@@ -1,0 +1,119 @@
+# Newcastle CZC color palette
+# Canonical source for all colors used in draft renderings.
+# Values are working estimates from visual inspection of the baseline PDF.
+# Items marked "verify" should be confirmed by pixel sampling before v0.1 release.
+#
+# Used by:
+#   - style/czc-template.typ (Typst template imports this via YAML)
+#   - build scripts (pass selected colors as Typst inputs)
+
+system:
+  article_blue:       "#2E96CC"   # verify | Article display, section headings, divider lines, wordmark
+  section_blue_dark:  "#2079B0"   # verify | Subsection headings, deep accents
+  body_dark:          "#333333"   # body text
+  footer_gray:        "#666666"   # footer date and "|" separators
+  header_gray:        "#777777"   # header band topic name (small caps)
+  table_tint:         "#E8E8E8"   # standard table header row background
+  rule_gray:          "#B0B0B0"   # subtle horizontal rules in headers/footers
+  page_bg:            "#FFFFFF"
+
+districts:
+  D1:
+    name: "Rural"
+    hex:  "#B5C58F"               # verify | olive / sage green
+    text: "#333333"               # text color over this background
+  D2:
+    name: "Neighborhood Residential"
+    hex:  "#F5E58A"               # verify | pale yellow
+    text: "#333333"
+  D3:
+    name: "Neighborhood Business"
+    hex:  "#C9A87C"               # verify | tan / light brown
+    text: "#333333"
+  D4:
+    name: "Village Residential"
+    hex:  "#F5D540"               # verify | saturated yellow
+    text: "#333333"
+  D5:
+    name: "Village Business"
+    hex:  "#C0A4D2"               # verify | light lavender purple
+    text: "#333333"
+  D6:
+    name: "Town Center"
+    hex:  "#5C2D74"               # verify | deep purple
+    text: "#FFFFFF"
+
+special_districts:
+  SD_Historic:
+    name: "Historic"
+    hex:  "#6FB5B5"               # verify | teal
+    text: "#FFFFFF"
+  SD_Conservation:
+    name: "Conservation"
+    hex:  "#4B8B3A"               # verify | forest green
+    text: "#FFFFFF"
+  SD_HighwayCommercial:
+    name: "Highway Commercial"
+    hex:  "#F08A30"               # verify | orange
+    text: "#FFFFFF"
+  SD_RuralHighway:
+    name: "Rural Highway"
+    hex:  "#7A6536"               # verify | olive-brown
+    text: "#FFFFFF"
+  SD_Campus:
+    name: "Campus"
+    hex:  "#69C2D6"               # verify | light sky blue
+    text: "#333333"
+  SD_Marine:
+    name: "Marine"
+    hex:  "#244D8F"               # verify | deep nautical blue
+    text: "#FFFFFF"
+  SD_Fabrication:
+    name: "Fabrication"
+    hex:  "#939393"               # verify | medium gray
+    text: "#FFFFFF"
+  SD_Civic:
+    name: "Civic"
+    hex:  "#803535"               # verify | brick red / maroon
+    text: "#FFFFFF"
+
+# NEW — for Article 3 Street/Road Types. Proposed; review before v0.1 release.
+# Constraint: each color must be visually distinguishable from every district color
+# when adjacent on the District Map and inventory table.
+street_road_types:
+  S1_MainStreet:
+    name: "Main Street"
+    hex:  "#A33C3C"               # proposed | deep red
+    text: "#FFFFFF"
+  S2_VillageStreet:
+    name: "Village Street"
+    hex:  "#C67343"               # proposed | burnt orange
+    text: "#FFFFFF"
+  S3_NeighborhoodStreet:
+    name: "Neighborhood Street"
+    hex:  "#D9A05B"               # proposed | warm tan
+    text: "#333333"
+  S4_LaneAlley:
+    name: "Lane / Alley"
+    hex:  "#9C8466"               # proposed | muted brown
+    text: "#FFFFFF"
+  R1_ConnectorRoad:
+    name: "Connector Road"
+    hex:  "#4F8AAB"               # proposed | slate blue
+    text: "#FFFFFF"
+  R2_RuralRoad:
+    name: "Rural Road"
+    hex:  "#3F6D5C"               # proposed | forest teal
+    text: "#FFFFFF"
+  R3_HighwayCommercial:
+    name: "Highway Commercial"
+    hex:  "#7E5C8C"               # proposed | muted plum
+    text: "#FFFFFF"
+  R4_RuralHighway:
+    name: "Rural Highway"
+    hex:  "#5A6E48"               # proposed | olive
+    text: "#FFFFFF"
+  D_Driveway:
+    name: "Driveway"
+    hex:  "#888888"               # proposed | neutral gray
+    text: "#FFFFFF"
