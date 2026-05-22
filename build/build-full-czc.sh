@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
-# Build the full integrated CZC (all articles concatenated) for a release.
+# Build the full integrated CZC for a release.
+#
+# Each article is rendered to its own PDF (so per-article metadata — Article
+# number, Article name, opener page — is honored), then all article PDFs are
+# concatenated with pdfunite into a single deliverable.
 #
 # Usage:
 #   build-full-czc.sh [version-tag]
 #
 # Example:
-#   build-full-czc.sh v0.1-draft
+#   build-full-czc.sh v0.1-baseline
 
 set -euo pipefail
 
@@ -15,8 +19,11 @@ VERSION="${1:-v0.0-dev}"
 RELEASE_DIR="$REPO_ROOT/releases/$VERSION"
 mkdir -p "$RELEASE_DIR"
 
-# Collect all article markdown files in lexical order (article-01, article-02, …)
-mapfile -t ARTICLES < <(ls "$SOURCE_DIR"/article-*.md 2>/dev/null | sort)
+# Collect article markdown files in lexical order (bash-3 compatible).
+ARTICLES=()
+while IFS= read -r f; do
+  ARTICLES+=("$f")
+done < <(ls "$SOURCE_DIR"/article-*.md 2>/dev/null | sort)
 
 if [ ${#ARTICLES[@]} -eq 0 ]; then
   echo "No article markdown files found in $SOURCE_DIR" >&2
@@ -24,19 +31,30 @@ if [ ${#ARTICLES[@]} -eq 0 ]; then
 fi
 
 OUT_NAME="Newcastle CZC (Integrated Draft $VERSION)"
-COMBINED_MD="$RELEASE_DIR/$OUT_NAME.md"
 OUTPUT_PDF="$RELEASE_DIR/$OUT_NAME.pdf"
+COMBINED_MD="$RELEASE_DIR/$OUT_NAME.md"
 
-echo "Concatenating ${#ARTICLES[@]} article files into: $COMBINED_MD"
+# Render each article to its own PDF.
+TMPDIR_PDFS="$(mktemp -d)"
+trap 'rm -rf "$TMPDIR_PDFS"' EXIT
+
+INDEX=0
+PDF_LIST=()
+for ART in "${ARTICLES[@]}"; do
+  INDEX=$((INDEX + 1))
+  PART="$TMPDIR_PDFS/$(printf "%02d" "$INDEX").pdf"
+  echo "Rendering article $INDEX: $(basename "$ART")"
+  bash "$REPO_ROOT/build/build-article.sh" "$ART" "$PART" \
+    -V "footer-date=Draft $VERSION" >/dev/null
+  PDF_LIST+=("$PART")
+done
+
+echo "Concatenating ${#PDF_LIST[@]} article PDFs into: $OUTPUT_PDF"
+pdfunite "${PDF_LIST[@]}" "$OUTPUT_PDF"
+
+# Also emit the concatenated markdown source for reference (frontmatter intact;
+# read by humans, not re-rendered through pandoc as one input).
+echo "Writing combined markdown: $COMBINED_MD"
 cat "${ARTICLES[@]}" > "$COMBINED_MD"
-
-echo "Rendering: $OUTPUT_PDF"
-pandoc "$COMBINED_MD" \
-  --from=markdown+fancy_lists+startnum \
-  --pdf-engine=typst \
-  --template="$REPO_ROOT/style/czc-template.typ" \
-  --resource-path="$REPO_ROOT/style" \
-  -V footer-date="Draft $VERSION" \
-  -o "$OUTPUT_PDF"
 
 echo "Done: $OUTPUT_PDF"
