@@ -1,10 +1,10 @@
 ---
-article-number: "4"
+article-number: "5"
 article-name: "Building Standards"
 footer-date: "Adopted: November 3, 2020"
 ---
 
-# Article 4 Building Standards
+# Article 5 Building Standards
 
 ## 1. BUILDING TYPES
 
@@ -197,7 +197,7 @@ TABLE 4.1 ALLOWABLE ADDITION LOCATION BY DISTRICT
 ### D. HEIGHT EXCEPTIONS
 
 1. Maximum height standards do not apply to mechanical equipment; vents or exhausts; solar panels or skylights; flagpoles; chimneys; parapets; or other non-habitable architectural features.
-2. The maximum heights of roof decks, towers, turrets, cupolas, and penthouses are regulated in Article 5.5 Architectural Components.
+2. The maximum heights of roof decks, towers, turrets, cupolas, and penthouses are regulated in Article 6.5 Architectural Components.
 
 ## 8. MATERIALS
 

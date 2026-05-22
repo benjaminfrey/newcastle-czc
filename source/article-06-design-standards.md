@@ -1,10 +1,10 @@
 ---
-article-number: "5"
+article-number: "6"
 article-name: "Design Standards"
 footer-date: "Adopted: November 3, 2020"
 ---
 
-# Article 5 Design Standards
+# Article 6 Design Standards
 
 ## 1. GENERAL
 

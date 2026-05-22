@@ -1,10 +1,10 @@
 ---
-article-number: "7"
+article-number: "8"
 article-name: "Administration"
 footer-date: "Adopted: November 3, 2020"
 ---
 
-# Article 7 Administration
+# Article 8 Administration
 
 ## 1. CORE CODE ADMINISTRATION
 
@@ -35,8 +35,8 @@ footer-date: "Adopted: November 3, 2020"
 4. At the public hearing, the Permitting Authority may vote to determine if an application is complete and may do one of the following:
     a. Determine the application is complete and ready for review.
     b. Determine the application is incomplete and deny the application.
-    c. Determine the application is incomplete and allow the applicant to withdraw the application without prejudice according to Article 7.A.9.B Withdrawal.
-    d. Table the application to a date and time specific according to Article 7.A.7.C. Continuance.
+    c. Determine the application is incomplete and allow the applicant to withdraw the application without prejudice according to Article 8.A.9.B Withdrawal.
+    d. Table the application to a date and time specific according to Article 8.A.7.C. Continuance.
 
 ### C. FEES
 
@@ -46,7 +46,7 @@ footer-date: "Adopted: November 3, 2020"
 
 1. Where a Permitting Authority finds that the scale or complexity of a project necessitates third party professional or technical services to assist with project review and determination of compliance with this Code and any modules, the applicant may be required to escrow funds prior to the commencement of project review.
 2. Funds will be held by the Town Treasurer and any balance of funds remaining at the conclusion of project review will be returned to the applicant.
-3. In the instance where an applicant disagrees with the amount of funds to be escrowed, an applicant may appeal a decision of the Permitting Authority in accordance with Article 7.F.1 Administrative Appeals.
+3. In the instance where an applicant disagrees with the amount of funds to be escrowed, an applicant may appeal a decision of the Permitting Authority in accordance with Article 8.F.1 Administrative Appeals.
 
 ### E. RECORDING
 
@@ -297,8 +297,8 @@ TABLE 7.1 NOTICES & PUBLIC HEARINGS
 
 ### D. PROCEDURE
 
-1. A Small Project Plan application must be filed, including payment of the applicable fee, with the Office of the Code Enforcement Officer, in accordance with Article 7.2 General Procedures.
-2. The Code Enforcement Officer shall forward permit applications for Life Safety review, in accordance with Article 7.29 Life Safety.
+1. A Small Project Plan application must be filed, including payment of the applicable fee, with the Office of the Code Enforcement Officer, in accordance with Article 8.2 General Procedures.
+2. The Code Enforcement Officer shall forward permit applications for Life Safety review, in accordance with Article 8.29 Life Safety.
 3. Applications may be subject to additional State or Municipal permit review.
     a. Zoning Permits for Small Project Plans will not be issued for applications that require any additional development review until that review has been completed.
     b. The applicant is responsible for obtaining proof of any and all required additional development review.
@@ -350,8 +350,8 @@ TABLE 7.1 NOTICES & PUBLIC HEARINGS
 
 ### D. PROCEDURE
 
-1. A Large Project Plan application must be filed, including payment of the applicable fee, with the Office of the Code Enforcement Officer, in accordance with Article 7.A.1 General Procedures.
-2. The Code Enforcement Officer shall forward permit applications for Life Safety review, in accordance with Article 7.29 Life Safety.
+1. A Large Project Plan application must be filed, including payment of the applicable fee, with the Office of the Code Enforcement Officer, in accordance with Article 8.A.1 General Procedures.
+2. The Code Enforcement Officer shall forward permit applications for Life Safety review, in accordance with Article 8.29 Life Safety.
 3. Within 45 days after receiving a completed application for a Large Project Plan that does not require any further type of development review, the Code Enforcement Officer must issue a Zoning Permit or transmit in writing to the Applicant the reasons for failure to issue such permit.
 4. If the Code Enforcement Officer forwards the application to the Planning Board, the Planning Board will proceed as follows:
     a. Within 30 days after receiving an application for Large Project Plan approval, the Planning Board must review the application for completeness and hold a public hearing.
@@ -430,7 +430,7 @@ TABLE 7.1 NOTICES & PUBLIC HEARINGS
 
 1. The Planning Board must approve a Subdivision Plan application and issue findings of fact upon verifying consistency to the following:
     a. The standards of this Code.
-    b. The Newcastle Road, Driveway, and Entrance Ordinance.
+    b. The standards of Article 3 Streets, Roads & Driveways.
     c. Pollution: The proposed subdivision will not result in undue water or air pollution. In making this determination, it will at least consider:
         i. The elevation of the land above sea level and its relation to the flood plains;
         ii. The nature of soils and subsoils and their ability to adequately support waste disposal;
@@ -465,7 +465,7 @@ TABLE 7.1 NOTICES & PUBLIC HEARINGS
 1. The Code Enforcement Officer may determine that the following modifications to an approved plat are de minimis in nature, and do not constitute an amendment to the approved final plat:
     a. Moving of lot lines and rearrangement of easements, provided that the lots meet the minimum requirements of this Code and all other applicable regulations, and the number of lots remains the same; and,
     b. Modification of design of improvements as result of unforeseen conditions or field adjustments during construction, as recommended by the Road Commissioner.
-2. All other modifications to an approved plat will constitute a new application to the Planning Board, subject to the procedures of Article 7.B.4.C Procedure.
+2. All other modifications to an approved plat will constitute a new application to the Planning Board, subject to the procedures of Article 8.B.4.C Procedure.
 3. Where a revision causes need for a new plan mylar to be signed by the Planning Board for recording at the Lincoln County Registry of Deeds, the Planning Board must make itself available as a board or as individuals to sign mylars in a timely manner.  After obtaining necessary signatures, the applicant must file the signed mylar with the Lincoln County Registry of Deeds in accordance with the standards of this Code.
 
 ### I. COMPLIANCE
@@ -522,7 +522,7 @@ TABLE 7.1 NOTICES & PUBLIC HEARINGS
 ### A. PURPOSE
 
 1. To provide a development review process that applies to a conceptual plan coordinating the development of blocks, roads, civic space, and other neighborhood level design.
-2. To show mandatory compliance standards for blocks, shopfront streets, roads, district mix, and building mix, as applicable.
+2. To show mandatory compliance standards for blocks, Street and Road Types per Article 3, district mix, and building mix, as applicable.
 3. To allow an applicant to gain conceptual-level approval for a project without preparing detailed site plans or architectural and engineering drawings for roads, civic spaces, lots, or buildings.
 4. To authorize the Code Enforcement Office to accept applications for subsequent development review in accordance with this Code, as project phases and individual lots are built out.
 
@@ -539,11 +539,11 @@ TABLE 7.1 NOTICES & PUBLIC HEARINGS
 
 1. The review and approval of an application for Master Plan application is conducted at a public hearing.
 2. Within 30 days of receiving an application for Master Plan approval, the Planning Board must review the application for completeness and hold a public hearing.
-3. The Planning Board shall forward Master Plan applications for Life Safety review, in accordance with Article 7.29 Life Safety.
+3. The Planning Board shall forward Master Plan applications for Life Safety review, in accordance with Article 8.29 Life Safety.
 4. Within 30 days of the closing of the public hearing, the Planning Board must make a decision to approve, approve with conditions, deny, or grant withdrawal of the application.
 5. When considering a revision to a previously approved application for Master Plan approval, the Planning Board must limit its review to the proposed changes to the previously approved application.
 6. Plans for project phases under a Master Plan may be submitted as Large Project Plans, Small Project plans, or Subdivision Plans, as appropriate.
-7. For Master Plans that involve realignment of districts, see Article 7 Section C.2 Zoning Amendment.
+7. For Master Plans that involve realignment of districts, see Article 8 Section C.2 Zoning Amendment.
 
 ### E. APPROVAL STANDARDS
 
@@ -574,7 +574,7 @@ TABLE 7.1 NOTICES & PUBLIC HEARINGS
 ### C. AUTHORITY
 
 1. The Code Enforcement Officer must determine whether a plan revision is de minimis in nature and thereupon review said revision administratively or determine if the Permitting Authority should review the petition based on the nature of the request and initial plan approval.
-2. In accordance with Article 7.B.4.F Amendments and Modifications, the Code Enforcement Officer may determine whether a Subdivision Plan revision is de minimis or requires action by the Planning Board.
+2. In accordance with Article 8.B.4.F Amendments and Modifications, the Code Enforcement Officer may determine whether a Subdivision Plan revision is de minimis or requires action by the Planning Board.
 
 ### D. PROCEEDURES
 
@@ -622,7 +622,7 @@ TABLE 7.1 NOTICES & PUBLIC HEARINGS
 
 ### C. GENERAL
 
-1. Expanded Use Permit Authority and Proceedure follow those of Article 7 Section 15.C and 15.D respectively.
+1. Expanded Use Permit Authority and Proceedure follow those of Article 8 Section 15.C and 15.D respectively.
 
 ## 17. RESIDENTIAL COMPANION USE PERMIT
 
@@ -636,7 +636,7 @@ TABLE 7.1 NOTICES & PUBLIC HEARINGS
 
 ### C. GENERAL
 
-1. Residential Companion Use Permit Authority and Proceedure follow those of Article 7 Section 15.C and 15.D respectively.
+1. Residential Companion Use Permit Authority and Proceedure follow those of Article 8 Section 15.C and 15.D respectively.
 
 ## 18. SPECIAL PERMIT
 
@@ -912,7 +912,7 @@ TABLE 7.1 NOTICES & PUBLIC HEARINGS
 
 ### E. DETERMINATIONS
 
-1. The Code Enforcement Officer will determine all questions as to whether a nonconforming condition exists, and prepare a written interpretation in accordance with Article 7.A.6 Written Interpretation.
+1. The Code Enforcement Officer will determine all questions as to whether a nonconforming condition exists, and prepare a written interpretation in accordance with Article 8.A.6 Written Interpretation.
 2. The written interpretation must assign a building type, components, roof type, and any other features to the nonconforming building, to set the baseline for modifications that can be legally made to the nonconforming building.
 
 ### F. RESTORATION OF NONCONFORMING CONDITIONS

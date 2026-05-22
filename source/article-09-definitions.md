@@ -1,10 +1,10 @@
 ---
-article-number: "8"
+article-number: "9"
 article-name: "Definitions"
 footer-date: "Adopted: November 3, 2020"
 ---
 
-# Article 8 Definitions
+# Article 9 Definitions
 
 **Abandoned:**
 When a building, commercial unit, or property becomes vacant and unoccupied for a period of one year or more is deemed abandoned.
@@ -73,7 +73,7 @@ The process of determining the closest reasonable district, building type, compo
 An object may be said to be attached to another when their outer surfaces are permanently in direct contact, or when they share part of their structural system.
 
 **Auto-Oriented:**
-Businesses that relate to vehicular sales and service. All auto-oriented uses, definitions, and standards may be found in Article 4 Use Standards.
+Businesses that relate to vehicular sales and service. All auto-oriented uses, definitions, and standards may be found in Article 7 Use Standards.
 
 **Average Ground Level:**
 The mean (average) ground level at the corners of the main body of a building type.
@@ -139,7 +139,7 @@ An area protected from development and designated for use as civic space on the 
 An area that shares common characteristics with other land in the same zoning designation, or is an area that is intended to transition toward a character that has been determined by the community. Core Districts span a range of development intensity from most rural, D1, to most urban, D6.
 
 **Civic Use:**
-Activities, uses, purposes, and organizations which are dedicated to arts, culture, education, religion, recreation, government, transit, municipal parking, gardening, horticulture, public gathering, assembly, or meeting. All civic and institutional uses must serve and be open to the public and operate as a non-profit or otherwise be tax exempt. All civic and institutional uses, definitions, and standards may be found in Article 4 Use Standards.
+Activities, uses, purposes, and organizations which are dedicated to arts, culture, education, religion, recreation, government, transit, municipal parking, gardening, horticulture, public gathering, assembly, or meeting. All civic and institutional uses must serve and be open to the public and operate as a non-profit or otherwise be tax exempt. All civic and institutional uses, definitions, and standards may be found in Article 7 Use Standards.
 
 **Clear Height:**
 The vertical distance between the underside of an overhanging building element and the horizontal surface below, free from obstruction.
@@ -325,7 +325,7 @@ See Absolute Height.
 Any alteration of land, a lot, a building or a structure.
 
 **Industrial:**
-The processing or manufacturing of materials, and activities associated with this work. All industrial uses, definitions, and standards may be found in Article 4 Use Standards.
+The processing or manufacturing of materials, and activities associated with this work. All industrial uses, definitions, and standards may be found in Article 7 Use Standards.
 
 **Insular Lot:**
 A building lot that does not have frontage on a private road, a public road, or a waterbody.
@@ -361,7 +361,7 @@ The lamp and all refractive, reflective, and translucent light transmitting part
 A platform, dedicated to the loading or unloading of trucks.
 
 **Lodging:**
-Premises available for daily and weekly renting of bedrooms. All lodging uses, definitions, and standards may be found in Article 4 Use Standards.
+Premises available for daily and weekly renting of bedrooms. All lodging uses, definitions, and standards may be found in Article 7 Use Standards.
 
 **Lot:**
 A designated parcel, tract, or area of land established by a deed or plat, or as otherwise permitted by law. Syn: Parcel or Lot of Record.
@@ -428,16 +428,16 @@ A building occupied by a combination of 1 or more commercial uses and 1 or more 
 Includes wood, metal, brick, stone, or composites from any of the aforementioned materials.
 
 **Natural Resources:**
-The processing or manufacturing of materials, and activities associated with this work. All natural resources uses, definitions, and standards may be found in Article 6 Use Standards.
+The processing or manufacturing of materials, and activities associated with this work. All natural resources uses, definitions, and standards may be found in Article 7 Use Standards.
 
 **Nonconformity:**
 An existing use, structure, lot, site characteristics or sign that, at the time of its legal establishment, was in compliance with the zoning regulations, but after the adoption date of this Code has been made wholly or partially nonconforming.
 
 **Non-dwelling Unit:**
-A single, internally connected space that comprises a building or a part of a building that can be occupied by any one of the use categories included in Article 6 Use Standards, except for those under the category of Residential.
+A single, internally connected space that comprises a building or a part of a building that can be occupied by any one of the use categories included in Article 7 Use Standards, except for those under the category of Residential.
 
 **Office:**
-The transaction of general business, including administrative, professional, and clerical activities, but excluding retail. All office uses, definitions, and standards may be found in Article 4 Use Standards.
+The transaction of general business, including administrative, professional, and clerical activities, but excluding retail. All office uses, definitions, and standards may be found in Article 7 Use Standards.
 
 **On-Site Civic Space:**
 Civic space owned, maintained, and administered by a private entity, provided on the same lot as a building or on a lot associated with a building group, for the purpose of adding publicly accessible amenity space to a development project.
@@ -518,13 +518,13 @@ The horizontal distance from a rear lot line to the location of structures or us
 Uses catering to patrons originating from locations both within the local municipality and elsewhere in the broader area.
 
 **Residential:**
-Use characterizing premises available for long-term human dwelling. All residential uses, definitions, and standards may be found in Article 4 Use Standards.
+Use characterizing premises available for long-term human dwelling. All residential uses, definitions, and standards may be found in Article 7 Use Standards.
 
 **Residential Accessory Building:**
 A building occupied by a use that supports or compliments a residential use, not a commercial use.
 
 **Retail:**
-Use characterizing premises available for the sale of merchandise and food service. All retail uses, definitions, and standards may be found in Article 4 Use Standards.
+Use characterizing premises available for the sale of merchandise and food service. All retail uses, definitions, and standards may be found in Article 7 Use Standards.
 
 **Retaining Wall:**
 A wall that holds the earth at one side at a higher elevation than the earth on the other side.
@@ -553,11 +553,11 @@ When a lot fronts on more than one road, and multiple roads meet the above crite
 **Road, Secondary:**
 In determining the Secondary Road for Corner lots, Through lots, or any lot that abuts more than one road, the secondary road or roads are the roads determined not to be the primary road.
 
-**Road, Private**
-See Newcastle Road Ordinance.
+**Road, Private:**
+A road in fully private ownership over which no public access right exists; an Ownership Category under Article 3 Section 4.C. Independent of the road's Street/Road Type. Maintenance is the responsibility of the private owner or association.
 
-**Road, Public**
-See Newcastle Road Ordinance.
+**Road, Public:**
+Legacy term superseded by the Ownership Categories in Article 3 Section 4.C. Where the term appears in this Code without further qualification, it shall be construed to include both Town Way (formally accepted under 23 MRSA §3022) and Public Easement (under 23 MRSA §3021). See also **Town Way** and **Public Easement**.
 
 **Roof Line:**
 The highest point on any building or structure where an exterior wall or parapet wall encloses roof or floor area, including floor area provided for housing mechanical equipment.
@@ -581,7 +581,7 @@ See Lot Line, Secondary Front.
 See Setback, Secondary Front.
 
 **Service:**
-Service uses include any enterprise that provides work performed in an expert manner by an individual or team for the benefit of its customers. The typical service business provides intangible products. Auto-oriented service uses are listed under a separate use category. All service uses, definitions, and standards may be found in Article 6 Use Standards.
+Service uses include any enterprise that provides work performed in an expert manner by an individual or team for the benefit of its customers. The typical service business provides intangible products. Auto-oriented service uses are listed under a separate use category. All service uses, definitions, and standards may be found in Article 7 Use Standards.
 
 **Setback:**
 The horizontal distance required between the closest exterior wall of a building or parking and a specified element, such as a lot line, easement, or water body, measured along a perpendicular angle at ground height regardless of natural contours of the land. This area must be maintained clear of permanent structures with the exception of allowed encroachments.
@@ -689,7 +689,7 @@ Refers to 6 unique categories of trees, defined by a unique shape and used as a 
 The required numbers of trees that must be planted per square foot of ground.
 
 **Unit:**
-A single, internally connected space that comprises a building or a part of a building that can be occupied by any one of the use categories included in Article 4 Use Standards. (See Dwelling Unit and Non-dwelling Unit).
+A single, internally connected space that comprises a building or a part of a building that can be occupied by any one of the use categories included in Article 7 Use Standards. (See Dwelling Unit and Non-dwelling Unit).
 
 **Unit Floor Area:**
 The net Floor Area of any single Residential or Non-Residential unit.
@@ -748,3 +748,67 @@ A privately-owned area that is adjacent to a building and often times described 
 
 **Zoning Permit:**
 An approval that certifies that a project complies with all applicable municipal ordinances.
+
+## DEFINITIONS ADDED FOR ARTICLE 3 STREETS, ROADS & DRIVEWAYS
+
+The following definitions are added in connection with the adoption of Article 3. At the next consolidation of this Article, they will be merged alphabetically with the entries above.
+
+**Cartway:**
+The portion of a Street or Road's right-of-way that is paved, graveled, or otherwise improved for vehicular travel, including travel lanes, on-street parking lanes (where present), and shoulders (where present). The cartway does not include sidewalks, planting strips, or the frontage zone.
+
+**Connector Road (R-1):**
+A Road Type providing connections in the rural-to-urban transition zone, with shoulders rather than curbs, no continuous sidewalks, and a design speed higher than any Street Type. Defined in Article 3 Section 2.H.
+
+**Curb Return Radius:**
+The radius of the curve at the corner of two intersecting Streets or Roads, measured along the outside face of the curb or, where no curb is present, along the edge of the cartway. Calibrated by Type pair under Article 3 Section 9.
+
+**Driveway** *(modified entry — supersedes prior definition above):*
+A private vehicular access way from a Street or Road (per Article 3 Section 2) to the interior of a single lot, including access to homes, parking lots, or loading docks. A Driveway is not a Street or Road and is not subject to the construction specifications of Article 3 Section 11. See Article 3 Section 7 for full Driveway standards. Where this Code uses the prior definition of "Driveway" (a vehicular access way serving two single family dwellings or one two-family dwelling or less), the prior definition is superseded; use limits, if any, are set within Article 3 Section 7.
+
+**Highway Commercial (R-3):**
+A Road Type for auto-oriented commercial corridors with access management, sidewalks where feasible, and MaineDOT-coordinated cartway geometry. Defined in Article 3 Section 2.J.
+
+**Lane / Alley (S-4):**
+A Street Type for narrow service streets internal to a block providing access to the side or rear of lots. Defined in Article 3 Section 2.G. This term is synonymous with "Alley" as used elsewhere in this Code; where the two terms appear in different sections, they refer to the same Type S-4.
+
+**Main Street (S-1):**
+The most urban Street Type, providing the central organizing thoroughfare of the Town Center with continuous building streetwalls, active ground-floor uses, wide sidewalks, on-street parking both sides, and the lowest design speed in the typology. Defined in Article 3 Section 2.D.
+
+**Neighborhood Street (S-3):**
+A Street Type providing connections within and between residential and small-business neighborhoods, with a sidewalk on at least one side, a planting strip, on-street parking permitted, and a residential-scale design speed. Defined in Article 3 Section 2.F.
+
+**Ownership Category:**
+The statutory ownership and maintenance classification of a Street or Road under Article 3 Section 4, independent of its Street/Road Type. The four Ownership Categories are Town Way, Public Easement, Private Road, and State Highway.
+
+**Planting Strip:**
+The portion of a Street or Road's right-of-way located between the curb (or edge of cartway, where no curb is present) and the sidewalk (where present), or between the curb and the front lot line where no sidewalk is present. The planting strip typically contains street trees, grass, low plantings, and tree pits; it may also contain on-street furniture in the furnishing zone.
+
+**Public Easement:**
+A right of public access over a road or way, held by the municipality under 23 MRSA §3021. The road or way is open to public traffic, but the Town does not bear maintenance responsibility. Formerly referred to in some Maine usage as a "private way." An Ownership Category under Article 3 Section 4.C.
+
+**Rural Highway (R-4):**
+A Road Type for high-speed regional corridors through rural and conservation contexts, with deep front setbacks, vegetative screening, and MaineDOT-controlled cartway geometry. Defined in Article 3 Section 2.K.
+
+**Rural Road (R-2):**
+The most rural Road Type, providing access to working landscapes — farmland, forest, conservation lands — with the narrowest pavement, no curbs, and drainage by open ditches. Defined in Article 3 Section 2.I.
+
+**State Highway:**
+A street or road owned and maintained by the State of Maine through the Maine Department of Transportation. US Route 1 within Newcastle is a State Highway. An Ownership Category under Article 3 Section 4.C. Subject to the coordination protocol in Article 3 Section 12.
+
+**Street:**
+A thoroughfare classified under the Street family of Types (S-1 Main Street, S-2 Village Street, S-3 Neighborhood Street, S-4 Lane/Alley) under Article 3 Section 2. Distinct from a Road in that pedestrian comfort is generally a primary design consideration.
+
+**Street/Road Type:**
+The form-based classification assigned to a Street or Road under Article 3 Section 2, describing its character, dimensions, and design standards. Distinct from the Street or Road's Ownership Category.
+
+**Thoroughfare:**
+An umbrella term for any Street, Road, or Driveway. Includes all eight Street/Road Types (S-1 through S-4 and R-1 through R-4) plus the Driveway category.
+
+**Town Way:**
+A road or way formally accepted by the Town under 23 MRSA §3022 by vote at Town Meeting. The Town owns and maintains a Town Way. An Ownership Category under Article 3 Section 4.C.
+
+**Travel Lane:**
+A portion of the cartway designated for the through movement of vehicular traffic in a single direction; does not include on-street parking lanes or shoulders.
+
+**Village Street (S-2):**
+A Street Type providing mixed-use frontages in village centers, with sidewalks both sides, optional on-street parking, and a design speed appropriate to pedestrian-prioritized neighborhood streets. Defined in Article 3 Section 2.E.

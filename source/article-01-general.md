@@ -43,7 +43,7 @@ footer-date: "Adopted: November 3, 2020"
 
 ### B. MEANING & PURPOSE
 
-1. Words, phrases, and terms used in this Code are defined in Article 8 Definitions or within the Articles that contain standards associated with the term.
+1. Words, phrases, and terms used in this Code are defined in Article 9 Definitions or within the Articles that contain standards associated with the term.
 2. Words, phrases, or terms not defined in this Code must be accorded their commonly accepted meanings as defined in the most recent edition of the Webster's Unabridged Dictionary.
 3. The terms "standards," "regulations," and "requirements" are used to mandate a specific course of action or built outcome.
 4. The words "must," "will," and "may not" are mandatory and when used require compliance with standards, regulations, and requirements of the Ordinance.

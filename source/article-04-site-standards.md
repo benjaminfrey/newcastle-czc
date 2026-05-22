@@ -1,10 +1,10 @@
 ---
-article-number: "3"
+article-number: "4"
 article-name: "Site Standards"
 footer-date: "Adopted: November 3, 2020"
 ---
 
-# Article 3 Site Standards
+# Article 4 Site Standards
 
 ## 1. SITE STANDARDS
 
@@ -21,20 +21,15 @@ footer-date: "Adopted: November 3, 2020"
 
 ### A. PURPOSE
 
-1. To provide vehicular access to lots.
+1. To cross-reference the standards for vehicular access from a Street or Road to the interior of a single lot.
 
 ### B. APPLICABILITY
 
-1. New driveways or driveway relocation.
+1. New driveways and driveway relocation.
 
 ### C. GENERAL
 
-1. Driveways must comply with the Roads, Driveways and Entrances Ordinance of Newcastle.
-2. Residential Companion uses may share a driveway with the primary dwelling unit.
-3. Abutting lots may share a driveway subject to the conditions of item 1 above.
-4. Driveways may pass through required front, side, and rear setbacks to access permitted parking locations.
-5. One driveway is permitted per building or virtual lot.
-6. In D1 and D2 more than 1 driveway per lot is permitted.
+1. Driveways are regulated under Article 3 Section 7 (Driveways). Refer to Article 3 for all driveway design, location, sharing, and calibration standards.
 
 ## 3. VEHICULAR PARKING
 
@@ -74,7 +69,7 @@ footer-date: "Adopted: November 3, 2020"
 
 ### F. VEHICULAR ACCESS
 
-1. Off-street parking must be accessed from an alley or secondary road. When there is no abutting alley or secondary road, parking may be accessed from the primary road.
+1. Off-street parking must be accessed from a Lane/Alley (Type S-4 per Article 3 Section 2.G) or from a secondary frontage. When there is no abutting Lane/Alley or secondary frontage, parking may be accessed from the primary frontage.
 2. Parking lots should connect with existing abutting parking lots.
 3. Shared parking agreements with neighboring properties are encouraged.
 
@@ -244,7 +239,7 @@ TABLE 3.1 SCREENING FORMULA
 
 ### B. APPLICABILITY
 
-1. The standards of this Article apply to any new fences or walls, including those required per use standards in Article 6 Use Standards, to minimize the trespass of undue sound and light between abutting properties.
+1. The standards of this Article apply to any new fences or walls, including those required per use standards in Article 7 Use Standards, to minimize the trespass of undue sound and light between abutting properties.
 
 ### C. FENCES & WALLS
 

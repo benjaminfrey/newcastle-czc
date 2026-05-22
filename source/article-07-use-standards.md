@@ -1,10 +1,10 @@
 ---
-article-number: "6"
+article-number: "7"
 article-name: "Use Standards"
 footer-date: "Adopted: November 3, 2020"
 ---
 
-# Article 6 Use Standards
+# Article 7 Use Standards
 
 ## 1. USE STANDARDS
 
@@ -109,7 +109,7 @@ A commercial facility for spectator and participatory uses conducted outdoors or
 
 ### B. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 6 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
 
 ## 6. ANIMAL CARE, INDOOR
 
@@ -119,7 +119,7 @@ A facility where animals not owned by the proprietor are sheltered and fed, and 
 
 ### B. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 6 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
 
 ## 7. ANIMAL CARE, OUTDOOR
 
@@ -134,7 +134,7 @@ A facility where animals not owned by the proprietor are sheltered and fed. Incl
     b. must be located no less than 200 feet from any abutting residential use.
     c. must meet state and federal regulations regarding shelter against weather.
     d. must provide fencing of adequate height to prevent escape.
-2. The proposed Use shall comply with the Nuisance Standards in Article 6 Section 1.G.
+2. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
 
 ## 8. AQUACULTURE
 
@@ -155,7 +155,7 @@ A facility that has organized services, meetings, events, or programs to benefit
 ### B. STANDARDS
 
 1. Meeting facilities and places of worship may include functionally related internal facilities such as kitchens, multi-purpose rooms, and offices. Places of worship may establish schools, daycare centers, and on-site social programs such as health care clinics, and food banks.
-2. The proposed Use shall comply with the Nuisance Standards in Article 6 Section 1.G.
+2. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
 
 ## 10. BANKING & FINANCIAL SERVICES
 
@@ -202,7 +202,7 @@ A site where one or more lots are used, or are intended to be used, by campers w
 
 ### B. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 6 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
 
 ## 14. CAR WASH
 
@@ -274,7 +274,7 @@ The storage and dispatch of ambulances, taxis, limousines, armored cars, tow tru
 ### B. STANDARDS
 
 1. The storage of vehicles must be within a fully-enclosed structure or behind a 25 ft deep Level 2 Natural Screen or a 50% opaque fence.
-2. The proposed Use shall comply with the Nuisance Standards in Article 6 Section 1.G.
+2. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
     a. Emergency Services are exempt from noise and glare requirements.
 
 ## 22. DISTRICT ENERGY SYSTEM
@@ -346,7 +346,7 @@ A facility engaged in the retail sales of personal or commercial vehicle fuels.
 
 ### B. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 6 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
 
 ## 30. HEALTH CARE PROVIDER
 
@@ -401,7 +401,7 @@ A manufacturing use involving small-scale production or assembly with no noxious
 
 ### B. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 6 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
 2. Parking lots are not permitted within the frontage zone and must not be visible from any road, excluding alleys.
 
 ## 36. INDUSTRIAL, GENERAL
@@ -412,7 +412,7 @@ Uses that are associated with retail sales, outdoor storage, or light manufactur
 
 ### B. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 6 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
 2. A Level 3 Screen, 25 ft deep, is required along all side and rear lot lines that abut residential uses.
 
 ## 37. INDUSTRIAL, HEAVY
@@ -448,7 +448,7 @@ Any activity provided for pleasure, quiet enjoyment, recreation, relaxation, div
 
 ### B. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 6 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
 
 ## 40. MARINA, DRY STORAGE
 
@@ -521,7 +521,7 @@ A non-accessory parking lot made available to the general public in exchange for
 
 ### B. STANDARDS
 
-1. Parking lots must follow the standards for Vehicular Parking in Article 3 Site Standards.
+1. Parking lots must follow the standards for Vehicular Parking in Article 4 Site Standards.
 
 ## 49. PRIMARY/SECONDARY SCHOOL
 
@@ -537,7 +537,7 @@ A facility operated for an organization, which is open to people upon invitation
 
 ### B. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 6 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
 
 ## 51. RECYCLING FACILITY
 
@@ -549,7 +549,7 @@ A facility that accepts materials, such as dry paper, glass, cans, or plastics, 
 
 1. Outdoor storage or operations of the recycling facility may not be located within the frontage zone and must be located behind a 50 ft deep Level 3 Natural Screen, or a 6 ft to 8 ft tall opaque fence. Outdoor storage or operations of any kind are prohibited outside the screened area.
 2. Recycling drop-off facilities, manned or unmanned, must be located behind the frontage zone.
-3. The proposed Use shall comply with the Nuisance Standards in Article 6 Section 1.G.
+3. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
 
 ## 52. RESEARCH LABORATORY
 
@@ -559,7 +559,7 @@ A facility for research and development that does not involve the use of human t
 
 ### B. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 6 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
 
 ## 53. RESIDENCE
 
@@ -694,7 +694,7 @@ The rental of a dwelling unit, or a portion of a dwelling unit, on an overnight 
     a. Glass cladding.
     b. Louvered or paneled shutters covering the panel in a "closed" position.
     c. A trellis, grille, grate, or fretwork.
-4. The proposed Use shall comply with the Nuisance Standards in Article 6 Section 1.G.
+4. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
 
 ## 65. VEHICLE RENTAL OR SALES
 
@@ -718,4 +718,4 @@ A business that repairs, installs, or maintains automobiles, small trucks or van
 2. No partially dismantled, wrecked, or unregistered vehicle may be stored outdoors for more than 30 days.
 3. Temporary storage of vehicles may not be located within the frontage zone and must be located behind a 25 ft Level 2 Natural Screen or a 6ft to 8 ft tall opaque fence.
 4. Outdoor storage or operations of any kind are prohibited in the frontage zone.
-5. The proposed Use shall comply with the Nuisance Standards in Article 6 Section 1.G.
+5. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.

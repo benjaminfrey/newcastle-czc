@@ -17,7 +17,7 @@ footer-date: "Adopted: November 3, 2020"
 ### B. APPLICABILITY
 
 1. Applies to the land, improvements, development, construction, subdivision, re-subdivision, structures, buildings, and lots within each core districts or special district.
-2. Core Districts and Special Districts are assigned on the District Map. Standards related to each district are located in Article 2 District Standards, Article 3 Site Standards, Article 4 Building Standards, Article 5 Design Standards, and Article 6 Use Standards.
+2. Core Districts and Special Districts are assigned on the District Map. Standards related to each district are located in Article 2 District Standards, Article 4 Site Standards, Article 5 Building Standards, Article 6 Design Standards, and Article 7 Use Standards.
 3. Properties that are designated on the District Map as having Special Requirements must comply with the Special Requirements standards found in this Article.
 
 ## 2. LOTS
@@ -32,16 +32,16 @@ footer-date: "Adopted: November 3, 2020"
 
 ### C. GENERAL
 
-1. All newly created lots must abut a Public Road or Private Road which conforms with the Newcastle Driveway, Road, and Entrance Ordinance.
+1. All newly created lots must abut a Street or Road of a Type defined in Article 3 Section 2 (Street & Road Types). The Street or Road must conform to the standards of Article 3.
     a. Newly created lots shall retain the District designation of the original lot.
-    b. New insular lots are prohibited, unless created with a minimum deeded 24 ft wide right-of-way to a Public or Private Road.
+    b. New insular lots are prohibited, unless created with a minimum deeded 24 ft wide right-of-way to a Street or Road as defined in Article 3.
         i. Newly created insular lots wholly held in a non-public conservation easement may reduce the right-of-way with access standard to 10 ft for non-vehicular access. Subsequent removal of the lot from the conservation easement shall create a legal non-conformity.
     c. New flag lots are prohibited.
 2. Land may be platted to create new corner lots, insular lots, through lots, or waterfront lots.
 3. Any lot type that has not been described by this Code may not be developed except by special permit.
 4. Lots must be platted as follows:
     a. The front lot line must be located along the primary road, or water body.
-    b. For newly created corner lots or through lots that abut two roads, the primary frontage shall be along the Public or Private Road of greatest significance.
+    b. For newly created corner lots or through lots that abut two roads, the primary frontage shall be along the Street or Road of the highest Type per Article 3 Section 2 hierarchy (Streets take precedence over Roads; within each family, Types with lower codes — e.g., S-1 over S-2 — take precedence).
 
 ### D. NONCONFORMING LOTS
 
@@ -79,8 +79,8 @@ footer-date: "Adopted: November 3, 2020"
 1. Primary building setbacks are provided on District pages.
 2. Accessory building setbacks are provided on District pages.
 3. All primary buildings must comply with required front, side, and rear setback ranges.
-4. Deviations to setbacks, including building articulation and encroachments, are specified in Article 4 Building Standards.
-5. Standards related to setbacks for components are specified in Article 4 Building Components.
+4. Deviations to setbacks, including building articulation and encroachments, are specified in Article 5 Building Standards.
+5. Standards related to setbacks for components are specified in Article 5 Building Components.
 6. Where a lot has more than one side, front, or rear lot line, the setback must be observed in each instance.
 7. When two lots of different districts share a lot line, the side setback standard of the less restrictive district may be used along the shared lot line.
 8. For corner lots, the front setback is measured from the primary road and the secondary setback is measured from the secondary road.
@@ -98,7 +98,7 @@ footer-date: "Adopted: November 3, 2020"
 
 ### C. REQUIRED SHOPFRONT STREETS
 
-1. Lots subject to required shopfronts as shown on the District Map must comply with shopfront standards in Article 4.9 Shopfronts.
+1. Lots subject to required shopfronts as shown on the District Map must comply with shopfront standards in Article 5.9 Shopfronts.
 
 ### D. REQUIRED SCENIC VIEWS
 
@@ -173,7 +173,7 @@ The Rural D1 district consists of forested lands, fields, rivers and streams wit
 | Windows & Doors               | n/a      |
 | Primary & Accessory Roofs     | n/a      |
 
-1. Article 5: Design Standards do not apply in the Rural D1 district.
+1. Article 6: Design Standards do not apply in the Rural D1 district.
 
 ### DISTRICT STANDARDS
 
@@ -554,7 +554,7 @@ The D3 Neighborhood Business district is a medium-density residential area withi
 | Front of buildings         | Massing & Architectural Components    |
 | Side of buildings          | Massing & Architectural Components    |
 | Rear of buildings          | Additions                             |
-| Building Orientation       | see Article 5 section 8               |
+| Building Orientation       | see Article 6 section 8               |
 | Windows & Doors            | 20% min, 80% max                      |
 | Primary & Accessory Roofs  | (see roof pitch table)                |
 
@@ -742,7 +742,7 @@ The D4 Village Residential district has narrow, interconnected streets with a mi
 | Front of buildings         | Massing & Architectural Components    |
 | Side of buildings          | Massing & Architectural Components    |
 | Rear of buildings          | Additions                             |
-| Building Orientation       | see Article 5 section 8               |
+| Building Orientation       | see Article 6 section 8               |
 | Windows & Doors            | 20% min, 80% max                      |
 | Primary & Accessory Roofs  | (see roof pitch table)                |
 
@@ -927,7 +927,7 @@ The D5 Village Business district allows greater density, larger buildings, and a
 | Front of buildings         | Massing & Architectural Components    |
 | Side of buildings          | Massing & Architectural Components    |
 | Rear of buildings          | Massing Components                    |
-| Building Orientation       | see Article 5 section 8               |
+| Building Orientation       | see Article 6 section 8               |
 | Windows & Doors            | 20% min, 80% max                      |
 | Primary & Accessory Roofs  | (see roof pitch table)                |
 
@@ -1111,7 +1111,7 @@ The D6 Town Center district consists of a greater density of buildings that acco
 | Front of buildings         | Massing & Architectural Components    |
 | Side of buildings          | Massing & Architectural Components    |
 | Rear of buildings          | Massing & Architectural Components    |
-| Building Orientation       | see Article 5 section 8               |
+| Building Orientation       | see Article 6 section 8               |
 | Windows & Doors            | 20% min, 80% max                      |
 | Primary & Accessory Roofs  | (see roof pitch table)                |
 
@@ -1299,7 +1299,7 @@ The Historic Special District has narrow, interconnected streets with a mix of s
 | Front of buildings         | Massing & Architectural Components    |
 | Side of buildings          | Massing & Architectural Components    |
 | Rear of buildings          | Massing & Architectural Components    |
-| Building Orientation       | see Article 5 section 8               |
+| Building Orientation       | see Article 6 section 8               |
 | Windows & Doors            | 20% min, 80% max                      |
 | Primary & Accessory Roofs  | (see roof pitch table)                |
 
@@ -1639,7 +1639,7 @@ The Highway Commercial Special District accommodates the areas of Route 1 that h
 ### BUILDINGS STANDARDS
 
 1. Pre-existing Single Unit Residential and Residential Accessory buildings shall be allowed to continue until they are granted a change of use.
-    a. For alteration or expansion of pre-existing Single Unit Residential buildings see Article 3 Section 3 Nonconforming Buildings.
+    a. For alteration or expansion of pre-existing Single Unit Residential buildings see Article 4 Section 3 Nonconforming Buildings.
     b. Lots with pre-existing Single Unit Residential buildings shall be allowed to construct new Residential Accessory buildings.
 2. Construction of new Single Unit Residential buildings is not permitted.
 3. No more than 70% of the total Gross Floor Area of a Mixed-Use Building shall be a Residential use.
@@ -2319,7 +2319,7 @@ The Fabrication Special District allows a mix of industrial, office, retail, liv
 ### BUILDINGS STANDARDS
 
 1. Pre-existing Single Unit Residential and Residential Accessory buildings shall be allowed to continue until they are granted a change of use.
-    a. For alteration or expansion of pre-existing Single Unit Residential buildings see Article 3 Section 3 Nonconforming Buildings.
+    a. For alteration or expansion of pre-existing Single Unit Residential buildings see Article 4 Section 3 Nonconforming Buildings.
     b. Lots with pre-existing Single Unit Residential buildings shall be allowed to construct new Residential Accessory buildings.
 2. Construction of new Single Unit Residential buildings is not permitted.
 3. No more than 45% of the total Gross Floor Area of a Mixed-Use Building shall be a Residential use.
