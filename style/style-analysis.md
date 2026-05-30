@@ -332,3 +332,33 @@ While locking captions, a pre-existing **table-numbering collision** surfaced, i
 Fixing this requires renumbering ~35 captions **plus** every in-text cross-reference that cites them, and a verification sweep. It is **out of scope for v0.4.2** (deferred to its own pass by explicit decision) and recorded here and in the v0.4.2 Summary of Changes as a known issue. The new Article 3's own tables (3.1–3.4) are correct.
 
 > **Page-count note.** Integrated remains **90 pages**; standalone Article 3 remains **9 pages**. The case change and the table edits do not alter pagination materially; the 4 blank pads (verso pages 36, 58, 68, 84) and continuous 1→90 footers are unchanged from v0.4.1.
+
+## 16. v0.4.3 — two new Street/Road Types & the Table 3.1 split (content + layout)
+
+Unlike §§13–15 (pure layout passes), v0.4.3 is primarily a **regulatory-content** change: the typology grew from **8 Types to 10**. Full rationale and the calibration values live in `releases/v0.4.3-draft/Summary of Changes v0.4.3-draft.md`; recorded here are only the parts that touch rendering, the template, and pagination.
+
+### Typology change (what the renderer now has to lay out)
+
+- **S-4 "Lane / Alley" was split into two Types:** **S-4 Lane** (a narrow *fronting* slow-movement street — buildings front on it; it "punches in" to mid-block land) and **S-5 Alley** (the *service* rear-lane, buildings do not front on it). The old combined Type's standards moved to S-5; S-4 is new.
+- **New R-3 "Rural Lane"** (rural yield roadway, ADT ≤ 400, two-way single-lane where ≤ 15 ft with passing pull-outs ≤ 300 ft; conforms historic two-rod / 33 ft ways) inserted between R-2 Rural Road and the highway Types.
+- **Highway Types shifted down one number** to make room: old R-3 Highway Commercial → **R-4**, old R-4 Rural Highway → **R-5**. Every in-text code reference and the §2 description letters (now **d–n**) were renumbered to match.
+- **Held findings from earlier research applied in the same pass:** S-1 Main Street ROW widened to **66–80 ft**; the "cartway" row relabelled **"Traveled way (moving lanes)"** with a separate **"On-street parking lane (each side)"** row, so moving-lane width and parking width are no longer conflated.
+
+### Table 3.1 → split into 3.1a + 3.1b (the layout-relevant fix)
+
+Ten Types will not fit one readable full-width matrix, so the single Table 3.1 was split by family:
+
+- **TABLE 3.1a STREET TYPE STANDARDS** — 6 columns (Standard + S-1…S-5).
+- **TABLE 3.1b ROAD TYPE STANDARDS** — 6 columns (Standard + R-1…R-5).
+
+Both are raw-Typst **full-width bottom floats** (`#place(bottom, scope: "parent", float: true, block(width: 100%)[…])`, the §14/§15 pattern), `columns: (1.7fr, 1fr, 1fr, 1fr, 1fr, 1fr)`, body text dropped to **8 pt** with `inset: (x: 3pt, y: 3pt)` so six columns fit the 478.5 pt block. Literal `@` in lane specs (e.g. `2@10–11`) is escaped `\@` in the Markdown so Pandoc does not treat it as a Typst code sigil. **Verified in the v0.4.3 render:** 3.1a on integrated **p. 29**, 3.1b on **p. 30**, all columns present (incl. the new R-3 Rural Lane), no `\@` escape leak, `@` glyph renders.
+
+> **Why split rather than rotate or shrink one wide table.** A 10-data-column matrix at a legible size overruns the full-width block; landscape/rotated tables break the two-column reading flow and the running header/tab geometry. Splitting by family keeps each table at the same 8 pt as the body and keeps **Tables 3.2/3.3/3.4 numbers unchanged**, so none of the "per Table 3.2" / "per Table 3.3" cross-references had to move.
+
+### Cross-file ripple
+
+The renumber/split touched three source files: `article-03-streets-roads-driveways.md` (typology, descriptions, all five split-table-and-§ references), `article-09-definitions.md` (new **Lane (S-4)**, **Alley (S-5)**, **Rural Lane (R-3)**, **On-Street Parking Lane** entries; **Rural Road (R-2)** softened; highway defs renumbered; **Thoroughfare** now "ten … Types (S-1 through S-5 and R-1 through R-5)"), and `article-04-site-standards.md` (parking-access reference now "Lane or Alley (Types S-4 or S-5)"). `article-02` and the other renumbered Articles needed **no** change (they reference Special-District *names*, not Type codes).
+
+> **Page-count note.** Integrated is now **91 pages** (was 90); standalone Article 3 holds at **9 pages**. The +1 is **Article 9 (Definitions)** growing 6 → 7 pages from the four new/expanded entries — *not* Article 3, whose two new Types and split table still fit its existing 9-page (+1 pad) block. The 4 blank pads are unchanged at verso pages **36, 58, 68, 84**; footers remain continuous **1 → 91**; Articles 1–8 paginate identically to v0.4.2.
+
+> **Deferred items carried forward (unchanged from §15 except where noted).** Stale renumbered-Article table numbers (Art. 4 reads "3.x", etc.) — still deferred; the new Art. 3 tables 3.1a/3.1b/3.2/3.3/3.4 are correct. Front matter (cover + TOC). District-page banner styling. Status-glyph fallback font (`❶ ❷ ✪`). **Cross-section graphics now number 10, not 8** (one per Type) — still unproduced, and slightly more relevant now that two Types are new. R-2 12 % grade vs. RDEO's 10 % still flagged for a future reconciliation.

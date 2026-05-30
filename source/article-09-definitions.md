@@ -753,11 +753,14 @@ An approval that certifies that a project complies with all applicable municipal
 
 The following definitions are added in connection with the adoption of Article 3. At the next consolidation of this Article, they will be merged alphabetically with the entries above.
 
+**Alley (S-5):**
+A Street Type for narrow service streets internal to a block, providing access to the side or rear of lots for parking, loading, accessory buildings, and utility easements; buildings do not front on an Alley. Formerly combined with the Lane as Type "S-4 Lane/Alley"; the two are now distinct Types (Lane = S-4, fronting; Alley = S-5, service). Defined in Article 3 Section 2.H.
+
 **Cartway:**
 The portion of a Street or Road's right-of-way that is paved, graveled, or otherwise improved for vehicular travel, including travel lanes, on-street parking lanes (where present), and shoulders (where present). The cartway does not include sidewalks, planting strips, or the frontage zone.
 
 **Connector Road (R-1):**
-A Road Type providing connections in the rural-to-urban transition zone, with shoulders rather than curbs, no continuous sidewalks, and a design speed higher than any Street Type. Defined in Article 3 Section 2.H.
+A Road Type providing connections in the rural-to-urban transition zone, with shoulders rather than curbs, no continuous sidewalks, and a design speed higher than any Street Type. Defined in Article 3 Section 2.I.
 
 **Curb Return Radius:**
 The radius of the curve at the corner of two intersecting Streets or Roads, measured along the outside face of the curb or, where no curb is present, along the edge of the cartway. Calibrated by Type pair under Article 3 Section 9.
@@ -765,17 +768,20 @@ The radius of the curve at the corner of two intersecting Streets or Roads, meas
 **Driveway** *(modified entry — supersedes prior definition above):*
 A private vehicular access way from a Street or Road (per Article 3 Section 2) to the interior of a single lot, including access to homes, parking lots, or loading docks. A Driveway is not a Street or Road and is not subject to the construction specifications of Article 3 Section 11. See Article 3 Section 7 for full Driveway standards. Where this Code uses the prior definition of "Driveway" (a vehicular access way serving two single family dwellings or one two-family dwelling or less), the prior definition is superseded; use limits, if any, are set within Article 3 Section 7.
 
-**Highway Commercial (R-3):**
-A Road Type for auto-oriented commercial corridors with access management, sidewalks where feasible, and MaineDOT-coordinated cartway geometry. Defined in Article 3 Section 2.J.
+**Highway Commercial (R-4):**
+A Road Type for auto-oriented commercial corridors with access management, sidewalks where feasible, and MaineDOT-coordinated cartway geometry. Defined in Article 3 Section 2.L.
 
-**Lane / Alley (S-4):**
-A Street Type for narrow service streets internal to a block providing access to the side or rear of lots. Defined in Article 3 Section 2.G. This term is synonymous with "Alley" as used elsewhere in this Code; where the two terms appear in different sections, they refer to the same Type S-4.
+**Lane (S-4):**
+A Street Type for narrow, low-speed fronting streets internal to a neighborhood or village block, carrying two narrow travel lanes that operate in a yield fashion, with a sidewalk on one side or none. A Lane provides frontage and may connect to other Street Types or "punch in" to open the interior of a block; it is larger than an Alley (S-5). Defined in Article 3 Section 2.G.
 
 **Main Street (S-1):**
 The most urban Street Type, providing the central organizing thoroughfare of the Town Center with continuous building streetwalls, active ground-floor uses, wide sidewalks, on-street parking both sides, and the lowest design speed in the typology. Defined in Article 3 Section 2.D.
 
 **Neighborhood Street (S-3):**
 A Street Type providing connections within and between residential and small-business neighborhoods, with a sidewalk on at least one side, a planting strip, on-street parking permitted, and a residential-scale design speed. Defined in Article 3 Section 2.F.
+
+**On-Street Parking Lane:**
+A lane within the cartway, adjacent to the travel lanes, reserved for the parking of vehicles parallel or at an angle to the curb or edge of pavement. Where provided, an on-street parking lane is typically 7–8 ft wide per side and is counted separately from the traveled way (moving lanes) in Tables 3.1a and 3.1b.
 
 **Ownership Category:**
 The statutory ownership and maintenance classification of a Street or Road under Article 3 Section 4, independent of its Street/Road Type. The four Ownership Categories are Town Way, Public Easement, Private Road, and State Highway.
@@ -786,23 +792,26 @@ The portion of a Street or Road's right-of-way located between the curb (or edge
 **Public Easement:**
 A right of public access over a road or way, held by the municipality under 23 MRSA §3021. The road or way is open to public traffic, but the Town does not bear maintenance responsibility. Formerly referred to in some Maine usage as a "private way." An Ownership Category under Article 3 Section 4.C.
 
-**Rural Highway (R-4):**
-A Road Type for high-speed regional corridors through rural and conservation contexts, with deep front setbacks, vegetative screening, and MaineDOT-controlled cartway geometry. Defined in Article 3 Section 2.K.
+**Rural Highway (R-5):**
+A Road Type for high-speed regional corridors through rural and conservation contexts, with deep front setbacks, vegetative screening, and MaineDOT-controlled cartway geometry. Defined in Article 3 Section 2.M.
+
+**Rural Lane (R-3):**
+A Road Type for low-volume rural yield roadways providing access to a small number of lots, working landscapes, or back land, with a single shared travel surface (or two very narrow lanes) on which opposing vehicles yield, a gravel or paved surface, and open-ditch drainage. The rural counterpart to the Lane (S-4); generally carries fewer than 400 vehicles per day. Provides a conforming designation for existing narrow rural ways, including historic two-rod (33 ft) rights-of-way. Defined in Article 3 Section 2.K.
 
 **Rural Road (R-2):**
-The most rural Road Type, providing access to working landscapes — farmland, forest, conservation lands — with the narrowest pavement, no curbs, and drainage by open ditches. Defined in Article 3 Section 2.I.
+A rural Road Type providing access to working landscapes — farmland, forest, conservation lands — with the narrowest standard pavement, no curbs, and drainage by open ditches. Defined in Article 3 Section 2.J.
 
 **State Highway:**
 A street or road owned and maintained by the State of Maine through the Maine Department of Transportation. US Route 1 within Newcastle is a State Highway. An Ownership Category under Article 3 Section 4.C. Subject to the coordination protocol in Article 3 Section 12.
 
 **Street:**
-A thoroughfare classified under the Street family of Types (S-1 Main Street, S-2 Village Street, S-3 Neighborhood Street, S-4 Lane/Alley) under Article 3 Section 2. Distinct from a Road in that pedestrian comfort is generally a primary design consideration.
+A thoroughfare classified under the Street family of Types (S-1 Main Street, S-2 Village Street, S-3 Neighborhood Street, S-4 Lane, S-5 Alley) under Article 3 Section 2. Distinct from a Road in that pedestrian comfort is generally a primary design consideration.
 
 **Street/Road Type:**
 The form-based classification assigned to a Street or Road under Article 3 Section 2, describing its character, dimensions, and design standards. Distinct from the Street or Road's Ownership Category.
 
 **Thoroughfare:**
-An umbrella term for any Street, Road, or Driveway. Includes all eight Street/Road Types (S-1 through S-4 and R-1 through R-4) plus the Driveway category.
+An umbrella term for any Street, Road, or Driveway. Includes all ten Street/Road Types (S-1 through S-5 and R-1 through R-5) plus the Driveway category.
 
 **Town Way:**
 A road or way formally accepted by the Town under 23 MRSA §3022 by vote at Town Meeting. The Town owns and maintains a Town Way. An Ownership Category under Article 3 Section 4.C.
