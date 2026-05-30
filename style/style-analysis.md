@@ -8,22 +8,24 @@ Companion: [`czc-colors.yml`](czc-colors.yml) (canonical color values) and [`czc
 
 ## 1. Page geometry
 
-| Property | Value |
-|---|---|
-| Page size | 612 × 792 pt (US Letter) |
-| Body width (between section-divider endpoints) | 468 pt (6.5″) — measured on Art. 1 opener divider |
-| Body left edge on **verso** (even pages, e.g., p. 4, 12) | ~45–50 pt from left |
-| Body right edge on **verso** | ~517 pt (so right margin ≈ 95 pt, where the tab is on the *opposite* side) |
-| Body left edge on **recto** (odd pages, e.g., p. 5) | ~90 pt from left |
-| Body right edge on **recto** | ~605 pt (so right margin ≈ 7 pt — the tab is at right) |
-| Top margin (first body baseline) | ~25 pt |
-| Bottom margin (footer baseline) | ~14–16 pt |
+Values below are the **precise** figures from the v0.4 forensic pass (averaged across 12 body pages, both parities, via `/tmp/forensic_layout.py`). They supersede the rough first-pass estimates and are the ones now encoded in `czc-template.typ`.
 
-The page is asymmetric: the side that hosts the rotated **Article tab** has a very narrow 0–7 pt outer margin where the tab sits, and the body is offset 40–50 pt inward from that edge. The opposite side has a normal ~90 pt margin. Verso (even-numbered) pages have the tab on the **left**; recto (odd-numbered) pages have the tab on the **right**. This is conventional book-spread layout.
+| Property | Measured value | In template |
+|---|---|---|
+| Page size | 612 × 792 pt (US Letter) | `paper: "us-letter"` |
+| **Inside** (binding/gutter) margin — the WIDE side | **90 pt** | `inside: 90pt` |
+| **Outside** (tab/fore-edge) margin — the NARROW side | **44 pt** | `outside: 44pt` |
+| Top margin (first body line ~65 pt) | **64 pt** | `top: 64pt` |
+| Bottom margin (body floor ~736 pt) | **56 pt** | `bottom: 56pt` |
+| Column width (each of two) | **217 pt** | (derived: 478 − 44) ÷ 2 |
+| Column gutter | **44 pt** | `columns(2, gutter: 44pt)` |
+| Text block width | **478 pt** | inside 90 → 568 (recto) |
 
-### Two-column body
+Column structure on an **odd/recto** page: `90 | colL 90→307 | gutter 44 | colR 351→568 | 44`. Verified in the v0.4 render: `colR_x0 = 351.0` exactly. Typst's named `inside`/`outside` margins flip automatically by page parity, reproducing the book-spread asymmetry.
 
-The body is split into two equal columns separated by a small gutter. The divider line on Art. 1 opener spans the full body width (49.5 → 517.5 = 468 pt). Columns are ~225 pt wide with a ~18 pt gutter.
+The page is asymmetric: the side that hosts the rotated **Article tab** has a narrow 44 pt outer margin where the tab sits; the opposite (binding) side has a wide 90 pt margin. Verso (even-numbered) pages have the tab on the **left**; recto (odd-numbered) pages have the tab on the **right**.
+
+> **Earlier rough estimates (superseded):** first-pass measurements read margins as ~45/~90 pt and the gutter as ~18 pt with ~225 pt columns. Those were imprecise — the real gutter is **44 pt** (the columns were rendering jammed together until this was corrected) and the wide/narrow margins are **90 / 44 pt**.
 
 ---
 
@@ -68,10 +70,17 @@ Every entry below was sampled from a real text span in the baseline PDF via `pym
 
 ### Leading and spacing
 
-- Body lines are tight: a 2-line body item shows a vertical gap of ~11 pt between baselines, giving a leading of ~11/8.5 ≈ 1.29.
-- Item-to-item spacing (between numbered items) is ~15.5 pt baseline-to-baseline for the start of a new item — ~4.5 pt extra space above the marker.
-- Subsection-to-subsection spacing: ~22 pt from previous content to subsection heading baseline.
-- Section-to-section spacing: similarly generous; section heading creates a clear break with the divider line.
+Baseline measurements and the matching Typst settings now in `czc-template.typ`:
+
+| Spacing | Baseline (measured) | Template setting | Rendered result |
+|---|---|---|---|
+| Body line advance | ~11.0 pt baseline-to-baseline (leading ≈ 1.29 × 8.5 pt) | `par(leading: 0.57em)` | ~10.8 pt (≈0.2 pt tight, acceptable) |
+| Paragraph / item gap | ~15.5 pt baseline-to-baseline | `par(spacing: 0.78em)` | — |
+| Subsection heading: space **below** | clear blank row before body resumes | `block(below: 9.5pt)` on level-3 | the user-requested "blank row below each sub-section header" |
+| Section heading: space above/below | generous break + divider | `block(above: 13pt, below: 6pt)` on level-2 | — |
+| **Article opener: "ARTICLE N" → name** baseline-to-baseline | **~39.7 pt** | two 33 pt blocks, each `below: 16pt` | **39.1 pt** (verified across all 9 articles) |
+
+> **Article-opener overlap — root cause & fix.** The original template stacked the two 33 pt opener lines with too little vertical space, so "ARTICLE 3" and "STREETS, ROADS & DRIVEWAYS" collided. The subtlety: Typst sizes an **all-caps** line box to *cap-height* (~23 pt at 33 pt), **not** the full em. So the visually-relevant figure is the ~16 pt ink gap between the ARTICLE baseline and the name's cap-top — setting each opener block's `below: 16pt` yields the baseline's ~39 pt baseline-to-baseline. An earlier attempt that reasoned in em-boxes produced only ~24.6 pt and still looked cramped.
 
 ---
 
@@ -172,14 +181,21 @@ The convention "lowercase a./b./c. for subsections" is a baseline reality that s
 
 ## 9. Tables
 
-Standard data tables (e.g., D1 LOT DIMENSIONS, PRIMARY BUILDING PLACEMENT):
+Measured across representative table pages (p. 13 district tables, p. 44 site standards, p. 48 building grid, p. 82 administration) via `/tmp/forensic_table_geom.py`:
 
-- Cell borders: thin horizontal rules in **#231F20** at ~0.25 pt (very thin, almost black)
-- No vertical borders
-- Header row: same Light 8.5 pt body font, no shading (matching examples)
-- Right column (values like "100 ft min") is right-aligned in numeric columns, left-aligned otherwise
+| Property | Measured | Template setting |
+|---|---|---|
+| Cell borders | **horizontal hairlines only** at each row boundary; ~0.25–0.5 pt | `stroke: (x,y) => (top: 0.5pt + rule_dark, bottom: 0.5pt + rule_dark)` |
+| Vertical borders | **none** | absence of `left`/`right` keys + `table.vline(stroke: none)` |
+| Rule color | **#231F20** (near-black) | `rule_dark` |
+| Row height | ~15 pt at 8.5 pt text | `inset: (x: 5pt, y: 3pt)` |
+| Header/zebra shading | **none** | `fill: none` |
+| Header row weight | slightly heavier than Light body | `table.cell.where(y: 0): set text(weight: "medium")` |
+| Body text | 8.5 pt condensed, matching surrounding body | `show table: set text(size: 8.5pt, stretch: 75%)` |
 
-District use-tables use a similar style with status glyphs in a narrow right column.
+**Table-styling rewrite (v0.4).** Pandoc emits a bare `#table` with no stroke spec, so it inherited Typst's default **heavy 1 pt full-box grid** — the single biggest table-rendering deviation. The global `#set table(...)` / `#set table.hline(...)` / `#set table.vline(stroke: none)` overrides above convert every table to the baseline's horizontal-hairline-only look with no vertical rules and no shading. Verified on the v0.4 render (p. 13, p. 31).
+
+District use-tables use the same hairline style with status glyphs (§10) in a narrow right column.
 
 ---
 
@@ -215,7 +231,7 @@ What our current rendering gets wrong and how to fix:
 | District colors | Estimated | Measured (per Section 4 above) | Update colors.yml |
 | Status glyphs | Render as `?` | Need a fallback font with these glyphs | Add fallback font to template |
 
-This is the work list for v0.3-draft.
+This is the work list for v0.3-draft. **All items above were applied in v0.3; v0.4 then re-measured and corrected the geometry — see §13.**
 
 ---
 
@@ -236,3 +252,28 @@ python3 -c "import fitz; doc=fitz.open('docs/...'); …"
 ```
 
 All sampled PNGs were rendered at 144 DPI from the baseline PDF via `pdftoppm` or `pymupdf.get_pixmap(dpi=144)`. Color values reported are the modal pixel in a 5×5 region around the target point. Drawing fills were read from PyMuPDF's `page.get_drawings()` API.
+
+---
+
+## 13. v0.4 forensic pass — corrections applied
+
+This pass re-measured everything the v0.3 render still got wrong and corrected it. The reusable measurement scripts are `/tmp/forensic_layout.py` (margins/columns/header/footer), `/tmp/forensic_tables.py` + `/tmp/forensic_table_geom.py` (table geometry), and `/tmp/forensic_pagenum.py` (footer continuity & opener parity).
+
+| Fix | Before (v0.3) | After (v0.4, measured) |
+|---|---|---|
+| Inside / outside margins | 68 / 45 pt | **90 / 44 pt** |
+| Column gutter | 13 pt (columns jammed) | **44 pt** (colR_x0 = 351.0, exact) |
+| Running header | last level-2 section name | **Article topic name, 11 pt #7C766F**, outer edge per parity |
+| Footer separator color | gray | **dark (#231F20)**, grouped with page number |
+| Article-opener overlap | "ARTICLE N" / name collided | **39.1 pt baseline-to-baseline** (each block `below: 16pt`) |
+| Subsection spacing below | ~2.5 pt (cramped) | **9.5 pt** — a clear blank row |
+| Tables | Typst default 1 pt full-box grid | **horizontal hairlines only, no verticals, no shading** |
+| Footer page numbers (integrated build) | restarted at 1 every Article | **continuous 1→91** across the document |
+
+### Continuous page numbering across a per-Article build
+
+The full-CZC deliverable is assembled by rendering each Article to its own PDF (so per-Article metadata — number, name, tab, opener — is honored) and concatenating with `pdfunite`. Each standalone render naturally numbers from 1, so without intervention the combined document had multiple "page 1"s — unusable for a legal document cited by page.
+
+The build (`build/build-full-czc.sh`) threads a cumulative **page offset** into each render via `-V page-offset=N`; the template displays `here().page() + page_offset` in the footer (and uses the same adjusted value for header/footer/tab edge parity). To keep Typst's automatic `inside`/`outside` (binding) margins aligned to the **combined** document's parity, every offset must be **even** — so the build pads any odd-length Article with a trailing blank page. Side effect (intentional, conventional): each Article opens on a **recto** (odd) page.
+
+> **Known deviation from baseline parity.** The baseline opens each Article on a **verso** page because it carries three front-matter pages (cover + 2-page TOC) that the integrated draft does not yet include. The draft therefore mirrors the baseline's tab/binding side on opener pages. Adding real front matter (cover + TOC) is the proper future fix and will restore verso openers; it is deferred as separate scope.

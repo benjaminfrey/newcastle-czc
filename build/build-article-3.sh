@@ -27,6 +27,7 @@ echo "Rendering: $OUTPUT_PDF"
 pandoc "$SOURCE" \
   --from=markdown+fancy_lists+startnum \
   --pdf-engine=typst \
+  --pdf-engine-opt=--font-path="$REPO_ROOT/style/fonts" \
   --template="$REPO_ROOT/style/czc-template.typ" \
   --resource-path="$REPO_ROOT/style" \
   -V article-number=3 \

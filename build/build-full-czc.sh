@@ -38,18 +38,48 @@ COMBINED_MD="$RELEASE_DIR/$OUT_NAME.md"
 TMPDIR_PDFS="$(mktemp -d)"
 trap 'rm -rf "$TMPDIR_PDFS"' EXIT
 
+# A single blank US-Letter page, used to pad Articles that render to an odd page
+# count. Padding keeps each Article opening on a recto (odd) page and keeps the
+# cumulative page offset EVEN, so Typst's automatic inside/outside (binding)
+# margins stay aligned with the combined document's page parity.
+BLANK_PDF="$TMPDIR_PDFS/blank.pdf"
+python3 - "$BLANK_PDF" <<'PY'
+import sys, fitz
+d = fitz.open(); d.new_page(width=612, height=792); d.save(sys.argv[1]); d.close()
+PY
+
+# Render Articles in order, threading a running page offset so footers number
+# continuously across the combined document (instead of restarting at 1 per
+# Article). The page COUNT of a render does not depend on the offset, so a
+# single sequential pass suffices: when we render Article N the offset already
+# equals the (even) page total of Articles 1..N-1.
 INDEX=0
+OFFSET=0
 PDF_LIST=()
 for ART in "${ARTICLES[@]}"; do
   INDEX=$((INDEX + 1))
   PART="$TMPDIR_PDFS/$(printf "%02d" "$INDEX").pdf"
-  echo "Rendering article $INDEX: $(basename "$ART")"
+  echo "Rendering article $INDEX (page offset $OFFSET): $(basename "$ART")"
   bash "$REPO_ROOT/build/build-article.sh" "$ART" "$PART" \
-    -V "footer-date=Draft $VERSION" >/dev/null
+    -V "footer-date=Draft $VERSION" \
+    -V "page-offset=$OFFSET" >/dev/null
   PDF_LIST+=("$PART")
+  PAGES=$(python3 - "$PART" <<'PY'
+import sys, fitz
+print(fitz.open(sys.argv[1]).page_count)
+PY
+)
+  # Pad odd-length Articles with a trailing blank page (keeps offsets even and
+  # the next Article opening on a recto page). The final Article is never padded
+  # — a trailing blank at the very end of the document serves no purpose.
+  if [ $((PAGES % 2)) -eq 1 ] && [ "$INDEX" -lt "${#ARTICLES[@]}" ]; then
+    PDF_LIST+=("$BLANK_PDF")
+    PAGES=$((PAGES + 1))
+  fi
+  OFFSET=$((OFFSET + PAGES))
 done
 
-echo "Concatenating ${#PDF_LIST[@]} article PDFs into: $OUTPUT_PDF"
+echo "Concatenating ${#PDF_LIST[@]} PDFs ($OFFSET total pages) into: $OUTPUT_PDF"
 pdfunite "${PDF_LIST[@]}" "$OUTPUT_PDF"
 
 # Also emit the concatenated markdown source for reference (frontmatter intact;
