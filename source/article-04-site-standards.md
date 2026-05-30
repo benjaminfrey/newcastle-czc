@@ -149,7 +149,7 @@ footer-date: "Adopted: November 3, 2020"
 1. Screening may take the form of either natural vegetation or man-made structures such as berms or fences.
     a. Man-made screening of any type may only be employed to satisfy the requirements of Level 4 - Complete visual opacity.
 2. In all types of vegetative screening except Level 4 - Total visual opacity, selective cutting of trees is allowed, provided that a well distributed stand of trees and other natural vegetation is maintained as described in each of the Levels of Screening.
-3. A screening area of vegetation shall be defined as maintaining a certain rating score, or more, in any 25 ft by 50 ft, non overlapping, rectangular area(s) within the screening area. See Table 3.1 Screening Formula
+3. A screening area of vegetation shall be defined as maintaining a certain rating score, or more, in any 25 ft by 50 ft, non overlapping, rectangular area(s) within the screening area. See Table 4.1 Screening Formula
 4. Screening areas may encroach onto front, side, or rear setbacks.
 
 ### d. LEVELS OF SCREENING
@@ -177,7 +177,7 @@ footer-date: "Adopted: November 3, 2020"
 5. Where conditions permit, no more than 50% of the points on any 25 ft by 50 ft rectangular area may consist of trees greater than 12 inches in diameter.
 6. The diameter of the tree shall be measured at a height of 4 ft 6 in from ground level.
 
-TABLE 3.1 SCREENING FORMULA
+TABLE 4.1 SCREENING FORMULA
 
 | Diameter of Tree           | Points |
 | :------------------------- | :----- |
@@ -349,7 +349,7 @@ TABLE 3.1 SCREENING FORMULA
 ### c. GENERAL
 
 1. Lighting levels are regulated by District according to total permitted lumens per square foot, a unit of measurement related to light intensity.
-2. The average lumens per square foot of all outdoor lighting may not exceed the site lumen limit of Table 3.1 Site Lumens.
+2. The average lumens per square foot of all outdoor lighting may not exceed the site lumen limit of Table 4.2 Site Lumens.
 3. Light levels must be specified, calculated, and measured in lumens per square foot, as calculated by multiplying the square footage of the paved portion of the area to be lighted by the allowed lumens per district to determine a total maximum number of allowed lumens for that area.
 4. Total allowed lighting for any given area should be evenly distributed across the paved portion of a site.
 5. Lights may not have a color temperature in excess of 3,000 Kelvin.
@@ -361,7 +361,7 @@ TABLE 3.1 SCREENING FORMULA
     a. Every reasonable effort will be made to mitigate the effects of light on the environment and surrounding properties.
     b. The proposed use or lighting will not create unnecessary glare, sky glow, or light trespass.
 
-TABLE 3.1 SITE LUMENS
+TABLE 4.2 SITE LUMENS
 
 | District        | Average Lumens/SF |
 | :-------------- | :---------------- |

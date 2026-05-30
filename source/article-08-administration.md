@@ -115,7 +115,7 @@ footer-date: "Adopted: November 3, 2020"
 
 ### c. MAILED NOTICE
 
-1. Refer to Table 7.1 Notices & Public Hearings.
+1. Refer to Table 8.1 Notices & Public Hearings.
 2. Notice of a development review or legislative procedure public hearing must be mailed by USPS Return Receipt to abutters located:
     a. Within 1,000 feet of the subject property, if the property is in D1.
     b. Within 250 feet of the subject property located in all other districts.
@@ -143,7 +143,7 @@ footer-date: "Adopted: November 3, 2020"
 
 ### b. APPLICABILITY
 
-1. Refer to Table 7.1 Notice & Public Hearing. Application types that are not listed, do not require a Public Hearing.
+1. Refer to Table 8.1 Notice & Public Hearing. Application types that are not listed, do not require a Public Hearing.
 
 ### c. ACCESS TO DOCUMENTS
 
@@ -160,7 +160,7 @@ footer-date: "Adopted: November 3, 2020"
     b. The time limit required to make a decision.
 2. Time limit extentions shall be recorded in writing.
 
-TABLE 7.1 NOTICES & PUBLIC HEARINGS
+TABLE 8.1 NOTICES & PUBLIC HEARINGS
 
 ● = Required; ◐ = May be required
 

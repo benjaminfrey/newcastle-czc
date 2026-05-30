@@ -22,7 +22,7 @@ footer-date: "Adopted: November 3, 2020"
 2. Renovations or reconstruction, including general maintenance, to existing non-conforming structures or components does not require compliance with these Design Standards.
 3. Non-conforming structures or components shall be grandfathered for a period of 12 months from the date of their removal, after which replacement structures or components shall comply with these Design Standards.
 
-TABLE 5.1 DESIGN STANDARDS BY DISTRICT
+TABLE 6.1 DESIGN STANDARDS BY DISTRICT
 
 A = Architectural Components are allowable in the specified location and shall meet applicable Design Standards.
 M = Massing Components are allowable in the specified location and shall meet applicable Design Standards.
@@ -97,7 +97,7 @@ M = Massing Components are allowable in the specified location and shall meet ap
 
 ### b. APPLICABILITY
 
-1. Applies to the front, side, and rear sides of all primary and accessory buildings on a lot when designated in table 5.1 Design Standards By District.
+1. Applies to the front, side, and rear sides of all primary and accessory buildings on a lot when designated in table 6.1 Design Standards By District.
 
 ### c. FRONT OR SIDE EXPANSION
 
@@ -110,7 +110,7 @@ M = Massing Components are allowable in the specified location and shall meet ap
     d. A Front/Side Expansion may only attach to a primary or accessory building, though other components may attach to it.
     e. The Front/Side Expansion may be used for vehicular parking, provided the garage doors are not within the frontage zone.
 
-TABLE 5.2 FRONT OR SIDE EXPANSION DIMENSIONS
+TABLE 6.2 FRONT OR SIDE EXPANSION DIMENSIONS
 
 | Property        | Standard                                |
 | :-------------- | :-------------------------------------- |
@@ -130,7 +130,7 @@ TABLE 5.2 FRONT OR SIDE EXPANSION DIMENSIONS
     c. Rear expansions may be centered or offset at the rear wall of the main building mass, provided they share at least 6 ft with the common wall.
     d. The rear expansion may be used for vehicular parking, provided the garage doors are not within the frontage zone.
 
-TABLE 5.3 REAR EXPANSION DIMENSIONS
+TABLE 6.3 REAR EXPANSION DIMENSIONS
 
 | Property        | Standard                                                |
 | :-------------- | :------------------------------------------------------ |
@@ -148,7 +148,7 @@ TABLE 5.3 REAR EXPANSION DIMENSIONS
     b. Must attach on at least one side to the primary building.
     c. Connectors may not encroach on setbacks.
 
-TABLE 5.4 CONNECTOR DIMESIONS
+TABLE 6.4 CONNECTOR DIMESIONS
 
 | Property        | Standard                                                                                                       |
 | :-------------- | :------------------------------------------------------------------------------------------------------------- |
@@ -171,7 +171,7 @@ TABLE 5.4 CONNECTOR DIMESIONS
     g. The highest point of a tower may extend above the highest point of the roof of the primary building.
     h. Towers built as silos on a barn may ignore widow and door requirements.
 
-TABLE 5.5 TOWER DIMENSIONS
+TABLE 6.5 TOWER DIMENSIONS
 
 | Property        | Standard                                                  |
 | :-------------- | :-------------------------------------------------------- |
@@ -188,7 +188,7 @@ TABLE 5.5 TOWER DIMENSIONS
     b. Only allowed in Districts D5, D6.
     c. Only 1 extended shopfront allowed per building face.
 
-TABLE 5.6 EXTENDED SHOPFRONT DIMENSIONS
+TABLE 6.6 EXTENDED SHOPFRONT DIMENSIONS
 
 | Property        | Standard                                                  |
 | :-------------- | :-------------------------------------------------------- |
@@ -205,7 +205,7 @@ TABLE 5.6 EXTENDED SHOPFRONT DIMENSIONS
 
 ### b. APPLICABILITY
 
-1. Applies to the front, side, and rear sides of all primary and accessory buildings on a lot when designated in table 5.1 Design Standards By District.
+1. Applies to the front, side, and rear sides of all primary and accessory buildings on a lot when designated in table 6.1 Design Standards By District.
 
 ### c. PORCH
 
@@ -219,7 +219,7 @@ TABLE 5.6 EXTENDED SHOPFRONT DIMENSIONS
     e. When built on an upper floor, porches must be supported from below by a porch, arcade, or other supporting component; or visually supported by brackets, corbels, or beams along its full depth.
     f. When built at the first floor, and higher than 3 feet above the ground, the space between piles or piers must be enclosed with latticework or similar material, or concealed visually by evergreen landscaping, on all sides.
 
-TABLE 5.7 PORCH DIMENSIONS
+TABLE 6.7 PORCH DIMENSIONS
 
 | Property        | Standard                                       |
 | :-------------- | :--------------------------------------------- |
@@ -238,7 +238,7 @@ TABLE 5.7 PORCH DIMENSIONS
     d. Stoops may be configured as a split stair to access a below grade unit.
     e. If a stoop is built encroaching onto a public sidewalk, it must provide at least 3 ft clear and unobstructed between its outermost face and the face of the curb.
 
-TABLE 5.8 STOOP DIMENSIONS
+TABLE 6.8 STOOP DIMENSIONS
 
 | Property   | Standard    |
 | :--------- | :---------- |
@@ -256,7 +256,7 @@ TABLE 5.8 STOOP DIMENSIONS
     d. When built on an upper floor, galleries must be supported from below by a porch, arcade, or other supporting component; or visually supported by brackets, corbels, or beams along its full depth.
     e. When built at the first floor, the platform must extend visually to the ground plane.
 
-TABLE 5.9 GALLERY DIMENSIONS
+TABLE 6.9 GALLERY DIMENSIONS
 
 | Property        | Standard                                       |
 | :-------------- | :--------------------------------------------- |
@@ -273,7 +273,7 @@ TABLE 5.9 GALLERY DIMENSIONS
     a. Cross Gables may project outward from a building face (to a maximum of 12 ft) if supported from below by a component or visually supported by brackets, corbels, or a beam.
     b. Two cross gables of equal size and roof pitch may be used together and may occupy the same space, with an overlap of no more than 1/2 the width of each.
 
-TABLE 5.10 CROSS GABLE DIMENSIONS
+TABLE 6.10 CROSS GABLE DIMENSIONS
 
 | Property        | Standard                                                                                                  |
 | :-------------- | :-------------------------------------------------------------------------------------------------------- |
@@ -290,7 +290,7 @@ TABLE 5.10 CROSS GABLE DIMENSIONS
     b. The face of the shed dormer must not project beyond the building eaves.
     c. Gable end setbacks may be 0 ft from the building face when not visible from a road (not including alleys).
 
-TABLE 5.11 SHED DORMER DIMENSIONS
+TABLE 6.11 SHED DORMER DIMENSIONS
 
 | Property        | Standard            |
 | :-------------- | :------------------ |
@@ -307,7 +307,7 @@ TABLE 5.11 SHED DORMER DIMENSIONS
     c. The face of the dormer window must not project beyond the building eaves.
     d. When attached to a mansard or gambrel roof, the eave of the dormer may not pass above the chine of the roof.
 
-TABLE 5.12 DORMER WINDOW DIMENSIONS
+TABLE 6.12 DORMER WINDOW DIMENSIONS
 
 | Property | Standard       |
 | :------- | :------------- |
@@ -326,7 +326,7 @@ TABLE 5.12 DORMER WINDOW DIMENSIONS
     e. Bays windows may be two sided, multi-sided, or curved.
     f. Bay windows may provide openings for doorways or windows.
 
-TABLE 5.13 BAY WINDOW DIMENSIONS
+TABLE 6.13 BAY WINDOW DIMENSIONS
 
 | Property        | Standard                                       |
 | :-------------- | :--------------------------------------------- |
@@ -349,7 +349,7 @@ TABLE 5.13 BAY WINDOW DIMENSIONS
     g. The railing of any balcony oriented toward a frontage must have posts and railings with spacing, except when recessed into the envelope of the building or component to which it is attached.
     h. When built on top of a porch, gallery, portico, or arcade, the balcony may extend to the boundaries of the component below.
 
-TABLE 5.14 BALCONY DIMENSIONS
+TABLE 6.14 BALCONY DIMENSIONS
 
 | Property   | Standard                                  |
 | :--------- | :---------------------------------------- |
@@ -367,7 +367,7 @@ TABLE 5.14 BALCONY DIMENSIONS
     d. Arcades located along a primary or secondary frontage, or within the town right-of-way may not be enclosed.
     e. Arcades may wrap around corners to attach to other arcades on abutting building faces.
 
-TABLE 5.15 ARCADE DIMENSIONS
+TABLE 6.15 ARCADE DIMENSIONS
 
 | Property        | Standard                                                       |
 | :-------------- | :------------------------------------------------------------- |
@@ -385,7 +385,7 @@ TABLE 5.15 ARCADE DIMENSIONS
     b. A portico may not exceed the height of the primary ridge beam on the building element to which it attaches.
     c. A portico must be elevated on a platform at least 1 foot from the surface of the ground.
 
-TABLE 5.16 PORTICO DIMENSIONS
+TABLE 6.16 PORTICO DIMENSIONS
 
 | Property        | Standard          |
 | :-------------- | :---------------- |
@@ -402,7 +402,7 @@ TABLE 5.16 PORTICO DIMENSIONS
     a. Canopies should be visually supported on wood or metal brackets, or suspended by cable or chain.
     b. Canopies should be inset from the corners of the wall to which they are attached by at least 3 inches.
 
-TABLE 5.17 CANOPY DIMENSIONS
+TABLE 6.17 CANOPY DIMENSIONS
 
 | Property        | Standard |
 | :-------------- | :------- |
@@ -420,7 +420,7 @@ TABLE 5.17 CANOPY DIMENSIONS
     b. Cupolas may only attach to the main building mass, penthouses, roof decks, towers, porte-cocheres, and accessory buildings.
     c. The highest point of a cupola may be higher than the highest point of the roof of the primary building.
 
-TABLE 5.18 CUPOLA DIMENSIONS
+TABLE 6.18 CUPOLA DIMENSIONS
 
 | Property        | Standard                                                                                       |
 | :-------------- | :--------------------------------------------------------------------------------------------- |
@@ -441,7 +441,7 @@ TABLE 5.18 CUPOLA DIMENSIONS
     e. Turrets must extend beyond the building face(s) to which they are attached.
     f. The highest point of the roof of a turret may be higher than the highest point of the roof of the primary building.
 
-TABLE 5.19 TURRET DIMENSIONS
+TABLE 6.19 TURRET DIMENSIONS
 
 | Property        | Standard                                                                  |
 | :-------------- | :------------------------------------------------------------------------ |
@@ -459,7 +459,7 @@ TABLE 5.19 TURRET DIMENSIONS
     b. The space between piles or piers must be enclosed with latticework or similar material, or concealed visually by evergreen landscaping, on all sides, except for decks that are elevated more than 8 ft from the ground plane.
     c. Decks may not be enclosed.
 
-TABLE 5.20 DECK DIMENSIONS
+TABLE 6.20 DECK DIMENSIONS
 
 | Property            | Standard |
 | :------------------ | :------- |
@@ -480,7 +480,7 @@ TABLE 5.20 DECK DIMENSIONS
     d. Roof decks may only be built on the main of a primary, building accessory building, rear additions, side wings, connectors, galleries, and porches.
     e. The highest point of a roof deck may be higher than the highest point of the roof of the primary building.
 
-TABLE 5.21 ROOF DECK DIMENSIONS
+TABLE 6.21 ROOF DECK DIMENSIONS
 
 | Property                | Standard                          |
 | :---------------------- | :-------------------------------- |

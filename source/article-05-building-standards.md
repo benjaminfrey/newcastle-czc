@@ -128,7 +128,7 @@ footer-date: "Adopted: November 3, 2020"
     e. Regulations to the roof pitch and style are exempt if a,b,c,d are satisfied.
 2. Additions which do not conform to a,b,c,d above shall be considered a Primary Building or Accessory Building and shall require a permit.
 
-TABLE 4.1 ALLOWABLE ADDITION LOCATION BY DISTRICT
+TABLE 5.1 ALLOWABLE ADDITION LOCATION BY DISTRICT
 
 ● = Additions are allowable in the specified location.
 
@@ -231,16 +231,16 @@ TABLE 4.1 ALLOWABLE ADDITION LOCATION BY DISTRICT
 ### c. GENERAL
 
 1. Additional structures shall not contain a dwelling unit.
-2. Additional structures are permitted in conjunction with primary or accessory buildings and must be clearly incidental and subordinate in terms of area, size, use, and location. See Table 4.2: Additional Structures.
+2. Additional structures are permitted in conjunction with primary or accessory buildings and must be clearly incidental and subordinate in terms of area, size, use, and location. See Table 5.2: Additional Structures.
     a. The Absolute Height of an Additional Structure shall not exceed the height of the tallest building on the site.
 3. Additional Structures shall be under the same ownership and on the same lot as the primary or accessory building.
 4. Additional structures may be permitted on undeveloped lots in D1, D2, and SD-Conservation.
 5. A Marina, Dry Storage use shall be permitted to construct Additional Structures up to 1,200 sf in area.
-    a. Additional Stuctures larger than the maximum structure area set forth in Table 4.2: Additional Structures shall be removed from the site at the time of the discontinuance of the Marina, Dry Storage use.
+    a. Additional Stuctures larger than the maximum structure area set forth in Table 5.2: Additional Structures shall be removed from the site at the time of the discontinuance of the Marina, Dry Storage use.
 
 ### d. SCREENING
 
-1. Additional Structures are required to be screened from view when they are located in a district identified in Table 4.2: Additional Structures below
+1. Additional Structures are required to be screened from view when they are located in a district identified in Table 5.2: Additional Structures below
 2. Screening is required to screen Additional Structures from view from Public Roads.
 3. Screening must be of a height equal to or greater than the height of the Additional Structure being screened.
 4. Screening shall be a fence, wall, dense evergreen hedge, or a Level 4 Natural Screen.
@@ -249,7 +249,7 @@ TABLE 4.1 ALLOWABLE ADDITION LOCATION BY DISTRICT
 
 a. Additional structures must follow the Accessory Building Placement Setbacks for their applicable District.
 
-TABLE 4.2: ADDITIONAL STRUCTURES
+TABLE 5.2: ADDITIONAL STRUCTURES
 
 | District          | Structure Area (Max) | Screening Required |
 | :---------------- | :------------------- | :----------------- |
@@ -449,9 +449,9 @@ TABLE 4.2: ADDITIONAL STRUCTURES
 2. A building group may permit additional building types with standards related to form and placement.
 3. All buildings that are incorporated into a building group must be located on a single lot or virtual lot.
 4. Building Group standards supersede General, District, and Site Standards where the standards differ.
-5. The four types of Building Groups are, Connected Farm, Small Rural Compound, Large Rural Compound, and Multi-Unit Court. The Districts where each type of Building Group is allowable is regulated in Table 4.3 Building Groups Permitted By District.
+5. The four types of Building Groups are, Connected Farm, Small Rural Compound, Large Rural Compound, and Multi-Unit Court. The Districts where each type of Building Group is allowable is regulated in Table 5.3 Building Groups Permitted By District.
 
-TABLE 4.3 BUILDING GROUPS PERMITTED BY DISTRICT
+TABLE 5.3 BUILDING GROUPS PERMITTED BY DISTRICT
 
 |              | Connected Farm | Small Rural Compound | Large Rural Compound | Multi-Unit Court |
 | :----------- | :------------: | :------------------: | :------------------: | :--------------: |
@@ -487,7 +487,7 @@ TABLE 4.3 BUILDING GROUPS PERMITTED BY DISTRICT
     g. No building may be located closer to the primary frontage than the primary building, with the exception of a barn.
     h. The primary entrance to the primary building may be located either on the buildings front, or on its side.
 
-TABLE 4.4 CONNECTED FARM - PERMITTED BUILDINGS
+TABLE 5.4 CONNECTED FARM - PERMITTED BUILDINGS
 
 |                    | Single-Unit Residential | Residential Accessory | Commercial Accessory |
 | :----------------- | :---------------------- | :-------------------- | :------------------- |
@@ -522,7 +522,7 @@ TABLE 4.4 CONNECTED FARM - PERMITTED BUILDINGS
     k. Each small rural compound must have a maximum of one curb cut from a Public Road.
     l. The curb cut for a small rural compound must be a minimum of 500 ft from any adjacent curb cut.
 
-TABLE 4.5 SMALL RURAL COMPOUND - PERMITTED BUILDINGS
+TABLE 5.5 SMALL RURAL COMPOUND - PERMITTED BUILDINGS
 
 |                    | Single-Unit Residential | Multi-unit Residential | Mixed-Use Building | Residential Accessory | Commercial Accessory |
 | :----------------- | :---------------------- | :--------------------- | :----------------- | :-------------------- | :------------------- |
@@ -559,7 +559,7 @@ TABLE 4.5 SMALL RURAL COMPOUND - PERMITTED BUILDINGS
     k. Work yards with material storage and long term equipment parking must be screened from any Public Road by buildings, a 25 ft deep Level 3 Natural Screen, or a fence between 6 ft and 8 ft tall, unless they are part of an active agricultural use.
     l. Each large rural compound must have a maximum of one curb cut from a Public Road and be a minimum of 500 ft from any adjacent curb cut.
 
-TABLE 4.6 LARGE RURAL COMPOUND PERMITTED-BUILDINGS
+TABLE 5.6 LARGE RURAL COMPOUND PERMITTED-BUILDINGS
 
 |                    | Single-Unit Residential | Multi-unit Residential | Mixed-Use Building | Multi-Unit Commercial | Residential Accessory | Commercial Accessory |
 | :----------------- | :---------------------- | :--------------------- | :----------------- | :-------------------- | :-------------------- | :------------------- |
@@ -597,7 +597,7 @@ TABLE 4.6 LARGE RURAL COMPOUND PERMITTED-BUILDINGS
     m. Individual building lots within the Multi-Unit Court are not subject to the lot measurement and building setback standards for the base district.
     n. Pedestrian walkways and sidewalks providing access within a multi-use court shall not exceed 10 ft wide.
 
-TABLE 4.7 MULTI-UNIT COURT - PERMITTED BUILDINGS
+TABLE 5.7 MULTI-UNIT COURT - PERMITTED BUILDINGS
 
 |                    | Single-Unit Residential |
 | :----------------- | :---------------------- |
