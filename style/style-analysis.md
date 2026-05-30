@@ -1,8 +1,8 @@
-# CZC Baseline Style Analysis
+# CZC Baseline Style Analysis (measured)
 
-Reverse-engineered formatting of [Newcastle Core Zoning Code.pdf](../docs/Newcastle Core Zoning Code.pdf) and [Newcastle Roads Driveways and Entrances Ordinance.pdf](../docs/Newcastle Roads Driveways and Entrances Ordinance.pdf). The two documents share an identical visual system. All draft work must reproduce this look closely enough that a reader does not perceive new content as appended or separately styled.
+Forensic style analysis of [Newcastle Core Zoning Code.pdf](../docs/Newcastle Core Zoning Code.pdf). All values in this document are **measured** from the baseline PDF using `pdffonts`, `pymupdf` text-span extraction, and pixel sampling of rendered pages. Where ranges or "approximately" appear, they reflect actual variation observed in the source.
 
-The values below are working estimates derived from visual inspection. Items marked **(TODO: verify by pixel sampling)** should be refined by extracting exact pixels from the baseline PDF before the v0.1 release.
+Companion: [`czc-colors.yml`](czc-colors.yml) (canonical color values) and [`czc-template.typ`](czc-template.typ) (rendering implementation).
 
 ---
 
@@ -10,219 +10,229 @@ The values below are working estimates derived from visual inspection. Items mar
 
 | Property | Value |
 |---|---|
-| Page size | US Letter, 8.5″ × 11″ portrait |
-| Top margin | ≈ 0.75″ (with header band inside) |
-| Bottom margin | ≈ 0.75″ (with footer band inside) |
-| Inside (binding) margin | ≈ 0.75″ |
-| Outside margin | ≈ 1.0″ (wider, to host the vertical Article tab) |
-| Columns | Two columns, full body region |
-| Column gutter | ≈ 0.25″ |
-| Header band height | ≈ 0.4″ — contains topic name in muted small caps, right- or left-aligned to outside edge |
-| Footer band height | ≈ 0.4″ — contains date and page identifier |
+| Page size | 612 × 792 pt (US Letter) |
+| Body width (between section-divider endpoints) | 468 pt (6.5″) — measured on Art. 1 opener divider |
+| Body left edge on **verso** (even pages, e.g., p. 4, 12) | ~45–50 pt from left |
+| Body right edge on **verso** | ~517 pt (so right margin ≈ 95 pt, where the tab is on the *opposite* side) |
+| Body left edge on **recto** (odd pages, e.g., p. 5) | ~90 pt from left |
+| Body right edge on **recto** | ~605 pt (so right margin ≈ 7 pt — the tab is at right) |
+| Top margin (first body baseline) | ~25 pt |
+| Bottom margin (footer baseline) | ~14–16 pt |
 
-Front matter (cover, table of contents) and some district pages break from the two-column rule. The District Map exhibits (Art. 1 Exhibits 1.1–1.4) are full-page landscape-style images on portrait pages.
+The page is asymmetric: the side that hosts the rotated **Article tab** has a very narrow 0–7 pt outer margin where the tab sits, and the body is offset 40–50 pt inward from that edge. The opposite side has a normal ~90 pt margin. Verso (even-numbered) pages have the tab on the **left**; recto (odd-numbered) pages have the tab on the **right**. This is conventional book-spread layout.
 
-## 2. Typography
+### Two-column body
 
-| Element | Font family (working) | Size | Weight | Style | Color |
+The body is split into two equal columns separated by a small gutter. The divider line on Art. 1 opener spans the full body width (49.5 → 517.5 = 468 pt). Columns are ~225 pt wide with a ~18 pt gutter.
+
+---
+
+## 2. Embedded fonts
+
+`pdffonts` reports the following font families embedded in the PDF:
+
+| Family | Weights used | Where |
+|---|---|---|
+| **BentonSansCond** *(commercial; primary)* | Light, Book, Regular, Bold | All body text, all headings, footers, headers, district badges |
+| **BentonSans** *(commercial; non-condensed)* | Regular | Only on district name banners (e.g., "RURAL", "TOWN CENTER") — a slightly wider display variant |
+| BentonSansComp-Light-SC7 | Light, small caps | Sparse — appears on Article 5 design-component tables (likely small-caps captions like "FRONT", "SIDE", "REAR") |
+| TrebuchetMS | Regular, Bold, Italic | Some figure/exhibit annotations only |
+| ArialMT | Regular | Fallback / sparse |
+
+**Benton Sans Condensed** (Font Bureau / Cyrus Highsmith) is a commercial font. The closest free metric/visual match used in this project is **Barlow Condensed** (Jeremy Tribby, SIL OFL, available on Google Fonts and via `brew install --cask font-barlow-condensed`). Where the baseline uses BentonSans (non-condensed), we substitute regular **Barlow**.
+
+---
+
+## 3. Typography — measured per element
+
+Every entry below was sampled from a real text span in the baseline PDF via `pymupdf`. Font names are the embedded names; in this project they map to Barlow Condensed equivalents.
+
+| Element | Font | Size | Weight | Color | Notes |
 |---|---|---|---|---|---|
-| Body text | Source Sans 3 (humanist sans) | 9 pt | Regular | — | `#333333` |
-| Body emphasis | Source Sans 3 | 9 pt | Semibold | — | `#333333` |
-| Article display (cover & opener) | Source Sans 3 | 48–60 pt | Bold | UPPERCASE | Article blue `#2E96CC` |
-| Section heading ("1. CORE ZONING CODE") | Source Sans 3 | 18 pt | Bold | UPPERCASE | Article blue `#2E96CC` |
-| Subsection heading ("A. PURPOSE") | Source Sans 3 | 10 pt | Bold | UPPERCASE | Section blue dark `#2079B0` |
-| Numbered item (1., 2.) | Source Sans 3 | 9 pt | Regular | — | `#333333` |
-| Lettered sub-item (a., b.) | Source Sans 3 | 9 pt | Regular | — | `#333333` (indented) |
-| Roman sub-sub (i., ii.) | Source Sans 3 | 9 pt | Regular | — | `#333333` (further indented) |
-| Table caption ("TABLE 2.1 SIGHT DISTANCE") | Source Sans 3 | 8 pt | Semibold | UPPERCASE | `#333333` |
-| Table header row | Source Sans 3 | 8 pt | Semibold | UPPERCASE | `#333333` on tinted background |
-| Header band (topic name) | Source Sans 3 | 8 pt | Regular | UPPERCASE letter-spaced | `#777777` muted gray |
-| Footer | Source Sans 3 | 8 pt | Regular | — | `#666666` muted gray; "Newcastle Core Zoning Code" in Article blue |
-| Article tab (vertical) | Source Sans 3 | 11 pt | Semibold | UPPERCASE, rotated 90° CCW | White on Article color block |
+| Body text | BentonSansCond-Light | **8.5 pt** | Light | **#231F20** | Near-black warm gray. Sample n=78 on a typical page. |
+| Body text — alt (some spans) | BentonSansCond-Light | 8.5 pt | Light | **#000000** | Pure black appears on some spans, possibly from a different style. Treat as visually equivalent to #231F20. |
+| Section heading marker + name ("1. CORE ZONING CODE") | BentonSansCond-Bold | **14 pt** | Bold | **#367AAC** | Uppercase. Article blue. |
+| Subsection heading marker + name ("a. PURPOSE") | BentonSansCond-Bold | **11 pt** | Bold | **#7C766F** | **Lowercase letter marker** + uppercase name. Muted gray-brown. *This is the single most visible deviation from common municipal-code conventions: subsections use lowercase, not uppercase, letters.* |
+| Article display "ARTICLE N" (on opener) | BentonSansCond-Book | **33 pt** | Book (a hair lighter than Bold) | **#367AAC** | Uppercase. |
+| Article display "GENERAL STANDARDS" etc. | BentonSansCond-Bold | **33 pt** | Bold | **#367AAC** | Uppercase. Same line height as the "ARTICLE N" above it. |
+| Article tab text ("ARTICLE N") | BentonSansCond-Bold | **14 pt** | Bold | **#FFFFFF** | White text, rotated 90° CCW, on a gray (#BFBFBF) background block. |
+| Header band topic ("GENERAL STANDARDS") | BentonSansCond-Bold | **11 pt** | Bold | **#7C766F** | Uppercase. Same color as subsection markers. |
+| Header band right-side topic (district pages: "Core Zoning Districts") | BentonSansCond-Bold | **10 pt** | Bold | #7C766F | Mixed case. |
+| Footer wordmark ("Newcastle Core Zoning Code") | BentonSansCond-Bold | **10 pt** | Bold | **#367AAC** | Mixed case. |
+| Footer page number | BentonSansCond-Bold | 10 pt | Bold | **#231F20** | |
+| Footer date ("Amended: March 24, 2025") | BentonSansCond-Bold | 10 pt | Bold | #367AAC | |
+| District badge ("D1") | BentonSansCond-Bold | **9 pt** *(verify; could be larger)* | Bold | varies | White on dark district colors, dark on light district colors |
+| District name banner ("RURAL", "TOWN CENTER") | **BentonSans-Regular** *(not condensed)* | **19 pt** | Regular | #231F20 (dark text) or #FFFFFF (light text) | Color flips depending on district-color luminance |
+| Description / Purpose / Lot Dimensions headers on district pages | BentonSansCond-Bold | **9 pt** | Bold | **#7C766F** | Uppercase. |
+| Architectural Components column labels (Article 5: "FRONT", "SIDE", "REAR") | BentonSansComp-Light-SC7 | 7.8 pt | Light SC | #7C766F | Small caps. |
 
-**Font selection:** the baseline body font reads as a clean humanist sans. **Source Sans 3** (open-source, OFL) is the working default — visually very close to what appears in the CZC and freely embeddable. If a closer match is desired after pixel comparison, candidates include Open Sans, Noto Sans, or proprietary fonts (Calibri, Frutiger, Myriad Pro).
+### Leading and spacing
 
-**Body line height (leading):** ≈ 12 pt for 9 pt body — generous for legibility in narrow columns.
+- Body lines are tight: a 2-line body item shows a vertical gap of ~11 pt between baselines, giving a leading of ~11/8.5 ≈ 1.29.
+- Item-to-item spacing (between numbered items) is ~15.5 pt baseline-to-baseline for the start of a new item — ~4.5 pt extra space above the marker.
+- Subsection-to-subsection spacing: ~22 pt from previous content to subsection heading baseline.
+- Section-to-section spacing: similarly generous; section heading creates a clear break with the divider line.
 
-**Body alignment:** body text is **left-aligned** (not justified), with hanging indents on numbered items.
+---
 
-## 3. Color palette
-
-All hex values are working estimates **(TODO: verify by pixel sampling against the baseline PDF)**. The canonical encoding is in [czc-colors.yml](czc-colors.yml).
+## 4. Color palette (pixel-sampled)
 
 ### Primary system colors
 
-| Name | Hex | Usage |
+| Name | Hex | Sampled from |
 |---|---|---|
-| Article blue | `#2E96CC` | Article display headings, section headings, section divider lines, "Newcastle Core Zoning Code" wordmark |
-| Section blue dark | `#2079B0` | Subsection headings, deep accents |
-| Body dark | `#333333` | Body text |
-| Footer gray | `#666666` | Footer text |
-| Header gray | `#777777` | Header band text |
-| Table tint | `#E8E8E8` | Table header row background (non-district tables) |
-| Page background | `#FFFFFF` | All pages |
+| **Article blue** | **#367AAC** | "1. CORE ZONING CODE" (Art. 1 p. 4), wordmark, divider stroke |
+| **Body dark** | **#231F20** | Body text spans |
+| **Subsection gray** (warm) | **#7C766F** | Subsection markers, header band, district descriptors |
+| **Tab gray** | **#BFBFBF** | Article tab background fill (e.g., D1 p. 12 drawing #0) |
+| White (on colored backgrounds) | **#FFFFFF** | Tab text; banner text on dark district colors |
+| Pure black | **#000000** | A subset of body spans (alternates with #231F20) |
 
-### District badge/banner colors (Article 2 D1–D6 + SD pages)
+### District badge & banner colors (pixel-sampled fills)
 
-| District | Hex (working) | Visual character |
+| District | Hex | Visual |
 |---|---|---|
-| D1 Rural | `#B5C58F` | Olive / sage green |
-| D2 Neighborhood Residential | `#F5E58A` | Pale yellow |
-| D3 Neighborhood Business | `#C9A87C` | Tan / light brown |
-| D4 Village Residential | `#F5D540` | Brighter saturated yellow |
-| D5 Village Business | `#C0A4D2` | Light lavender purple |
-| D6 Town Center | `#5C2D74` | Deep / dark purple |
-| SD-Historic | `#6FB5B5` | Teal |
-| SD-Conservation | `#4B8B3A` | Forest green |
-| SD-Highway Commercial | `#F08A30` | Orange |
-| SD-Rural Highway | `#7A6536` | Olive-brown |
-| SD-Campus | `#69C2D6` | Light sky blue |
-| SD-Marine | `#244D8F` | Deep nautical blue |
-| SD-Fabrication | `#939393` | Medium gray |
-| SD-Civic | `#803535` | Brick red / maroon |
+| D1 Rural | **#CDE3CC** | Pale mint green |
+| D2 Neighborhood Residential | **#F3F2AE** | Pale yellow |
+| D3 Neighborhood Business | **#B4A27A** | Tan / khaki |
+| D4 Village Residential | **#EDE832** | Bright lemon yellow |
+| D5 Village Business | **#BBACD4** | Lavender |
+| D6 Town Center | **#502971** | Deep eggplant purple |
+| SD-Historic | **#108C89** | Dark teal |
+| SD-Conservation | **#3CAC48** | Medium green |
+| SD-Highway Commercial | **#F2AB57** | Orange |
+| SD-Rural Highway | **#716C53** | Warm olive-brown |
+| SD-Campus | **#7ED0EE** | Light sky blue |
+| SD-Marine | **#1C66B0** | Strong nautical blue |
+| SD-Fabrication | **#A7A9AB** | Cool medium gray |
+| SD-Civic | *(no district page; treated by enclosing District) * | — |
 
-The district color appears in three places per district page: (a) the colored code badge ("D1") top-left, (b) the colored name banner ("RURAL") spanning the rest of the row, and (c) the rotated Article tab in the outer margin.
+Each district page renders the banner as a single full-width colored rectangle at the top of the body area (about 42 pt tall, x = 99 → 522 pt on a verso page), with a separate badge block at left (also ~42 × 42 pt, holding the "D1"/"D6" code).
 
-### Proposed Type colors (new — for Article 3)
+---
 
-To extend the system to the new Street/Road Types without clashing with district colors, use a constrained dual-family palette: warmer tones for the **Street** family (S-1…S-4), cooler tones for the **Road** family (R-1…R-4), neutral for **Driveway**.
+## 5. Article tab (margin element)
 
-| Type | Hex (proposed) | Visual character |
-|---|---|---|
-| S-1 Main Street | `#A33C3C` | Deep red — strongest urban marker |
-| S-2 Village Street | `#C67343` | Burnt orange |
-| S-3 Neighborhood Street | `#D9A05B` | Warm tan |
-| S-4 Lane / Alley | `#9C8466` | Muted brown |
-| R-1 Connector Road | `#4F8AAB` | Slate blue |
-| R-2 Rural Road | `#3F6D5C` | Forest teal |
-| R-3 Highway Commercial | `#7E5C8C` | Muted plum |
-| R-4 Rural Highway | `#5A6E48` | Olive |
-| D Driveway | `#888888` | Neutral gray |
+Measured on page 12 (D1, verso):
 
-These are **proposed only** and should be reviewed by the user before locking in. The constraint: every Type color must be distinguishable from every District color when adjacent on the District Map.
+| Property | Value |
+|---|---|
+| Rectangle | x=0 → 30.2 pt, y=139.5 → 211.5 pt (so 30.2 × 72 pt) |
+| Background fill | **#BFBFBF** (gray, uniform across districts and articles) |
+| Text | "ARTICLE 2", rotated 90° CCW, 14 pt BentonSansCond-Bold #FFFFFF |
+| Side (parity) | Verso (even pages): left; Recto (odd pages): right |
 
-## 4. Heading hierarchy and section structure
+The tab is **the same gray on every page**, regardless of district or article. This contradicts an earlier assumption that tabs are district-color-coded; they are not.
 
-Newcastle's CZC uses a six-level hierarchy:
+---
+
+## 6. Section divider (under "1. NAME" headings)
+
+Measured on page 4:
+
+| Property | Value |
+|---|---|
+| Horizontal rule | x = 49.5 → 517.5 pt (full body width), y = ~149.4 pt |
+| Stroke color | #367AAC (Article blue) |
+| Stroke width | ~0.5–0.75 pt (thin) |
+| Endpoint squares | 4 × 4 pt filled #367AAC at each end of the rule, vertically centered on the rule's y-position |
+
+---
+
+## 7. Article opener layout
+
+Important: the article opener is **NOT a separate full-height title page**. Title + first section share the same page:
+
+1. Top: header band (`GENERAL STANDARDS` topic, gray small caps, with thin gray rule)
+2. Then "ARTICLE 1" at ~33 pt #367AAC Book
+3. Then "GENERAL STANDARDS" at ~33 pt #367AAC Bold
+4. Then a thin blue divider with 4×4 endpoint squares
+5. Then "1. CORE ZONING CODE" section heading in column 1, body content flowing in both columns
+
+So the article display heading occupies roughly the top third of the page; the body starts directly below. The opener does *not* leave the rest of the page blank.
+
+---
+
+## 8. Heading numbering hierarchy (with marker case)
+
+Confirmed by sampling text spans on page 5:
 
 ```
-ARTICLE 1                              ← Article opener (big blue display)
-1. CORE ZONING CODE                    ← Numbered Section heading
-   A. PURPOSE                          ← Lettered Subsection heading
-      1. To implement the Comp Plan.   ← Numbered Item (body)
-         a. ...                        ← Lettered sub-item
-            i. ...                     ← Roman sub-sub-item
+ARTICLE 1                                  ← Article opener (33 pt blue, Book + Bold)
+1. CORE ZONING CODE                        ← Numbered Section (14 pt blue Bold, UPPERCASE name)
+   a. PURPOSE                              ← Subsection (11 pt gray Bold, LOWERCASE letter marker, UPPERCASE name)
+      1. To implement the Comp Plan.       ← Numbered Item (8.5 pt body, sentence case)
+         a. Allowance of the waiver…       ← Sub-item (8.5 pt body, lowercase letter)
+            i. (no examples found yet)     ← Sub-sub-item (presumed Roman lowercase)
 ```
 
-Numbering style:
-- Items use a period after the marker: `1.` `2.` `A.` `a.` `i.`
-- Item text is left-aligned with a hanging indent so subsequent lines align with the first character of the item text, not the marker
-- No bullet glyphs — all items are numbered/lettered
+The convention "lowercase a./b./c. for subsections" is a baseline reality that should be reproduced in the new draft. Source markdown should use `### a. PURPOSE`, not `### A. PURPOSE`.
 
-## 5. Section divider
-
-Under each numbered Section heading ("1. CORE ZONING CODE"), there is a thin horizontal rule in Article blue, spanning the column, with small filled-square endpoints (▪) at left and right ends of the rule:
-
-```
-1. CORE ZONING CODE
-▪━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━▪
-```
-
-The rule sits a few points below the heading text. The endpoints are subtle but unmistakable when rendered.
-
-## 6. Article tab (vertical margin element)
-
-Each page within an Article displays a vertical "ARTICLE N" label in the outer margin.
-
-- Position: outer margin (right margin on right pages, left margin on left pages), aligned vertically center or slightly above center
-- Orientation: rotated 90° counter-clockwise (reads bottom-to-top)
-- Background: a solid block in the Article color (Article blue for Articles 1–9; district color on Article 2 district pages; type color on new Article 3 type pages)
-- Text: white, UPPERCASE, semibold, e.g., "ARTICLE 1"
-- Block dimensions: ~0.25" wide × ~1.5" tall
-
-On Article 2 (District Standards) pages, the tab is **color-coded by district**, not by Article — D1 pages have a green tab, D6 pages have a purple tab, etc. The Article number ("ARTICLE 2") appears on the tab regardless of district color. Apply the same convention to new Article 3 type pages.
-
-## 7. Header band
-
-The header band runs across the top of the page, below the top margin:
-
-- Left page (verso): outer-aligned (left), small-caps muted gray topic name (e.g., "GENERAL"), with the Article tab tagged opposite
-- Right page (recto): outer-aligned (right), small-caps muted gray topic name (e.g., "DISTRICT STANDARDS"), with the Article tab tagged opposite
-- Topic name is typically the Section name from the current page (e.g., "DRIVEWAYS" if the page is in Art. 3 §2 Driveways)
-- District pages substitute the topic with "Core Zoning Districts" or "Special Zoning Districts" with a small ▪ between
-- A thin horizontal rule (1 pt, muted gray) sits at the bottom of the header band
-
-## 8. Footer band
-
-The footer band runs across the bottom of the page, above the bottom margin:
-
-- Left position: date string ("Adopted: November 3, 2020" for the original CZC, "Amended: March 24, 2025" for the amended version) in muted gray
-- Right position: "Newcastle Core Zoning Code | [page number]" — wordmark in Article blue, separator "|" in gray, page number in muted gray
-- On left pages (verso) the layout is mirrored: page number left, date right
-- A thin horizontal rule (1 pt, muted gray) sits at the top of the footer band
+---
 
 ## 9. Tables
 
-Several table conventions are in use:
+Standard data tables (e.g., D1 LOT DIMENSIONS, PRIMARY BUILDING PLACEMENT):
 
-**Standard data tables** (e.g., Table 2.1 Sight Distance, Table 5.5 Tower Dimensions):
-- Caption above table, e.g., "TABLE 2.1 SIGHT DISTANCE" — semibold uppercase, body-text-size
-- Header row: tinted gray (`#E8E8E8`) background, semibold uppercase body
-- Body rows: white background, body text
-- Borders: subtle horizontal rules only, no vertical borders
-- Right-aligned numerics, left-aligned text columns
+- Cell borders: thin horizontal rules in **#231F20** at ~0.25 pt (very thin, almost black)
+- No vertical borders
+- Header row: same Light 8.5 pt body font, no shading (matching examples)
+- Right column (values like "100 ft min") is right-aligned in numeric columns, left-aligned otherwise
 
-**District tables (D1–D6 and SD pages)**:
-- The district badge + name banner is itself a table-like header row in the district color
-- Below, two-column tabular content (Lot Dimensions | Permitted Buildings, etc.)
-- "Use Table" section uses a multi-column grid of use categories with status glyphs (● ❶ ❷ ✪)
+District use-tables use a similar style with status glyphs in a narrow right column.
 
-**Status glyphs** in district use tables:
-- ● Use Permit Required (CEO)
-- ❶ Residential Companion Permit Required (CEO)
-- ❷ Special Permit Required (Planning Board)
-- ✪ Expanded Use Permit Required (Planning Board)
-- Blank = not allowed in this district
+---
 
-## 10. Cross-reference conventions
+## 10. Specific Unicode glyphs needed in body
 
-- Article references: "Article 4 Building Standards" — Article + number + name
-- Section references: "Article 4 Section 17 Building Groups" — full path with "Section"
-- Internal short references within an Article: "see section 8" (lowercase "section")
-- Table references: "Table 4.3 Building Groups Permitted By District" — Table + number + name
-- Exhibit references: "Exhibit 1.1 District Map" — Exhibit + number + name
-- External law references: "Title 23, Section 704" or "30-A MRSA Chapter 187"
-- Defined terms appear with leading capital ("Public Road," "Frontage Zone") but are not italicized or otherwise typographically distinguished
+The use tables use four custom glyphs:
+- `●` Use Permit Required (CEO)
+- `❶` Residential Companion Permit Required (CEO)
+- `❷` Special Permit Required (Planning Board)
+- `✪` Expanded Use Permit Required (Planning Board)
 
-## 11. Notable conventions to preserve in new content
+These render correctly in BentonSansCond (the baseline). They do **not** render in Helvetica Neue or in Barlow Condensed by default; a fallback font like DejaVu Sans, Noto Sans Symbols 2, or Symbola will be needed for these specific code points.
 
-1. **Every Section starts with Purpose, then Applicability, then General/Standards** — without exception
-2. **No bulleted lists** — everything is numbered or lettered hierarchically
-3. **No bold/italic emphasis in body text** — emphasis carries through heading hierarchy alone
-4. **No footnotes or endnotes** — references are inline
-5. **No marginal annotations** — the outer margin is reserved for the Article tab
-6. **Tables include captions with TABLE N.N format**, even single-table sections
-7. **Cross-references include the named section, not just the number** (e.g., "Article 4 Building Standards," not "Article 4")
-8. **Definitions are alphabetized**, one bold term per entry, body text definition below
+---
 
-## 12. Open questions for the template implementation
+## 11. Implementation deltas (v0.2.1-draft → target)
 
-- Exact body font selection (Source Sans 3 working; may refine after pixel-sampling)
-- Whether to embed fonts in PDFs (recommended for portability and archival)
-- Whether the District Map exhibits will be regenerated as vector (SVG) or remain raster — affects template page break logic
-- Whether the rotated Article tab should be implemented via Typst `rotate()` or via a precomputed image
-- Whether numbered list nesting in Typst can produce the exact CZC indent pattern, or if a custom show rule is needed
+What our current rendering gets wrong and how to fix:
 
-These will be resolved during template iteration.
+| Deviation | Current | Target | Action |
+|---|---|---|---|
+| Body font | Helvetica Neue | Barlow Condensed Light, 8.5 pt | Install Barlow Condensed; set body to "Barlow Condensed Light" 8.5 pt |
+| Article blue hex | #2E96CC | #367AAC | Update template + colors.yml |
+| Body dark hex | #333333 | #231F20 | Update template + colors.yml |
+| Subsection gray | #2079B0 (was using "section_blue_dark") | #7C766F | Update; rename palette key |
+| Tab color | Article blue | #BFBFBF (gray) | Update tab function |
+| Tab side | Always right | Left on verso, right on recto | Make tab side parity-aware |
+| Subsection markers | Uppercase A./B. | Lowercase a./b. | Sed across all source files |
+| Article opener layout | Full page, only opener | Title + first section share page | Restructure article_opener function |
+| Section heading size | 18 pt | 14 pt | Update show rule |
+| Subsection heading size | 10 pt | 11 pt | Update show rule |
+| Body size | 9 pt | 8.5 pt | Update text default |
+| District colors | Estimated | Measured (per Section 4 above) | Update colors.yml |
+| Status glyphs | Render as `?` | Need a fallback font with these glyphs | Add fallback font to template |
 
-## 13. Validation method
+This is the work list for v0.3-draft.
 
-After the template is implemented, validate visual fidelity by:
+---
 
-1. Transcribing CZC Article 1 (pages 4–9, "General Standards") into markdown at the source numbering
-2. Rendering it through the build pipeline
-3. Placing a rendered page side-by-side with the corresponding baseline PDF page
-4. Comparing: page geometry, fonts, colors, heading hierarchy, section divider, Article tab, header/footer bands, table styling
-5. Iterating on the template until the comparison passes the "not jarring" bar set in the plan
+## 12. Methodology
 
-Pixel-perfect identity is not required. The deliverable test is: does a typical reviewer perceive this as the same document or as a separate document?
+Measurements were obtained with the following tools (all reproducible):
+
+```sh
+# Embedded font inventory
+pdffonts docs/Newcastle\ Core\ Zoning\ Code.pdf
+
+# Per-span typography
+python3 -c "import fitz; doc=fitz.open('docs/...'); …"
+# See /tmp/analyze_pdf.py and /tmp/analyze_pdf_2.py
+
+# Pixel sampling of rendered pages
+# See /tmp/sample_colors.py and /tmp/sample_tab.py
+```
+
+All sampled PNGs were rendered at 144 DPI from the baseline PDF via `pdftoppm` or `pymupdf.get_pixmap(dpi=144)`. Color values reported are the modal pixel in a 5×5 region around the target point. Drawing fills were read from PyMuPDF's `page.get_drawings()` API.

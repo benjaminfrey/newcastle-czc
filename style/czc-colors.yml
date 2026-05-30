@@ -1,119 +1,118 @@
-# Newcastle CZC color palette
-# Canonical source for all colors used in draft renderings.
-# Values are working estimates from visual inspection of the baseline PDF.
-# Items marked "verify" should be confirmed by pixel sampling before v0.1 release.
+# Newcastle CZC color palette — all values MEASURED from the baseline PDF.
+#
+# Method: pymupdf text-span extraction + pixel sampling of rendered pages.
+# See style/style-analysis.md for methodology and per-element sources.
 #
 # Used by:
-#   - style/czc-template.typ (Typst template imports this via YAML)
+#   - style/czc-template.typ (mirror of these values; keep in sync)
 #   - build scripts (pass selected colors as Typst inputs)
 
 system:
-  article_blue:       "#2E96CC"   # verify | Article display, section headings, divider lines, wordmark
-  section_blue_dark:  "#2079B0"   # verify | Subsection headings, deep accents
-  body_dark:          "#333333"   # body text
-  footer_gray:        "#666666"   # footer date and "|" separators
-  header_gray:        "#777777"   # header band topic name (small caps)
-  table_tint:         "#E8E8E8"   # standard table header row background
-  rule_gray:          "#B0B0B0"   # subtle horizontal rules in headers/footers
+  article_blue:       "#367AAC"   # measured | Article displays, section headings, dividers, wordmark
+  body_dark:          "#231F20"   # measured | body text (near-black warm gray)
+  subsection_gray:    "#7C766F"   # measured | subsection markers, header band, district descriptors
+  tab_gray:           "#BFBFBF"   # measured | article tab background fill (uniform across districts)
+  black:              "#000000"   # measured | appears on some body spans (treat as visually equiv to body_dark)
+  rule_gray:          "#231F20"   # measured | thin table rules (≈ #231F20 at low opacity, but rendered as full color thin)
   page_bg:            "#FFFFFF"
 
 districts:
   D1:
     name: "Rural"
-    hex:  "#B5C58F"               # verify | olive / sage green
-    text: "#333333"               # text color over this background
+    hex:  "#CDE3CC"               # measured | pale mint green
+    text: "#231F20"               # dark text on light background
   D2:
     name: "Neighborhood Residential"
-    hex:  "#F5E58A"               # verify | pale yellow
-    text: "#333333"
+    hex:  "#F3F2AE"               # measured | pale yellow
+    text: "#231F20"
   D3:
     name: "Neighborhood Business"
-    hex:  "#C9A87C"               # verify | tan / light brown
-    text: "#333333"
+    hex:  "#B4A27A"               # measured | tan / khaki
+    text: "#231F20"
   D4:
     name: "Village Residential"
-    hex:  "#F5D540"               # verify | saturated yellow
-    text: "#333333"
+    hex:  "#EDE832"               # measured | bright lemon yellow
+    text: "#231F20"
   D5:
     name: "Village Business"
-    hex:  "#C0A4D2"               # verify | light lavender purple
-    text: "#333333"
+    hex:  "#BBACD4"               # measured | lavender
+    text: "#231F20"
   D6:
     name: "Town Center"
-    hex:  "#5C2D74"               # verify | deep purple
-    text: "#FFFFFF"
+    hex:  "#502971"               # measured | deep eggplant purple
+    text: "#FFFFFF"               # light text on dark background
 
 special_districts:
   SD_Historic:
     name: "Historic"
-    hex:  "#6FB5B5"               # verify | teal
+    hex:  "#108C89"               # measured | dark teal
     text: "#FFFFFF"
   SD_Conservation:
     name: "Conservation"
-    hex:  "#4B8B3A"               # verify | forest green
+    hex:  "#3CAC48"               # measured | medium green
     text: "#FFFFFF"
   SD_HighwayCommercial:
     name: "Highway Commercial"
-    hex:  "#F08A30"               # verify | orange
-    text: "#FFFFFF"
+    hex:  "#F2AB57"               # measured | orange
+    text: "#231F20"
   SD_RuralHighway:
     name: "Rural Highway"
-    hex:  "#7A6536"               # verify | olive-brown
+    hex:  "#716C53"               # measured | warm olive-brown
     text: "#FFFFFF"
   SD_Campus:
     name: "Campus"
-    hex:  "#69C2D6"               # verify | light sky blue
-    text: "#333333"
+    hex:  "#7ED0EE"               # measured | light sky blue
+    text: "#231F20"
   SD_Marine:
     name: "Marine"
-    hex:  "#244D8F"               # verify | deep nautical blue
+    hex:  "#1C66B0"               # measured | strong nautical blue
     text: "#FFFFFF"
   SD_Fabrication:
     name: "Fabrication"
-    hex:  "#939393"               # verify | medium gray
-    text: "#FFFFFF"
+    hex:  "#A7A9AB"               # measured | cool medium gray
+    text: "#231F20"
   SD_Civic:
     name: "Civic"
-    hex:  "#803535"               # verify | brick red / maroon
+    hex:  "#7C766F"               # proposed | no measurable color in baseline; uses subsection_gray
     text: "#FFFFFF"
 
-# NEW — for Article 3 Street/Road Types. Proposed; review before v0.1 release.
-# Constraint: each color must be visually distinguishable from every district color
-# when adjacent on the District Map and inventory table.
+# NEW — for Article 3 Street/Road Types. Proposed; review before adoption.
+# Constraint: each color must be visually distinguishable from every District
+# color above when adjacent on the District Map and inventory table.
 street_road_types:
   S1_MainStreet:
     name: "Main Street"
-    hex:  "#A33C3C"               # proposed | deep red
+    hex:  "#A33C3C"
     text: "#FFFFFF"
   S2_VillageStreet:
     name: "Village Street"
-    hex:  "#C67343"               # proposed | burnt orange
+    hex:  "#C67343"
     text: "#FFFFFF"
   S3_NeighborhoodStreet:
     name: "Neighborhood Street"
-    hex:  "#D9A05B"               # proposed | warm tan
-    text: "#333333"
+    hex:  "#D9A05B"
+    text: "#231F20"
   S4_LaneAlley:
     name: "Lane / Alley"
-    hex:  "#9C8466"               # proposed | muted brown
+    hex:  "#9C8466"
     text: "#FFFFFF"
   R1_ConnectorRoad:
     name: "Connector Road"
-    hex:  "#4F8AAB"               # proposed | slate blue
+    hex:  "#4F8AAB"
     text: "#FFFFFF"
   R2_RuralRoad:
     name: "Rural Road"
-    hex:  "#3F6D5C"               # proposed | forest teal
+    hex:  "#3F6D5C"
     text: "#FFFFFF"
   R3_HighwayCommercial:
     name: "Highway Commercial"
-    hex:  "#7E5C8C"               # proposed | muted plum
+    hex:  "#7E5C8C"
     text: "#FFFFFF"
   R4_RuralHighway:
     name: "Rural Highway"
-    hex:  "#5A6E48"               # proposed | olive
+    hex:  "#5A6E48"
     text: "#FFFFFF"
   D_Driveway:
     name: "Driveway"
-    hex:  "#888888"               # proposed | neutral gray
+    hex:  "#888888"
     text: "#FFFFFF"

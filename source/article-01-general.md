@@ -8,7 +8,7 @@ footer-date: "Adopted: November 3, 2020"
 
 ## 1. CORE ZONING CODE
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To implement the Comprehensive Plan of the Town of Newcastle.
 2. To coordinate development and redevelopment according to plans collaboratively developed with community members from the Town of Newcastle.
@@ -25,7 +25,7 @@ footer-date: "Adopted: November 3, 2020"
 13. To preserve and enhance the availability and design of Newcastle's public realm, including access to nature, parks, streets, and civic space.
 14. To allow for a range of business activity that supports the local interest in promoting Newcastle as a center for entrepreneurial activity, both in the villages and rural areas.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Unless otherwise specified, this Code is applicable throughout the Town of Newcastle as shown on the Town of Newcastle Official District Map.
 2. All departments, boards, and authorities of the Town of Newcastle must comply with the procedural requirements of this Code.
@@ -37,11 +37,11 @@ footer-date: "Adopted: November 3, 2020"
 
 ## 2. CODE INSTRUCTIONS
 
-### A. TITLE
+### a. TITLE
 
 1. This Code is known as the "Newcastle Core Zoning Code" and may also be cited and referred to as "the Code."
 
-### B. MEANING & PURPOSE
+### b. MEANING & PURPOSE
 
 1. Words, phrases, and terms used in this Code are defined in Article 9 Definitions or within the Articles that contain standards associated with the term.
 2. Words, phrases, or terms not defined in this Code must be accorded their commonly accepted meanings as defined in the most recent edition of the Webster's Unabridged Dictionary.
@@ -52,12 +52,12 @@ footer-date: "Adopted: November 3, 2020"
 7. The word "description" is synonymous with "definition" when used in this Code.
 8. The term "Permitted" describes the condition where a specific standard, use, or activity described in this Code is permittable. Acquisition of a permit is mandatory prior to enacting anything noted as "Permitted" in this Code.
 
-### C. TEXT & GRAPHICS
+### c. TEXT & GRAPHICS
 
 1. Illustrations, graphics, pictures, and flowcharts are included in this Code to help illustrate the purpose and requirements of the text. In the case of a conflict between the text of this Code and any illustration, graphic, picture, or flowchart, the text must govern.
 2. All metrics included in tables must be interpreted as text under this Code and must govern.
 
-### D. ORGANIZATIONAL STRUCTURE
+### d. ORGANIZATIONAL STRUCTURE
 
 1. The burden is on the applicant for complying with all the terms of this Code.
 2. All of the terms is this Code are legally binding, whether or not they are numbered. Purpose and Applicability sections are binding regulations.
@@ -65,7 +65,7 @@ footer-date: "Adopted: November 3, 2020"
 
 ## 3. DISTRICT MAP
 
-### A. GENERAL
+### a. GENERAL
 
 1. The boundaries of districts are applied to real property as shown on the Official District Map of the Town of Newcastle, Maine.
 2. This map may be cited and referred to as the "Official District Map" or "District Map."
@@ -76,11 +76,11 @@ footer-date: "Adopted: November 3, 2020"
 
 ## 4. AUTHORITY & COMPLIANCE
 
-### A. AUTHORITY
+### a. AUTHORITY
 
 1. This Code is adopted under the authority granted by Article 2 of the November 3, 2020 Referendum Election.
 
-### B. COMPLIANCE
+### b. COMPLIANCE
 
 1. No real property may be occupied or used, no use of an existing building or land may change, no building or structure may be constructed, altered, expanded, or enlarged in whole or in part for any purpose except as specifically authorized by this Code.
 2. This Code allows waivers from the standards of this Code as explicitly authorized by the standards within this Code if the Permitting Authority determines that:
@@ -88,7 +88,7 @@ footer-date: "Adopted: November 3, 2020"
     b. The waiver does not exceed the allowed metric variations or qualitative criteria described in the section where the waiver is authorized.
 3. Allowance of a waiver under this Code is considered an integral part of the application of this Code and is not considered the granting of a variance, as that term is defined under Maine law.
 
-### C. RELATIONSHIP TO OTHER STANDARDS
+### c. RELATIONSHIP TO OTHER STANDARDS
 
 1. This Code does not abrogate, annul, or otherwise interfere with any easement, covenant, and/or other private agreements.
 2. Where the standards of this Code impose a greater restriction than required by other ordinances, regulations, resolutions, rules, easements, covenants, or agreements, the provision of this Code must apply.
@@ -97,18 +97,18 @@ footer-date: "Adopted: November 3, 2020"
 
 ## 5. ADOPTION & EFFECT
 
-### A. ADOPTION DATE
+### a. ADOPTION DATE
 
 1. This Code is adopted under the Municipal Home Rule Powers of the Maine Constitution, Article VIII-A and 30-A MRSA Chapter 141, and Chapter 187. Specific chapters of this Code are also adopted under specific statutory standards, including Mobile Home Parks, under 30-A MRSA Section 4358; Subdivisions, under 30-A MRSA Section 4404; Shoreland Standards, under 38 MRSA Sections 435449, and Floodplain Management, under PL. 90-488, the National Flood Insurance Act of 1968.
 
-### B. IN EFFECT
+### b. IN EFFECT
 
 1. This Code must take effect on January 1, 2021 and supersedes the Zoning Ordinance of the Town of Newcastle as enacted on March 27, 2001 and updated November 2017.
 
-### C. PREVIOUS APPROVALS
+### c. PREVIOUS APPROVALS
 
 1. All valid permits issued on or before the date of adoption of this Code will remain valid.
 
-### D. SEVERABILITY & INVALIDITY
+### d. SEVERABILITY & INVALIDITY
 
 1. If any provision of this Code or the application of any provision to any person, partnership, corporation, or circumstance is declared unconstitutional or otherwise held invalid, the validity of the remaining standards of this Code and their application to any other person, partnership, corporation, or circumstance must not be affected.

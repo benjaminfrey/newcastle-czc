@@ -8,15 +8,15 @@ footer-date: "Adopted: November 3, 2020"
 
 ## 1. BUILDING TYPES
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To provide descriptions for different types of buildings.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to all buildings.
 
-### C. GENERAL
+### c. GENERAL
 
 1. Buildings shall be classified as Primary or Accessory as follows:
     a. Primary Buildings are;
@@ -35,15 +35,15 @@ footer-date: "Adopted: November 3, 2020"
 
 ## 2. NUMBER OF BUILDINGS
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To be able to effectively regulate the number of buildings allowed on a lot.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to all buildings and lots.
 
-### C. GENERAL
+### c. GENERAL
 
 1. Only one Primary Building may be built on each lot or virtual lot.
 2. Only one Accessory Building may be built on each lot or virtual lot except:
@@ -56,16 +56,16 @@ footer-date: "Adopted: November 3, 2020"
 
 ## 3. BUILDING ASSEMBLY
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To provide a clear and flexible system for enabling the construction of new buildings and the expansion and modification of existing buildings.
 2. To allow for a broad range of building designs.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to all buildings in any District that contains a Permitted Buildings table.
 
-### C. GENERAL
+### c. GENERAL
 
 1. All Primary Buildings and all Accessory Buildings must meet the standards for one of the building types provided within this Code.
 2. Each Primary Building and each Accessory Building must be comprised of a Main Building Mass with a rectangular form and a single allowed roof type.
@@ -76,7 +76,7 @@ footer-date: "Adopted: November 3, 2020"
     c. All other standards apply to the entire building.
 5. Integral components may be used to cut away space within the boundaries of the roof or Main Building Mass provided the eaves and ridge beam of the roof are not affected.
 
-### D. ATTACHMENTS
+### d. ATTACHMENTS
 
 1. Components may attach to primary and accessory buildings.
 2. A building may not encroach on setbacks in order to attach to an adjacent building.
@@ -89,16 +89,16 @@ footer-date: "Adopted: November 3, 2020"
 
 ## 4. BUILDING ELEVATION
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To ensure that buildings with first floor residential uses are raised above the level of the ground as a way to protect privacy in neighborhoods where buildings are located close to the street.
 2. To ensure that buildings with first floor commercial spaces are located at grade to the extent possible to provide accessible shopfronts.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to all new primary buildings and accessory buildings, with residential first floor units, in any District that contains a Permitted Buildings table.
 
-### C. GENERAL
+### c. GENERAL
 
 1. Buildings must be elevated along their primary frontage to meet first floor elevation requirements of each primary and accessory building type.
 2. Buildings that are located within 10 ft of a frontage line must have the first floor at the same grade or higher than the abutting sidewalk.
@@ -109,16 +109,16 @@ footer-date: "Adopted: November 3, 2020"
 
 ## 5. ADDITIONS
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To provide a basic framework for the regulation of generic additions to buildings.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to the expansion of the square footage of a Primary Building or Accessory Building.
 2. Applies to any expansion of an existing Primary Building or Accessory Building that incorporates a roof.
 
-### C. GENERAL
+### c. GENERAL
 
 1. Additions are not regulated by form, size, scale, shape, color, roof type, windows and doors or any other such element of the addition, except for the following:
     a. The Addition shall be attached to and share a common wall with a Primary Building or Accessory Building.
@@ -150,16 +150,16 @@ TABLE 4.1 ALLOWABLE ADDITION LOCATION BY DISTRICT
 
 ## 6. BUILDING ARTICULATION
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To enable buildings that contribute to the overall character of a street.
 2. To minimize exaggerated building articulations that can interrupt pedestrian movement and result in a disorienting built environment.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to new buildings in District D6 Town Center.
 
-### C. GENERAL
+### c. GENERAL
 
 1. Architectural features and small articulations less than 6 horizontal inches from the surface of a building's facade are permitted.
 2. Forecourts are permitted on Mixed Use Buildings, Multi-unit Residential Buildings, and Multi-unit Commercial Buildings, provided they meet the following standards:
@@ -176,15 +176,15 @@ TABLE 4.1 ALLOWABLE ADDITION LOCATION BY DISTRICT
 
 ## 7. HEIGHT
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To create a predictable and clear approach to measuring and regulating height of buildings.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to all new buildings or modifications to existing buildings that increase the overall height of the structure.
 
-### C. STORY HEIGHT
+### c. STORY HEIGHT
 
 1. Building height in this Code is measured in stories.
 2. Story height is measured from the surface of any floor to the surface of the floor above it or, if there is no floor above, from the surface of the floor to the top of the wall plate.
@@ -194,22 +194,22 @@ TABLE 4.1 ALLOWABLE ADDITION LOCATION BY DISTRICT
 6. Basements are counted as a story when 5 feet or more of an exterior wall located within the frontage zone is exposed above the average ground level.
 7. In the event that floor heights vary in different parts of the same building, such that multiple stories in one area equate in height to one story in another, the shorter floor-to-floor height should be used to determine number of stories, provided that none of the floors is a mezzanine.
 
-### D. HEIGHT EXCEPTIONS
+### d. HEIGHT EXCEPTIONS
 
 1. Maximum height standards do not apply to mechanical equipment; vents or exhausts; solar panels or skylights; flagpoles; chimneys; parapets; or other non-habitable architectural features.
 2. The maximum heights of roof decks, towers, turrets, cupolas, and penthouses are regulated in Article 6.5 Architectural Components.
 
 ## 8. MATERIALS
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To allow for a range of building materials that reflect local character.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to new buildings or to substantially modified buildings in any District that contains a Permitted Buildings table.
 
-### C. GENERAL
+### c. GENERAL
 
 1. On building facades, the exterior finish material must be brick, wood clapboard, wood shingles, cement board siding, stone, or corrugated metal, and / or lime-based stucco or other materials that have the appearance of natural materials.
 2. On building facades, building wall materials must be combined horizontally, with the heavier masonry materials on the lower portion of the facade.
@@ -218,17 +218,17 @@ TABLE 4.1 ALLOWABLE ADDITION LOCATION BY DISTRICT
 
 ## 9. ADDITIONAL STRUCTURES
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To allow for additional structures that support activities associated with primary and accessory buildings.
 2. To minimize visual impacts from private and public spaces.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to any structure on a lot, not including primary or accessory buildings such as, but not limited to, garden sheds.
 2. Does not apply to Temporary Structures. See section 10 Temporary Structures
 
-### C. GENERAL
+### c. GENERAL
 
 1. Additional structures shall not contain a dwelling unit.
 2. Additional structures are permitted in conjunction with primary or accessory buildings and must be clearly incidental and subordinate in terms of area, size, use, and location. See Table 4.2: Additional Structures.
@@ -238,14 +238,14 @@ TABLE 4.1 ALLOWABLE ADDITION LOCATION BY DISTRICT
 5. A Marina, Dry Storage use shall be permitted to construct Additional Structures up to 1,200 sf in area.
     a. Additional Stuctures larger than the maximum structure area set forth in Table 4.2: Additional Structures shall be removed from the site at the time of the discontinuance of the Marina, Dry Storage use.
 
-### D. SCREENING
+### d. SCREENING
 
 1. Additional Structures are required to be screened from view when they are located in a district identified in Table 4.2: Additional Structures below
 2. Screening is required to screen Additional Structures from view from Public Roads.
 3. Screening must be of a height equal to or greater than the height of the Additional Structure being screened.
 4. Screening shall be a fence, wall, dense evergreen hedge, or a Level 4 Natural Screen.
 
-### E. SETBACKS
+### e. SETBACKS
 
 a. Additional structures must follow the Accessory Building Placement Setbacks for their applicable District.
 
@@ -270,15 +270,15 @@ TABLE 4.2: ADDITIONAL STRUCTURES
 
 ## 10. TEMPORARY STRUCTURES
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To provide standards for the short term deployment of a structure to shelter people, products, equipment, or animals from the elements.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to any structure not classified as a Primary, Accessory or Additional Structure, and is temporary in nature, including but not limited to tents, carports, storage containers, and moving equipment.
 
-### C. GENERAL
+### c. GENERAL
 
 1. Temporary Structures require a permit from the Code Enforcement Officer, unless:
     a. The structure is no greater than 100 sq ft.
@@ -288,17 +288,17 @@ TABLE 4.2: ADDITIONAL STRUCTURES
 
 ## 11. PRIMARY ENTRANCES
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To ensure that buildings are accessible from Public Roads as a way to encourage pedestrian activity.
 2. To prevent long expanses of blank walls.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to new buildings in any District that contains a Permitted Buildings table.
 2. Applies to modifications to existing buildings, that include a change in use to a commercial use, in any District that contains a Permitted Buildings table.
 
-### C. GENERAL
+### c. GENERAL
 
 1. At least one primary entrance must be located along the primary frontage of a primary building's Main Building Mass.
 2. Single Unit Residential, and Multi-unit Residential Buildings may have their primary entrance on the side of a primary building's Main Building Mass, provided the side door is located within the frontage zone.
@@ -309,15 +309,15 @@ TABLE 4.2: ADDITIONAL STRUCTURES
 
 ## 12. SHOPFRONTS
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To ensure that areas intended for commercial activity have shopfront treatment that supports business vitality.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. The first floor facade of buildings that front onto a road designated as a Shopfront Required on the Zoning Map.
 
-### C. GENERAL
+### c. GENERAL
 
 1. Shopfronts, where required, must provide doors and windows with a minimum of 70% glazing.
 2. Shopfronts may include garage doors that meet the glazing requirements.
@@ -328,23 +328,23 @@ TABLE 4.2: ADDITIONAL STRUCTURES
 7. Where a shopfront does not extend across a building's entire facade, the area of the shopfront must be determined by the first floor height multiplied by the total width of the commercial unit.
 8. The area of a commercial unit is determined by the first floor height multiplied by horizontal distance between the interior walls of the unit, measured at the frontage.
 
-### D. NONCONFORMING SHOPFRONTS
+### d. NONCONFORMING SHOPFRONTS
 
 1. Routine repair and maintenance of nonconforming shopfronts is permitted.
 2. Nonconforming shopfronts may only expand along a frontage if primary entrance, door and window, and building type standards are met.
 
 ## 13. SLOPES & TERRACES
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To ensure that buildings located in mixed-use areas meet the sidewalk.
 2. To allow terraces as a way to provide pedestrian circulation adjacent to Shopfronts on streets with steep slopes.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to new buildings or existing buildings, in any District that contains a Permitted Buildings table, onto which a terrace is added.
 
-### C. GENERAL
+### c. GENERAL
 
 1. Buildings with a 0 ft front setback must provide entrances at grade to the abutting sidewalk.
 2. Shopfronts in D5 and D6 must step down entrances to meet the grade of the adjacent sidewalk along the frontage.
@@ -362,16 +362,16 @@ TABLE 4.2: ADDITIONAL STRUCTURES
 
 ## 14. MEZZANINES
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To allow additional flexibility within building envelopes.
 2. To enable additional partial floors to encourage tall stories.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to new buildings or existing buildings, in any District that contains a Permitted Buildings table, in which a mezzanine is added.
 
-### C. GENERAL
+### c. GENERAL
 
 1. Publicly accessible mezzanines may be provided within a building story with the following standards:
     a. A building story must be at least 18 ft in height to accommodate a public mezzanine.
@@ -385,15 +385,15 @@ TABLE 4.2: ADDITIONAL STRUCTURES
 
 ## 15. NONCONFORMING BUILDINGS
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To allow for the flexible modification, adaption, reuse, and expansion of buildings that existed prior to and were made non-conforming by this Code.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to all buildings, accessory buildings, and additional structures that existed prior to the adoption of this Code, and that do not meet all the standards of this Code.
 
-### C. GENERAL
+### c. GENERAL
 
 1. Routine repair and maintenance of nonconforming buildings is permitted.
 2. Nonconforming buildings may be altered to eliminate or reduce a nonconformity or to create a conforming building type that meets the standards of this Code.
@@ -410,15 +410,15 @@ TABLE 4.2: ADDITIONAL STRUCTURES
 
 ## 16. LARGE SCALE BUILDINGS
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To ensure that larger buildings along a Public Road are scaled appropriately.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to buildings with a total area of 10,000 sq ft or more.
 
-### C. GENERAL
+### c. GENERAL
 
 1. Within 50 ft of a Public Road, no single building or grouping of attached buildings shall exceed 180 feet in aggregate length.
 2. Within 200 ft of a Public Road:
@@ -429,21 +429,21 @@ TABLE 4.2: ADDITIONAL STRUCTURES
 
 ## 17. SIZE CAP
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To require a maximum structure gross floor area for any and all single retail or service establishments.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. This section and its maximum gross floor area restriction applies to all new, retail, or service establishments and to all expansions of existing retail or service establishments.
 
-### C. GENERAL
+### c. GENERAL
 
 1. No single retail or service establishment, whether located in a single structure, a combination of structures, single tenant space, or an aggregate of structures, single tenant spaces or tenant spaces in an aggregate of structures, may exceed 35,000 sf of gross floor area. All adjacent retail or service establishments which share a common check stand, management, controlling ownership or storage areas will be considered a "single retail or service establishment" and their aggregate square footage of floor area will be used to determine compliance with the standards of this Code.
 
 ## 18. BUILDING GROUPS
 
-### A. GENERAL
+### a. GENERAL
 
 1. Building groups may be used as an alternative development pattern with unique lot standards and setback standards defined by the building group.
 2. A building group may permit additional building types with standards related to form and placement.
@@ -470,7 +470,7 @@ TABLE 4.3 BUILDING GROUPS PERMITTED BY DISTRICT
 | SD-Marine    |                |                      | ●                    |                  |
 | SD-Conserve  |                |                      |                      |                  |
 
-### B. CONNECTED FARM
+### b. CONNECTED FARM
 
 1. Description
     a. A building comprised of multiple elements, based on the common building tradition of big house, little house, back house, and barn.
@@ -497,7 +497,7 @@ TABLE 4.4 CONNECTED FARM - PERMITTED BUILDINGS
 | First Floor Height | 12 ft                   | 10 ft                 | 16 ft                |
 | Upper Floor Height | 10 ft                   | 8 ft                  | —                    |
 
-### C. SMALL RURAL COMPOUND
+### c. SMALL RURAL COMPOUND
 
 1. Description
     a. Medium-sized lots that allow for the more dense arrangement of buildings in the character of traditional rural farms, with buildings grouped together to efficiently meet residential and working needs.
@@ -533,7 +533,7 @@ TABLE 4.5 SMALL RURAL COMPOUND - PERMITTED BUILDINGS
 | First Floor Height | 12 ft                   | 12 ft                  | 15 ft              | 10 ft                 | 16 ft                |
 | Upper Floor Height | 10 ft                   | 10 ft                  | 10 ft              | 8 ft                  | —                    |
 
-### D. LARGE RURAL COMPOUND
+### d. LARGE RURAL COMPOUND
 
 1. Description
     a. Large lots that allow for the more dense arrangement of buildings in the character of traditional rural farms, with buildings grouped together to efficiently meet residential and working needs.
@@ -570,7 +570,7 @@ TABLE 4.6 LARGE RURAL COMPOUND PERMITTED-BUILDINGS
 | First Floor Height | 12 ft                   | 12 ft                  | 15 ft              | 15 ft                 | 10 ft                 | 16 ft                |
 | Upper Floor Height | 10 ft                   | 10 ft                  | 10 ft              | 10 ft                 | 8 ft                  | —                    |
 
-### E. MULTI-UNIT COURT
+### e. MULTI-UNIT COURT
 
 1. Description
     a. The arrangement of a single building type around a central common courtyard space to promote greater density than otherwise allowed.

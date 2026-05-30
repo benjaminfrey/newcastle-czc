@@ -8,48 +8,48 @@ footer-date: "Adopted: November 3, 2020"
 
 ## 1. SITE STANDARDS
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To provide standards for the development of a site.
 2. To ensure that private development contributes to the character along a public street or civic space.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. This Article applies to alterations made to a site, including but not limited to: parking, access to a site from a public road, landscaping, buffers, loading, mechanical equipment, lighting, and signage.
 
 ## 2. DRIVEWAYS
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To cross-reference the standards for vehicular access from a Street or Road to the interior of a single lot.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. New driveways and driveway relocation.
 
-### C. GENERAL
+### c. GENERAL
 
 1. Driveways are regulated under Article 3 Section 7 (Driveways). Refer to Article 3 for all driveway design, location, sharing, and calibration standards.
 
 ## 3. VEHICULAR PARKING
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To allow for parking that supports the function of abutting land uses while preserving the walk-ability and character of neighborhoods.
 2. To provide standards for parking lots that enhance land values in the community.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Parking lot standards apply to:
     a. New parking lot construction, including expansion of an existing parking lot by 10 or more spaces.
         i. Only the area of expansion must follow Parking Lot Standards.
 2. Parking lot standards do not apply to sealing, striping, resurfacing, or replacement of the asphalt, concrete, or other surface paving material of existing parking lots.
 
-### C. REQUIRED SPACES
+### c. REQUIRED SPACES
 
 1. Off-street vehicle parking is not required in all districts. Where provided, off-street vehicle parking must comply with the standards of this section.
 
-### D. PARKING LOCATION
+### d. PARKING LOCATION
 
 1. All off-street parking must be located behind the frontage zone, with the following exceptions:
     a. Parking permitted inside accessory buildings that are located within the frontage zone.
@@ -61,23 +61,23 @@ footer-date: "Adopted: November 3, 2020"
     a. A municipal lot that is authorized by special permit.
     b. An otherwise un-buildable lot may contain parking provided it meets all other applicable Site Standards.
 
-### E. PARKING LOT SCREENING
+### e. PARKING LOT SCREENING
 
 1. Where any parking lot is visible or located within 50 feet of a civic space or a road (other than an alley) the parking lot must be screened along the frontage line, by any of the following:
     a. A dense evergreen hedge installed at the frontage line that is between two feet and three and one-half feet in height.
     b. A solid wall installed at the frontage line that is between two feet and three and one-half feet in height.
 
-### F. VEHICULAR ACCESS
+### f. VEHICULAR ACCESS
 
 1. Off-street parking must be accessed from a Lane/Alley (Type S-4 per Article 3 Section 2.G) or from a secondary frontage. When there is no abutting Lane/Alley or secondary frontage, parking may be accessed from the primary frontage.
 2. Parking lots should connect with existing abutting parking lots.
 3. Shared parking agreements with neighboring properties are encouraged.
 
-### G. PEDESTRIAN ACCESS
+### g. PEDESTRIAN ACCESS
 
 1. Sidewalks, footpaths, or crossweaves must be provided to connect parking areas to on-site buildings, adjacent buildings, roads, existing sidewalks, and trails, or when appropriate, to amenities such as parks or open space on or adjacent to the site.
 
-### H. DESIGN
+### h. DESIGN
 
 1. Parking lots are required to plant 1 shade tree of a minimum caliper of 2 inches for every 8 parking spaces. Each parking space must be located within 40 feet of a tree.
 2. An existing shade tree may satisfy a tree planting requirement in instances where the existing tree meets the spacing requirements, so long as the existing shade tree is located on the same property, is a minimum of four inches diameter at breast height, possesses a healthy and full canopy, has an unmolested critical root zone, and has incurred no damage that would undermine its long-term vitality and quality.
@@ -89,12 +89,12 @@ footer-date: "Adopted: November 3, 2020"
     c. Raised, curbed beds designed as rain gardens with plantings to facilitate stormwater management.
     d. Parking lot landscaping must be integral, where possible, with on-site stormwater management facilities.
 
-### I. MAINTENANCE
+### i. MAINTENANCE
 
 1. All required plant materials must be maintained in a healthy growing condition over their lifetime and replaced as necessary.
 2. All permeable surfacing materials should be maintained and tested periodically to ensure they are still functioning as intended.
 
-### J. NONCONFORMING VEHICULAR PARKING
+### j. NONCONFORMING VEHICULAR PARKING
 
 1. Routine repair and maintenance of nonconforming parking lots is permitted, including grading, sealing, and repaving.
 2. Substantial reconstruction may be permitted by waiver.
@@ -104,27 +104,27 @@ footer-date: "Adopted: November 3, 2020"
 
 ## 4. BICYCLE PARKING
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To provide secure space for bicycle parking in order to support active lifestyles.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to projects in the D6 Town Center District that involve:
     a. New construction, expansion, or substantial renovation of a primary building that results in a total of 4 or more dwelling units.
     b. Creation of new shopfronts.
     c. New construction of a civic building.
 
-### C. GENERAL
+### c. GENERAL
 
 1. A single bicycle rack that is designed for parking two bicycles is counted as two bicycle parking spaces.
 
-### D. REQUIRED SPACES
+### d. REQUIRED SPACES
 
 1. A minimum of 2 bicycle parking spaces must be provided for each building.
 2. A minimum of 2 bicycle parking spaces is required for every 24 ft of shopfront.
 
-### E. DESIGN
+### e. DESIGN
 
 1. A bicycle rack may be erected on a public sidewalk in the furnishing zone.
 2. All bicycle racks must be:
@@ -134,17 +134,17 @@ footer-date: "Adopted: November 3, 2020"
 
 ## 5. NATURAL SCREENING
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To provide a set of standards for visual, light, and noise barriers between uses, buildings, or activities on adjacent lots or on lots adjacent to a public way.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to any application that requires a Special Permit or an Expanded Use Permit.
 2. Applies to any use that may negatively impact the peaceful enjoyment of abutting lots.
 3. When applied as a standard from any part of this Code.
 
-### C. GENERAL
+### c. GENERAL
 
 1. Screening may take the form of either natural vegetation or man-made structures such as berms or fences.
     a. Man-made screening of any type may only be employed to satisfy the requirements of Level 4 - Complete visual opacity.
@@ -152,7 +152,7 @@ footer-date: "Adopted: November 3, 2020"
 3. A screening area of vegetation shall be defined as maintaining a certain rating score, or more, in any 25 ft by 50 ft, non overlapping, rectangular area(s) within the screening area. See Table 3.1 Screening Formula
 4. Screening areas may encroach onto front, side, or rear setbacks.
 
-### D. LEVELS OF SCREENING
+### d. LEVELS OF SCREENING
 
 1. Level 1 - Total visual transparency.
     a. No requirement for any form of visual, light, or noise screen or buffer.
@@ -168,7 +168,7 @@ footer-date: "Adopted: November 3, 2020"
         i. Removal of dead or dangerous trees shall be permitted by the CEO.
         ii. If total visual opacity cannot be provided by natural vegetation, the Planning Board may require a 100% opaque fence, or additional setbacks to fulfill this standard.
 
-### E. RATING SCORE
+### e. RATING SCORE
 
 1. The 25 ft by 50 ft rectangular plot of screening area or must be established where the landowner or lessee proposes clearing within the required buffer.
 2. Each successive plot must be adjacent to, but not overlap a previous plot.
@@ -190,21 +190,21 @@ TABLE 3.1 SCREENING FORMULA
 
 ## 6. LANDSCAPING
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To ensure that landscaping supports a clear transition between the street and adjacent buildings.
 2. To enable landscaping and hardscape treatments that maintain the character of mixed-use neighborhoods.
 3. To minimize soil erosion and protect water quality.
 4. To minimize conflicts between landscaping and areas that require easy and safe human access.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Commercial properties.
 2. Frontage zones in D3, D4, D5, and D6.
 3. Parking lots.
 4. Civic spaces.
 
-### C. DESIGN & INSTALLATION
+### c. DESIGN & INSTALLATION
 
 1. Plant materials installed adjacent to roads that are plowed and typically receive seasonal salt treatment should be non-woody and salt-tolerant to ensure survival.
 2. Artificial plants and artificial turf are prohibited, excluding recreation fields.
@@ -214,16 +214,16 @@ TABLE 3.1 SCREENING FORMULA
 
 ## 7. FIELDS
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To protect rural character by providing guidance for the development of fields.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to any lot that contains a field of 5 acres or more.
 2. Does not apply to new Commercial Agricultural uses.
 
-### C. GENERAL
+### c. GENERAL
 
 1. Development within a field of 5 acres or more must be reviewed by the Planning Board.
 2. Where possible, development should be located to preserve the view of the field from the road to the greatest extent possible.
@@ -232,16 +232,16 @@ TABLE 3.1 SCREENING FORMULA
 
 ## 8. FENCES & WALLS
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To ensure that fences allow for delineation of private yard space while allowing for a street that is visually transparent, safe, and interesting.
 2. To allow for rear yard fences that provide privacy.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. The standards of this Article apply to any new fences or walls, including those required per use standards in Article 7 Use Standards, to minimize the trespass of undue sound and light between abutting properties.
 
-### C. FENCES & WALLS
+### c. FENCES & WALLS
 
 1. Fences and walls shall have a minimum 6 inch setback from any lot line or virtual lot line.
 2. Fence posts or supporting rails must face inward toward the property being fenced and the finished face must be oriented towards the abutting property, road, or civic space.
@@ -254,12 +254,12 @@ TABLE 3.1 SCREENING FORMULA
     b. Fences made of plastic mesh, electrified wire, galvanized steel mesh, chicken wire, metal rails, and PVC may be installed on lots used for agricultural activities.
     c. Split rail fences are permitted along any lot line in D1.
 
-### D. RETAINING WALLS
+### d. RETAINING WALLS
 
 1. Projects should be designed in a way to reduce the need for retaining walls.
 2. Retaining walls over 6 feet in height are prohibited, except in D1 or by special permit.
 
-### E. NONCONFORMING FENCES & WALLS
+### e. NONCONFORMING FENCES & WALLS
 
 1. Routine repair and maintenance of nonconforming fences and walls is permitted.
 2. Nonconforming fences and walls may be altered to eliminate or reduce a nonconformity or to create conforming fences and walls that meet the standards of this Code.
@@ -268,19 +268,19 @@ TABLE 3.1 SCREENING FORMULA
 
 ## 9. MECHANICAL EQUIPMENT
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To allow for mechanical equipment while minimizing negative impacts of noise, blowing air, and smells on pedestrians and abutting properties.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to all new buildings or substantial modifications to existing buildings.
 
-### C. ROOF-MOUNTED
+### c. ROOF-MOUNTED
 
 1. Mechanical equipment must be hidden from ground level view from the road, and abutting properties by a structure at least one foot above the height of the mechanical equipment and be of durable, permanent materials.
 
-### D. BUILDING OR GROUND MOUNTED
+### d. BUILDING OR GROUND MOUNTED
 
 1. Mechanical equipment cannot be located within the frontage zone.
 2. Mechanical equipment that is visible from a road (not including alleys) must be screened by a fence, wall, or dense evergreen hedge.
@@ -289,16 +289,16 @@ TABLE 3.1 SCREENING FORMULA
 
 ## 10. LOADING DOCKS
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To provide design guidance for the design and orientation of loading docks.
 2. To ensure loading docks are properly screened when necessary.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. The following standards apply to loading docks.
 
-### C. GENERAL
+### c. GENERAL
 
 1. Loading docks are not permitted within the frontage zone.
 2. In D5 or D6, where any loading dock is visible from a road (not including alleys), loading facilities must be screened from view by a wall or fully enclosed fence between 6 and 12 feet in height.
@@ -308,19 +308,19 @@ TABLE 3.1 SCREENING FORMULA
 
 ## 11. DRIVE-THROUGHS
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To permit auto-oriented drive-through services in a predictable manner.
 2. To reduce the negative impacts associated with drive-throughs on abutting properties, pedestrians, and bicycle traffic.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to all new drive-throughs.
 2. Drive-through standards apply to all businesses that service customers directly from their vehicles through a window or electronic interface.
 3. Drive-through standards apply to all businesses where vehicles must queue in an on-site driveway while idling.
 4. Drive-through standards apply to all businesses where a vehicle must pass under a roof covering or overhang in order to be serviced.
 
-### C. GENERAL
+### c. GENERAL
 
 1. Drive-throughs including incidental roof coverings, overhangs, ordering, point of sale and pick-up locations may not be located in the frontage zone.
 2. Nonresidential projects that include drive-through services must be designed and have sufficient stacking capacity to avoid the queuing of vehicles on any public street.
@@ -329,7 +329,7 @@ TABLE 3.1 SCREENING FORMULA
 
 ## 12. LIGHTING
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To allow adequate night time lighting that provides safety, utility and security.
 2. To prohibit excessive light trespass beyond property boundaries and preserve the night time character of neighborhoods.
@@ -338,7 +338,7 @@ TABLE 3.1 SCREENING FORMULA
 5. To reduce the consumption of electricity for lighting purposes.
 6. To require lighting fixtures and layout patterns that contribute to unified exterior lighting design of development.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to all outdoor lighting fixtures except for the following:
 2. Sign lighting (see Sign Ordinance).
@@ -346,7 +346,7 @@ TABLE 3.1 SCREENING FORMULA
 4. Outdoor lighting used for emergency equipment and work conducted in the interest of law enforcement or for public health, safety, or welfare.
 5. Ground mounted pedestrian lighting.
 
-### C. GENERAL
+### c. GENERAL
 
 1. Lighting levels are regulated by District according to total permitted lumens per square foot, a unit of measurement related to light intensity.
 2. The average lumens per square foot of all outdoor lighting may not exceed the site lumen limit of Table 3.1 Site Lumens.
@@ -380,12 +380,12 @@ TABLE 3.1 SITE LUMENS
 | SD-FAB          | 2.5 max           |
 | SD-CIVIC        | 1.25 max          |
 
-### D. OFF-SITE IMPACTS
+### d. OFF-SITE IMPACTS
 
 1. Light levels measured at the front lot line exceeding 1.0 foot candles are prohibited except in D6.
 2. Light levels measured at any side or rear lot line of any property abutting any D3 and D4 districts exceeding 1.0 foot candles are prohibited.
 
-### E. NONCONFORMING LIGHTING
+### e. NONCONFORMING LIGHTING
 
 1. Routine repair and maintenance of nonconforming lighting is permitted so long as any changes to bulbs and lighting intensity are brought into compliance with this Code.
 2. Nonconforming lighting may be altered to eliminate or reduce a nonconformity or to create conforming lighting that meets the standards of this Code.
@@ -393,19 +393,19 @@ TABLE 3.1 SITE LUMENS
 4. If a nonconforming light fixture is damaged and does not require a replacement of the fixture, it may be repaired to its previous condition.
 5. Any nonconforming lighting associated with an abandoned building or business located within D5, D6, or any special district must meet the lighting standards before any new permits or approvals may be issued.
 
-### F. FIXTURE HEIGHT
+### f. FIXTURE HEIGHT
 
 1. Lighting intended to illuminate areas for pedestrian travel and/or seating must be mounted between 12 and 15 feet in height.
 2. Lighting intended to illuminate areas for vehicular travel and parking are not permitted to be taller than 30 feet in height.
 3. Light fixtures located within 50 feet of the side or rear lot line abutting any residential neighborhood are not permitted above 15 feet in height.
 
-### G. SHIELDING
+### g. SHIELDING
 
 1. All outdoor lighting fixtures must be placed and directed to prevent light trespass or glare onto abutting roads or properties in a manner that may distract or interfere with the vision of drivers or create a nuisance for abutting residential uses.
 2. All outdoor light fixtures must be full cutoff or fully shielded to prevent light at or above horizontal 90° (above nadir) and limited to a value not exceeding 10% of lamp lumens at or above 80°, as defined by the Illuminating Engineering Society of North America (IESNA, or IES).
 3. All outdoor light fixtures must be fitted so that no portion of the light source or drop lens is visible below the fixture when viewed directly from the side.
 
-### H. PROHIBITED LIGHTING
+### h. PROHIBITED LIGHTING
 
 1. The following is prohibited:
     a. Lighting that unnecessarily illuminates and substantially interferes with the use or quiet enjoyment of any other property.
@@ -415,7 +415,7 @@ TABLE 3.1 SITE LUMENS
     e. Searchlights and other high-intensity narrow-beam fixtures.
     f. Strobe lights and rotating lights.
 
-### I. SPECIFIC LIGHTING REQUIREMENTS
+### i. SPECIFIC LIGHTING REQUIREMENTS
 
 1. Vehicular Canopies
     a. Lighting for any canopy area over fuel sales, drive-through lanes, automated teller machines, or similar structures must use recessed luminaire fixtures and be designed and located so as to prevent glare onto abutting properties.

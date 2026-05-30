@@ -8,7 +8,7 @@ footer-date: "Adopted: November 3, 2020"
 
 ## 1. GENERAL
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. Encourage the continued use of historically or architecturally important buildings and those which contribute to the character of the Historic areas and discourage their demolition and removal
 2. Prevent inappropriate alterations or removal of buildings of historic value;
@@ -16,7 +16,7 @@ footer-date: "Adopted: November 3, 2020"
 4. Assure that changes to contemporary buildings and new construction do not detract from adjacent historic buildings
 5. Assure the protection and preservation of archaeological sites.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Design Standards shall apply to the construction of new buildings or additions to existing buildings.
 2. Renovations or reconstruction, including general maintenance, to existing non-conforming structures or components does not require compliance with these Design Standards.
@@ -45,20 +45,20 @@ M = Massing Components are allowable in the specified location and shall meet ap
 
 ## 2. COMPONENTS, GENERAL
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To provide a clear and flexible system for enabling the construction of new buildings and the expansion and modification of existing buildings.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Components are regulated by District. See District Page for specific applicability.
 
-### C. GENERAL
+### c. GENERAL
 
 1. Where applicable, a minimum of one component is required per primary building type.
 2. Components are divided into two categories: Massing Components and Architectural Components. Unless specified in the Code, the term 'component' refers to either category.
 
-### D. ATTACHMENTS
+### d. ATTACHMENTS
 
 1. All components may attach to other components, unless otherwise indicated.
 2. All components are allowed to stack on top of one another, unless otherwise indicated.
@@ -67,12 +67,12 @@ M = Massing Components are allowable in the specified location and shall meet ap
 5. Two components may not occupy the same space (overlap), unless specifically allowed.
 6. Any enclosed component, that is permitted to extend flush with a side or rear lot line, is permitted to attach to a neighboring structure also built flush to the same lot line.
 
-### E. ENCROACHMENTS
+### e. ENCROACHMENTS
 
 1. In District D6 Town Center, Components may encroach their entire width and/or depth into all setbacks.
 2. in District D6 Town Center, Components may be allowed to encroach into the public right-of-way by special permit.
 
-### F. NONCONFORMING COMPONENTS
+### f. NONCONFORMING COMPONENTS
 
 1. Routine repair and maintenance of nonconforming components is permitted.
 2. Nonconforming components may be altered to eliminate or reduce a nonconformity or to create a conforming component that meets the standards of this Code.
@@ -80,7 +80,7 @@ M = Massing Components are allowable in the specified location and shall meet ap
 4. When a nonconforming component is destroyed and requires total replacement, the component must be rebuilt to meet with the standards of this Code.
 5. When any portion of a nonconforming component is damaged and does not require a total reconstruction, it may be repaired and rebuilt to its previous condition.
 
-### G. EXTERIOR FIRE ESCAPES
+### g. EXTERIOR FIRE ESCAPES
 
 1. Exterior fire escapes shall not be permitted on new buildings.
 2. Exterior fire escapes may be added to existing buildings when other means of providing egress is not feasible.
@@ -91,15 +91,15 @@ M = Massing Components are allowable in the specified location and shall meet ap
 
 ## 3. MASSING COMPONENTS
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To provide standards for the addition of enclosed spaces attached to a primary or accessory buildings.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to the front, side, and rear sides of all primary and accessory buildings on a lot when designated in table 5.1 Design Standards By District.
 
-### C. FRONT OR SIDE EXPANSION
+### c. FRONT OR SIDE EXPANSION
 
 1. Definition
     a. A single or multi-story extension from the side walls of a primary building or accessory building.
@@ -120,7 +120,7 @@ TABLE 5.2 FRONT OR SIDE EXPANSION DIMENSIONS
 | Absolute Height | Equal to or less than height of primary building |
 | Windows & Doors | 20% min                                 |
 
-### D. REAR EXPANSION
+### d. REAR EXPANSION
 
 1. Definition
     a. An single or multi-story extension from the rear wall of a primary building or accessory building.
@@ -139,7 +139,7 @@ TABLE 5.3 REAR EXPANSION DIMENSIONS
 | Height          | Equal to or less than height of main building mass       |
 | Windows & Doors | 20% min                                                 |
 
-### E. CONNECTOR
+### e. CONNECTOR
 
 1. Definition
     a. A narrow, roofed extension meant to link a main building mass to an accessory building or to a component of an accessory building.
@@ -157,7 +157,7 @@ TABLE 5.4 CONNECTOR DIMESIONS
 | Absolute Height | May be one or more stories in height, but may not exceed the eave height of the smallest building element to which it is linked. |
 | Windows & Doors | 10% min                                                                                                        |
 
-### F. TOWER
+### f. TOWER
 
 1. Definition
     a. A building component that is significantly taller than it is wide as way to gain views and additional habitable space.
@@ -179,7 +179,7 @@ TABLE 5.5 TOWER DIMENSIONS
 | Height          | Maximum of one story above the highest story not contained within a roof. |
 | Windows & Doors | 30% min (8)                                               |
 
-### G. EXTENDED SHOPFRONT
+### g. EXTENDED SHOPFRONT
 
 1. Definition
     a. An extension on the front of a building to provide new or expanded commercial space and a shopfront.
@@ -199,15 +199,15 @@ TABLE 5.6 EXTENDED SHOPFRONT DIMENSIONS
 
 ## 4. ARCHITECTURAL COMPONENTS
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To provide standards for the addition of un-enclosed components that are attached to a primary or accessory buildings.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to the front, side, and rear sides of all primary and accessory buildings on a lot when designated in table 5.1 Design Standards By District.
 
-### C. PORCH
+### c. PORCH
 
 1. Definition
     a. A raised platform with stairs that provides access to a building entrance
@@ -227,7 +227,7 @@ TABLE 5.7 PORCH DIMENSIONS
 | Projection      | 6 ft min, 12 ft max                            |
 | Windows & Doors | 60% min when enclosed                          |
 
-### D. STOOP
+### d. STOOP
 
 1. Definition
     a. A component type featuring set of stairs with a landing leading to the entrance of a building.
@@ -245,7 +245,7 @@ TABLE 5.8 STOOP DIMENSIONS
 | Width      | 3 ft 6 in min |
 | Projection | 3 ft 6 in min |
 
-### E. GALLERY
+### e. GALLERY
 
 1. Definition
     a. A raised, roofed platform that provides additional living space, with access solely from the interior of a building.
@@ -265,7 +265,7 @@ TABLE 5.9 GALLERY DIMENSIONS
 | Clear Height    | 7 ft min                                       |
 | Windows & Doors | 60% min when enclosed                          |
 
-### F. CROSS GABLE
+### f. CROSS GABLE
 
 1. Definition
     a. A gable or gambrel roof that projects perpendicular from the roof of the primary building to increase the habitable space within a roof.
@@ -281,7 +281,7 @@ TABLE 5.10 CROSS GABLE DIMENSIONS
 | Height          | The ridge beam of the cross gable may not be higher than the ridge beam of the primary building.          |
 | Windows & Doors | 20% min                                                                                                   |
 
-### G. SHED DORMER
+### g. SHED DORMER
 
 1. Definition
     a. A room, or portion of a room with a shed roof that projects vertically from the roof a building element, designed to provide increased light and expand the habitable space under a roof.
@@ -297,7 +297,7 @@ TABLE 5.11 SHED DORMER DIMENSIONS
 | Gable End Setback | 1 ft min (see G.2.c above) |
 | Windows & Doors | 20% min             |
 
-### H. DORMER WINDOW
+### h. DORMER WINDOW
 
 1. Definition
     a. A window or group of up to 3 windows with a gable, hip, or shed roof that projects vertically from the roof a building element, designed to provide increased light and expand the habitable space within a roof.
@@ -314,7 +314,7 @@ TABLE 5.12 DORMER WINDOW DIMENSIONS
 | Width    | (see H.2.b above) |
 | Height   | (see H.2.d above) |
 
-### I. BAY WINDOW
+### i. BAY WINDOW
 
 1. Definition
     a. A enclosed window assembly extending from the face of a building element to permit increased light, multi-directional views, and articulate a building facade.
@@ -335,7 +335,7 @@ TABLE 5.13 BAY WINDOW DIMENSIONS
 | Top Plate Height | Max equal to total number of full building stories. |
 | Windows & Doors | 30% min                                        |
 
-### J. BALCONY
+### j. BALCONY
 
 1. Definition
     a. An unroofed platform attached to a building face with a railing that provides outdoor space above the first floor.
@@ -356,7 +356,7 @@ TABLE 5.14 BALCONY DIMENSIONS
 | Width      | No more than the width of the adjoining building face. |
 | Projection | 8 ft max                                  |
 
-### K. ARCADE
+### k. ARCADE
 
 1. Definition
     a. A ground-level roofed structure that provides cover and is supported on regularly spaced pillars, columns, or archways.
@@ -376,7 +376,7 @@ TABLE 5.15 ARCADE DIMENSIONS
 | Height          | 8 ft min                                                       |
 | Windows & Doors | 70% min when enclosed                                          |
 
-### L. PORTICO
+### l. PORTICO
 
 1. Definition
     a. A roofed structure above a stoop or platform supported on columns or pillars, which shields occupants from inclement whether and provides access to a building entrance.
@@ -394,7 +394,7 @@ TABLE 5.16 PORTICO DIMENSIONS
 | Height          | 8 ft min          |
 | Windows & Doors | n/a               |
 
-### M. CANOPY
+### m. CANOPY
 
 1. Definition
     a. A fixed, wall mounted overhang extending from a building to provide shade and weather protection for pedestrians.
@@ -411,7 +411,7 @@ TABLE 5.17 CANOPY DIMENSIONS
 | Height          | 8 ft min |
 | Windows & Doors | n/a      |
 
-### N. CUPOLA
+### n. CUPOLA
 
 1. Definition
     a. A small roof structure, possessing radial symmetry, used to provide light and ventilation to a building, or as a belfry, overlook, lantern, or additional habitable space.
@@ -429,7 +429,7 @@ TABLE 5.18 CUPOLA DIMENSIONS
 | Height          | Less than or equal to the maximum upper floor height for the main building mass or accessory building to which it is attached, measured from the primary ridge beam to the base of the cupola's eaves. |
 | Windows & Doors | 40% min                                                                                        |
 
-### O. TURRET
+### o. TURRET
 
 1. Definition
     a. A small, decorative, tower-like extension from the wall or corner of a building, meant to provide distinctive living space or to terminate an important axis.
@@ -450,7 +450,7 @@ TABLE 5.19 TURRET DIMENSIONS
 | Height          | The top plate of a turret may not exceed the height of the top plate of the adjoining building. |
 | Windows & Doors | 30% min                                                                   |
 
-### P. DECK
+### p. DECK
 
 1. Definition
     a. A roofless, uncovered, raised platform accessible from a secondary entrance to a building that provides outdoor amenity space.
@@ -469,7 +469,7 @@ TABLE 5.20 DECK DIMENSIONS
 | Height              | none     |
 | Windows & Doors     | none     |
 
-### Q. ROOF DECK
+### q. ROOF DECK
 
 1. Definition
     a. A raised uncovered platform with a railing on the roof of a building that provides outdoor amenity space and access to views.
@@ -489,16 +489,16 @@ TABLE 5.21 ROOF DECK DIMENSIONS
 
 ## 5. ROOFS
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To provide for buildings that have identifiable roof shapes.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Roof standards are regulated by District. See District Page for specific applicability.
 2. Where applicable, Roof standards apply to all primary and accessory building types and components unless otherwise indicated.
 
-### C. GENERAL
+### c. GENERAL
 
 1. Pitched roofs must converge to a single ridge beam at their highest point.
 2. Each primary building, accessory building, or component may only have one roof.
@@ -507,7 +507,7 @@ TABLE 5.21 ROOF DECK DIMENSIONS
 5. Pitched roofs, if provided, must be clad with wood shingles, asphalt shingles, slate tile, metal, or have the appearance of natural materials.
 6. Where Gable or Gambrel roofs are permitted, the ridge beam must be continuous front to back, or side to side.
 
-### D. NONCONFORMING ROOFS
+### d. NONCONFORMING ROOFS
 
 1. Routine repair and maintenance of nonconforming roofs is permitted.
 2. Nonconforming roofs may be altered to eliminate or reduce a nonconformity or to create a conforming roof that meets the standards of this Code.
@@ -516,16 +516,16 @@ TABLE 5.21 ROOF DECK DIMENSIONS
 
 ## 6. WINDOW & DOOR
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To ensure that buildings relate to the street by providing a rhythm of door and window openings to minimize blank walls along roads.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Window and Door standards are regulated by District. See District Page for specific applicability.
 2. Where applicable, Window and Door standards apply to all new primary buildings, accessory buildings, and components.
 
-### C. GENERAL
+### c. GENERAL
 
 1. Window and Door standards apply to all building facades, except where the installation of windows along side or rear property lines is infeasible due to separation requirements mandated by the fire code.
 2. The required window and door percentages apply to the total area of each story of each building facade as measured from the surface of the floor of that story, to the surface of the next floor above; or, if there is no floor above, to either the top of the wall plate, or the base of the buildings eaves, whichever is shorter.
@@ -539,7 +539,7 @@ TABLE 5.21 ROOF DECK DIMENSIONS
 6. Window and door openings must correspond to interior space and may not vertically span more than one story, including floor structures or mechanical systems.
 7. Openings to basements may not be located within the frontage zone in District D6 Town Center.
 
-### D. NONCONFORMING WINDOWS & DOORS
+### d. NONCONFORMING WINDOWS & DOORS
 
 1. Routine repair, maintenance, and replacement of nonconforming windows and doors is permitted.
 2. Nonconforming windows and doors may be altered to eliminate or reduce a nonconformity or to create conforming windows and doors that meet the standards of this Code.
@@ -547,16 +547,16 @@ TABLE 5.21 ROOF DECK DIMENSIONS
 
 ## 7. BUILDING ORIENTATION
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To ensure that buildings address the street in a way that reinforces or creates the desired character in a neighborhood.
 2. To provide consistent placement of buildings within neighborhood centers.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to all new primary buildings, accessory buildings, and components in Districts D3, D4, D5, D6, SD Historic, and SD Civic.
 
-### C. GENERAL
+### c. GENERAL
 
 1. All primary buildings must front on a primary road, civic space, or waterbody with the exception of residential accessory buildings, and multi-unit residential buildings which may front on alleys.
 2. Primary buildings must be oriented parallel to the primary frontage line.

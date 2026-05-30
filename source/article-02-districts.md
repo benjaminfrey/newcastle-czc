@@ -8,13 +8,13 @@ footer-date: "Adopted: November 3, 2020"
 
 ## 1. DISTRICTS
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To support and protect the existing character of Newcastle's villages.
 2. To provide for growth and investment within growth areas identified by the community.
 3. To allow for rural areas that support working and natural landscapes.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to the land, improvements, development, construction, subdivision, re-subdivision, structures, buildings, and lots within each core districts or special district.
 2. Core Districts and Special Districts are assigned on the District Map. Standards related to each district are located in Article 2 District Standards, Article 4 Site Standards, Article 5 Building Standards, Article 6 Design Standards, and Article 7 Use Standards.
@@ -22,15 +22,15 @@ footer-date: "Adopted: November 3, 2020"
 
 ## 2. LOTS
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To provide a clear and flexible system for creating lots that reflect the character of a neighborhood.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Applies to all projects that create new lots with actual or virtual lot lines.
 
-### C. GENERAL
+### c. GENERAL
 
 1. All newly created lots must abut a Street or Road of a Type defined in Article 3 Section 2 (Street & Road Types). The Street or Road must conform to the standards of Article 3.
     a. Newly created lots shall retain the District designation of the original lot.
@@ -43,19 +43,19 @@ footer-date: "Adopted: November 3, 2020"
     a. The front lot line must be located along the primary road, or water body.
     b. For newly created corner lots or through lots that abut two roads, the primary frontage shall be along the Street or Road of the highest Type per Article 3 Section 2 hierarchy (Streets take precedence over Roads; within each family, Types with lower codes — e.g., S-1 over S-2 — take precedence).
 
-### D. NONCONFORMING LOTS
+### d. NONCONFORMING LOTS
 
 1. Nonconforming lots may not be further subdivided.
 2. A lot that is nonconforming due to insufficient lot width or insufficient lot area may be developed as long as any applicable setback standards are met.
 
-### E. VIRTUAL LOTS
+### e. VIRTUAL LOTS
 
 1. Lots of record may be divided by virtual lot lines to create virtual lots.
     a. Virtual lots shall conform to all applicable District, Lot, Site, Building, and Administration standards for the lot of record.
     b. Virtual lot lines cannot be used to create a non-conformity.
     c. Virtual lots shall conform to all applicable Subdivision regulations.
 
-### F. FRONTAGE
+### f. FRONTAGE
 
 1. Lots must meet the building setback, windows and doors, parking placement, and all other standards of the code related to frontages.
 2. Every lot and building lot has a primary frontage along a road, easement, right of way, civic space, or water body.
@@ -66,15 +66,15 @@ footer-date: "Adopted: November 3, 2020"
 
 ## 3. SETBACKS
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To enable and require building placement along a street that supports and reinforces the character of each District and to produce the desired character.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Setback standards apply to Primary Buildings and Accessory Buildings. Massing Components and Additional Structures have unique setback standards.
 
-### C. GENERAL
+### c. GENERAL
 
 1. Primary building setbacks are provided on District pages.
 2. Accessory building setbacks are provided on District pages.
@@ -87,20 +87,20 @@ footer-date: "Adopted: November 3, 2020"
 
 ## 4. SPECIAL MAP REQUIREMENTS
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To provide opportunities for standards that help reinforce or yield a specific character or condition.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Shopfront street special requirements apply to all lots that abut roads designated as shopfront streets shown on the District Map.
 2. Scenic view requirements apply to all lots that intersect with a scenic view designation.
 
-### C. REQUIRED SHOPFRONT STREETS
+### c. REQUIRED SHOPFRONT STREETS
 
 1. Lots subject to required shopfronts as shown on the District Map must comply with shopfront standards in Article 5.9 Shopfronts.
 
-### D. REQUIRED SCENIC VIEWS
+### d. REQUIRED SCENIC VIEWS
 
 1. Lots subject to required scenic views must be reviewed by the Planning Board and are subject to the standards below.
 2. The following views are designated as scenic views on the District Map and require preservation and enhancement to the greatest extent possible:
@@ -115,11 +115,11 @@ footer-date: "Adopted: November 3, 2020"
 
 ## 5. CIVIC DISTRICT
 
-### A. PURPOSE
+### a. PURPOSE
 
 1. To define and display municipally owned land on the District Map.
 
-### B. APPLICABILITY
+### b. APPLICABILITY
 
 1. Lots designated on the Zoning Map as SD-Civic are municipally owned and not subject to the standards of this Ordinance.
 
