@@ -4,7 +4,7 @@
 **From:** ________________________  *(Article 3 code-amendment drafter)*
 **Date:** May 30, 2026
 **Re:** Reducing right-of-way (ROW) width minimums in the draft Article 3 Street/Road Type Standards (Tables 3.1a & 3.1b) — justification and proposed widths
-**Status:** **Discussion draft.** No code change has been adopted or written into the draft. The widths below are proposed for the Board's deliberation; the current draft (v0.4.3) still carries the existing 50-foot figures.
+**Status:** **Discussion draft.** The Moderate option recommended in §2 has since been written into the draft code (draft v0.4.4: Tables 3.1a/3.1b and the new Article 3 §3.d), and the Comprehensive Plan citations in §3.6 have now been filled in. This memo is retained as the supporting justification; it has not been formally adopted, and its numbers remain open to revision by the Board.
 
 ---
 
@@ -87,7 +87,14 @@ This is an affirmative safety argument, not merely a cost argument. The widely-c
 - **Stormwater / impervious cover.** Less ROW and pavement means less impervious surface and a lighter stormwater burden — consistent with Maine DEP objectives and reduced long-term drainage liability.
 - **Housing and land.** Every foot of unused ROW is land removed from a buildable, taxable parcel. Right-sizing supports housing supply and the efficient use of land, consistent with the State's recent direction on reducing regulatory barriers to housing.
 - **Municipal cost.** The Town builds, plows, patches, and eventually rebuilds every foot of accepted ROW. A narrower standard lowers lifecycle cost.
-- **Comprehensive Plan.** *[To be completed by the drafter: cite the specific Comp Plan policies on rural/village character, walkability, and efficient public investment that this reduction implements — see the placeholder in the Article 3 General section.]*
+- **Comprehensive Plan.** The reduction directly implements the *2018 Newcastle Comprehensive Plan*, whose *Streets & Roads* chapter takes up this very question and reaches the conclusions this memo urges:
+    - **A range of context-calibrated street types, not one uniform width.** The Plan finds that "Newcastle's street standards are uniform and do not take into consideration whether the street is in a pedestrian-scaled neighborhood or if it serves more as a rural conduit," and directs that "new zoning will incorporate a range of street types and standards to accommodate local conditions and desired development goals." (*Road Standards = Land Use Goals*, p. 46.) The Article 3 typology and these ROW ranges are that mechanism.
+    - **"Right-sized infrastructure" and lower lifecycle cost.** The Plan asks whether the Town provides "the right-sized infrastructure for the community's needs," calls anticipated road costs "one of Newcastle's greatest financial challenges," and urges the Town to "adopt new road standards" and "reduce its exposure to future costs." (*Less road*, p. 43.)
+    - **Narrower streets are safer.** A connected network "enables individual streets to become narrower, which then slows traffic and increases vehicular and pedestrian safety." (*Connectivity*, p. 44.) This is the Plan's own statement of the §3.5 safety argument.
+    - **Walkability and on-street parking.** The Plan calls for streets "designed for a downtown Main Street condition, with a design speed no greater than 20-25 mph" (*Claim Main Street*, p. 74) and for "repurposing existing asphalt from too-wide travel lanes to create additional [on-street] parking" (*Modern Parking Standards*, p. 45) — supporting the S-2 parking-on-one-side calibration.
+    - **Rural character and efficient land use.** Protection of rural character is "an ongoing concern of citizens," and the Plan's growth framework focuses development where "infrastructure already exists to support new growth." (*Natural & Built Landscape*, p. 116; *Make Rural Work*, pp. 100–101.)
+
+  The Plan's Regulatory Flowchart (p. 177) designates the Character-Based Code as the implementing tool for these policies. Page references are to the June 2018 plan and should be confirmed against the adopted text before relying on them at a public hearing.
 
 ---
 
@@ -127,7 +134,7 @@ To complete the record and refine the numbers, staff/Board should:
 1. **Pull the State's *Model Subdivision Regulations for Use by Maine Planning Boards* ROW table** and confirm how it tiers width by street class (the model is the baseline most Maine ordinances copied).
 2. **Compare neighboring towns** — Damariscotta, Wiscasset, Edgecomb, Bristol — for any already using tiered or context-based ROW, to show Newcastle is within (or leading) regional practice.
 3. **Get Public Works / Road Commissioner input** on snow-storage and plowing needs and on dry-utility placement at a 40-foot section, to validate the retained margins.
-4. **Cite the specific Comprehensive Plan policies** the reduction implements (fill the §3.6 / Article 3 General placeholder).
+4. **Confirm the Comprehensive Plan citations** now incorporated in §3.6 above and in Article 3 §3.d against the adopted June 2018 plan text before relying on them at hearing.
 5. On the Board's decision, **fold the chosen widths into the next draft** (edit Tables 3.1a/3.1b, add a short "Basis for Right-of-Way Widths" note to Article 3 §3, and regenerate the redline and Summary of Changes).
 
 ---
