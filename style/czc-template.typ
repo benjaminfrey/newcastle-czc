@@ -190,8 +190,20 @@ $endif$
     block(above: 0pt, below: 16pt,
       text(size: 33pt, weight: "regular")[ARTICLE #number])
   }
-  block(above: 0pt, below: 16pt,
+  block(above: 0pt, below: 15pt,
     text(size: 33pt, weight: "bold")[#upper(name)])
+  // Divider belongs to the ARTICLE OPENER ONLY (measured: baseline shows the
+  // 4×4pt-square + thin-line divider tight under the opener title, NOT under
+  // mid-article section headings). Baseline gaps: name-baseline→divider ≈ 10.6pt,
+  // divider→first section ≈ 14.4pt (the all-caps line box sits ~4.6pt above the
+  // span descender, so `below` values run ~5pt larger than the visible gap).
+  block(above: 0pt, below: 16pt,
+    grid(columns: (auto, 1fr, auto), align: horizon,
+      rect(fill: article_blue, width: 4pt, height: 4pt),
+      line(length: 100%, stroke: 0.6pt + article_blue),
+      rect(fill: article_blue, width: 4pt, height: 4pt),
+    )
+  )
 }
 
 // ---- Heading show rules -----------------------------------------------------
@@ -200,17 +212,12 @@ $endif$
 #show heading.where(level: 1): h => { }
 
 // Level 2: numbered Section (e.g., "1. CORE ZONING CODE") — 14pt Bold blue.
-// Followed by a thin blue divider with 4×4pt square endpoints.
-#show heading.where(level: 2): h => block(above: 13pt, below: 6pt)[
+// MEASURED: baseline mid-article section headings have NO divider and NO blank
+// row below — body/subsection follows directly. (The square-endpoint divider is
+// an ARTICLE-OPENER element only; see article_opener above.)
+#show heading.where(level: 2): h => block(above: 13pt, below: 4pt)[
   #set text(fill: article_blue, weight: "bold", stretch: 75%, size: 14pt, tracking: 0.3pt)
   #upper(h.body)
-  #v(2pt)
-  // Divider: 4×4pt square + 0.6pt line + 4×4pt square (measured)
-  #grid(columns: (auto, 1fr, auto), align: horizon,
-    rect(fill: article_blue, width: 4pt, height: 4pt),
-    line(length: 100%, stroke: 0.6pt + article_blue),
-    rect(fill: article_blue, width: 4pt, height: 4pt),
-  )
 ]
 
 // Level 3: lowercase-letter Subsection (e.g., "a. PURPOSE") — 11pt Bold gray.

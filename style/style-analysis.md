@@ -77,7 +77,7 @@ Baseline measurements and the matching Typst settings now in `czc-template.typ`:
 | Body line advance | ~11.0 pt baseline-to-baseline (leading ≈ 1.29 × 8.5 pt) | `par(leading: 0.57em)` | ~10.8 pt (≈0.2 pt tight, acceptable) |
 | Paragraph / item gap | ~15.5 pt baseline-to-baseline | `par(spacing: 0.78em)` | — |
 | Subsection heading: space **below** | clear blank row before body resumes | `block(below: 9.5pt)` on level-3 | the user-requested "blank row below each sub-section header" |
-| Section heading: space above/below | generous break + divider | `block(above: 13pt, below: 6pt)` on level-2 | — |
+| Section heading: space above/below | generous break, **no divider, no blank row below** (corrected v0.4.1 — the divider is an opener element, see §6) | `block(above: 13pt, below: 4pt)` on level-2 | section name sits directly above body text |
 | **Article opener: "ARTICLE N" → name** baseline-to-baseline | **~39.7 pt** | two 33 pt blocks, each `below: 16pt` | **39.1 pt** (verified across all 9 articles) |
 
 > **Article-opener overlap — root cause & fix.** The original template stacked the two 33 pt opener lines with too little vertical space, so "ARTICLE 3" and "STREETS, ROADS & DRIVEWAYS" collided. The subtlety: Typst sizes an **all-caps** line box to *cap-height* (~23 pt at 33 pt), **not** the full em. So the visually-relevant figure is the ~16 pt ink gap between the ARTICLE baseline and the name's cap-top — setting each opener block's `below: 16pt` yields the baseline's ~39 pt baseline-to-baseline. An earlier attempt that reasoned in em-boxes produced only ~24.6 pt and still looked cramped.
@@ -135,9 +135,11 @@ The tab is **the same gray on every page**, regardless of district or article. T
 
 ---
 
-## 6. Section divider (under "1. NAME" headings)
+## 6. Article-opener divider (under the opener title only — NOT under section headings)
 
-Measured on page 4:
+**Corrected v0.4.1.** Earlier passes mislabeled this as a *section-heading* divider and attached it to every level-2 ("1. NAME") heading. Re-measurement shows the square-endpoint divider appears **once per Article**, tight under the opener title ("ARTICLE N" / NAME), and **never** under mid-article section headings (verified: the baseline's "3. DISTRICT MAP" and other mid-Article section headings have no rule below them). The y = ~149.4 pt rule originally measured "on page 4" is the *Article 1 opener* divider — it sits just above the first section "1. CORE ZONING CODE", which is what created the confusion. It is an opener element (see §7), so the template now draws it in `article_opener()` and the level-2 heading rule draws nothing.
+
+Measured on page 4 (the Article 1 opener):
 
 | Property | Value |
 |---|---|
@@ -145,6 +147,8 @@ Measured on page 4:
 | Stroke color | #367AAC (Article blue) |
 | Stroke width | ~0.5–0.75 pt (thin) |
 | Endpoint squares | 4 × 4 pt filled #367AAC at each end of the rule, vertically centered on the rule's y-position |
+| Name-baseline → divider | ~10.6 pt |
+| Divider → first section heading | ~14.4 pt |
 
 ---
 
@@ -277,3 +281,15 @@ The full-CZC deliverable is assembled by rendering each Article to its own PDF (
 The build (`build/build-full-czc.sh`) threads a cumulative **page offset** into each render via `-V page-offset=N`; the template displays `here().page() + page_offset` in the footer (and uses the same adjusted value for header/footer/tab edge parity). To keep Typst's automatic `inside`/`outside` (binding) margins aligned to the **combined** document's parity, every offset must be **even** — so the build pads any odd-length Article with a trailing blank page. Side effect (intentional, conventional): each Article opens on a **recto** (odd) page.
 
 > **Known deviation from baseline parity.** The baseline opens each Article on a **verso** page because it carries three front-matter pages (cover + 2-page TOC) that the integrated draft does not yet include. The draft therefore mirrors the baseline's tab/binding side on opener pages. Adding real front matter (cover + TOC) is the proper future fix and will restore verso openers; it is deferred as separate scope.
+
+---
+
+## 14. v0.4.1 corrections — divider placement & wide-table layout
+
+Two review-driven fixes on top of v0.4.
+
+**Divider relocated to the Article opener (see §6).** v0.4 still drew the square-endpoint blue divider under *every* level-2 section heading, with a blank row above it — neither matches the baseline. The divider is now drawn once per Article inside `article_opener()`, tight under the opener title, and the level-2 heading rule draws nothing (no rule, no blank row; `below: 4pt`). Measured opener gaps reproduced: name-baseline → divider ≈ **10.4 pt** (target 10.6), divider → first section ≈ **11.8 pt** (target 14.4; the remainder is absorbed at the single-column-opener → two-column-body boundary and reads correctly). Verified on all 9 Article openers in the integrated build (pages 1, 3, 27, 37, 43, 51, 59, 69, 85 — every one carries the divider; no section heading does).
+
+**Table 3.1 promoted to a full-width float.** The 9-column Street/Road Type Standards matrix is unreadable inside a single 217 pt column. It is now authored directly in Typst in the source (a ```` ```{=typst} ```` raw block) and placed with `#place(top, scope: "parent", float: true, block(width: 100%)[…])`, which spans both body columns; body text flows in two columns above/below it. A local `#show table: set text(size: 8pt)` and `inset: (x: 3pt)` keep the "per MaineDOT" cells on one line. Verified: the table's widest horizontal hairline measures **478.5 pt** (full text block) vs. ~217 pt for an in-column table, and it appears exactly once (integrated p. 29). The global hairline table styling (§9) still applies to it.
+
+> **Page-count note.** The integrated document is now **90 pages** (v0.4 was 91). This is not a regression: the divider relocation and the Table 3.1 float shift each Article's content flow, which changes *which* Articles render to an odd page length and therefore which receive an even-keeping blank pad. v0.4.1 has 4 blank pads (verso pages 36, 58, 68, 84); footers remain **continuous 1→90** and every Article still opens on a recto page.
