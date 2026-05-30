@@ -5,17 +5,30 @@
 # number, Article name, opener page — is honored), then all article PDFs are
 # concatenated with pdfunite into a single deliverable.
 #
+# A cover page (baseline art + draft banner) and an auto-derived Table of
+# Contents are prepended as UNNUMBERED front matter; the body keeps printing
+# 1..N. The front matter is always an EVEN page count, so the body's physical
+# page parity (every Article opens on a recto) is preserved. See the front-
+# matter section below for the parity arithmetic.
+#
 # Usage:
-#   build-full-czc.sh [version-tag]
+#   build-full-czc.sh [version-tag] [date-str]
+#
+# DATE_STR is stamped on the cover ("Generated <date> ..."). For a reproducible
+# tagged release, pass it explicitly (defaults to today, which makes rebuilds
+# non-deterministic).
 #
 # Example:
-#   build-full-czc.sh v0.1-baseline
+#   build-full-czc.sh v0.1-baseline "May 30, 2026"
 
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SOURCE_DIR="$REPO_ROOT/source"
 VERSION="${1:-v0.0-dev}"
+DATE_STR="${2:-$(date +"%B %-d, %Y")}"
+BASELINE_PDF="$REPO_ROOT/docs/Newcastle Core Zoning Code.pdf"
+DATA_JSON="$SOURCE_DIR/article-02-data.json"
 RELEASE_DIR="$REPO_ROOT/releases/$VERSION"
 mkdir -p "$RELEASE_DIR"
 
@@ -111,8 +124,58 @@ PY
   OFFSET=$((OFFSET + PAGES))
 done
 
-echo "Concatenating ${#PDF_LIST[@]} PDFs ($OFFSET total pages) into: $OUTPUT_PDF"
-pdfunite "${PDF_LIST[@]}" "$OUTPUT_PDF"
+# --- Body --------------------------------------------------------------------
+# Concatenate all rendered Articles into the BODY pdf. The body prints its own
+# 1..N page numbers and is NOT modified by the front matter that follows.
+BODY_PDF="$TMPDIR_PDFS/body.pdf"
+echo "Concatenating ${#PDF_LIST[@]} PDFs ($OFFSET body pages) into body"
+pdfunite "${PDF_LIST[@]}" "$BODY_PDF"
+
+# --- Front matter (cover + auto-derived TOC) ---------------------------------
+# Architecture (Convention A): front matter is UNNUMBERED; the body keeps its
+# own printed 1..N. The TOC references those printed numbers, which are
+# independent of front-matter length — so there is no circularity.
+#
+# Parity arithmetic — two invariants must hold:
+#   (1) The TOC is rendered STANDALONE (its header/footer/binding margins bake
+#       in at compile time keyed to its own physical page parity). For that to
+#       match the final document, the number of pages BEFORE the TOC must be
+#       EVEN. Cover(1) + one blank(1) = 2  ->  TOC opens on a recto, correct.
+#   (2) Total front matter must be EVEN so the body's physical parity (every
+#       Article opens recto) is preserved. cover+blank+TOC(+pad) is forced even
+#       by padding a trailing blank when the TOC page count T is odd.
+# Layout: [cover] [blank verso] [TOC ...] [blank if T odd] [body 1..N]
+COVER_PDF="$TMPDIR_PDFS/cover.pdf"
+TOC_JSON="$TMPDIR_PDFS/toc.json"
+TOC_PDF="$TMPDIR_PDFS/toc.pdf"
+
+echo "Building cover (baseline art + $VERSION draft banner)"
+python3 "$REPO_ROOT/build/build-cover.py" "$BASELINE_PDF" "$COVER_PDF" "$VERSION" "$DATE_STR"
+
+echo "Deriving TOC entries by scanning the built body"
+python3 "$REPO_ROOT/build/toc_entries.py" "$BODY_PDF" "$DATA_JSON" "$TOC_JSON"
+
+echo "Rendering TOC"
+typst compile "$REPO_ROOT/build/toc.typ" "$TOC_PDF" \
+  --root / \
+  --input "data=$TOC_JSON" \
+  --font-path "$REPO_ROOT/style/fonts"
+
+TOC_PAGES=$(python3 - "$TOC_PDF" <<'PY'
+import sys, fitz
+print(fitz.open(sys.argv[1]).page_count)
+PY
+)
+
+# cover, blank verso, TOC, then a trailing blank iff the TOC page count is odd.
+FRONT_PARTS=("$COVER_PDF" "$BLANK_PDF" "$TOC_PDF")
+if [ $((TOC_PAGES % 2)) -eq 1 ]; then
+  FRONT_PARTS+=("$BLANK_PDF")
+fi
+FRONT_COUNT=$(( 2 + TOC_PAGES + (TOC_PAGES % 2) ))
+
+echo "Assembling: $FRONT_COUNT front-matter pages + $OFFSET body pages -> $OUTPUT_PDF"
+pdfunite "${FRONT_PARTS[@]}" "$BODY_PDF" "$OUTPUT_PDF"
 
 # Also emit the concatenated markdown source for reference (frontmatter intact;
 # read by humans, not re-rendered through pandoc as one input). Only the

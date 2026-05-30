@@ -36,4 +36,4 @@ __pycache__/
 
 # Scratch / working review artifacts (not deliverables)
 review-d1/
-extract/_*.png
+extract/_*

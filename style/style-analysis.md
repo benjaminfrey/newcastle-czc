@@ -422,3 +422,38 @@ The article glob became `ls article-*.md article-02.typ | sort`. The hyphen in `
 > **Redline note.** No whole-document overlay this release: re-rendering every district page and growing the document 6 pp shifts all pages from Article 2 on, so a page-by-page diff would be all-noise (and the prior cross-version overlays ran 100–200 MB). Replaced with a **6-page focused fidelity comparison** (`District Spread Fidelity — Baseline vs v0.5-draft.pdf`: D1, D6, SD-Historic verso+recto, baseline-left / draft-right).
 
 > **Deferred items carried forward (unchanged from §18 except as noted).** **Resolved this release:** status-glyph fallback font and district-page banner styling. **Remaining:** stale renumbered-Article table numbers (Art. 4 "3.x", etc.) — the Art. 3 tables 3.1a–3.4 and Art. 2's matrices are correct. Front matter (cover + TOC). 10 cross-section graphics. R-2 12 % grade vs. RDEO's 10 %. Memo finalization (blank FROM line).
+
+## 20. v0.6 — front matter (cover + auto-derived TOC), and three carry-forward items cleared
+
+This release adds the document furniture (a cover and a Table of Contents) and clears three deferred items. The body renderer is **unchanged**; the new machinery sits *around* it. Full rationale in `releases/v0.6-draft/Summary of Changes v0.6-draft.md`; the layout/build facts:
+
+### Front-matter architecture (Convention A — body stays untouched)
+
+The body still renders to printed pages **1…N** exactly as before. Front matter is layered on afterward and is **unnumbered**; the TOC references the body's own printed numbers, which are independent of front-matter length — so there is no circularity and the build needs no second pass. Assembly order: **`[cover] [blank verso] [TOC…] [trailing blank if TOC is odd] [body 1…N]`**.
+
+Two parity invariants, both satisfied by construction:
+
+1. **TOC self-parity.** The TOC is compiled *standalone*, so its inside/outside binding margins and its running-head/footer edge bake in against its *own* physical page parity (Typst's automatic margins key off the physical `here().page()` and cannot be offset — the same constraint that governs the body, §16). For the standalone render to match the final document, the page count **before** the TOC must be **even**: cover (1) + one blank verso (1) = 2 → the TOC opens on a recto, margins on the correct edge.
+2. **Body parity preserved.** Total front matter is forced **even**, so the even shift leaves every Article on the parity it had standalone. cover + blank + TOC is even when the TOC is even; a trailing blank is appended iff the TOC page count is odd.
+
+**Recto-vs-verso deviation (made explicit).** The baseline opens every Article on a **verso** — it paginates its front matter 1–3 (odd) and pads each Article to an even length. Our body opens on a **recto** (§16). The even front matter (4 pp this release) *preserves* that recto-opening; it does **not** convert it to verso-opening, which would require either per-Article leading blanks (page bloat absent from the baseline) or abandoning Typst's automatic binding margins. Recto-opening is retained as a deliberate, documented deviation. (Consequently our TOC opens on a **recto** at physical p3, where the baseline's TOC opens on a **verso** at physical p2 — same grammar, mirrored edge.)
+
+### The cover (`build/build-cover.py`, PyMuPDF)
+
+Reuses the adopted code's cover art rather than redrawing it. Baseline page 0 is a `/Rotate 90` landscape scan, so it is **rasterized at 300 dpi** (which honors the rotation → upright 612×792) and placed as the page image; vector-pasting would ignore the rotation. The lower-left handwritten clerk attestation is **masked** with a rectangle filled in the scan's near-white background `(254,254,254)` — invisible, but it removes the legal "true copy" certification that must not ride on an unadopted draft. A draft banner (article-blue bar, white Barlow text + a gray provenance line) is stamped in the upper white space; embedded Barlow encodes the em-dash and middle-dot.
+
+### The TOC (`build/toc_entries.py` → JSON → `build/toc.typ`)
+
+**Derived from the rendered body, never hand-kept.** `toc_entries.py` scans the built body PDF for the same visual signals the baseline TOC keys on: **33 pt article-blue** = Article openers; **14 pt article-blue** numbered "N. NAME" = Section sub-entries (wrapped continuation lines merged only when on the *same page*, so an un-numbered blue heading like the Definitions divider is not absorbed); **≥15 pt district-banner names** matched against `article-02-data.json` = Article-2 sub-entries, inserted by page order. Entry page numbers are the body's own printed 1…N.
+
+`toc.typ` renders those entries in the baseline's measured TOC grammar (baseline pp. 2–3): page geometry identical to the body (inside 90 / outside 44, two 217 pt columns, 44 pt gutter), a **"CONTENTS"** running head (11 pt `#7C766F` bold, outer edge) and **"TABLE OF CONTENTS"** title (25 pt `#367AAC`), gray **ARTICLE N** labels (14 pt `#7C766F` bold) each on its own line above the name, and blue sub-entries (11.5 pt `#367AAC`) with `box(width: 1fr, repeat[.])` dot leaders and right-aligned page numbers. Footer carries only the blue wordmark on the outer edge (no page number — front matter is unnumbered). Compiled with `--root /` so the JSON path resolves, `--font-path style/fonts` for Barlow.
+
+### Build wiring & cleared items
+
+`build/build-full-czc.sh` gains a front-matter stage after the body concatenation (build cover → scan body for TOC entries → render TOC → prepend with the parity arithmetic above) and a second positional `DATE_STR` arg so the cover date is reproducible per tagged release. Also cleared this release: **stale table numbers** (Art. 4→4.x incl. the disambiguated 4.1/4.2, Art. 5→5.x, Art. 6→6.x, Art. 8→8.x; commit `8d4f179`) and the **road-grade basis** (Article 3 §3.e, commit `30710f5`; grade *values* unchanged).
+
+> **Page-count note.** Integrated grew **97 → 101 pages** (97 body + 4 front matter: cover, blank verso, 2× TOC). Body parity unchanged — Article 1's printed "1" now sits on physical p5 (recto); footers run **1 → 97** continuously, number at the right fore-edge on recto / left on verso; footer reads "Draft v0.6-draft". Standalone Article 3 **9 → 10 pp** (+1 from §3.e).
+
+> **Comparison note.** No `diff-pdf` overlay vs. v0.5: the footer version stamp differs on every page, so an overlay flags all 97 body pages (and ran 62 MB). Replaced with **`Front Matter Fidelity — Baseline vs v0.6-draft.pdf`** (3 spreads: cover + both TOC pages, baseline-left / draft-right).
+
+> **Deferred items carried forward.** **Resolved this release:** stale table numbers, road-grade basis, front matter. **Remaining:** 10 cross-section graphics (held by direction); re-verify §3.d Comp Plan policy/section numbers against the adopted plan before public release. *(Correction: the v0.5 "memo blank FROM line" item was stale — the memo was finalized in `59b6aec`; it stays an unadopted discussion draft by design, not as a defect.)*
