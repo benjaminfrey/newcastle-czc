@@ -220,13 +220,15 @@ $endif$
   #upper(h.body)
 ]
 
-// Level 3: lowercase-letter Subsection (e.g., "a. PURPOSE") — 11pt Bold gray.
-// IMPORTANT: baseline uses lowercase letter markers (a./b./c.), not uppercase.
-// Source markdown already has lowercase letter + uppercase name (e.g., "a.
-// PURPOSE"); we preserve case as authored — no upper() call here.
+// Level 3: lettered Subsection (e.g., "A. PURPOSE") — 11pt Bold gray.
+// NOTE ON CASE: the baseline CZC renders the marker letter in LOWERCASE
+// ("a. PURPOSE") — measured at 129 lowercase / 0 uppercase across all 110 pages.
+// Per an explicit v0.4.2 styling decision the marker is rendered UPPERCASE
+// ("A. PURPOSE") as a deliberate deviation from the baseline. The subsection name
+// is already all-caps in the source, so upper() only changes the marker letter.
 #show heading.where(level: 3): h => block(above: 14pt, below: 9.5pt)[
   #set text(fill: subsection_gray, weight: "bold", stretch: 75%, size: 11pt, tracking: 0.2pt)
-  #h.body
+  #upper(h.body)
 ]
 
 // Level 4: occasional inline header (used sparsely, kept small).

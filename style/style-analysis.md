@@ -54,7 +54,7 @@ Every entry below was sampled from a real text span in the baseline PDF via `pym
 | Body text | BentonSansCond-Light | **8.5 pt** | Light | **#231F20** | Near-black warm gray. Sample n=78 on a typical page. |
 | Body text — alt (some spans) | BentonSansCond-Light | 8.5 pt | Light | **#000000** | Pure black appears on some spans, possibly from a different style. Treat as visually equivalent to #231F20. |
 | Section heading marker + name ("1. CORE ZONING CODE") | BentonSansCond-Bold | **14 pt** | Bold | **#367AAC** | Uppercase. Article blue. |
-| Subsection heading marker + name ("a. PURPOSE") | BentonSansCond-Bold | **11 pt** | Bold | **#7C766F** | **Lowercase letter marker** + uppercase name. Muted gray-brown. *This is the single most visible deviation from common municipal-code conventions: subsections use lowercase, not uppercase, letters.* |
+| Subsection heading marker + name ("a. PURPOSE") | BentonSansCond-Bold | **11 pt** | Bold | **#7C766F** | **Lowercase letter marker** + uppercase name in the baseline. Muted gray-brown. *This is the single most visible deviation from common municipal-code conventions: the baseline's subsections use lowercase, not uppercase, letters.* **Note (v0.4.2):** the draft template now deliberately renders this marker **UPPERCASE** ("A. PURPOSE") — an intentional deviation from the baseline; see §15. The baseline measurement in this row is unchanged. |
 | Article display "ARTICLE N" (on opener) | BentonSansCond-Book | **33 pt** | Book (a hair lighter than Bold) | **#367AAC** | Uppercase. |
 | Article display "GENERAL STANDARDS" etc. | BentonSansCond-Bold | **33 pt** | Bold | **#367AAC** | Uppercase. Same line height as the "ARTICLE N" above it. |
 | Article tab text ("ARTICLE N") | BentonSansCond-Bold | **14 pt** | Bold | **#FFFFFF** | White text, rotated 90° CCW, on a gray (#BFBFBF) background block. |
@@ -179,7 +179,9 @@ ARTICLE 1                                  ← Article opener (33 pt blue, Book 
             i. (no examples found yet)     ← Sub-sub-item (presumed Roman lowercase)
 ```
 
-The convention "lowercase a./b./c. for subsections" is a baseline reality that should be reproduced in the new draft. Source markdown should use `### a. PURPOSE`, not `### A. PURPOSE`.
+The convention "lowercase a./b./c. for subsections" is a baseline reality. Source markdown is authored with lowercase markers (`### a. PURPOSE`), preserving the baseline's authored form.
+
+> **v0.4.2 rendering deviation.** As of v0.4.2 the template **force-uppercases** the level-3 marker at render time (`#upper(h.body)`), so the rendered output reads "A. PURPOSE" even though the source stays `### a. PURPOSE`. This is a deliberate, informed deviation from the baseline (see §15) — the source markdown is unchanged, so reverting is a one-line template edit.
 
 ---
 
@@ -293,3 +295,40 @@ Two review-driven fixes on top of v0.4.
 **Table 3.1 promoted to a full-width float.** The 9-column Street/Road Type Standards matrix is unreadable inside a single 217 pt column. It is now authored directly in Typst in the source (a ```` ```{=typst} ```` raw block) and placed with `#place(top, scope: "parent", float: true, block(width: 100%)[…])`, which spans both body columns; body text flows in two columns above/below it. A local `#show table: set text(size: 8pt)` and `inset: (x: 3pt)` keep the "per MaineDOT" cells on one line. Verified: the table's widest horizontal hairline measures **478.5 pt** (full text block) vs. ~217 pt for an in-column table, and it appears exactly once (integrated p. 29). The global hairline table styling (§9) still applies to it.
 
 > **Page-count note.** The integrated document is now **90 pages** (v0.4 was 91). This is not a regression: the divider relocation and the Table 3.1 float shift each Article's content flow, which changes *which* Articles render to an odd page length and therefore which receive an even-keeping blank pad. v0.4.1 has 4 blank pads (verso pages 36, 58, 68, 84); footers remain **continuous 1→90** and every Article still opens on a recto page.
+
+---
+
+## 15. v0.4.2 corrections — subsection-marker case, table ordering & caption-locking
+
+Three review-driven fixes on top of v0.4.1. None change regulatory text; all three are layout/typography.
+
+### Subsection marker forced UPPERCASE (deliberate deviation)
+
+The baseline renders subsection markers in **lowercase** ("a. PURPOSE") — re-confirmed in this pass: **129 lowercase / 0 uppercase** markers across all 110 baseline pages. Per an explicit styling decision the draft now renders them **UPPERCASE** ("A. PURPOSE"). The level-3 heading show-rule in `czc-template.typ` changed from `#h.body` to `#upper(h.body)`; the subsection name is already all-caps in the source, so `upper()` only flips the single marker letter. The source markdown is untouched (`### a. PURPOSE`), so this is reversible with a one-line edit. See the notes in §3 and §8.
+
+> This is the one place the draft *intentionally* diverges from a measured baseline value. It is recorded here so a future reader does not "correct" it back to lowercase thinking it is a regression. Verified in the v0.4.2 render: **277 uppercase / 0 lowercase** markers in the integrated build, **44 / 0** in the standalone Article 3 (samples: "A. PURPOSE", "B. APPLICABILITY", "C. AUTHORITY").
+
+### Table 3.1 ordering — bottom-float after its section heading
+
+v0.4.1 placed the full-width Table 3.1 with `#place(top, scope: "parent", float: true, …)`. A **top** float migrates to the top of its anchor page — *above* any source-earlier content on that page — so the table read as if it preceded its own "3. TYPE STANDARDS TABLE" heading. Changing the placement edge to **`bottom`** sinks the float below the heading + intro, so the table now follows Section 3 as intended. The float still spans the full **478.5 pt** text block (verified) and still appears exactly once (integrated p. 29).
+
+> **Why an edge change and not a page break.** A clean "Section 3 heading → table → Section 4" isolation would want a page/column break, but `#pagebreak()` is **illegal inside the `columns()` container** Typst error: *"pagebreaks are not allowed inside of containers"*, which the whole two-column body is). So float placement is steered by **edge** (`top`/`bottom`), not by forcing a page. Honest caveat: with a bottom float, Section 4's body still flows in the two columns *above* the table on the same page; the table is not visually fenced between the two sections. Strict fencing would cost ~half a page of whitespace and was not requested.
+
+### Caption-locking for Tables 3.2, 3.3, 3.4
+
+When a table wrapped to the next column, its "TABLE 3.x …" caption could strand at the bottom of the previous column, detached from its grid. Fix: each of these three tables was re-authored from a Markdown pipe table into a raw Typst `#block(breakable: false)[ caption + #table(…) ]`. `breakable: false` forbids the block from splitting across a column/page boundary, so the caption and grid always travel together. These tables are short (≤14 rows) and fit comfortably within one column, so locking them costs no readability. The global hairline table styling (§9) still applies; bold sub-header rows in Table 3.3 use `*…*` span emphasis. Verified: captions sit immediately above their grids on the same page/column (standalone pp. 4, 6, 7).
+
+### Known defect identified this pass — DEFERRED: stale table numbers from renumbering
+
+While locking captions, a pre-existing **table-numbering collision** surfaced, introduced back when Articles 3–8 were renumbered to 4–9 (v0.2) but their *table captions and in-text "see Table X.Y" references were not*. The old article-number prefix is stale in every renumbered Article:
+
+| Article (new no.) | Was | Table captions currently read | Should read |
+|---|---|---|---|
+| Art. 4 Site Standards | 3 | "TABLE 3.1 SCREENING FORMULA", "TABLE 3.1 SITE LUMENS" (also collide with the new Art. 3 tables) | 4.1, 4.2, … |
+| Art. 5 Building Standards | 4 | "TABLE 4.1" – "TABLE 4.7" | 5.1 – 5.7 |
+| Art. 6 Design Standards | 5 | "TABLE 5.1" – "TABLE 5.21" | 6.1 – 6.21 |
+| Art. 8 Administration | 7 | "TABLE 7.1" | 8.1 |
+
+Fixing this requires renumbering ~35 captions **plus** every in-text cross-reference that cites them, and a verification sweep. It is **out of scope for v0.4.2** (deferred to its own pass by explicit decision) and recorded here and in the v0.4.2 Summary of Changes as a known issue. The new Article 3's own tables (3.1–3.4) are correct.
+
+> **Page-count note.** Integrated remains **90 pages**; standalone Article 3 remains **9 pages**. The case change and the table edits do not alter pagination materially; the 4 blank pads (verso pages 36, 58, 68, 84) and continuous 1→90 footers are unchanged from v0.4.1.
