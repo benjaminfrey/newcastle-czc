@@ -29,3 +29,11 @@ $RECYCLE.BIN/
 
 # Logs
 *.log
+
+# Python (extraction pipeline)
+__pycache__/
+*.pyc
+
+# Scratch / working review artifacts (not deliverables)
+review-d1/
+extract/_*.png

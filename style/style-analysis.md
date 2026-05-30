@@ -395,3 +395,30 @@ The smallest pass yet: a single regulatory-text edit plus a memo update, with **
 > **Redline note.** Because the only code change is one paragraph on integrated p. 29, the shipped redline is scoped to **pages 29–30** (not the whole Article 3 as in v0.4.4) — a 9-page Article-3 redline would have been eight pages of footer-string noise around a single changed paragraph. The Summary of Changes carries the precise before/after text.
 
 > **Deferred items carried forward (unchanged from §17 except as noted).** Comp-Plan citations are now **done** in both the code (§3.d) and the memo (§3.6); they remain flagged for confirmation against the adopted plan before a hearing, but the placeholders are gone. Remaining: memo finalization (blank FROM line). Stale renumbered-Article table numbers (Art. 4 "3.x", etc.) — the Art. 3 tables 3.1a/3.1b/3.2/3.3/3.4 are correct. Front matter (cover + TOC). District-page banner styling. Status-glyph fallback font (`❶ ❷ ✪`). 10 cross-section graphics. R-2 12 % grade vs. RDEO's 10 %.
+
+## 19. v0.5 — Article 2 district pages re-derived from the baseline (major; new renderer)
+
+The largest rendering change since §16, and the first that adds a **second renderer** to the build. Prior drafts generated the 13 district pages from a hand-keyed markdown transcription (`article-02-districts.md`) the Town flagged as **not accurate**. v0.5 replaces that with district content **extracted programmatically from the baseline PDF** and rendered through a purpose-built Typst layout that reproduces the baseline's 2-page district spread. Full rationale in `releases/v0.5-draft/Summary of Changes v0.5-draft.md`; recorded here are the parts that bear on layout and the build.
+
+### The spread anatomy (reverse-engineered from the baseline)
+
+Each district is a **verso (standards) + recto (use-matrix)** pair:
+
+- **Verso** — colored **code badge at the fore-edge** (left, because the standards page is even/verso) + name band; below it two measured columns (LEFT label-x≈48 / value-x≈156; RIGHT label-x≈309 / value-x≈415) of `#7C766F` bold panel headings (size 9). Panel bodies are one of three kinds — **para** (DESCRIPTION), **list** (numbered, nested a/b/c), **lv** (label/value pairs) — plus a **full-width PERMITTED BUILDINGS matrix** with a variable column count spanning both columns.
+- **Recto** — two use-category columns; every use row carries a right-aligned **Wingdings status glyph** at its column's right edge, plus a USE TABLE LEGEND and a numbered USE STANDARDS list.
+
+### The two-renderer architecture
+
+- **`source/article-02.typ`** — structure-agnostic native renderer. It draws whatever ordered `left`/`right` panel arrays and optional `matrix` the data carries, so a baseline correction re-flows without editing layout code. Geometry matches the markdown articles' inside/outside binding margins (inside 90 pt / outside 44 pt / top 64 / bottom 56). A leading **`#pagebreak(to:"even")`** lands D1 on a verso; that leading page is a true parity blank with header, footer, and article-tab all suppressed by an `if here().page() == 1 { return [] }` guard in each of the three context functions.
+- **`source/article-02-prefatory.md`** — Article 2 §1–§5 prose stays in markdown/pandoc because (a) it relies on nested ordinal list numbering (1./a./i.) the native renderer would have to re-implement, and (b) the baseline's *prose* pages show only the "DISTRICT STANDARDS" header (no group label), which the pandoc template already produces.
+- **Status glyphs now render** via `glyph_font = ("Apple Symbols", "Arial Unicode MS")`: ● Use Permit, ❶ Special Permit, ❷ Expanded Use, ✪ Residential Companion — resolving the carried-forward "`❶ ❷ ✪` need a fallback font" defect. **Band fill + text color** are read per-district from the baseline, resolving the carried-forward "district-page banner styling" item.
+
+### Build wiring (`build/build-full-czc.sh`)
+
+The article glob became `ls article-*.md article-02.typ | sort`. The hyphen in `article-02-prefatory.md` (0x2D) sorts before the dot in `article-02.typ` (0x2E), so the two interleave correctly — prose then spreads — with the render loop **dispatching by extension** (`*.typ` → `typst` directly; everything else → the pandoc `build-article.sh`). Both paths thread the same cumulative **even** `page_offset` and `footer_date`, preserving the §16 parity invariant (margins/tab off the physical page; chrome off logical = `here().page() + page_offset`). Cross-references in the extracted district text are renumbered for the integrated draft **in the extractor** (old 3→4 … 8→9), so no post-processing is needed.
+
+> **Page-count note.** Integrated grew **91 → 97 pages**; standalone Article 3 holds at **9**. The +6 is the faithful 2-page-per-district treatment (13 spreads = 26 pages, vs. the compressed markdown blocks they replace) plus the one leading parity blank before D1. Blank pads now sit at physical pages **5, 32, 42, 64, 74, 90** (page 5 is the D1 lead-in blank); footers remain continuous **1 → 97** and parity-correct (number at the left fore-edge on verso, right on recto). Footer version string set to "Draft v0.5-draft" at build time.
+
+> **Redline note.** No whole-document overlay this release: re-rendering every district page and growing the document 6 pp shifts all pages from Article 2 on, so a page-by-page diff would be all-noise (and the prior cross-version overlays ran 100–200 MB). Replaced with a **6-page focused fidelity comparison** (`District Spread Fidelity — Baseline vs v0.5-draft.pdf`: D1, D6, SD-Historic verso+recto, baseline-left / draft-right).
+
+> **Deferred items carried forward (unchanged from §18 except as noted).** **Resolved this release:** status-glyph fallback font and district-page banner styling. **Remaining:** stale renumbered-Article table numbers (Art. 4 "3.x", etc.) — the Art. 3 tables 3.1a–3.4 and Art. 2's matrices are correct. Front matter (cover + TOC). 10 cross-section graphics. R-2 12 % grade vs. RDEO's 10 %. Memo finalization (blank FROM line).

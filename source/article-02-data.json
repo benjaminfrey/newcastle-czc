@@ -1,0 +1,6330 @@
+[
+ {
+  "code": "D1",
+  "name": "RURAL",
+  "group": "Core Zoning Districts",
+  "color": "#CDE4CC",
+  "band_text": "#231F20",
+  "left": [
+   {
+    "title": "DESCRIPTION",
+    "kind": "para",
+    "body": "The Rural D1 district consists of forested lands, fields, rivers and streams with houses interspersed on lots ranging in size from 1 acre to 100 plus acres. Development flows along the rivers, and smaller rural town-owned roads with houses generally close to the road but sometimes set far back. Typical buildings include houses, farmhouses, agricultural buildings, cabins, and are frequently separated from the road by natural features."
+   },
+   {
+    "title": "PURPOSE",
+    "kind": "list",
+    "body": [
+     "To provide the community with a predictable outcome from development and redevelopment.",
+     "To protect and enhance rural character.",
+     "To provide opportunities for activities and development that support rural character, including agricultural uses, agrotourism, rural-based businesses, and residential uses."
+    ]
+   },
+   {
+    "title": "LOT DIMENSIONS",
+    "kind": "lv",
+    "body": [
+     [
+      "Width",
+      "100 ft min"
+     ],
+     [
+      "Depth",
+      "n/a"
+     ],
+     [
+      "Lot Area",
+      "n/a"
+     ],
+     [
+      "Primary Frontage Line Length",
+      "250 ft min"
+     ]
+    ]
+   },
+   {
+    "title": "PRIMARY BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "20 ft min"
+     ],
+     [
+      "Secondary Front Setback",
+      "20 ft min"
+     ],
+     [
+      "Side Setback",
+      "15 ft min"
+     ],
+     [
+      "Rear Setback",
+      "15 ft min"
+     ]
+    ]
+   },
+   {
+    "title": "ACCESSORY BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "10 ft min"
+     ],
+     [
+      "Secondary Front Setback",
+      "10 ft min"
+     ],
+     [
+      "Side Setback",
+      "5 ft min"
+     ],
+     [
+      "Rear Setback",
+      "5 ft min"
+     ]
+    ]
+   }
+  ],
+  "right": [
+   {
+    "title": "DESIGN STANDARDS",
+    "kind": "lv",
+    "body": [
+     [
+      "Front of buildings",
+      "n/a"
+     ],
+     [
+      "Side of buildings",
+      "n/a"
+     ],
+     [
+      "Rear of buildings",
+      "n/a"
+     ],
+     [
+      "Building Orientation",
+      "n/a"
+     ],
+     [
+      "Windows & Doors",
+      "n/a"
+     ],
+     [
+      "Primary & Accessory Roofs",
+      "n/a"
+     ]
+    ]
+   },
+   {
+    "title": "DESIGN STANDARDS",
+    "kind": "list",
+    "body": [
+     "Article 6: Design Standards do not apply in the Rural D1 district."
+    ]
+   },
+   {
+    "title": "DISTRICT STANDARDS",
+    "kind": "list",
+    "body": [
+     "Lots of record created before the date of adoption of this Code that have less than 250 linear ft along their Primary Frontage Line shall be treated as if they have 250 ft of Frontage Line Length."
+    ]
+   },
+   {
+    "title": "PERMITTED BUILDING GROUPS",
+    "kind": "list",
+    "body": [
+     "Connected Farm",
+     "Small Rural Compound",
+     "Large Rural Compound",
+     "Multi-Unit Court"
+    ]
+   }
+  ],
+  "matrix": {
+   "title": "PERMITTED BUILDINGS",
+   "cols": [
+    "Residential",
+    "General Accessory",
+    "Agricultural Use"
+   ],
+   "rows": [
+    [
+     "Permitting Authority",
+     "CEO",
+     "CEO",
+     "CEO"
+    ],
+    [
+     "Building Width",
+     "50 ft",
+     "30 ft",
+     "-"
+    ],
+    [
+     "Building Depth",
+     "50 ft",
+     "40 ft",
+     "-"
+    ],
+    [
+     "Building Floor Area",
+     "-",
+     "-",
+     "-"
+    ],
+    [
+     "Total Stories",
+     "2",
+     "1",
+     "-"
+    ],
+    [
+     "First Floor Height",
+     "12 ft",
+     "16 ft",
+     "-"
+    ],
+    [
+     "Upper Floor Height",
+     "10 ft",
+     "10 ft",
+     "-"
+    ],
+    [
+     "Number of Units",
+     "-",
+     "2",
+     "-"
+    ]
+   ]
+  },
+  "use_col1": [
+   {
+    "title": "TRANSPORTATION & UTILITIES",
+    "entries": [
+     [
+      "Dispatch Service",
+      "ex"
+     ],
+     [
+      "District Energy System",
+      "sp"
+     ],
+     [
+      "Junk/Salvage Yard",
+      "ex"
+     ],
+     [
+      "Paid Parking Lot",
+      ""
+     ],
+     [
+      "Recycling Facility",
+      "ex"
+     ],
+     [
+      "Utilities & Services",
+      "sp"
+     ]
+    ]
+   },
+   {
+    "title": "RECREATION",
+    "entries": [
+     [
+      "Amusement, Indoor",
+      "ex"
+     ],
+     [
+      "Amusement, Outdoor",
+      "ex"
+     ],
+     [
+      "Assembly",
+      "ex"
+     ],
+     [
+      "Campground",
+      "ex"
+     ],
+     [
+      "Cultural Facility",
+      "ex"
+     ],
+     [
+      "Health/Fitness Studio",
+      "rc"
+     ],
+     [
+      "Marina, Recreation",
+      "sp"
+     ],
+     [
+      "Private Club or Lodge",
+      "ex"
+     ],
+     [
+      "Stables/Riding Center",
+      "sp"
+     ]
+    ]
+   },
+   {
+    "title": "RESIDENTIAL",
+    "entries": [
+     [
+      "Bed & Breakfast",
+      "rc"
+     ],
+     [
+      "Dormitory",
+      ""
+     ],
+     [
+      "Mobile Home Park",
+      "u"
+     ],
+     [
+      "Residence",
+      "u"
+     ],
+     [
+      "Rooming House",
+      "ex"
+     ],
+     [
+      "Tourist Rental",
+      "u"
+     ]
+    ]
+   },
+   {
+    "title": "AGRICULTURAL",
+    "entries": [
+     [
+      "Animal Care, Outdoor",
+      "ex"
+     ],
+     [
+      "Aquaculture",
+      "sp"
+     ],
+     [
+      "Commercial Agriculture",
+      "u"
+     ],
+     [
+      "Farm/Vendor Market",
+      "u"
+     ]
+    ]
+   },
+   {
+    "title": "INDUSTRIAL",
+    "entries": [
+     [
+      "Industrial, Artisan",
+      "rc"
+     ],
+     [
+      "Industrial, General",
+      "ex"
+     ],
+     [
+      "Industrial, Heavy",
+      ""
+     ],
+     [
+      "Resource Extraction",
+      "sp"
+     ]
+    ]
+   }
+  ],
+  "use_col2": [
+   {
+    "title": "COMMERCIAL GOODS",
+    "entries": [
+     [
+      "Adult Establishment",
+      "ex"
+     ],
+     [
+      "Bar or Tavern",
+      "ex"
+     ],
+     [
+      "Car Wash",
+      "ex"
+     ],
+     [
+      "Drive-Through Facility",
+      ""
+     ],
+     [
+      "Food Pantry",
+      "ex"
+     ],
+     [
+      "Gas Station",
+      "ex"
+     ],
+     [
+      "Live Entertainment",
+      "ex"
+     ],
+     [
+      "Marina, Dry Storage",
+      "ex"
+     ],
+     [
+      "Outdoor Storage",
+      "rc"
+     ],
+     [
+      "Packaged Liquor",
+      "ex"
+     ],
+     [
+      "Research Laboratory",
+      "ex"
+     ],
+     [
+      "Restaurant & Café",
+      "ex"
+     ],
+     [
+      "Retail & Service, General",
+      "ex"
+     ],
+     [
+      "Retail & Service, Heavy",
+      "ex"
+     ],
+     [
+      "Retail Firearm Sales Facility",
+      "ex"
+     ],
+     [
+      "Self-Storage Facility",
+      "ex"
+     ],
+     [
+      "Vehicle Rental or Sales",
+      "ex"
+     ],
+     [
+      "Vehicle Repair",
+      "rc"
+     ]
+    ]
+   },
+   {
+    "title": "COMMERCIAL SERVICES",
+    "entries": [
+     [
+      "Animal Care, Indoor",
+      "rc"
+     ],
+     [
+      "Banking Services",
+      ""
+     ],
+     [
+      "College/University",
+      "ex"
+     ],
+     [
+      "Commercial School",
+      "ex"
+     ],
+     [
+      "Day Care Center",
+      "rc"
+     ],
+     [
+      "Day Care Facility",
+      "ex"
+     ],
+     [
+      "Funeral Services",
+      "sp"
+     ],
+     [
+      "Health Care Provider",
+      "rc"
+     ],
+     [
+      "Hospital",
+      ""
+     ],
+     [
+      "Hotel & Hostel",
+      "ex"
+     ],
+     [
+      "Human Service Facility",
+      "ex"
+     ],
+     [
+      "Office, Large",
+      ""
+     ],
+     [
+      "Office, Medium",
+      "ex"
+     ],
+     [
+      "Office, Small",
+      "rc"
+     ],
+     [
+      "Primary/Secondary School",
+      ""
+     ],
+     [
+      "Residential Care Facility",
+      "ex"
+     ]
+    ]
+   }
+  ],
+  "use_standards": {
+   "title": "USE STANDARDS FOR D1 - RURAL",
+   "items": [
+    {
+     "text": "Gas stations are limited to a maximum of six individual filling pumps.",
+     "sub": []
+    },
+    {
+     "text": "Vehicle repair uses that are not part of a building group may occur only in accessory buildings.",
+     "sub": []
+    },
+    {
+     "text": "Any building used for vehicle repair must have a side setback of 50ft min",
+     "sub": []
+    },
+    {
+     "text": "Bar or Tavern Use:",
+     "sub": [
+      "Cannot be the sole use on a lot.",
+      "Must be clearly incidental and subordinate to an Industrial, Artisan use or a Hotel & Hostel use.",
+      "May provide Live Entertainment when it is clearly incidental and subordinate to the Bar or Tavern use."
+     ]
+    },
+    {
+     "text": "Deliveries or pick-ups in connection with the Artisan Industrial uses are limited to parcel and small freight carriers.",
+     "sub": []
+    }
+   ]
+  }
+ },
+ {
+  "code": "D2",
+  "name": "NEIGHBORHOOD RESIDENTIAL",
+  "group": "Core Zoning Districts",
+  "color": "#F3F3AE",
+  "band_text": "#231F20",
+  "left": [
+   {
+    "title": "DESCRIPTION",
+    "kind": "para",
+    "body": "The D2 Neighborhood Residential district is characterized by low-to-medium density residential areas, adjacent to a higher density residential neighborhood. This district has narrow, interconnected streets and long, irregular blocks, with a mix of small and large homes, including homes with historic architectural significance. Many of the lots have generous side yards and rear yards, and accessory barns and carriage houses connected to the principal house and sometimes detached."
+   },
+   {
+    "title": "PURPOSE",
+    "kind": "list",
+    "body": [
+     "To accommodate areas of detached, residential homes.",
+     "To provide opportunities for residential uses on medium- sized lots within walking distance of the Town Center.",
+     "To provide the community with a predictable outcome from development and redevelopment.",
+     "To enable residential companion uses ."
+    ]
+   },
+   {
+    "title": "LOT DIMENSIONS",
+    "kind": "lv",
+    "body": [
+     [
+      "Width",
+      "80 ft min, 200 ft max"
+     ],
+     [
+      "Depth",
+      "n/a"
+     ],
+     [
+      "Lot Area",
+      "n/a"
+     ]
+    ]
+   },
+   {
+    "title": "PRIMARY BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "20 ft min"
+     ],
+     [
+      "Secondary Front Setback",
+      "20 ft min"
+     ],
+     [
+      "Side Setback",
+      "12 ft min"
+     ],
+     [
+      "Rear Setback",
+      "10 ft min"
+     ],
+     [
+      "Frontage Zone Setback",
+      "n/a"
+     ]
+    ]
+   },
+   {
+    "title": "ACCESSORY BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "20 ft min"
+     ],
+     [
+      "Secondary Front Setback",
+      "20 ft min"
+     ],
+     [
+      "Side Setback",
+      "5 ft min"
+     ],
+     [
+      "Rear Setback",
+      "5 ft min"
+     ]
+    ]
+   }
+  ],
+  "right": [
+   {
+    "title": "DESIGN STANDARDS",
+    "kind": "lv",
+    "body": [
+     [
+      "Front of buildings",
+      "Massing Components"
+     ],
+     [
+      "Side of buildings",
+      "Additions"
+     ],
+     [
+      "Rear of buildings",
+      "Additions"
+     ],
+     [
+      "Building Orientation",
+      "n/a"
+     ],
+     [
+      "Windows & Doors",
+      "20% min, 80% max"
+     ],
+     [
+      "Primary & Accessory Roofs",
+      "Gable 5/12 min"
+     ]
+    ]
+   },
+   {
+    "title": "BUILDINGS STANDARDS",
+    "kind": "list",
+    "body": [
+     "Unless otherwise noted, all measurements represent the maximum permitted values.",
+     "The CEO may determine that the scope of the project requires Planning Board approval.",
+     "No more than 80% of the total Gross Floor Area of a Mixed- Use Building shall be a Residential use."
+    ]
+   },
+   {
+    "title": "PERMITTED BUILDING GROUPS",
+    "kind": "list",
+    "body": [
+     "Connected Farm",
+     "Small Rural Compound",
+     "Large Rural Compound",
+     "Multi-Unit Court"
+    ]
+   }
+  ],
+  "matrix": {
+   "title": "PERMITTED BUILDINGS",
+   "cols": [
+    "Residential",
+    "Mixed-Use",
+    "Residential Accessory"
+   ],
+   "rows": [
+    [
+     "Permitting Authority",
+     "CEO",
+     "Planning Board",
+     "CEO"
+    ],
+    [
+     "Building Width",
+     "75 ft",
+     "50 ft",
+     "30 ft"
+    ],
+    [
+     "Building Depth",
+     "50 ft",
+     "50 ft",
+     "40 ft"
+    ],
+    [
+     "Building Floor Area",
+     "-",
+     "-",
+     "-"
+    ],
+    [
+     "Total Stories",
+     "2",
+     "2",
+     "1"
+    ],
+    [
+     "First Floor Height",
+     "12 ft",
+     "12 ft",
+     "16 ft"
+    ],
+    [
+     "Upper Floor Height",
+     "10 ft",
+     "10 ft",
+     "8 ft"
+    ],
+    [
+     "Number of Units",
+     "-",
+     "-",
+     "1"
+    ]
+   ]
+  },
+  "use_col1": [
+   {
+    "title": "TRANSPORTATION & UTILITIES",
+    "entries": [
+     [
+      "Dispatch Service",
+      ""
+     ],
+     [
+      "District Energy System",
+      "sp"
+     ],
+     [
+      "Junk/Salvage Yard",
+      ""
+     ],
+     [
+      "Paid Parking Lot",
+      ""
+     ],
+     [
+      "Recycling Facility",
+      ""
+     ],
+     [
+      "Utilities & Services",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "RECREATION",
+    "entries": [
+     [
+      "Amusement, Indoor",
+      ""
+     ],
+     [
+      "Amusement, Outdoor",
+      ""
+     ],
+     [
+      "Assembly",
+      "sp"
+     ],
+     [
+      "Campground",
+      ""
+     ],
+     [
+      "Cultural Facility",
+      ""
+     ],
+     [
+      "Health/Fitness Studio",
+      "rc"
+     ],
+     [
+      "Marina, Recreation",
+      ""
+     ],
+     [
+      "Private Club or Lodge",
+      ""
+     ],
+     [
+      "Stables/Riding Center",
+      "sp"
+     ]
+    ]
+   },
+   {
+    "title": "RESIDENTIAL",
+    "entries": [
+     [
+      "Bed & Breakfast",
+      "rc"
+     ],
+     [
+      "Dormitory",
+      ""
+     ],
+     [
+      "Mobile Home Park",
+      ""
+     ],
+     [
+      "Residence",
+      "u"
+     ],
+     [
+      "Rooming House",
+      "sp"
+     ],
+     [
+      "Tourist Rental",
+      "u"
+     ]
+    ]
+   },
+   {
+    "title": "AGRICULTURAL",
+    "entries": [
+     [
+      "Animal Care, Outdoor",
+      ""
+     ],
+     [
+      "Aquaculture",
+      ""
+     ],
+     [
+      "Commercial Agriculture",
+      "u"
+     ],
+     [
+      "Farm/Vendor Market",
+      "rc"
+     ]
+    ]
+   },
+   {
+    "title": "INDUSTRIAL",
+    "entries": [
+     [
+      "Industrial, Artisan",
+      "rc"
+     ],
+     [
+      "Industrial, General",
+      ""
+     ],
+     [
+      "Industrial, Heavy",
+      ""
+     ],
+     [
+      "Resource Extraction",
+      "sp"
+     ]
+    ]
+   }
+  ],
+  "use_col2": [
+   {
+    "title": "COMMERCIAL GOODS",
+    "entries": [
+     [
+      "Adult Establishment",
+      ""
+     ],
+     [
+      "Bar or Tavern",
+      ""
+     ],
+     [
+      "Car Wash",
+      ""
+     ],
+     [
+      "Drive-Through Facility",
+      ""
+     ],
+     [
+      "Food Pantry",
+      ""
+     ],
+     [
+      "Gas Station",
+      ""
+     ],
+     [
+      "Live Entertainment",
+      ""
+     ],
+     [
+      "Marina, Dry Storage",
+      ""
+     ],
+     [
+      "Outdoor Storage",
+      "rc"
+     ],
+     [
+      "Packaged Liquor",
+      ""
+     ],
+     [
+      "Research Laboratory",
+      ""
+     ],
+     [
+      "Restaurant & Café",
+      ""
+     ],
+     [
+      "Retail & Service, General",
+      ""
+     ],
+     [
+      "Retail & Service, Heavy",
+      ""
+     ],
+     [
+      "Retail Firearm Sales Facility",
+      ""
+     ],
+     [
+      "Self-Storage Facility",
+      ""
+     ],
+     [
+      "Vehicle Rental or Sales",
+      ""
+     ],
+     [
+      "Vehicle Repair",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "COMMERCIAL SERVICES",
+    "entries": [
+     [
+      "Animal Care, Indoor",
+      "rc"
+     ],
+     [
+      "Banking Services",
+      ""
+     ],
+     [
+      "College/University",
+      ""
+     ],
+     [
+      "Commercial School",
+      ""
+     ],
+     [
+      "Day Care Center",
+      "rc"
+     ],
+     [
+      "Day Care Facility",
+      "u"
+     ],
+     [
+      "Funeral Services",
+      "sp"
+     ],
+     [
+      "Health Care Provider",
+      "rc"
+     ],
+     [
+      "Hospital",
+      ""
+     ],
+     [
+      "Hotel & Hostel",
+      ""
+     ],
+     [
+      "Human Service Facility",
+      ""
+     ],
+     [
+      "Office, Large",
+      ""
+     ],
+     [
+      "Office, Medium",
+      ""
+     ],
+     [
+      "Office, Small",
+      "rc"
+     ],
+     [
+      "Primary/Secondary School",
+      "sp"
+     ],
+     [
+      "Residential Care Facility",
+      "u"
+     ]
+    ]
+   }
+  ],
+  "use_standards": {
+   "title": "USE STANDARDS FOR D2 - NEIGHBORHOOD RESIDENTIAL",
+   "items": [
+    "Deliveries or pick-ups in connection with an Industrial, Artisan use are limited to parcel and small freight carriers."
+   ]
+  }
+ },
+ {
+  "code": "D3",
+  "name": "NEIGHBORHOOD BUSINESS",
+  "group": "Core Zoning Districts",
+  "color": "#B5A37A",
+  "band_text": "#231F20",
+  "left": [
+   {
+    "title": "DESCRIPTION",
+    "kind": "para",
+    "body": "The D3 Neighborhood Business district is a medium-density residential area within walking distance of the Town Center that is transitioning from a strictly residential neighborhood to mixed-uses, including office and small boutique retail uses."
+   },
+   {
+    "title": "PURPOSE",
+    "kind": "list",
+    "body": [
+     "To accommodate areas of detached, residential homes.",
+     "To provide opportunities for residential uses on medium- sized lots within walking distance of the Town Center.",
+     "To provide the community with a predictable outcome from development and redevelopment.",
+     "To enable residential companion uses ."
+    ]
+   },
+   {
+    "title": "LOT DIMENSIONS",
+    "kind": "lv",
+    "body": [
+     [
+      "Width",
+      "60 ft min, 200 ft max"
+     ],
+     [
+      "Depth",
+      "n/a"
+     ],
+     [
+      "Lot Area",
+      "n/a"
+     ]
+    ]
+   },
+   {
+    "title": "PRIMARY BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "20 ft min, 75 ft max"
+     ],
+     [
+      "Secondary Front Setback",
+      "20 ft min"
+     ],
+     [
+      "Side Setback",
+      "12 ft min"
+     ],
+     [
+      "Rear Setback",
+      "10 ft min"
+     ],
+     [
+      "Frontage Zone Setback",
+      "4 ft min"
+     ]
+    ]
+   },
+   {
+    "title": "ACCESSORY BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "20 ft min"
+     ],
+     [
+      "Secondary Front Setback",
+      "20 ft min"
+     ],
+     [
+      "Side Setback",
+      "12 ft min"
+     ],
+     [
+      "Rear Setback",
+      "10 ft min"
+     ]
+    ]
+   }
+  ],
+  "right": [
+   {
+    "title": "DESIGN STANDARDS",
+    "kind": "lv",
+    "body": [
+     [
+      "Front of buildings",
+      ""
+     ],
+     [
+      "Side of buildings",
+      "Massing & Architectural"
+     ],
+     [
+      "Rear of buildings",
+      "Additions"
+     ],
+     [
+      "Building Orientation",
+      "see Article 6 section 8"
+     ],
+     [
+      "Windows & Doors",
+      "20% min, 80% max"
+     ],
+     [
+      "Primary & Accessory Roofs",
+      "Gable 5/12 min"
+     ]
+    ]
+   },
+   {
+    "title": "BUILDINGS STANDARDS",
+    "kind": "list",
+    "body": [
+     "Unless otherwise noted, all measurements represent the maximum permitted values.",
+     "The CEO may determine that the scope of the project requires Planning Board approval.",
+     "No more than 70% of the total Gross Floor Area of a Mixed- Use Building shall be a Residential use."
+    ]
+   },
+   {
+    "title": "PERMITTED BUILDING GROUPS",
+    "kind": "list",
+    "body": [
+     "Connected Farm",
+     "Multi-Unit Court"
+    ]
+   }
+  ],
+  "matrix": {
+   "title": "PERMITTED BUILDINGS",
+   "cols": [
+    "Residential",
+    "Mixed-Use",
+    "Residential Accessory",
+    "Commercial Accessory"
+   ],
+   "rows": [
+    [
+     "Permitting Authority",
+     "Planning Board",
+     "Planning Board",
+     "CEO",
+     "Planning Board"
+    ],
+    [
+     "Building Width",
+     "50 ft",
+     "60 ft",
+     "30 ft",
+     "30 ft"
+    ],
+    [
+     "Building Depth",
+     "50 ft",
+     "50 ft",
+     "40 ft",
+     "40 ft"
+    ],
+    [
+     "Building Floor Area",
+     "-",
+     "-",
+     "-",
+     "-"
+    ],
+    [
+     "Total Stories",
+     "2",
+     "2",
+     "1",
+     "1"
+    ],
+    [
+     "First Floor Height",
+     "12 ft",
+     "15 ft",
+     "16 ft",
+     "16 ft"
+    ],
+    [
+     "Upper Floor Height",
+     "10 ft",
+     "10 ft",
+     "8 ft",
+     "8 ft"
+    ],
+    [
+     "Number of Units",
+     "-",
+     "-",
+     "1",
+     "1"
+    ]
+   ]
+  },
+  "use_col1": [
+   {
+    "title": "TRANSPORTATION & UTILITIES",
+    "entries": [
+     [
+      "Dispatch Service",
+      ""
+     ],
+     [
+      "District Energy System",
+      "sp"
+     ],
+     [
+      "Junk/Salvage Yard",
+      ""
+     ],
+     [
+      "Paid Parking Lot",
+      ""
+     ],
+     [
+      "Recycling Facility",
+      ""
+     ],
+     [
+      "Utilities & Services",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "RECREATION",
+    "entries": [
+     [
+      "Amusement, Indoor",
+      ""
+     ],
+     [
+      "Amusement, Outdoor",
+      ""
+     ],
+     [
+      "Assembly",
+      "sp"
+     ],
+     [
+      "Campground",
+      ""
+     ],
+     [
+      "Cultural Facility",
+      ""
+     ],
+     [
+      "Health/Fitness Studio",
+      "rc"
+     ],
+     [
+      "Marina, Recreation",
+      ""
+     ],
+     [
+      "Private Club or Lodge",
+      ""
+     ],
+     [
+      "Stables/Riding Center",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "RESIDENTIAL",
+    "entries": [
+     [
+      "Bed & Breakfast",
+      "rc"
+     ],
+     [
+      "Dormitory",
+      ""
+     ],
+     [
+      "Mobile Home Park",
+      ""
+     ],
+     [
+      "Residence",
+      "u"
+     ],
+     [
+      "Rooming House",
+      ""
+     ],
+     [
+      "Tourist Rental",
+      "u"
+     ]
+    ]
+   },
+   {
+    "title": "AGRICULTURAL",
+    "entries": [
+     [
+      "Animal Care, Outdoor",
+      ""
+     ],
+     [
+      "Aquaculture",
+      ""
+     ],
+     [
+      "Commercial Agriculture",
+      ""
+     ],
+     [
+      "Farm/Vendor Market",
+      "sp"
+     ]
+    ]
+   },
+   {
+    "title": "INDUSTRIAL",
+    "entries": [
+     [
+      "Industrial, Artisan",
+      "rc"
+     ],
+     [
+      "Industrial, General",
+      ""
+     ],
+     [
+      "Industrial, Heavy",
+      ""
+     ],
+     [
+      "Resource Extraction",
+      ""
+     ]
+    ]
+   }
+  ],
+  "use_col2": [
+   {
+    "title": "COMMERCIAL GOODS",
+    "entries": [
+     [
+      "Adult Establishment",
+      ""
+     ],
+     [
+      "Bar or Tavern",
+      ""
+     ],
+     [
+      "Car Wash",
+      ""
+     ],
+     [
+      "Drive-Through Facility",
+      ""
+     ],
+     [
+      "Food Pantry",
+      ""
+     ],
+     [
+      "Gas Station",
+      ""
+     ],
+     [
+      "Live Entertainment",
+      ""
+     ],
+     [
+      "Marina, Dry Storage",
+      ""
+     ],
+     [
+      "Outdoor Storage",
+      "rc"
+     ],
+     [
+      "Packaged Liquor",
+      ""
+     ],
+     [
+      "Research Laboratory",
+      ""
+     ],
+     [
+      "Restaurant & Café",
+      ""
+     ],
+     [
+      "Retail & Service, General",
+      "rc"
+     ],
+     [
+      "Retail & Service, Heavy",
+      ""
+     ],
+     [
+      "Retail Firearm Sales Facility",
+      ""
+     ],
+     [
+      "Self-Storage Facility",
+      ""
+     ],
+     [
+      "Vehicle Rental or Sales",
+      ""
+     ],
+     [
+      "Vehicle Repair",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "COMMERCIAL SERVICES",
+    "entries": [
+     [
+      "Animal Care, Indoor",
+      "rc"
+     ],
+     [
+      "Banking Services",
+      ""
+     ],
+     [
+      "College/University",
+      ""
+     ],
+     [
+      "Commercial School",
+      ""
+     ],
+     [
+      "Day Care Center",
+      "rc"
+     ],
+     [
+      "Day Care Facility",
+      ""
+     ],
+     [
+      "Funeral Services",
+      "sp"
+     ],
+     [
+      "Health Care Provider",
+      "rc"
+     ],
+     [
+      "Hospital",
+      ""
+     ],
+     [
+      "Hotel & Hostel",
+      ""
+     ],
+     [
+      "Human Service Facility",
+      ""
+     ],
+     [
+      "Office, Large",
+      ""
+     ],
+     [
+      "Office, Medium",
+      ""
+     ],
+     [
+      "Office, Small",
+      "u"
+     ],
+     [
+      "Primary/Secondary School",
+      "sp"
+     ],
+     [
+      "Residential Care Facility",
+      "u"
+     ]
+    ]
+   }
+  ],
+  "use_standards": {
+   "title": "USE STANDARDS FOR D3 - NEIGHBORHOOD BUSINESS",
+   "items": [
+    "Deliveries or pick-ups in connection with an Industrial, Artisan use are limited to parcel and small freight carriers.",
+    "General Retail & Service uses require both a residential companion use permit and a special permit.",
+    "General Retail & Service uses are limited to antique stores and galleries."
+   ]
+  }
+ },
+ {
+  "code": "D4",
+  "name": "VILLAGE RESIDENTIAL",
+  "group": "Core Zoning Districts",
+  "color": "#EDE933",
+  "band_text": "#231F20",
+  "left": [
+   {
+    "title": "DESCRIPTION",
+    "kind": "para",
+    "body": "The D4 Village Residential district has narrow, interconnected streets with a mix of small and large residential houses with barns and garages connected to the principal house and sometimes detached. Lots in this district are generally smaller, with shallower lot depths, narrower lot widths, and shallower setbacks, giving this district a more dense character than the adjacent neighborhood district."
+   },
+   {
+    "title": "PURPOSE",
+    "kind": "list",
+    "body": [
+     "To accommodate areas of tight-knit detached and attached residential homes.",
+     "To promote a mix of housing options on small to medium sized lots within the villages of Newcastle.",
+     "To provide the community with a predictable outcome from development and redevelopment.",
+     "To enable residential companion uses ."
+    ]
+   },
+   {
+    "title": "LOT DIMENSIONS",
+    "kind": "lv",
+    "body": [
+     [
+      "Width",
+      "50 ft min, 150 ft max"
+     ],
+     [
+      "Depth",
+      "n/a"
+     ],
+     [
+      "Lot Area",
+      "n/a"
+     ]
+    ]
+   },
+   {
+    "title": "PRIMARY BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "14 ft min, 35 ft max"
+     ],
+     [
+      "Secondary Front Setback",
+      "14 ft min"
+     ],
+     [
+      "Side Setback",
+      "8 ft min"
+     ],
+     [
+      "Rear Setback",
+      "8 ft min"
+     ],
+     [
+      "Frontage Zone Setback",
+      "4 ft min"
+     ]
+    ]
+   },
+   {
+    "title": "ACCESSORY BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "14 ft min"
+     ],
+     [
+      "Secondary Front Setback",
+      "14 ft min"
+     ],
+     [
+      "Side Setback",
+      "8 ft min"
+     ],
+     [
+      "Rear Setback",
+      "8 ft min"
+     ]
+    ]
+   }
+  ],
+  "right": [
+   {
+    "title": "DESIGN STANDARDS",
+    "kind": "lv",
+    "body": [
+     [
+      "Front of buildings",
+      ""
+     ],
+     [
+      "Side of buildings",
+      "Massing & Architectural"
+     ],
+     [
+      "Rear of buildings",
+      "Additions"
+     ],
+     [
+      "Building Orientation",
+      "see Article 6 section 8"
+     ],
+     [
+      "Windows & Doors",
+      "20% min, 80% max"
+     ],
+     [
+      "Primary & Accessory Roofs",
+      "Gable 5/12 min"
+     ]
+    ]
+   },
+   {
+    "title": "BUILDINGS STANDARDS",
+    "kind": "list",
+    "body": [
+     "Unless otherwise noted, all measurements represent the maximum permitted values.",
+     "CEO may determine that the scope of the project requires Planning Board approval."
+    ]
+   },
+   {
+    "title": "PERMITTED BUILDING GROUPS",
+    "kind": "list",
+    "body": [
+     "Connected Farm",
+     "Multi-Unit Court"
+    ]
+   }
+  ],
+  "matrix": {
+   "title": "PERMITTED BUILDINGS",
+   "cols": [
+    "Residential",
+    "Residential Accessory"
+   ],
+   "rows": [
+    [
+     "Permitting Authority",
+     "Planning Board",
+     "CEO"
+    ],
+    [
+     "Building Width",
+     "60 ft",
+     "30 ft"
+    ],
+    [
+     "Building Depth",
+     "50 ft",
+     "40 ft"
+    ],
+    [
+     "Building Floor Area",
+     "8,000 sf",
+     "-"
+    ],
+    [
+     "Total Stories",
+     "2",
+     "1"
+    ],
+    [
+     "First Floor Height",
+     "12 ft",
+     "16 ft"
+    ],
+    [
+     "Upper Floor Height",
+     "10 ft",
+     "8 ft"
+    ],
+    [
+     "Number of Units",
+     "-",
+     "1"
+    ]
+   ]
+  },
+  "use_col1": [
+   {
+    "title": "TRANSPORTATION & UTIL­",
+    "entries": []
+   },
+   {
+    "title": "ITIES",
+    "entries": [
+     [
+      "Dispatch Service",
+      ""
+     ],
+     [
+      "District Energy System",
+      "sp"
+     ],
+     [
+      "Junk/Salvage Yard",
+      ""
+     ],
+     [
+      "Paid Parking Lot",
+      ""
+     ],
+     [
+      "Recycling Facility",
+      ""
+     ],
+     [
+      "Utilities & Services",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "RECREATION",
+    "entries": [
+     [
+      "Amusement, Indoor",
+      ""
+     ],
+     [
+      "Amusement, Outdoor",
+      ""
+     ],
+     [
+      "Assembly",
+      "sp"
+     ],
+     [
+      "Campground",
+      ""
+     ],
+     [
+      "Cultural Facility",
+      ""
+     ],
+     [
+      "Health/Fitness Studio",
+      "rc"
+     ],
+     [
+      "Marina, Recreation",
+      ""
+     ],
+     [
+      "Private Club or Lodge",
+      ""
+     ],
+     [
+      "Stables/Riding Center",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "RESIDENTIAL",
+    "entries": [
+     [
+      "Bed & Breakfast",
+      "rc"
+     ],
+     [
+      "Dormitory",
+      ""
+     ],
+     [
+      "Mobile Home Park",
+      ""
+     ],
+     [
+      "Residence",
+      "u"
+     ],
+     [
+      "Rooming House",
+      ""
+     ],
+     [
+      "Tourist Rental",
+      "u"
+     ]
+    ]
+   },
+   {
+    "title": "AGRICULTURAL",
+    "entries": [
+     [
+      "Animal Care, Outdoor",
+      ""
+     ],
+     [
+      "Aquaculture",
+      ""
+     ],
+     [
+      "Commercial Agriculture",
+      ""
+     ],
+     [
+      "Farm/Vendor Market",
+      "rc"
+     ]
+    ]
+   },
+   {
+    "title": "INDUSTRIAL",
+    "entries": [
+     [
+      "Industrial, Artisan",
+      "rc"
+     ],
+     [
+      "Industrial, General",
+      ""
+     ],
+     [
+      "Industrial, Heavy",
+      ""
+     ],
+     [
+      "Resource Extraction",
+      ""
+     ]
+    ]
+   }
+  ],
+  "use_col2": [
+   {
+    "title": "COMMERCIAL GOODS",
+    "entries": [
+     [
+      "Adult Establishment",
+      ""
+     ],
+     [
+      "Bar or Tavern",
+      ""
+     ],
+     [
+      "Car Wash",
+      ""
+     ],
+     [
+      "Drive-Through Facility",
+      ""
+     ],
+     [
+      "Food Pantry",
+      ""
+     ],
+     [
+      "Gas Station",
+      ""
+     ],
+     [
+      "Live Entertainment",
+      ""
+     ],
+     [
+      "Marina, Dry Storage",
+      ""
+     ],
+     [
+      "Outdoor Storage",
+      "rc"
+     ],
+     [
+      "Packaged Liquor",
+      ""
+     ],
+     [
+      "Research Laboratory",
+      ""
+     ],
+     [
+      "Restaurant & Café",
+      ""
+     ],
+     [
+      "Retail & Service, General",
+      ""
+     ],
+     [
+      "Retail & Service, Heavy",
+      ""
+     ],
+     [
+      "Retail Firearm Sales Facility",
+      ""
+     ],
+     [
+      "Self-Storage Facility",
+      ""
+     ],
+     [
+      "Vehicle Rental or Sales",
+      ""
+     ],
+     [
+      "Vehicle Repair",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "COMMERCIAL SERVICES",
+    "entries": [
+     [
+      "Animal Care, Indoor",
+      "rc"
+     ],
+     [
+      "Banking Services",
+      ""
+     ],
+     [
+      "College/University",
+      ""
+     ],
+     [
+      "Commercial School",
+      ""
+     ],
+     [
+      "Day Care Center",
+      "rc"
+     ],
+     [
+      "Day Care Facility",
+      ""
+     ],
+     [
+      "Funeral Services",
+      "sp"
+     ],
+     [
+      "Health Care Provider",
+      "rc"
+     ],
+     [
+      "Hospital",
+      ""
+     ],
+     [
+      "Hotel & Hostel",
+      ""
+     ],
+     [
+      "Human Service Facility",
+      ""
+     ],
+     [
+      "Office, Large",
+      ""
+     ],
+     [
+      "Office, Medium",
+      ""
+     ],
+     [
+      "Office, Small",
+      "rc"
+     ],
+     [
+      "Primary/Secondary School",
+      "sp"
+     ],
+     [
+      "Residential Care Facility",
+      "u"
+     ]
+    ]
+   }
+  ],
+  "use_standards": {
+   "title": "USE STANDARDS FOR D4 - RESIDENTIAL VILLAGE",
+   "items": [
+    "Deliveries or pick-ups in connection with an Industrial, Artisan use are limited to parcel and small freight carriers."
+   ]
+  }
+ },
+ {
+  "code": "D5",
+  "name": "VILLAGE BUSINESS",
+  "group": "Core Zoning Districts",
+  "color": "#BBACD4",
+  "band_text": "#231F20",
+  "left": [
+   {
+    "title": "DESCRIPTION",
+    "kind": "para",
+    "body": "The D5 Village Business district allows greater density, larger buildings, and a wide range of building types and uses. Minimum lot sizes are relatively small, with minimal setbacks to encourage in-fill development."
+   },
+   {
+    "title": "PURPOSE",
+    "kind": "list",
+    "body": [
+     "To accommodate fine-grained, diverse mixed-use areas that primarily occur in close proximity to the Village Center.",
+     "To address the need for missing-middle housing, including apartment buildings, stacked flats, single family homes, duplexes, live/works, and townhouses.",
+     "To promote a mix of housing options within the Village Center.",
+     "To provide the community with a predictable outcome from development and redevelopment."
+    ]
+   },
+   {
+    "title": "LOT DIMENSIONS",
+    "kind": "lv",
+    "body": [
+     [
+      "Width",
+      "20 ft min, 100 ft max"
+     ],
+     [
+      "Depth",
+      "n/a"
+     ],
+     [
+      "Lot Area",
+      "n/a"
+     ]
+    ]
+   },
+   {
+    "title": "PRIMARY BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "0 ft min, 20 ft max"
+     ],
+     [
+      "Secondary Front Setback",
+      "0 ft min, 15 ft max"
+     ],
+     [
+      "Side Setback",
+      "0 ft min, 25 ft max"
+     ],
+     [
+      "Rear Setback",
+      "5 ft min"
+     ],
+     [
+      "Frontage Zone Setback",
+      "20 ft min"
+     ]
+    ]
+   },
+   {
+    "title": "ACCESSORY BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "20 ft min"
+     ],
+     [
+      "Secondary Front Setback",
+      "15 ft min"
+     ],
+     [
+      "Side Setback",
+      "15 ft min"
+     ],
+     [
+      "Rear Setback",
+      "5 ft min"
+     ]
+    ]
+   }
+  ],
+  "right": [
+   {
+    "title": "DESIGN STANDARDS",
+    "kind": "lv",
+    "body": [
+     [
+      "Front of buildings",
+      ""
+     ],
+     [
+      "Side of buildings",
+      ""
+     ],
+     [
+      "Rear of buildings",
+      "Massing Components"
+     ],
+     [
+      "Building Orientation",
+      "see Article 6 section 8"
+     ],
+     [
+      "Windows & Doors",
+      "20% min, 80% max"
+     ],
+     [
+      "Primary & Accessory Roofs",
+      "Gable 5/12 min"
+     ]
+    ]
+   },
+   {
+    "title": "BUILDINGS STANDARDS",
+    "kind": "list",
+    "body": [
+     "Unless otherwise noted, all measurements represent the maximum permitted values.",
+     "The CEO may determine that the scope of the project requires Planning Board approval.",
+     "No more than 80% of the total Gross Floor Area of a Mixed- Use Building shall be a Residential use."
+    ]
+   },
+   {
+    "title": "PERMITTED BUILDING GROUPS",
+    "kind": "list",
+    "body": [
+     "Multi-Unit Court"
+    ]
+   }
+  ],
+  "matrix": {
+   "title": "PERMITTED BUILDINGS",
+   "cols": [
+    "Residential",
+    "Mixed-Use",
+    "Multi-Unit Commercial",
+    "Residential Accessory",
+    "Commercial Accessory"
+   ],
+   "rows": [
+    [
+     "Permitting Authority",
+     "CEO",
+     "CEO",
+     "Planning Board",
+     "CEO",
+     "Planning Board"
+    ],
+    [
+     "Building Width",
+     "60 ft",
+     "60 ft",
+     "80 ft",
+     "30 ft",
+     "30 ft"
+    ],
+    [
+     "Building Depth",
+     "75 ft",
+     "-",
+     "-",
+     "40 ft",
+     "30 ft"
+    ],
+    [
+     "Building Floor Area",
+     "-",
+     "12,000",
+     "-",
+     "-",
+     "-"
+    ],
+    [
+     "Total Stories",
+     "2",
+     "2",
+     "2",
+     "2",
+     "1"
+    ],
+    [
+     "First Floor Height",
+     "12 ft",
+     "15 ft",
+     "15 ft",
+     "10 ft",
+     "16 ft"
+    ],
+    [
+     "Upper Floor Height",
+     "10 ft",
+     "10 ft",
+     "10 ft",
+     "10 ft",
+     "8 ft"
+    ],
+    [
+     "Number of Units",
+     "-",
+     "-",
+     "5",
+     "1",
+     "1"
+    ]
+   ]
+  },
+  "use_col1": [
+   {
+    "title": "TRANSPORTATION & UTILITIES",
+    "entries": [
+     [
+      "Dispatch Service",
+      ""
+     ],
+     [
+      "District Energy System",
+      "sp"
+     ],
+     [
+      "Junk/Salvage Yard",
+      ""
+     ],
+     [
+      "Paid Parking Lot",
+      "sp"
+     ],
+     [
+      "Recycling Facility",
+      ""
+     ],
+     [
+      "Utilities & Services",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "RECREATION",
+    "entries": [
+     [
+      "Amusement, Indoor",
+      "u"
+     ],
+     [
+      "Amusement, Outdoor",
+      ""
+     ],
+     [
+      "Assembly",
+      "u"
+     ],
+     [
+      "Campground",
+      ""
+     ],
+     [
+      "Cultural Facility",
+      "u"
+     ],
+     [
+      "Health/Fitness Studio",
+      "u"
+     ],
+     [
+      "Marina, Recreation",
+      "sp"
+     ],
+     [
+      "Private Club or Lodge",
+      "u"
+     ],
+     [
+      "Stables/Riding Center",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "RESIDENTIAL",
+    "entries": [
+     [
+      "Bed & Breakfast",
+      "rc"
+     ],
+     [
+      "Dormitory",
+      ""
+     ],
+     [
+      "Mobile Home Park",
+      ""
+     ],
+     [
+      "Residence",
+      "u"
+     ],
+     [
+      "Rooming House",
+      "u"
+     ],
+     [
+      "Tourist Rental",
+      "u"
+     ]
+    ]
+   },
+   {
+    "title": "AGRICULTURAL",
+    "entries": [
+     [
+      "Animal Care, Outdoor",
+      ""
+     ],
+     [
+      "Aquaculture",
+      ""
+     ],
+     [
+      "Commercial Agriculture",
+      ""
+     ],
+     [
+      "Farm/Vendor Market",
+      "u"
+     ]
+    ]
+   },
+   {
+    "title": "INDUSTRIAL",
+    "entries": [
+     [
+      "Industrial, Artisan",
+      "u"
+     ],
+     [
+      "Industrial, General",
+      ""
+     ],
+     [
+      "Industrial, Heavy",
+      ""
+     ],
+     [
+      "Resource Extraction",
+      ""
+     ]
+    ]
+   }
+  ],
+  "use_col2": [
+   {
+    "title": "COMMERCIAL GOODS",
+    "entries": [
+     [
+      "Adult Establishment",
+      ""
+     ],
+     [
+      "Bar or Tavern",
+      "u"
+     ],
+     [
+      "Car Wash",
+      ""
+     ],
+     [
+      "Drive-Through Facility",
+      ""
+     ],
+     [
+      "Food Pantry",
+      "u"
+     ],
+     [
+      "Gas Station",
+      ""
+     ],
+     [
+      "Live Entertainment",
+      "u"
+     ],
+     [
+      "Marina, Dry Storage",
+      ""
+     ],
+     [
+      "Outdoor Storage",
+      "sp"
+     ],
+     [
+      "Packaged Liquor",
+      "u"
+     ],
+     [
+      "Research Laboratory",
+      "u"
+     ],
+     [
+      "Restaurant & Café",
+      "u"
+     ],
+     [
+      "Retail & Service, General",
+      "u"
+     ],
+     [
+      "Retail & Service, Heavy",
+      "u"
+     ],
+     [
+      "Retail Firearm Sales Facility",
+      "u"
+     ],
+     [
+      "Self-Storage Facility",
+      ""
+     ],
+     [
+      "Vehicle Rental or Sales",
+      ""
+     ],
+     [
+      "Vehicle Repair",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "COMMERCIAL SERVICES",
+    "entries": [
+     [
+      "Animal Care, Indoor",
+      "u"
+     ],
+     [
+      "Banking Services",
+      "u"
+     ],
+     [
+      "College/University",
+      "u"
+     ],
+     [
+      "Commercial School",
+      "u"
+     ],
+     [
+      "Day Care Center",
+      "rc"
+     ],
+     [
+      "Day Care Facility",
+      "u"
+     ],
+     [
+      "Funeral Services",
+      "u"
+     ],
+     [
+      "Health Care Provider",
+      "u"
+     ],
+     [
+      "Hospital",
+      "u"
+     ],
+     [
+      "Hotel & Hostel",
+      "u"
+     ],
+     [
+      "Human Service Facility",
+      "u"
+     ],
+     [
+      "Office, Large",
+      ""
+     ],
+     [
+      "Office, Medium",
+      "u"
+     ],
+     [
+      "Office, Small",
+      "u"
+     ],
+     [
+      "Primary/Secondary School",
+      "u"
+     ],
+     [
+      "Residential Care Facility",
+      ""
+     ]
+    ]
+   }
+  ],
+  "use_standards": {
+   "title": "USE STANDARDS FOR D5 - VILLAGE BUSINESS",
+   "items": [
+    "Deliveries or pick-ups in connection with an Industrial, Artisan use are limited to parcel and small freight carriers."
+   ]
+  }
+ },
+ {
+  "code": "D6",
+  "name": "TOWN CENTER",
+  "group": "Core Zoning Districts",
+  "color": "#502971",
+  "band_text": "#FFFFFF",
+  "left": [
+   {
+    "title": "DESCRIPTION",
+    "kind": "para",
+    "body": "The D6 Town Center district consists of a greater density of buildings that accommodate a mix of uses. It has a tight network of streets designed to enable multiple modes of travel, with wide sidewalks for street trees, on-street parking, and active ground- floor uses such as restaurants and cafes. Buildings are set close to the sidewalk."
+   },
+   {
+    "title": "PURPOSE",
+    "kind": "list",
+    "body": [
+     "To accommodate attached, mixed use buildings within the Town Center that provide local and regional access to commercial uses.",
+     "To promote housing on the upper floors of mixed-use buildings.",
+     "To provide the community with a predictable outcome from development and redevelopment."
+    ]
+   },
+   {
+    "title": "LOT DIMENSIONS",
+    "kind": "lv",
+    "body": [
+     [
+      "Width",
+      "20 ft min, 100 ft max"
+     ],
+     [
+      "Depth",
+      "n/a"
+     ],
+     [
+      "Lot Area",
+      "n/a"
+     ]
+    ]
+   },
+   {
+    "title": "PRIMARY BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "0 ft max"
+     ],
+     [
+      "Secondary Front Setback",
+      "0 ft max"
+     ],
+     [
+      "Side Setback",
+      "0 ft min (4) , 5 ft max (5)"
+     ],
+     [
+      "Rear Setback",
+      "5 ft min"
+     ],
+     [
+      "Frontage Zone Setback",
+      "20 ft min"
+     ]
+    ]
+   },
+   {
+    "title": "ACCESSORY BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "25 ft min"
+     ],
+     [
+      "Secondary Front Setback",
+      "25 ft min"
+     ],
+     [
+      "Side Setback",
+      "0 ft min"
+     ],
+     [
+      "Rear Setback",
+      "5 ft min"
+     ]
+    ]
+   }
+  ],
+  "right": [
+   {
+    "title": "DESIGN STANDARDS",
+    "kind": "lv",
+    "body": [
+     [
+      "Front of buildings",
+      ""
+     ],
+     [
+      "Side of buildings",
+      ""
+     ],
+     [
+      "Rear of buildings",
+      "Components"
+     ],
+     [
+      "Building Orientation",
+      "see Article 6 section 8"
+     ],
+     [
+      "Windows & Doors",
+      "20% min, 80% max"
+     ],
+     [
+      "Primary & Accessory Roofs",
+      "Gable 5/12 min"
+     ]
+    ]
+   },
+   {
+    "title": "BUILDINGS STANDARDS",
+    "kind": "list",
+    "body": [
+     "Unless otherwise noted, all measurements represent the maximum permitted values.",
+     "The CEO may determine that the scope of the project requires Planning Board approval.",
+     "No more than 80% of the total Gross Floor Area of a Mixed- Use Building shall be a Residential use.",
+     "One side of a new building is required to have a 0 ft side setback.",
+     "The Planning Board may increase the side setback to include vehicular and pedestrian access to the rear of the lot, but shall not increase the side setback beyond 15 ft."
+    ]
+   },
+   {
+    "title": "PERMITTED BUILDING GROUPS",
+    "kind": "list",
+    "body": [
+     "Multi-Unit Court"
+    ]
+   }
+  ],
+  "matrix": {
+   "title": "PERMITTED BUILDINGS",
+   "cols": [
+    "Residential",
+    "Mixed-Use",
+    "Multi-Unit Commercial",
+    "Commercial Accessory"
+   ],
+   "rows": [
+    [
+     "Permitting Authority",
+     "Planning Board",
+     "Planning Board",
+     "Planning Board",
+     "Planning Board"
+    ],
+    [
+     "Building Width",
+     "90 ft",
+     "90 ft",
+     "90 ft",
+     "30 ft"
+    ],
+    [
+     "Building Depth",
+     "90 ft",
+     "90 ft",
+     "90 ft",
+     "40 ft"
+    ],
+    [
+     "Building Floor Area",
+     "-",
+     "-",
+     "18,000 sf",
+     "-"
+    ],
+    [
+     "Total Stories",
+     "2 min. - 3 max.",
+     "2 min. - 3 max.",
+     "2 min. - 3 max.",
+     "1 max."
+    ],
+    [
+     "First Floor Height",
+     "12 ft",
+     "15 ft",
+     "15 ft",
+     "15 ft"
+    ],
+    [
+     "Upper Floor Height",
+     "10 ft",
+     "10 ft",
+     "10 ft",
+     "8 ft"
+    ],
+    [
+     "Number of Units",
+     "-",
+     "-",
+     "20",
+     "1"
+    ]
+   ]
+  },
+  "use_col1": [
+   {
+    "title": "TRANSPORTATION & UTILITIES",
+    "entries": [
+     [
+      "Dispatch Service",
+      ""
+     ],
+     [
+      "District Energy System",
+      ""
+     ],
+     [
+      "Junk/Salvage Yard",
+      ""
+     ],
+     [
+      "Paid Parking Lot",
+      "sp"
+     ],
+     [
+      "Recycling Facility",
+      ""
+     ],
+     [
+      "Utilities & Services",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "RECREATION",
+    "entries": [
+     [
+      "Amusement, Indoor",
+      "u"
+     ],
+     [
+      "Amusement, Outdoor",
+      ""
+     ],
+     [
+      "Assembly",
+      "u"
+     ],
+     [
+      "Campground",
+      ""
+     ],
+     [
+      "Cultural Facility",
+      "u"
+     ],
+     [
+      "Health/Fitness Studio",
+      "u"
+     ],
+     [
+      "Marina, Recreation",
+      "sp"
+     ],
+     [
+      "Private Club or Lodge",
+      "u"
+     ],
+     [
+      "Stables/Riding Center",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "RESIDENTIAL",
+    "entries": [
+     [
+      "Bed & Breakfast",
+      ""
+     ],
+     [
+      "Dormitory",
+      "u"
+     ],
+     [
+      "Mobile Home Park",
+      ""
+     ],
+     [
+      "Residence",
+      "u"
+     ],
+     [
+      "Rooming House",
+      "u"
+     ],
+     [
+      "Tourist Rental",
+      "u"
+     ]
+    ]
+   },
+   {
+    "title": "AGRICULTURAL",
+    "entries": [
+     [
+      "Animal Care, Outdoor",
+      ""
+     ],
+     [
+      "Aquaculture",
+      ""
+     ],
+     [
+      "Commercial Agriculture",
+      ""
+     ],
+     [
+      "Farm/Vendor Market",
+      "u"
+     ]
+    ]
+   },
+   {
+    "title": "INDUSTRIAL",
+    "entries": [
+     [
+      "Industrial, Artisan",
+      "u"
+     ],
+     [
+      "Industrial, General",
+      ""
+     ],
+     [
+      "Industrial, Heavy",
+      ""
+     ],
+     [
+      "Resource Extraction",
+      ""
+     ]
+    ]
+   }
+  ],
+  "use_col2": [
+   {
+    "title": "COMMERCIAL GOODS",
+    "entries": [
+     [
+      "Adult Establishment",
+      ""
+     ],
+     [
+      "Bar or Tavern",
+      "u"
+     ],
+     [
+      "Car Wash",
+      ""
+     ],
+     [
+      "Drive-Through Facility",
+      ""
+     ],
+     [
+      "Food Pantry",
+      "u"
+     ],
+     [
+      "Gas Station",
+      ""
+     ],
+     [
+      "Live Entertainment",
+      "u"
+     ],
+     [
+      "Marina, Dry Storage",
+      ""
+     ],
+     [
+      "Outdoor Storage",
+      "sp"
+     ],
+     [
+      "Packaged Liquor",
+      "u"
+     ],
+     [
+      "Research Laboratory",
+      "u"
+     ],
+     [
+      "Restaurant & Café",
+      "u"
+     ],
+     [
+      "Retail & Service, General",
+      "u"
+     ],
+     [
+      "Retail & Service, Heavy",
+      "u"
+     ],
+     [
+      "Retail Firearm Sales Facility",
+      "u"
+     ],
+     [
+      "Self-Storage Facility",
+      ""
+     ],
+     [
+      "Vehicle Rental or Sales",
+      ""
+     ],
+     [
+      "Vehicle Repair",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "COMMERCIAL SERVICES",
+    "entries": [
+     [
+      "Animal Care, Indoor",
+      "u"
+     ],
+     [
+      "Banking Services",
+      "u"
+     ],
+     [
+      "College/University",
+      "u"
+     ],
+     [
+      "Commercial School",
+      "u"
+     ],
+     [
+      "Day Care Center",
+      "rc"
+     ],
+     [
+      "Day Care Facility",
+      "u"
+     ],
+     [
+      "Funeral Services",
+      "u"
+     ],
+     [
+      "Health Care Provider",
+      "u"
+     ],
+     [
+      "Hospital",
+      "u"
+     ],
+     [
+      "Hotel & Hostel",
+      "u"
+     ],
+     [
+      "Human Service Facility",
+      "u"
+     ],
+     [
+      "Office, Large",
+      ""
+     ],
+     [
+      "Office, Medium",
+      "u"
+     ],
+     [
+      "Office, Small",
+      "u"
+     ],
+     [
+      "Primary/Secondary School",
+      "u"
+     ],
+     [
+      "Residential Care Facility",
+      ""
+     ]
+    ]
+   }
+  ],
+  "use_standards": {
+   "title": "USE STANDARDS FOR D6 - TOWN CENTER",
+   "items": [
+    "Deliveries or pick-ups in connection with an Industrial, Artisan use are limited to parcel and small freight carriers.",
+    "Outdoor Storage use areas that are visible from a road (not including alleys), must be fully enclosed by a wall or a fence at least 6 feet in height, and constructed of natural materials or have the appearance of natural materials."
+   ]
+  }
+ },
+ {
+  "code": "SD",
+  "name": "HISTORIC",
+  "group": "Special Zoning Districts",
+  "color": "#108C8A",
+  "band_text": "#FFFFFF",
+  "left": [
+   {
+    "title": "DESCRIPTION",
+    "kind": "para",
+    "body": "The Historic Special District has narrow, interconnected streets with a mix of small and large residential houses with barns and garages connected to the principal house and sometimes detached. Lots in this district are generally smaller, with shallower lot depths, narrower lot widths, and shallower setbacks. Many of the houses date to the 19th century and have a greater historical significance."
+   },
+   {
+    "title": "PURPOSE",
+    "kind": "list",
+    "body": [
+     "To preserve areas that are identified as historically distinct.",
+     "To allow new development to proceed in an historically appropriate manner.",
+     "To provide the community with a predictable outcome from development and redevelopment.",
+     "To enable residential companion uses."
+    ]
+   },
+   {
+    "title": "LOT DIMENSIONS",
+    "kind": "lv",
+    "body": [
+     [
+      "Width",
+      "50 ft min, 150 ft max"
+     ],
+     [
+      "Depth",
+      "n/a"
+     ],
+     [
+      "Lot Area",
+      "n/a"
+     ]
+    ]
+   },
+   {
+    "title": "PRIMARY BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "14 ft min, 35 ft max"
+     ],
+     [
+      "Secondary Front Setback",
+      "4 ft min"
+     ],
+     [
+      "Side Setback",
+      "8 ft min"
+     ],
+     [
+      "Rear Setback",
+      "8 ft min"
+     ],
+     [
+      "Frontage Zone Setback",
+      "20 ft"
+     ]
+    ]
+   },
+   {
+    "title": "ACCESSORY BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "14 ft min"
+     ],
+     [
+      "Secondary Front Setback",
+      "4 ft min"
+     ],
+     [
+      "Side Setback",
+      "8 ft min"
+     ],
+     [
+      "Rear Setback",
+      "8 ft min"
+     ]
+    ]
+   }
+  ],
+  "right": [
+   {
+    "title": "DESIGN STANDARDS",
+    "kind": "lv",
+    "body": [
+     [
+      "Front of buildings",
+      ""
+     ],
+     [
+      "Side of buildings",
+      ""
+     ],
+     [
+      "Rear of buildings",
+      "Components"
+     ],
+     [
+      "Building Orientation",
+      "see Article 6 section 8"
+     ],
+     [
+      "Windows & Doors",
+      "20% min, 80% max"
+     ],
+     [
+      "Primary & Accessory Roofs",
+      "Gable 5/12 min"
+     ]
+    ]
+   },
+   {
+    "title": "PERMITTED BUILDING GROUPS",
+    "kind": "list",
+    "body": [
+     "Connected Farm",
+     "Multi-Unit Court"
+    ]
+   }
+  ],
+  "matrix": {
+   "title": "PERMITTED BUILDINGS",
+   "cols": [
+    "Residential",
+    "Residential Accessory"
+   ],
+   "rows": [
+    [
+     "Permitting Authority",
+     "Planning Board",
+     "CEO"
+    ],
+    [
+     "Building Width",
+     "75 ft",
+     "30 ft"
+    ],
+    [
+     "Building Depth",
+     "50 ft",
+     "40 ft"
+    ],
+    [
+     "Building Floor Area",
+     "-",
+     "-"
+    ],
+    [
+     "Total Stories",
+     "2",
+     "1"
+    ],
+    [
+     "First Floor Height",
+     "12 ft",
+     "16 ft"
+    ],
+    [
+     "Upper Floor Height",
+     "10 ft",
+     "8 ft"
+    ],
+    [
+     "Number of Units",
+     "-",
+     "1"
+    ]
+   ]
+  },
+  "use_col1": [
+   {
+    "title": "TRANSPORTATION & UTILITIES",
+    "entries": [
+     [
+      "Dispatch Service",
+      ""
+     ],
+     [
+      "District Energy System",
+      "sp"
+     ],
+     [
+      "Junk/Salvage Yard",
+      ""
+     ],
+     [
+      "Paid Parking Lot",
+      ""
+     ],
+     [
+      "Recycling Facility",
+      ""
+     ],
+     [
+      "Utilities & Services",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "RECREATION",
+    "entries": [
+     [
+      "Amusement, Indoor",
+      ""
+     ],
+     [
+      "Amusement, Outdoor",
+      ""
+     ],
+     [
+      "Assembly",
+      "sp"
+     ],
+     [
+      "Campground",
+      ""
+     ],
+     [
+      "Cultural Facility",
+      ""
+     ],
+     [
+      "Health/Fitness Studio",
+      "rc"
+     ],
+     [
+      "Marina, Recreation",
+      ""
+     ],
+     [
+      "Private Club or Lodge",
+      ""
+     ],
+     [
+      "Stables/Riding Center",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "RESIDENTIAL",
+    "entries": [
+     [
+      "Bed & Breakfast",
+      "rc"
+     ],
+     [
+      "Dormitory",
+      ""
+     ],
+     [
+      "Mobile Home Park",
+      ""
+     ],
+     [
+      "Residence",
+      "u"
+     ],
+     [
+      "Rooming House",
+      ""
+     ],
+     [
+      "Tourist Rental",
+      "u"
+     ]
+    ]
+   },
+   {
+    "title": "AGRICULTURAL",
+    "entries": [
+     [
+      "Animal Care, Outdoor",
+      ""
+     ],
+     [
+      "Aquaculture",
+      ""
+     ],
+     [
+      "Commercial Agriculture",
+      ""
+     ],
+     [
+      "Farm/Vendor Market",
+      "rc"
+     ]
+    ]
+   },
+   {
+    "title": "INDUSTRIAL",
+    "entries": [
+     [
+      "Industrial, Artisan",
+      "rc"
+     ],
+     [
+      "Industrial, General",
+      ""
+     ],
+     [
+      "Industrial, Heavy",
+      ""
+     ],
+     [
+      "Resource Extraction",
+      ""
+     ]
+    ]
+   }
+  ],
+  "use_col2": [
+   {
+    "title": "COMMERCIAL GOODS",
+    "entries": [
+     [
+      "Adult Establishment",
+      ""
+     ],
+     [
+      "Bar or Tavern",
+      ""
+     ],
+     [
+      "Car Wash",
+      ""
+     ],
+     [
+      "Drive-Through Facility",
+      ""
+     ],
+     [
+      "Food Pantry",
+      ""
+     ],
+     [
+      "Gas Station",
+      ""
+     ],
+     [
+      "Live Entertainment",
+      ""
+     ],
+     [
+      "Marina, Dry Storage",
+      ""
+     ],
+     [
+      "Outdoor Storage",
+      ""
+     ],
+     [
+      "Packaged Liquor",
+      ""
+     ],
+     [
+      "Research Laboratory",
+      ""
+     ],
+     [
+      "Restaurant & Café",
+      ""
+     ],
+     [
+      "Retail & Service, General",
+      ""
+     ],
+     [
+      "Retail & Service, Heavy",
+      ""
+     ],
+     [
+      "Retail Firearm Sales Facility",
+      ""
+     ],
+     [
+      "Self-Storage Facility",
+      ""
+     ],
+     [
+      "Vehicle Rental or Sales",
+      ""
+     ],
+     [
+      "Vehicle Repair",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "COMMERCIAL SERVICES",
+    "entries": [
+     [
+      "Animal Care, Indoor",
+      "rc"
+     ],
+     [
+      "Banking Services",
+      ""
+     ],
+     [
+      "College/University",
+      ""
+     ],
+     [
+      "Commercial School",
+      ""
+     ],
+     [
+      "Day Care Center",
+      "rc"
+     ],
+     [
+      "Day Care Facility",
+      ""
+     ],
+     [
+      "Funeral Services",
+      "sp"
+     ],
+     [
+      "Health Care Provider",
+      "rc"
+     ],
+     [
+      "Hospital",
+      ""
+     ],
+     [
+      "Hotel & Hostel",
+      ""
+     ],
+     [
+      "Human Service Facility",
+      ""
+     ],
+     [
+      "Office, Large",
+      ""
+     ],
+     [
+      "Office, Medium",
+      ""
+     ],
+     [
+      "Office, Small",
+      "rc"
+     ],
+     [
+      "Primary/Secondary School",
+      "sp"
+     ],
+     [
+      "Residential Care Facility",
+      ""
+     ]
+    ]
+   }
+  ],
+  "use_standards": {
+   "title": "USE STANDARDS FOR SD-H HISTORIC",
+   "items": [
+    "Deliveries or pick-ups in connection with an Industrial, Artisan use are limited to parcel and small freight carriers.",
+    "Tourist Rental uses as the sole use, within Single Unit Residental buildings that are not owner occupied, shall be limited to 6 months of a calendar year."
+   ]
+  }
+ },
+ {
+  "code": "SD",
+  "name": "CONSERVATION",
+  "group": "Special Zoning Districts",
+  "color": "#3CAD49",
+  "band_text": "#FFFFFF",
+  "left": [
+   {
+    "title": "DESCRIPTION",
+    "kind": "para",
+    "body": "The Conservation Special District contains lots of record that are entirely held in conservation. No lot of record that is partially held in conservation may be included in the SD Conservation District."
+   },
+   {
+    "title": "PURPOSE",
+    "kind": "list",
+    "body": [
+     "To identify areas permanently protected from development by law, conservation easement or fee, ownership by land trust, or other similar means.",
+     "To reinforce areas permanently protected for recreational use or resource protection."
+    ]
+   },
+   {
+    "title": "LOT DIMENSIONS",
+    "kind": "lv",
+    "body": [
+     [
+      "Width",
+      "n/a"
+     ],
+     [
+      "Depth",
+      "n/a"
+     ],
+     [
+      "Lot Area",
+      "n/a"
+     ]
+    ]
+   },
+   {
+    "title": "PRIMARY BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "n/a"
+     ],
+     [
+      "Secondary Front Setback",
+      "n/a"
+     ],
+     [
+      "Side Setback",
+      "n/a"
+     ],
+     [
+      "Rear Setback",
+      "n/a"
+     ],
+     [
+      "Frontage Zone Setback",
+      "n/a"
+     ]
+    ]
+   },
+   {
+    "title": "ACCESSORY BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "n/a"
+     ],
+     [
+      "Secondary Front Setback",
+      "n/a"
+     ],
+     [
+      "Side Setback",
+      "n/a"
+     ],
+     [
+      "Rear Setback",
+      "n/a"
+     ]
+    ]
+   }
+  ],
+  "right": [
+   {
+    "title": "ADDITIONAL STANDARDS",
+    "kind": "list",
+    "body": [
+     {
+      "text": "Newly created lots in the Conservation District shall be required to maintain a 50 ft right-of-way to a Public or Private Road.",
+      "sub": [
+       "The Planning Board may reduce the required right-of- way width for non-vehicular access."
+      ]
+     }
+    ]
+   }
+  ],
+  "matrix": null,
+  "use_col1": [
+   {
+    "title": "TRANSPORTATION & UTILITIES",
+    "entries": [
+     [
+      "Dispatch Service",
+      ""
+     ],
+     [
+      "District Energy System",
+      ""
+     ],
+     [
+      "Junk/Salvage Yard",
+      ""
+     ],
+     [
+      "Paid Parking Lot",
+      ""
+     ],
+     [
+      "Recycling Facility",
+      ""
+     ],
+     [
+      "Utilities & Services",
+      "sp"
+     ]
+    ]
+   },
+   {
+    "title": "RECREATION",
+    "entries": [
+     [
+      "Amusement, Indoor",
+      ""
+     ],
+     [
+      "Amusement, Outdoor",
+      ""
+     ],
+     [
+      "Assembly",
+      "u"
+     ],
+     [
+      "Campground",
+      "u"
+     ],
+     [
+      "Cultural Facility",
+      ""
+     ],
+     [
+      "Health/Fitness Studio",
+      ""
+     ],
+     [
+      "Marina, Recreation",
+      ""
+     ],
+     [
+      "Private Club or Lodge",
+      ""
+     ],
+     [
+      "Stables/Riding Center",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "RESIDENTIAL",
+    "entries": [
+     [
+      "Bed & Breakfast",
+      ""
+     ],
+     [
+      "Dormitory",
+      ""
+     ],
+     [
+      "Mobile Home Park",
+      ""
+     ],
+     [
+      "Residence",
+      ""
+     ],
+     [
+      "Rooming House",
+      ""
+     ],
+     [
+      "Tourist Rental",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "AGRICULTURAL",
+    "entries": [
+     [
+      "Animal Care, Outdoor",
+      ""
+     ],
+     [
+      "Aquaculture",
+      "sp"
+     ],
+     [
+      "Commercial Agriculture",
+      "u"
+     ],
+     [
+      "Farm/Vendor Market",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "INDUSTRIAL",
+    "entries": [
+     [
+      "Industrial, Artisan",
+      ""
+     ],
+     [
+      "Industrial, General",
+      ""
+     ],
+     [
+      "Industrial, Heavy",
+      ""
+     ],
+     [
+      "Resource Extraction",
+      "sp"
+     ]
+    ]
+   }
+  ],
+  "use_col2": [
+   {
+    "title": "COMMERCIAL GOODS",
+    "entries": [
+     [
+      "Adult Establishment",
+      ""
+     ],
+     [
+      "Bar or Tavern",
+      ""
+     ],
+     [
+      "Car Wash",
+      ""
+     ],
+     [
+      "Drive-Through Facility",
+      ""
+     ],
+     [
+      "Food Pantry",
+      ""
+     ],
+     [
+      "Gas Station",
+      ""
+     ],
+     [
+      "Live Entertainment",
+      ""
+     ],
+     [
+      "Marina, Dry Storage",
+      ""
+     ],
+     [
+      "Outdoor Storage",
+      "sp"
+     ],
+     [
+      "Packaged Liquor",
+      ""
+     ],
+     [
+      "Research Laboratory",
+      ""
+     ],
+     [
+      "Restaurant & Café",
+      ""
+     ],
+     [
+      "Retail & Service, General",
+      ""
+     ],
+     [
+      "Retail & Service, Heavy",
+      ""
+     ],
+     [
+      "Retail Firearm Sales Facility",
+      ""
+     ],
+     [
+      "Self-Storage Facility",
+      ""
+     ],
+     [
+      "Vehicle Rental or Sales",
+      ""
+     ],
+     [
+      "Vehicle Repair",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "COMMERCIAL SERVICES",
+    "entries": [
+     [
+      "Animal Care, Indoor",
+      ""
+     ],
+     [
+      "Banking Services",
+      ""
+     ],
+     [
+      "College/University",
+      ""
+     ],
+     [
+      "Commercial School",
+      ""
+     ],
+     [
+      "Day Care Center",
+      ""
+     ],
+     [
+      "Day Care Facility",
+      ""
+     ],
+     [
+      "Funeral Services",
+      ""
+     ],
+     [
+      "Health Care Provider",
+      ""
+     ],
+     [
+      "Hospital",
+      ""
+     ],
+     [
+      "Hotel & Hostel",
+      ""
+     ],
+     [
+      "Human Service Facility",
+      ""
+     ],
+     [
+      "Office, Large",
+      ""
+     ],
+     [
+      "Office, Medium",
+      ""
+     ],
+     [
+      "Office, Small",
+      ""
+     ],
+     [
+      "Primary/Secondary School",
+      ""
+     ],
+     [
+      "Residential Care Facility",
+      ""
+     ]
+    ]
+   }
+  ],
+  "use_standards": {
+   "title": "USE STANDARDS FOR SD-CONSERVE",
+   "items": []
+  }
+ },
+ {
+  "code": "SD",
+  "name": "HIGHWAY COMMERCIAL",
+  "group": "Special Zoning Districts",
+  "color": "#F2AC57",
+  "band_text": "#FFFFFF",
+  "left": [
+   {
+    "title": "DESCRIPTION",
+    "kind": "para",
+    "body": "The Highway Commercial Special District accommodates the areas of Route 1 that have an auto-oriented pattern of development and allows future commercial activity through infill and redevelopment of underutilized and vacant sites."
+   },
+   {
+    "title": "PURPOSE",
+    "kind": "list",
+    "body": [
+     "To allow large highway oriented buildings to develop in a predictable manner.",
+     "To enable the continuation of existing highway commercial uses, while allowing new development that enables buildings to be closer together and with opportunities for pedestrian access."
+    ]
+   },
+   {
+    "title": "LOT DIMENSIONS",
+    "kind": "lv",
+    "body": [
+     [
+      "Width",
+      "50 ft min"
+     ],
+     [
+      "Depth",
+      "n/a"
+     ],
+     [
+      "Lot Area",
+      "n/a"
+     ]
+    ]
+   },
+   {
+    "title": "PRIMARY BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "n/a"
+     ],
+     [
+      "Secondary Front Setback",
+      "n/a"
+     ],
+     [
+      "Side Setback",
+      "5 ft min"
+     ],
+     [
+      "Rear Setback",
+      "5 ft min"
+     ],
+     [
+      "Frontage Zone Setback",
+      "20 ft min"
+     ]
+    ]
+   },
+   {
+    "title": "ACCESSORY BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "50 ft min"
+     ],
+     [
+      "Secondary Front Setback",
+      "50 ft min"
+     ],
+     [
+      "Side Setback",
+      "5 ft min"
+     ],
+     [
+      "Rear Setback",
+      "5 ft min"
+     ]
+    ]
+   }
+  ],
+  "right": [
+   {
+    "title": "DESIGN STANDARDS",
+    "kind": "lv",
+    "body": [
+     [
+      "Front of buildings",
+      "Additions"
+     ],
+     [
+      "Side of buildings",
+      "Additions"
+     ],
+     [
+      "Rear of buildings",
+      "n/a"
+     ],
+     [
+      "Building Orientation",
+      "Parallel within 200 of road"
+     ],
+     [
+      "Windows & Doors",
+      "20% min, 80% max"
+     ],
+     [
+      "Primary & Accessory Roofs",
+      "Gable 5/12 min"
+     ]
+    ]
+   },
+   {
+    "title": "BUILDINGS STANDARDS",
+    "kind": "list",
+    "body": [
+     {
+      "text": "Pre-existing Single Unit Residential and Residential Accessory buildings shall be allowed to continue until they are granted a change of use.",
+      "sub": [
+       "For alteration or expansion of pre-existing Single Unit Residential buildings see Article 5 Section 3 Nonconforming Buildings.",
+       "Lots with pre-existing Single Unit Residential buildings shall be allowed to construct new Residential Accessory buildings."
+      ]
+     },
+     {
+      "text": "Construction of new Single Unit Residential buildings is not permitted.",
+      "sub": []
+     },
+     {
+      "text": "No more than 70% of the total Gross Floor Area of a Mixed- Use Building shall be a Residential use.",
+      "sub": []
+     }
+    ]
+   },
+   {
+    "title": "PERMITTED BUILDING GROUPS",
+    "kind": "list",
+    "body": [
+     "Small Rural Compound",
+     "Large Rural Compound",
+     "Multi-Unit Court"
+    ]
+   }
+  ],
+  "matrix": {
+   "title": "PERMITTED BUILDINGS",
+   "cols": [
+    "Single Unit Commercial",
+    "Mixed-Use",
+    "Multi-Unit Commercial",
+    "Commercial Accessory",
+    "Residential Accessory"
+   ],
+   "rows": [
+    [
+     "Permitting Authority",
+     "Planning Board",
+     "Planning Board",
+     "Planning Board",
+     "Planning Board",
+     "CEO"
+    ],
+    [
+     "Building Width",
+     "120 ft",
+     "120 ft",
+     "120 ft",
+     "30 ft",
+     "30 ft"
+    ],
+    [
+     "Building Depth",
+     "-",
+     "-",
+     "-",
+     "40 ft",
+     "40 ft"
+    ],
+    [
+     "Building Floor Area",
+     "60,000",
+     "40,000",
+     "60,000",
+     "-",
+     "-"
+    ],
+    [
+     "Total Stories",
+     "3",
+     "3",
+     "3",
+     "1",
+     "1"
+    ],
+    [
+     "First Floor Height",
+     "12 ft",
+     "15 ft",
+     "15 ft",
+     "15 ft",
+     "16 ft"
+    ],
+    [
+     "Upper Floor Height",
+     "10 ft",
+     "10 ft",
+     "10 ft",
+     "10 ft",
+     "8 ft"
+    ],
+    [
+     "Number of Units",
+     "1",
+     "-",
+     "-",
+     "1",
+     "1"
+    ]
+   ]
+  },
+  "use_col1": [
+   {
+    "title": "TRANSPORTATION & UTILITIES",
+    "entries": [
+     [
+      "Dispatch Service",
+      "u"
+     ],
+     [
+      "District Energy System",
+      "sp"
+     ],
+     [
+      "Junk/Salvage Yard",
+      ""
+     ],
+     [
+      "Paid Parking Lot",
+      "sp"
+     ],
+     [
+      "Recycling Facility",
+      ""
+     ],
+     [
+      "Utilities & Services",
+      "sp"
+     ]
+    ]
+   },
+   {
+    "title": "RECREATION",
+    "entries": [
+     [
+      "Amusement, Indoor",
+      "u"
+     ],
+     [
+      "Amusement, Outdoor",
+      ""
+     ],
+     [
+      "Assembly",
+      "u"
+     ],
+     [
+      "Campground",
+      ""
+     ],
+     [
+      "Cultural Facility",
+      "u"
+     ],
+     [
+      "Health/Fitness Studio",
+      "u"
+     ],
+     [
+      "Marina, Recreation",
+      ""
+     ],
+     [
+      "Private Club or Lodge",
+      "u"
+     ],
+     [
+      "Stables/Riding Center",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "RESIDENTIAL",
+    "entries": [
+     [
+      "Bed & Breakfast",
+      ""
+     ],
+     [
+      "Dormitory",
+      ""
+     ],
+     [
+      "Mobile Home Park",
+      ""
+     ],
+     [
+      "Residence",
+      "u"
+     ],
+     [
+      "Rooming House",
+      ""
+     ],
+     [
+      "Tourist Rental",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "AGRICULTURAL",
+    "entries": [
+     [
+      "Animal Care, Outdoor",
+      "u"
+     ],
+     [
+      "Aquaculture",
+      "sp"
+     ],
+     [
+      "Commercial Agriculture",
+      "u"
+     ],
+     [
+      "Farm/Vendor Market",
+      "u"
+     ]
+    ]
+   },
+   {
+    "title": "INDUSTRIAL",
+    "entries": [
+     [
+      "Industrial, Artisan",
+      "u"
+     ],
+     [
+      "Industrial, General",
+      "u"
+     ],
+     [
+      "Industrial, Heavy",
+      ""
+     ],
+     [
+      "Resource Extraction",
+      ""
+     ]
+    ]
+   }
+  ],
+  "use_col2": [
+   {
+    "title": "COMMERCIAL GOODS",
+    "entries": [
+     [
+      "Adult Establishment",
+      ""
+     ],
+     [
+      "Bar or Tavern",
+      "u"
+     ],
+     [
+      "Car Wash",
+      "u"
+     ],
+     [
+      "Drive-Through Facility",
+      "u"
+     ],
+     [
+      "Food Pantry",
+      "u"
+     ],
+     [
+      "Gas Station",
+      "u"
+     ],
+     [
+      "Live Entertainment",
+      "u"
+     ],
+     [
+      "Marina, Dry Storage",
+      "u"
+     ],
+     [
+      "Outdoor Storage",
+      "u"
+     ],
+     [
+      "Packaged Liquor",
+      "u"
+     ],
+     [
+      "Research Laboratory",
+      "u"
+     ],
+     [
+      "Restaurant & Café",
+      "u"
+     ],
+     [
+      "Retail & Service, General",
+      "u"
+     ],
+     [
+      "Retail & Service, Heavy",
+      "u"
+     ],
+     [
+      "Retail Firearm Sales Facility",
+      "u"
+     ],
+     [
+      "Self-Storage Facility",
+      "u"
+     ],
+     [
+      "Vehicle Rental or Sales",
+      "u"
+     ],
+     [
+      "Vehicle Repair",
+      "u"
+     ]
+    ]
+   },
+   {
+    "title": "COMMERCIAL SERVICES",
+    "entries": [
+     [
+      "Animal Care, Indoor",
+      "u"
+     ],
+     [
+      "Banking Services",
+      "u"
+     ],
+     [
+      "College/University",
+      "u"
+     ],
+     [
+      "Commercial School",
+      "u"
+     ],
+     [
+      "Day Care Center",
+      "rc"
+     ],
+     [
+      "Day Care Facility",
+      "u"
+     ],
+     [
+      "Funeral Services",
+      ""
+     ],
+     [
+      "Health Care Provider",
+      "u"
+     ],
+     [
+      "Hospital",
+      "u"
+     ],
+     [
+      "Hotel & Hostel",
+      "u"
+     ],
+     [
+      "Human Service Facility",
+      ""
+     ],
+     [
+      "Office, Large",
+      "u"
+     ],
+     [
+      "Office, Medium",
+      "u"
+     ],
+     [
+      "Office, Small",
+      "u"
+     ],
+     [
+      "Primary/Secondary School",
+      ""
+     ],
+     [
+      "Residential Care Facility",
+      ""
+     ]
+    ]
+   }
+  ],
+  "use_standards": {
+   "title": "USE STANDARDS FOR SD-HWY",
+   "items": [
+    "Deliveries or pick-ups in connection with an Industrial, Artisan use are limited to parcel and small freight carriers.",
+    "Outdoor Storage use areas that are visible from a road (not including alleys), must be fully enclosed by a wall or a fence at least 6 feet in height, and constructed of natural materials or have the appearance of natural materials.",
+    "The display of vehicles for rental or sale may occur within the frontage zone in this district."
+   ]
+  }
+ },
+ {
+  "code": "SD",
+  "name": "RURAL HIGHWAY",
+  "group": "Special Zoning Districts",
+  "color": "#726D53",
+  "band_text": "#FFFFFF",
+  "left": [
+   {
+    "title": "DESCRIPTION",
+    "kind": "para",
+    "body": "The Rural Highway Special District includes areas along the Route 1 corridor outside the Highway Commercial Special District where commercial development exists, and where there is a desire to allow future commercial development to expand in a manner that preserves the rural character of the corridor."
+   },
+   {
+    "title": "PURPOSE",
+    "kind": "list",
+    "body": [
+     "To enable commercial and residential uses along the highway corridor.",
+     "To allow new development along the highway in a manner that preserves the rural character."
+    ]
+   },
+   {
+    "title": "LOT DIMENSIONS",
+    "kind": "lv",
+    "body": [
+     [
+      "Width",
+      "1000 ft min (1)"
+     ],
+     [
+      "Depth",
+      "n/a"
+     ],
+     [
+      "Lot Area",
+      "n/a"
+     ]
+    ]
+   },
+   {
+    "title": "PRIMARY BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "200 ft min"
+     ],
+     [
+      "Secondary Front Setback",
+      "50 ft min"
+     ],
+     [
+      "Side Setback",
+      "15 ft min"
+     ],
+     [
+      "Rear Setback",
+      "15 ft min"
+     ],
+     [
+      "Frontage Zone Setback",
+      "20 ft min"
+     ]
+    ]
+   },
+   {
+    "title": "ACCESSORY BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "200 ft min"
+     ],
+     [
+      "Secondary Front Setback",
+      "50 ft min"
+     ],
+     [
+      "Side Setback",
+      "15 ft min"
+     ],
+     [
+      "Rear Setback",
+      "15 ft min"
+     ]
+    ]
+   }
+  ],
+  "right": [
+   {
+    "title": "DESIGN STANDARDS",
+    "kind": "lv",
+    "body": [
+     [
+      "Front of buildings",
+      "Additions"
+     ],
+     [
+      "Side of buildings",
+      "Additions"
+     ],
+     [
+      "Rear of buildings",
+      "n/a"
+     ],
+     [
+      "Building Orientation",
+      "n/a"
+     ],
+     [
+      "Windows & Doors",
+      "20% min, 80% max"
+     ],
+     [
+      "Primary & Accessory Roofs",
+      "Gable 5/12 min"
+     ]
+    ]
+   },
+   {
+    "title": "LOT AND BUILDINGS STANDARDS",
+    "kind": "list",
+    "body": [
+     {
+      "text": "Lots that abut Route 1 have the following standards:",
+      "sub": [
+       "Primary Front Setbacks are measured from the center line of Route 1 .",
+       "A Level 4 Natural Screen is required along the entire length of the Route 1 Frontage of the lot, and;",
+       "is required the entire depth of the Primary Front Setback,and; ii. is not required in areas necessary for entrances, driveways, and public or private roads."
+      ]
+     },
+     {
+      "text": "No more than 70% of the total Gross Floor Area of a Mixed- Use Building shall be a Residential use.",
+      "sub": []
+     }
+    ]
+   },
+   {
+    "title": "PERMITTED BUILDING GROUPS",
+    "kind": "list",
+    "body": [
+     "Small Rural Compound",
+     "Large Rural Compound",
+     "Multi-Unit Court"
+    ]
+   }
+  ],
+  "matrix": {
+   "title": "PERMITTED BUILDINGS",
+   "cols": [
+    "Single Unit Commercial",
+    "Mixed-Use",
+    "Multi-Unit Commercial",
+    "Commercial Accessory",
+    "Residential Accessory"
+   ],
+   "rows": [
+    [
+     "Permitting Authority",
+     "Planning Board",
+     "Planning Board",
+     "Planning Board",
+     "Planning Board",
+     "CEO"
+    ],
+    [
+     "Building Width",
+     "120 ft",
+     "120 ft",
+     "120 ft",
+     "30 ft",
+     "30 ft"
+    ],
+    [
+     "Building Depth",
+     "-",
+     "-",
+     "-",
+     "40 ft",
+     "40 ft"
+    ],
+    [
+     "Building Floor Area",
+     "60,000 sf",
+     "40,000 sf",
+     "60,000 sf",
+     "-",
+     "-"
+    ],
+    [
+     "Total Stories",
+     "3",
+     "3",
+     "3",
+     "1",
+     "1"
+    ],
+    [
+     "First Floor Height",
+     "12 ft",
+     "15 ft",
+     "15 ft",
+     "15 ft",
+     "16 ft"
+    ],
+    [
+     "Upper Floor Height",
+     "10 ft",
+     "10 ft",
+     "10 ft",
+     "10 ft",
+     "8 ft"
+    ],
+    [
+     "Number of Units",
+     "1",
+     "-",
+     "20",
+     "1",
+     "1"
+    ]
+   ]
+  },
+  "use_col1": [
+   {
+    "title": "TRANSPORTATION & UTILITIES",
+    "entries": [
+     [
+      "Dispatch Service",
+      "u"
+     ],
+     [
+      "District Energy System",
+      "sp"
+     ],
+     [
+      "Junk/Salvage Yard",
+      ""
+     ],
+     [
+      "Paid Parking Lot",
+      ""
+     ],
+     [
+      "Recycling Facility",
+      ""
+     ],
+     [
+      "Utilities & Services",
+      "sp"
+     ]
+    ]
+   },
+   {
+    "title": "RECREATION",
+    "entries": [
+     [
+      "Amusement, Indoor",
+      "u"
+     ],
+     [
+      "Amusement, Outdoor",
+      "sp"
+     ],
+     [
+      "Assembly",
+      ""
+     ],
+     [
+      "Campground",
+      ""
+     ],
+     [
+      "Cultural Facility",
+      ""
+     ],
+     [
+      "Health/Fitness Studio",
+      "u"
+     ],
+     [
+      "Marina, Recreation",
+      ""
+     ],
+     [
+      "Private Club or Lodge",
+      "u"
+     ],
+     [
+      "Stables/Riding Center",
+      "u"
+     ]
+    ]
+   },
+   {
+    "title": "RESIDENTIAL",
+    "entries": [
+     [
+      "Bed & Breakfast",
+      ""
+     ],
+     [
+      "Dormitory",
+      ""
+     ],
+     [
+      "Mobile Home Park",
+      ""
+     ],
+     [
+      "Residence",
+      "u"
+     ],
+     [
+      "Rooming House",
+      ""
+     ],
+     [
+      "Tourist Rental",
+      "u"
+     ]
+    ]
+   },
+   {
+    "title": "AGRICULTURAL",
+    "entries": [
+     [
+      "Animal Care, Outdoor",
+      "u"
+     ],
+     [
+      "Aquaculture",
+      "sp"
+     ],
+     [
+      "Commercial Agriculture",
+      "u"
+     ],
+     [
+      "Farm/Vendor Market",
+      "u"
+     ]
+    ]
+   },
+   {
+    "title": "INDUSTRIAL",
+    "entries": [
+     [
+      "Industrial, Artisan",
+      "u"
+     ],
+     [
+      "Industrial, General",
+      "u"
+     ],
+     [
+      "Industrial, Heavy",
+      ""
+     ],
+     [
+      "Resource Extraction",
+      ""
+     ]
+    ]
+   }
+  ],
+  "use_col2": [
+   {
+    "title": "COMMERCIAL GOODS",
+    "entries": [
+     [
+      "Adult Establishment",
+      ""
+     ],
+     [
+      "Bar or Tavern",
+      "sp"
+     ],
+     [
+      "Car Wash",
+      ""
+     ],
+     [
+      "Drive-Through Facility",
+      ""
+     ],
+     [
+      "Food Pantry",
+      ""
+     ],
+     [
+      "Gas Station",
+      ""
+     ],
+     [
+      "Live Entertainment",
+      "u"
+     ],
+     [
+      "Marina, Dry Storage",
+      "u"
+     ],
+     [
+      "Outdoor Storage",
+      "u"
+     ],
+     [
+      "Packaged Liquor",
+      ""
+     ],
+     [
+      "Research Laboratory",
+      "u"
+     ],
+     [
+      "Restaurant & Café",
+      "ex"
+     ],
+     [
+      "Retail & Service, General",
+      ""
+     ],
+     [
+      "Retail & Service, Heavy",
+      "u"
+     ],
+     [
+      "Retail Firearm Sales Facility",
+      "u"
+     ],
+     [
+      "Self-Storage Facility",
+      "u"
+     ],
+     [
+      "Vehicle Rental or Sales",
+      ""
+     ],
+     [
+      "Vehicle Repair",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "COMMERCIAL SERVICES",
+    "entries": [
+     [
+      "Animal Care, Indoor",
+      "u"
+     ],
+     [
+      "Banking Services",
+      ""
+     ],
+     [
+      "College/University",
+      "ex"
+     ],
+     [
+      "Commercial School",
+      "ex"
+     ],
+     [
+      "Day Care Center",
+      "rc"
+     ],
+     [
+      "Day Care Facility",
+      "u"
+     ],
+     [
+      "Funeral Services",
+      ""
+     ],
+     [
+      "Health Care Provider",
+      "u"
+     ],
+     [
+      "Hospital",
+      "ex"
+     ],
+     [
+      "Hotel & Hostel",
+      "ex"
+     ],
+     [
+      "Human Service Facility",
+      ""
+     ],
+     [
+      "Office, Large",
+      "u"
+     ],
+     [
+      "Office, Medium",
+      "u"
+     ],
+     [
+      "Office, Small",
+      "rc"
+     ],
+     [
+      "Primary/Secondary School",
+      "ex"
+     ],
+     [
+      "Residential Care Facility",
+      ""
+     ]
+    ]
+   }
+  ],
+  "use_standards": {
+   "title": "USE STANDARDS FOR SD-RHWY",
+   "items": [
+    {
+     "text": "Bar or Tavern Use:",
+     "sub": [
+      "Cannot be the sole use on a lot.",
+      "Must be clearly incidental and subordinate to an Industrial or Hotel or Hostel use.",
+      "May provide Live Entertainment when it is clearly incidental and subordinate to the Bar or Tavern use."
+     ]
+    },
+    {
+     "text": "Deliveries or pick-ups in connection with an Industrial, Artisan use are limited to parcel and small freight carriers.",
+     "sub": []
+    },
+    {
+     "text": "Outdoor Storage use areas that are visible from a Public Road (not including alleys), must be fully enclosed by a wall or a fence at least 6 feet in height, and constructed of natural materials or have the appearance of natural materials.",
+     "sub": []
+    }
+   ]
+  }
+ },
+ {
+  "code": "SD",
+  "name": "CAMPUS",
+  "group": "Special Zoning Districts",
+  "color": "#7ED1EE",
+  "band_text": "#FFFFFF",
+  "left": [
+   {
+    "title": "DESCRIPTION",
+    "kind": "para",
+    "body": "The Campus Special District accommodates the unique function and design of the Lincoln Academy campus. The campus has large detached buildings, buildings that face onto internal greens, large recreational spaces, lanes and access driveways, wayfinding and other unique qualities seen in a campus environment."
+   },
+   {
+    "title": "PURPOSE",
+    "kind": "list",
+    "body": [
+     "To accommodate large detached buildings, buildings that face onto internal greens, large recreational spaces, lanes and access driveways, wayfinding and other unique qualities seen in a campus environment.",
+     "To enable large institutional uses to create campuses in a predictable fashion."
+    ]
+   },
+   {
+    "title": "LOT DIMENSIONS",
+    "kind": "lv",
+    "body": [
+     [
+      "Width",
+      "100 ft min"
+     ],
+     [
+      "Depth",
+      "n/a"
+     ],
+     [
+      "Lot Area",
+      "n/a"
+     ]
+    ]
+   },
+   {
+    "title": "BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "0 ft min"
+     ],
+     [
+      "Secondary Front Setback",
+      "0 ft min"
+     ],
+     [
+      "Side Setback",
+      "5 ft min"
+     ],
+     [
+      "Rear Setback",
+      "5 ft min"
+     ],
+     [
+      "Frontage Zone Setback",
+      "20 ft min"
+     ]
+    ]
+   }
+  ],
+  "right": [
+   {
+    "title": "DESIGN STANDARDS",
+    "kind": "lv",
+    "body": [
+     [
+      "Front of buildings",
+      "n/a"
+     ],
+     [
+      "Side of buildings",
+      "n/a"
+     ],
+     [
+      "Rear of buildings",
+      "n/a"
+     ],
+     [
+      "Building Orientation",
+      "n/a"
+     ],
+     [
+      "Windows & Doors",
+      "n/a"
+     ],
+     [
+      "Primary & Accessory Roofs",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "BUILDINGS STANDARDS",
+    "kind": "list",
+    "body": [
+     {
+      "text": "The Absolute Height of buildings shall not exceed 40 ft.",
+      "sub": [
+       "Absolute Height shall be measured from the average existing grade at the adjacent public road.",
+       "Absolute Height measurements shall not include architectural components such as cupolas, towers, etc."
+      ]
+     },
+     {
+      "text": "No single building or series of connected buildings shall exceed 180 linear feet facing a public road.",
+      "sub": []
+     }
+    ]
+   },
+   {
+    "title": "PERMITTED BUILDING GROUPS",
+    "kind": "list",
+    "body": [
+     "Large Rural Compound",
+     "Multi-Unit Court"
+    ]
+   }
+  ],
+  "matrix": null,
+  "use_col1": [
+   {
+    "title": "TRANSPORTATION & UTILITIES",
+    "entries": [
+     [
+      "Dispatch Service",
+      ""
+     ],
+     [
+      "District Energy System",
+      "sp"
+     ],
+     [
+      "Junk/Salvage Yard",
+      ""
+     ],
+     [
+      "Paid Parking Lot",
+      "sp"
+     ],
+     [
+      "Recycling Facility",
+      ""
+     ],
+     [
+      "Utilities & Services",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "RECREATION",
+    "entries": [
+     [
+      "Amusement, Indoor",
+      ""
+     ],
+     [
+      "Amusement, Outdoor",
+      ""
+     ],
+     [
+      "Assembly",
+      "u"
+     ],
+     [
+      "Campground",
+      ""
+     ],
+     [
+      "Cultural Facility",
+      "u"
+     ],
+     [
+      "Health/Fitness Studio",
+      "u"
+     ],
+     [
+      "Marina, Recreation",
+      ""
+     ],
+     [
+      "Private Club or Lodge",
+      ""
+     ],
+     [
+      "Stables/Riding Center",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "RESIDENTIAL",
+    "entries": [
+     [
+      "Bed & Breakfast",
+      "rc"
+     ],
+     [
+      "Dormitory",
+      "u"
+     ],
+     [
+      "Mobile Home Park",
+      ""
+     ],
+     [
+      "Residence",
+      "u"
+     ],
+     [
+      "Rooming House",
+      ""
+     ],
+     [
+      "Tourist Rental",
+      "u"
+     ]
+    ]
+   },
+   {
+    "title": "AGRICULTURAL",
+    "entries": [
+     [
+      "Animal Care, Outdoor",
+      ""
+     ],
+     [
+      "Aquaculture",
+      "sp"
+     ],
+     [
+      "Commercial Agriculture",
+      "u"
+     ],
+     [
+      "Farm/Vendor Market",
+      "u"
+     ]
+    ]
+   },
+   {
+    "title": "INDUSTRIAL",
+    "entries": [
+     [
+      "Industrial, Artisan",
+      "u"
+     ],
+     [
+      "Industrial, General",
+      ""
+     ],
+     [
+      "Industrial, Heavy",
+      ""
+     ],
+     [
+      "Resource Extraction",
+      ""
+     ]
+    ]
+   }
+  ],
+  "use_col2": [
+   {
+    "title": "COMMERCIAL GOODS",
+    "entries": [
+     [
+      "Adult Establishment",
+      ""
+     ],
+     [
+      "Bar or Tavern",
+      ""
+     ],
+     [
+      "Car Wash",
+      ""
+     ],
+     [
+      "Drive-Through Facility",
+      ""
+     ],
+     [
+      "Food Pantry",
+      ""
+     ],
+     [
+      "Gas Station",
+      ""
+     ],
+     [
+      "Live Entertainment",
+      "u"
+     ],
+     [
+      "Marina, Dry Storage",
+      ""
+     ],
+     [
+      "Outdoor Storage",
+      "u"
+     ],
+     [
+      "Packaged Liquor",
+      ""
+     ],
+     [
+      "Research Laboratory",
+      "u"
+     ],
+     [
+      "Restaurant & Café",
+      "u"
+     ],
+     [
+      "Retail & Service, General",
+      ""
+     ],
+     [
+      "Retail & Service, Heavy",
+      ""
+     ],
+     [
+      "Retail Firearm Sales Facility",
+      ""
+     ],
+     [
+      "Self-Storage Facility",
+      ""
+     ],
+     [
+      "Vehicle Rental or Sales",
+      ""
+     ],
+     [
+      "Vehicle Repair",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "COMMERCIAL SERVICES",
+    "entries": [
+     [
+      "Animal Care, Indoor",
+      ""
+     ],
+     [
+      "Banking Services",
+      ""
+     ],
+     [
+      "College/University",
+      "u"
+     ],
+     [
+      "Commercial School",
+      "u"
+     ],
+     [
+      "Day Care Center",
+      "rc"
+     ],
+     [
+      "Day Care Facility",
+      "u"
+     ],
+     [
+      "Funeral Services",
+      ""
+     ],
+     [
+      "Health Care Provider",
+      "u"
+     ],
+     [
+      "Hospital",
+      "u"
+     ],
+     [
+      "Hotel & Hostel",
+      "u"
+     ],
+     [
+      "Human Service Facility",
+      ""
+     ],
+     [
+      "Office, Large",
+      "u"
+     ],
+     [
+      "Office, Medium",
+      "u"
+     ],
+     [
+      "Office, Small",
+      "u"
+     ],
+     [
+      "Primary/Secondary School",
+      "u"
+     ],
+     [
+      "Residential Care Facility",
+      ""
+     ]
+    ]
+   }
+  ],
+  "use_standards": {
+   "title": "USE STANDARDS FOR SD-CAMPUS",
+   "items": [
+    {
+     "text": "All lots, buildings, and uses within the Campus Special District must serve an educational function of Lincoln Academy.",
+     "sub": [
+      "Lots removed from the Campus Special District must seek a Zoning Change before applying for any building or use permit."
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "code": "SD",
+  "name": "MARINE",
+  "group": "Special Zoning Districts",
+  "color": "#1D67B1",
+  "band_text": "#FFFFFF",
+  "left": [
+   {
+    "title": "DESCRIPTION",
+    "kind": "para",
+    "body": "The Marine Special District includes sites with buildings and uses that are water-dependent or water-oriented. The Marine District accommodates applicable Shoreland zoning rules that requires a sensitive approach and use of best management practices to minimize to the greatest extent negative impacts to water resources."
+   },
+   {
+    "title": "PURPOSE",
+    "kind": "list",
+    "body": [
+     "To accommodate uses that are functionally water dependent, except heavy manufacturing use."
+    ]
+   },
+   {
+    "title": "LOT DIMENSIONS",
+    "kind": "lv",
+    "body": [
+     [
+      "Width",
+      "100 ft min"
+     ],
+     [
+      "Depth",
+      "n/a"
+     ],
+     [
+      "Lot Area",
+      "n/a"
+     ]
+    ]
+   },
+   {
+    "title": "BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "14 ft min, 35 ft max"
+     ],
+     [
+      "Secondary Front Setback",
+      "4 ft min"
+     ],
+     [
+      "Side Setback",
+      "8 ft min"
+     ],
+     [
+      "Rear Setback",
+      "8 ft min"
+     ],
+     [
+      "Frontage Zone Setback",
+      "20 ft"
+     ]
+    ]
+   }
+  ],
+  "right": [
+   {
+    "title": "DESIGN STANDARDS",
+    "kind": "lv",
+    "body": [
+     [
+      "Front of buildings",
+      "Additions"
+     ],
+     [
+      "Side of buildings",
+      "Additions"
+     ],
+     [
+      "Rear of buildings",
+      "n/a"
+     ],
+     [
+      "Building Orientation",
+      "n/a"
+     ],
+     [
+      "Windows & Doors",
+      "n/a"
+     ],
+     [
+      "Primary & Accessory Roofs",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "BUILDINGS STANDARDS",
+    "kind": "list",
+    "body": [
+     {
+      "text": "The Absolute Height of buildings shall not exceed 40 ft.",
+      "sub": [
+       "Absolute Height shall be measured from the average existing grade at the adjacent public road.",
+       "Absolute Height measurements shall not include architectural components such as cupolas, towers, etc."
+      ]
+     },
+     {
+      "text": "No single building or series of connected buildings shall exceed 180 linear feet facing a public road.",
+      "sub": []
+     }
+    ]
+   },
+   {
+    "title": "PERMITTED BUILDING GROUPS",
+    "kind": "list",
+    "body": [
+     "Large Rural Compound"
+    ]
+   }
+  ],
+  "matrix": null,
+  "use_col1": [
+   {
+    "title": "TRANSPORTATION & UTILITIES",
+    "entries": [
+     [
+      "Dispatch Service",
+      ""
+     ],
+     [
+      "District Energy System",
+      "sp"
+     ],
+     [
+      "Junk/Salvage Yard",
+      ""
+     ],
+     [
+      "Paid Parking Lot",
+      ""
+     ],
+     [
+      "Recycling Facility",
+      ""
+     ],
+     [
+      "Utilities & Services",
+      "sp"
+     ]
+    ]
+   },
+   {
+    "title": "RECREATION",
+    "entries": [
+     [
+      "Amusement, Indoor",
+      ""
+     ],
+     [
+      "Amusement, Outdoor",
+      ""
+     ],
+     [
+      "Assembly",
+      ""
+     ],
+     [
+      "Campground",
+      ""
+     ],
+     [
+      "Cultural Facility",
+      "u"
+     ],
+     [
+      "Health/Fitness Studio",
+      ""
+     ],
+     [
+      "Marina, Recreation",
+      "u"
+     ],
+     [
+      "Private Club or Lodge",
+      "u"
+     ],
+     [
+      "Stables/Riding Center",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "RESIDENTIAL",
+    "entries": [
+     [
+      "Bed & Breakfast",
+      ""
+     ],
+     [
+      "Dormitory",
+      ""
+     ],
+     [
+      "Mobile Home Park",
+      ""
+     ],
+     [
+      "Residence",
+      "u"
+     ],
+     [
+      "Rooming House",
+      ""
+     ],
+     [
+      "Tourist Rental",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "AGRICULTURAL",
+    "entries": [
+     [
+      "Animal Care, Outdoor",
+      ""
+     ],
+     [
+      "Aquaculture",
+      "u"
+     ],
+     [
+      "Commercial Agriculture",
+      ""
+     ],
+     [
+      "Farm/Vendor Market",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "INDUSTRIAL",
+    "entries": [
+     [
+      "Industrial, Artisan",
+      "u"
+     ],
+     [
+      "Industrial, General",
+      "u"
+     ],
+     [
+      "Industrial, Heavy",
+      ""
+     ],
+     [
+      "Resource Extraction",
+      ""
+     ]
+    ]
+   }
+  ],
+  "use_col2": [
+   {
+    "title": "COMMERCIAL GOODS",
+    "entries": [
+     [
+      "Adult Establishment",
+      ""
+     ],
+     [
+      "Bar or Tavern",
+      "u"
+     ],
+     [
+      "Car Wash",
+      ""
+     ],
+     [
+      "Drive-Through Facility",
+      ""
+     ],
+     [
+      "Food Pantry",
+      ""
+     ],
+     [
+      "Gas Station",
+      "sp"
+     ],
+     [
+      "Live Entertainment",
+      "u"
+     ],
+     [
+      "Marina, Dry Storage",
+      "u"
+     ],
+     [
+      "Outdoor Storage",
+      "u"
+     ],
+     [
+      "Packaged Liquor",
+      ""
+     ],
+     [
+      "Research Laboratory",
+      "u"
+     ],
+     [
+      "Restaurant & Café",
+      "u"
+     ],
+     [
+      "Retail & Service, General",
+      "u"
+     ],
+     [
+      "Retail & Service, Heavy",
+      "u"
+     ],
+     [
+      "Retail Firearm Sales Facility",
+      ""
+     ],
+     [
+      "Self-Storage Facility",
+      "u"
+     ],
+     [
+      "Vehicle Rental or Sales",
+      ""
+     ],
+     [
+      "Vehicle Repair",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "COMMERCIAL SERVICES",
+    "entries": [
+     [
+      "Animal Care, Indoor",
+      ""
+     ],
+     [
+      "Banking Services",
+      ""
+     ],
+     [
+      "College/University",
+      "u"
+     ],
+     [
+      "Commercial School",
+      "u"
+     ],
+     [
+      "Day Care Center",
+      "rc"
+     ],
+     [
+      "Day Care Facility",
+      ""
+     ],
+     [
+      "Funeral Services",
+      ""
+     ],
+     [
+      "Health Care Provider",
+      ""
+     ],
+     [
+      "Hospital",
+      ""
+     ],
+     [
+      "Hotel & Hostel",
+      ""
+     ],
+     [
+      "Human Service Facility",
+      ""
+     ],
+     [
+      "Office, Large",
+      ""
+     ],
+     [
+      "Office, Medium",
+      "u"
+     ],
+     [
+      "Office, Small",
+      "u"
+     ],
+     [
+      "Primary/Secondary School",
+      ""
+     ],
+     [
+      "Residential Care Facility",
+      ""
+     ]
+    ]
+   }
+  ],
+  "use_standards": {
+   "title": "USE STANDARDS FOR SD-MARINE",
+   "items": [
+    "Gas stations are limited to a maximum of 4 individual filling pumps.",
+    "A gas station may be located in SD-Marine only with a special permit that finds the gas station use will not adversely affect the water quality of an abutting water body."
+   ]
+  }
+ },
+ {
+  "code": "SD",
+  "name": "FABRICATION",
+  "group": "Special Zoning Districts",
+  "color": "#A7A9AC",
+  "band_text": "#FFFFFF",
+  "left": [
+   {
+    "title": "DESCRIPTION",
+    "kind": "para",
+    "body": "The Fabrication Special District allows a mix of industrial, office, retail, live-work flex spaces and other supporting development."
+   },
+   {
+    "title": "PURPOSE",
+    "kind": "list",
+    "body": [
+     "To accommodate more intensive industrial uses in a way that is compatible with and in proximity to higher density residential areas.",
+     "To support existing industrial uses and provide an area for their expansion.",
+     "To allow for residential uses that are compatible with industrial activities."
+    ]
+   },
+   {
+    "title": "LOT DIMENSIONS",
+    "kind": "lv",
+    "body": [
+     [
+      "Width",
+      "20 ft min, 100 ft max"
+     ],
+     [
+      "Depth",
+      "n/a"
+     ],
+     [
+      "Lot Area",
+      "n/a"
+     ]
+    ]
+   },
+   {
+    "title": "PRIMARY BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "0 ft min, 20 ft max"
+     ],
+     [
+      "Secondary Front Setback",
+      "0 ft min, 20 ft max"
+     ],
+     [
+      "Side Setback",
+      "5 ft min"
+     ],
+     [
+      "Rear Setback",
+      "5 ft min"
+     ],
+     [
+      "Frontage Zone Setback",
+      "4 ft min"
+     ]
+    ]
+   },
+   {
+    "title": "ACCESSORY BUILDING PLACEMENT",
+    "kind": "lv",
+    "body": [
+     [
+      "Primary Front Setback",
+      "20 ft min"
+     ],
+     [
+      "Secondary Front Setback",
+      "3 ft min"
+     ],
+     [
+      "Side Setback",
+      "5 ft min"
+     ],
+     [
+      "Rear Setback",
+      "5 ft min"
+     ]
+    ]
+   }
+  ],
+  "right": [
+   {
+    "title": "DESIGN STANDARDS",
+    "kind": "lv",
+    "body": [
+     [
+      "Front of buildings",
+      "Additions"
+     ],
+     [
+      "Side of buildings",
+      "Additions"
+     ],
+     [
+      "Rear of buildings",
+      "n/a"
+     ],
+     [
+      "Building Orientation",
+      "n/a"
+     ],
+     [
+      "Windows & Doors",
+      "20% min, 80% max"
+     ],
+     [
+      "Primary & Accessory Roofs",
+      "Gable 3/12 min"
+     ]
+    ]
+   },
+   {
+    "title": "BUILDINGS STANDARDS",
+    "kind": "list",
+    "body": [
+     {
+      "text": "Pre-existing Single Unit Residential and Residential Accessory buildings shall be allowed to continue until they are granted a change of use.",
+      "sub": [
+       "For alteration or expansion of pre-existing Single Unit Residential buildings see Article 5 Section 3 Nonconforming Buildings.",
+       "Lots with pre-existing Single Unit Residential buildings shall be allowed to construct new Residential Accessory buildings."
+      ]
+     },
+     {
+      "text": "Construction of new Single Unit Residential buildings is not permitted.",
+      "sub": []
+     },
+     {
+      "text": "No more than 45% of the total Gross Floor Area of a Mixed- Use Building shall be a Residential use.",
+      "sub": []
+     }
+    ]
+   },
+   {
+    "title": "PERMITTED BUILDING GROUPS",
+    "kind": "list",
+    "body": [
+     "Multi-Unit Court"
+    ]
+   }
+  ],
+  "matrix": {
+   "title": "PERMITTED BUILDINGS",
+   "cols": [
+    "Single Unit Commercial",
+    "Mixed-Use",
+    "Multi-Unit Commercial",
+    "Commercial Accessory",
+    "Residential Accessory"
+   ],
+   "rows": [
+    [
+     "Permitting Authority",
+     "Planning Board",
+     "Planning Board",
+     "Planning Board",
+     "Planning Board",
+     "CEO"
+    ],
+    [
+     "Building Width",
+     "120 ft",
+     "150 ft",
+     "120 ft",
+     "30 ft",
+     "30 ft"
+    ],
+    [
+     "Building Depth",
+     "-",
+     "-",
+     "-",
+     "40 ft",
+     "40 ft"
+    ],
+    [
+     "Building Floor Area",
+     "50,000",
+     "60,000",
+     "50,000",
+     "-",
+     "-"
+    ],
+    [
+     "Total Stories",
+     "2",
+     "2",
+     "2",
+     "1",
+     "1"
+    ],
+    [
+     "First Floor Height",
+     "22 ft",
+     "22 ft",
+     "22 ft",
+     "22 ft",
+     "16 ft"
+    ],
+    [
+     "Upper Floor Height",
+     "10 ft",
+     "10 ft",
+     "10 ft",
+     "10 ft",
+     "8 ft"
+    ],
+    [
+     "Number of Units",
+     "1",
+     "-",
+     "-",
+     "1",
+     "1"
+    ]
+   ]
+  },
+  "use_col1": [
+   {
+    "title": "TRANSPORTATION & UTILITIES",
+    "entries": [
+     [
+      "Dispatch Service",
+      ""
+     ],
+     [
+      "District Energy System",
+      "sp"
+     ],
+     [
+      "Junk/Salvage Yard",
+      ""
+     ],
+     [
+      "Paid Parking Lot",
+      "sp"
+     ],
+     [
+      "Recycling Facility",
+      "u"
+     ],
+     [
+      "Utilities & Services",
+      "sp"
+     ]
+    ]
+   },
+   {
+    "title": "RECREATION",
+    "entries": [
+     [
+      "Amusement, Indoor",
+      ""
+     ],
+     [
+      "Amusement, Outdoor",
+      ""
+     ],
+     [
+      "Assembly",
+      ""
+     ],
+     [
+      "Campground",
+      ""
+     ],
+     [
+      "Cultural Facility",
+      ""
+     ],
+     [
+      "Health/Fitness Studio",
+      "u"
+     ],
+     [
+      "Marina, Recreation",
+      ""
+     ],
+     [
+      "Private Club or Lodge",
+      ""
+     ],
+     [
+      "Stables/Riding Center",
+      ""
+     ]
+    ]
+   },
+   {
+    "title": "RESIDENTIAL",
+    "entries": [
+     [
+      "Bed & Breakfast",
+      ""
+     ],
+     [
+      "Dormitory",
+      ""
+     ],
+     [
+      "Mobile Home Park",
+      ""
+     ],
+     [
+      "Residence",
+      "u"
+     ],
+     [
+      "Rooming House",
+      "sp"
+     ],
+     [
+      "Tourist Rental",
+      "u"
+     ]
+    ]
+   },
+   {
+    "title": "AGRICULTURAL",
+    "entries": [
+     [
+      "Animal Care, Outdoor",
+      ""
+     ],
+     [
+      "Aquaculture",
+      "sp"
+     ],
+     [
+      "Commercial Agriculture",
+      ""
+     ],
+     [
+      "Farm/Vendor Market",
+      "u"
+     ]
+    ]
+   },
+   {
+    "title": "INDUSTRIAL",
+    "entries": [
+     [
+      "Industrial, Artisan",
+      "u"
+     ],
+     [
+      "Industrial, General",
+      "u"
+     ],
+     [
+      "Industrial, Heavy",
+      ""
+     ],
+     [
+      "Resource Extraction",
+      ""
+     ]
+    ]
+   }
+  ],
+  "use_col2": [
+   {
+    "title": "COMMERCIAL GOODS",
+    "entries": [
+     [
+      "Adult Establishment",
+      ""
+     ],
+     [
+      "Bar or Tavern",
+      "u"
+     ],
+     [
+      "Car Wash",
+      ""
+     ],
+     [
+      "Drive-Through Facility",
+      ""
+     ],
+     [
+      "Food Pantry",
+      "u"
+     ],
+     [
+      "Gas Station",
+      ""
+     ],
+     [
+      "Live Entertainment",
+      ""
+     ],
+     [
+      "Marina, Dry Storage",
+      "u"
+     ],
+     [
+      "Outdoor Storage",
+      "u"
+     ],
+     [
+      "Packaged Liquor",
+      "u"
+     ],
+     [
+      "Research Laboratory",
+      "u"
+     ],
+     [
+      "Restaurant & Café",
+      "u"
+     ],
+     [
+      "Retail & Service, General",
+      "u"
+     ],
+     [
+      "Retail & Service, Heavy",
+      "u"
+     ],
+     [
+      "Retail Firearm Sales Facility",
+      "u"
+     ],
+     [
+      "Self-Storage Facility",
+      ""
+     ],
+     [
+      "Vehicle Rental or Sales",
+      ""
+     ],
+     [
+      "Vehicle Repair",
+      "u"
+     ]
+    ]
+   },
+   {
+    "title": "COMMERCIAL SERVICES",
+    "entries": [
+     [
+      "Animal Care, Indoor",
+      "u"
+     ],
+     [
+      "Banking Services",
+      ""
+     ],
+     [
+      "College/University",
+      ""
+     ],
+     [
+      "Commercial School",
+      "u"
+     ],
+     [
+      "Day Care Center",
+      "rc"
+     ],
+     [
+      "Day Care Facility",
+      ""
+     ],
+     [
+      "Funeral Services",
+      ""
+     ],
+     [
+      "Health Care Provider",
+      "u"
+     ],
+     [
+      "Hospital",
+      ""
+     ],
+     [
+      "Hotel & Hostel",
+      "u"
+     ],
+     [
+      "Human Service Facility",
+      ""
+     ],
+     [
+      "Office, Large",
+      ""
+     ],
+     [
+      "Office, Medium",
+      "u"
+     ],
+     [
+      "Office, Small",
+      "u"
+     ],
+     [
+      "Primary/Secondary School",
+      ""
+     ],
+     [
+      "Residential Care Facility",
+      ""
+     ]
+    ]
+   }
+  ],
+  "use_standards": {
+   "title": "USE STANDARDS FOR SD-FAB",
+   "items": []
+  }
+ }
+]
