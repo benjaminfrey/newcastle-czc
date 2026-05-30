@@ -186,25 +186,26 @@ $endif$
 }
 
 // ---- List styling -----------------------------------------------------------
-
-// Enumerated lists: use CZC numbering depth conventions
-// Level 1: 1., 2., 3.
-// Level 2: a., b., c.
-// Level 3: i., ii., iii.
+//
+// CZC convention: 1. / A. / 1. / a. / i. hierarchy. Section headings own the
+// "A." and uppercase-letter level (handled in heading show rules above), so
+// for list bodies pandoc emits a top-level enum at the "1." level and nested
+// enums at the "a." and "i." levels via #set enum(numbering: ...) inside
+// #block[...]. Our defaults below:
+//   - keep "1." numbering at the outer level
+//   - let pandoc's per-block override take care of nested numbering style
+//   - apply real visual indent at every level so nested items don't read
+//     as continuations of their parent
 
 #set enum(
-  numbering: (..nums) => {
-    let lvl = nums.pos().len()
-    let n = nums.pos().last()
-    if lvl == 1 { str(n) + "." }
-    else if lvl == 2 { ("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z").at(n - 1) + "." }
-    else if lvl == 3 { ("i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x", "xi", "xii").at(n - 1) + "." }
-    else { str(n) + "." }
-  },
-  indent: 0pt,
-  body-indent: 0.6em,
-  spacing: 0.4em
+  indent: 1.2em,
+  body-indent: 0.5em,
+  spacing: 0.55em,
+  tight: false
 )
+
+// Suppress bulleted lists — CZC uses only numbered/lettered hierarchies.
+#show list: it => { it }
 
 // Suppress bulleted lists — CZC uses only numbered/lettered hierarchies.
 #show list: it => { it }
