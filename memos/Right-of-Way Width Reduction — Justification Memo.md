@@ -1,7 +1,7 @@
 # MEMORANDUM
 
 **To:** Newcastle Planning Board
-**From:** ________________________  *(Article 3 code-amendment drafter)*
+**From:** Ben Frey  *(Article 3 code-amendment drafter)*
 **Date:** May 30, 2026
 **Re:** Reducing right-of-way (ROW) width minimums in the draft Article 3 Street/Road Type Standards (Tables 3.1a & 3.1b) — justification and proposed widths
 **Status:** **Discussion draft.** The Moderate option recommended in §2 has since been written into the draft code (draft v0.4.4: Tables 3.1a/3.1b and the new Article 3 §3.d), and the Comprehensive Plan citations in §3.6 have now been filled in. This memo is retained as the supporting justification; it has not been formally adopted, and its numbers remain open to revision by the Board.
@@ -135,7 +135,7 @@ To complete the record and refine the numbers, staff/Board should:
 2. **Compare neighboring towns** — Damariscotta, Wiscasset, Edgecomb, Bristol — for any already using tiered or context-based ROW, to show Newcastle is within (or leading) regional practice.
 3. **Get Public Works / Road Commissioner input** on snow-storage and plowing needs and on dry-utility placement at a 40-foot section, to validate the retained margins.
 4. **Confirm the Comprehensive Plan citations** now incorporated in §3.6 above and in Article 3 §3.d against the adopted June 2018 plan text before relying on them at hearing.
-5. On the Board's decision, **fold the chosen widths into the next draft** (edit Tables 3.1a/3.1b, add a short "Basis for Right-of-Way Widths" note to Article 3 §3, and regenerate the redline and Summary of Changes).
+5. **On the Board's final decision, confirm or revise the widths in the draft.** The recommended Moderate option has already been written into draft v0.4.4 (Tables 3.1a/3.1b and the §3.d "Basis for Right-of-Way Widths" note) so the Board can review it in context; if the Board settles on a different option, update those tables and the §3.d note to match and regenerate the redline and Summary of Changes.
 
 ---
 
