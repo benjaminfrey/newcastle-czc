@@ -522,7 +522,7 @@ TABLE 8.1 NOTICES & PUBLIC HEARINGS
 ### a. PURPOSE
 
 1. To provide a development review process that applies to a conceptual plan coordinating the development of blocks, roads, civic space, and other neighborhood level design.
-2. To show mandatory compliance standards for blocks, Street and Road Types per Article 3, district mix, and building mix, as applicable.
+2. To show mandatory compliance standards for blocks, Street and Road Types and cross-section configurations per Article 3, district mix, and building mix, as applicable.
 3. To allow an applicant to gain conceptual-level approval for a project without preparing detailed site plans or architectural and engineering drawings for roads, civic spaces, lots, or buildings.
 4. To authorize the Code Enforcement Office to accept applications for subsequent development review in accordance with this Code, as project phases and individual lots are built out.
 
@@ -552,6 +552,7 @@ TABLE 8.1 NOTICES & PUBLIC HEARINGS
     b. The purpose of the District(s) where the property is located.
     c. The adopted Comprehensive Plan of the Town of Newcastle.
     d. Considerations indicated elsewhere in this Code for the required Master Plan approval.
+2. At Master Plan approval, the Type and cross-section configuration of each Street and Road within the plan are fixed and govern subsequent project phases. A later phase may propose a different Type or cross-section configuration only by a revision of the Master Plan under Section 14.
 
 ### f. COMPLIANCE
 

@@ -41,7 +41,7 @@ footer-date: "Adopted: November 3, 2020"
 3. Any lot type that has not been described by this Code may not be developed except by special permit.
 4. Lots must be platted as follows:
     a. The front lot line must be located along the primary road, or water body.
-    b. For newly created corner lots or through lots that abut two roads, the primary frontage shall be along the Street or Road of the highest Type per Article 3 Section 2 hierarchy (Streets take precedence over Roads; within each family, Types with lower codes — e.g., S-1 over S-2 — take precedence).
+    b. For newly created corner lots or through lots that abut two roads, the primary frontage shall be along the Street or Road of the highest Type per Article 3 Section 2 hierarchy (Streets take precedence over Roads; within each family, Types with lower codes — e.g., S1 over S2 — take precedence).
 
 ### d. NONCONFORMING LOTS
 

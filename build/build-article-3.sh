@@ -2,7 +2,7 @@
 # Build the standalone Article 3 "Streets, Roads & Driveways" deliverable.
 #
 # The standalone is the new Article rendered for focused review. The ten
-# full-page Street/Road Type pages (S-1..S-5, R-1..R-5, native Typst from
+# full-page Street/Road Type pages (S1..S5, R1..R5, native Typst from
 # source/cross-section-plates.typ) are seated INSIDE Section 2 — between the
 # General subsection (§2.c) and the Driveway subsection (§2.d) — mirroring the
 # District pages of Article 2. Because pandoc cannot emit a native pagebreak

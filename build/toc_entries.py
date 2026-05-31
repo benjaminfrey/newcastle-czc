@@ -77,7 +77,7 @@ def extract(body_pdf, data_json):
     # Physical page range [start, next_start) of an Article, used to confine the
     # banner-name scans below to their own Article. This matters because some
     # names collide across Articles: "HIGHWAY COMMERCIAL" and "RURAL HIGHWAY" are
-    # both SD districts in Article 2 AND the R-4 / R-5 Street/Road Types in
+    # both SD districts in Article 2 AND the R4 / R5 Street/Road Types in
     # Article 3. Without bounding, the first (Article-2) occurrence would steal
     # the Type's page. Returns None if the Article has no opener (no filtering).
     def art_range(n):
@@ -125,9 +125,9 @@ def extract(body_pdf, data_json):
     # name banner identical in size to the Article-2 district banners. Match that
     # banner text against the Type names in types.json and file each as an
     # Article-3 sub-entry (page-ordered, nested after the "Street & Road Types"
-    # section heading). The 19pt code badge ("S-1" etc.) shares the banner size
+    # section heading). The 19pt code badge ("S1" etc.) shares the banner size
     # but matches no name key, so it is harmlessly ignored.
-    type_label = {}  # banner text ("MAIN STREET") -> TOC label ("S-1 Main Street")
+    type_label = {}  # banner text ("MAIN STREET") -> TOC label ("S1 Main Street")
     types_path = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
         "..", "source", "exhibits", "cross-sections", "types.json")

@@ -5,13 +5,14 @@
     "credit": "Street/road cross-section illustrations adapted from Streetmix (streetmix.net), © the Streetmix project, licensed CC BY-SA 4.0."
   },
 
-  "S-1": {
-    "code": "S-1",
+  "S1": {
+    "code": "S1",
+    "footnote": "A sidewalk is required both sides in D6 (§3.F.2).",
     "family": "STREET",
     "name": "MAIN STREET",
     "context": "D6 Town Center · designated D5 segments",
     "description": "The most urban Street Type — the central organizing thoroughfare of the Town Center, with continuous building streetwalls, active ground-floor uses, wide sidewalks, on-street parking both sides, and the lowest design speed in the typology.",
-    "note": "Shopfront Required: a street classified S-1 is a Shopfront Required street under Article 2 §4.C, subsuming the separate Shopfront Required overlay shown on the District Map.",
+    "note": "Shopfront Required: a street classified S1 is a Shopfront Required street under Article 2 §4.C, subsuming the separate Shopfront Required overlay shown on the District Map.",
     "row": { "min": 66, "max": 80, "typ": 73 },
     "edges": {
       "left":  { "sprite": "buildings/arcade-left.svg",  "show_ft": 9, "label": "SHOPFRONT" },
@@ -28,20 +29,20 @@
       { "surface": "concrete", "width": 10, "name": "Sidewalk", "raised": true,  "objects": [ { "sprite": "people/people-05.svg", "at": 0.45 } ] }
     ],
     "standards": [
-      ["Right-of-way", "66–80 ft"],
-      ["Traveled way", "20–22 ft · 2 lanes @ 10–11 ft"],
-      ["On-street parking", "Both sides · 7–8 ft"],
-      ["Curb", "Vertical"],
-      ["Planting strip", "5–8 ft, both sides"],
-      ["Sidewalk", "8–12 ft, both sides"],
-      ["Street trees", "Required"],
-      ["Design speed", "20 mph"],
-      ["Max. grade", "6%"],
-      ["Max. block length", "400 ft"],
-      ["Curb return radius", "10–15 ft"],
-      ["Sight distance", "Per Table 3.2"],
-      ["Pavement", "Per Table 3.3"],
-      ["Surface", "Paved"]
+      ["Right-of-way", "66–80 ft", "80 ft"],
+      ["Traveled way", "20–22 ft · 2 lanes @ 10–11 ft", "20 ft · 2 @ 10 ft"],
+      ["On-street parking", "Both sides · 7–8 ft", "Both sides · 8 ft"],
+      ["Curb", "Vertical", "Vertical"],
+      ["Planting strip", "5–8 ft, both sides", "8 ft, both sides"],
+      ["Sidewalk", "8–12 ft, both sides", "12 ft, both sides"],
+      ["Street trees", "Required", "Both sides"],
+      ["Design speed", "20 mph", "20 mph"],
+      ["Max. grade", "6%", "6%"],
+      ["Max. block length", "400 ft", "400 ft"],
+      ["Curb return radius", "10–15 ft", "10 ft"],
+      ["Sight distance", "Per Table 3.2", "Per Table 3.2"],
+      ["Pavement", "Per Table 3.3", "Per Table 3.3"],
+      ["Surface", "Paved", "Paved"]
     ],
     "applies_in": [
       "D6 Town Center",
@@ -52,17 +53,18 @@
       "On-street parking buffers the sidewalk from traffic",
       "Planting strip and street trees both sides",
       "Narrow travel lanes calm traffic",
-      "Rear-lot service via a Lane (S-4) or Alley (S-5)"
+      "Rear-lot service via a Lane (S4) or Alley (S5)"
     ]
   },
 
-  "S-2": {
-    "code": "S-2",
+  "S2": {
+    "code": "S2",
+    "footnote": "On-street parking is required where ground-floor retail is permitted (§3.F.3).",
     "family": "STREET",
     "name": "VILLAGE STREET",
     "context": "D5 Village Business · edges of D6 · SD-Historic core",
     "description": "A village-center Street with mixed-use frontages, sidewalks both sides, and on-street parking on at least one side, at a design speed suited to pedestrian-prioritized village streets.",
-    "note": "Shopfront by designation: an S-2 segment may be designated Shopfront Required on the District Map and is then subject to the shopfront standards of Article 5 §12.",
+    "note": "Shopfront by designation: an S2 segment may be designated Shopfront Required on the District Map and is then subject to the shopfront standards of Article 5 §12.",
     "row": { "min": 40, "max": 54, "typ": 47 },
     "edges": {
       "left":  { "sprite": "buildings/residential-left.svg",  "show_ft": 12, "label": "FRONTAGE" },
@@ -78,20 +80,20 @@
       { "surface": "concrete", "width": 6,  "name": "Sidewalk", "raised": true,  "objects": [ { "sprite": "people/people-11.svg", "at": 0.5 } ] }
     ],
     "standards": [
-      ["Right-of-way", "40–54 ft"],
-      ["Traveled way", "20 ft · 2 lanes @ 10 ft"],
-      ["On-street parking", "One side · 7–8 ft"],
-      ["Curb", "Vertical or rolled"],
-      ["Planting strip", "Optional, both sides"],
-      ["Sidewalk", "5 ft min, both sides"],
-      ["Street trees", "Required"],
-      ["Design speed", "25 mph"],
-      ["Max. grade", "8%"],
-      ["Max. block length", "500 ft"],
-      ["Curb return radius", "15–20 ft"],
-      ["Sight distance", "Per Table 3.2"],
-      ["Pavement", "Per Table 3.3"],
-      ["Surface", "Paved"]
+      ["Right-of-way", "40–54 ft", "54 ft"],
+      ["Traveled way", "20 ft · 2 lanes @ 10 ft", "20 ft · 2 @ 10 ft"],
+      ["On-street parking", "One side · 7–8 ft", "One side · 8 ft"],
+      ["Curb", "Vertical or rolled", "Vertical"],
+      ["Planting strip", "Both sides", "Both sides"],
+      ["Sidewalk", "5 ft min, both sides", "5 ft, both sides"],
+      ["Street trees", "Required", "Both sides"],
+      ["Design speed", "25 mph", "25 mph"],
+      ["Max. grade", "8%", "8%"],
+      ["Max. block length", "500 ft", "500 ft"],
+      ["Curb return radius", "15–20 ft", "15 ft"],
+      ["Sight distance", "Per Table 3.2", "Per Table 3.2"],
+      ["Pavement", "Per Table 3.3", "Per Table 3.3"],
+      ["Surface", "Paved", "Paved"]
     ],
     "applies_in": [
       "D5 Village Business",
@@ -106,8 +108,9 @@
     ]
   },
 
-  "S-3": {
-    "code": "S-3",
+  "S3": {
+    "code": "S3",
+    "footnote": "Street trees and on-street parking are provided by context under §3.F.",
     "family": "STREET",
     "name": "NEIGHBORHOOD STREET",
     "context": "D2 · D3 · D4 · SD-Historic outside center",
@@ -126,20 +129,20 @@
       { "surface": "grass",    "width": 5,  "name": "Planting", "raised": true,  "objects": [ { "sprite": "trees/tree.svg", "at": 0.5 } ] }
     ],
     "standards": [
-      ["Right-of-way", "40–46 ft"],
-      ["Traveled way", "20 ft · 2 lanes @ 10 ft"],
-      ["On-street parking", "Permitted · one side · 7–8 ft"],
-      ["Curb", "Rolled or none"],
-      ["Planting strip", "4 ft min, one side"],
-      ["Sidewalk", "5 ft min, one side"],
-      ["Street trees", "Encouraged"],
-      ["Design speed", "25 mph"],
-      ["Max. grade", "8%"],
-      ["Max. block length", "600 ft"],
-      ["Curb return radius", "15–25 ft"],
-      ["Sight distance", "Per Table 3.2"],
-      ["Pavement", "Per Table 3.3"],
-      ["Surface", "Paved"]
+      ["Right-of-way", "40–46 ft", "40 ft"],
+      ["Traveled way", "20 ft · 2 lanes @ 10 ft", "20 ft · 2 @ 10 ft"],
+      ["On-street parking", "One side · 7–8 ft", "One side · 8 ft"],
+      ["Curb", "Rolled or none", "Rolled"],
+      ["Planting strip", "4 ft min, one side", "4 ft, one side"],
+      ["Sidewalk", "5 ft min, one side", "5 ft, one side"],
+      ["Street trees", "Provided where sidewalk/planting present", "Where planting built"],
+      ["Design speed", "25 mph", "25 mph"],
+      ["Max. grade", "8%", "8%"],
+      ["Max. block length", "600 ft", "600 ft"],
+      ["Curb return radius", "15–25 ft", "15 ft"],
+      ["Sight distance", "Per Table 3.2", "Per Table 3.2"],
+      ["Pavement", "Per Table 3.3", "Per Table 3.3"],
+      ["Surface", "Paved", "Paved"]
     ],
     "applies_in": [
       "D2 Neighborhood Residential",
@@ -155,12 +158,13 @@
     ]
   },
 
-  "S-4": {
-    "code": "S-4",
+  "S4": {
+    "code": "S4",
+    "footnote": "Street trees are provided where a planting strip is built (§3.F.4).",
     "family": "STREET",
     "name": "LANE",
     "context": "Internal blocks · D2 · D4 · D5 · D6 · SD-Historic · SD-Campus",
-    "description": "A narrow, low-speed Street internal to a block that provides building frontage and access on two yield-operated travel lanes, with a required sidewalk on one side; larger than an Alley (S-5), on which buildings do not front.",
+    "description": "A narrow, low-speed Street internal to a block that provides building frontage and access on two yield-operated travel lanes, with a required sidewalk on one side; larger than an Alley (S5), on which buildings do not front.",
     "row": { "min": 30, "max": 40, "typ": 35 },
     "edges": {
       "left":  { "sprite": "buildings/residential-left.svg",  "show_ft": 11, "label": "FRONTAGE" },
@@ -174,20 +178,20 @@
       { "surface": "asphalt",  "width": 8,  "name": "Parking",  "raised": false, "objects": [ { "sprite": "vehicles/car-outbound.svg", "at": 0.5 } ] }
     ],
     "standards": [
-      ["Right-of-way", "30–40 ft"],
-      ["Traveled way", "16–20 ft · 2 lanes @ 8–10 ft"],
-      ["On-street parking", "Optional · one side · 7–8 ft"],
-      ["Curb", "Rolled or none"],
-      ["Planting strip", "Optional"],
-      ["Sidewalk", "5 ft min, one side"],
-      ["Street trees", "Encouraged"],
-      ["Design speed", "15 mph"],
-      ["Max. grade", "10%"],
-      ["Max. block length", "n/a"],
-      ["Curb return radius", "10–15 ft"],
-      ["Sight distance", "Per Table 3.2"],
-      ["Pavement", "Per Table 3.3"],
-      ["Surface", "Paved"]
+      ["Right-of-way", "30–40 ft", "30 ft"],
+      ["Traveled way", "16–20 ft · 2 lanes @ 8–10 ft", "16 ft · 2 @ 8 ft"],
+      ["On-street parking", "Optional · one side · 7–8 ft", "Optional"],
+      ["Curb", "Rolled or none", "Rolled or none"],
+      ["Planting strip", "Optional", "Optional"],
+      ["Sidewalk", "5 ft min, one side", "5 ft, one side"],
+      ["Street trees", "Provided where planting strip built", "Where planting built"],
+      ["Design speed", "15 mph", "15 mph"],
+      ["Max. grade", "10%", "10%"],
+      ["Max. block length", "n/a", "n/a"],
+      ["Curb return radius", "10–15 ft", "10 ft"],
+      ["Sight distance", "Per Table 3.2", "Per Table 3.2"],
+      ["Pavement", "Per Table 3.3", "Per Table 3.3"],
+      ["Surface", "Paved", "Paved"]
     ],
     "applies_in": [
       "Mid-block segments of D2 & D4",
@@ -202,8 +206,9 @@
     ]
   },
 
-  "S-5": {
-    "code": "S-5",
+  "S5": {
+    "code": "S5",
+    "footnote": "An Alley carries no required pedestrian components; the widths shown are minimums.",
     "family": "STREET",
     "name": "ALLEY",
     "context": "Internal service · D3–D6 · SD-Historic · SD-Fabrication · SD-Civic",
@@ -218,20 +223,20 @@
       { "surface": "asphalt", "width": 9, "name": "Travel", "raised": false, "objects": [ { "sprite": "vehicles/car-outbound.svg", "at": 0.5 } ] }
     ],
     "standards": [
-      ["Right-of-way", "16–20 ft"],
-      ["Traveled way", "12–16 ft · 1–2 lanes @ 8–10 ft"],
-      ["On-street parking", "None"],
-      ["Curb", "None"],
-      ["Planting strip", "None"],
-      ["Sidewalk", "None"],
-      ["Street trees", "Permitted"],
-      ["Design speed", "10–15 mph"],
-      ["Max. grade", "10%"],
-      ["Max. block length", "n/a"],
-      ["Curb return radius", "5–10 ft"],
-      ["Sight distance", "Per Table 3.2"],
-      ["Pavement", "Per Table 3.3"],
-      ["Surface", "Paved"]
+      ["Right-of-way", "16–20 ft", "16 ft"],
+      ["Traveled way", "12–16 ft · 1–2 lanes @ 8–10 ft", "12 ft · 1–2 @ 8 ft"],
+      ["On-street parking", "None", "None"],
+      ["Curb", "None", "None"],
+      ["Planting strip", "None", "None"],
+      ["Sidewalk", "None", "None"],
+      ["Street trees", "Permitted", "Optional"],
+      ["Design speed", "10–15 mph", "10 mph"],
+      ["Max. grade", "10%", "10%"],
+      ["Max. block length", "n/a", "n/a"],
+      ["Curb return radius", "5–10 ft", "5 ft"],
+      ["Sight distance", "Per Table 3.2", "Per Table 3.2"],
+      ["Pavement", "Per Table 3.3", "Per Table 3.3"],
+      ["Surface", "Paved", "Paved"]
     ],
     "applies_in": [
       "Internal to D3–D6",
@@ -246,8 +251,9 @@
     ]
   },
 
-  "R-1": {
-    "code": "R-1",
+  "R1": {
+    "code": "R1",
+    "footnote": "A Road-family Type: the sidewalk and planting requirements of §3.F apply only where the segment abuts D5 or D6 frontage (§3.F.7).",
     "family": "ROAD",
     "name": "CONNECTOR ROAD",
     "context": "D1–D2 transition · SD-Rural Highway secondary routes",
@@ -266,20 +272,20 @@
       { "surface": "grass",    "width": 8,  "name": "Verge",  "raised": false, "objects": [ { "sprite": "plants/bush.svg", "at": 0.5 } ] }
     ],
     "standards": [
-      ["Right-of-way", "40–50 ft"],
-      ["Traveled way", "20 ft · 2 lanes @ 10 ft"],
-      ["On-street parking", "None"],
-      ["Curb", "None (shoulder)"],
-      ["Planting strip", "Optional"],
-      ["Sidewalk", "Optional · 5 ft"],
-      ["Street trees", "Permitted"],
-      ["Design speed", "35 mph"],
-      ["Max. grade", "10%"],
-      ["Max. block length", "n/a"],
-      ["Curb return radius", "25–35 ft"],
-      ["Sight distance", "Per Table 3.2"],
-      ["Pavement", "Per Table 3.3"],
-      ["Surface", "Paved"]
+      ["Right-of-way", "40–50 ft", "40 ft"],
+      ["Traveled way", "20 ft · 2 lanes @ 10 ft", "20 ft · 2 @ 10 ft"],
+      ["On-street parking", "None", "None"],
+      ["Curb", "None (shoulder)", "None (shoulder)"],
+      ["Planting strip", "Optional", "Optional"],
+      ["Sidewalk", "Optional · 5 ft", "Where abuts D5/D6"],
+      ["Street trees", "Permitted", "Optional"],
+      ["Design speed", "35 mph", "35 mph"],
+      ["Max. grade", "10%", "10%"],
+      ["Max. block length", "n/a", "n/a"],
+      ["Curb return radius", "25–35 ft", "25 ft"],
+      ["Sight distance", "Per Table 3.2", "Per Table 3.2"],
+      ["Pavement", "Per Table 3.3", "Per Table 3.3"],
+      ["Surface", "Paved", "Paved"]
     ],
     "applies_in": [
       "D1 Rural – D2 transition",
@@ -294,8 +300,9 @@
     ]
   },
 
-  "R-2": {
-    "code": "R-2",
+  "R2": {
+    "code": "R2",
+    "footnote": "A rural Road-family Type: no pedestrian components are required (§3.F.7); the widths shown are minimums.",
     "family": "ROAD",
     "name": "RURAL ROAD",
     "context": "D1 Rural · SD-Conservation · rural SD-Marine",
@@ -314,20 +321,20 @@
       { "surface": "grass",    "width": 11, "name": "Verge",  "raised": false, "objects": [ { "sprite": "plants/bush.svg", "at": 0.45 } ] }
     ],
     "standards": [
-      ["Right-of-way", "40–50 ft"],
-      ["Traveled way", "18–20 ft · 2 lanes @ 9–10 ft"],
-      ["On-street parking", "None"],
-      ["Curb", "None (shoulder)"],
-      ["Planting strip", "None"],
-      ["Sidewalk", "None"],
-      ["Street trees", "Permitted"],
-      ["Design speed", "25–35 mph"],
-      ["Max. grade", "12%"],
-      ["Max. block length", "n/a"],
-      ["Curb return radius", "25–35 ft"],
-      ["Sight distance", "Per Table 3.2"],
-      ["Pavement", "Per Table 3.3"],
-      ["Surface", "Paved or gravel"]
+      ["Right-of-way", "40–50 ft", "40 ft"],
+      ["Traveled way", "18–20 ft · 2 lanes @ 9–10 ft", "18 ft · 2 @ 9 ft"],
+      ["On-street parking", "None", "None"],
+      ["Curb", "None (shoulder)", "None (shoulder)"],
+      ["Planting strip", "None", "None"],
+      ["Sidewalk", "None", "None"],
+      ["Street trees", "Permitted", "Optional"],
+      ["Design speed", "25–35 mph", "25 mph"],
+      ["Max. grade", "12%", "12%"],
+      ["Max. block length", "n/a", "n/a"],
+      ["Curb return radius", "25–35 ft", "25 ft"],
+      ["Sight distance", "Per Table 3.2", "Per Table 3.2"],
+      ["Pavement", "Per Table 3.3", "Per Table 3.3"],
+      ["Surface", "Paved or gravel", "Paved or gravel"]
     ],
     "applies_in": [
       "D1 Rural",
@@ -338,16 +345,17 @@
       "Paved or gravel, by segment and abutting use",
       "Roadside vegetation generally preserved",
       "Driveway entrances widely spaced (large D1 frontages)",
-      "Rural Lane (R-3) is the lower-volume variant"
+      "Rural Lane (R3) is the lower-volume variant"
     ]
   },
 
-  "R-3": {
-    "code": "R-3",
+  "R3": {
+    "code": "R3",
+    "footnote": "A rural Road-family Type: no pedestrian components are required (§3.F.7); passing pull-outs apply where ≤ 15 ft wide (§3.C.5).",
     "family": "ROAD",
     "name": "RURAL LANE",
     "context": "D1 Rural · SD-Conservation · low-volume rural ways",
-    "description": "A low-volume rural yield roadway — the rural counterpart to the Lane (S-4) — carrying the fewest vehicles in the Road family (generally under 400 per day) on a single shared surface or two very narrow lanes; the conforming designation for narrow historic two-rod (33 ft) ways.",
+    "description": "A low-volume rural yield roadway — the rural counterpart to the Lane (S4) — carrying the fewest vehicles in the Road family (generally under 400 per day) on a single shared surface or two very narrow lanes; the conforming designation for narrow historic two-rod (33 ft) ways.",
     "row": { "min": 33, "max": 50, "typ": 40 },
     "edges": {
       "left":  { "ground": "grass", "show_ft": 12, "objects": [ { "sprite": "trees/tree.svg", "at": 0.45 } ] },
@@ -359,20 +367,20 @@
       { "surface": "grass",  "width": 12, "name": "Verge",  "raised": false, "objects": [ { "sprite": "plants/bush.svg", "at": 0.5 } ] }
     ],
     "standards": [
-      ["Right-of-way", "33–50 ft"],
-      ["Traveled way", "12–18 ft · 1 shared or 2 @ 8–9 ft"],
-      ["On-street parking", "None"],
-      ["Curb", "None (shoulder + ditch)"],
-      ["Planting strip", "None"],
-      ["Sidewalk", "None"],
-      ["Street trees", "Permitted"],
-      ["Design speed", "15–25 mph"],
-      ["Max. grade", "12%"],
-      ["Max. block length", "n/a"],
-      ["Curb return radius", "15–25 ft"],
-      ["Sight distance", "Per Table 3.2"],
-      ["Pavement", "Per Table 3.3"],
-      ["Surface", "Gravel acceptable"]
+      ["Right-of-way", "33–50 ft", "33 ft"],
+      ["Traveled way", "12–18 ft · 1 shared or 2 @ 8–9 ft", "12 ft · 1 shared"],
+      ["On-street parking", "None", "None"],
+      ["Curb", "None (shoulder + ditch)", "None (shoulder + ditch)"],
+      ["Planting strip", "None", "None"],
+      ["Sidewalk", "None", "None"],
+      ["Street trees", "Permitted", "Optional"],
+      ["Design speed", "15–25 mph", "15 mph"],
+      ["Max. grade", "12%", "12%"],
+      ["Max. block length", "n/a", "n/a"],
+      ["Curb return radius", "15–25 ft", "15 ft"],
+      ["Sight distance", "Per Table 3.2", "Per Table 3.2"],
+      ["Pavement", "Per Table 3.3", "Per Table 3.3"],
+      ["Surface", "Gravel acceptable", "Gravel"]
     ],
     "applies_in": [
       "D1 Rural",
@@ -387,13 +395,14 @@
     ]
   },
 
-  "R-4": {
-    "code": "R-4",
+  "R4": {
+    "code": "R4",
+    "footnote": "Cartway per MaineDOT (§12); the Town governs frontage, sidewalks, and access management, and §3.F applies where the segment abuts D5 or D6 frontage.",
     "family": "ROAD",
     "name": "HIGHWAY COMMERCIAL",
     "context": "SD-Highway Commercial · US Route 1",
     "description": "An auto-oriented commercial corridor where the cartway is designed and maintained by MaineDOT while the Town governs the frontage zone, setbacks, sidewalks (where feasible), and access management.",
-    "note": "Most R-4 segments are state-aid roads; the cartway follows MaineDOT geometry. See Section 12 for the MaineDOT coordination protocol.",
+    "note": "Most R4 segments are state-aid roads; the cartway follows MaineDOT geometry. See Section 12 for the MaineDOT coordination protocol.",
     "maindot": true,
     "illustrative": true,
     "row": { "min": 56, "max": 56, "typ": 56 },
@@ -411,20 +420,20 @@
       { "surface": "grass",    "width": 8,  "name": "Buffer",   "raised": false, "objects": [ { "sprite": "plants/bush.svg", "at": 0.5 } ] }
     ],
     "standards": [
-      ["Right-of-way", "Per MaineDOT"],
-      ["Traveled way", "Per MaineDOT"],
-      ["On-street parking", "Not in cartway"],
-      ["Curb", "Per MaineDOT"],
-      ["Planting strip", "Per District page"],
-      ["Sidewalk", "Where feasible"],
-      ["Street trees", "Encouraged"],
-      ["Design speed", "Per MaineDOT"],
-      ["Max. grade", "Per MaineDOT"],
-      ["Max. block length", "n/a"],
-      ["Curb return radius", "Per MaineDOT"],
-      ["Sight distance", "Per Table 3.2"],
-      ["Pavement", "Per MaineDOT"],
-      ["Surface", "Per MaineDOT"]
+      ["Right-of-way", "Per MaineDOT", "Per MaineDOT"],
+      ["Traveled way", "Per MaineDOT", "Per MaineDOT"],
+      ["On-street parking", "Not in cartway", "Not in cartway"],
+      ["Curb", "Per MaineDOT", "Per MaineDOT"],
+      ["Planting strip", "Per District page", "Per District page"],
+      ["Sidewalk", "Where feasible", "Where feasible"],
+      ["Street trees", "Encouraged", "Encouraged"],
+      ["Design speed", "Per MaineDOT", "Per MaineDOT"],
+      ["Max. grade", "Per MaineDOT", "Per MaineDOT"],
+      ["Max. block length", "n/a", "n/a"],
+      ["Curb return radius", "Per MaineDOT", "Per MaineDOT"],
+      ["Sight distance", "Per Table 3.2", "Per Table 3.2"],
+      ["Pavement", "Per MaineDOT", "Per MaineDOT"],
+      ["Surface", "Per MaineDOT", "Per MaineDOT"]
     ],
     "applies_in": [
       "SD-Highway Commercial",
@@ -438,13 +447,14 @@
     ]
   },
 
-  "R-5": {
-    "code": "R-5",
+  "R5": {
+    "code": "R5",
+    "footnote": "Cartway per MaineDOT (§12); rural character is preserved through vegetative screening and deep setbacks.",
     "family": "ROAD",
     "name": "RURAL HIGHWAY",
     "context": "SD-Rural Highway · US Route 1 corridor",
     "description": "A high-speed regional corridor through rural and conservation contexts, where MaineDOT controls the cartway and the Town preserves rural character through vegetative screening, deep front setbacks, and tightly managed curb cuts.",
-    "note": "All R-5 segments are state-aid roads; the cartway follows MaineDOT geometry. See Section 12 for the MaineDOT coordination protocol.",
+    "note": "All R5 segments are state-aid roads; the cartway follows MaineDOT geometry. See Section 12 for the MaineDOT coordination protocol.",
     "maindot": true,
     "illustrative": true,
     "row": { "min": 68, "max": 68, "typ": 68 },
@@ -461,20 +471,20 @@
       { "surface": "grass",    "width": 14, "name": "Screen",   "raised": false, "objects": [ { "sprite": "trees/tree.svg", "at": 0.55 } ] }
     ],
     "standards": [
-      ["Right-of-way", "Per MaineDOT"],
-      ["Traveled way", "Per MaineDOT"],
-      ["On-street parking", "Not in cartway"],
-      ["Curb", "Per MaineDOT"],
-      ["Planting strip", "None"],
-      ["Sidewalk", "None"],
-      ["Street trees", "Permitted"],
-      ["Design speed", "Per MaineDOT"],
-      ["Max. grade", "Per MaineDOT"],
-      ["Max. block length", "n/a"],
-      ["Curb return radius", "Per MaineDOT"],
-      ["Sight distance", "Per Table 3.2"],
-      ["Pavement", "Per MaineDOT"],
-      ["Surface", "Per MaineDOT"]
+      ["Right-of-way", "Per MaineDOT", "Per MaineDOT"],
+      ["Traveled way", "Per MaineDOT", "Per MaineDOT"],
+      ["On-street parking", "Not in cartway", "Not in cartway"],
+      ["Curb", "Per MaineDOT", "Per MaineDOT"],
+      ["Planting strip", "None", "None"],
+      ["Sidewalk", "None", "None"],
+      ["Street trees", "Permitted", "Optional"],
+      ["Design speed", "Per MaineDOT", "Per MaineDOT"],
+      ["Max. grade", "Per MaineDOT", "Per MaineDOT"],
+      ["Max. block length", "n/a", "n/a"],
+      ["Curb return radius", "Per MaineDOT", "Per MaineDOT"],
+      ["Sight distance", "Per Table 3.2", "Per Table 3.2"],
+      ["Pavement", "Per MaineDOT", "Per MaineDOT"],
+      ["Surface", "Per MaineDOT", "Per MaineDOT"]
     ],
     "applies_in": [
       "SD-Rural Highway",

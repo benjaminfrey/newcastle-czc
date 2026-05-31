@@ -3,7 +3,7 @@
 // =============================================================================
 //
 // Why this file exists:
-//   Each numbered Street/Road Type (S-1…S-5, R-1…R-5) gets its own full-page
+//   Each numbered Street/Road Type (S1…S5, R1…R5) gets its own full-page
 //   plate: a code badge + name banner (the Article 2 district-band chrome), a
 //   column-spanning Streetmix-style cross-section graphic (built by
 //   build/build-cross-sections.py -> source/exhibits/cross-sections/<CODE>.svg),
@@ -16,9 +16,9 @@
 // Shares ALL visual tokens + page geometry + parity-aware chrome with
 // source/article-02.typ so a plate reads as a torn-out page of the same code.
 //
-// Render the S-1 slice standalone (lands on a verso page via even offset):
+// Render the S1 slice standalone (lands on a verso page via even offset):
 //   typst compile source/cross-section-plates.typ /tmp/plates/s1.pdf \
-//     --root . --font-path style/fonts --input only=S-1 --input page_offset=30
+//     --root . --font-path style/fonts --input only=S1 --input page_offset=30
 //
 // Build integration passes the cumulative page-offset + footer date and the
 // ordered subset to emit. PARITY INVARIANT identical to article-02.typ: chrome
@@ -135,24 +135,25 @@
   line(length: 100%, stroke: hair)
 })
 
-// ---- Standards strip: two label/value pairs per row -------------------------
+// ---- Standards strip: one row per standard, Type standard + Build to ---------
+// Three columns: the item, the Type standard (the authorized range/option, set
+// gray as reference) and the Build-To Standard (the value to construct, dark +
+// bold). Art. 3 §3.C. Build to the right-hand column; on fixed/reference rows
+// (design speed, sight distance, "Per MaineDOT", …) the two columns coincide.
+// Each standards row in types.json is a [label, type-standard, build-to] triple.
 #let standards_strip(rows) = {
-  let n = rows.len()
-  let half = calc.ceil(n / 2)
-  let col_a = rows.slice(0, half)
-  let col_b = rows.slice(half)
-  while col_b.len() < col_a.len() { col_b.push((" ", " ")) }
-  let cells = ()
-  for i in range(col_a.len()) {
-    cells.push(text(fill: subsection_gray, weight: "regular")[#col_a.at(i).at(0)])
-    cells.push(text(fill: body_dark, weight: "regular")[#col_a.at(i).at(1)])
-    cells.push(text(fill: subsection_gray, weight: "regular")[#col_b.at(i).at(0)])
-    cells.push(text(fill: body_dark, weight: "regular")[#col_b.at(i).at(1)])
+  let sz = 7.5pt
+  let head(s) = text(fill: subsection_gray, weight: "bold", size: 6pt, tracking: 0.4pt)[#upper(s)]
+  let cells = (head(""), head("Type standard"), head("Build to"))
+  for r in rows {
+    cells.push(text(fill: subsection_gray, weight: "regular", size: sz)[#r.at(0)])
+    cells.push(text(fill: subsection_gray, weight: "regular", size: sz)[#r.at(1)])
+    cells.push(text(fill: body_dark, weight: "bold", size: sz)[#r.at(2)])
   }
   table(
-    columns: (0.9fr, 1.1fr, 0.9fr, 1.1fr),
+    columns: (auto, 1fr, 1fr),
     stroke: (x, y) => (top: hair, bottom: hair),
-    inset: (x: 6pt, y: 3.75pt),
+    inset: (x: 6pt, y: 2pt),
     align: left + horizon,
     ..cells,
   )
@@ -221,6 +222,19 @@
   // Table 3.1a/3.1b comparison matrix has been retired in favor of these pages).
   panel("Design Standards")
   standards_strip(t.standards)
+
+  // Build-To legend + Type-specific footnote. Set in the same gray 7pt italic as
+  // the credit caption so it reads as an annotation on the standards strip rather
+  // than as another standards row. States the §3.C reading convention (build to
+  // the right-hand column) plus the §3.F / §6.D component rules; t.footnote (if
+  // present) carries the Type-specific note.
+  block(above: 5pt, below: 13pt, text(fill: subsection_gray, size: 7pt, style: "italic")[
+    Build to the right-hand column (Art. 3 §3.C): the fuller value for pedestrian and
+    landscape components (reducible only on the written demonstration of §3.C.4), the
+    lower value for the traffic-calming dimensions (a safety floor). Components marked
+    "where …" are required by context under §3.F; the Board may require fuller components
+    within the assigned Type under §6.D.#if "footnote" in t [ \ #t.footnote]
+  ])
 
   // Reference notes — complement the §2 prose (which sits just before the
   // plate); do not duplicate it. Two columns: where the Type applies + its

@@ -339,29 +339,29 @@ Unlike §§13–15 (pure layout passes), v0.4.3 is primarily a **regulatory-cont
 
 ### Typology change (what the renderer now has to lay out)
 
-- **S-4 "Lane / Alley" was split into two Types:** **S-4 Lane** (a narrow *fronting* slow-movement street — buildings front on it; it "punches in" to mid-block land) and **S-5 Alley** (the *service* rear-lane, buildings do not front on it). The old combined Type's standards moved to S-5; S-4 is new.
-- **New R-3 "Rural Lane"** (rural yield roadway, ADT ≤ 400, two-way single-lane where ≤ 15 ft with passing pull-outs ≤ 300 ft; conforms historic two-rod / 33 ft ways) inserted between R-2 Rural Road and the highway Types.
-- **Highway Types shifted down one number** to make room: old R-3 Highway Commercial → **R-4**, old R-4 Rural Highway → **R-5**. Every in-text code reference and the §2 description letters (now **d–n**) were renumbered to match.
-- **Held findings from earlier research applied in the same pass:** S-1 Main Street ROW widened to **66–80 ft**; the "cartway" row relabelled **"Traveled way (moving lanes)"** with a separate **"On-street parking lane (each side)"** row, so moving-lane width and parking width are no longer conflated.
+- **S4 "Lane / Alley" was split into two Types:** **S4 Lane** (a narrow *fronting* slow-movement street — buildings front on it; it "punches in" to mid-block land) and **S5 Alley** (the *service* rear-lane, buildings do not front on it). The old combined Type's standards moved to S5; S4 is new.
+- **New R3 "Rural Lane"** (rural yield roadway, ADT ≤ 400, two-way single-lane where ≤ 15 ft with passing pull-outs ≤ 300 ft; conforms historic two-rod / 33 ft ways) inserted between R2 Rural Road and the highway Types.
+- **Highway Types shifted down one number** to make room: old R3 Highway Commercial → **R4**, old R4 Rural Highway → **R5**. Every in-text code reference and the §2 description letters (now **d–n**) were renumbered to match.
+- **Held findings from earlier research applied in the same pass:** S1 Main Street ROW widened to **66–80 ft**; the "cartway" row relabelled **"Traveled way (moving lanes)"** with a separate **"On-street parking lane (each side)"** row, so moving-lane width and parking width are no longer conflated.
 
 ### Table 3.1 → split into 3.1a + 3.1b (the layout-relevant fix)
 
 Ten Types will not fit one readable full-width matrix, so the single Table 3.1 was split by family:
 
-- **TABLE 3.1a STREET TYPE STANDARDS** — 6 columns (Standard + S-1…S-5).
-- **TABLE 3.1b ROAD TYPE STANDARDS** — 6 columns (Standard + R-1…R-5).
+- **TABLE 3.1a STREET TYPE STANDARDS** — 6 columns (Standard + S1…S5).
+- **TABLE 3.1b ROAD TYPE STANDARDS** — 6 columns (Standard + R1…R5).
 
-Both are raw-Typst **full-width bottom floats** (`#place(bottom, scope: "parent", float: true, block(width: 100%)[…])`, the §14/§15 pattern), `columns: (1.7fr, 1fr, 1fr, 1fr, 1fr, 1fr)`, body text dropped to **8 pt** with `inset: (x: 3pt, y: 3pt)` so six columns fit the 478.5 pt block. Literal `@` in lane specs (e.g. `2@10–11`) is escaped `\@` in the Markdown so Pandoc does not treat it as a Typst code sigil. **Verified in the v0.4.3 render:** 3.1a on integrated **p. 29**, 3.1b on **p. 30**, all columns present (incl. the new R-3 Rural Lane), no `\@` escape leak, `@` glyph renders.
+Both are raw-Typst **full-width bottom floats** (`#place(bottom, scope: "parent", float: true, block(width: 100%)[…])`, the §14/§15 pattern), `columns: (1.7fr, 1fr, 1fr, 1fr, 1fr, 1fr)`, body text dropped to **8 pt** with `inset: (x: 3pt, y: 3pt)` so six columns fit the 478.5 pt block. Literal `@` in lane specs (e.g. `2@10–11`) is escaped `\@` in the Markdown so Pandoc does not treat it as a Typst code sigil. **Verified in the v0.4.3 render:** 3.1a on integrated **p. 29**, 3.1b on **p. 30**, all columns present (incl. the new R3 Rural Lane), no `\@` escape leak, `@` glyph renders.
 
 > **Why split rather than rotate or shrink one wide table.** A 10-data-column matrix at a legible size overruns the full-width block; landscape/rotated tables break the two-column reading flow and the running header/tab geometry. Splitting by family keeps each table at the same 8 pt as the body and keeps **Tables 3.2/3.3/3.4 numbers unchanged**, so none of the "per Table 3.2" / "per Table 3.3" cross-references had to move.
 
 ### Cross-file ripple
 
-The renumber/split touched three source files: `article-03-streets-roads-driveways.md` (typology, descriptions, all five split-table-and-§ references), `article-09-definitions.md` (new **Lane (S-4)**, **Alley (S-5)**, **Rural Lane (R-3)**, **On-Street Parking Lane** entries; **Rural Road (R-2)** softened; highway defs renumbered; **Thoroughfare** now "ten … Types (S-1 through S-5 and R-1 through R-5)"), and `article-04-site-standards.md` (parking-access reference now "Lane or Alley (Types S-4 or S-5)"). `article-02` and the other renumbered Articles needed **no** change (they reference Special-District *names*, not Type codes).
+The renumber/split touched three source files: `article-03-streets-roads-driveways.md` (typology, descriptions, all five split-table-and-§ references), `article-09-definitions.md` (new **Lane (S4)**, **Alley (S5)**, **Rural Lane (R3)**, **On-Street Parking Lane** entries; **Rural Road (R2)** softened; highway defs renumbered; **Thoroughfare** now "ten … Types (S1 through S5 and R1 through R5)"), and `article-04-site-standards.md` (parking-access reference now "Lane or Alley (Types S4 or S5)"). `article-02` and the other renumbered Articles needed **no** change (they reference Special-District *names*, not Type codes).
 
 > **Page-count note.** Integrated is now **91 pages** (was 90); standalone Article 3 holds at **9 pages**. The +1 is **Article 9 (Definitions)** growing 6 → 7 pages from the four new/expanded entries — *not* Article 3, whose two new Types and split table still fit its existing 9-page (+1 pad) block. The 4 blank pads are unchanged at verso pages **36, 58, 68, 84**; footers remain continuous **1 → 91**; Articles 1–8 paginate identically to v0.4.2.
 
-> **Deferred items carried forward (unchanged from §15 except where noted).** Stale renumbered-Article table numbers (Art. 4 reads "3.x", etc.) — still deferred; the new Art. 3 tables 3.1a/3.1b/3.2/3.3/3.4 are correct. Front matter (cover + TOC). District-page banner styling. Status-glyph fallback font (`❶ ❷ ✪`). **Cross-section graphics now number 10, not 8** (one per Type) — still unproduced, and slightly more relevant now that two Types are new. R-2 12 % grade vs. RDEO's 10 % still flagged for a future reconciliation.
+> **Deferred items carried forward (unchanged from §15 except where noted).** Stale renumbered-Article table numbers (Art. 4 reads "3.x", etc.) — still deferred; the new Art. 3 tables 3.1a/3.1b/3.2/3.3/3.4 are correct. Front matter (cover + TOC). District-page banner styling. Status-glyph fallback font (`❶ ❷ ✪`). **Cross-section graphics now number 10, not 8** (one per Type) — still unproduced, and slightly more relevant now that two Types are new. R2 12 % grade vs. RDEO's 10 % still flagged for a future reconciliation.
 
 ## 17. v0.4.4 — right-of-way calibration (content; ~zero layout impact)
 
@@ -369,9 +369,9 @@ Like §16, v0.4.4 is a **regulatory-content** release, not a layout pass — and
 
 ### What changed (all within the existing 3.1a/3.1b float blocks)
 
-- **Four fixed 50-ft ROW values became ranges with a 40-ft floor:** S-2 `50 → 40–54`, S-3 `50 → 40–46` (Table 3.1a); R-1 `50 → 40–50`, R-2 `50 → 40–50` (Table 3.1b). These are **cell-value edits inside the same raw-Typst bottom-float tables built in §16** — no column count, font size, `inset`, or `columns:` ratio changed, so the layout the v0.4.3 pass verified is undisturbed.
-- **Two S-2 component cells edited:** parking `optional both → 7–8 ft, one side`; planting `5 ft one side → optional, both sides`. **One S-4 cell edited:** sidewalk `optional → one side 5 ft min`.
-- **§2.e (S-2) and §2.g (S-4) prose reconciled** to the table edits (Description + Character clauses) so no sentence contradicts its own row. Pure body-text edits; no new heading levels, no new float.
+- **Four fixed 50-ft ROW values became ranges with a 40-ft floor:** S2 `50 → 40–54`, S3 `50 → 40–46` (Table 3.1a); R1 `50 → 40–50`, R2 `50 → 40–50` (Table 3.1b). These are **cell-value edits inside the same raw-Typst bottom-float tables built in §16** — no column count, font size, `inset`, or `columns:` ratio changed, so the layout the v0.4.3 pass verified is undisturbed.
+- **Two S2 component cells edited:** parking `optional both → 7–8 ft, one side`; planting `5 ft one side → optional, both sides`. **One S4 cell edited:** sidewalk `optional → one side 5 ft min`.
+- **§2.e (S2) and §2.g (S4) prose reconciled** to the table edits (Description + Character clauses) so no sentence contradicts its own row. Pure body-text edits; no new heading levels, no new float.
 
 ### The one structural addition — new §3.d
 
@@ -381,7 +381,7 @@ A short **`### d. BASIS FOR RIGHT-OF-WAY WIDTHS`** subsection (four numbered ite
 
 > **Page-count note.** Integrated holds at **91 pages**; standalone Article 3 holds at **9 pages**. The new §3.d (~5 lines) and the prose reconciliations absorb within Article 3's existing 9-page (+1 pad) block; no Article repaginated. The 4 blank pads stay at verso pages **36, 58, 68, 84**; footers remain continuous **1 → 91**. The footer version string is the only per-page change (set at build time to "Draft v0.4.4-draft"), which is why a whole-document pixel redline marks ~87/91 pages as differing — the shipped redline is therefore **scoped to Article 3 (pages 27–35)**, the only article with substantive edits, and the Summary of Changes carries the precise record.
 
-> **Deferred items carried forward (unchanged from §16 except where noted).** Comp-Plan citations — the §3.d placeholder and the memo's §3.6 placeholder both still need specific policy references (a `docs/Newcastle Comprehensive Plan.pdf` baseline is now in the repo to support that). Memo finalization (blank FROM line; discussion draft only). Stale renumbered-Article table numbers (Art. 4 reads "3.x", etc.) — still deferred; the new Art. 3 tables 3.1a/3.1b/3.2/3.3/3.4 are correct. Front matter (cover + TOC). District-page banner styling. Status-glyph fallback font (`❶ ❷ ✪`). 10 cross-section graphics still unproduced — more relevant now that the four ROW ranges would benefit from a "what 40 ft holds" diagram. R-2 12 % grade vs. RDEO's 10 % still flagged for a future reconciliation.
+> **Deferred items carried forward (unchanged from §16 except where noted).** Comp-Plan citations — the §3.d placeholder and the memo's §3.6 placeholder both still need specific policy references (a `docs/Newcastle Comprehensive Plan.pdf` baseline is now in the repo to support that). Memo finalization (blank FROM line; discussion draft only). Stale renumbered-Article table numbers (Art. 4 reads "3.x", etc.) — still deferred; the new Art. 3 tables 3.1a/3.1b/3.2/3.3/3.4 are correct. Front matter (cover + TOC). District-page banner styling. Status-glyph fallback font (`❶ ❷ ✪`). 10 cross-section graphics still unproduced — more relevant now that the four ROW ranges would benefit from a "what 40 ft holds" diagram. R2 12 % grade vs. RDEO's 10 % still flagged for a future reconciliation.
 
 ## 18. v0.4.5 — Comprehensive Plan citations filled (content only; no template change)
 
@@ -394,7 +394,7 @@ The smallest pass yet: a single regulatory-text edit plus a memo update, with **
 
 > **Redline note.** Because the only code change is one paragraph on integrated p. 29, the shipped redline is scoped to **pages 29–30** (not the whole Article 3 as in v0.4.4) — a 9-page Article-3 redline would have been eight pages of footer-string noise around a single changed paragraph. The Summary of Changes carries the precise before/after text.
 
-> **Deferred items carried forward (unchanged from §17 except as noted).** Comp-Plan citations are now **done** in both the code (§3.d) and the memo (§3.6); they remain flagged for confirmation against the adopted plan before a hearing, but the placeholders are gone. Remaining: memo finalization (blank FROM line). Stale renumbered-Article table numbers (Art. 4 "3.x", etc.) — the Art. 3 tables 3.1a/3.1b/3.2/3.3/3.4 are correct. Front matter (cover + TOC). District-page banner styling. Status-glyph fallback font (`❶ ❷ ✪`). 10 cross-section graphics. R-2 12 % grade vs. RDEO's 10 %.
+> **Deferred items carried forward (unchanged from §17 except as noted).** Comp-Plan citations are now **done** in both the code (§3.d) and the memo (§3.6); they remain flagged for confirmation against the adopted plan before a hearing, but the placeholders are gone. Remaining: memo finalization (blank FROM line). Stale renumbered-Article table numbers (Art. 4 "3.x", etc.) — the Art. 3 tables 3.1a/3.1b/3.2/3.3/3.4 are correct. Front matter (cover + TOC). District-page banner styling. Status-glyph fallback font (`❶ ❷ ✪`). 10 cross-section graphics. R2 12 % grade vs. RDEO's 10 %.
 
 ## 19. v0.5 — Article 2 district pages re-derived from the baseline (major; new renderer)
 
@@ -421,7 +421,7 @@ The article glob became `ls article-*.md article-02.typ | sort`. The hyphen in `
 
 > **Redline note.** No whole-document overlay this release: re-rendering every district page and growing the document 6 pp shifts all pages from Article 2 on, so a page-by-page diff would be all-noise (and the prior cross-version overlays ran 100–200 MB). Replaced with a **6-page focused fidelity comparison** (`District Spread Fidelity — Baseline vs v0.5-draft.pdf`: D1, D6, SD-Historic verso+recto, baseline-left / draft-right).
 
-> **Deferred items carried forward (unchanged from §18 except as noted).** **Resolved this release:** status-glyph fallback font and district-page banner styling. **Remaining:** stale renumbered-Article table numbers (Art. 4 "3.x", etc.) — the Art. 3 tables 3.1a–3.4 and Art. 2's matrices are correct. Front matter (cover + TOC). 10 cross-section graphics. R-2 12 % grade vs. RDEO's 10 %. Memo finalization (blank FROM line).
+> **Deferred items carried forward (unchanged from §18 except as noted).** **Resolved this release:** status-glyph fallback font and district-page banner styling. **Remaining:** stale renumbered-Article table numbers (Art. 4 "3.x", etc.) — the Art. 3 tables 3.1a–3.4 and Art. 2's matrices are correct. Front matter (cover + TOC). 10 cross-section graphics. R2 12 % grade vs. RDEO's 10 %. Memo finalization (blank FROM line).
 
 ## 20. v0.6 — front matter (cover + auto-derived TOC), and three carry-forward items cleared
 

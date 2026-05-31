@@ -59,14 +59,14 @@ footer-date: "Draft v0.2-draft"
 ### c. GENERAL
 
 1. The Street/Road Types are organized in two families:
-    a. The **Street family** (S-1 through S-5) contains Types whose character emphasizes pedestrian comfort, defined frontages, and lower design speeds. Street Types are intended for the more urban Districts.
-    b. The **Road family** (R-1 through R-5) contains Types whose character emphasizes vehicular movement, working landscapes, and higher design speeds. Road Types are intended for the more rural Districts and for state-aid highway corridors.
+    a. The **Street family** (S1 through S5) contains Types whose character emphasizes pedestrian comfort, defined frontages, and lower design speeds. Street Types are intended for the more urban Districts.
+    b. The **Road family** (R1 through R5) contains Types whose character emphasizes vehicular movement, working landscapes, and higher design speeds. Road Types are intended for the more rural Districts and for state-aid highway corridors.
 2. The Driveway (D) is a third category, distinct from the Street and Road families, and provides private access from a Street or Road to a single lot.
-3. Within Types S-1 through S-5 and R-1 through R-5, pedestrian comfort considerations are weighted as follows: in Types S-1 through S-4, pedestrian comfort is a primary consideration. In Types S-5 (Alley), R-1, R-2, and R-3, pedestrian comfort is a secondary consideration but is not eliminated. In Types R-4 and R-5, vehicular movement is the primary consideration consistent with Maine Department of Transportation classification of the corridor.
+3. Within Types S1 through S5 and R1 through R5, pedestrian comfort considerations are weighted as follows: in Types S1 through S4, pedestrian comfort is a primary consideration. In Types S5 (Alley), R1, R2, and R3, pedestrian comfort is a secondary consideration but is not eliminated. In Types R4 and R5, vehicular movement is the primary consideration consistent with Maine Department of Transportation classification of the corridor.
 4. The full design standards for each Type are stated on that Type's page, which follows in this Section. The sight-distance standards of Section 8 and the construction specifications of Section 11 are referenced on each Type's page and stated in full in those Sections.
-5. A full page for each numbered Type (S-1 through S-5 and R-1 through R-5) follows in this Section. Each Type page states that Type's description, target Districts, character, and design standards, and includes an illustrative cross-section showing the representative arrangement and typical widths of the Type's right-of-way components. The cross-section illustration is representative; the design standards stated on the page govern. No Type page is provided for the Driveway (D), which is not a Street or Road Type and is regulated under Section 7.
+5. A full page for each numbered Type (S1 through S5 and R1 through R5) follows in this Section. Each Type page states that Type's description, target Districts, character, and design standards, and includes an illustrative cross-section showing the representative arrangement and typical widths of the Type's right-of-way components. The cross-section illustration is representative; the design standards stated on the page govern. No Type page is provided for the Driveway (D), which is not a Street or Road Type and is regulated under Section 7.
 
-<!-- TYPE-PAGES: the ten full-page Street/Road Type pages (S-1 through S-5, R-1 through R-5) are rendered natively from source/cross-section-plates.typ and spliced in here at build time, between Subsection C (General) above and the Driveway subsection below. See build/split-article-03.py. -->
+<!-- TYPE-PAGES: the ten full-page Street/Road Type pages (S1 through S5, R1 through R5) are rendered natively from source/cross-section-plates.typ and spliced in here at build time, between Subsection C (General) above and the Driveway subsection below. See build/split-article-03.py. -->
 
 ### d. DRIVEWAY (D)
 
@@ -87,25 +87,45 @@ footer-date: "Draft v0.2-draft"
 
 ### c. GENERAL
 
-1. Each Type's design standards are stated on that Type's page in Section 2. The rules in this Subsection govern how those standards are read and applied.
-2. Where a range is given (e.g., "10–11 ft"), the value selected within the range must be supported by an engineering justification submitted with the application.
+1. Each Type's design standards are stated on that Type's page in Section 2 in two columns. The **Type standard** column states the range or choice of options the Type authorizes. The **Build to** column states the single value to be constructed — the **Build-To Standard** defined in Section 3.C.2. The rules in this Subsection govern how the two columns are read and applied.
+2. The **Build-To Standard** is the value stated in the **Build to** column on the Type's page in Section 2. It is the value the applicant constructs, subject to alteration only as Section 3.C.4 provides. Where the Type standard is a single value, the Build-To Standard restates it. Where the Type standard is a range (for example, "8–12 ft") or a choice of sides, the Build-To Standard is drawn from it as follows:
+    a. for the pedestrian and landscape components — sidewalk width, planting strip, street trees, and on-street parking — the Build-To Standard is the fuller value, and within the Street family (Types S1 through S5) these components are built; and
+    b. for the traffic-calming dimensions — travel-lane width and curb-return radius — the Build-To Standard is the lower value.
 3. Where "per MaineDOT" is indicated, the Maine Department of Transportation's current geometric design standards for the applicable functional classification apply to the cartway. The Town retains authority over the frontage zone, building setbacks, sidewalks, and access management as set forth in this Article and in Article 2.
-4. All measurements stated for a Type are minimums unless otherwise indicated.
-5. For a Rural Lane (R-3) whose traveled way is 15 ft or narrower, passing pull-outs sufficient for two vehicles to pass, and for the deployment of fire apparatus, shall be provided at intervals of no more than 300 ft.
+4. The Build-To Standard, together with the components stated for a Type, is the configuration to be built. It may be altered only as this Subsection provides:
+    a. **Reducing a pedestrian or landscape component.** An applicant may build a sidewalk, planting strip, street-tree provision, or on-street parking narrower than its Build-To Standard, or omit such a component, only upon a written demonstration, submitted with the application, that (i) every safety-critical standard of this Article is met, and (ii) the reduced configuration better serves the purpose of the assigned Type in its District context under Sections 1 and 2.C. A component required under Section 3.F may not be reduced or omitted except as that Section provides.
+    b. **Widening a traffic-calming dimension.** The travel-lane width and the curb-return radius build to the lower value because a narrower lane and a tighter corner slow traffic and shorten pedestrian crossings. They may be built wider than their Build-To Standard where necessary to accommodate truck, bus, or emergency-vehicle movements; they shall not be built narrower.
+    c. **Safety-critical standards are fixed.** The safety-critical standards — the traveled-way width, the sight distances of Table 3.2 and Section 8, the intersection geometry of Section 9, and the maximum grade within 75 ft of an intersection (Section 9) — are fixed for every Type and may not be reduced under this Subsection.
+    d. **Building below a minimum.** A departure under paragraph a alters the Build-To Standard within the Type's stated range and is processed as part of the application; it is not a waiver. To build below a stated minimum of the assigned Type, a waiver under Section 13.H is required.
+5. For a Rural Lane (R3) whose traveled way is 15 ft or narrower, passing pull-outs sufficient for two vehicles to pass, and for the deployment of fire apparatus, shall be provided at intervals of no more than 300 ft.
 
 ### d. BASIS FOR RIGHT-OF-WAY WIDTHS
 
 1. The right-of-way widths stated on the Type pages in Section 2 are calibrated to the cross-section each Type is expected to carry — traveled way, on-street parking, planting strips, sidewalks, shoulders, and drainage — together with a margin for snow storage, dry utilities, and grading. They are not a single uniform width applied without regard to context.
-2. The widths remain rooted in the traditional New England rod (1 rod = 16.5 ft): a Main Street (S-1) at 66 ft is four rods, the historic town-road width of 49.5 ft is three rods, and a Rural Lane (R-3) and other narrow ways descend to the two-rod (33 ft) minimum. The ranges in this Section allow a Type to default to less than the historic three-rod width where its cross-section does not require it.
+2. The widths remain rooted in the traditional New England rod (1 rod = 16.5 ft): a Main Street (S1) at 66 ft is four rods, the historic town-road width of 49.5 ft is three rods, and a Rural Lane (R3) and other narrow ways descend to the two-rod (33 ft) minimum. The ranges in this Section allow a Type to default to less than the historic three-rod width where its cross-section does not require it.
 3. No Maine statute prescribes a minimum right-of-way width. 30-A MRSA §4404 requires only that a subdivision not cause unreasonable highway or public-road congestion or unsafe conditions. These widths are set under the Town's home-rule authority (Section 1.C), and the safety-critical dimensions — traveled way width, sight distance (Section 8), and intersection geometry (Section 9) — are fixed independently of the right-of-way range.
 4. These widths implement the 2018 Newcastle Comprehensive Plan, which found the Town's street standards "uniform" and directed that "new zoning will incorporate a range of street types and standards to accommodate local conditions and desired development goals" (*Streets & Roads: Road Standards = Land Use Goals*, p. 46). The calibrated rights-of-way further the Plan's call for "right-sized infrastructure" that reduces the Town's exposure to future road costs (*Less road*, p. 43), its observation that allowing "individual streets to become narrower … slows traffic and increases vehicular and pedestrian safety" (*Connectivity*, p. 44), and its policies for a walkable, pedestrian-scaled Main Street and village center (*Claim Main Street*, pp. 73–74) and for the protection of rural character (*Natural & Built Landscape*, p. 116).
 
 ### e. BASIS FOR MAXIMUM GRADES
 
 1. The maximum grades stated on the Type pages in Section 2 are calibrated to each Type's context rather than to its ownership. The Newcastle Road, Driveway, and Entrance Ordinance, repealed concurrent with this Article, set a single maximum grade by ownership — 8% for a Public Road and 10% for a Private Road (former Table 2.2) — without regard to whether the way served a pedestrian-scaled village street or a rural conduit. This Article replaces that ownership-based figure with grades calibrated to the rural-to-urban transect.
-2. The urban Street Types are held at or below the former Public-Road maximum: a Main Street (S-1) is capped at 6% and a Village or Neighborhood Street (S-2, S-3) at 8%, in the interest of pedestrian comfort, accessibility, on-street parking, and winter walkability. The rural Road Types tolerate steeper grades — a Connector Road (R-1) at 10% and a Rural Road or Rural Lane (R-2, R-3) at 12% — because they follow natural topography in low-density terrain, carry little or no pedestrian traffic, and serve the fewest lots. The repealed Ordinance itself directed that "road grades shall conform as closely as possible to the original topography"; permitting a modestly steeper rural grade honors that instruction and reduces the cut, fill, and earthwork imposed on the rural Districts (D1, D2), where this Code prioritizes minimal alteration of the landscape.
+2. The urban Street Types are held at or below the former Public-Road maximum: a Main Street (S1) is capped at 6% and a Village or Neighborhood Street (S2, S3) at 8%, in the interest of pedestrian comfort, accessibility, on-street parking, and winter walkability. The rural Road Types tolerate steeper grades — a Connector Road (R1) at 10% and a Rural Road or Rural Lane (R2, R3) at 12% — because they follow natural topography in low-density terrain, carry little or no pedestrian traffic, and serve the fewest lots. The repealed Ordinance itself directed that "road grades shall conform as closely as possible to the original topography"; permitting a modestly steeper rural grade honors that instruction and reduces the cut, fill, and earthwork imposed on the rural Districts (D1, D2), where this Code prioritizes minimal alteration of the landscape.
 3. The steeper rural maximums relax no safety-critical standard. The 2% maximum grade within 75 ft of an intersection (Section 9), the requirement that all changes in grade be connected by vertical curves providing the minimum stopping sight distance of Table 3.2 (Section 10), and the sight-distance and intersection-geometry standards generally, are fixed independently of a Type's maximum grade and apply to every Type.
-4. Grades for the Highway Commercial (R-4) and Rural Highway (R-5) cartways defer to MaineDOT design standards under Section 12, consistent with the status of US Route 1 as a State Highway.
+4. Grades for the Highway Commercial (R4) and Rural Highway (R5) cartways defer to MaineDOT design standards under Section 12, consistent with the status of US Route 1 as a State Highway.
+
+### f. REQUIRED COMPONENTS BY CONTEXT
+
+1. This Subsection states the components that shall be provided on a Street or Road regardless of whether a component's dimension is a Build-To Standard (Section 3.C.2) or a minimum. These requirements are administered by the Code Enforcement Officer on permits the Officer issues under Section 13.C, and by the Planning Board on Subdivision and Master Plan review.
+2. **Sidewalk.** A sidewalk shall be provided:
+    a. on both sides of a Street in D5 Village Business and D6 Town Center;
+    b. on at least one side of a Street or Road where any part of the frontage lies within ¼ mile, measured along the public way, of a school, the Town Office, the library, the post office, a public park or public landing, or a place of public assembly;
+    c. on at least one side where the segment connects to an existing sidewalk; and
+    d. on at least one side of a new Street that will serve more than [12] dwelling units.
+3. **On-street parking.** On-street parking shall be provided on at least one side where the abutting frontage permits a ground-floor retail, restaurant, or personal-service use under Articles 2 and 7.
+4. **Planting strip and street trees.** A planting strip with street trees shall be provided on any segment on which a sidewalk is required under Section 3.F.2, unless the Code Enforcement Officer finds in writing that a planting strip is infeasible because of a utility conflict, insufficient right-of-way remaining after the safety-critical widths are met, or ledge.
+5. **Connectivity.** A new Street shall connect to any stubbed street abutting the parcel and shall provide a stub to each abutting developable parcel where a future through-connection is feasible.
+6. **Trail connection.** Where an adopted Town trail, path, or sidewalk plan shows a connection across or along the parcel, the Street or Road shall accommodate that connection.
+7. **Road-family limit.** Types R1 through R5 are exempt from Sections 3.F.2 through 3.F.4 except where the segment abuts D5 or D6 frontage.
 
 
 <!-- The former TABLE 3.1a STREET TYPE STANDARDS and TABLE 3.1b ROAD TYPE STANDARDS comparison matrices have been retired. Each Type's design standards now live on that Type's full page in Section 2 (rendered from source/cross-section-plates.typ). The rules of general application that governed those tables — ranges, "per MaineDOT" entries, and the basis for the right-of-way widths and maximum grades — remain in Subsections 3.c, 3.d, and 3.e above. -->
@@ -131,7 +151,7 @@ footer-date: "Draft v0.2-draft"
 
 ### d. RELATIONSHIP TO TYPE
 
-1. The Type of a street or road describes its form, character, and design standards. The Ownership Category describes its statutory ownership and maintenance status. The two designations are independent: a Main Street (S-1) may be a Town Way, a Public Easement, or a State Highway; a Rural Road (R-2) may be a Town Way or a Private Road.
+1. The Type of a street or road describes its form, character, and design standards. The Ownership Category describes its statutory ownership and maintenance status. The two designations are independent: a Main Street (S1) may be a Town Way, a Public Easement, or a State Highway; a Rural Road (R2) may be a Town Way or a Private Road.
 2. Where the standards of this Article conflict with the standards or practices applicable to a particular Ownership Category — for example, with MaineDOT design standards for a State Highway, or with the terms of a Public Easement instrument — the provisions of Section 12 (Coordination with MaineDOT) and Section 4.E (below) apply.
 
 ### e. PROCESS FOR CHANGING OWNERSHIP
@@ -172,7 +192,7 @@ footer-date: "Draft v0.2-draft"
     a. **Adjacent District test.** A segment whose abutting parcels are predominantly in a given District is provisionally classified as the Type targeted for that District in Section 2 (see also the District-Type cross-reference in Table 3.4).
     b. **Built character test.** Where the abutting built form indicates a character at variance with the Adjacent District test — for example, a segment within D2 whose abutting parcels are uniformly rural in character — the Type is adjusted to match the built character.
     c. **Right-of-way and cartway test.** Where the existing right-of-way and cartway widths preclude one Type but are consistent with another, the Type is set to the closest match permitted by physical constraints, and the segment is recorded as nonconforming under Section 14.
-    d. **MaineDOT functional class test.** A segment carrying a MaineDOT functional classification of Principal Arterial or Minor Arterial is presumed to be R-4 (Highway Commercial) or R-5 (Rural Highway) depending on its abutting District. A Collector classification is presumed to be R-1 (Connector Road). A Local classification is presumed to follow the Adjacent District test.
+    d. **MaineDOT functional class test.** A segment carrying a MaineDOT functional classification of Principal Arterial or Minor Arterial is presumed to be R4 (Highway Commercial) or R5 (Rural Highway) depending on its abutting District. A Collector classification is presumed to be R1 (Connector Road). A Local classification is presumed to follow the Adjacent District test.
     e. **Tie-breaker.** Where the above tests produce conflicting indications, the Planning Board determines the Type after a public hearing, considering the long-term character intent of the abutting District(s).
 
 ```{=typst}
@@ -187,19 +207,19 @@ footer-date: "Draft v0.2-draft"
     columns: (1fr, 1.7fr),
     align: left,
     table.header([District], [Default Street/Road Type(s)]),
-    [D1 Rural], [R-2 Rural Road; R-3 Rural Lane on low-volume segments; R-1 Connector Road on transition segments],
-    [D2 Neighborhood Residential], [S-3 Neighborhood Street; S-4 Lane on mid-block segments; R-1 Connector Road on edge segments],
-    [D3 Neighborhood Business], [S-3 Neighborhood Street; S-2 Village Street on center segments],
-    [D4 Village Residential], [S-3 Neighborhood Street; S-4 Lane on mid-block segments; S-2 Village Street on center segments],
-    [D5 Village Business], [S-2 Village Street; S-1 Main Street on designated segments; S-4 Lane internal to blocks],
-    [D6 Town Center], [S-1 Main Street; S-4 Lane and S-5 Alley internal to blocks],
-    [SD-Historic], [S-2 Village Street center; S-3 Neighborhood Street outside center],
-    [SD-Conservation], [R-2 Rural Road; R-3 Rural Lane on low-volume segments],
-    [SD-Highway Commercial], [R-4 Highway Commercial],
-    [SD-Rural Highway], [R-5 Rural Highway],
-    [SD-Campus], [S-3 Neighborhood Street; S-4 Lane and S-5 Alley internal],
-    [SD-Marine], [S-3 Neighborhood Street; R-1 Connector Road on access segments],
-    [SD-Fabrication], [S-3 Neighborhood Street; S-5 Alley internal],
+    [D1 Rural], [R2 Rural Road; R3 Rural Lane on low-volume segments; R1 Connector Road on transition segments],
+    [D2 Neighborhood Residential], [S3 Neighborhood Street; S4 Lane on mid-block segments; R1 Connector Road on edge segments],
+    [D3 Neighborhood Business], [S3 Neighborhood Street; S2 Village Street on center segments],
+    [D4 Village Residential], [S3 Neighborhood Street; S4 Lane on mid-block segments; S2 Village Street on center segments],
+    [D5 Village Business], [S2 Village Street; S1 Main Street on designated segments; S4 Lane internal to blocks],
+    [D6 Town Center], [S1 Main Street; S4 Lane and S5 Alley internal to blocks],
+    [SD-Historic], [S2 Village Street center; S3 Neighborhood Street outside center],
+    [SD-Conservation], [R2 Rural Road; R3 Rural Lane on low-volume segments],
+    [SD-Highway Commercial], [R4 Highway Commercial],
+    [SD-Rural Highway], [R5 Rural Highway],
+    [SD-Campus], [S3 Neighborhood Street; S4 Lane and S5 Alley internal],
+    [SD-Marine], [S3 Neighborhood Street; R1 Connector Road on access segments],
+    [SD-Fabrication], [S3 Neighborhood Street; S5 Alley internal],
     [SD-Civic], [Type follows adjacent District],
   )
 ]
@@ -240,19 +260,32 @@ footer-date: "Draft v0.2-draft"
 3. Where the new street or road serves a Subdivision, the Type assignment is reviewed and approved by the Planning Board as part of the Subdivision Plan under Article 8 §12.
 4. Where the new street or road is a state-aid road, MaineDOT coordination is required under Section 12 prior to Type assignment.
 
-### d. DESIGN STANDARDS
+### d. DETERMINATION OF COMPONENTS AND WIDTHS
+
+1. In approving a new Street or Road, the Planning Board may require components and widths drawn from within the assigned Type's stated ranges and options in Section 2 in order to serve one or more of the following objectives:
+    a. pedestrian safety and comfort consistent with Section 2.C.3;
+    b. continuity of the street, sidewalk, and block network;
+    c. the character of the abutting District and the adopted Comprehensive Plan;
+    d. stormwater management and the establishment of tree canopy;
+    e. emergency-vehicle access; and
+    f. the supply of on-street parking.
+2. A requirement imposed under Section 6.D.1 shall be supported by a written finding identifying the objective it serves and the basis for it, made as part of the Subdivision findings under Article 8 §12.F or the Master Plan findings under Article 8 §13.E.
+3. The Planning Board may not require a configuration that exceeds the assigned Type. A fuller cross-section than the assigned Type provides is available only by reclassifying the segment to a higher Type under Section 5.E.
+4. In Types R1 through R3, the Planning Board shall weigh the preservation of rural character and the minimization of land alteration against the objectives in Section 6.D.1.
+
+### e. DESIGN STANDARDS
 
 1. The design of a new street or road must conform to the design standards stated for the assigned Type on that Type's page in Section 2, to the rules of general application in Section 3, and to the construction specifications of Section 11, except as modified under Section 12 for state-aid roads.
 2. Engineering plans must be prepared and stamped by a Maine-licensed civil engineer.
 3. Plans must be reviewed and approved by the Road Commissioner prior to issuance of a Zoning Permit for street or road construction.
 
-### e. CONSTRUCTION AND INSPECTION
+### f. CONSTRUCTION AND INSPECTION
 
 1. Construction must be supervised by a Maine-licensed civil engineer contracted by the Town at the expense of the applicant.
 2. The Road Commissioner inspects required improvements during and at the completion of construction.
 3. Upon completion, the supervising engineer certifies in writing to the Road Commissioner that all required improvements have been constructed in accordance with the approved plans.
 
-### f. ACCEPTANCE AS A TOWN WAY
+### g. ACCEPTANCE AS A TOWN WAY
 
 1. A new street or road constructed under this Section is presumed to remain a Private Road unless and until it is formally accepted as a Town Way by vote at Town Meeting under 23 MRSA §3022.
 2. The cost of any improvements required to bring the street or road up to current Town Way acceptance standards shall not be borne by the Town.
@@ -290,9 +323,9 @@ footer-date: "Draft v0.2-draft"
 ### e. CALIBRATION BY DISTRICT
 
 1. Driveway maximum width is calibrated by District as follows:
-    a. D1, D2, R-1/R-2/R-3 corridors: 24 ft max
-    b. D3, D4, S-3 corridors: 20 ft max
-    c. D5, D6, S-1/S-2 corridors: 12 ft max within the frontage zone (may flare beyond the frontage zone)
+    a. D1, D2, R1/R2/R3 corridors: 24 ft max
+    b. D3, D4, S3 corridors: 20 ft max
+    c. D5, D6, S1/S2 corridors: 12 ft max within the frontage zone (may flare beyond the frontage zone)
     d. SD-Highway Commercial, SD-Rural Highway: 30 ft max with MaineDOT entrance permit
 
 ## 8. ENTRANCES
@@ -307,7 +340,7 @@ footer-date: "Draft v0.2-draft"
 
 ### c. GENERAL
 
-1. An entrance onto a State Highway (R-4 or R-5) must be approved by the Maine Department of Transportation in accordance with 23 MRSA §704. A copy of MaineDOT approval shall be submitted to the Permitting Authority at the time of application review.
+1. An entrance onto a State Highway (R4 or R5) must be approved by the Maine Department of Transportation in accordance with 23 MRSA §704. A copy of MaineDOT approval shall be submitted to the Permitting Authority at the time of application review.
 2. Entrance standards apply to the first 20 ft of the Driveway, road, or parking lot that intersects the Street or Road.
 
 ### d. DESIGN
@@ -373,7 +406,7 @@ footer-date: "Draft v0.2-draft"
 ### b. APPLICABILITY
 
 1. Applies to all new intersections and to substantial reconstruction of existing intersections within the Town.
-2. Intersections with State Highways (R-4 or R-5) are subject to MaineDOT review under Section 12.
+2. Intersections with State Highways (R4 or R5) are subject to MaineDOT review under Section 12.
 
 ### c. GENERAL
 
@@ -427,12 +460,12 @@ footer-date: "Draft v0.2-draft"
 ### b. APPLICABILITY
 
 1. Applies to the construction of new Streets and Roads under Section 6 and to the substantial reconstruction of existing Streets and Roads under Section 14.
-2. Construction of state-aid roads (R-4 and R-5) is governed by MaineDOT specifications per Section 12.
+2. Construction of state-aid roads (R4 and R5) is governed by MaineDOT specifications per Section 12.
 
 ### c. GENERAL
 
 1. Streets and Roads shall remove stumps and rocks over 6 inches in diameter from a depth not less than 18 inches below the finished top.
-2. All newly constructed Streets and Roads remain Private Roads until they are formally accepted as a Town Way per Section 6.F.
+2. All newly constructed Streets and Roads remain Private Roads until they are formally accepted as a Town Way per Section 6.G.
 
 ```{=typst}
 // Table 3.3 authored in Typst so block(breakable: false) locks the caption to
@@ -445,7 +478,7 @@ footer-date: "Draft v0.2-draft"
   #table(
     columns: (1.9fr, 1.5fr, 1fr, 1fr, 1.15fr, 0.8fr),
     align: left,
-    table.header([Specification], [S-1 / S-2 / S-3 (Town Way)], [S-4 / S-5 (Lane / Alley)], [R-1 Connector], [R-2 / R-3 (Rural)], [Driveway]),
+    table.header([Specification], [S1 / S2 / S3 (Town Way)], [S4 / S5 (Lane / Alley)], [R1 Connector], [R2 / R3 (Rural)], [Driveway]),
     [*Construction*], [], [], [], [], [],
     [Aggregate sub-base course], [18″], [12″], [18″], [12″], [n/a],
     [Crushed aggregate base course], [3″], [3″], [3″], [3″], [n/a],
@@ -457,9 +490,9 @@ footer-date: "Draft v0.2-draft"
 ]
 ```
 
-### d. R-4 AND R-5 CONSTRUCTION
+### d. R4 AND R5 CONSTRUCTION
 
-1. Construction of new R-4 and R-5 segments and substantial reconstruction of existing R-4 and R-5 segments shall conform to MaineDOT specifications for the applicable functional classification.
+1. Construction of new R4 and R5 segments and substantial reconstruction of existing R4 and R5 segments shall conform to MaineDOT specifications for the applicable functional classification.
 2. Where MaineDOT specifications are less stringent than this Section for any element under Town authority (frontage zone, sidewalks, planting strips, access management), this Article controls for those elements.
 
 ## 12. COORDINATION WITH MAINE DOT
@@ -470,7 +503,7 @@ footer-date: "Draft v0.2-draft"
 
 ### b. APPLICABILITY
 
-1. Applies to all R-4 (Highway Commercial) and R-5 (Rural Highway) segments.
+1. Applies to all R4 (Highway Commercial) and R5 (Rural Highway) segments.
 2. Applies to any entrance from a Driveway, Street, or Road onto a State Highway.
 
 ### c. AUTHORITY DIVISION
@@ -510,6 +543,7 @@ footer-date: "Draft v0.2-draft"
     b. Substantial reconstruction of existing Streets and Roads under Section 14.
     c. Reclassification petitions under Section 5.E.
 3. The Road Commissioner reviews and certifies all construction-phase work.
+4. The Code Enforcement Officer administers the Build-To Standards of Section 3.C and the contextual component requirements of Section 3.F on permits the Officer issues, and states any infeasibility finding under Section 3.F.4 in writing. The discretion to require fuller components and widths under Section 6.D is reserved to the Planning Board.
 
 ### d. INSPECTIONS
 
@@ -533,6 +567,7 @@ footer-date: "Draft v0.2-draft"
 ### h. WAIVERS
 
 1. The Permitting Authority may grant waivers from the dimensional standards stated for an assigned Type (Sections 2 and 3) as explicitly authorized in this Article and in accordance with Section 1.D Compliance, but may not grant waivers from the sight distance standards of Section 8.G or from the State Highway entrance permit requirement of Section 12.D.
+2. A departure from a Build-To Standard under Section 3.C.4 is processed as part of the application and is not a waiver under this Subsection. A waiver under this Subsection is required only to build below a stated minimum of the assigned Type, and no waiver may be granted from the safety-critical standards listed in Section 3.C.4.
 
 ## 14. NONCONFORMING STREETS & ROADS
 

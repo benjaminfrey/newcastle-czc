@@ -12,10 +12,10 @@
 
 Four of the ten Street/Road Types in the draft Article 3 carry a **fixed 50-foot right-of-way minimum**:
 
-- **S-2 Village Street**
-- **S-3 Neighborhood Street**
-- **R-1 Connector Road**
-- **R-2 Rural Road**
+- **S2 Village Street**
+- **S3 Neighborhood Street**
+- **R1 Connector Road**
+- **R2 Rural Road**
 
 Experience administering the code indicates the 50-foot ROW is wider than these contexts require for most applications, and that the requirement imposes avoidable burdens — land taken from buildable/taxable parcels, additional impervious surface, and pavement and drainage the Town must maintain in perpetuity — without a corresponding safety or function benefit. This memo assembles the justification for reducing those minimums and proposes calibrated widths.
 
@@ -29,11 +29,11 @@ Convert the four fixed 50-foot minimums into **calibrated ranges with a 40-foot 
 
 | Type | Current ROW | **Proposed ROW** | Change to the required minimum |
 |---|:---:|:---:|:---:|
-| S-2 Village Street | 50 ft (fixed) | **40–54 ft** | −10 ft floor |
-| S-3 Neighborhood Street | 50 ft (fixed) | **40–46 ft** | −10 ft floor |
-| R-1 Connector Road | 50 ft (fixed) | **40–50 ft** | −10 ft floor |
-| R-2 Rural Road | 50 ft (fixed) | **40–50 ft** | −10 ft floor |
-| S-1, S-4, S-5, R-3 | (already ranges) | unchanged | — |
+| S2 Village Street | 50 ft (fixed) | **40–54 ft** | −10 ft floor |
+| S3 Neighborhood Street | 50 ft (fixed) | **40–46 ft** | −10 ft floor |
+| R1 Connector Road | 50 ft (fixed) | **40–50 ft** | −10 ft floor |
+| R2 Rural Road | 50 ft (fixed) | **40–50 ft** | −10 ft floor |
+| S1, S4, S5, R3 | (already ranges) | unchanged | — |
 
 **The travel lanes, sidewalks, planting strips, shoulders, and ditches are not reduced.** The ~20% reduction in the required ROW comes entirely out of the *unallocated margin* between the built cross-section and the ROW line.
 
@@ -43,7 +43,7 @@ Why **40 feet** as the common floor:
 - It sits **between the historic 2-rod (33 ft) and 3-rod (49.5 ft)** survey widths — i.e., it remains rooted in the same New England rod tradition the rest of the table already uses (see §3.1), simply declining to default to the widest.
 - It is a **round, administrable** number that staff and applicants can apply without case-by-case derivation.
 
-(Alternative postures — a more aggressive reduction, or fixing only S-2 — are set out in §6.)
+(Alternative postures — a more aggressive reduction, or fixing only S2 — are set out in §6.)
 
 ---
 
@@ -53,7 +53,7 @@ Why **40 feet** as the common floor:
 
 Early New England town ways were laid out **by the rod** (1 rod = 16.5 ft): inter-town/county roads at **4 rods = 66 ft**, ordinary town roads at **3 rods = 49.5 ft**, and minor ways at **2 rods = 33 ft**. The familiar "50-foot" minimum is simply **3 rods, rounded up** — a 19th-century petition-and-survey convention, not a figure derived from what a modern street carries.
 
-The draft code is *already* built on this tradition: **S-1 Main Street's 66-foot ROW is 4 rods**, and **R-3 Rural Lane's 33-foot floor is 2 rods**. The four fixed-50 Types are merely defaulting to the 3-rod middle. Nothing about the number reflects a calculated need, so moving off it sacrifices no engineering basis.
+The draft code is *already* built on this tradition: **S1 Main Street's 66-foot ROW is 4 rods**, and **R3 Rural Lane's 33-foot floor is 2 rods**. The four fixed-50 Types are merely defaulting to the 3-rod middle. Nothing about the number reflects a calculated need, so moving off it sacrifices no engineering basis.
 
 ### 3.2 No Maine statute sets a minimum ROW width — it is the Town's to set
 
@@ -69,12 +69,12 @@ A component-by-component budget of each Type (travel lanes + parking + planting 
 
 | Type | Maximum built cross-section | Current ROW | Unused margin |
 |---|:---:|:---:|:---:|
-| S-3 Neighborhood Street | ~37 ft | 50 ft | **≈ 13 ft** |
-| R-1 Connector Road | ~30 ft (incl. shoulders) | 50 ft | **≈ 20 ft** |
-| R-2 Rural Road | ~20 ft + ditch section | 50 ft | **≈ 16+ ft** |
-| S-2 Village Street | 35 ft (no parking) – 51 ft (parking both sides) | 50 ft | varies* |
+| S3 Neighborhood Street | ~37 ft | 50 ft | **≈ 13 ft** |
+| R1 Connector Road | ~30 ft (incl. shoulders) | 50 ft | **≈ 20 ft** |
+| R2 Rural Road | ~20 ft + ditch section | 50 ft | **≈ 16+ ft** |
+| S2 Village Street | 35 ft (no parking) – 51 ft (parking both sides) | 50 ft | varies* |
 
-\* S-2 is the one Type where the *maximum* optional build (on-street parking both sides at full width) slightly **exceeds** 50 ft — the proposed 40–54 ft range both lowers the floor and resolves that overflow. For the typical S-2 build (no parking, or one side), the required section is only ~35 ft.
+\* S2 is the one Type where the *maximum* optional build (on-street parking both sides at full width) slightly **exceeds** 50 ft — the proposed 40–54 ft range both lowers the floor and resolves that overflow. For the typical S2 build (no parking, or one side), the required section is only ~35 ft.
 
 The unused margin is not pure waste — part of it is the utility/snow/grading zone — but the analysis shows there is room to right-size without encroaching on any built element.
 
@@ -91,7 +91,7 @@ This is an affirmative safety argument, not merely a cost argument. The widely-c
     - **A range of context-calibrated street types, not one uniform width.** The Plan finds that "Newcastle's street standards are uniform and do not take into consideration whether the street is in a pedestrian-scaled neighborhood or if it serves more as a rural conduit," and directs that "new zoning will incorporate a range of street types and standards to accommodate local conditions and desired development goals." (*Road Standards = Land Use Goals*, p. 46.) The Article 3 typology and these ROW ranges are that mechanism.
     - **"Right-sized infrastructure" and lower lifecycle cost.** The Plan asks whether the Town provides "the right-sized infrastructure for the community's needs," calls anticipated road costs "one of Newcastle's greatest financial challenges," and urges the Town to "adopt new road standards" and "reduce its exposure to future costs." (*Less road*, p. 43.)
     - **Narrower streets are safer.** A connected network "enables individual streets to become narrower, which then slows traffic and increases vehicular and pedestrian safety." (*Connectivity*, p. 44.) This is the Plan's own statement of the §3.5 safety argument.
-    - **Walkability and on-street parking.** The Plan calls for streets "designed for a downtown Main Street condition, with a design speed no greater than 20-25 mph" (*Claim Main Street*, p. 74) and for "repurposing existing asphalt from too-wide travel lanes to create additional [on-street] parking" (*Modern Parking Standards*, p. 45) — supporting the S-2 parking-on-one-side calibration.
+    - **Walkability and on-street parking.** The Plan calls for streets "designed for a downtown Main Street condition, with a design speed no greater than 20-25 mph" (*Claim Main Street*, p. 74) and for "repurposing existing asphalt from too-wide travel lanes to create additional [on-street] parking" (*Modern Parking Standards*, p. 45) — supporting the S2 parking-on-one-side calibration.
     - **Rural character and efficient land use.** Protection of rural character is "an ongoing concern of citizens," and the Plan's growth framework focuses development where "infrastructure already exists to support new growth." (*Natural & Built Landscape*, p. 116; *Make Rural Work*, pp. 100–101.)
 
   The Plan's Regulatory Flowchart (p. 177) designates the Character-Based Code as the implementing tool for these policies. Page references are to the June 2018 plan and should be confirmed against the adopted text before relying on them at a public hearing.
@@ -102,9 +102,9 @@ This is an affirmative safety argument, not merely a cost argument. The widely-c
 
 The proposal deliberately leaves the safety-critical dimensions untouched, so the reduced ROW does not compromise function:
 
-- **Travel-way widths are unchanged.** S-2/S-3/R-1 keep their 20-foot travel ways, which meet the **20-foot minimum unobstructed fire-apparatus access width** under the International Fire Code (§503). Fire access is not affected.
+- **Travel-way widths are unchanged.** S2/S3/R1 keep their 20-foot travel ways, which meet the **20-foot minimum unobstructed fire-apparatus access width** under the International Fire Code (§503). Fire access is not affected.
 - **Planting strips and shoulders are retained** — the zone where dry utilities are placed and where plowed snow is stored in a Maine winter.
-- **Rural ditches and backslopes are retained** — R-1 and R-2 keep full open-drainage sections within the 40-foot floor.
+- **Rural ditches and backslopes are retained** — R1 and R2 keep full open-drainage sections within the 40-foot floor.
 - **Sight distances and intersection geometry** (Tables 3.2 and the curb-return standards) are unchanged.
 
 In short, the proposal trims the *margin*, not the *street*.
@@ -119,11 +119,11 @@ Reducing the **minimum** does not make any existing street nonconforming. Roads 
 
 ## 6. Options for the Board
 
-| | Floor | S-2 | S-3 | R-1 | R-2 | Trade-off |
+| | Floor | S2 | S3 | R1 | R2 | Trade-off |
 |---|:---:|:---:|:---:|:---:|:---:|---|
 | **A. Moderate** *(recommended)* | 40 ft | 40–54 | 40–46 | 40–50 | 40–50 | Keeps full utility/snow/ditch margins; most defensible. |
 | **B. Aggressive** | bare section | ~38 | ~36 | ~36 | **33** (2-rod) | Pushes dry utilities into easements, accepts minimal ditches; maximizes land savings but thinner margins. |
-| **C. Fix S-2 only** | — | 40–54 | 50 | 50 | 50 | Resolves only the parking-overflow inconsistency; leaves the burden the memo identifies unaddressed. |
+| **C. Fix S2 only** | — | 40–54 | 50 | 50 | 50 | Resolves only the parking-overflow inconsistency; leaves the burden the memo identifies unaddressed. |
 
 ---
 

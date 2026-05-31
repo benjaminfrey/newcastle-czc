@@ -69,7 +69,7 @@ footer-date: "Adopted: November 3, 2020"
 
 ### f. VEHICULAR ACCESS
 
-1. Off-street parking must be accessed from a Lane or Alley (Types S-4 or S-5 per Article 3 Section 2) or from a secondary frontage. When there is no abutting Lane, Alley, or secondary frontage, parking may be accessed from the primary frontage.
+1. Off-street parking must be accessed from a Lane or Alley (Types S4 or S5 per Article 3 Section 2) or from a secondary frontage. When there is no abutting Lane, Alley, or secondary frontage, parking may be accessed from the primary frontage.
 2. Parking lots should connect with existing abutting parking lots.
 3. Shared parking agreements with neighboring properties are encouraged.
 

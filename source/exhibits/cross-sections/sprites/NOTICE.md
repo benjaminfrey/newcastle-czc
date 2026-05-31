@@ -29,8 +29,8 @@ incorporate these CC BY-SA illustrations, those generated images are
 
 ## Sprites vendored here
 
-Curated subset sufficient to render the ten Street/Road Type plates (S-1…S-5,
-R-1…R-5). Ground-surface sprites are retained for provenance; the compositor
+Curated subset sufficient to render the ten Street/Road Type plates (S1…S5,
+R1…R5). Ground-surface sprites are retained for provenance; the compositor
 samples their fill colors (asphalt rgb(41,43,41), concrete rgb(216,211,203),
 earth rgb(53,45,39), sand rgb(236,219,177)) rather than tiling the textures.
 

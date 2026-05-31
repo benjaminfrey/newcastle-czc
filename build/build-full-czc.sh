@@ -64,8 +64,8 @@ trap 'rm -rf "$TMPDIR_PDFS"' EXIT
 # Splice the ten Street/Road Type pages (native Typst, cross-section-plates.typ)
 # INTO Article 3 Section 2 — between the General subsection (§2.c) and the
 # Driveway subsection (§2.d) — so each Type's full page sits where its standards
-# live, mirroring the District pages of Article 2. Each numbered Type (S-1..S-5,
-# R-1..R-5) renders as its own full page.
+# live, mirroring the District pages of Article 2. Each numbered Type (S1..S5,
+# R1..R5) renders as its own full page.
 #
 # Pandoc cannot emit a native-Typst pagebreak mid-flow, so Article 3 is rendered
 # in TWO pandoc passes around the Typst block: split-article-03.py cuts the
@@ -260,7 +260,7 @@ import io, sys
 with io.open(sys.argv[1], encoding="utf-8") as f:
     lines = f.read().split("\n")
 note = (
-    "<!-- The ten Street/Road Type pages (S-1..S-5, R-1..R-5) appear here in the\n"
+    "<!-- The ten Street/Road Type pages (S1..S5, R1..R5) appear here in the\n"
     "     rendered PDF, inside Section 2 between the General subsection and the\n"
     "     Driveway subsection. Each is a full page rendered from\n"
     "     source/cross-section-plates.typ (compositing\n"
