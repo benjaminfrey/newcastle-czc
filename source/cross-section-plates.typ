@@ -7,8 +7,11 @@
 //   plate: a code badge + name banner (the Article 2 district-band chrome), a
 //   column-spanning Streetmix-style cross-section graphic (built by
 //   build/build-cross-sections.py -> source/exhibits/cross-sections/<CODE>.svg),
-//   a CC BY-SA credit line, and a compact standards strip drawn from Table 3.1a/
-//   3.1b. Plates are interleaved into Article 3 right after each Type's prose.
+//   a CC BY-SA credit line, and a compact Design Standards strip drawn from each
+//   Type's `standards` block in types.json. Each plate IS that Type's one-stop
+//   page (description + standards + character), seated inside Article 3 §2 — they
+//   replace the former §2.D–§2.M per-Type prose subsections, mirroring the
+//   District pages of Article 2.
 //
 // Shares ALL visual tokens + page geometry + parity-aware chrome with
 // source/article-02.typ so a plate reads as a torn-out page of the same code.
@@ -167,9 +170,23 @@
   v(6pt)
 
   // Context kicker line.
-  block(above: 0pt, below: 11pt,
+  block(above: 0pt, below: 8pt,
     text(fill: subsection_gray, size: 9pt, weight: "regular", tracking: 0.2pt)[
       #upper(fam) TYPE · #t.context])
+
+  // Regulatory description — the authoritative page text rolled on from the
+  // former §2 prose subsection. Reads as body prose; the TARGET DISTRICTS and
+  // CHARACTER columns below carry the scannable specifics without restating it.
+  block(above: 0pt, below: 9pt, text(fill: body_dark, size: 8.5pt)[#t.description])
+
+  // Optional Type-specific cross-reference (shopfront / state-aid), set off with
+  // a colored left bar in the Type's family color.
+  if "note" in t {
+    block(above: 0pt, below: 11pt, width: 100%,
+      inset: (left: 9pt, top: 1pt, bottom: 1pt),
+      stroke: (left: 2pt + fill_c),
+      text(fill: body_dark, size: 8pt, style: "italic")[#t.note])
+  }
 
   // Cross-section graphic. Span the full text-block width when the section's
   // natural aspect keeps it within a sane height; otherwise (narrow Types like
@@ -178,7 +195,7 @@
   layout(size => {
     let nat = measure(image(xs_path))
     let full_h = size.width * (nat.height / nat.width)
-    let maxh = 225pt
+    let maxh = 180pt
     if full_h <= maxh {
       align(center, image(xs_path, width: 100%))
     } else {
@@ -194,14 +211,15 @@
     access management. Cross-section illustration adapted from Streetmix (streetmix.net),
     © the Streetmix project, licensed CC BY-SA 4.0.
   ] else [
-    Representative section at typical right-of-way; widths are typical values from
-    Table 3.1#if fam == "ROAD" { "b" } else { "a" }. Cross-section illustration adapted
+    Representative section at a typical right-of-way; widths are typical values within
+    the ranges in the Design Standards below. Cross-section illustration adapted
     from Streetmix (streetmix.net), © the Streetmix project, licensed CC BY-SA 4.0.
   ]
   block(above: 0pt, below: 14pt, text(fill: subsection_gray, size: 7pt, style: "italic", credit))
 
-  // Standards strip.
-  panel("Design Standards — Table 3.1" + if fam == "ROAD" { "b" } else { "a" })
+  // Standards strip — these per-Type pages are the standards home (the former
+  // Table 3.1a/3.1b comparison matrix has been retired in favor of these pages).
+  panel("Design Standards")
   standards_strip(t.standards)
 
   // Reference notes — complement the §2 prose (which sits just before the
@@ -213,8 +231,8 @@
     pad(top: 4pt, list(..items.map(it => [#it])))
   }
   grid(columns: (0.85fr, 1.15fr), column-gutter: 44pt,
-    notecol("Applies In", t.at("applies_in", default: ())),
-    notecol("Key Attributes", t.at("attributes", default: ())),
+    notecol("Target Districts", t.at("applies_in", default: ())),
+    notecol("Character", t.at("attributes", default: ())),
   )
 }
 

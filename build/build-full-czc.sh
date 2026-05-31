@@ -57,34 +57,61 @@ if [ ${#ARTICLES[@]} -eq 0 ]; then
   exit 1
 fi
 
-# Splice the Street/Road Type cross-section plate gallery (native Typst,
-# source/cross-section-plates.typ) into the render order immediately AFTER
-# Article 3's prose. Each of the ten numbered Types (S-1..S-5, R-1..R-5) renders
-# as its own full-page plate. Placing the 10-page (EVEN) block at the end of
-# Article 3 keeps Article 3's own footers correct (nothing shifts inside it) and
-# leaves the cumulative offset even for Article 4. The block lands at the EVEN
-# offset Article 3 leaves behind, satisfying the plate file's parity invariant.
-# It is rendered by the *.typ branch below exactly like article-02.typ (same
-# page_offset/footer_date inputs).
+# Working temp dir (Article-3 split-markdown halves + per-unit rendered PDFs).
+TMPDIR_PDFS="$(mktemp -d)"
+trap 'rm -rf "$TMPDIR_PDFS"' EXIT
+
+# Splice the ten Street/Road Type pages (native Typst, cross-section-plates.typ)
+# INTO Article 3 Section 2 — between the General subsection (§2.c) and the
+# Driveway subsection (§2.d) — so each Type's full page sits where its standards
+# live, mirroring the District pages of Article 2. Each numbered Type (S-1..S-5,
+# R-1..R-5) renders as its own full page.
+#
+# Pandoc cannot emit a native-Typst pagebreak mid-flow, so Article 3 is rendered
+# in TWO pandoc passes around the Typst block: split-article-03.py cuts the
+# markdown at the <!-- TYPE-PAGES --> marker into 03a (opener + §1 + §2.a-c) and
+# 03b (§2.d Driveway + §3..§14, rendered with continuation=true so the big
+# "ARTICLE 3" opener is not repeated). The render order becomes [03a, plates,
+# 03b]. Threading the running EVEN page offset through all three keeps footers
+# continuous and every unit's parity-aware chrome (tab/header/badge) correct; the
+# 10-page (EVEN) plate block preserves offset parity for the segments around it.
 PLATES_TYP="$SOURCE_DIR/cross-section-plates.typ"
-if [ -f "$PLATES_TYP" ]; then
-  SPLICED=()
-  for f in "${ARTICLES[@]}"; do
-    SPLICED+=("$f")
-    case "$f" in
-      */article-03-*.md) SPLICED+=("$PLATES_TYP") ;;
-    esac
-  done
-  ARTICLES=("${SPLICED[@]}")
+ART3_SRC=""
+for f in "${ARTICLES[@]}"; do
+  case "$f" in */article-03-*.md) ART3_SRC="$f" ;; esac
+done
+SPLIT_03A=""
+SPLIT_03B=""
+if [ -f "$PLATES_TYP" ] && [ -n "$ART3_SRC" ]; then
+  CAND_03A="$TMPDIR_PDFS/article-03a.md"
+  CAND_03B="$TMPDIR_PDFS/article-03b.md"
+  if python3 "$REPO_ROOT/build/split-article-03.py" "$ART3_SRC" "$CAND_03A" "$CAND_03B"; then
+    SPLIT_03A="$CAND_03A"
+    SPLIT_03B="$CAND_03B"
+    SPLICED=()
+    for f in "${ARTICLES[@]}"; do
+      case "$f" in
+        */article-03-*.md) SPLICED+=("$SPLIT_03A" "$PLATES_TYP" "$SPLIT_03B") ;;
+        *) SPLICED+=("$f") ;;
+      esac
+    done
+    ARTICLES=("${SPLICED[@]}")
+  else
+    # No marker (older Article 3) — fall back to appending the plate block AFTER
+    # Article 3's prose, as a single pass (legacy behavior).
+    echo "split-article-03: no marker; appending plate block after Article 3" >&2
+    SPLICED=()
+    for f in "${ARTICLES[@]}"; do
+      SPLICED+=("$f")
+      case "$f" in */article-03-*.md) SPLICED+=("$PLATES_TYP") ;; esac
+    done
+    ARTICLES=("${SPLICED[@]}")
+  fi
 fi
 
 OUT_NAME="Newcastle CZC (Integrated Draft $VERSION)"
 OUTPUT_PDF="$RELEASE_DIR/$OUT_NAME.pdf"
 COMBINED_MD="$RELEASE_DIR/$OUT_NAME.md"
-
-# Render each article to its own PDF.
-TMPDIR_PDFS="$(mktemp -d)"
-trap 'rm -rf "$TMPDIR_PDFS"' EXIT
 
 # A single blank US-Letter page, used to pad Articles that render to an odd page
 # count. Padding keeps each Article opening on a recto (odd) page and keeps the
@@ -122,11 +149,28 @@ for ART in "${ARTICLES[@]}"; do
         --input "footer_date=Draft $VERSION"
       ;;
     *)
-      echo "Rendering article $INDEX (page offset $OFFSET): $(basename "$ART")"
-      bash "$REPO_ROOT/build/build-article.sh" "$ART" "$PART" \
-        -V "footer-date=Draft $VERSION" \
-        -V "page-offset=$OFFSET" >/dev/null
-      MD_LIST+=("$ART")
+      # Article 3 renders in two passes (see the splice section): 03a carries the
+      # opener; 03b is a continuation (opener suppressed via -V continuation). For
+      # the combined-markdown reference, 03a contributes the ORIGINAL whole
+      # Article 3 (its TYPE-PAGES marker swapped for a pointer note below); 03b
+      # contributes nothing (already covered by the original).
+      if [ -n "$SPLIT_03B" ] && [ "$ART" = "$SPLIT_03B" ]; then
+        echo "Rendering article $INDEX (page offset $OFFSET) [Art. 3 continuation]: $(basename "$ART")"
+        bash "$REPO_ROOT/build/build-article.sh" "$ART" "$PART" \
+          -V "footer-date=Draft $VERSION" \
+          -V "page-offset=$OFFSET" \
+          -V "continuation=true" >/dev/null
+      else
+        echo "Rendering article $INDEX (page offset $OFFSET): $(basename "$ART")"
+        bash "$REPO_ROOT/build/build-article.sh" "$ART" "$PART" \
+          -V "footer-date=Draft $VERSION" \
+          -V "page-offset=$OFFSET" >/dev/null
+        if [ -n "$SPLIT_03A" ] && [ "$ART" = "$SPLIT_03A" ]; then
+          MD_LIST+=("$ART3_SRC")
+        else
+          MD_LIST+=("$ART")
+        fi
+      fi
       ;;
   esac
   PDF_LIST+=("$PART")
@@ -206,24 +250,40 @@ pdfunite "${FRONT_PARTS[@]}" "$BODY_PDF" "$OUTPUT_PDF"
 echo "Writing combined markdown: $COMBINED_MD"
 : > "$COMBINED_MD"
 for ART in "${MD_LIST[@]}"; do
-  cat "$ART" >> "$COMBINED_MD"
   case "$ART" in
-    *article-02-prefatory.md)
-      {
-        printf '\n\n'
-        printf '<!-- The 13 District Standards spreads (D1-D6 + 7 Special Districts) are\n'
-        printf '     rendered natively from article-02-data.json via source/article-02.typ.\n'
-        printf '     See the Integrated Draft PDF for the per-district 2-page spreads. -->\n\n'
-      } >> "$COMBINED_MD"
-      ;;
     *article-03-*.md)
-      {
-        printf '\n\n'
-        printf '<!-- The ten Street/Road Type cross-section plates (S-1..S-5, R-1..R-5) are\n'
-        printf '     rendered as full-page graphics from source/cross-section-plates.typ\n'
-        printf '     (compositing source/exhibits/cross-sections/<CODE>.svg). See the\n'
-        printf '     Integrated Draft PDF for the per-Type plate pages at the end of Article 3. -->\n\n'
-      } >> "$COMBINED_MD"
+      # Article 3 now seats the ten Type pages INSIDE §2. Swap the TYPE-PAGES
+      # build marker for a human-readable pointer note IN PLACE (between §2.c and
+      # §2.d), so the combined markdown reads as the plates appear in the PDF.
+      python3 - "$ART" >> "$COMBINED_MD" <<'PY'
+import io, sys
+with io.open(sys.argv[1], encoding="utf-8") as f:
+    lines = f.read().split("\n")
+note = (
+    "<!-- The ten Street/Road Type pages (S-1..S-5, R-1..R-5) appear here in the\n"
+    "     rendered PDF, inside Section 2 between the General subsection and the\n"
+    "     Driveway subsection. Each is a full page rendered from\n"
+    "     source/cross-section-plates.typ (compositing\n"
+    "     source/exhibits/cross-sections/<CODE>.svg) and carries that Type's\n"
+    "     description, design standards, target Districts, and character — the\n"
+    "     one-stop Type page modeled on the Article 2 District pages. -->"
+)
+out = [note if "TYPE-PAGES" in ln else ln for ln in lines]
+sys.stdout.write("\n".join(out))
+PY
+      ;;
+    *)
+      cat "$ART" >> "$COMBINED_MD"
+      case "$ART" in
+        *article-02-prefatory.md)
+          {
+            printf '\n\n'
+            printf '<!-- The 13 District Standards spreads (D1-D6 + 7 Special Districts) are\n'
+            printf '     rendered natively from article-02-data.json via source/article-02.typ.\n'
+            printf '     See the Integrated Draft PDF for the per-district 2-page spreads. -->\n\n'
+          } >> "$COMBINED_MD"
+          ;;
+      esac
       ;;
   esac
 done

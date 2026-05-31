@@ -37,10 +37,19 @@ echo "  baseline: $PDF_A"
 echo "  draft:    $PDF_B"
 echo "  output:   $OUTPUT"
 
-# diff-pdf exits non-zero when files differ — that is expected and not an error here.
-diff-pdf --output-diff="$OUTPUT" --mark-differences "$PDF_A" "$PDF_B" || true
+# diff-pdf (wxWidgets) double-encodes non-ASCII bytes in --output-diff, so an
+# output path containing an em-dash or other multibyte glyph is written to a
+# mojibake filename and never appears where we expect it. Write to an ASCII-only
+# temp path first, then move it into place with the shell (which handles UTF-8
+# filenames correctly).
+TMP_OUT="$(mktemp -t redline).pdf"
+trap 'rm -f "$TMP_OUT"' EXIT
 
-if [ -f "$OUTPUT" ]; then
+# diff-pdf exits non-zero when files differ — that is expected and not an error here.
+diff-pdf --output-diff="$TMP_OUT" --mark-differences "$PDF_A" "$PDF_B" || true
+
+if [ -s "$TMP_OUT" ]; then
+  mv "$TMP_OUT" "$OUTPUT"
   echo "Redline saved: $OUTPUT"
 else
   echo "Warning: diff-pdf did not produce an output file." >&2

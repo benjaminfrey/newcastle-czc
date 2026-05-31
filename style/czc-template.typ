@@ -48,6 +48,19 @@ $else$
 #let page_offset = 0
 $endif$
 
+// Continuation flag. When a single Article is rendered in MORE THAN ONE pandoc
+// pass — because native-Typst pages (the Article 3 Street/Road Type plates) are
+// spliced into the middle of its flow — only the FIRST segment carries the big
+// "ARTICLE N" opener + divider. Later segments set continuation:true so they
+// resume mid-article: the rotated tab and the running head still render (they
+// key off article_number / article_name, passed on every segment), but the
+// opener is suppressed so the page reads as a continuation, not a new Article.
+$if(continuation)$
+#let is_continuation = true
+$else$
+#let is_continuation = false
+$endif$
+
 // ---- Page geometry ----------------------------------------------------------
 // MEASURED from baseline (612x792pt US Letter):
 //   Inside (binding/gutter) margin = 90pt  — the WIDE margin.
@@ -278,8 +291,10 @@ $endif$
 
 // ---- Body content (pandoc inserts here) -------------------------------------
 
-// Article opener (full page width, single column, top of page).
-#article_opener(article_number, article_name)
+// Article opener (full page width, single column, top of page). Suppressed on a
+// continuation segment (see is_continuation above) so a mid-article resume after
+// spliced native-Typst pages does not repeat the "ARTICLE N" title + divider.
+#if not is_continuation { article_opener(article_number, article_name) }
 
 // Body content (two columns from here down).
 // MEASURED gutter = 44pt (0.61in): two 217pt columns + 44pt gutter span the
