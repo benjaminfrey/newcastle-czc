@@ -1,0 +1,445 @@
+{
+  "_meta": {
+    "note": "Cross-section spec for Article 3 Street/Road Type plates. Widths in feet (representative/typical, mid-range of Table 3.1a/3.1b). Sprites are CC BY-SA 4.0 Streetmix assets vendored under sprites/ (see sprites/NOTICE.md). Surfaces: concrete=sidewalk, grass=planting/verge, asphalt=pavement, gravel=rural earth/sand blend, shoulder=asphalt-gray. 'raised':true lifts a segment one curb-height above the roadway. 'at' is the object's center as a fraction (0..1) across its segment. 'maindot':true replaces the ROW bracket with an illustrative-section note; pair with the plate's 'illustrative':true.",
+    "scale_px_per_ft": 39.3700787,
+    "credit": "Street/road cross-section illustrations adapted from Streetmix (streetmix.net), © the Streetmix project, licensed CC BY-SA 4.0."
+  },
+
+  "S-1": {
+    "code": "S-1",
+    "family": "STREET",
+    "name": "MAIN STREET",
+    "context": "D6 Town Center · designated D5 segments",
+    "row": { "min": 66, "max": 80, "typ": 73 },
+    "edges": {
+      "left":  { "sprite": "buildings/arcade-left.svg",  "show_ft": 9, "label": "SHOPFRONT" },
+      "right": { "sprite": "buildings/arcade-right.svg", "show_ft": 9, "label": "SHOPFRONT" }
+    },
+    "segments": [
+      { "surface": "concrete", "width": 10, "name": "Sidewalk", "raised": true,  "objects": [ { "sprite": "people/people-01.svg", "at": 0.55 } ] },
+      { "surface": "grass",    "width": 6,  "name": "Planting", "raised": true,  "objects": [ { "sprite": "trees/tree.svg", "at": 0.5 } ] },
+      { "surface": "asphalt",  "width": 8,  "name": "Parking",  "raised": false, "objects": [ { "sprite": "vehicles/car-outbound.svg", "at": 0.5 } ] },
+      { "surface": "asphalt",  "width": 11, "name": "Travel",   "raised": false, "centerline_right": true, "objects": [ { "sprite": "vehicles/car-inbound.svg", "at": 0.5 } ] },
+      { "surface": "asphalt",  "width": 11, "name": "Travel",   "raised": false, "objects": [ { "sprite": "vehicles/car-outbound.svg", "at": 0.5 } ] },
+      { "surface": "asphalt",  "width": 8,  "name": "Parking",  "raised": false, "objects": [ { "sprite": "vehicles/car-inbound.svg", "at": 0.5 } ] },
+      { "surface": "grass",    "width": 6,  "name": "Planting", "raised": true,  "objects": [ { "sprite": "trees/tree.svg", "at": 0.5 } ] },
+      { "surface": "concrete", "width": 10, "name": "Sidewalk", "raised": true,  "objects": [ { "sprite": "people/people-05.svg", "at": 0.45 } ] }
+    ],
+    "standards": [
+      ["Right-of-way", "66–80 ft"],
+      ["Traveled way", "20–22 ft · 2 lanes @ 10–11 ft"],
+      ["On-street parking", "Both sides · 7–8 ft"],
+      ["Curb", "Vertical"],
+      ["Planting strip", "5–8 ft, both sides"],
+      ["Sidewalk", "8–12 ft, both sides"],
+      ["Street trees", "Required"],
+      ["Design speed", "20 mph"],
+      ["Max. block length", "400 ft"],
+      ["Surface", "Paved"]
+    ],
+    "applies_in": [
+      "D6 Town Center",
+      "Designated D5 Village Business segments"
+    ],
+    "attributes": [
+      "Pedestrian-primary; slow 20 mph design speed",
+      "Continuous shopfront streetwall at the 0 ft setback line",
+      "On-street parking both sides buffers the sidewalk",
+      "Planting strip and street trees both sides",
+      "Rear-lot service and parking via a Lane (S-4) or Alley (S-5)"
+    ]
+  },
+
+  "S-2": {
+    "code": "S-2",
+    "family": "STREET",
+    "name": "VILLAGE STREET",
+    "context": "D5 Village Business · edges of D6 · SD-Historic core",
+    "row": { "min": 40, "max": 54, "typ": 47 },
+    "edges": {
+      "left":  { "sprite": "buildings/residential-left.svg",  "show_ft": 12, "label": "FRONTAGE" },
+      "right": { "sprite": "buildings/residential-right.svg", "show_ft": 12, "label": "FRONTAGE" }
+    },
+    "segments": [
+      { "surface": "concrete", "width": 6,  "name": "Sidewalk", "raised": true,  "objects": [ { "sprite": "people/people-01.svg", "at": 0.5 } ] },
+      { "surface": "grass",    "width": 4,  "name": "Planting", "raised": true,  "objects": [ { "sprite": "trees/tree.svg", "at": 0.5 } ] },
+      { "surface": "asphalt",  "width": 10, "name": "Travel",   "raised": false, "centerline_right": true, "objects": [ { "sprite": "vehicles/car-inbound.svg", "at": 0.5 } ] },
+      { "surface": "asphalt",  "width": 10, "name": "Travel",   "raised": false, "objects": [ { "sprite": "vehicles/car-outbound.svg", "at": 0.5 } ] },
+      { "surface": "asphalt",  "width": 7,  "name": "Parking",  "raised": false, "objects": [ { "sprite": "vehicles/car-inbound.svg", "at": 0.5 } ] },
+      { "surface": "grass",    "width": 4,  "name": "Planting", "raised": true,  "objects": [ { "sprite": "trees/tree.svg", "at": 0.5 } ] },
+      { "surface": "concrete", "width": 6,  "name": "Sidewalk", "raised": true,  "objects": [ { "sprite": "people/people-11.svg", "at": 0.5 } ] }
+    ],
+    "standards": [
+      ["Right-of-way", "40–54 ft"],
+      ["Traveled way", "20 ft · 2 lanes @ 10 ft"],
+      ["On-street parking", "One side · 7–8 ft"],
+      ["Curb", "Vertical or rolled"],
+      ["Planting strip", "Optional, both sides"],
+      ["Sidewalk", "5 ft min, both sides"],
+      ["Street trees", "Required"],
+      ["Design speed", "25 mph"],
+      ["Max. block length", "500 ft"],
+      ["Surface", "Paved"]
+    ],
+    "applies_in": [
+      "D5 Village Business",
+      "Edges of D6 Town Center",
+      "Central segments of SD-Historic"
+    ],
+    "attributes": [
+      "Mixed-use frontages with shallow front setbacks",
+      "Sidewalks both sides; on-street parking at least one side",
+      "Shopfront Required by segment designation (Art. 5 §12)",
+      "Planting strips optional, either or both sides",
+      "Pedestrian-prioritized; 25 mph design speed"
+    ]
+  },
+
+  "S-3": {
+    "code": "S-3",
+    "family": "STREET",
+    "name": "NEIGHBORHOOD STREET",
+    "context": "D2 · D3 · D4 · SD-Historic outside center",
+    "row": { "min": 40, "max": 46, "typ": 43 },
+    "edges": {
+      "left":  { "sprite": "buildings/residential-left.svg",  "show_ft": 13, "label": "FRONTAGE" },
+      "right": { "sprite": "buildings/residential-right.svg", "show_ft": 13, "label": "FRONTAGE" }
+    },
+    "segments": [
+      { "surface": "concrete", "width": 5,  "name": "Sidewalk", "raised": true,  "objects": [ { "sprite": "people/people-05.svg", "at": 0.5 } ] },
+      { "surface": "grass",    "width": 5,  "name": "Planting", "raised": true,  "objects": [ { "sprite": "trees/tree.svg", "at": 0.5 } ] },
+      { "surface": "asphalt",  "width": 10, "name": "Travel",   "raised": false, "centerline_right": true, "objects": [ { "sprite": "vehicles/car-inbound.svg", "at": 0.5 } ] },
+      { "surface": "asphalt",  "width": 10, "name": "Travel",   "raised": false, "objects": [ { "sprite": "vehicles/car-outbound.svg", "at": 0.5 } ] },
+      { "surface": "asphalt",  "width": 8,  "name": "Parking",  "raised": false, "objects": [ { "sprite": "vehicles/car-inbound.svg", "at": 0.5 } ] },
+      { "surface": "grass",    "width": 5,  "name": "Planting", "raised": true,  "objects": [ { "sprite": "trees/tree.svg", "at": 0.5 } ] }
+    ],
+    "standards": [
+      ["Right-of-way", "40–46 ft"],
+      ["Traveled way", "20 ft · 2 lanes @ 10 ft"],
+      ["On-street parking", "Permitted · one side · 7–8 ft"],
+      ["Curb", "Rolled or none"],
+      ["Planting strip", "4 ft min, one side"],
+      ["Sidewalk", "5 ft min, one side"],
+      ["Street trees", "Encouraged"],
+      ["Design speed", "25 mph"],
+      ["Max. block length", "600 ft"],
+      ["Surface", "Paved"]
+    ],
+    "applies_in": [
+      "D2 Neighborhood Residential",
+      "D3 Neighborhood Business",
+      "D4 Village Residential",
+      "SD-Historic outside the center"
+    ],
+    "attributes": [
+      "Most common village Street Type outside the Town Center",
+      "Sidewalk required on at least one side; planting strip",
+      "On-street parking permitted, one side",
+      "Street trees encouraged in the furnishing zone",
+      "Front setbacks consistent with the abutting District"
+    ]
+  },
+
+  "S-4": {
+    "code": "S-4",
+    "family": "STREET",
+    "name": "LANE",
+    "context": "Internal blocks · D2 · D4 · D5 · D6 · SD-Historic · SD-Campus",
+    "row": { "min": 30, "max": 40, "typ": 35 },
+    "edges": {
+      "left":  { "sprite": "buildings/residential-left.svg",  "show_ft": 11, "label": "FRONTAGE" },
+      "right": { "sprite": "buildings/residential-right.svg", "show_ft": 11, "label": "FRONTAGE" }
+    },
+    "segments": [
+      { "surface": "concrete", "width": 5,  "name": "Sidewalk", "raised": true,  "objects": [ { "sprite": "people/people-11.svg", "at": 0.5 } ] },
+      { "surface": "grass",    "width": 4,  "name": "Planting", "raised": true,  "objects": [ { "sprite": "trees/tree.svg", "at": 0.5 } ] },
+      { "surface": "asphalt",  "width": 9,  "name": "Travel",   "raised": false, "objects": [ { "sprite": "vehicles/car-inbound.svg", "at": 0.5 } ] },
+      { "surface": "asphalt",  "width": 9,  "name": "Travel",   "raised": false, "objects": [] },
+      { "surface": "asphalt",  "width": 8,  "name": "Parking",  "raised": false, "objects": [ { "sprite": "vehicles/car-outbound.svg", "at": 0.5 } ] }
+    ],
+    "standards": [
+      ["Right-of-way", "30–40 ft"],
+      ["Traveled way", "16–20 ft · 2 lanes @ 8–10 ft"],
+      ["On-street parking", "Optional · one side"],
+      ["Curb", "Rolled or none"],
+      ["Planting strip", "Optional"],
+      ["Sidewalk", "5 ft min, one side"],
+      ["Street trees", "Encouraged"],
+      ["Design speed", "15 mph"],
+      ["Max. block length", "n/a"],
+      ["Surface", "Paved"]
+    ],
+    "applies_in": [
+      "Mid-block segments of D2 & D4",
+      "D5 Village Business; D6 Town Center",
+      "SD-Historic; SD-Campus"
+    ],
+    "attributes": [
+      "Narrow, low-speed; opposing vehicles yield",
+      "Buildings front the Lane with shallow setbacks",
+      "Required sidewalk one side; optional parking one side",
+      "May “punch in” to open block interiors to frontage",
+      "Rolled or absent curbs; 15 mph design speed"
+    ]
+  },
+
+  "S-5": {
+    "code": "S-5",
+    "family": "STREET",
+    "name": "ALLEY",
+    "context": "Internal service · D3–D6 · SD-Historic · SD-Fabrication · SD-Civic",
+    "row": { "min": 16, "max": 20, "typ": 18 },
+    "edges": {
+      "left":  { "sprite": "buildings/apartments-narrow-left.svg",  "show_ft": 6 },
+      "right": { "sprite": "buildings/apartments-narrow-right.svg", "show_ft": 6 }
+    },
+    "segments": [
+      { "surface": "asphalt", "width": 9, "name": "Travel", "raised": false, "objects": [] },
+      { "surface": "asphalt", "width": 9, "name": "Travel", "raised": false, "objects": [ { "sprite": "vehicles/car-outbound.svg", "at": 0.5 } ] }
+    ],
+    "standards": [
+      ["Right-of-way", "16–20 ft"],
+      ["Traveled way", "12–16 ft · 1–2 lanes @ 8–10 ft"],
+      ["On-street parking", "None"],
+      ["Curb", "None"],
+      ["Planting strip", "None"],
+      ["Sidewalk", "None"],
+      ["Street trees", "Permitted"],
+      ["Design speed", "10–15 mph"],
+      ["Curb return radius", "5–10 ft"],
+      ["Surface", "Paved"]
+    ],
+    "applies_in": [
+      "Internal to D3–D6",
+      "SD-Historic; SD-Fabrication; SD-Civic",
+      "Only rear-access type permitted in D6"
+    ],
+    "attributes": [
+      "Service access to side/rear of lots; buildings do not front",
+      "No sidewalk and no on-street parking",
+      "Narrow paved width; functionally low speed",
+      "Tight curb returns sized for delivery & emergency vehicles",
+      "Only Street Type allowed for rear-lot access in D6"
+    ]
+  },
+
+  "R-1": {
+    "code": "R-1",
+    "family": "ROAD",
+    "name": "CONNECTOR ROAD",
+    "context": "D1–D2 transition · SD-Rural Highway secondary routes",
+    "row": { "min": 40, "max": 50, "typ": 45 },
+    "edges": {
+      "left":  { "ground": "grass", "show_ft": 10, "objects": [ { "sprite": "trees/tree.svg", "at": 0.45 } ] },
+      "right": { "ground": "grass", "show_ft": 10, "objects": [ { "sprite": "trees/tree.svg", "at": 0.55 } ] }
+    },
+    "segments": [
+      { "surface": "grass",    "width": 8,  "name": "Verge",  "raised": false, "objects": [ { "sprite": "plants/bush.svg", "at": 0.5 } ] },
+      { "surface": "shoulder", "width": 4,  "name": "Shoulder","raised": false, "objects": [] },
+      { "surface": "asphalt",  "width": 10, "name": "Travel", "raised": false, "centerline_right": true, "objects": [ { "sprite": "vehicles/car-inbound.svg", "at": 0.5 } ] },
+      { "surface": "asphalt",  "width": 10, "name": "Travel", "raised": false, "objects": [ { "sprite": "vehicles/car-outbound.svg", "at": 0.5 } ] },
+      { "surface": "shoulder", "width": 4,  "name": "Shoulder","raised": false, "objects": [] },
+      { "surface": "grass",    "width": 8,  "name": "Verge",  "raised": false, "objects": [ { "sprite": "plants/bush.svg", "at": 0.5 } ] }
+    ],
+    "standards": [
+      ["Right-of-way", "40–50 ft"],
+      ["Traveled way", "20 ft · 2 lanes @ 10 ft"],
+      ["On-street parking", "None"],
+      ["Curb", "None (shoulder)"],
+      ["Sidewalk", "Optional · 5 ft"],
+      ["Street trees", "Permitted"],
+      ["Design speed", "35 mph"],
+      ["Max. grade", "10%"],
+      ["Curb return radius", "25–35 ft"],
+      ["Surface", "Paved"]
+    ],
+    "applies_in": [
+      "D1 Rural – D2 transition",
+      "Secondary routes in SD-Rural Highway",
+      "Rural connections between villages"
+    ],
+    "attributes": [
+      "Most “Street-like” Road; shoulders rather than curbs",
+      "Through-travel between villages and into rural areas",
+      "Shoulders accommodate occasional pedestrians & cyclists",
+      "Drainage by ditches and culverts, not curb-and-gutter",
+      "Larger building setbacks than on Streets; 35 mph"
+    ]
+  },
+
+  "R-2": {
+    "code": "R-2",
+    "family": "ROAD",
+    "name": "RURAL ROAD",
+    "context": "D1 Rural · SD-Conservation · rural SD-Marine",
+    "row": { "min": 40, "max": 50, "typ": 45 },
+    "edges": {
+      "left":  { "ground": "grass", "show_ft": 12, "objects": [ { "sprite": "trees/tree.svg", "at": 0.4 } ] },
+      "right": { "ground": "grass", "show_ft": 12, "objects": [ { "sprite": "trees/tree.svg", "at": 0.6 } ] }
+    },
+    "segments": [
+      { "surface": "grass",    "width": 11, "name": "Verge",  "raised": false, "objects": [ { "sprite": "plants/bush.svg", "at": 0.55 } ] },
+      { "surface": "shoulder", "width": 2,  "name": "Shoulder","raised": false, "objects": [] },
+      { "surface": "asphalt",  "width": 9,  "name": "Travel", "raised": false, "centerline_right": true, "objects": [ { "sprite": "vehicles/car-inbound.svg", "at": 0.5 } ] },
+      { "surface": "asphalt",  "width": 9,  "name": "Travel", "raised": false, "objects": [ { "sprite": "vehicles/car-outbound.svg", "at": 0.5 } ] },
+      { "surface": "shoulder", "width": 2,  "name": "Shoulder","raised": false, "objects": [] },
+      { "surface": "grass",    "width": 11, "name": "Verge",  "raised": false, "objects": [ { "sprite": "plants/bush.svg", "at": 0.45 } ] }
+    ],
+    "standards": [
+      ["Right-of-way", "40–50 ft"],
+      ["Traveled way", "18–20 ft · 2 lanes @ 9–10 ft"],
+      ["On-street parking", "None"],
+      ["Curb", "None (shoulder)"],
+      ["Sidewalk", "None"],
+      ["Street trees", "Permitted"],
+      ["Design speed", "25–35 mph"],
+      ["Max. grade", "12%"],
+      ["Curb return radius", "25–35 ft"],
+      ["Surface", "Paved or gravel"]
+    ],
+    "applies_in": [
+      "D1 Rural",
+      "SD-Conservation",
+      "Rural SD-Marine segments"
+    ],
+    "attributes": [
+      "Standard rural Road; access to working landscapes",
+      "Narrowest standard pavement; paved or gravel",
+      "No curbs; drainage by open ditches",
+      "Roadside vegetation generally preserved",
+      "Widely spaced driveway entrances (large D1 frontages)"
+    ]
+  },
+
+  "R-3": {
+    "code": "R-3",
+    "family": "ROAD",
+    "name": "RURAL LANE",
+    "context": "D1 Rural · SD-Conservation · low-volume rural ways",
+    "row": { "min": 33, "max": 50, "typ": 40 },
+    "edges": {
+      "left":  { "ground": "grass", "show_ft": 12, "objects": [ { "sprite": "trees/tree.svg", "at": 0.45 } ] },
+      "right": { "ground": "grass", "show_ft": 12, "objects": [ { "sprite": "trees/tree.svg", "at": 0.55 } ] }
+    },
+    "segments": [
+      { "surface": "grass",  "width": 12, "name": "Verge",  "raised": false, "objects": [ { "sprite": "plants/bush.svg", "at": 0.5 } ] },
+      { "surface": "gravel", "width": 16, "name": "Travel", "raised": false, "objects": [ { "sprite": "vehicles/car-outbound.svg", "at": 0.5 } ] },
+      { "surface": "grass",  "width": 12, "name": "Verge",  "raised": false, "objects": [ { "sprite": "plants/bush.svg", "at": 0.5 } ] }
+    ],
+    "standards": [
+      ["Right-of-way", "33–50 ft"],
+      ["Traveled way", "12–18 ft · 1 shared or 2 @ 8–9 ft"],
+      ["On-street parking", "None"],
+      ["Curb", "None (shoulder + ditch)"],
+      ["Sidewalk", "None"],
+      ["Street trees", "Permitted"],
+      ["Design speed", "15–25 mph"],
+      ["Max. grade", "12%"],
+      ["Curb return radius", "15–25 ft"],
+      ["Surface", "Gravel acceptable"]
+    ],
+    "applies_in": [
+      "D1 Rural",
+      "SD-Conservation",
+      "Low-volume rural ways & historic two-rod (33 ft) ROWs"
+    ],
+    "attributes": [
+      "Rural counterpart to the Lane (S-4); yield roadway",
+      "Single shared travel surface; gravel or paved",
+      "Conforming designation for historic two-rod (33 ft) ways",
+      "Passing pull-outs at ≤ 300 ft where ≤ 15 ft wide",
+      "Lowest volumes in the Road family (< 400 vehicles/day)"
+    ]
+  },
+
+  "R-4": {
+    "code": "R-4",
+    "family": "ROAD",
+    "name": "HIGHWAY COMMERCIAL",
+    "context": "SD-Highway Commercial · US Route 1",
+    "maindot": true,
+    "illustrative": true,
+    "row": { "min": 56, "max": 56, "typ": 56 },
+    "edges": {
+      "left":  { "ground": "grass", "show_ft": 9, "objects": [ { "sprite": "trees/tree.svg", "at": 0.5 } ] },
+      "right": { "ground": "grass", "show_ft": 9, "objects": [ { "sprite": "trees/tree.svg", "at": 0.5 } ] }
+    },
+    "segments": [
+      { "surface": "concrete", "width": 6,  "name": "Sidewalk", "raised": true,  "objects": [ { "sprite": "people/people-01.svg", "at": 0.5 } ] },
+      { "surface": "grass",    "width": 6,  "name": "Planting", "raised": true,  "objects": [ { "sprite": "trees/tree.svg", "at": 0.5 } ] },
+      { "surface": "shoulder", "width": 6,  "name": "Shoulder", "raised": false, "objects": [] },
+      { "surface": "asphalt",  "width": 12, "name": "Travel",   "raised": false, "centerline_right": true, "objects": [ { "sprite": "vehicles/car-inbound.svg", "at": 0.5 } ] },
+      { "surface": "asphalt",  "width": 12, "name": "Travel",   "raised": false, "objects": [ { "sprite": "vehicles/car-outbound.svg", "at": 0.5 } ] },
+      { "surface": "shoulder", "width": 6,  "name": "Shoulder", "raised": false, "objects": [] },
+      { "surface": "grass",    "width": 8,  "name": "Buffer",   "raised": false, "objects": [ { "sprite": "plants/bush.svg", "at": 0.5 } ] }
+    ],
+    "standards": [
+      ["Right-of-way", "Per MaineDOT"],
+      ["Cartway", "Per MaineDOT"],
+      ["Curb / shoulder", "Per MaineDOT"],
+      ["Sidewalk", "Where feasible"],
+      ["Planting strip", "Per District page"],
+      ["Street trees", "Encouraged"],
+      ["Access management", "Town-controlled"],
+      ["Frontage & setbacks", "Town-controlled (Art. 2)"],
+      ["Design speed", "Per MaineDOT"],
+      ["Surface", "Per MaineDOT"]
+    ],
+    "applies_in": [
+      "SD-Highway Commercial",
+      "US Route 1 (most segments state-aid)"
+    ],
+    "attributes": [
+      "Auto-oriented commercial corridor with deep setbacks",
+      "Cartway designed & maintained per MaineDOT",
+      "Town governs frontage, setbacks, sidewalks & access",
+      "Sidewalks provided where feasible",
+      "Managed curb cuts; MaineDOT §704 entrance permits"
+    ]
+  },
+
+  "R-5": {
+    "code": "R-5",
+    "family": "ROAD",
+    "name": "RURAL HIGHWAY",
+    "context": "SD-Rural Highway · US Route 1 corridor",
+    "maindot": true,
+    "illustrative": true,
+    "row": { "min": 68, "max": 68, "typ": 68 },
+    "edges": {
+      "left":  { "ground": "grass", "show_ft": 14, "objects": [ { "sprite": "trees/tree.svg", "at": 0.5 } ] },
+      "right": { "ground": "grass", "show_ft": 14, "objects": [ { "sprite": "trees/tree.svg", "at": 0.5 } ] }
+    },
+    "segments": [
+      { "surface": "grass",    "width": 14, "name": "Screen",   "raised": false, "objects": [ { "sprite": "trees/tree.svg", "at": 0.45 } ] },
+      { "surface": "shoulder", "width": 8,  "name": "Shoulder", "raised": false, "objects": [] },
+      { "surface": "asphalt",  "width": 12, "name": "Travel",   "raised": false, "centerline_right": true, "objects": [ { "sprite": "vehicles/car-inbound.svg", "at": 0.5 } ] },
+      { "surface": "asphalt",  "width": 12, "name": "Travel",   "raised": false, "objects": [ { "sprite": "vehicles/car-outbound.svg", "at": 0.5 } ] },
+      { "surface": "shoulder", "width": 8,  "name": "Shoulder", "raised": false, "objects": [] },
+      { "surface": "grass",    "width": 14, "name": "Screen",   "raised": false, "objects": [ { "sprite": "trees/tree.svg", "at": 0.55 } ] }
+    ],
+    "standards": [
+      ["Right-of-way", "Per MaineDOT"],
+      ["Cartway", "Per MaineDOT"],
+      ["Curb / shoulder", "Per MaineDOT"],
+      ["Sidewalk", "None"],
+      ["Planting strip", "None"],
+      ["Street trees", "Permitted"],
+      ["Vegetative screen", "Required (SD-RHWY)"],
+      ["Frontage & setbacks", "Town-controlled (Art. 2)"],
+      ["Design speed", "Per MaineDOT"],
+      ["Surface", "Per MaineDOT"]
+    ],
+    "applies_in": [
+      "SD-Rural Highway",
+      "US Route 1 rural corridor (all segments state-aid)"
+    ],
+    "attributes": [
+      "High-speed regional corridor through rural contexts",
+      "Vegetative screening between cartway and development",
+      "Deep front setbacks measured from the centerline",
+      "MaineDOT-controlled cartway geometry (§12)",
+      "Tightly managed curb-cut spacing"
+    ]
+  }
+}

@@ -57,6 +57,27 @@ if [ ${#ARTICLES[@]} -eq 0 ]; then
   exit 1
 fi
 
+# Splice the Street/Road Type cross-section plate gallery (native Typst,
+# source/cross-section-plates.typ) into the render order immediately AFTER
+# Article 3's prose. Each of the ten numbered Types (S-1..S-5, R-1..R-5) renders
+# as its own full-page plate. Placing the 10-page (EVEN) block at the end of
+# Article 3 keeps Article 3's own footers correct (nothing shifts inside it) and
+# leaves the cumulative offset even for Article 4. The block lands at the EVEN
+# offset Article 3 leaves behind, satisfying the plate file's parity invariant.
+# It is rendered by the *.typ branch below exactly like article-02.typ (same
+# page_offset/footer_date inputs).
+PLATES_TYP="$SOURCE_DIR/cross-section-plates.typ"
+if [ -f "$PLATES_TYP" ]; then
+  SPLICED=()
+  for f in "${ARTICLES[@]}"; do
+    SPLICED+=("$f")
+    case "$f" in
+      */article-03-*.md) SPLICED+=("$PLATES_TYP") ;;
+    esac
+  done
+  ARTICLES=("${SPLICED[@]}")
+fi
+
 OUT_NAME="Newcastle CZC (Integrated Draft $VERSION)"
 OUTPUT_PDF="$RELEASE_DIR/$OUT_NAME.pdf"
 COMBINED_MD="$RELEASE_DIR/$OUT_NAME.md"
@@ -193,6 +214,15 @@ for ART in "${MD_LIST[@]}"; do
         printf '<!-- The 13 District Standards spreads (D1-D6 + 7 Special Districts) are\n'
         printf '     rendered natively from article-02-data.json via source/article-02.typ.\n'
         printf '     See the Integrated Draft PDF for the per-district 2-page spreads. -->\n\n'
+      } >> "$COMBINED_MD"
+      ;;
+    *article-03-*.md)
+      {
+        printf '\n\n'
+        printf '<!-- The ten Street/Road Type cross-section plates (S-1..S-5, R-1..R-5) are\n'
+        printf '     rendered as full-page graphics from source/cross-section-plates.typ\n'
+        printf '     (compositing source/exhibits/cross-sections/<CODE>.svg). See the\n'
+        printf '     Integrated Draft PDF for the per-Type plate pages at the end of Article 3. -->\n\n'
       } >> "$COMBINED_MD"
       ;;
   esac
