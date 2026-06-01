@@ -151,7 +151,10 @@
     cells.push(text(fill: body_dark, weight: "bold", size: sz)[#r.at(2)])
   }
   table(
-    columns: (auto, 1fr, 1fr),
+    // Three EQUAL columns: the label column was `auto` (hugging the row names),
+    // which left "Type standard" crowding the labels and "Build to" floating far
+    // right. Equal 1fr columns space the three evenly across the table width.
+    columns: (1fr, 1fr, 1fr),
     // BOTTOM-only stroke: the panel("Design Standards") line() above is the rule
     // under the heading (this table's top edge). A cell `top` would stack a
     // second hairline ~3.5pt below it (the "double rule" bug). Bottom on every
@@ -163,7 +166,22 @@
   )
 }
 
+// ---- List renderers (shared by the prose columns) ---------------------------
+#let bullet_list(items) = {
+  set list(marker: text(fill: article_blue)[•], indent: 0pt, body-indent: 0.5em, spacing: 0.5em, tight: true)
+  pad(top: 4pt, list(..items.map(it => [#it])))
+}
+#let numbered_list(items) = {
+  set enum(indent: 0.4em, body-indent: 0.5em, spacing: 0.5em, tight: false)
+  pad(top: 2pt, enum(..items.map(it => [#it])))
+}
+
 // ---- One plate (single page) ------------------------------------------------
+// Layout mirrors the Article 2 District standards page so a Type page reads as a
+// torn-out page of the same Code: band → hero cross-section → a two-column prose
+// band in the CZC panel grammar (DESCRIPTION + PURPOSE on the left; STANDARDS +
+// reference columns on the right) → the full-width DESIGN STANDARDS table at the
+// bottom (the analog of the District pages' PERMITTED BUILDINGS matrix).
 #let plate(t) = {
   let fam = t.family
   // Page-anchored group marker for the running head (read in the header via
@@ -172,35 +190,17 @@
   let fill_c = if fam == "ROAD" { road_color } else { street_color }
 
   type_band(t.code, t.name, fill_c)
-  v(6pt)
+  v(9pt)
 
-  // Context kicker line.
-  block(above: 0pt, below: 8pt,
-    text(fill: subsection_gray, size: 9pt, weight: "regular", tracking: 0.2pt)[
-      #upper(fam) TYPE · #t.context])
-
-  // Regulatory description — the authoritative page text rolled on from the
-  // former §2 prose subsection. Reads as body prose; the TARGET DISTRICTS and
-  // CHARACTER columns below carry the scannable specifics without restating it.
-  block(above: 0pt, below: 9pt, text(fill: body_dark, size: 8.5pt)[#t.description])
-
-  // Optional Type-specific cross-reference (shopfront / state-aid), set off with
-  // a colored left bar in the Type's family color.
-  if "note" in t {
-    block(above: 0pt, below: 11pt, width: 100%,
-      inset: (left: 9pt, top: 1pt, bottom: 1pt),
-      stroke: (left: 2pt + fill_c),
-      text(fill: body_dark, size: 8pt, style: "italic")[#t.note])
-  }
-
-  // Cross-section graphic. Span the full text-block width when the section's
-  // natural aspect keeps it within a sane height; otherwise (narrow Types like
-  // the Alley) cap the height and center so the section never towers up the page.
+  // ---- Cross-section graphic (the page's hero) ------------------------------
+  // Moved directly under the band. Span the full text-block width when the
+  // section's natural aspect keeps it within a sane height; otherwise (narrow
+  // Types like the Alley) cap the height and center so it never towers up.
   let xs_path = "exhibits/cross-sections/" + t.code + ".svg"
   layout(size => {
     let nat = measure(image(xs_path))
     let full_h = size.width * (nat.height / nat.width)
-    let maxh = 180pt
+    let maxh = 168pt
     if full_h <= maxh {
       align(center, image(xs_path, width: 100%))
     } else {
@@ -208,7 +208,7 @@
     }
   })
 
-  // Credit + context caption.
+  // Credit caption (directly under the graphic).
   v(3pt)
   let credit = if t.at("illustrative", default: false) [
     Illustrative section only. Cartway geometry and right-of-way for this Type are set by
@@ -220,38 +220,53 @@
     the ranges in the Design Standards below. Cross-section illustration adapted
     from Streetmix (streetmix.net), © the Streetmix project, licensed CC BY-SA 4.0.
   ]
-  block(above: 0pt, below: 14pt, text(fill: subsection_gray, size: 7pt, style: "italic", credit))
+  block(above: 0pt, below: 13pt, text(fill: subsection_gray, size: 7pt, style: "italic", credit))
 
-  // Standards strip — these per-Type pages are the standards home (the former
-  // Table 3.1a/3.1b comparison matrix has been retired in favor of these pages).
+  // ---- Two-column prose band (mirrors the District standards columns) -------
+  // Same panel grammar as Article 2: gray bold under-ruled headings, prose /
+  // numbered / bulleted bodies.
+  let std = ()
+  if "note" in t { std.push(t.note) }
+  if "footnote" in t { std.push(t.footnote) }
+
+  grid(columns: (1fr, 1fr), column-gutter: 40pt,
+    // ----- LEFT: Description + Purpose -----
+    {
+      panel("Description", above: 0pt)
+      block(above: 4pt, below: 0pt, text(fill: body_dark, size: 8.5pt)[#t.description])
+      if "purpose" in t {
+        panel("Purpose")
+        numbered_list(t.purpose)
+      }
+    },
+    // ----- RIGHT: Standards (applicability) + reference columns -----
+    {
+      // STANDARDS — the Type-specific applicability statements (the former
+      // blue-bar `note` + `footnote`), now in the CZC standards-section grammar.
+      if std.len() > 0 {
+        panel("Standards", above: 0pt)
+        numbered_list(std)
+      }
+      panel("Target Districts", above: if std.len() > 0 { 14pt } else { 0pt })
+      bullet_list(t.at("applies_in", default: ()))
+      panel("Character")
+      bullet_list(t.at("attributes", default: ()))
+    },
+  )
+
+  // ---- Design Standards table (full width, at the bottom) -------------------
+  // Mirrors the District pages' full-width PERMITTED BUILDINGS matrix: the page's
+  // data table is the last, widest element. The §3.C reading convention rides
+  // under it as a caption (cf. the use-table legend on the district use page).
   panel("Design Standards")
   standards_strip(t.standards)
-
-  // Build-To legend + Type-specific footnote. Set in the same gray 7pt italic as
-  // the credit caption so it reads as an annotation on the standards strip rather
-  // than as another standards row. States the §3.C reading convention (build to
-  // the right-hand column) plus the §3.F / §6.D component rules; t.footnote (if
-  // present) carries the Type-specific note.
-  block(above: 5pt, below: 13pt, text(fill: subsection_gray, size: 7pt, style: "italic")[
+  block(above: 5pt, below: 0pt, text(fill: subsection_gray, size: 7pt, style: "italic")[
     Build to the right-hand column (Art. 3 §3.C): the fuller value for pedestrian and
     landscape components (reducible only on the written demonstration of §3.C.4), the
     lower value for the traffic-calming dimensions (a safety floor). Components marked
     "where …" are required by context under §3.F; the Board may require fuller components
-    within the assigned Type under §6.D.#if "footnote" in t [ \ #t.footnote]
+    within the assigned Type under §6.D.
   ])
-
-  // Reference notes — complement the §2 prose (which sits just before the
-  // plate); do not duplicate it. Two columns: where the Type applies + its
-  // qualitative character attributes.
-  let notecol(title, items) = {
-    panel(title, above: 15pt)
-    set list(marker: text(fill: article_blue)[•], indent: 0pt, body-indent: 0.5em, spacing: 0.5em, tight: true)
-    pad(top: 4pt, list(..items.map(it => [#it])))
-  }
-  grid(columns: (0.85fr, 1.15fr), column-gutter: 44pt,
-    notecol("Target Districts", t.at("applies_in", default: ())),
-    notecol("Character", t.at("attributes", default: ())),
-  )
 }
 
 // =============================================================================

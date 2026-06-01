@@ -1,6 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:serif="http://www.serif.com/" viewBox="0 0 3779.53 1068.98" width="3779.53" height="1068.98">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:serif="http://www.serif.com/" viewBox="0 0 3779.53 1303.94" width="3779.53" height="1303.94">
 <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#DCEEF3"/><stop offset="1" stop-color="#CCE0E7"/></linearGradient></defs>
-<rect x="0" y="0" width="3779.53" height="708.74" fill="url(#sky)"/>
+<rect x="0" y="0" width="3779.53" height="941.73" fill="url(#sky)"/>
+<g transform="translate(0.00, 232.99)">
 <rect x="551.18" y="708.74" width="551.18" height="102.36" fill="#3D8140"/>
 <rect x="551.18" y="708.74" width="551.18" height="7.09" fill="#356B38" opacity="0.5"/>
 <rect x="1102.36" y="708.74" width="314.96" height="102.36" fill="#5C5E5F"/>
@@ -11,10 +12,10 @@
 <rect x="2677.17" y="708.74" width="551.18" height="7.09" fill="#356B38" opacity="0.5"/>
 <rect x="551.18" y="804.02" width="2677.17" height="7.09" fill="#352D27" opacity="0.55"/>
 <line x1="551.18" y1="708.74" x2="3228.35" y2="708.74" stroke="#231F20" stroke-width="1.5" opacity="0.35"/>
-<rect x="0.00" y="708.74" width="551.18" height="102.36" fill="#3D8140"/>
-<rect x="0.00" y="708.74" width="551.18" height="7.09" fill="#356B38" opacity="0.5"/>
-<svg x="140.59" y="78.74" width="270.00" height="630.00" viewBox="0.0 0.0 270.0 630.0" preserveAspectRatio="xMidYMax meet">
-    <g id="el_0_tree" transform="matrix(1.27,0,0,1.27,-17.4,-16.43)">
+<rect x="-0.00" y="708.74" width="551.18" height="102.36" fill="#3D8140"/>
+<rect x="-0.00" y="708.74" width="551.18" height="7.09" fill="#356B38" opacity="0.5"/>
+<svg x="173.18" y="78.74" width="270.00" height="630.00" viewBox="0.0 0.0 270.0 630.0" preserveAspectRatio="xMidYMax meet">
+    <g id="el_v0_tree" transform="matrix(1.27,0,0,1.27,-17.4,-16.43)">
         <g transform="matrix(1,0,0,1,2.74049,0)">
             <path d="M167.628,98.327L128.96,97.079L110.293,68.08L88.96,103.413L28.96,98.746L62.293,78.746L40.293,39.413L59.96,24.41L120.96,18.08L140.96,54.08L168.293,56.746L167.628,98.327Z" style="fill:rgb(102,153,68);fill-rule:nonzero;"/>
         </g>
@@ -145,8 +146,8 @@
 </svg>
 <rect x="3228.35" y="708.74" width="551.18" height="102.36" fill="#3D8140"/>
 <rect x="3228.35" y="708.74" width="551.18" height="7.09" fill="#356B38" opacity="0.5"/>
-<svg x="3368.94" y="78.74" width="270.00" height="630.00" viewBox="0.0 0.0 270.0 630.0" preserveAspectRatio="xMidYMax meet">
-    <g id="er_0_tree" transform="matrix(1.27,0,0,1.27,-17.4,-16.43)">
+<svg x="3336.35" y="78.74" width="270.00" height="630.00" viewBox="0.0 0.0 270.0 630.0" preserveAspectRatio="xMidYMax meet">
+    <g id="er_v0_tree" transform="matrix(1.27,0,0,1.27,-17.4,-16.43)">
         <g transform="matrix(1,0,0,1,2.74049,0)">
             <path d="M167.628,98.327L128.96,97.079L110.293,68.08L88.96,103.413L28.96,98.746L62.293,78.746L40.293,39.413L59.96,24.41L120.96,18.08L140.96,54.08L168.293,56.746L167.628,98.327Z" style="fill:rgb(102,153,68);fill-rule:nonzero;"/>
         </g>
@@ -680,5 +681,6 @@
 <line x1="551.18" y1="956.77" x2="3228.35" y2="956.77" stroke="#7C766F" stroke-width="1.4"/>
 <line x1="551.18" y1="941.02" x2="551.18" y2="972.52" stroke="#7C766F" stroke-width="1.4"/>
 <line x1="3228.35" y1="941.02" x2="3228.35" y2="972.52" stroke="#7C766F" stroke-width="1.4"/>
-<text x="1889.76" y="1002.05" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="60" font-weight="600" fill="#231F20" text-anchor="middle" letter-spacing="1.5">ILLUSTRATIVE SECTION  ·  CARTWAY &amp; R.O.W. PER MAINEDOT</text>
+<text x="1889.76" y="1031.57" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="60.0" font-weight="600" fill="#231F20" text-anchor="middle" letter-spacing="1.5">ILLUSTRATIVE SECTION  ·  CARTWAY &amp; R.O.W. PER MAINEDOT</text>
+</g>
 </svg>

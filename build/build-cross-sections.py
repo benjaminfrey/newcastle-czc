@@ -37,8 +37,20 @@ GAP_FT = 0.55             # gap between surface band and the segment dimension l
 SEG_LABEL_GAP_FT = 1.15   # baseline-to-width-label drop below the dim line
 SEG_NAME_GAP_FT = 2.05    # baseline-to-name-label drop below the dim line
 ROW_GAP_FT = 3.15         # dim line to ROW bracket
-ROW_LABEL_GAP_FT = 1.15   # ROW bracket to its label
-BOTTOM_PAD_FT = 1.7
+ROW_LABEL_GAP_FT = 1.9    # ROW bracket to its caption — clear of the bracket line
+                          # (the 60px caption's own ascender ate the old 1.15 gap,
+                          # leaving the text essentially touching the bracket).
+BOTTOM_PAD_FT = 1.0       # traded down from 1.7 so the larger ROW_LABEL_GAP keeps
+                          # the canvas height (ROW_LABEL_GAP+BOTTOM_PAD) ~constant,
+                          # leaving every plate's 1-page fit unchanged.
+
+# Uniform full-width frame. Every Type's canvas is padded horizontally (sky on
+# the flanks) to this fixed aspect ratio (height / width) so all ten render at
+# the SAME full-column width and height on the page — the narrow Alley and the
+# wide Main Street included — with the to-scale drawing centered and undistorted.
+# 0.345 ≈ 165 pt tall at the ~478 pt text-block width (matches the prior capped
+# height, so the page's vertical budget is unchanged).
+FRAME_ASPECT_HW = 0.345
 
 # --- surface fills (sampled from Streetmix ground sprites) --------------------
 SURFACE = {
@@ -196,6 +208,20 @@ def build_type(code, spec):
     row_y = dim_y + ROW_GAP_FT * SCALE
     H = row_y + (ROW_LABEL_GAP_FT + BOTTOM_PAD_FT) * SCALE
 
+    # Uniform full-width frame: pad the canvas to a single fixed aspect
+    # (FRAME_ASPECT_HW = height/width) so every Type renders to the SAME width and
+    # height on the page. A narrow drawing (most Types) is padded with sky on the
+    # left/right flanks; a wide-and-short drawing (e.g. R5 Rural Highway) is padded
+    # with sky on top. The to-scale drawing is centered horizontally and anchored
+    # to the bottom (its dimension lines), then shifted by (pad_x, pad_y). Never
+    # crops.
+    if H >= FRAME_ASPECT_HW * W:        # too narrow → pad width (sky on the flanks)
+        FW, FH = H / FRAME_ASPECT_HW, H
+    else:                               # too wide/short → pad height (sky on top)
+        FW, FH = W, W * FRAME_ASPECT_HW
+    pad_x = (FW - W) / 2.0
+    pad_y = FH - H                      # added above the drawing (pushes it down)
+
     x_street0 = left_show * SCALE
     x_street1 = (left_show + street_w) * SCALE
 
@@ -207,14 +233,19 @@ def build_type(code, spec):
     parts.append(
         f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" '
         f'xmlns:serif="http://www.serif.com/" '
-        f'viewBox="0 0 {W:.2f} {H:.2f}" width="{W:.2f}" height="{H:.2f}">')
+        f'viewBox="0 0 {FW:.2f} {FH:.2f}" width="{FW:.2f}" height="{FH:.2f}">')
 
-    # sky
+    # sky — spans the FULL frame width down to the (translated) horizon, so the
+    # padded flanks and any top padding read as open sky to a continuous horizon.
     parts.append(
         f'<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">'
         f'<stop offset="0" stop-color="{SKY_TOP}"/>'
         f'<stop offset="1" stop-color="{SKY_HORIZON}"/></linearGradient></defs>')
-    parts.append(f'<rect x="0" y="0" width="{W:.2f}" height="{baseline:.2f}" fill="url(#sky)"/>')
+    parts.append(f'<rect x="0" y="0" width="{FW:.2f}" height="{baseline + pad_y:.2f}" fill="url(#sky)"/>')
+
+    # Center the to-scale drawing in the padded frame (shift right by pad_x, down
+    # by pad_y). Everything below is in the natural drawing coordinate space.
+    parts.append(f'<g transform="translate({pad_x:.2f}, {pad_y:.2f})">')
 
     # ---- ground surface bands (per segment) ----
     x = x_street0
@@ -242,29 +273,62 @@ def build_type(code, spec):
                  f'y2="{baseline:.2f}" stroke="{BODY_DARK}" stroke-width="1.5" opacity="0.35"/>')
 
     # ---- context edges: building (urban) or open ground + vegetation (rural) ----
+    # The drawing is centered in a wider frame (pad_x of sky per flank). To keep a
+    # narrow Type from reading as a section marooned in empty sky, each edge's
+    # context is EXTENDED across its whole flank, out to the frame edge: a building
+    # frontage continues as a receding (faded) streetwall; an open ground edge
+    # continues its grade and repeats its vegetation. The element nearest the
+    # street stays crisp (primary); those behind it fade back for depth.
+    BG_OPACITY = 0.55
     def render_edge(edge, side, prefix):
         if not edge:
             return
         if side == "left":
-            zx0, zx1, top = 0.0, x_street0, top_left
+            zx0, zx1, top = -pad_x, x_street0, top_left
         else:
-            zx0, zx1, top = x_street1, W, top_right
-        if edge.get("ground"):  # open / vegetated / lawn edge
+            zx0, zx1, top = x_street1, W + pad_x, top_right
+        if edge.get("ground"):  # open / vegetated edge — fill the flank to the edge
             surf = SURFACE.get(edge["ground"], "#999999")
             parts.append(f'<rect x="{zx0:.2f}" y="{top:.2f}" width="{zx1 - zx0:.2f}" '
                          f'height="{ground_bottom - top:.2f}" fill="{surf}"/>')
             if edge["ground"] == "grass":
                 parts.append(f'<rect x="{zx0:.2f}" y="{top:.2f}" width="{zx1 - zx0:.2f}" '
                              f'height="{max(2, 0.18 * SCALE):.2f}" fill="{SURFACE["grass_lo"]}" opacity="0.5"/>')
-            for j, obj in enumerate(edge.get("objects", [])):
-                cx = zx0 + obj.get("at", 0.5) * (zx1 - zx0)
-                emb, _, _ = embed(obj["sprite"], cx, top, f"{prefix}{j}_")
-                parts.append(emb)
-        if edge.get("sprite"):  # building flush to the ROW line, clipped at canvas
-            emb, w, h = embed(edge["sprite"], 0, top, prefix)
-            ex = (x_street0 - w) if side == "left" else x_street1
-            emb = re.sub(r'^<svg x="[^"]*"', f'<svg x="{ex:.2f}"', emb)
-            parts.append(emb)
+            objs = edge.get("objects", [])
+            if objs:
+                spr = objs[0]["sprite"]
+                sw, _ = sprite_size(spr)
+                step = max(sw * 1.5, 7 * SCALE)
+                xs = []
+                if side == "left":
+                    cx = x_street0 - 0.6 * step
+                    while cx - sw / 2 >= zx0 and len(xs) < 10:
+                        xs.append(cx); cx -= step
+                else:
+                    cx = x_street1 + 0.6 * step
+                    while cx + sw / 2 <= zx1 and len(xs) < 10:
+                        xs.append(cx); cx += step
+                for k, cx in enumerate(xs):
+                    emb, _, _ = embed(spr, cx, top, f"{prefix}v{k}_")
+                    parts.append(emb if k == 0 else f'<g opacity="{BG_OPACITY}">{emb}</g>')
+        if edge.get("sprite"):  # frontage building, continued as a receding streetwall
+            spr = edge["sprite"]
+            emb, w, h = embed(spr, 0, top, f"{prefix}f_")
+            ex0 = (x_street0 - w) if side == "left" else x_street1
+            parts.append(re.sub(r'^<svg x="[^"]*"', f'<svg x="{ex0:.2f}"', emb))
+            xs = []
+            if side == "left":
+                ex = ex0 - w
+                while ex + w > zx0 and len(xs) < 8:
+                    xs.append(ex); ex -= w
+            else:
+                ex = ex0 + w
+                while ex < zx1 and len(xs) < 8:
+                    xs.append(ex); ex += w
+            for k, ex in enumerate(xs):
+                e2, _, _ = embed(spr, 0, top, f"{prefix}b{k}_")
+                e2 = re.sub(r'^<svg x="[^"]*"', f'<svg x="{ex:.2f}"', e2)
+                parts.append(f'<g opacity="{BG_OPACITY}">{e2}</g>')
 
     render_edge(left, "left", "el_")
     render_edge(right, "right", "er_")
@@ -319,11 +383,26 @@ def build_type(code, spec):
     if spec.get("maindot"):
         rowlabel = "ILLUSTRATIVE SECTION  ·  CARTWAY & R.O.W. PER MAINEDOT"
     else:
+        # State the allowed ROW range and the width this section is drawn at, in
+        # plain words (the old "(47 ft typ.)" was cryptic). The bracket measures
+        # the drawn width, which equals the Type's representative ('typ') value.
         r = spec["row"]
-        rowlabel = f"RIGHT-OF-WAY   {r['min']}–{r['max']} ft  ({r['typ']} ft typ.)"
-    parts.append(text((x_street0 + x_street1) / 2.0, row_y + ROW_LABEL_GAP_FT * SCALE,
-                      rowlabel, FS_ROW, BODY_DARK, "600", spacing="1.5"))
+        rowlabel = f"RIGHT-OF-WAY   {r['min']}–{r['max']} ft range   ·   shown at {r['typ']} ft"
+    # Center on the street midpoint, but shrink to fit the canvas so the longer,
+    # clearer caption never clips on a narrow Type (the Alley canvas is ~1181px).
+    row_mid = (x_street0 + x_street1) / 2.0
+    row_sp = 1.5
+    # The caption sits inside the translated group (drawing coords); its true
+    # room is the full frame about the street centre at frame x = pad_x + row_mid.
+    row_mid_f = pad_x + row_mid
+    avail = 2.0 * min(row_mid_f, FW - row_mid_f) - 1.9 * SCALE   # ~0.95 ft margin each side
+    rsize = float(FS_ROW)
+    if _txt_w(rowlabel, rsize, row_sp) > avail:
+        rsize = max(36.0, (avail - (len(rowlabel) - 1) * row_sp) / (len(rowlabel) * 0.52))
+    parts.append(text(row_mid, row_y + ROW_LABEL_GAP_FT * SCALE,
+                      rowlabel, rsize, BODY_DARK, "600", spacing=row_sp))
 
+    parts.append("</g>")     # close the centering translate group
     parts.append("</svg>")
     return "\n".join(parts)
 

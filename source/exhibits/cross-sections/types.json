@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "note": "Cross-section spec for Article 3 Street/Road Type plates. Widths in feet (representative/typical, mid-range of each Type's design-standard ranges). Sprites are CC BY-SA 4.0 Streetmix assets vendored under sprites/ (see sprites/NOTICE.md). Surfaces: concrete=sidewalk, grass=planting/verge, asphalt=pavement, gravel=rural earth/sand blend, shoulder=asphalt-gray. 'raised':true lifts a segment one curb-height above the roadway. 'at' is the object's center as a fraction (0..1) across its segment. 'maindot':true replaces the ROW bracket with an illustrative-section note; pair with the plate's 'illustrative':true. 'standards' is the uniform 14-row design-standards set shown on each Type plate (these pages are the standards home; the comparison matrix has been retired). 'description' is the authoritative one-paragraph regulatory text for the Type; 'note' carries a Type-specific cross-reference (shopfront / state-aid).",
+    "note": "Cross-section spec for Article 3 Street/Road Type plates. Widths in feet (representative/typical, mid-range of each Type's design-standard ranges). Sprites are CC BY-SA 4.0 Streetmix assets vendored under sprites/ (see sprites/NOTICE.md). Surfaces: concrete=sidewalk, grass=planting/verge, asphalt=pavement, gravel=rural earth/sand blend, shoulder=asphalt-gray. 'raised':true lifts a segment one curb-height above the roadway. 'at' is the object's center as a fraction (0..1) across its segment. 'maindot':true replaces the ROW bracket with an illustrative-section note; pair with the plate's 'illustrative':true. 'standards' is the uniform 14-row design-standards set shown on each Type plate (these pages are the standards home; the comparison matrix has been retired). 'description' is the authoritative one-paragraph regulatory text for the Type; 'purpose' is the list of statement-of-purpose items shown under the page's PURPOSE heading (CZC 'To …' convention, mirroring the District pages); 'note' and 'footnote' carry Type-specific applicability statements shown together under the page's STANDARDS heading (note = cross-reference such as shopfront / state-aid; footnote = component/parking rule). The Type page layout mirrors the Article 2 District standards page: band, cross-section, two prose columns, and the full-width design-standards table at the bottom.",
     "scale_px_per_ft": 39.3700787,
     "credit": "Street/road cross-section illustrations adapted from Streetmix (streetmix.net), © the Streetmix project, licensed CC BY-SA 4.0."
   },
@@ -12,6 +12,11 @@
     "name": "MAIN STREET",
     "context": "D6 Town Center · designated D5 segments",
     "description": "The most urban Street Type — the central organizing thoroughfare of the Town Center, with continuous building streetwalls, active ground-floor uses, wide sidewalks, on-street parking both sides, and the lowest design speed in the typology.",
+    "purpose": [
+      "To establish the Town Center's principal civic and commercial thoroughfare, framed by continuous building streetwalls and active ground-floor uses.",
+      "To give pedestrians clear priority over vehicles, holding the lowest design speed in the typology (§1.a.4).",
+      "To complete the public realm with wide sidewalks, on-street parking both sides, and street trees, served from the rear by a Lane or Alley."
+    ],
     "note": "Shopfront Required: a street classified S1 is a Shopfront Required street under Article 2 §4.C, subsuming the separate Shopfront Required overlay shown on the District Map.",
     "row": { "min": 66, "max": 80, "typ": 73 },
     "edges": {
@@ -64,6 +69,11 @@
     "name": "VILLAGE STREET",
     "context": "D5 Village Business · edges of D6 · SD-Historic core",
     "description": "A village-center Street with mixed-use frontages, sidewalks both sides, and on-street parking on at least one side, at a design speed suited to pedestrian-prioritized village streets.",
+    "purpose": [
+      "To support a compact, walkable village center by pairing mixed-use frontages with sidewalks and on-street parking along the travel way.",
+      "To resolve conflicts between vehicular and pedestrian movement in favor of the pedestrian, holding the design speed low (§1.a.4).",
+      "To frame the public realm with shallow setbacks, continuous street trees, and building entrances that meet the sidewalk."
+    ],
     "note": "Shopfront by designation: an S2 segment may be designated Shopfront Required on the District Map and is then subject to the shopfront standards of Article 5 §12.",
     "row": { "min": 40, "max": 54, "typ": 47 },
     "edges": {
@@ -115,6 +125,11 @@
     "name": "NEIGHBORHOOD STREET",
     "context": "D2 · D3 · D4 · SD-Historic outside center",
     "description": "The most common village Street outside the Town Center, connecting residential and small-business neighborhoods with a sidewalk and planting strip on at least one side and a residential-scale design speed.",
+    "purpose": [
+      "To connect Newcastle's residential and small-business neighborhoods at a comfortable, residential-scale design speed.",
+      "To provide for pedestrians with a sidewalk and planting strip on at least one side, scaled to the abutting District.",
+      "To accommodate on-street parking and street trees without widening the travel way beyond neighborhood scale."
+    ],
     "row": { "min": 40, "max": 46, "typ": 43 },
     "edges": {
       "left":  { "sprite": "buildings/residential-left.svg",  "show_ft": 13, "label": "FRONTAGE" },
@@ -165,6 +180,11 @@
     "name": "LANE",
     "context": "Internal blocks · D2 · D4 · D5 · D6 · SD-Historic · SD-Campus",
     "description": "A narrow, low-speed Street internal to a block that provides building frontage and access on two yield-operated travel lanes, with a required sidewalk on one side; larger than an Alley (S5), on which buildings do not front.",
+    "purpose": [
+      "To open block interiors to building frontage and access on a narrow, low-speed shared surface.",
+      "To provide pedestrian access with a required sidewalk on one side while holding vehicles to a yield operation.",
+      "To support compact, walkable block structure where a full Street is neither needed nor desired."
+    ],
     "row": { "min": 30, "max": 40, "typ": 35 },
     "edges": {
       "left":  { "sprite": "buildings/residential-left.svg",  "show_ft": 11, "label": "FRONTAGE" },
@@ -213,6 +233,11 @@
     "name": "ALLEY",
     "context": "Internal service · D3–D6 · SD-Historic · SD-Fabrication · SD-Civic",
     "description": "A narrow service street internal to a block, providing side- and rear-lot access for parking, loading, accessory buildings, and utilities; buildings do not front on an Alley.",
+    "purpose": [
+      "To provide side- and rear-lot access for parking, loading, service, and utilities away from the primary Street frontage.",
+      "To keep service traffic, curb cuts, and utilities off the pedestrian-priority Streets — the only Street Type allowed for rear-lot access in D6.",
+      "To size the paved width and curb returns for delivery and emergency vehicles without inviting through-travel."
+    ],
     "row": { "min": 16, "max": 20, "typ": 18 },
     "edges": {
       "left":  { "sprite": "buildings/apartments-narrow-left.svg",  "show_ft": 6 },
@@ -258,6 +283,11 @@
     "name": "CONNECTOR ROAD",
     "context": "D1–D2 transition · SD-Rural Highway secondary routes",
     "description": "The most Street-like of the Road family, carrying through-travel in the rural-to-urban transition zone with shoulders rather than curbs, no continuous sidewalk, and a design speed higher than any Street Type.",
+    "purpose": [
+      "To carry through-travel between villages and rural areas across the rural-to-urban transition zone.",
+      "To favor the vehicle while still accommodating occasional pedestrians and cyclists on shoulders rather than sidewalks (§1.a.4).",
+      "To manage drainage and roadside development at a rural scale, with ditches, culverts, and larger setbacks than on Streets."
+    ],
     "row": { "min": 40, "max": 50, "typ": 45 },
     "edges": {
       "left":  { "ground": "grass", "show_ft": 10, "objects": [ { "sprite": "trees/tree.svg", "at": 0.45 } ] },
@@ -307,6 +337,11 @@
     "name": "RURAL ROAD",
     "context": "D1 Rural · SD-Conservation · rural SD-Marine",
     "description": "The standard rural Road, providing access to working landscapes — farmland, forest, and conservation lands — with the narrowest standard pavement, no curbs, and drainage by open ditches.",
+    "purpose": [
+      "To provide reliable vehicular access to working rural landscapes — farm, forest, and conservation lands — with the least practical land alteration.",
+      "To keep the rural Road narrow and unembellished, favoring the vehicle and rural character over urban streetscape elements (§1.a.4).",
+      "To limit impervious surface and preserve the open, ditch-drained character of Newcastle's rural Districts."
+    ],
     "row": { "min": 40, "max": 50, "typ": 45 },
     "edges": {
       "left":  { "ground": "grass", "show_ft": 12, "objects": [ { "sprite": "trees/tree.svg", "at": 0.4 } ] },
@@ -356,6 +391,11 @@
     "name": "RURAL LANE",
     "context": "D1 Rural · SD-Conservation · low-volume rural ways",
     "description": "A low-volume rural yield roadway — the rural counterpart to the Lane (S4) — carrying the fewest vehicles in the Road family (generally under 400 per day) on a single shared surface or two very narrow lanes; the conforming designation for narrow historic two-rod (33 ft) ways.",
+    "purpose": [
+      "To serve the lowest-volume rural ways on a single shared or very narrow surface, with the least practical land alteration.",
+      "To preserve roadside vegetation and the character of narrow two-rod ways, providing passing pull-outs in lieu of widening.",
+      "To bring existing narrow rural roads into conformance with this Code without urbanizing them."
+    ],
     "row": { "min": 33, "max": 50, "typ": 40 },
     "edges": {
       "left":  { "ground": "grass", "show_ft": 12, "objects": [ { "sprite": "trees/tree.svg", "at": 0.45 } ] },
@@ -402,6 +442,11 @@
     "name": "HIGHWAY COMMERCIAL",
     "context": "SD-Highway Commercial · US Route 1",
     "description": "An auto-oriented commercial corridor where the cartway is designed and maintained by MaineDOT while the Town governs the frontage zone, setbacks, sidewalks (where feasible), and access management.",
+    "purpose": [
+      "To accommodate auto-oriented commercial development along the Route 1 corridor where MaineDOT designs and maintains the cartway.",
+      "To secure pedestrian access and a coherent frontage where feasible, through Town control of setbacks, sidewalks, and access management (Article 2).",
+      "To manage curb cuts and entrances in coordination with MaineDOT (§12) so corridor safety and capacity are preserved."
+    ],
     "note": "Most R4 segments are state-aid roads; the cartway follows MaineDOT geometry. See Section 12 for the MaineDOT coordination protocol.",
     "maindot": true,
     "illustrative": true,
@@ -454,6 +499,11 @@
     "name": "RURAL HIGHWAY",
     "context": "SD-Rural Highway · US Route 1 corridor",
     "description": "A high-speed regional corridor through rural and conservation contexts, where MaineDOT controls the cartway and the Town preserves rural character through vegetative screening, deep front setbacks, and tightly managed curb cuts.",
+    "purpose": [
+      "To carry high-speed regional through-travel along the Route 1 corridor on a MaineDOT-controlled cartway.",
+      "To preserve rural and conservation character through vegetative screening, deep front setbacks, and tightly managed curb cuts.",
+      "To coordinate all cartway geometry and entrances with MaineDOT (§12) while the Town governs the frontage and screening."
+    ],
     "note": "All R5 segments are state-aid roads; the cartway follows MaineDOT geometry. See Section 12 for the MaineDOT coordination protocol.",
     "maindot": true,
     "illustrative": true,
