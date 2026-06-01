@@ -76,6 +76,42 @@ def strip_meta(text: str) -> str:
     return text
 
 
+# Article 2's per-District spreads — the Core Districts (``## D1`` … ``## D6``)
+# and the Special Districts (``## SD …``). In current releases these live in
+# source/article-02-data.json and render as native-Typst 2-page spreads; they
+# are NOT in the markdown. The v0.1 baseline, however, authored every District
+# as markdown prose and tables (use matrices, lot-dimension tables, ~2,300
+# lines), so a naive text diff against the baseline reports them as a wall of
+# phantom "deletions" even though nothing was deleted — the content only moved
+# to native rendering. Honoring this tool's contract (native layout is not
+# text-compared), drop these sections from BOTH documents. This is a no-op for
+# post-migration draft-to-draft redlines (neither side carries them).
+NATIVE_SECTION_RE = re.compile(r'^##[ \t]+(?:D[1-6]\b|SD[ \t]+\S)')
+
+
+def drop_native_sections(text: str) -> str:
+    """Remove H2 District-spread sections that migrated to native rendering.
+
+    Skipping runs from a matching ``##`` heading up to (not including) the next
+    H1/H2 heading, so the District's own ``###``/``####`` subsections are
+    dropped with it while the general prose sections (``## 1. DISTRICTS`` …
+    ``## 5. CIVIC DISTRICT``) and every later Article are preserved.
+    """
+    out, skip = [], False
+    for ln in text.split('\n'):
+        if re.match(r'^#{1,2}[ \t]', ln):      # H1 or H2 boundary re-evaluates
+            skip = bool(NATIVE_SECTION_RE.match(ln))
+        if not skip:
+            out.append(ln)
+    return '\n'.join(out)
+
+
+def prepare(text: str):
+    """Normalise → drop native spreads → mask fenced blocks. Returns
+    ``(lines, registry)`` ready to diff."""
+    return mask_blocks(drop_native_sections(strip_meta(text)))
+
+
 def mask_blocks(text: str):
     """Replace each fenced block with a single content-hashed token line.
 
@@ -326,8 +362,8 @@ def mark_replace_1to1(old: str, new: str) -> str:
 
 
 def redline(old_text: str, new_text: str):
-    a, reg_a = mask_blocks(strip_meta(old_text))
-    b, reg_b = mask_blocks(strip_meta(new_text))
+    a, reg_a = prepare(old_text)
+    b, reg_b = prepare(new_text)
     reg = {**reg_a, **reg_b}
     sm = difflib.SequenceMatcher(None, a, b, autojunk=False)
     out = []
@@ -426,8 +462,8 @@ def _changed_lines(group, a, b):
 
 
 def digest(old_text: str, new_text: str, context: int = 2):
-    a, reg_a = mask_blocks(strip_meta(old_text))
-    b, reg_b = mask_blocks(strip_meta(new_text))
+    a, reg_a = prepare(old_text)
+    b, reg_b = prepare(new_text)
     reg = {**reg_a, **reg_b}
     sm = difflib.SequenceMatcher(None, a, b, autojunk=False)
     b_headings = heading_index(b)
