@@ -193,9 +193,14 @@
 
 // ---- Label / value mini-table (row hairlines) -------------------------------
 // inset y 3.75pt => ~13.5pt row pitch (MEASURED baseline lvtable pitch).
+// Stroke is BOTTOM-only: the heading's panel() already draws the line() that
+// serves as the rule under the heading (i.e. the table's top edge). Adding a
+// cell `top` here would stack a SECOND hairline ~3.5pt below it — the "double
+// rule" the baseline never shows. Bottom on every cell still yields the
+// inter-row hairlines and the table's closing bottom rule.
 #let lvtable(rows) = table(
   columns: (1.15fr, 1fr),
-  stroke: (x, y) => (top: hair, bottom: hair),
+  stroke: (x, y) => (bottom: hair),
   inset: (x: 0pt, y: 3.75pt),
   align: (left + horizon, left + horizon),
   ..rows.map(r => (r.at(0), r.at(1))).flatten()
@@ -204,9 +209,11 @@
 // ---- Full-width PERMITTED BUILDINGS matrix ----------------------------------
 // MEASURED: every cell (column headers, row labels, values) is Light body weight
 // — NOT bold/medium. inset y 4.25pt => ~14.5pt row pitch (looser than lvtable).
+// BOTTOM-only stroke (see lvtable): the panel() line() is the rule under the
+// heading, so a cell `top` would double it.
 #let permitted_buildings(m) = table(
   columns: (1.6fr,) + (1fr,) * m.cols.len(),
-  stroke: (x, y) => (top: hair, bottom: hair),
+  stroke: (x, y) => (bottom: hair),
   inset: (x: 4pt, y: 4.25pt),
   align: left + horizon,
   table.header([], ..m.cols.map(c => [#c])),
@@ -297,14 +304,16 @@
   district_band(d)
   v(9pt)
 
-  // The two inter-column dividers are drawn at the GRID level so each spans the
-  // full matrix height (the tallest column), rather than per-column boxes that
-  // would each stop at their own content's end. Insets supply the 7pt+7pt of
-  // breathing room on either side of each hairline (≈ the old 14pt gutter).
-  grid(columns: (0.72fr, 0.72fr, 1fr),
+  // Three EQUAL columns (1fr each) for a balanced spread. The two inter-column
+  // dividers are drawn at the GRID level so each spans the full matrix height
+  // (the tallest column), rather than per-column boxes that would each stop at
+  // their own content's end. Insets supply 11pt+11pt of breathing room on either
+  // side of each hairline (≈ a 22pt gutter) — wider separation between col1↔col2
+  // and col2↔col3 than the old layout.
+  grid(columns: (1fr, 1fr, 1fr),
     stroke: (x, y) => if x > 0 { (left: hair) },
-    inset: (x, y) => (left: if x > 0 { 7pt } else { 0pt },
-                      right: if x < 2 { 7pt } else { 0pt }),
+    inset: (x, y) => (left: if x > 0 { 11pt } else { 0pt },
+                      right: if x < 2 { 11pt } else { 0pt }),
     usecolumn(d.use_col1),
     usecolumn(d.use_col2),
     // col 3: legend + use standards (divider/inset now supplied by the grid)

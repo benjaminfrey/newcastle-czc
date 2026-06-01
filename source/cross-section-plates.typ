@@ -152,7 +152,11 @@
   }
   table(
     columns: (auto, 1fr, 1fr),
-    stroke: (x, y) => (top: hair, bottom: hair),
+    // BOTTOM-only stroke: the panel("Design Standards") line() above is the rule
+    // under the heading (this table's top edge). A cell `top` would stack a
+    // second hairline ~3.5pt below it (the "double rule" bug). Bottom on every
+    // cell keeps the header/row separators and the closing bottom rule.
+    stroke: (x, y) => (bottom: hair),
     inset: (x: 6pt, y: 2pt),
     align: left + horizon,
     ..cells,

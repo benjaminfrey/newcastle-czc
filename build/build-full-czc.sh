@@ -61,6 +61,29 @@ fi
 TMPDIR_PDFS="$(mktemp -d)"
 trap 'rm -rf "$TMPDIR_PDFS"' EXIT
 
+# Splice the three Article-1 District Map exhibits (native Typst,
+# district-maps.typ) in AFTER Article 1's prose. The baseline closes Article 1
+# with three full-page zoning exhibits (EXHIBIT 1.1 District Map, 1.2 Newcastle
+# Town Center inset, 1.4 Sheepscot Village inset). They are GIS raster
+# composites (vector zoning polygons over a sliced-JPEG basemap) that
+# markdown/pandoc cannot express, so — exactly like the Article-2 district
+# spreads (article-02.typ) and the Article-3 Type plates
+# (cross-section-plates.typ) — they render natively and are concatenated in
+# place. The render loop's *.typ branch threads the same cumulative even
+# page-offset + footer date, so the maps' parity-aware chrome (ARTICLE 1 tab,
+# GENERAL STANDARDS running head, continuous footer) is correct; the 3-page
+# (odd) block is padded with one trailing blank, keeping every downstream
+# Article's parity unchanged (an even shift of +4).
+MAPS_TYP="$SOURCE_DIR/district-maps.typ"
+if [ -f "$MAPS_TYP" ]; then
+  SPLICED=()
+  for f in "${ARTICLES[@]}"; do
+    SPLICED+=("$f")
+    case "$f" in */article-01-*.md) SPLICED+=("$MAPS_TYP") ;; esac
+  done
+  ARTICLES=("${SPLICED[@]}")
+fi
+
 # Splice the ten Street/Road Type pages (native Typst, cross-section-plates.typ)
 # INTO Article 3 Section 2 — between the General subsection (§2.c) and the
 # Driveway subsection (§2.d) — so each Type's full page sits where its standards
@@ -275,6 +298,17 @@ PY
     *)
       cat "$ART" >> "$COMBINED_MD"
       case "$ART" in
+        *article-01-general.md)
+          {
+            printf '\n\n'
+            printf '<!-- The three District Map exhibits (EXHIBIT 1.1 District Map, 1.2\n'
+            printf '     District Map Inset - Newcastle Town Center, 1.4 District Map Inset -\n'
+            printf '     Sheepscot Village) appear here in the rendered PDF as full pages. They\n'
+            printf '     are GIS raster composites (vector zoning districts over an aerial\n'
+            printf '     basemap) rendered natively from source/district-maps.typ (reseating\n'
+            printf '     source/exhibits/district-maps/*.png). See the Integrated Draft PDF. -->\n\n'
+          } >> "$COMBINED_MD"
+          ;;
         *article-02-prefatory.md)
           {
             printf '\n\n'
