@@ -1,0 +1,29 @@
+{
+  "_meta": {
+    "note": "SAMPLE / SCAFFOLD DATA for the Street & Road Type Map (Exhibit 3.2) and the Inventory of Existing Streets & Roads (Exhibit 3.1, Article 3 §5.C). This is NOT real Newcastle data — it is a small invented network (one segment per Type) so the renderer can be demonstrated. To produce the real exhibits, replace 'segments' with Newcastle's road centerlines + the Type classification applied under §5.D. The renderer auto-scales the geometry to the page, so 'geometry' may be in any consistent units; for the real map, use projected town coordinates (e.g. Maine State Plane / EPSG:26919, easting/northing in feet or meters) and the map will fit-to-page with north up.",
+    "crs": "ARBITRARY SAMPLE UNITS (x = east, y = north). Replace with projected town coordinates.",
+    "fields": "Per segment: id, name, termini [from, to] (binding identity, §5.C.2); type = the BINDING classification (S1-S5, R1-R5); ownership, row_ft, traveled_ft, districts[], maindot, nonconformity = RECORDED reference data (§5.C.3, not standards); geometry = polyline [[x,y], ...]."
+  },
+  "segments": [
+    { "id": "main-st",       "name": "Main Street",        "termini": ["Mill Street", "Bridge Street"],  "type": "S1", "ownership": "Town Way",      "row_ft": 73, "traveled_ft": 20, "districts": ["D6"],       "maindot": null,              "nonconformity": null,
+      "geometry": [[3.0, 5.0], [4.5, 5.05], [6.0, 5.0], [7.0, 5.05]] },
+    { "id": "village-st",    "name": "Academy Street",     "termini": ["Main Street", "School Lane"],     "type": "S2", "ownership": "Town Way",      "row_ft": 47, "traveled_ft": 20, "districts": ["D5"],       "maindot": null,              "nonconformity": "ROW 38 ft, narrower than Type" ,
+      "geometry": [[5.0, 5.0], [5.05, 6.0], [5.0, 7.0]] },
+    { "id": "neighborhood-st","name": "Elm Street",        "termini": ["Main Street", "North Street"],    "type": "S3", "ownership": "Town Way",      "row_ft": 43, "traveled_ft": 20, "districts": ["D4", "D2"], "maindot": "Local",           "nonconformity": null,
+      "geometry": [[3.0, 5.0], [2.4, 6.2], [2.0, 7.6], [2.0, 9.0]] },
+    { "id": "lane",          "name": "Cooper Lane",        "termini": ["Academy Street", "rear lots"],    "type": "S4", "ownership": "Town Way",      "row_ft": 35, "traveled_ft": 14, "districts": ["D5"],       "maindot": null,              "nonconformity": null,
+      "geometry": [[5.0, 5.6], [6.0, 5.9], [6.6, 5.85]] },
+    { "id": "alley",         "name": "Market Alley",       "termini": ["Main Street", "Cooper Lane"],     "type": "S5", "ownership": "Town Way",      "row_ft": 18, "traveled_ft": 18, "districts": ["D6"],       "maindot": null,              "nonconformity": null,
+      "geometry": [[6.2, 5.0], [6.3, 5.45], [6.4, 5.85]] },
+    { "id": "connector-rd",  "name": "Sheepscot Road",     "termini": ["Bridge Street", "Town line"],     "type": "R1", "ownership": "Town Way",      "row_ft": 45, "traveled_ft": 22, "districts": ["D2", "D1"], "maindot": "Collector",       "nonconformity": null,
+      "geometry": [[7.0, 5.05], [8.2, 5.6], [9.4, 6.2]] },
+    { "id": "rural-rd",      "name": "River Road",         "termini": ["Main Street", "Mill Pond"],       "type": "R2", "ownership": "Town Way",      "row_ft": 45, "traveled_ft": 18, "districts": ["D1"],       "maindot": "Local",           "nonconformity": null,
+      "geometry": [[3.0, 5.0], [2.0, 4.0], [1.2, 3.0]] },
+    { "id": "rural-lane",    "name": "Old Ferry Way",      "termini": ["River Road", "landing"],          "type": "R3", "ownership": "Public Easement","row_ft": 40, "traveled_ft": 12, "districts": ["SD-Conservation"], "maindot": null,         "nonconformity": "two-rod (33 ft) historic way",
+      "geometry": [[1.2, 3.0], [0.8, 2.0], [0.6, 1.2]] },
+    { "id": "highway-comm",  "name": "US Route 1 (in-town)","termini": ["Bridge Street", "Sherman Marsh"],"type": "R4", "ownership": "State Highway", "row_ft": 56, "traveled_ft": 24, "districts": ["SD-Highway Commercial"], "maindot": "Minor Arterial", "nonconformity": null,
+      "geometry": [[7.0, 5.0], [7.8, 3.4], [8.6, 2.2], [9.2, 1.6]] },
+    { "id": "rural-highway", "name": "US Route 1 (rural)", "termini": ["Sherman Marsh", "Town line"],     "type": "R5", "ownership": "State Highway", "row_ft": 68, "traveled_ft": 24, "districts": ["SD-Rural Highway"], "maindot": "Principal Arterial", "nonconformity": null,
+      "geometry": [[9.2, 1.6], [9.7, 0.9], [10.0, 0.4]] }
+  ]
+}
