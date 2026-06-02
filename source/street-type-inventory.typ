@@ -106,28 +106,25 @@
 
 #block(above: 0pt, below: 9pt, text(size: 8pt, fill: subsection_gray, style: "italic")[
   The #text(weight: "bold")[Type] column is the binding classification of each segment (§5.C.2). The remaining
-  columns are recorded for reference (§5.C.3): approximate, not standards, and updatable by the Town.
+  columns record reference information (§5.C.3) the Town may update without amending this Code.
   #text(weight: "bold")[#banner]])
 
 // ---- The inventory table (breakable; header repeats per page) ---------------
 #let hd(s) = text(fill: subsection_gray, weight: "bold", size: 6.5pt, tracking: 0.3pt)[#upper(s)]
 #set text(size: 7pt)
 #table(
-  columns: (1.5fr, 1.9fr, 0.75fr, 1.15fr, 0.55fr, 0.7fr, 1.5fr),
+  columns: (1.5fr, 1.9fr, 0.75fr, 1.15fr, 0.7fr),
   stroke: (x, y) => (bottom: 0.4pt + subsection_gray),
   inset: (x: 4pt, y: 3pt),
   align: (left + horizon),
   table.header(
-    hd("Thoroughfare"), hd("From → To"), hd("Type"), hd("Ownership"),
-    hd("ROW ft"), hd("District"), hd("Nonconformity"),
+    hd("Thoroughfare"), hd("From → To"), hd("Type"), hd("Ownership"), hd("District"),
   ),
   ..segs.map(s => (
     [#s.name],
     text(fill: subsection_gray)[#termini_str(s)],
     type_cell(s.at("type", default: none)),
     or_dash(s.at("ownership", default: none)),
-    or_dash(s.at("row_ft", default: none)),
     dist_str(s),
-    text(fill: subsection_gray)[#or_dash(s.at("nonconformity", default: none))],
   )).flatten()
 )

@@ -102,12 +102,17 @@ rebuild. No code changes.
 
 ## Current state (as of 2026-06-02)
 
+- **Shipped `v0.17-draft`** — editorial: the repealed RDEO is now named only in the
+  §1.A repeal/supersede clause; the 3 incidental mentions (§3.E grade rationale, §14.D
+  substantial-reconstruction definition) reworded to keep substance without the
+  citation. Also trimmed the always-empty ROW/Nonconformity columns from Exhibit 3.1
+  (JSON fields kept). No standard/definition change. Tags through v0.17-draft.
 - **Shipped `v0.16-draft`** — **Main Street reconciliation.** Typed the downtown core
   **S1** (Mills Rd → Damariscotta bridge) + **S2** (Mills → River Rd), Ownership kept
   **State Highway** (`overrides.json`: main-street-9→S2, -10/-11/-12→S1); **S1 went
   0 → 3 segments**. Amended §5.D ¶d so MaineDOT functional class drives Type only in
   road-default Districts; in the village the form test governs (Main-St-is-S1 example,
-  §12 coordination). Western approach to Route 1 left R-typed. Tags through v0.16-draft.
+  §12 coordination). Western approach to Route 1 left R-typed.
 - **Shipped `v0.15-draft`** — the **Thoroughfares** terminology release. Collective
   "Street/Road" → **Thoroughfare**; Article 3 retitled **"Thoroughfares"**;
   `Street/Road Type` → `Thoroughfare Type`. Street & Road kept for the families, Type
