@@ -68,9 +68,9 @@
   // the last one on or before this physical page: lag-free, and still correct
   // when a single Type is rendered standalone (only=...).
   let marks = query(<plate-group>)
-  let grp = "Street & Road Types"
+  let grp = "Thoroughfare Types"
   for m in marks { if m.location().page() <= here().page() { grp = m.value } }
-  let outer = text(fill: subsection_gray, weight: "bold", size: 11pt, tracking: 1.35pt)[STREET & ROAD TYPES]
+  let outer = text(fill: subsection_gray, weight: "bold", size: 11pt, tracking: 1.35pt)[THOROUGHFARE TYPES]
   let inner = text(fill: subsection_gray, weight: "bold", size: 10pt, tracking: 0.2pt, grp)
   if calc.even(pn) {
     grid(columns: (HEAD_MARK, HEAD_INNER - HEAD_MARK, 1fr),

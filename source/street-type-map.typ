@@ -39,7 +39,7 @@
 
 // ---- This file IS Article 3 (mirrors district-maps.typ's hardcoded Article 1)
 #let article_number = "3"
-#let article_name = "Streets, Roads & Driveways"
+#let article_name = "Thoroughfares"
 
 // ---- Palette (mirror of style/czc-colors.yml / czc-template.typ) ------------
 #let article_blue    = rgb("#367AAC")
@@ -188,7 +188,7 @@
 // EXHIBIT caption — same style as the Article-1 District Map exhibits.
 #block(above: 0pt, below: 9pt,
   text(fill: subsection_gray, weight: "bold", stretch: 75%, size: 11pt, tracking: 0.3pt)[
-    EXHIBIT 3.2#h(0.85em)STREET & ROAD TYPE MAP])
+    EXHIBIT 3.2#h(0.85em)THOROUGHFARE TYPE MAP])
 
 #map_panel
 
@@ -197,7 +197,7 @@
 #let banner = data.at("_meta", default: (:)).at("banner",
   default: "Sample data shown — not Newcastle's adopted network.")
 #block(above: 11pt, text(fill: subsection_gray, size: 7.5pt, style: "italic")[
-  Illustrative companion to the Inventory of Existing Streets & Roads (Exhibit 3.1, §5.C);
+  Illustrative companion to the Inventory of Existing Thoroughfares (Exhibit 3.1, §5.C);
   generated from the Inventory and provided for convenience. The Type assignment shown is the
   binding classification (§5.C.2); where this Map and the Inventory differ, the Inventory governs.
   #text(weight: "bold")[#banner]])

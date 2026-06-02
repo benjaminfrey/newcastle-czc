@@ -32,16 +32,16 @@ footer-date: "Adopted: November 3, 2020"
 
 ### c. GENERAL
 
-1. All newly created lots must abut a Street or Road of a Type defined in Article 3 Section 2 (Street & Road Types). The Street or Road must conform to the standards of Article 3.
+1. All newly created lots must abut a Thoroughfare of a Type defined in Article 3 Section 2 (Thoroughfare Types). The Thoroughfare must conform to the standards of Article 3.
     a. Newly created lots shall retain the District designation of the original lot.
-    b. New insular lots are prohibited, unless created with a minimum deeded 24 ft wide right-of-way to a Street or Road as defined in Article 3.
+    b. New insular lots are prohibited, unless created with a minimum deeded 24 ft wide right-of-way to a Thoroughfare as defined in Article 3.
         i. Newly created insular lots wholly held in a non-public conservation easement may reduce the right-of-way with access standard to 10 ft for non-vehicular access. Subsequent removal of the lot from the conservation easement shall create a legal non-conformity.
     c. New flag lots are prohibited.
 2. Land may be platted to create new corner lots, insular lots, through lots, or waterfront lots.
 3. Any lot type that has not been described by this Code may not be developed except by special permit.
 4. Lots must be platted as follows:
     a. The front lot line must be located along the primary road, or water body.
-    b. For newly created corner lots or through lots that abut two roads, the primary frontage shall be along the Street or Road of the highest Type per Article 3 Section 2 hierarchy (Streets take precedence over Roads; within each family, Types with lower codes — e.g., S1 over S2 — take precedence).
+    b. For newly created corner lots or through lots that abut two roads, the primary frontage shall be along the Thoroughfare of the highest Type per Article 3 Section 2 hierarchy (Streets take precedence over Roads; within each family, Types with lower codes — e.g., S1 over S2 — take precedence).
 
 ### d. NONCONFORMING LOTS
 

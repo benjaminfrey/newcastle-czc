@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build the standalone Article 3 "Streets, Roads & Driveways" deliverable.
+# Build the standalone Article 3 "Thoroughfares" deliverable.
 #
 # The standalone is the new Article rendered for focused review. The ten
 # full-page Street/Road Type pages (S1..S5, R1..R5, native Typst from
@@ -38,7 +38,7 @@ if [ ! -f "$SOURCE" ]; then
   exit 1
 fi
 
-OUT_NAME="Article 3 Streets Roads & Driveways (Standalone $VERSION)"
+OUT_NAME="Article 3 Thoroughfares (Standalone $VERSION)"
 OUTPUT_PDF="$RELEASE_DIR/$OUT_NAME.pdf"
 
 TMPDIR_A3="$(mktemp -d)"
@@ -56,7 +56,7 @@ render_seg() {  # <src.md> <out.pdf> <page-offset> [extra pandoc -V ...]
     --template="$REPO_ROOT/style/czc-template.typ" \
     --resource-path="$REPO_ROOT/style" \
     -V article-number=3 \
-    -V article-name="Streets, Roads & Driveways" \
+    -V article-name="Thoroughfares" \
     -V "footer-date=Draft $VERSION" \
     -V "page-offset=$off" \
     "$@" \
@@ -90,15 +90,12 @@ if [ -f "$PLATES_TYP" ] && python3 "$REPO_ROOT/build/split-article-03.py" "$SOUR
   render_seg "$SPLIT_03A" "$SEG_A" 0
   PARTS+=("$SEG_A")
 
-  # The plate block's page_offset must be EVEN (parity invariant in
-  # cross-section-plates.typ). If the opener segment ends on an odd page, pad a
-  # blank so the first plate opens on a recto and logical == physical for chrome.
+  # The standalone flows continuously: each unit threads the TRUE running page
+  # count so chrome (verso/recto band, tab, footer) stays logical == physical at
+  # its actual position — no recto-opening blanks are inserted. (The bound
+  # integrated CZC, by contrast, pads each unit to open on a recto.)
   A_PAGES=$(pagecount "$SEG_A")
   PRECEDING=$A_PAGES
-  if [ $((A_PAGES % 2)) -eq 1 ]; then
-    PARTS+=("$BLANK_PDF")
-    PRECEDING=$((A_PAGES + 1))
-  fi
 
   echo "Rendering 10 Type plates (page offset $PRECEDING)"
   typst compile "$PLATES_TYP" "$PLATES_PDF" \
@@ -109,7 +106,7 @@ if [ -f "$PLATES_TYP" ] && python3 "$REPO_ROOT/build/split-article-03.py" "$SOUR
   PLATES_PAGES=$(pagecount "$PLATES_PDF")
 
   # Continuation segment (§2.d .. §5.C when §5 exhibits splice in, else §2.d..§14)
-  # at the cumulative EVEN offset.
+  # at the cumulative offset.
   CONT_OFFSET=$((PRECEDING + PLATES_PAGES))
   echo "Rendering Article 3 continuation segment (page offset $CONT_OFFSET)"
   render_seg "$SPLIT_03B" "$SEG_B" "$CONT_OFFSET" -V "continuation=true"
@@ -121,25 +118,24 @@ if [ -f "$PLATES_TYP" ] && python3 "$REPO_ROOT/build/split-article-03.py" "$SOUR
   # 03c ALWAYS renders when non-empty so the §5.D..§14 body is never dropped; only
   # the exhibits are conditional on the data existing. (Marker absent ⇒ 03c empty
   # ⇒ this whole block is skipped and SEG_B above already carries §2.d..§14.)
+  # Offsets thread the TRUE running page count (logical == physical), so the
+  # standalone flows with no recto-opening blanks; chrome stays correct because
+  # each renderer keys verso/recto off here().page() + page_offset.
   if [ -s "$SPLIT_03C" ]; then
-    pad_even() { if [ $((OFF % 2)) -eq 1 ]; then PARTS+=("$BLANK_PDF"); OFF=$((OFF + 1)); fi; }
-    render_typ() {  # <typ> <out>  (renders at global EVEN $OFF, with the inventory data)
+    render_typ() {  # <typ> <out>  (renders at the running $OFF, with the inventory data)
       typst compile "$1" "$2" --font-path "$REPO_ROOT/style/fonts" \
         --input "page_offset=$OFF" --input "footer_date=Draft $VERSION" \
         --input "data=exhibits/street-types/inventory.json"
     }
     if [ -f "$INVENTORY_JSON" ] && [ -f "$INV_TYP" ] && [ -f "$MAP_TYP" ]; then
       echo "Splicing Exhibits 3.1 + 3.2 into Article 3 §5"
-      pad_even
       echo "Rendering Exhibit 3.1 Inventory table (page offset $OFF)"
       render_typ "$INV_TYP" "$TMPDIR_A3/inv.pdf"; PARTS+=("$TMPDIR_A3/inv.pdf")
       OFF=$((OFF + $(pagecount "$TMPDIR_A3/inv.pdf")))
-      pad_even
       echo "Rendering Exhibit 3.2 Type Map (page offset $OFF)"
       render_typ "$MAP_TYP" "$TMPDIR_A3/map.pdf"; PARTS+=("$TMPDIR_A3/map.pdf")
       OFF=$((OFF + $(pagecount "$TMPDIR_A3/map.pdf")))
     fi
-    pad_even
     echo "Rendering Article 3 continuation (§5.D-§14, page offset $OFF)"
     render_seg "$SPLIT_03C" "$TMPDIR_A3/03c.pdf" "$OFF" -V "continuation=true"
     PARTS+=("$TMPDIR_A3/03c.pdf")

@@ -72,7 +72,7 @@ def build_cover(baseline_pdf, out_pdf, version, date_str):
     )
     page.insert_textbox(
         fitz.Rect(bar.x0 + 8, bar.y0 + 56, bar.x1 - 8, bar.y0 + 86),
-        f"{version}  ·  includes proposed Article 3: Streets, Roads & Driveways",
+        f"{version}  ·  includes proposed Article 3: Thoroughfares",
         fontfile=BARLOW_MED, fontname="barlow-med", fontsize=12, color=WHITE,
         align=fitz.TEXT_ALIGN_CENTER,
     )

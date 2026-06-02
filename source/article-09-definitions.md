@@ -554,7 +554,7 @@ When a lot fronts on more than one road, and multiple roads meet the above crite
 In determining the Secondary Road for Corner lots, Through lots, or any lot that abuts more than one road, the secondary road or roads are the roads determined not to be the primary road.
 
 **Road, Private:**
-A road in fully private ownership over which no public access right exists; an Ownership Category under Article 3 Section 4.C. Independent of the road's Street/Road Type. Maintenance is the responsibility of the private owner or association.
+A road in fully private ownership over which no public access right exists; an Ownership Category under Article 3 Section 4.C. Independent of the road's Thoroughfare Type. Maintenance is the responsibility of the private owner or association.
 
 **Road, Public:**
 Legacy term superseded by the Ownership Categories in Article 3 Section 4.C. Where the term appears in this Code without further qualification, it shall be construed to include both Town Way (formally accepted under 23 MRSA §3022) and Public Easement (under 23 MRSA §3021). See also **Town Way** and **Public Easement**.
@@ -760,13 +760,13 @@ A Street Type for narrow service streets internal to a block, providing access t
 The value stated in the "Build to" column on a Type's page in Article 3 Section 2 — the configuration the applicant is to construct for that Type. It is drawn from the Type's authorized range under Article 3 Section 3.C.2 (the fuller value for the pedestrian and landscape components, the lower value for the traffic-calming dimensions). A Build-To Standard is distinguished from a minimum, which is the floor below which a waiver is required: an applicant may build less than a Build-To Standard by the written demonstration of Article 3 Section 3.C.4, whereas building below a stated minimum requires a waiver under Article 3 Section 13.H.
 
 **Cartway:**
-The portion of a Street or Road's right-of-way that is paved, graveled, or otherwise improved for vehicular travel, including travel lanes, on-street parking lanes (where present), and shoulders (where present). The cartway does not include sidewalks, planting strips, or the frontage zone.
+The portion of a Thoroughfare's right-of-way that is paved, graveled, or otherwise improved for vehicular travel, including travel lanes, on-street parking lanes (where present), and shoulders (where present). The cartway does not include sidewalks, planting strips, or the frontage zone.
 
 **Connector Road (R1):**
 A Road Type providing connections in the rural-to-urban transition zone, with shoulders rather than curbs, no continuous sidewalks, and a design speed higher than any Street Type. Defined in Article 3 Section 2 (Type R1).
 
 **Curb Return Radius:**
-The radius of the curve at the corner of two intersecting Streets or Roads, measured along the outside face of the curb or, where no curb is present, along the edge of the cartway. Calibrated by Type pair under Article 3 Section 9.
+The radius of the curve at the corner of two intersecting Thoroughfares, measured along the outside face of the curb or, where no curb is present, along the edge of the cartway. Calibrated by Type pair under Article 3 Section 9.
 
 **Driveway** *(modified entry — supersedes prior definition above):*
 A private vehicular access way from a Street or Road (per Article 3 Section 2) to the interior of a single lot, including access to homes, parking lots, or loading docks. A Driveway is not a Street or Road and is not subject to the construction specifications of Article 3 Section 11. See Article 3 Section 7 for full Driveway standards. Where this Code uses the prior definition of "Driveway" (a vehicular access way serving two single family dwellings or one two-family dwelling or less), the prior definition is superseded; use limits, if any, are set within Article 3 Section 7.
@@ -787,10 +787,10 @@ A Street Type providing connections within and between residential and small-bus
 A lane within the cartway, adjacent to the travel lanes, reserved for the parking of vehicles parallel or at an angle to the curb or edge of pavement. Where provided, an on-street parking lane is typically 7–8 ft wide per side and is counted separately from the traveled way (moving lanes) on each Type's page in Article 3 Section 2.
 
 **Ownership Category:**
-The statutory ownership and maintenance classification of a Street or Road under Article 3 Section 4, independent of its Street/Road Type. The four Ownership Categories are Town Way, Public Easement, Private Road, and State Highway.
+The statutory ownership and maintenance classification of a Thoroughfare under Article 3 Section 4, independent of its Thoroughfare Type. The four Ownership Categories are Town Way, Public Easement, Private Road, and State Highway.
 
 **Planting Strip:**
-The portion of a Street or Road's right-of-way located between the curb (or edge of cartway, where no curb is present) and the sidewalk (where present), or between the curb and the front lot line where no sidewalk is present. The planting strip typically contains street trees, grass, low plantings, and tree pits; it may also contain on-street furniture in the furnishing zone.
+The portion of a Thoroughfare's right-of-way located between the curb (or edge of cartway, where no curb is present) and the sidewalk (where present), or between the curb and the front lot line where no sidewalk is present. The planting strip typically contains street trees, grass, low plantings, and tree pits; it may also contain on-street furniture in the furnishing zone.
 
 **Provision Component:**
 A Street element — a sidewalk, planting strip, street trees, or on-street parking — whose presence on a given segment is governed by the context triggers of Article 3 Section 3.F rather than by a fixed dimension stated for the Type.
@@ -808,16 +808,16 @@ A Road Type for low-volume rural yield roadways providing access to a small numb
 A rural Road Type providing access to working landscapes — farmland, forest, conservation lands — with the narrowest standard pavement, no curbs, and drainage by open ditches. Defined in Article 3 Section 2 (Type R2).
 
 **State Highway:**
-A street or road owned and maintained by the State of Maine through the Maine Department of Transportation. US Route 1 within Newcastle is a State Highway. An Ownership Category under Article 3 Section 4.C. Subject to the coordination protocol in Article 3 Section 12.
+A thoroughfare owned and maintained by the State of Maine through the Maine Department of Transportation. US Route 1 within Newcastle is a State Highway. An Ownership Category under Article 3 Section 4.C. Subject to the coordination protocol in Article 3 Section 12.
 
 **Street:**
 A thoroughfare classified under the Street family of Types (S1 Main Street, S2 Village Street, S3 Neighborhood Street, S4 Lane, S5 Alley) under Article 3 Section 2. Distinct from a Road in that pedestrian comfort is generally a primary design consideration.
 
-**Street/Road Type:**
-The form-based classification assigned to a Street or Road under Article 3 Section 2, describing its character, dimensions, and design standards. Distinct from the Street or Road's Ownership Category.
-
 **Thoroughfare:**
-An umbrella term for any Street, Road, or Driveway. Includes all ten Street/Road Types (S1 through S5 and R1 through R5) plus the Driveway category.
+An umbrella term for any Street, Road, or Driveway. Includes all ten Thoroughfare Types (S1 through S5 and R1 through R5) plus the Driveway category.
+
+**Thoroughfare Type:**
+The form-based classification assigned to a Thoroughfare under Article 3 Section 2, describing its character, dimensions, and design standards. Distinct from the Thoroughfare's Ownership Category.
 
 **Town Way:**
 A road or way formally accepted by the Town under 23 MRSA §3022 by vote at Town Meeting. The Town owns and maintains a Town Way. An Ownership Category under Article 3 Section 4.C.

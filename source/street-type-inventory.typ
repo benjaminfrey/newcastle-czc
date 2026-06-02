@@ -20,7 +20,7 @@
 #let data_path   = sys.inputs.at("data", default: "exhibits/street-types/inventory-sample.json")
 
 #let article_number = "3"
-#let article_name = "Streets, Roads & Driveways"
+#let article_name = "Thoroughfares"
 
 #let article_blue    = rgb("#367AAC")
 #let body_dark       = rgb("#231F20")
@@ -102,7 +102,7 @@
 // ---- Exhibit caption + reading note -----------------------------------------
 #block(above: 0pt, below: 7pt,
   text(fill: subsection_gray, weight: "bold", stretch: 75%, size: 11pt, tracking: 0.3pt)[
-    EXHIBIT 3.1#h(0.85em)INVENTORY OF EXISTING STREETS & ROADS])
+    EXHIBIT 3.1#h(0.85em)INVENTORY OF EXISTING THOROUGHFARES])
 
 #block(above: 0pt, below: 9pt, text(size: 8pt, fill: subsection_gray, style: "italic")[
   The #text(weight: "bold")[Type] column is the binding classification of each segment (§5.C.2). The remaining
@@ -118,7 +118,7 @@
   inset: (x: 4pt, y: 3pt),
   align: (left + horizon),
   table.header(
-    hd("Street / Road"), hd("From → To"), hd("Type"), hd("Ownership"),
+    hd("Thoroughfare"), hd("From → To"), hd("Type"), hd("Ownership"),
     hd("ROW ft"), hd("District"), hd("Nonconformity"),
   ),
   ..segs.map(s => (
