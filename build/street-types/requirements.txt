@@ -1,0 +1,12 @@
+# Geospatial stack for the Street & Road Type pipeline (build/street-types/).
+# Installed into a LOCAL venv only — the routine CZC build needs just PyMuPDF.
+#   python3 -m venv build/street-types/.venv
+#   build/street-types/.venv/bin/pip install -r build/street-types/requirements.txt
+#
+# pyogrio and rasterio ship GDAL inside their wheels, so no system GDAL is needed.
+geopandas>=0.14
+shapely>=2.0
+pyogrio>=0.8
+rasterio>=1.3
+requests>=2.31
+PyYAML>=6.0

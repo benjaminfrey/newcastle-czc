@@ -1,0 +1,34 @@
+# Source layers for the Street & Road Type pipeline.
+# Endpoints verified against the live services 2026-06. Each source is queried
+# with the ArcGIS REST `/query` API (paged, f=geojson, outSR=4326); 02_prepare.py
+# reprojects everything to working_crs.
+#
+# To retarget another town, change `town` + the WHERE clauses.
+
+town: NEWCASTLE
+working_crs: "EPSG:26919"        # NAD83 / UTM 19N — MaineDOT/MEGIS standard; metres
+
+sources:
+  town_boundary:
+    # MEGIS Maine Town & Township Boundary Polygons (AGOL hosted). Newcastle is
+    # multipart (mainland + islands); 02_prepare dissolves to one clip mask.
+    url: "https://services1.arcgis.com/RbMX0mRVOFNTdLzd/arcgis/rest/services/Maine_Town_and_Townships_Boundary_Polygons/FeatureServer/0"
+    where: "UPPER(TOWN)='NEWCASTLE'"
+    name_field: TOWN
+
+  e911_roads:
+    # MEGIS NG911/E911 Roads (AGOL hosted) — PRIMARY road spine; public + private.
+    # Key fields: ST_FULLNAME (name), RDCLASS (road class), MDOTJURIS (jurisdiction),
+    # ROUTE_NUM, ONEWAY, SPEED, TOWN.
+    url: "https://services1.arcgis.com/RbMX0mRVOFNTdLzd/arcgis/rest/services/Maine_E911_Roads_Feature/FeatureServer/0"
+    where: "UPPER(TOWN)='NEWCASTLE'"
+    name_field: ST_FULLNAME
+
+  maindot_roads:
+    # MaineDOT Public Roads (GeoLibrary MapServer layer 52) — VERIFY/attributes.
+    # Key fields: strtname (name), fedfunccls (federal functional class),
+    # jurisdictn (jurisdiction -> ownership), sh_sa_ir (state-hwy/state-aid),
+    # surfc_type, num_lanes, speed_lim, townname.
+    url: "https://gis.maine.gov/mapservices/rest/services/dot/MaineDOT_OpenData/MapServer/52"
+    where: "UPPER(townname)='NEWCASTLE'"
+    name_field: strtname

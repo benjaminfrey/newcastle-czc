@@ -1,0 +1,23 @@
+{
+  "town_boundary": {
+    "url": "https://services1.arcgis.com/RbMX0mRVOFNTdLzd/arcgis/rest/services/Maine_Town_and_Townships_Boundary_Polygons/FeatureServer/0",
+    "where": "UPPER(TOWN)='NEWCASTLE'",
+    "features": 28,
+    "crs": "EPSG:4326",
+    "fetched": "2026-06-01"
+  },
+  "e911_roads": {
+    "url": "https://services1.arcgis.com/RbMX0mRVOFNTdLzd/arcgis/rest/services/Maine_E911_Roads_Feature/FeatureServer/0",
+    "where": "UPPER(TOWN)='NEWCASTLE'",
+    "features": 326,
+    "crs": "EPSG:4326",
+    "fetched": "2026-06-01"
+  },
+  "maindot_roads": {
+    "url": "https://gis.maine.gov/mapservices/rest/services/dot/MaineDOT_OpenData/MapServer/52",
+    "where": "UPPER(townname)='NEWCASTLE'",
+    "features": 192,
+    "crs": "EPSG:4326",
+    "fetched": "2026-06-01"
+  }
+}

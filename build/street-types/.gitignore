@@ -1,0 +1,4 @@
+# Local geospatial venv and Python caches — not committed.
+.venv/
+__pycache__/
+*.pyc

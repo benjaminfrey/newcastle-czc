@@ -144,7 +144,9 @@
   fill: rgb("#F7F9FB"), stroke: hair, clip: true, {
   // each segment as one Type-colored polyline
   for s in segs {
-    let col = TYPE_COLORS.at(s.type, default: subsection_gray)
+    // A segment may be unclassified (type null/pending) — draw it gray.
+    let t = if s.type == none { "" } else { s.type }
+    let col = TYPE_COLORS.at(t, default: subsection_gray)
     let pts = s.geometry.map(project)
     place(top + left, curve(stroke: 2.6pt + col,
       curve.move(pts.at(0)),
@@ -159,6 +161,7 @@
 // ---- Legend -----------------------------------------------------------------
 // Only the Types actually present, in canonical order, two columns.
 #let present = TYPE_ORDER.filter(t => segs.any(s => s.type == t))
+#let has_unclassified = segs.any(s => s.type == none or not (s.type in TYPE_ORDER))
 #let legend_cell(code) = box(inset: (y: 2.5pt))[
   #box(baseline: -1.5pt, rect(width: 18pt, height: 3.5pt, radius: 1pt,
     fill: TYPE_COLORS.at(code), stroke: none))
@@ -171,6 +174,12 @@
   v(4pt, weak: true)
   grid(columns: (1fr, 1fr), column-gutter: 24pt, row-gutter: 0pt,
     ..present.map(legend_cell))
+  if has_unclassified {
+    box(inset: (y: 2.5pt))[
+      #box(baseline: -1.5pt, rect(width: 18pt, height: 3.5pt, radius: 1pt,
+        fill: subsection_gray, stroke: none))
+      #h(6pt)#text(size: 8.5pt, fill: body_dark)[Unclassified — pending District classification]]
+  }
 })
 
 // =============================================================================
@@ -185,8 +194,10 @@
 
 #legend
 
+#let banner = data.at("_meta", default: (:)).at("banner",
+  default: "Sample data shown — not Newcastle's adopted network.")
 #block(above: 11pt, text(fill: subsection_gray, size: 7.5pt, style: "italic")[
   Illustrative companion to the Inventory of Existing Streets & Roads (Exhibit 3.1, §5.C);
   generated from the Inventory and provided for convenience. The Type assignment shown is the
   binding classification (§5.C.2); where this Map and the Inventory differ, the Inventory governs.
-  #text(weight: "bold")[Sample data shown — not Newcastle's adopted network.]])
+  #text(weight: "bold")[#banner]])

@@ -1,0 +1,4 @@
+{
+  "_README": "Human / Planning-Board decisions that OVERRIDE the auto-classification. Keyed by segment id (see work/review.csv). Each entry may set any of: type (S1-S5/R1-R5), ownership, row_ft, traveled_ft, nonconformity, note. These are version-controlled and merged on every pipeline re-run, so adopted decisions survive data refreshes. Example: \"main-street-1\": { \"type\": \"S1\", \"nonconformity\": \"ROW 38 ft, narrower than Type\" }",
+  "overrides": {}
+}
