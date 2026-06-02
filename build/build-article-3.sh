@@ -26,6 +26,9 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SOURCE="$REPO_ROOT/source/article-03-streets-roads-driveways.md"
 PLATES_TYP="$REPO_ROOT/source/cross-section-plates.typ"
+INV_TYP="$REPO_ROOT/source/street-type-inventory.typ"          # Exhibit 3.1
+MAP_TYP="$REPO_ROOT/source/street-type-map.typ"                # Exhibit 3.2
+INVENTORY_JSON="$REPO_ROOT/source/exhibits/street-types/inventory.json"
 VERSION="${1:-v0.0-dev}"
 RELEASE_DIR="$REPO_ROOT/releases/$VERSION"
 mkdir -p "$RELEASE_DIR"
@@ -74,9 +77,10 @@ PY
 
 SPLIT_03A="$TMPDIR_A3/article-03a.md"
 SPLIT_03B="$TMPDIR_A3/article-03b.md"
+SPLIT_03C="$TMPDIR_A3/article-03c.md"
 PARTS=()
 
-if [ -f "$PLATES_TYP" ] && python3 "$REPO_ROOT/build/split-article-03.py" "$SOURCE" "$SPLIT_03A" "$SPLIT_03B"; then
+if [ -f "$PLATES_TYP" ] && python3 "$REPO_ROOT/build/split-article-03.py" "$SOURCE" "$SPLIT_03A" "$SPLIT_03B" "$SPLIT_03C"; then
   # --- Type pages seated INSIDE Section 2 (two passes around the plate block) ---
   SEG_A="$TMPDIR_A3/03a.pdf"
   SEG_B="$TMPDIR_A3/03b.pdf"
@@ -104,11 +108,42 @@ if [ -f "$PLATES_TYP" ] && python3 "$REPO_ROOT/build/split-article-03.py" "$SOUR
   PARTS+=("$PLATES_PDF")
   PLATES_PAGES=$(pagecount "$PLATES_PDF")
 
-  # Continuation segment (§2.d Driveway + §3..§14) at the cumulative EVEN offset.
+  # Continuation segment (§2.d .. §5.C when §5 exhibits splice in, else §2.d..§14)
+  # at the cumulative EVEN offset.
   CONT_OFFSET=$((PRECEDING + PLATES_PAGES))
-  echo "Rendering Article 3 continuation segment (§2.d-§14, page offset $CONT_OFFSET)"
+  echo "Rendering Article 3 continuation segment (page offset $CONT_OFFSET)"
   render_seg "$SPLIT_03B" "$SEG_B" "$CONT_OFFSET" -V "continuation=true"
   PARTS+=("$SEG_B")
+  OFF=$((CONT_OFFSET + $(pagecount "$SEG_B")))
+
+  # When the §5 marker split off a continuation (03c = §5.D..§14), render it — and
+  # splice Exhibits 3.1 + 3.2 in front of it when the inventory data is present.
+  # 03c ALWAYS renders when non-empty so the §5.D..§14 body is never dropped; only
+  # the exhibits are conditional on the data existing. (Marker absent ⇒ 03c empty
+  # ⇒ this whole block is skipped and SEG_B above already carries §2.d..§14.)
+  if [ -s "$SPLIT_03C" ]; then
+    pad_even() { if [ $((OFF % 2)) -eq 1 ]; then PARTS+=("$BLANK_PDF"); OFF=$((OFF + 1)); fi; }
+    render_typ() {  # <typ> <out>  (renders at global EVEN $OFF, with the inventory data)
+      typst compile "$1" "$2" --font-path "$REPO_ROOT/style/fonts" \
+        --input "page_offset=$OFF" --input "footer_date=Draft $VERSION" \
+        --input "data=exhibits/street-types/inventory.json"
+    }
+    if [ -f "$INVENTORY_JSON" ] && [ -f "$INV_TYP" ] && [ -f "$MAP_TYP" ]; then
+      echo "Splicing Exhibits 3.1 + 3.2 into Article 3 §5"
+      pad_even
+      echo "Rendering Exhibit 3.1 Inventory table (page offset $OFF)"
+      render_typ "$INV_TYP" "$TMPDIR_A3/inv.pdf"; PARTS+=("$TMPDIR_A3/inv.pdf")
+      OFF=$((OFF + $(pagecount "$TMPDIR_A3/inv.pdf")))
+      pad_even
+      echo "Rendering Exhibit 3.2 Type Map (page offset $OFF)"
+      render_typ "$MAP_TYP" "$TMPDIR_A3/map.pdf"; PARTS+=("$TMPDIR_A3/map.pdf")
+      OFF=$((OFF + $(pagecount "$TMPDIR_A3/map.pdf")))
+    fi
+    pad_even
+    echo "Rendering Article 3 continuation (§5.D-§14, page offset $OFF)"
+    render_seg "$SPLIT_03C" "$TMPDIR_A3/03c.pdf" "$OFF" -V "continuation=true"
+    PARTS+=("$TMPDIR_A3/03c.pdf")
+  fi
 else
   # Fallback: no plate file, or no marker in the source — render the whole
   # Article 3 in a single pass, appending the plate block after it if present.

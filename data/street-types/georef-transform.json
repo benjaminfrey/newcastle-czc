@@ -1,0 +1,14 @@
+{
+  "raster": "../../source/exhibits/district-maps/exhibit-1.1-district-map.png",
+  "crs": "EPSG:26919",
+  "affine": [
+    6.682315621494384,
+    0.0,
+    448369.58797898405,
+    0.0,
+    -6.328014510756711,
+    4885396.653235776
+  ],
+  "seed_iou": 0.7039,
+  "iou": 0.7728
+}

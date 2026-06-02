@@ -28,16 +28,33 @@ Exit status:
 import io
 import sys
 
-MARKER = "TYPE-PAGES"
+MARKER = "TYPE-PAGES"            # §2: split before the ten Type plates
+MARKER2 = "STREET-TYPE-EXHIBITS"  # §5.C: split before the Inventory + Type-Map exhibits
+
+
+def _find(body, marker):
+    for i, ln in enumerate(body):
+        if marker in ln:
+            return i
+    return None
+
+
+def _cont(frontmatter):
+    fm = list(frontmatter)
+    if fm:
+        fm.insert(len(fm) - 1, "continuation: true\n")   # before the closing '---'
+    else:
+        fm = ["---\n", "continuation: true\n", "---\n"]
+    return fm
 
 
 def main():
-    if len(sys.argv) != 4:
-        sys.stderr.write(
-            "usage: split-article-03.py <in.md> <out-03a.md> <out-03b.md>\n"
-        )
+    args = sys.argv[1:]
+    if len(args) not in (3, 4):
+        sys.stderr.write("usage: split-article-03.py <in.md> <out-03a.md> <out-03b.md> [<out-03c.md>]\n")
         return 1
-    src, out_a, out_b = sys.argv[1], sys.argv[2], sys.argv[3]
+    src, out_a, out_b = args[0], args[1], args[2]
+    out_c = args[3] if len(args) == 4 else None
 
     with io.open(src, encoding="utf-8") as f:
         lines = f.readlines()
@@ -52,34 +69,37 @@ def main():
                 body = lines[i + 1 :]
                 break
 
-    # Locate the marker line within the body.
-    marker_idx = None
-    for i, ln in enumerate(body):
-        if MARKER in ln:
-            marker_idx = i
-            break
-    if marker_idx is None:
+    m1 = _find(body, MARKER)
+    if m1 is None:
         sys.stderr.write("split-article-03: no %s marker found in %s\n" % (MARKER, src))
         return 2
+    before, after = body[:m1], body[m1 + 1:]
 
-    before = body[:marker_idx]
-    after = body[marker_idx + 1 :]
-
-    # 03a: original frontmatter + everything before the marker.
+    # 03a: original frontmatter + everything before the §2 plate marker.
     with io.open(out_a, "w", encoding="utf-8") as f:
         f.writelines(frontmatter)
         f.writelines(before)
 
-    # 03b: frontmatter with `continuation: true` added + everything after.
-    fm_b = list(frontmatter)
-    if fm_b:
-        # frontmatter == ['---\n', ...keys..., '---\n']; insert before the close.
-        fm_b.insert(len(fm_b) - 1, "continuation: true\n")
+    fm_cont = _cont(frontmatter)
+
+    # Optional second split at the §5 exhibit marker (only if an out-c path is
+    # given AND the marker exists). Otherwise 03b is everything after the plates
+    # and out-c (if given) is written empty so callers can detect "no 2nd split".
+    m2 = _find(after, MARKER2) if out_c else None
+    if out_c and m2 is not None:
+        before2, after2 = after[:m2], after[m2 + 1:]
+        with io.open(out_b, "w", encoding="utf-8") as f:
+            f.writelines(fm_cont)
+            f.writelines(before2)
+        with io.open(out_c, "w", encoding="utf-8") as f:
+            f.writelines(fm_cont)
+            f.writelines(after2)
     else:
-        fm_b = ["---\n", "continuation: true\n", "---\n"]
-    with io.open(out_b, "w", encoding="utf-8") as f:
-        f.writelines(fm_b)
-        f.writelines(after)
+        with io.open(out_b, "w", encoding="utf-8") as f:
+            f.writelines(fm_cont)
+            f.writelines(after)
+        if out_c:
+            io.open(out_c, "w", encoding="utf-8").close()   # empty => no 2nd split
 
     return 0
 

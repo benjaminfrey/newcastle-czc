@@ -86,7 +86,12 @@ def main() -> None:
             for j in disx.query(seg, predicate="intersects"):
                 d = dgdf.iloc[j]
                 hits[d[code_field]] = hits.get(d[code_field], 0.0) + seg.intersection(d.geometry).length
-            adj.append("; ".join(sorted(hits, key=hits.get, reverse=True)) if hits else "")
+            if hits:
+                adj.append("; ".join(sorted(hits, key=hits.get, reverse=True)))
+            else:
+                # segment outside every district polygon (edge sliver / island) ->
+                # fall back to the nearest district so nothing is left unclassified.
+                adj.append(dgdf.iloc[dgdf.geometry.distance(seg).idxmin()][code_field])
         segs["districts"] = adj
         print(f"[join] district overlay applied from {dist_path.name}")
     else:

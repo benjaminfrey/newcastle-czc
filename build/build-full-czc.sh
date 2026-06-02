@@ -99,22 +99,42 @@ fi
 # continuous and every unit's parity-aware chrome (tab/header/badge) correct; the
 # 10-page (EVEN) plate block preserves offset parity for the segments around it.
 PLATES_TYP="$SOURCE_DIR/cross-section-plates.typ"
+INV_TYP="$SOURCE_DIR/street-type-inventory.typ"          # Exhibit 3.1 (Inventory table)
+MAP_TYP="$SOURCE_DIR/street-type-map.typ"                # Exhibit 3.2 (Type Map)
+INVENTORY_JSON="$SOURCE_DIR/exhibits/street-types/inventory.json"
 ART3_SRC=""
 for f in "${ARTICLES[@]}"; do
   case "$f" in */article-03-*.md) ART3_SRC="$f" ;; esac
 done
 SPLIT_03A=""
 SPLIT_03B=""
+SPLIT_03C=""
 if [ -f "$PLATES_TYP" ] && [ -n "$ART3_SRC" ]; then
   CAND_03A="$TMPDIR_PDFS/article-03a.md"
   CAND_03B="$TMPDIR_PDFS/article-03b.md"
-  if python3 "$REPO_ROOT/build/split-article-03.py" "$ART3_SRC" "$CAND_03A" "$CAND_03B"; then
+  CAND_03C="$TMPDIR_PDFS/article-03c.md"
+  if python3 "$REPO_ROOT/build/split-article-03.py" "$ART3_SRC" "$CAND_03A" "$CAND_03B" "$CAND_03C"; then
     SPLIT_03A="$CAND_03A"
     SPLIT_03B="$CAND_03B"
+    # The §5 marker (when present) splits the post-plate body into 03b (§2.d..§5.C)
+    # + 03c (§5.D..§14). 03c is ALWAYS spliced back so the body is never dropped;
+    # the Exhibit 3.1 Inventory table + Exhibit 3.2 Type Map are inserted in front
+    # of it ONLY when the real inventory.json exists (so a draft never appears until
+    # promoted). Render order: [03a, plates, 03b, (inventory, map,) 03c]. The table
+    # is even-paged; the 1-page map self-pads to keep §5.D verso/recto parity.
+    MID=("$PLATES_TYP" "$SPLIT_03B")
+    if [ -s "$CAND_03C" ]; then
+      SPLIT_03C="$CAND_03C"
+      if [ -f "$INVENTORY_JSON" ] && [ -f "$INV_TYP" ] && [ -f "$MAP_TYP" ]; then
+        MID+=("$INV_TYP" "$MAP_TYP")
+        echo "Splicing Exhibits 3.1 + 3.2 into Article 3 §5"
+      fi
+      MID+=("$SPLIT_03C")
+    fi
     SPLICED=()
     for f in "${ARTICLES[@]}"; do
       case "$f" in
-        */article-03-*.md) SPLICED+=("$SPLIT_03A" "$PLATES_TYP" "$SPLIT_03B") ;;
+        */article-03-*.md) SPLICED+=("$SPLIT_03A" "${MID[@]}") ;;
         *) SPLICED+=("$f") ;;
       esac
     done
@@ -166,10 +186,14 @@ for ART in "${ARTICLES[@]}"; do
       # verso (even) page; the surrounding even OFFSET keeps logical==physical
       # parity so the badge sits at the LEFT fore-edge. See article-02.typ.
       echo "Rendering article $INDEX (page offset $OFFSET, native Typst): $(basename "$ART")"
+      # The `data=` input is read only by the §5 exhibit renderers (street-type-
+      # inventory.typ / street-type-map.typ) to point at the promoted inventory;
+      # the other native units ignore the extra input.
       typst compile "$ART" "$PART" \
         --font-path "$REPO_ROOT/style/fonts" \
         --input "page_offset=$OFFSET" \
-        --input "footer_date=Draft $VERSION"
+        --input "footer_date=Draft $VERSION" \
+        --input "data=exhibits/street-types/inventory.json"
       ;;
     *)
       # Article 3 renders in two passes (see the splice section): 03a carries the
@@ -177,7 +201,8 @@ for ART in "${ARTICLES[@]}"; do
       # the combined-markdown reference, 03a contributes the ORIGINAL whole
       # Article 3 (its TYPE-PAGES marker swapped for a pointer note below); 03b
       # contributes nothing (already covered by the original).
-      if [ -n "$SPLIT_03B" ] && [ "$ART" = "$SPLIT_03B" ]; then
+      if { [ -n "$SPLIT_03B" ] && [ "$ART" = "$SPLIT_03B" ]; } || \
+         { [ -n "$SPLIT_03C" ] && [ "$ART" = "$SPLIT_03C" ]; }; then
         echo "Rendering article $INDEX (page offset $OFFSET) [Art. 3 continuation]: $(basename "$ART")"
         bash "$REPO_ROOT/build/build-article.sh" "$ART" "$PART" \
           -V "footer-date=Draft $VERSION" \
@@ -291,8 +316,19 @@ note = (
     "     description, design standards, target Districts, and character — the\n"
     "     one-stop Type page modeled on the Article 2 District pages. -->"
 )
-out = [note if "TYPE-PAGES" in ln else ln for ln in lines]
-sys.stdout.write("\n".join(out))
+exhibits_note = (
+    "<!-- Exhibit 3.1 (Inventory of Existing Streets & Roads — the binding Type\n"
+    "     table) and Exhibit 3.2 (Street & Road Type Map) appear here in the\n"
+    "     rendered PDF, inside Section 5 between the Inventory subsection and the\n"
+    "     Classification Rubric. Both render natively from\n"
+    "     source/exhibits/street-types/inventory.json (Exhibit 3.1 via\n"
+    "     source/street-type-inventory.typ; 3.2 via source/street-type-map.typ). -->"
+)
+def swap(ln):
+    if "TYPE-PAGES" in ln: return note
+    if "STREET-TYPE-EXHIBITS" in ln: return exhibits_note
+    return ln
+sys.stdout.write("\n".join(swap(ln) for ln in lines))
 PY
       ;;
     *)
