@@ -12461,7 +12461,7 @@
     "River Road",
     "Academy Hill / Mills Road"
    ],
-   "type": "R1",
+   "type": "S2",
    "ownership": "State Highway",
    "row_ft": null,
    "traveled_ft": null,
@@ -12508,7 +12508,7 @@
     "Academy Hill / Mills Road",
     "Pump Street"
    ],
-   "type": "R1",
+   "type": "S1",
    "ownership": "State Highway",
    "row_ft": null,
    "traveled_ft": null,
@@ -12539,7 +12539,7 @@
     "Pump Street",
     "Glidden Street"
    ],
-   "type": "R1",
+   "type": "S1",
    "ownership": "State Highway",
    "row_ft": null,
    "traveled_ft": null,
@@ -12590,7 +12590,7 @@
     "Glidden Street",
     "end"
    ],
-   "type": "R1",
+   "type": "S1",
    "ownership": "State Highway",
    "row_ft": null,
    "traveled_ft": null,

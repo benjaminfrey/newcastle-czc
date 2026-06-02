@@ -102,12 +102,17 @@ rebuild. No code changes.
 
 ## Current state (as of 2026-06-02)
 
+- **Shipped `v0.16-draft`** — **Main Street reconciliation.** Typed the downtown core
+  **S1** (Mills Rd → Damariscotta bridge) + **S2** (Mills → River Rd), Ownership kept
+  **State Highway** (`overrides.json`: main-street-9→S2, -10/-11/-12→S1); **S1 went
+  0 → 3 segments**. Amended §5.D ¶d so MaineDOT functional class drives Type only in
+  road-default Districts; in the village the form test governs (Main-St-is-S1 example,
+  §12 coordination). Western approach to Route 1 left R-typed. Tags through v0.16-draft.
 - **Shipped `v0.15-draft`** — the **Thoroughfares** terminology release. Collective
-  "Street/Road" term → **Thoroughfare**; Article 3 retitled **"Thoroughfares"**;
-  `Street/Road Type` defined term → `Thoroughfare Type`. Street & Road kept for the
-  two families, the Type names, the driveway/entrance connection phrases, and the
-  Comp Plan citation. Regulation-neutral. Also removed the 2 recto-opening blanks
-  from the standalone (now 27 pp, flows continuously). Tags exist through v0.15-draft.
+  "Street/Road" → **Thoroughfare**; Article 3 retitled **"Thoroughfares"**;
+  `Street/Road Type` → `Thoroughfare Type`. Street & Road kept for the families, Type
+  names, driveway/entrance connection phrases, Comp Plan citation. Regulation-neutral.
+  Standalone lost its 2 recto-opening blanks (27 pp, continuous).
 - **"Thoroughfare" is the umbrella** (already defined in Article 9, includes Driveway);
   **Street** (S1–S5) + **Road** (R1–R5) are the two families.
 - v0.14 (commit `4444972`) = first release where Article 3 §5 **renders** Exhibit 3.1
@@ -119,29 +124,19 @@ rebuild. No code changes.
   `street-type-{map,inventory}.typ`, dir `build/street-types/`, the `STREET-TYPE-EXHIBITS`
   marker, build vars, JSON keys, `.typ` code comments. Optional; not user-facing.
 
-## ▶ NEXT: v0.16 — reconcile Main Street (form vs. function/jurisdiction) — APPROVED A+B
+## ▶ NEXT: no active release queued — open/parked items (await Ben's direction)
 
-Ben caught that Newcastle's **Main Street** (a state-owned **Major Collector** through
-the village) is typed **R1 (Connector Road — rural)**, and the flagship **S1 "Main
-Street" Type has zero segments**. Three compounding causes: (1) the approximate
-district trace put the 12 "Main Street" segments in **D1 = Rural** (Table 3.4 →
-R2/R3/R1) — almost certainly a trace error; downtown belongs in D5/D6/SD-Historic;
-(2) §5.D rubric ¶d presumes "Collector → R1," overriding the form default; (3) it's a
-State Highway (an *ownership* fact, not a form fact). §4.D already says Type ⊥
-Ownership and that "a Main Street (S1) may be … a State Highway."
-
-**Approved approach = A + B (do as v0.16, ship with redlines + Summary on go-ahead):**
-- **A — Form wins (data):** type Main Street **S1**, keep Ownership **State Highway**,
-  coordinate via §12. Correct the district (Main St → D5/D6) and/or pin the 12 "Main
-  Street" segments to S1 in `build/street-types/overrides.json`; `run.sh --from 3`;
-  re-promote `inventory.json`. Add a sentence that S1-on-a-state-highway is the
-  coordinated target, not unilaterally enforceable. Optional **C:** a "§12-coordinated"
-  flag in the inventory note column.
-- **B — Rubric (text):** amend §5.D ¶d so the MaineDOT functional-class presumption
-  (arterial→R4/R5, collector→R1) applies only in **rural/auto-oriented** districts; in
-  **village/urban** districts (D5, D6, SD-Historic…) the Adjacent-District (form) test
-  governs and the highway is coordinated via §12. Durable — prevents recurrence when
-  the exact shapefile is run.
+- **District-layer review (human, the big one):** eyeball the draft district trace vs
+  the official District Map. The Main-St-segments-landed-in-D1-Rural trace error is the
+  known example; correcting the layer + the v0.16 rubric fix makes the classification
+  self-correct. This is the main thing standing between the draft map and an accurate one.
+- **100% map:** drop in the contractor's exact district shapefile → `run.sh` from the
+  join stage → re-promote `inventory.json` → rebuild. `overrides.json` carries the
+  adopted decisions (incl. the Main St S1/S2 pins), so they survive the refresh.
+- **Deferred cosmetic cleanup** (optional, not user-facing): internal names still use
+  the old term — `street-type-{map,inventory}.typ`, dir `build/street-types/`, the
+  `STREET-TYPE-EXHIBITS` marker, build vars, JSON keys, `.typ` code comments.
+- **Adoption:** Planning-Board review → Town-Meeting vote (Maine).
 
 Districts (Table 3.4): D1 Rural · D2 Nbhd Residential · D3 Nbhd Business · D4 Village
 Residential · D5 Village Business (S2; S1 on designated) · D6 Town Center (S1).

@@ -1,4 +1,9 @@
 {
   "_README": "Human / Planning-Board decisions that OVERRIDE the auto-classification. Keyed by segment id (see work/review.csv). Each entry may set any of: type (S1-S5/R1-R5), ownership, row_ft, traveled_ft, nonconformity, note. These are version-controlled and merged on every pipeline re-run, so adopted decisions survive data refreshes. Example: \"main-street-1\": { \"type\": \"S1\", \"nonconformity\": \"ROW 38 ft, narrower than Type\" }",
-  "overrides": {}
+  "overrides": {
+    "main-street-12": { "type": "S1", "note": "Downtown core: Damariscotta bridge -> Glidden St. State Highway (Ownership unchanged); S1 form governs per Section 5.D, realized through Section 12 MaineDOT coordination." },
+    "main-street-11": { "type": "S1", "note": "Downtown core: Glidden St -> Pump St. State Highway; S1 form coordinated under Section 12." },
+    "main-street-10": { "type": "S1", "note": "Downtown core: Pump St -> Mills Rd. State Highway; S1 form coordinated under Section 12." },
+    "main-street-9":  { "type": "S2", "note": "Village: Mills Rd -> River Rd. State Highway; S2 form coordinated under Section 12." }
+  }
 }
