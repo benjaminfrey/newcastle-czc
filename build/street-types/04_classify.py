@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 """Stage 04 — classify each segment with a provisional Street/Road Type.
 
-Applies the automatable parts of the §5.D rubric:
-  - test 4 (MaineDOT functional class): Arterial -> R4/R5 (by district), Collector -> R1;
-  - test 1 (adjacent District -> default Type via Table 3.4) for Local / private /
-    unmatched roads.
+Applies the automatable parts of the §5.D rubric via lib.classify_type:
+  - arterials stay R4/R5 in every District (the regional highways);
+  - in road-default Districts, MaineDOT functional class governs (Collector -> R1,
+    else the District default);
+  - in form Districts the Adjacent-District (Table 3.4) test governs regardless of
+    functional class, using the per-District overlap fractions (district_fracs from
+    03_join) so the more urban District wins where a segment meaningfully touches
+    several (the v0.16 form-first / urban-wins amendment).
 Then merges overrides.json (Planning-Board decisions), which always win.
 
 District-dependent results stay 'pending' until the digitized districts layer is
-present (03_join fills the 'districts' column); collectors + arterials classify
-immediately from MaineDOT data.
+present (03_join fills 'districts' + 'district_fracs').
 
 Output: data/street-types/work/classified.gpkg
 
@@ -21,30 +24,9 @@ import geopandas as gpd
 
 import lib
 
-# Table 3.4 — primary default Type per District (the rubric's test-1 target).
-DEFAULT_TYPE = {
-    "D1": "R2", "D2": "S3", "D3": "S3", "D4": "S3", "D5": "S2", "D6": "S1",
-    "SD-Historic": "S3", "SD-Conservation": "R2", "SD-Highway Commercial": "R4",
-    "SD-Rural Highway": "R5", "SD-Campus": "S3", "SD-Marine": "S3",
-    "SD-Fabrication": "S3", "SD-Civic": None,    # follows the adjacent district
-}
-RURAL_ARTERIAL_DISTRICTS = {"SD-Rural Highway", "D1", "SD-Conservation"}
-
-
-def primary_district(districts: str) -> str:
-    return (districts or "").split(";")[0].strip()
-
-
-def auto_type(funcclass: str, district: str):
-    """Return (provisional_type, source) from the automatable rubric tests."""
-    fc = (funcclass or "").lower()
-    if "arterial" in fc:
-        return ("R5" if district in RURAL_ARTERIAL_DISTRICTS else "R4"), "funcclass"
-    if "collector" in fc:
-        return "R1", "funcclass"
-    if district:                                  # Local / private -> District default
-        return DEFAULT_TYPE.get(district), "district"
-    return None, ""                               # pending until districts exist
+# The §5.D classification rule lives in lib.classify_type so the pipeline and the
+# one-off inventory re-classification share one implementation (Table 3.4 + the v0.16
+# form-first amendment, keyed off the per-District overlap fractions from 03_join).
 
 
 def main() -> None:
@@ -56,12 +38,12 @@ def main() -> None:
     prov, ptype, psrc, nonconf, owner = [], [], [], [], []
     for _, r in segs.iterrows():
         o = ov.get(r["id"], {})
-        d = primary_district(r.get("districts", ""))
-        t, src = auto_type(r.get("fedfunccls", ""), d)
-        prov.append(t or "")
-        final = o["type"] if "type" in o else t
-        ptype.append(final or "")
-        psrc.append("override" if "type" in o else src)
+        fr = lib.parse_fracs(r.get("district_fracs", ""))
+        prov_t, _ = lib.classify_type(r.get("fedfunccls", ""), fr, None)
+        final_t, src = lib.classify_type(r.get("fedfunccls", ""), fr, o.get("type"))
+        prov.append(prov_t or "")
+        ptype.append(final_t or "")
+        psrc.append(src)
         nonconf.append(o.get("nonconformity", ""))
         owner.append(o.get("ownership", r.get("ownership", "")))
     segs["provisional_type"] = prov

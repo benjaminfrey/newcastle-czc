@@ -102,11 +102,18 @@ rebuild. No code changes.
 
 ## Current state (as of 2026-06-02)
 
+- **Shipped `v0.18-draft`** — classification-engine improvement. The §5.D form-first
+  rubric is now implemented in code (`lib.classify_type`; was prose-only since v0.16),
+  plus a most-urban-District-wins-in-the-village tweak (25% overlap gate; arterials
+  always R4/R5). Re-typed **9 village segments R→S** (Mills Rd→S3, River Rd→S2,
+  Stonebridge→S3, Teague→S2, Austin→S3, High St→S3); now **215/215 typed (0 pending)**.
+  `03_join` emits `district_fracs`; `04_classify` consumes them via `lib`. No prose
+  change (engine/data only). Tags through v0.18-draft.
 - **Shipped `v0.17-draft`** — editorial: the repealed RDEO is now named only in the
   §1.A repeal/supersede clause; the 3 incidental mentions (§3.E grade rationale, §14.D
   substantial-reconstruction definition) reworded to keep substance without the
   citation. Also trimmed the always-empty ROW/Nonconformity columns from Exhibit 3.1
-  (JSON fields kept). No standard/definition change. Tags through v0.17-draft.
+  (JSON fields kept). No standard/definition change.
 - **Shipped `v0.16-draft`** — **Main Street reconciliation.** Typed the downtown core
   **S1** (Mills Rd → Damariscotta bridge) + **S2** (Mills → River Rd), Ownership kept
   **State Highway** (`overrides.json`: main-street-9→S2, -10/-11/-12→S1); **S1 went
@@ -131,13 +138,13 @@ rebuild. No code changes.
 
 ## ▶ NEXT: no active release queued — open/parked items (await Ben's direction)
 
-- **District-layer review (human, the big one):** eyeball the draft district trace vs
-  the official District Map. The Main-St-segments-landed-in-D1-Rural trace error is the
-  known example; correcting the layer + the v0.16 rubric fix makes the classification
-  self-correct. This is the main thing standing between the draft map and an accurate one.
-- **100% map:** drop in the contractor's exact district shapefile → `run.sh` from the
-  join stage → re-promote `inventory.json` → rebuild. `overrides.json` carries the
-  adopted decisions (incl. the Main St S1/S2 pins), so they survive the refresh.
+- **100% map (the real fix):** the draft district trace is a ~0.77-IoU georeferenced
+  approximation — spatially distorted, so a hand polygon-review is low-value (we did the
+  v0.18 engine tweak instead, which sharpened the *village* classification on the
+  existing trace). The accurate layer comes from the contractor's exact district
+  shapefile: drop it in → `run.sh` from the join stage → re-promote `inventory.json` →
+  rebuild. The §5.D rule is now in the engine (`lib.classify_type`), so correct Types
+  fall out automatically; `overrides.json` (incl. the Main St S1/S2 pins) carries forward.
 - **Deferred cosmetic cleanup** (optional, not user-facing): internal names still use
   the old term — `street-type-{map,inventory}.typ`, dir `build/street-types/`, the
   `STREET-TYPE-EXHIBITS` marker, build vars, JSON keys, `.typ` code comments.

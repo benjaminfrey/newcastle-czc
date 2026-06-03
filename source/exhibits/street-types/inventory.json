@@ -607,7 +607,7 @@
     "Mills Road",
     "Pond Road"
    ],
-   "type": "R1",
+   "type": "S3",
    "ownership": "Town Way",
    "row_ft": null,
    "traveled_ft": null,
@@ -7597,7 +7597,7 @@
     "Academy Hill",
     "end"
    ],
-   "type": null,
+   "type": "S3",
    "ownership": "Town Way",
    "row_ft": null,
    "traveled_ft": null,
@@ -13428,7 +13428,7 @@
     "Academy Hill / Main Street",
     "Stewart Street"
    ],
-   "type": "R1",
+   "type": "S3",
    "ownership": "Town Way",
    "row_ft": null,
    "traveled_ft": null,
@@ -13485,7 +13485,7 @@
     "Stewart Street",
     "On Route One Road"
    ],
-   "type": "R1",
+   "type": "S3",
    "ownership": "Town Way",
    "row_ft": null,
    "traveled_ft": null,
@@ -13528,7 +13528,7 @@
     "On Route One Road",
     "Route 1"
    ],
-   "type": "R1",
+   "type": "S3",
    "ownership": "Town Way",
    "row_ft": null,
    "traveled_ft": null,
@@ -13559,7 +13559,7 @@
     "Route 1",
     "Off To Mills Road"
    ],
-   "type": "R1",
+   "type": "S3",
    "ownership": "Town Way",
    "row_ft": null,
    "traveled_ft": null,
@@ -20463,7 +20463,7 @@
     "Main Street",
     "end"
    ],
-   "type": "R1",
+   "type": "S2",
    "ownership": "Town Way",
    "row_ft": null,
    "traveled_ft": null,
@@ -23737,7 +23737,7 @@
     "end",
     "end"
    ],
-   "type": "R2",
+   "type": "S3",
    "ownership": "Town Way",
    "row_ft": null,
    "traveled_ft": null,
@@ -24032,7 +24032,7 @@
     "Academy Hill",
     "end"
    ],
-   "type": "R2",
+   "type": "S2",
    "ownership": "Private Road",
    "row_ft": null,
    "traveled_ft": null,

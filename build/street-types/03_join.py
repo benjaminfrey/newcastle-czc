@@ -79,7 +79,7 @@ def main() -> None:
     if dist_path.exists():
         dgdf = gpd.read_file(dist_path).to_crs(crs)
         code_field = "district" if "district" in dgdf.columns else dgdf.columns[0]
-        adj = []
+        adj, fracs_col = [], []
         disx = dgdf.sindex
         for seg in segs.geometry:
             hits = {}
@@ -87,15 +87,24 @@ def main() -> None:
                 d = dgdf.iloc[j]
                 hits[d[code_field]] = hits.get(d[code_field], 0.0) + seg.intersection(d.geometry).length
             if hits:
-                adj.append("; ".join(sorted(hits, key=hits.get, reverse=True)))
+                ordered = sorted(hits, key=hits.get, reverse=True)
+                adj.append("; ".join(ordered))
+                L = seg.length or 1.0
+                # per-District overlap fraction (consumed by 04_classify via
+                # lib.classify_type for the form-first / urban-wins rule).
+                fracs_col.append(";".join(f"{c}:{hits[c] / L:.3f}" for c in ordered))
             else:
                 # segment outside every district polygon (edge sliver / island) ->
                 # fall back to the nearest district so nothing is left unclassified.
-                adj.append(dgdf.iloc[dgdf.geometry.distance(seg).idxmin()][code_field])
+                nearest = dgdf.iloc[dgdf.geometry.distance(seg).idxmin()][code_field]
+                adj.append(nearest)
+                fracs_col.append(f"{nearest}:1.000")
         segs["districts"] = adj
+        segs["district_fracs"] = fracs_col
         print(f"[join] district overlay applied from {dist_path.name}")
     else:
         segs["districts"] = ""
+        segs["district_fracs"] = ""
         print("[join] no districts.gpkg yet — 'districts' left blank (Phase 0 pending)")
 
     out = lib.WORK / "joined.gpkg"
