@@ -178,6 +178,13 @@ MD_LIST=()
 for ART in "${ARTICLES[@]}"; do
   INDEX=$((INDEX + 1))
   PART="$TMPDIR_PDFS/$(printf "%02d" "$INDEX").pdf"
+  # Continuous flow: no recto-opening pads. The one unit needing an even offset is
+  # article-02.typ (its 2-page district spreads use pagebreak(to:"even") to land D1
+  # on a verso); pad to even only before it so the badges keep the LEFT fore-edge.
+  case "$ART" in
+    */article-02.typ)
+      if [ $((OFFSET % 2)) -eq 1 ]; then PDF_LIST+=("$BLANK_PDF"); OFFSET=$((OFFSET + 1)); fi ;;
+  esac
   case "$ART" in
     *.typ)
       # Native-Typst Article 2 district spreads. Rendered directly by typst (not
@@ -227,13 +234,6 @@ import sys, fitz
 print(fitz.open(sys.argv[1]).page_count)
 PY
 )
-  # Pad odd-length Articles with a trailing blank page (keeps offsets even and
-  # the next Article opening on a recto page). The final Article is never padded
-  # — a trailing blank at the very end of the document serves no purpose.
-  if [ $((PAGES % 2)) -eq 1 ] && [ "$INDEX" -lt "${#ARTICLES[@]}" ]; then
-    PDF_LIST+=("$BLANK_PDF")
-    PAGES=$((PAGES + 1))
-  fi
   OFFSET=$((OFFSET + PAGES))
 done
 
@@ -289,6 +289,11 @@ FRONT_COUNT=$(( 2 + TOC_PAGES + (TOC_PAGES % 2) ))
 
 echo "Assembling: $FRONT_COUNT front-matter pages + $OFFSET body pages -> $OUTPUT_PDF"
 pdfunite "${FRONT_PARTS[@]}" "$BODY_PDF" "$OUTPUT_PDF"
+
+# Make the TOC entries clickable: add internal GoTo links from each TOC row to its
+# physical page (printed body page + front-matter page count).
+echo "Adding clickable TOC links"
+python3 "$REPO_ROOT/build/toc_links.py" "$OUTPUT_PDF" "$FRONT_COUNT"
 
 # Also emit the concatenated markdown source for reference (frontmatter intact;
 # read by humans, not re-rendered through pandoc as one input). Only the

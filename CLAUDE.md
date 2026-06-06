@@ -70,14 +70,19 @@ Type (the §5 Inventory). Map/table legends show only Types actually present.
   integrated markdown (layout/image-only edits don't appear, by construction).
   Standard pair: vs the last *content* release **and** vs `v0.1-baseline`.
 - **Summary:** hand-write `releases/vX.Y-draft/Summary of Changes vX.Y-draft.md`.
+- **Re-cutting a shipped draft** (amending an already-pushed version, e.g. the v0.17
+  column trim) needs a **force-push** (history rewrite); the harness gates that pending
+  Ben's explicit OK. Default to a new version number unless Ben says "stay in vX.Y".
 
 **Parity invariant (critical, don't break):** native-Typst units are spliced
 between pandoc passes; chrome (verso/recto binding margins, rotated Article tab,
 running head, footer page numbers) keys off `here().page() + page_offset`, so each
 unit must render at an offset that makes **logical == physical**.
-- **Integrated CZC (bound book):** each unit renders at a **cumulative EVEN**
-  `page_offset`; odd-length units are padded with a trailing blank so every Article/
-  exhibit opens on a recto. Front matter (cover+TOC) is always even.
+- **Integrated CZC:** threads the **true running** `page_offset` (continuous flow, no
+  recto-opening pads — v0.19); an even-guard pads only before `article-02.typ`, whose
+  2-page district spreads need a verso start. Front matter stays even (cover + blank +
+  TOC). 3 structural blanks remain (Article 2 ×2 + the front-matter blank). After
+  assembly, `build/toc_links.py` adds clickable GoTo links from each TOC row to its page.
 - **Standalone Article 3 (excerpt):** threads the **true running page count** — no
   recto-opening blanks — so it flows continuously (`build-article-3.sh`, v0.15).
 - Article 3 is split by `build/split-article-03.py` at two markers:
@@ -94,6 +99,10 @@ Repeatable GeoPandas pipeline that produces the §5 classification. Venv at
 `01_fetch → 02_prepare → 03_join → 04_classify → 05_export`; `00_digitize_districts.py`
 + `georef.py` + `sample_key.py` build the district layer from the District Map image.
 Durable human decisions live in `overrides.json`. Full docs: `build/street-types/README.md`.
+The **§5.D classification rule** is centralized in `lib.classify_type` (form-first;
+arterials always R4/R5; road-default Districts use MaineDOT functional class; the more
+urban *form* District wins when it covers ≥25% of a segment). `03_join` emits per-District
+overlap fractions (`district_fracs`); `04_classify` applies the rule (v0.18).
 **To get the 100% map later:** drop in the contractor's exact district shapefile,
 re-run from the join stage, re-promote `work/inventory.json` → `source/exhibits/...`,
 rebuild. No code changes.
@@ -102,13 +111,20 @@ rebuild. No code changes.
 
 ## Current state (as of 2026-06-02)
 
+- **Shipped `v0.19-draft`** — integrated-PDF output only (no content change; integrated
+  `.md` byte-identical to v0.18). Removed the inter-article recto-opening blank pages —
+  the build now threads the **true** running `page_offset` instead of padding each
+  Article to a recto (**10→3 blanks, 125→118 pp**; the 3 remaining are structural —
+  Article 2's 2-page district spreads need a verso start + the front-matter TOC blank).
+  Added a **clickable TOC** (`build/toc_links.py` adds a GoTo link per row → its page;
+  188 links). Standalone unchanged. Tags through v0.19-draft.
 - **Shipped `v0.18-draft`** — classification-engine improvement. The §5.D form-first
   rubric is now implemented in code (`lib.classify_type`; was prose-only since v0.16),
   plus a most-urban-District-wins-in-the-village tweak (25% overlap gate; arterials
   always R4/R5). Re-typed **9 village segments R→S** (Mills Rd→S3, River Rd→S2,
   Stonebridge→S3, Teague→S2, Austin→S3, High St→S3); now **215/215 typed (0 pending)**.
   `03_join` emits `district_fracs`; `04_classify` consumes them via `lib`. No prose
-  change (engine/data only). Tags through v0.18-draft.
+  change (engine/data only).
 - **Shipped `v0.17-draft`** — editorial: the repealed RDEO is now named only in the
   §1.A repeal/supersede clause; the 3 incidental mentions (§3.E grade rationale, §14.D
   substantial-reconstruction definition) reworded to keep substance without the
@@ -130,11 +146,9 @@ rebuild. No code changes.
 - v0.14 (commit `4444972`) = first release where Article 3 §5 **renders** Exhibit 3.1
   (Inventory) + Exhibit 3.2 (Type Map) from a real but **DRAFT** classification
   (~90–95%, auto-traced from the District Map; banner says so). 215 segments, 214 typed.
-- **Two human steps remain before any vote:** (1) eyeball the draft district layer
-  vs the official District Map; (2) Planning-Board review → Town-Meeting adoption.
-- **Deferred cosmetic cleanup:** internal names still use the old term — file names
-  `street-type-{map,inventory}.typ`, dir `build/street-types/`, the `STREET-TYPE-EXHIBITS`
-  marker, build vars, JSON keys, `.typ` code comments. Optional; not user-facing.
+- **Before any vote:** (1) finalize the district layer via the contractor's exact
+  shapefile + re-run (the hand-eyeball of the distorted draft trace proved low-value —
+  see NEXT); (2) Planning-Board review → Town-Meeting adoption.
 
 ## ▶ NEXT: no active release queued — open/parked items (await Ben's direction)
 
