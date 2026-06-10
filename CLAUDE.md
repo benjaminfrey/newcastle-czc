@@ -109,8 +109,22 @@ rebuild. No code changes.
 
 ---
 
-## Current state (as of 2026-06-02)
+## Current state (as of 2026-06-09)
 
+- **Shipped `v0.20-draft`** — legal-drafting/editorial: **defined "Character"** and removed
+  it from the binding standards. New Article 9 definition anchors Character to measurable
+  physical/form attributes and **excludes ownership/occupancy/socioeconomic factors** (a
+  fair-housing safeguard). Replaced the **8 operative uses** with concrete terms (§5.D
+  "Built character test" → **"Built-form test"**; §5.E/§6.C/§6.D/§14.E "built character /
+  future character" → **"built form"**; two Art. 8 criteria "character" → **"nature"**).
+  **Kept** the word in non-binding **purpose** statements (now anchored), the form-based
+  **"form and character"** pairing, and the policy term **"rural character."** **Left
+  verbatim for town counsel + filed two tracking memos in `memos/`:** the **Variance**
+  standards (Art. 8 §19.d — mirror 30-A M.R.S. §4353; the new def could narrow the
+  statutory term → savings-clause suggested) and the **Human Service Facility** standards
+  (Art. 7 §34.b — FHA / Maine Human Rights Act exposure: a need/overconcentration/character
+  gate on a protected-class use). Text-only; **parity held** (integrated 118 pp/3 blank,
+  standalone 27 pp/0 blank). Tags through v0.20-draft.
 - **Shipped `v0.19-draft`** — integrated-PDF output only (no content change; integrated
   `.md` byte-identical to v0.18). Removed the inter-article recto-opening blank pages —
   the build now threads the **true** running `page_offset` instead of padding each
@@ -150,8 +164,65 @@ rebuild. No code changes.
   shapefile + re-run (the hand-eyeball of the distorted draft trace proved low-value —
   see NEXT); (2) Planning-Board review → Town-Meeting adoption.
 
-## ▶ NEXT: no active release queued — open/parked items (await Ben's direction)
+## ▶ NEXT: re-scope to all Articles + local-disk plan — AWAITING BEN'S DECISIONS (the morning topic)
 
+**The ask (2026-06-06):** expand the project so we can work on **any** CZC Article the
+same way we've done Article 3 — drafts, markdown, redlines, and the full integrated CZC
+with the new changes. Ben's stated concern is **local hard-drive space** (NOT git/remote
+storage), and he **plans to add images/graphics to many Articles**. He asked whether to
+have **per-Article PDF generators** or **one unified script** — said **"either way is
+fine."** This was a **report-only** turn; **no code/commits** made. He said *"not right
+now… we'll pick this back up in the morning."* So: **nothing is decided yet — re-present
+the decisions below and wait.**
+
+- **Local-disk findings (all on Ben's drive): ~1.1 GB total.** Three movers:
+  `build/street-types/.venv` **458 M** (gitignored, fully reproducible from
+  `requirements.txt`); `.git` **331 M** (bloated by committed PDFs — every draft adds
+  ~7.5 M ×, permanently, to the *local* `.git`); `releases/` **264 M** (PDFs regenerate
+  exactly from tags; v0.8/v0.9 carry ~140 M of obsolete raster redlines). Rest ~60 M
+  (docs 25 M baseline, source/exhibits 7.6 M / 41 images, etc.). **Graphics will
+  accelerate `.git` + `releases/` growth** (each draft's PDFs land in both).
+- **My recommendation (reclaim, ranked):** (1) delete `.venv`, make `run.sh`
+  self-heal/recreate it (−458 M, zero risk); (2) keep only recent PDFs in `releases/`
+  (latest + `v0.1-baseline`), prune the rest since regenerable from tags (≈ −240 M);
+  (3) **stop committing generated PDFs** — gitignore `releases/**/*.pdf`, keep the
+  text (md + Summary; redline inputs) — caps `.git` growth; (4) **optional one-time
+  `git filter-repo`** to purge historic PDFs from history (≈ −300 M now; **history
+  rewrite + force-push → needs Ben's explicit OK**); (5) delete v0.8/v0.9 legacy raster
+  redlines (−140 M). Safe set (1+2+3) ≈ 1.1 GB → ~350 M; add (4) ≈ ~100 M and flat
+  thereafter.
+- **Architecture recommendation (per-Article vs one script):** go with **one unified
+  `build-standalone.sh <article-NN> <version>`** driven by a tiny **per-Article exhibit
+  manifest** (which split markers + which `.typ` exhibits + splice points) — mirrors
+  what `build-full-czc.sh` already centralizes, DRY, no per-script drift. Key point for
+  Ben: **inline graphics need NO tooling** — `![](exhibits/foo.png)` already renders in
+  any Article via pandoc today; only **full-page native-Typst exhibits** (like Art. 3's
+  plates / Type map) need the splice machinery. (Per-Article scripts also fine per Ben,
+  just more duplication.) `build-article-3.sh` becomes Art. 3's manifest / can fold in.
+- **Re-scope is mostly already done:** `build-full-czc.sh` + `build-redline.sh` are
+  already Article-agnostic (they render all of `source/article-0N-*.md`). Only the
+  **standalone builder** needs generalizing. So the work = (a) safe disk reclaim,
+  (b) unified standalone builder + manifest, (c) document the "working on Article N"
+  flow in this file.
+- **OPEN DECISIONS to put to Ben (do not act until he answers):** (i) run the safe
+  reclaim set now? (deletes only regenerable files — `.venv` + old release PDFs);
+  (ii) stop committing PDFs going forward (recommended) or keep committing?;
+  (iii) the `git filter-repo` history purge — now / later / skip?; (iv) confirm unified
+  standalone builder (my rec) vs per-Article scripts.
+
+- **Permit-application + automated-review system (Ben's 2026-06-09 question — UNRESOLVED):**
+  should the project expand to include a **resident permit-intake portal** + an engine that
+  reviews applications against the Code and **drafts Findings of Fact / Conclusions of Law**
+  for the CEO or Planning Board — or be a **separate project**? My provisional lean:
+  **separate repo/stack** (it's a stateful, multi-user, hosted, PII-handling web app — near-
+  zero code reuse with this batch document toolchain), **bridged by a shared machine-readable
+  model of the CZC's substantive standards** (the real reusable core; would also sharpen the
+  code). Caveat: CZC is still a *draft*, so production adjudication is premature — but
+  *prototyping* could dogfood/sharpen the code pre-adoption (Art. 3 driveway permit = natural
+  first slice). I asked Ben ~8 scoping questions (automation depth / human-in-loop; permit
+  types first; public vs internal + hosting; existing town software; legal weight of AI-drafted
+  findings + Maine process; the CZC-as-data bridge + parcel GIS; build-vs-buy + funding; who
+  maintains it). **Awaiting his answers** — he pivoted to the "character" task before answering.
 - **100% map (the real fix):** the draft district trace is a ~0.77-IoU georeferenced
   approximation — spatially distorted, so a hand polygon-review is low-value (we did the
   v0.18 engine tweak instead, which sharpened the *village* classification on the

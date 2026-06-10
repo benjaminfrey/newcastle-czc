@@ -190,7 +190,7 @@ TABLE 8.1 NOTICES & PUBLIC HEARINGS
 ### c. GENERAL
 
 1. The Code Enforcement Officer may issue written interpretations.
-2. A written interpretation does not require the Code Enforcement Officer to reach a particular decision for any application for development review if the facts of the application, property, location, or character of the development proposal differ from those stated or assumed in a previously issued written interpretation.
+2. A written interpretation does not require the Code Enforcement Officer to reach a particular decision for any application for development review if the facts of the application, property, location, or nature of the development proposal differ from those stated or assumed in a previously issued written interpretation.
 3. Written interpretations must be consistent with the purpose and purpose of this Code and cannot contradict or override any standards of this or any other Ordinance.
 
 ### d. PROCEDURE
@@ -669,7 +669,7 @@ TABLE 8.1 NOTICES & PUBLIC HEARINGS
     b. The purpose and intent of this Code;
     c. The purpose of the District(s) where the property is located;
     d. The proposed use or activity will be established, maintained, and operated so as to be harmonious with the surrounding area and will not impede the development, use, and quiet enjoyment of abutting property in any foreseeable manner;
-    e. The proposed use or activity will be of a character that does not produce excessive noise, heat, glare, dust, smoke, fumes, odors, or vibration detectable off the property or that adversely affects the surrounding area;
+    e. The proposed use or activity will be of a nature that does not produce excessive noise, heat, glare, dust, smoke, fumes, odors, or vibration detectable off the property or that adversely affects the surrounding area;
     f. The proposed use or activity will not result in the destruction, loss, or damage of any feature determined to be of significant natural, scenic or historic importance; and,
     g. Considerations indicated elsewhere in this Code for special permit approval.
 

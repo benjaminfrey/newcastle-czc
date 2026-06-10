@@ -126,6 +126,9 @@ A roofed structure covered on 2 or more sides with fabric, vinyl, plastic, or ot
 **Change of Use:**
 The act of changing the categorization of activity within a building, structure, or portion thereof from one primary use to another.
 
+**Character:**
+The combined effect of the physical and design attributes of an area — including the form, scale, massing, and placement of buildings; the pattern of lots, blocks, and streets; the relationship of buildings to the street and to one another; and the streetscape and landscape — that distinguishes the area and that the form-based standards of this Code are intended to express. As used in this Code, character refers to these physical and design attributes; it does not refer to the ownership or occupancy of property, the identity of property owners or occupants, or the socioeconomic composition of an area.
+
 **Chine:**
 The break-point or horizontal plane formed where two differently sloped portions of a complex roof system meet.
 
