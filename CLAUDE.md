@@ -46,7 +46,10 @@ in-house GIS capacity. All ordinance changes require a **Town Meeting** vote (Ma
 - `build/` — build scripts (see below) + `street-types/` GIS pipeline.
 - `releases/vX.Y-draft/` — shipped deliverables + redlines + Summary per version.
 - `docs/` — **baseline PDFs, do not modify.**
-- `memos/` — supporting justification/discussion memos.
+- `memos/` — supporting justification/discussion memos. Rendered to PDF in CZC
+  house style by `build/build-memo.sh` + `style/memo-template.typ` (memo builder
+  added during the Fall-2026 redline review; usage: `build-memo.sh <md> <pdf>
+  "running head" "footer"`; long tables flow across pages via breakable figures).
 - `extract/`, `review-d1/` — scratch/analysis.
 
 ## The Type system
@@ -111,6 +114,27 @@ rebuild. No code changes.
 
 ## Current state (as of 2026-06-09)
 
+- **Reviewed another planner's Fall-2026 redline of the CZC** (`docs/CZC Redline
+  2026.06.docx` — a Google-Docs **color/strike legislative redline**, NOT Word
+  track-changes: green/underline = add, red/strike = delete, yellow = moved;
+  ~690 adds / 380 dels across Articles 1,2,3,X,6,7,8 — built on the **original
+  adopted CZC numbering**, so it does NOT include our Article 3 Thoroughfares).
+  Wrote **4 analysis memos in `memos/`** (all built to PDF): (1) **Thoroughfares
+  reconciliation** — our form-based Article 3 vs their engineering-style
+  "Article X"; verdict **merge, not choose** (ours is the better fit + a near-
+  superset; harvest their culvert-embedment/hammerhead/road-spacing specifics;
+  borrow their ROW-as-easement def; **fix our stale "Road" definition**; ⛔ both
+  can't reach Town Meeting — conflicting Thoroughfare/Road/Driveway/ROW defs);
+  (2) **Reconciled definitions + Article X harvest list**; (3) a **2-page
+  summary**; (4) **Article 7 Administration** analysis (~496 changes = a wholesale
+  development-review rewrite: "Permitting Authority"→"reviewing authority" + CEO
+  sole permit-issuer; Select Board; Permit→Review; project-size tiers; CEO↔PB
+  authority shifts; LD-2003 / §4404 alignment). **Open coordination items:** the
+  Thoroughfares merge; their "reviewing authority" rename vs **our Art. 3 §13
+  "Permitting Authority"**; confirm their deleted overlay reviews (Shoreland/
+  Floodplain/etc.) are preserved; the safe self-contained **"Road" def fix** is a
+  good near-term v0.x edit. The redline `.docx` sits in `docs/` (Ben placed it
+  there; **left untracked** — relocate out of the baseline folder before tracking).
 - **Shipped `v0.20-draft`** — legal-drafting/editorial: **defined "Character"** and removed
   it from the binding standards. New Article 9 definition anchors Character to measurable
   physical/form attributes and **excludes ownership/occupancy/socioeconomic factors** (a
