@@ -511,11 +511,97 @@ def digest(old_text: str, new_text: str, context: int = 2):
     return body, n_del, n_ins, n_hunks
 
 
+# ---------------------------------------------------------------------------
+# Source-file mode  (--source): redline ONE article .md in place, marking prose
+# while keeping the file structurally intact for the integrated build. Unlike
+# the concatenated-deliverable modes above it PRESERVES the YAML front-matter
+# and the HTML splice markers, does NOT drop native ``## D..`` sections, emits
+# fenced / raw-Typst blocks as the NEW version verbatim (no note), and leaves
+# ATX heading lines as the NEW text unmarked — so the scanned TOC and the
+# per-Article running heads stay clean. Figure/data and heading/section changes
+# are narrated in the hand-written Summary instead.
+# ---------------------------------------------------------------------------
+
+FRONTMATTER_RE = re.compile(r'^---[ \t]*\n.*?\n---[ \t]*\n?', re.S)
+HEADING_LINE_RE = re.compile(r'^\s*#{1,6}[ \t]')
+
+
+def split_frontmatter(text: str):
+    """Return ``(frontmatter_or_'', body)``, peeling a single leading
+    ``---`` … ``---`` YAML block (the per-Article metadata the build chrome reads)."""
+    m = FRONTMATTER_RE.match(text)
+    return (m.group(0), text[m.end():]) if m else ('', text)
+
+
+def prepare_source(text: str):
+    """Mask fenced blocks only — keep front-matter (split off by the caller),
+    HTML comments, and native ``## D..`` sections intact."""
+    return mask_blocks(text)
+
+
+def is_heading(ln: str) -> bool:
+    return bool(HEADING_LINE_RE.match(ln))
+
+
+def _markable(ln: str) -> bool:
+    """A line that actually receives a mark (used only for the stderr tally)."""
+    return bool(ln.strip()) and not is_block_token(ln) and not is_heading(ln)
+
+
+def emit_deleted_src(ln: str, reg: dict) -> str:
+    if is_block_token(ln) or is_heading(ln):
+        return ''            # native block / heading: gone from NEW, drop silently
+    return strike_pipe(ln) if is_pipe_row(ln) else strike_line(ln)
+
+
+def emit_inserted_src(ln: str, reg: dict) -> str:
+    if is_block_token(ln):
+        return reg[ln]       # NEW fenced / raw-Typst block VERBATIM, no note
+    if is_heading(ln):
+        return ln            # NEW heading text VERBATIM, unmarked (clean TOC)
+    return red_pipe(ln) if is_pipe_row(ln) else red_line(ln)
+
+
+def redline_source(old_text: str, new_text: str):
+    """Mark prose in one article ``.md`` (OLD vs NEW) while preserving NEW
+    front-matter and structure. Returns ``(marked_markdown, n_del, n_ins)``."""
+    new_fm, new_body = split_frontmatter(new_text)
+    _, old_body = split_frontmatter(old_text)
+    a, reg_a = prepare_source(old_body)
+    b, reg_b = prepare_source(new_body)
+    reg = {**reg_a, **reg_b}
+    sm = difflib.SequenceMatcher(None, a, b, autojunk=False)
+    out = []
+    n_del = n_ins = 0
+    for tag, i1, i2, j1, j2 in sm.get_opcodes():
+        if tag == 'equal':
+            out.extend(emit_equal(ln, reg) for ln in a[i1:i2])
+        elif tag == 'delete':
+            n_del += sum(1 for ln in a[i1:i2] if _markable(ln))
+            out.extend(emit_deleted_src(ln, reg) for ln in a[i1:i2])
+        elif tag == 'insert':
+            n_ins += sum(1 for ln in b[j1:j2] if _markable(ln))
+            out.extend(emit_inserted_src(ln, reg) for ln in b[j1:j2])
+        else:  # replace
+            ol, nl = a[i1:i2], b[j1:j2]
+            n_del += sum(1 for ln in ol if _markable(ln))
+            n_ins += sum(1 for ln in nl if _markable(ln))
+            if (len(ol) == 1 and len(nl) == 1
+                    and not is_block_token(ol[0]) and not is_block_token(nl[0])
+                    and not is_heading(ol[0]) and not is_heading(nl[0])):
+                out.append(mark_replace_1to1(ol[0], nl[0]))
+            else:
+                out.extend(emit_deleted_src(ln, reg) for ln in ol)
+                out.extend(emit_inserted_src(ln, reg) for ln in nl)
+    body_marked = '\n'.join(out)
+    return ((new_fm + body_marked) if new_fm else body_marked), n_del, n_ins
+
+
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith('--')]
     flags = {a for a in sys.argv[1:] if a.startswith('--')}
     if len(args) != 3:
-        sys.exit('usage: redline-text.py <old.md> <new.md> <out.md> [--digest|--full]')
+        sys.exit('usage: redline-text.py <old.md> <new.md> <out.md> [--digest|--full|--source]')
     old_f, new_f, out_f = args
     with open(old_f, encoding='utf-8') as f:
         old_text = f.read()
@@ -523,6 +609,9 @@ def main():
         new_text = f.read()
     if '--full' in flags:
         result, n_del, n_ins = redline(old_text, new_text)
+        n_hunks = None
+    elif '--source' in flags:
+        result, n_del, n_ins = redline_source(old_text, new_text)
         n_hunks = None
     else:  # default: changes-only digest
         result, n_del, n_ins, n_hunks = digest(old_text, new_text)

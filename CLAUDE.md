@@ -69,11 +69,19 @@ Type (the §5 Inventory). Map/table legends show only Types actually present.
   → `releases/vX.Y-draft/Newcastle CZC (Integrated Draft vX.Y-draft).{pdf,md}`
 - **Standalone Article 3:** `bash build/build-article-3.sh vX.Y-draft "Month D, YYYY"`
   → `releases/.../Article 3 Thoroughfares (Standalone vX.Y-draft).{pdf,md}`
-- **Redline (one, full-document):** `bash build/build-redline.sh <new-ver> <old-ver>`
-  → `releases/.../Newcastle CZC (Integrated Draft <new-ver>) — Redline.pdf` — the WHOLE
-  integrated draft with this version's changes struck/added inline, vs the **prior version**
-  (`redline-text.py --full`). TEXT only (layout/image edits don't appear, by construction).
-  *(Retired 2026-06: the vs-`v0.1-baseline` redline and the changed-passages `--digest`.)*
+- **Redline (formatted, full-layout — canonical):** `bash build/build-redline-full.sh <new-ver> [old-ver] [date]`
+  → `releases/.../Newcastle CZC (Integrated Draft <new-ver>) — Redline.pdf` — the integrated draft
+  in its **full publication layout** (chrome + all native figures) with **prose** changes marked
+  inline (additions red, deletions struck) vs the **prior version**. Stages the working-tree
+  `source/` (marks each `article-*.md` via `redline-text.py --source` vs the old tag) and runs
+  `build-full-czc.sh` against it (`SRC_DIR`/`OUT_DIR` seams; the build threads parity for the
+  longer doc automatically). **v1 limit:** figures/tables/maps + inline raw-Typst tables render at
+  **current state, unmarked** (a text diff can't mark a regenerated figure) — narrate those in the
+  Summary; the cover carries a redline caveat. `REDLINE_OUT=<path>` = a dry-run that won't touch a
+  release. Implemented 2026-06-19 (verified v0.20→v0.21: 117 pp / 1 blank, parity held).
+- **Redline (plain text — legacy):** `bash build/build-redline.sh <new-ver> <old-ver>`
+  (`redline-text.py --full`) — single-column TEXT-only report, no chrome/figures; superseded by
+  the formatted redline above, kept for quick wording-only reads.
 - **Summary (md + PDF):** hand-write `releases/vX.Y-draft/Summary of Changes vX.Y-draft.md`
   in **plain, human-readable** language — list changes by §/Table/Type/road name; **no file,
   path, or script references**. Render to PDF with `bash build/build-memo.sh "<…Summary….md>"
@@ -137,9 +145,13 @@ rebuild. No code changes.
   Article-2 blanks (integrated now **116 pp / 1 blank**). **Output structure changed:** one
   **full-document redline** vs prior version (dropped the vs-baseline + the changed-passages
   digest); **Summary now md + PDF**, rewritten plain (no file/path refs). "cartway" left as-is
-  (already defined). Tags through v0.21-draft. *(Deferred: a fully-formatted redline carrying
-  the integrated draft's layout — Ben to plan next session; native-Typst figures can't carry
-  inline marks.)*
+  (already defined). Tags through v0.21-draft. *(Formatted full-layout redline — now
+  **IMPLEMENTED 2026-06-19** (working tree, pending Ben's commit/adoption decision):
+  `build/build-redline-full.sh` + `redline-text.py --source` + `SRC_DIR`/`OUT_DIR` seams in
+  `build-full-czc.sh` + a cover caveat in `build-cover.py`. Stages the marked source and runs the
+  real build, so it carries the full integrated layout with prose marked inline; native figures
+  render at current state, unmarked. Verified v0.20→v0.21: 117 pp / 1 blank, parity held. See the
+  Build & release flow "Redline" bullet.)*
 - **Reviewed another planner's Fall-2026 redline of the CZC** (`docs/CZC Redline
   2026.06.docx` — a Google-Docs **color/strike legislative redline**, NOT Word
   track-changes: green/underline = add, red/strike = delete, yellow = moved;

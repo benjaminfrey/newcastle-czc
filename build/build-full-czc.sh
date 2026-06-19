@@ -24,12 +24,17 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SOURCE_DIR="$REPO_ROOT/source"
+# SRC_DIR / OUT_DIR overrides let the formatted-redline wrapper
+# (build-redline-full.sh) point this build at a staging tree of marked-up
+# article markdown and write to a scratch dir — without touching source/ or a
+# shipped release. Both default to the normal locations, so a plain build is
+# unchanged.
+SOURCE_DIR="${SRC_DIR:-$REPO_ROOT/source}"
 VERSION="${1:-v0.0-dev}"
 DATE_STR="${2:-$(date +"%B %-d, %Y")}"
 BASELINE_PDF="$REPO_ROOT/docs/Newcastle Core Zoning Code.pdf"
 DATA_JSON="$SOURCE_DIR/article-02-data.json"
-RELEASE_DIR="$REPO_ROOT/releases/$VERSION"
+RELEASE_DIR="${OUT_DIR:-$REPO_ROOT/releases/$VERSION}"
 mkdir -p "$RELEASE_DIR"
 
 # Collect article render units in lexical order (bash-3 compatible).
@@ -266,7 +271,7 @@ TOC_JSON="$TMPDIR_PDFS/toc.json"
 TOC_PDF="$TMPDIR_PDFS/toc.pdf"
 
 echo "Building cover (baseline art + $VERSION draft banner)"
-python3 "$REPO_ROOT/build/build-cover.py" "$BASELINE_PDF" "$COVER_PDF" "$VERSION" "$DATE_STR"
+python3 "$REPO_ROOT/build/build-cover.py" "$BASELINE_PDF" "$COVER_PDF" "$VERSION" "$DATE_STR" ${REDLINE_CAVEAT:+"$REDLINE_CAVEAT"}
 
 echo "Deriving TOC entries by scanning the built body"
 python3 "$REPO_ROOT/build/toc_entries.py" "$BODY_PDF" "$DATA_JSON" "$TOC_JSON"

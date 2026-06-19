@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # Produce a TEXT redline PDF between two versions of the Code.
 #
+# LEGACY / text-only — the plain single-column change report. For the formatted
+# redline that carries the full integrated layout (chrome + native figures) with
+# prose marked inline, use build/build-redline-full.sh instead.
+#
 # This compares the TEXT of two releases' integrated markdown deliverables and
 # renders a compact VECTOR PDF: deleted text struck through, new text in red
 # immediately after it. It replaces the old diff-pdf raster overlay (which

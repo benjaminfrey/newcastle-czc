@@ -35,7 +35,7 @@ fi
 mkdir -p "$(dirname "$OUTPUT_PDF")"
 
 pandoc "$SOURCE_MD" \
-  --from=markdown+fancy_lists+startnum \
+  --from=markdown+raw_attribute+strikeout+fancy_lists+startnum \
   --pdf-engine=typst \
   --pdf-engine-opt=--font-path="$REPO_ROOT/style/fonts" \
   --template="$TEMPLATE" \

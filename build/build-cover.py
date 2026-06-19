@@ -15,8 +15,11 @@ by vector-copying baseline page 0, then:
   2. Stamps a DRAFT banner in the upper white space: status, version, and a
      one-line provenance note.
 
+  3. Optionally stamps a REDLINE caveat line (when the formatted-redline build
+     passes one) so a marked-up integrated draft is unmistakable on its face.
+
 Usage:
-  build-cover.py BASELINE_PDF OUT_PDF VERSION DATE_STR
+  build-cover.py BASELINE_PDF OUT_PDF VERSION DATE_STR [REDLINE_CAVEAT]
 Example:
   build-cover.py "docs/Newcastle Core Zoning Code.pdf" /tmp/cover.pdf \
       v0.6-draft "May 30, 2026"
@@ -28,6 +31,7 @@ import fitz  # PyMuPDF
 ARTICLE_BLUE = (0x36 / 255, 0x7A / 255, 0xAC / 255)
 GRAY = (0x7C / 255, 0x76 / 255, 0x6F / 255)
 WHITE = (1, 1, 1)
+REDLINE_RED = (0xCC / 255, 0, 0)  # matches the added-text red in redline-text.py
 NEAR_WHITE = (254 / 255, 254 / 255, 254 / 255)  # matches the scan background
 
 # Attestation block to mask (page points; measured from the 200-dpi crop).
@@ -40,7 +44,7 @@ BARLOW_MED = os.path.join(FONTS_DIR, "Barlow-Medium.ttf")
 BARLOW_REG = os.path.join(FONTS_DIR, "Barlow-Regular.ttf")
 
 
-def build_cover(baseline_pdf, out_pdf, version, date_str):
+def build_cover(baseline_pdf, out_pdf, version, date_str, caveat=None):
     src = fitz.open(baseline_pdf)
     w, h = src[0].rect.width, src[0].rect.height
     # Baseline page 0 is /Rotate 90 over a landscape mediabox: rendering to a
@@ -84,6 +88,16 @@ def build_cover(baseline_pdf, out_pdf, version, date_str):
         align=fitz.TEXT_ALIGN_CENTER,
     )
 
+    # 4. Optional redline caveat — a marked-up integrated draft says so on the
+    #    cover (additions red / deletions struck; figures shown at current state).
+    if caveat:
+        page.insert_textbox(
+            fitz.Rect(72, bar.y1 + 54, w - 72, bar.y1 + 116),
+            caveat,
+            fontfile=BARLOW_MED, fontname="barlow-med", fontsize=10, color=REDLINE_RED,
+            align=fitz.TEXT_ALIGN_CENTER,
+        )
+
     out.save(out_pdf, garbage=4, deflate=True)
     out.close()
     src.close()
@@ -91,6 +105,7 @@ def build_cover(baseline_pdf, out_pdf, version, date_str):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 5:
-        sys.exit("usage: build-cover.py BASELINE_PDF OUT_PDF VERSION DATE_STR")
-    build_cover(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+    if len(sys.argv) not in (5, 6):
+        sys.exit("usage: build-cover.py BASELINE_PDF OUT_PDF VERSION DATE_STR [REDLINE_CAVEAT]")
+    caveat = sys.argv[5] if len(sys.argv) == 6 else None
+    build_cover(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], caveat)
