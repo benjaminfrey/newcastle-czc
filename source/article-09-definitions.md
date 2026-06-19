@@ -57,8 +57,8 @@ Includes storage sheds, apiaries, hoop houses, chicken coops, cold frames, compo
 **Agricultural Use:**
 The commercial planting, cultivating, producing, growing, and harvesting of agricultural or horticultural products, the raising of livestock and poultry, and any work performed in conjunction with the above farm operations, including the packing, drying, and storing of products produced on-premises. Agriculture also includes all equine, or horse-related activities, including boarding, lessons, rides, breeding, veterinary care, races, events, and shows. Unless otherwise specified in this Code, the term 'agriculture' refers to commercial agriculture.
 
-**Alley:**
-A type of road typically located internal to a block that provides access to the side or rear of lots. Alleys typically provide access to service areas, parking, and accessory buildings and may contain utility easements.
+**Alley (S5):**
+A Street Type for narrow service streets internal to a block, providing access to the side or rear of lots for parking, loading, accessory buildings, and utility easements; buildings do not front on an Alley. Formerly combined with the Lane as Type "S4 Lane/Alley"; the two are now distinct Types (Lane = S4, fronting; Alley = S5, service). Defined in Article 3 Section 2 (Type S5).
 
 **Alteration:**
 As applied to a building or structure, a change or rearrangement in the exterior structural parts or in the exit facilities; also an enlargement or addition where new construction is connected to an existing structure, whether by extending on a side or by increasing in height, or the moving from 1 location or position to another.
@@ -93,6 +93,9 @@ The aggregate land area, including alleys, cross weaves, and footpaths, circumsc
 **Bracket:**
 A visual and/or structural support, typically made of metal or wood, projecting from a building face to bear the weight or visually support a building element.
 
+**Build-To Standard:**
+The value stated in the "Build to" column on a Type's page in Article 3 Section 2 — the configuration the applicant is to construct for that Type. It is drawn from the Type's authorized range under Article 3 Section 3.C.2 (the fuller value for the pedestrian and landscape components, the lower value for the traffic-calming dimensions). A Build-To Standard is distinguished from a minimum, which is the floor below which a waiver is required: an applicant may build less than a Build-To Standard by the written demonstration of Article 3 Section 3.C.4, whereas building below a stated minimum requires a waiver under Article 3 Section 13.H.
+
 **Building:**
 An assemblage of materials and components that form an enclosure including a roof, windows, doors and solid exterior walls, and designed, built, or occupied as a shelter for persons, animals, or property. Not synonymous with Structure.
 
@@ -123,6 +126,9 @@ A measurement of the diameter of a tree trunk. For trees less than 4 inches in d
 **Carport:**
 A roofed structure covered on 2 or more sides with fabric, vinyl, plastic, or other similar sheeting material that provides protection from the elements for vehicles or other items.
 
+**Cartway:**
+The portion of a Thoroughfare's right-of-way that is paved, graveled, or otherwise improved for vehicular travel, including travel lanes, on-street parking lanes (where present), and shoulders (where present). The cartway does not include sidewalks, planting strips, or the frontage zone.
+
 **Change of Use:**
 The act of changing the categorization of activity within a building, structure, or portion thereof from one primary use to another.
 
@@ -137,6 +143,9 @@ An outdoor open space designed to support social and recreational activities.
 
 **Civic District:**
 An area protected from development and designated for use as civic space on the District Map.
+
+**Connector Road (R1):**
+A Road Type providing connections in the rural-to-urban transition zone, with shoulders rather than curbs, no continuous sidewalks, and a design speed higher than any Street Type. Defined in Article 3 Section 2 (Type R1).
 
 **Core District:**
 An area that shares common characteristics with other land in the same zoning designation, or is an area that is intended to transition toward a character that has been determined by the community. Core Districts span a range of development intensity from most rural, D1, to most urban, D6.
@@ -171,6 +180,9 @@ The edge of the vehicular pavement that may be raised or flush to a swale. It us
 **Curb Radius:**
 The distance between the edge and center point of a curved section of curbing at the corner of two intersecting roads. This distance is determined by measuring the radius of a circle that approximates the size of the arc formed by the outside face of the curb.
 
+**Curb Return Radius:**
+The radius of the curve at the corner of two intersecting Thoroughfares, measured along the outside face of the curb or, where no curb is present, along the edge of the cartway. Calibrated by Type pair under Article 3 Section 9.
+
 **Depth:**
 The perpendicular, horizontal distance from the primary facade of a building into the lot.
 
@@ -187,7 +199,7 @@ The land area encompassed in a development proposal irrespective of the number o
 The map or set of maps that shows all land areas subject to, or potentially subject to, regulation by this Code and including Core Districts, Special Districts, and any special requirements.
 
 **Driveway:**
-A vehicular way providing access from a Public or Private Road to the interior of a lot, including homes, parking lots, or loading docks. Driveways are not subject to construction specifications required for roads.
+A private vehicular access way from a Street or Road (per Article 3 Section 2) to the interior of a single lot, including access to homes, parking lots, or loading docks. A Driveway is not a Street or Road and is not subject to the construction specifications of Article 3 Section 11. See Article 3 Section 7 for full Driveway standards. Where this Code uses the prior definition of "Driveway" (a vehicular access way serving two single family dwellings or one two-family dwelling or less), the prior definition is superseded; use limits, if any, are set within Article 3 Section 7.
 
 **Dwelling Unit:**
 A single unit providing complete, independent, living facilities containing 1 or more rooms arranged for use by no more than 4 unrelated individuals living together as a single housekeeping unit with cooking, living, sanitary, and sleeping facilities.
@@ -324,6 +336,9 @@ The distance between two points along a vertical plane.
 **Height, Absolute:**
 See Absolute Height.
 
+**Highway Commercial (R4):**
+A Road Type for auto-oriented commercial corridors with access management, sidewalks where feasible, and MaineDOT-coordinated cartway geometry. Defined in Article 3 Section 2 (Type R4).
+
 **Improvements:**
 Any alteration of land, a lot, a building or a structure.
 
@@ -350,6 +365,9 @@ The source of illumination in a lighting fixture.
 
 **Landscaping:**
 Landscaping includes areas of arranged plant materials.
+
+**Lane (S4):**
+A Street Type for narrow, low-speed fronting streets internal to a neighborhood or village block, carrying two narrow travel lanes that operate in a yield fashion, with a sidewalk on one side or none. A Lane provides frontage and may connect to other Street Types or "punch in" to open the interior of a block; it is larger than an Alley (S5). Defined in Article 3 Section 2 (Type S4).
 
 **Large Animals:**
 Large domestic animals including cows, sheep, pigs, and horses raised for home use or for profit.
@@ -412,6 +430,9 @@ The amount of light energy generated by a light source.
 **Main Building Mass:**
 The volume of a primary or accessory building as defined by the dimensional standards for building type and onto which components and roofs may attach.
 
+**Main Street (S1):**
+The most urban Street Type, providing the central organizing thoroughfare of the Town Center with continuous building streetwalls, active ground-floor uses, wide sidewalks, on-street parking both sides, and the lowest design speed in the typology. Defined in Article 3 Section 2 (Type S1).
+
 **Master Plan:**
 A development plan and supporting illustrations and documents providing a framework for future development of a site. A Master Plan provides guidance to the applicant and Town regarding applicable permitting and decision making processes.
 
@@ -420,6 +441,9 @@ Equipment, devices, and accessories used for water supply, drainage, heating, ve
 
 **Multi-unit Commercial Building:**
 A building occupied by two or more commercial uses and no residential uses.
+
+**Neighborhood Street (S3):**
+A Street Type providing connections within and between residential and small-business neighborhoods, with a sidewalk on at least one side, a planting strip, on-street parking permitted, and a residential-scale design speed. Defined in Article 3 Section 2 (Type S3).
 
 **Residential Building:**
 A building occupied by one or more residential uses and no commercial uses.
@@ -445,6 +469,9 @@ The transaction of general business, including administrative, professional, and
 **On-Site Civic Space:**
 Civic space owned, maintained, and administered by a private entity, provided on the same lot as a building or on a lot associated with a building group, for the purpose of adding publicly accessible amenity space to a development project.
 
+**On-Street Parking Lane:**
+A lane within the cartway, adjacent to the travel lanes, reserved for the parking of vehicles parallel or at an angle to the curb or edge of pavement. Where provided, an on-street parking lane is typically 7–8 ft wide per side and is counted separately from the traveled way (moving lanes) on each Type's page in Article 3 Section 2.
+
 **Opening:**
 A void space in between the expanse of two solid structures or piers.
 
@@ -453,6 +480,9 @@ The outdoor exhibition or presentation of products and merchandise available for
 
 **Outdoor Storage:**
 The storage of merchandise or material in boxes, crates, on pallets or other kinds of shipping containers; and, garden supplies, building supplies, materials, plants, vehicles and other similar equipment, inventory, merchandise, or supplies not normally brought indoors overnight.
+
+**Ownership Category:**
+The statutory ownership and maintenance classification of a Thoroughfare under Article 3 Section 4, independent of its Thoroughfare Type. The four Ownership Categories are Town Way, Public Easement, Private Road, and State Highway.
 
 **Parcel:**
 See Lot.
@@ -471,6 +501,9 @@ A person or board granted the authority to conduct project review and approval, 
 
 **Pier:**
 A solid support designed to sustain vertical pressure, such as used in a section of a wall between windows or other adjacent openings or as structural members used in the construction of building foundations.
+
+**Planting Strip:**
+The portion of a Thoroughfare's right-of-way located between the curb (or edge of cartway, where no curb is present) and the sidewalk (where present), or between the curb and the front lot line where no sidewalk is present. The planting strip typically contains street trees, grass, low plantings, and tree pits; it may also contain on-street furniture in the furnishing zone.
 
 **Platform:**
 An elevated flat structure meant to support the weight of people at or above the plane of the ground.
@@ -504,6 +537,12 @@ When a building element extends perpendicular and away from the building face to
 
 **Property:**
 Any land, building, or other structure, or part thereof.
+
+**Provision Component:**
+A Street element — a sidewalk, planting strip, street trees, or on-street parking — whose presence on a given segment is governed by the context triggers of Article 3 Section 3.F rather than by a fixed dimension stated for the Type.
+
+**Public Easement:**
+A right of public access over a road or way, held by the municipality under 23 MRSA §3021. The road or way is open to public traffic, but the Town does not bear maintenance responsibility. Formerly referred to in some Maine usage as a "private way." An Ownership Category under Article 3 Section 4.C.
 
 **Public Realm:**
 All public and civic lands including roads, sidewalks, rights-of-way, and frontage zones.
@@ -567,6 +606,15 @@ The highest point on any building or structure where an exterior wall or parapet
 
 **ROW:**
 See Right-of-Way
+
+**Rural Highway (R5):**
+A Road Type for high-speed regional corridors through rural and conservation contexts, with deep front setbacks, vegetative screening, and MaineDOT-controlled cartway geometry. Defined in Article 3 Section 2 (Type R5).
+
+**Rural Lane (R3):**
+A Road Type for low-volume rural yield roadways providing access to a small number of lots, working landscapes, or back land, with a single shared travel surface (or two very narrow lanes) on which opposing vehicles yield, a gravel or paved surface, and open-ditch drainage. The rural counterpart to the Lane (S4); generally carries fewer than 400 vehicles per day. Provides a conforming designation for existing narrow rural ways, including historic two-rod (33 ft) rights-of-way. Defined in Article 3 Section 2 (Type R3).
+
+**Rural Road (R2):**
+A rural Road Type providing access to working landscapes — farmland, forest, conservation lands — with the narrowest standard pavement, no curbs, and drainage by open ditches. Defined in Article 3 Section 2 (Type R2).
 
 **Screen:**
 A physical barrier between uses, buildings, or activities on adjacent lots or on lots adjacent to a public way, that may be comprised of vegetation, or man-made elements.
@@ -646,8 +694,14 @@ An area that due to its intrinsic size, arrangement of buildings, or other uniqu
 **Special Requirements:**
 Designations on the Town of Newcastle Official Zoning Map that indicate additional standards.
 
+**State Highway:**
+A thoroughfare owned and maintained by the State of Maine through the Maine Department of Transportation. US Route 1 within Newcastle is a State Highway. An Ownership Category under Article 3 Section 4.C. Subject to the coordination protocol in Article 3 Section 12.
+
 **Story:**
 An occupiable floor of a building as distinct from the area contained under the pitch of a roof or a basement.
+
+**Street:**
+A thoroughfare classified under the Street family of Types (S1 Main Street, S2 Village Street, S3 Neighborhood Street, S4 Lane, S5 Alley) under Article 3 Section 2. Distinct from a Road in that pedestrian comfort is generally a primary design consideration.
 
 **Street Tree:**
 A tree planted within the furnishing zone as an element of a road.
@@ -673,11 +727,23 @@ Any structure that is intended for recreational bathing or swimming that contain
 **Terraced:**
 An area of sloped land that has been made into a series of level areas, resembling steps.
 
+**Thoroughfare:**
+An umbrella term for any Street, Road, or Driveway. Includes all ten Thoroughfare Types (S1 through S5 and R1 through R5) plus the Driveway category.
+
+**Thoroughfare Type:**
+The form-based classification assigned to a Thoroughfare under Article 3 Section 2, describing its character, dimensions, and design standards. Distinct from the Thoroughfare's Ownership Category.
+
 **Through Lot:**
 A building lot that has two or more frontages along one or more non-intersecting private or public roads.
 
 **Top Plate:**
 The topmost horizontal, load-bearing member of a framed wall system.
+
+**Town Way:**
+A road or way formally accepted by the Town under 23 MRSA §3022 by vote at Town Meeting. The Town owns and maintains a Town Way. An Ownership Category under Article 3 Section 4.C.
+
+**Travel Lane:**
+A portion of the cartway designated for the through movement of vehicular traffic in a single direction; does not include on-street parking lanes or shoulders.
 
 **Tree Pit:**
 A hole filled with soil for the planting and growth of a street tree. Tree pits have surface area open to air and water flow.
@@ -719,6 +785,9 @@ A departure from the strict terms or expressed standards of this Code, where suc
 **Vertical Plane:**
 A flat surface perpendicular to the ground or horizontal plane.
 
+**Village Street (S2):**
+A Street Type providing mixed-use frontages in village centers, with sidewalks both sides, optional on-street parking, and a design speed appropriate to pedestrian-prioritized neighborhood streets. Defined in Article 3 Section 2 (Type S2).
+
 **Waiver:**
 A predetermined type of deviation, within specific limitations, from the block, lot, and/or road standards of a specific district in this Code.
 
@@ -751,82 +820,3 @@ A privately-owned area that is adjacent to a building and often times described 
 
 **Zoning Permit:**
 An approval that certifies that a project complies with all applicable municipal ordinances.
-
-## DEFINITIONS ADDED FOR ARTICLE 3 STREETS, ROADS & DRIVEWAYS
-
-The following definitions are added in connection with the adoption of Article 3. At the next consolidation of this Article, they will be merged alphabetically with the entries above.
-
-**Alley (S5):**
-A Street Type for narrow service streets internal to a block, providing access to the side or rear of lots for parking, loading, accessory buildings, and utility easements; buildings do not front on an Alley. Formerly combined with the Lane as Type "S4 Lane/Alley"; the two are now distinct Types (Lane = S4, fronting; Alley = S5, service). Defined in Article 3 Section 2 (Type S5).
-
-**Build-To Standard:**
-The value stated in the "Build to" column on a Type's page in Article 3 Section 2 — the configuration the applicant is to construct for that Type. It is drawn from the Type's authorized range under Article 3 Section 3.C.2 (the fuller value for the pedestrian and landscape components, the lower value for the traffic-calming dimensions). A Build-To Standard is distinguished from a minimum, which is the floor below which a waiver is required: an applicant may build less than a Build-To Standard by the written demonstration of Article 3 Section 3.C.4, whereas building below a stated minimum requires a waiver under Article 3 Section 13.H.
-
-**Cartway:**
-The portion of a Thoroughfare's right-of-way that is paved, graveled, or otherwise improved for vehicular travel, including travel lanes, on-street parking lanes (where present), and shoulders (where present). The cartway does not include sidewalks, planting strips, or the frontage zone.
-
-**Connector Road (R1):**
-A Road Type providing connections in the rural-to-urban transition zone, with shoulders rather than curbs, no continuous sidewalks, and a design speed higher than any Street Type. Defined in Article 3 Section 2 (Type R1).
-
-**Curb Return Radius:**
-The radius of the curve at the corner of two intersecting Thoroughfares, measured along the outside face of the curb or, where no curb is present, along the edge of the cartway. Calibrated by Type pair under Article 3 Section 9.
-
-**Driveway** *(modified entry — supersedes prior definition above):*
-A private vehicular access way from a Street or Road (per Article 3 Section 2) to the interior of a single lot, including access to homes, parking lots, or loading docks. A Driveway is not a Street or Road and is not subject to the construction specifications of Article 3 Section 11. See Article 3 Section 7 for full Driveway standards. Where this Code uses the prior definition of "Driveway" (a vehicular access way serving two single family dwellings or one two-family dwelling or less), the prior definition is superseded; use limits, if any, are set within Article 3 Section 7.
-
-**Highway Commercial (R4):**
-A Road Type for auto-oriented commercial corridors with access management, sidewalks where feasible, and MaineDOT-coordinated cartway geometry. Defined in Article 3 Section 2 (Type R4).
-
-**Lane (S4):**
-A Street Type for narrow, low-speed fronting streets internal to a neighborhood or village block, carrying two narrow travel lanes that operate in a yield fashion, with a sidewalk on one side or none. A Lane provides frontage and may connect to other Street Types or "punch in" to open the interior of a block; it is larger than an Alley (S5). Defined in Article 3 Section 2 (Type S4).
-
-**Main Street (S1):**
-The most urban Street Type, providing the central organizing thoroughfare of the Town Center with continuous building streetwalls, active ground-floor uses, wide sidewalks, on-street parking both sides, and the lowest design speed in the typology. Defined in Article 3 Section 2 (Type S1).
-
-**Neighborhood Street (S3):**
-A Street Type providing connections within and between residential and small-business neighborhoods, with a sidewalk on at least one side, a planting strip, on-street parking permitted, and a residential-scale design speed. Defined in Article 3 Section 2 (Type S3).
-
-**On-Street Parking Lane:**
-A lane within the cartway, adjacent to the travel lanes, reserved for the parking of vehicles parallel or at an angle to the curb or edge of pavement. Where provided, an on-street parking lane is typically 7–8 ft wide per side and is counted separately from the traveled way (moving lanes) on each Type's page in Article 3 Section 2.
-
-**Ownership Category:**
-The statutory ownership and maintenance classification of a Thoroughfare under Article 3 Section 4, independent of its Thoroughfare Type. The four Ownership Categories are Town Way, Public Easement, Private Road, and State Highway.
-
-**Planting Strip:**
-The portion of a Thoroughfare's right-of-way located between the curb (or edge of cartway, where no curb is present) and the sidewalk (where present), or between the curb and the front lot line where no sidewalk is present. The planting strip typically contains street trees, grass, low plantings, and tree pits; it may also contain on-street furniture in the furnishing zone.
-
-**Provision Component:**
-A Street element — a sidewalk, planting strip, street trees, or on-street parking — whose presence on a given segment is governed by the context triggers of Article 3 Section 3.F rather than by a fixed dimension stated for the Type.
-
-**Public Easement:**
-A right of public access over a road or way, held by the municipality under 23 MRSA §3021. The road or way is open to public traffic, but the Town does not bear maintenance responsibility. Formerly referred to in some Maine usage as a "private way." An Ownership Category under Article 3 Section 4.C.
-
-**Rural Highway (R5):**
-A Road Type for high-speed regional corridors through rural and conservation contexts, with deep front setbacks, vegetative screening, and MaineDOT-controlled cartway geometry. Defined in Article 3 Section 2 (Type R5).
-
-**Rural Lane (R3):**
-A Road Type for low-volume rural yield roadways providing access to a small number of lots, working landscapes, or back land, with a single shared travel surface (or two very narrow lanes) on which opposing vehicles yield, a gravel or paved surface, and open-ditch drainage. The rural counterpart to the Lane (S4); generally carries fewer than 400 vehicles per day. Provides a conforming designation for existing narrow rural ways, including historic two-rod (33 ft) rights-of-way. Defined in Article 3 Section 2 (Type R3).
-
-**Rural Road (R2):**
-A rural Road Type providing access to working landscapes — farmland, forest, conservation lands — with the narrowest standard pavement, no curbs, and drainage by open ditches. Defined in Article 3 Section 2 (Type R2).
-
-**State Highway:**
-A thoroughfare owned and maintained by the State of Maine through the Maine Department of Transportation. US Route 1 within Newcastle is a State Highway. An Ownership Category under Article 3 Section 4.C. Subject to the coordination protocol in Article 3 Section 12.
-
-**Street:**
-A thoroughfare classified under the Street family of Types (S1 Main Street, S2 Village Street, S3 Neighborhood Street, S4 Lane, S5 Alley) under Article 3 Section 2. Distinct from a Road in that pedestrian comfort is generally a primary design consideration.
-
-**Thoroughfare:**
-An umbrella term for any Street, Road, or Driveway. Includes all ten Thoroughfare Types (S1 through S5 and R1 through R5) plus the Driveway category.
-
-**Thoroughfare Type:**
-The form-based classification assigned to a Thoroughfare under Article 3 Section 2, describing its character, dimensions, and design standards. Distinct from the Thoroughfare's Ownership Category.
-
-**Town Way:**
-A road or way formally accepted by the Town under 23 MRSA §3022 by vote at Town Meeting. The Town owns and maintains a Town Way. An Ownership Category under Article 3 Section 4.C.
-
-**Travel Lane:**
-A portion of the cartway designated for the through movement of vehicular traffic in a single direction; does not include on-street parking lanes or shoulders.
-
-**Village Street (S2):**
-A Street Type providing mixed-use frontages in village centers, with sidewalks both sides, optional on-street parking, and a design speed appropriate to pedestrian-prioritized neighborhood streets. Defined in Article 3 Section 2 (Type S2).

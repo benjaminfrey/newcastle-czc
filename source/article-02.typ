@@ -357,10 +357,13 @@
 // =============================================================================
 // RENDER
 // =============================================================================
-// Land the FIRST district's standards page on a physical-even (verso) page so
-// its badge sits at the LEFT fore-edge (see PARITY INVARIANT above). Each
-// district is exactly two pages, so every subsequent district inherits parity.
-#pagebreak(to: "even")
+// The FIRST district's standards page must land on a verso (even DISPLAYED page)
+// so its badge sits at the LEFT fore-edge (see PARITY INVARIANT above). D1 is this
+// unit's first page; the integrated build pads to an ODD running page-offset before
+// this unit, so D1 renders at an even displayed page (offset+1) with NO leading
+// blank. (A previous `#pagebreak(to:"even")` here, combined with the build's even
+// pad, produced two redundant blank pages — removed.) Each district is exactly two
+// pages, so every subsequent district inherits parity.
 #for (i, d) in districts.enumerate() {
   if i > 0 { pagebreak() }
   district(d)

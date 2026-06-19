@@ -41,15 +41,15 @@ if [ $# -eq 3 ]; then
   OLD_MD="$1"
   NEW_MD="$2"
   OUTPUT="$3"
-  SUBTITLE="$(basename "$OLD_MD") → $(basename "$NEW_MD") · changed passages"
+  SUBTITLE="Full redline — all changes shown inline"
 elif [ $# -eq 2 ]; then
   # Version mode: build-redline.sh <new> <old>
   NEW_V="$1"
   OLD_V="$2"
   OLD_MD="$REPO_ROOT/releases/$OLD_V/Newcastle CZC (Integrated Draft $OLD_V).md"
   NEW_MD="$REPO_ROOT/releases/$NEW_V/Newcastle CZC (Integrated Draft $NEW_V).md"
-  OUTPUT="$REPO_ROOT/releases/$NEW_V/Redline — Full CZC $NEW_V vs $OLD_V.pdf"
-  SUBTITLE="$OLD_V → $NEW_V · changed passages only"
+  OUTPUT="$REPO_ROOT/releases/$NEW_V/Newcastle CZC (Integrated Draft $NEW_V) — Redline.pdf"
+  SUBTITLE="Full integrated draft — all changes since $OLD_V shown inline"
 else
   echo "usage: build-redline.sh <new-version> <old-version>" >&2
   echo "       build-redline.sh <old.md> <new.md> <out.pdf>" >&2
@@ -74,9 +74,9 @@ echo "  output: $OUTPUT"
 TMP_MD="$(mktemp -t redline).md"
 trap 'rm -f "$TMP_MD"' EXIT
 
-# Changes-only digest: only changed passages, each under its Section breadcrumb
-# with a little context. Pass --full for the whole-document variant.
-python3 "$REDLINE_PY" "$OLD_MD" "$NEW_MD" "$TMP_MD" --digest
+# Full-document redline: the entire integrated draft with deletions struck and
+# additions in red, shown inline in full context (not a changed-passages digest).
+python3 "$REDLINE_PY" "$OLD_MD" "$NEW_MD" "$TMP_MD" --full
 render "$TMP_MD" "$OUTPUT" "$SUBTITLE"
 
 echo "Redline saved: $OUTPUT"

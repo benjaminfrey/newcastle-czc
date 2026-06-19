@@ -1,19 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:serif="http://www.serif.com/" viewBox="0 0 3886.80 1340.94" width="3886.80" height="1340.94">
 <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#DCEEF3"/><stop offset="1" stop-color="#CCE0E7"/></linearGradient></defs>
 <rect x="0" y="0" width="3886.80" height="978.74" fill="url(#sky)"/>
-<g transform="translate(211.11, 0.00)">
-<rect x="354.33" y="959.06" width="393.70" height="122.05" fill="#D8D3CB"/>
-<rect x="748.03" y="959.06" width="236.22" height="122.05" fill="#3D8140"/>
-<rect x="748.03" y="959.06" width="236.22" height="7.09" fill="#356B38" opacity="0.5"/>
-<rect x="984.25" y="978.74" width="314.96" height="102.36" fill="#292B29"/>
-<rect x="1299.21" y="978.74" width="433.07" height="102.36" fill="#292B29"/>
-<rect x="1732.28" y="978.74" width="433.07" height="102.36" fill="#292B29"/>
-<rect x="2165.35" y="978.74" width="314.96" height="102.36" fill="#292B29"/>
-<rect x="2480.31" y="959.06" width="236.22" height="122.05" fill="#3D8140"/>
-<rect x="2480.31" y="959.06" width="236.22" height="7.09" fill="#356B38" opacity="0.5"/>
-<rect x="2716.54" y="959.06" width="393.70" height="122.05" fill="#D8D3CB"/>
-<rect x="354.33" y="1074.02" width="2755.91" height="7.09" fill="#352D27" opacity="0.55"/>
-<line x1="354.33" y1="978.74" x2="3110.24" y2="978.74" stroke="#231F20" stroke-width="1.5" opacity="0.35"/>
+<g transform="translate(486.71, 0.00)">
+<rect x="354.33" y="959.06" width="236.22" height="122.05" fill="#D8D3CB"/>
+<rect x="590.55" y="959.06" width="118.11" height="122.05" fill="#3D8140"/>
+<rect x="590.55" y="959.06" width="118.11" height="7.09" fill="#356B38" opacity="0.5"/>
+<rect x="708.66" y="978.74" width="314.96" height="102.36" fill="#292B29"/>
+<rect x="1023.62" y="978.74" width="433.07" height="102.36" fill="#292B29"/>
+<rect x="1456.69" y="978.74" width="433.07" height="102.36" fill="#292B29"/>
+<rect x="1889.76" y="978.74" width="314.96" height="102.36" fill="#292B29"/>
+<rect x="2204.72" y="959.06" width="118.11" height="122.05" fill="#3D8140"/>
+<rect x="2204.72" y="959.06" width="118.11" height="7.09" fill="#356B38" opacity="0.5"/>
+<rect x="2322.83" y="959.06" width="236.22" height="122.05" fill="#D8D3CB"/>
+<rect x="354.33" y="1074.02" width="2204.72" height="7.09" fill="#352D27" opacity="0.55"/>
+<line x1="354.33" y1="978.74" x2="2559.06" y2="978.74" stroke="#231F20" stroke-width="1.5" opacity="0.35"/>
 <svg x="-625.67" y="59.06" width="980.00" height="900.00" viewBox="0.0 0.0 980.0 900.0" preserveAspectRatio="xMidYMax meet">
     <g id="el_f_arcade-left" transform="matrix(1.27,0,0,1.27,0.00117843,-12.64)">
         <g id="el_f_upstairs-wall" serif:id="el_f_upstairs wall" transform="matrix(1.00057,0,0,1.11642,-2.81287e-09,-15.9012)">
@@ -476,7 +476,7 @@
         </g>
     </g>
 </svg>
-<svg x="3110.24" y="59.06" width="980.00" height="900.00" viewBox="0.0 0.0 980.0 900.0" preserveAspectRatio="xMidYMax meet">
+<svg x="2559.06" y="59.06" width="980.00" height="900.00" viewBox="0.0 0.0 980.0 900.0" preserveAspectRatio="xMidYMax meet">
     <g id="er_f_arcade-right" transform="matrix(-1.27,0,0,1.27,980.237,-12.64)">
         <g id="er_f_upstairs-wall" serif:id="er_f_upstairs wall" transform="matrix(1.00057,0,0,1.04233,0.186267,-9.14633)">
             <rect x="0" y="126.681" width="741.312" height="247.192" style="fill:rgb(225,207,168);"/>
@@ -938,7 +938,7 @@
         </g>
     </g>
 </svg>
-<svg x="500.87" y="739.06" width="140.00" height="220.00" viewBox="0.0 0.0 140.0 220.0" preserveAspectRatio="xMidYMax meet">
+<svg x="414.25" y="739.06" width="140.00" height="220.00" viewBox="0.0 0.0 140.0 220.0" preserveAspectRatio="xMidYMax meet">
     <g id="o0_people-01" transform="matrix(1.27,0,0,1.27,-1711.36,-84.8)">
         <g transform="matrix(1,0,0,1,0,-12)">
             <path d="M1388.14,169.33L1387.11,174.849L1388.54,181.895L1391.11,180.451L1390.37,174.391L1390.54,176.228L1392.93,175.634L1390.91,171.145L1388.14,169.33Z" style="fill:rgb(225,197,181);fill-rule:nonzero;"/>
@@ -984,7 +984,7 @@
         </g>
     </g>
 </svg>
-<svg x="731.14" y="329.06" width="270.00" height="630.00" viewBox="0.0 0.0 270.0 630.0" preserveAspectRatio="xMidYMax meet">
+<svg x="514.61" y="329.06" width="270.00" height="630.00" viewBox="0.0 0.0 270.0 630.0" preserveAspectRatio="xMidYMax meet">
     <g id="o1_tree" transform="matrix(1.27,0,0,1.27,-17.4,-16.43)">
         <g transform="matrix(1,0,0,1,2.74049,0)">
             <path d="M167.628,98.327L128.96,97.079L110.293,68.08L88.96,103.413L28.96,98.746L62.293,78.746L40.293,39.413L59.96,24.41L120.96,18.08L140.96,54.08L168.293,56.746L167.628,98.327Z" style="fill:rgb(102,153,68);fill-rule:nonzero;"/>
@@ -1114,7 +1114,7 @@
         </g>
     </g>
 </svg>
-<svg x="961.73" y="798.74" width="360.00" height="180.00" viewBox="0.0 0.0 360.0 180.0" preserveAspectRatio="xMidYMax meet">
+<svg x="686.14" y="798.74" width="360.00" height="180.00" viewBox="0.0 0.0 360.0 180.0" preserveAspectRatio="xMidYMax meet">
     <g transform="matrix(1.27,0,0,1.27,88.581,-65.6388)">
         <g id="o2_car-outbound">
             <g id="o2_car-outbound1" serif:id="o2_car-outbound">
@@ -1176,7 +1176,7 @@
         </g>
     </g>
 </svg>
-<svg x="1335.75" y="798.74" width="360.00" height="180.00" viewBox="0.0 0.0 360.0 180.0" preserveAspectRatio="xMidYMax meet">
+<svg x="1060.16" y="798.74" width="360.00" height="180.00" viewBox="0.0 0.0 360.0 180.0" preserveAspectRatio="xMidYMax meet">
     <g transform="matrix(1.27,0,0,1.27,88.5343,-65.6383)">
         <g id="o3_car-inbound">
             <g id="o3_car-inbound1" serif:id="o3_car-inbound">
@@ -1235,8 +1235,8 @@
         </g>
     </g>
 </svg>
-<rect x="1710.24" y="990.55" width="14.17" height="70.87" fill="#EFEE5E"/><rect x="1740.16" y="990.55" width="14.17" height="70.87" fill="#EFEE5E"/>
-<svg x="1768.82" y="798.74" width="360.00" height="180.00" viewBox="0.0 0.0 360.0 180.0" preserveAspectRatio="xMidYMax meet">
+<rect x="1434.65" y="990.55" width="14.17" height="70.87" fill="#EFEE5E"/><rect x="1464.57" y="990.55" width="14.17" height="70.87" fill="#EFEE5E"/>
+<svg x="1493.23" y="798.74" width="360.00" height="180.00" viewBox="0.0 0.0 360.0 180.0" preserveAspectRatio="xMidYMax meet">
     <g transform="matrix(1.27,0,0,1.27,88.581,-65.6388)">
         <g id="o4_car-outbound">
             <g id="o4_car-outbound1" serif:id="o4_car-outbound">
@@ -1298,7 +1298,7 @@
         </g>
     </g>
 </svg>
-<svg x="2142.83" y="798.74" width="360.00" height="180.00" viewBox="0.0 0.0 360.0 180.0" preserveAspectRatio="xMidYMax meet">
+<svg x="1867.24" y="798.74" width="360.00" height="180.00" viewBox="0.0 0.0 360.0 180.0" preserveAspectRatio="xMidYMax meet">
     <g transform="matrix(1.27,0,0,1.27,88.5343,-65.6383)">
         <g id="o5_car-inbound">
             <g id="o5_car-inbound1" serif:id="o5_car-inbound">
@@ -1357,7 +1357,7 @@
         </g>
     </g>
 </svg>
-<svg x="2463.43" y="329.06" width="270.00" height="630.00" viewBox="0.0 0.0 270.0 630.0" preserveAspectRatio="xMidYMax meet">
+<svg x="2128.78" y="329.06" width="270.00" height="630.00" viewBox="0.0 0.0 270.0 630.0" preserveAspectRatio="xMidYMax meet">
     <g id="o6_tree" transform="matrix(1.27,0,0,1.27,-17.4,-16.43)">
         <g transform="matrix(1,0,0,1,2.74049,0)">
             <path d="M167.628,98.327L128.96,97.079L110.293,68.08L88.96,103.413L28.96,98.746L62.293,78.746L40.293,39.413L59.96,24.41L120.96,18.08L140.96,54.08L168.293,56.746L167.628,98.327Z" style="fill:rgb(102,153,68);fill-rule:nonzero;"/>
@@ -1487,7 +1487,7 @@
         </g>
     </g>
 </svg>
-<svg x="2823.70" y="739.06" width="140.00" height="220.00" viewBox="0.0 0.0 140.0 220.0" preserveAspectRatio="xMidYMax meet">
+<svg x="2359.13" y="739.06" width="140.00" height="220.00" viewBox="0.0 0.0 140.0 220.0" preserveAspectRatio="xMidYMax meet">
     <g id="o7_people-05" transform="matrix(1.27,0,0,1.27,-1971.39,-84.8)">
         <g transform="matrix(1,0,0,1,0,-12)">
             <path d="M1613.91,133.32L1611.08,131.431L1609.02,125.592L1604.26,126.949L1602.75,130.658L1599.49,132.29L1606.4,147.375L1613.91,133.32Z" style="fill:rgb(114,89,75);fill-rule:nonzero;"/>
@@ -1524,35 +1524,33 @@
         </g>
     </g>
 </svg>
-<line x1="354.33" y1="1102.76" x2="3110.24" y2="1102.76" stroke="#367AAC" stroke-width="1.4"/>
+<line x1="354.33" y1="1102.76" x2="2559.06" y2="1102.76" stroke="#367AAC" stroke-width="1.4"/>
 <line x1="354.33" y1="1086.22" x2="354.33" y2="1109.84" stroke="#367AAC" stroke-width="1.4"/>
-<line x1="748.03" y1="1086.22" x2="748.03" y2="1109.84" stroke="#367AAC" stroke-width="1.4"/>
-<line x1="984.25" y1="1086.22" x2="984.25" y2="1109.84" stroke="#367AAC" stroke-width="1.4"/>
-<line x1="1299.21" y1="1086.22" x2="1299.21" y2="1109.84" stroke="#367AAC" stroke-width="1.4"/>
-<line x1="1732.28" y1="1086.22" x2="1732.28" y2="1109.84" stroke="#367AAC" stroke-width="1.4"/>
-<line x1="2165.35" y1="1086.22" x2="2165.35" y2="1109.84" stroke="#367AAC" stroke-width="1.4"/>
-<line x1="2480.31" y1="1086.22" x2="2480.31" y2="1109.84" stroke="#367AAC" stroke-width="1.4"/>
-<line x1="2716.54" y1="1086.22" x2="2716.54" y2="1109.84" stroke="#367AAC" stroke-width="1.4"/>
-<line x1="3110.24" y1="1086.22" x2="3110.24" y2="1109.84" stroke="#367AAC" stroke-width="1.4"/>
-<text x="551.18" y="1148.03" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="56" font-weight="600" fill="#367AAC" text-anchor="middle">10 ft</text>
-<text x="551.18" y="1183.46" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="34" font-weight="500" fill="#7C766F" text-anchor="middle" letter-spacing="0.4">SIDEWALK</text>
-<text x="866.14" y="1148.03" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="56" font-weight="600" fill="#367AAC" text-anchor="middle">6 ft</text>
-<text x="866.14" y="1183.46" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="34" font-weight="500" fill="#7C766F" text-anchor="middle" letter-spacing="0.4">PLANTING</text>
-<text x="1141.73" y="1148.03" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="56" font-weight="600" fill="#367AAC" text-anchor="middle">8 ft</text>
-<text x="1141.73" y="1183.46" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="34" font-weight="500" fill="#7C766F" text-anchor="middle" letter-spacing="0.4">PARKING</text>
-<text x="1515.75" y="1148.03" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="56" font-weight="600" fill="#367AAC" text-anchor="middle">11 ft</text>
-<text x="1515.75" y="1183.46" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="34" font-weight="500" fill="#7C766F" text-anchor="middle" letter-spacing="0.4">TRAVEL</text>
-<text x="1948.82" y="1148.03" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="56" font-weight="600" fill="#367AAC" text-anchor="middle">11 ft</text>
-<text x="1948.82" y="1183.46" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="34" font-weight="500" fill="#7C766F" text-anchor="middle" letter-spacing="0.4">TRAVEL</text>
-<text x="2322.83" y="1148.03" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="56" font-weight="600" fill="#367AAC" text-anchor="middle">8 ft</text>
-<text x="2322.83" y="1183.46" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="34" font-weight="500" fill="#7C766F" text-anchor="middle" letter-spacing="0.4">PARKING</text>
-<text x="2598.43" y="1148.03" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="56" font-weight="600" fill="#367AAC" text-anchor="middle">6 ft</text>
-<text x="2598.43" y="1183.46" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="34" font-weight="500" fill="#7C766F" text-anchor="middle" letter-spacing="0.4">PLANTING</text>
-<text x="2913.39" y="1148.03" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="56" font-weight="600" fill="#367AAC" text-anchor="middle">10 ft</text>
-<text x="2913.39" y="1183.46" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="34" font-weight="500" fill="#7C766F" text-anchor="middle" letter-spacing="0.4">SIDEWALK</text>
-<line x1="354.33" y1="1226.77" x2="3110.24" y2="1226.77" stroke="#7C766F" stroke-width="1.4"/>
+<line x1="590.55" y1="1086.22" x2="590.55" y2="1109.84" stroke="#367AAC" stroke-width="1.4"/>
+<line x1="708.66" y1="1086.22" x2="708.66" y2="1109.84" stroke="#367AAC" stroke-width="1.4"/>
+<line x1="1023.62" y1="1086.22" x2="1023.62" y2="1109.84" stroke="#367AAC" stroke-width="1.4"/>
+<line x1="1456.69" y1="1086.22" x2="1456.69" y2="1109.84" stroke="#367AAC" stroke-width="1.4"/>
+<line x1="1889.76" y1="1086.22" x2="1889.76" y2="1109.84" stroke="#367AAC" stroke-width="1.4"/>
+<line x1="2204.72" y1="1086.22" x2="2204.72" y2="1109.84" stroke="#367AAC" stroke-width="1.4"/>
+<line x1="2322.83" y1="1086.22" x2="2322.83" y2="1109.84" stroke="#367AAC" stroke-width="1.4"/>
+<line x1="2559.06" y1="1086.22" x2="2559.06" y2="1109.84" stroke="#367AAC" stroke-width="1.4"/>
+<text x="472.44" y="1148.03" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="56" font-weight="600" fill="#367AAC" text-anchor="middle">6 ft</text>
+<text x="472.44" y="1183.46" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="34" font-weight="500" fill="#7C766F" text-anchor="middle" letter-spacing="0.4">SIDEWALK</text>
+<text x="649.61" y="1148.03" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="53.89915197115385" font-weight="600" fill="#367AAC" text-anchor="middle">3 ft</text>
+<text x="866.14" y="1148.03" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="56" font-weight="600" fill="#367AAC" text-anchor="middle">8 ft</text>
+<text x="866.14" y="1183.46" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="34" font-weight="500" fill="#7C766F" text-anchor="middle" letter-spacing="0.4">PARKING</text>
+<text x="1240.16" y="1148.03" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="56" font-weight="600" fill="#367AAC" text-anchor="middle">11 ft</text>
+<text x="1240.16" y="1183.46" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="34" font-weight="500" fill="#7C766F" text-anchor="middle" letter-spacing="0.4">TRAVEL</text>
+<text x="1673.23" y="1148.03" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="56" font-weight="600" fill="#367AAC" text-anchor="middle">11 ft</text>
+<text x="1673.23" y="1183.46" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="34" font-weight="500" fill="#7C766F" text-anchor="middle" letter-spacing="0.4">TRAVEL</text>
+<text x="2047.24" y="1148.03" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="56" font-weight="600" fill="#367AAC" text-anchor="middle">8 ft</text>
+<text x="2047.24" y="1183.46" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="34" font-weight="500" fill="#7C766F" text-anchor="middle" letter-spacing="0.4">PARKING</text>
+<text x="2263.78" y="1148.03" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="53.89915197115385" font-weight="600" fill="#367AAC" text-anchor="middle">3 ft</text>
+<text x="2440.94" y="1148.03" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="56" font-weight="600" fill="#367AAC" text-anchor="middle">6 ft</text>
+<text x="2440.94" y="1183.46" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="34" font-weight="500" fill="#7C766F" text-anchor="middle" letter-spacing="0.4">SIDEWALK</text>
+<line x1="354.33" y1="1226.77" x2="2559.06" y2="1226.77" stroke="#7C766F" stroke-width="1.4"/>
 <line x1="354.33" y1="1211.02" x2="354.33" y2="1242.52" stroke="#7C766F" stroke-width="1.4"/>
-<line x1="3110.24" y1="1211.02" x2="3110.24" y2="1242.52" stroke="#7C766F" stroke-width="1.4"/>
-<text x="1732.28" y="1301.57" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="60.0" font-weight="600" fill="#231F20" text-anchor="middle" letter-spacing="1.5">RIGHT-OF-WAY   66–80 ft range   ·   shown at 73 ft</text>
+<line x1="2559.06" y1="1211.02" x2="2559.06" y2="1242.52" stroke="#7C766F" stroke-width="1.4"/>
+<text x="1456.69" y="1301.57" font-family="Barlow, 'Helvetica Neue', Helvetica, sans-serif" font-size="60.0" font-weight="600" fill="#231F20" text-anchor="middle" letter-spacing="1.5">RIGHT-OF-WAY   50–62 ft range   ·   shown at 56 ft</text>
 </g>
 </svg>

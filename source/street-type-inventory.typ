@@ -113,14 +113,15 @@
 #let hd(s) = text(fill: subsection_gray, weight: "bold", size: 6.5pt, tracking: 0.3pt)[#upper(s)]
 #set text(size: 7pt)
 #table(
-  columns: (1.5fr, 1.9fr, 0.75fr, 1.15fr, 0.7fr),
+  columns: (20pt, 1.5fr, 1.9fr, 0.75fr, 1.15fr, 0.7fr),
   stroke: (x, y) => (bottom: 0.4pt + subsection_gray),
   inset: (x: 4pt, y: 3pt),
-  align: (left + horizon),
+  align: (x, y) => if x == 0 { right + horizon } else { left + horizon },
   table.header(
-    hd("Thoroughfare"), hd("From → To"), hd("Type"), hd("Ownership"), hd("District"),
+    hd("#"), hd("Thoroughfare"), hd("From → To"), hd("Type"), hd("Ownership"), hd("District"),
   ),
-  ..segs.map(s => (
+  ..segs.enumerate().map(((i, s)) => (
+    text(fill: subsection_gray)[#(i + 1)],
     [#s.name],
     text(fill: subsection_gray)[#termini_str(s)],
     type_cell(s.at("type", default: none)),

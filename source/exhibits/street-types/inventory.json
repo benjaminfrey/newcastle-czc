@@ -85,7 +85,7 @@
     "Route 1",
     "East Old County Road / Hillcrest Road"
    ],
-   "type": "R2",
+   "type": "S3",
    "ownership": "Town Way",
    "row_ft": null,
    "traveled_ft": null,
@@ -284,7 +284,7 @@
     "Timber Lane",
     "Stonebridge Circle"
    ],
-   "type": "R4",
+   "type": "S3",
    "ownership": "Town Way",
    "row_ft": null,
    "traveled_ft": null,
@@ -21395,7 +21395,7 @@
     "Lewis Hill Road / Lynch Road",
     "Woods Island Road"
    ],
-   "type": "R2",
+   "type": "R5",
    "ownership": "State Highway",
    "row_ft": null,
    "traveled_ft": null,
@@ -23737,7 +23737,7 @@
     "end",
     "end"
    ],
-   "type": "S3",
+   "type": "R2",
    "ownership": "Town Way",
    "row_ft": null,
    "traveled_ft": null,

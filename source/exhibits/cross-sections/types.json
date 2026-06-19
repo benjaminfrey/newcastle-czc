@@ -17,29 +17,29 @@
       "To give pedestrians clear priority over vehicles, holding the lowest design speed in the typology (§1.a.4).",
       "To complete the public realm with wide sidewalks, on-street parking both sides, and street trees, served from the rear by a Lane or Alley."
     ],
-    "note": "Shopfront Required: a street classified S1 is a Shopfront Required street under Article 2 §4.C, subsuming the separate Shopfront Required overlay shown on the District Map.",
-    "row": { "min": 66, "max": 80, "typ": 73 },
+    "note": "Shopfront Required: a street classified S1 is a Shopfront Required street under Article 2 §4.C, subsuming the separate Shopfront Required overlay shown on the District Map. State route: like the R4 and R5 Types, S1 Main Street follows a State-owned named route (U.S. Route 1B); the Maine Department of Transportation holds jurisdiction over the traveled way within its right-of-way (see Section 12).",
+    "row": { "min": 50, "max": 62, "typ": 56 },
     "edges": {
       "left":  { "sprite": "buildings/arcade-left.svg",  "show_ft": 9, "label": "SHOPFRONT" },
       "right": { "sprite": "buildings/arcade-right.svg", "show_ft": 9, "label": "SHOPFRONT" }
     },
     "segments": [
-      { "surface": "concrete", "width": 10, "name": "Sidewalk", "raised": true,  "objects": [ { "sprite": "people/people-01.svg", "at": 0.55 } ] },
-      { "surface": "grass",    "width": 6,  "name": "Planting", "raised": true,  "objects": [ { "sprite": "trees/tree.svg", "at": 0.5 } ] },
+      { "surface": "concrete", "width": 6,  "name": "Sidewalk", "raised": true,  "objects": [ { "sprite": "people/people-01.svg", "at": 0.55 } ] },
+      { "surface": "grass",    "width": 3,  "name": "Planting", "raised": true,  "objects": [ { "sprite": "trees/tree.svg", "at": 0.5 } ] },
       { "surface": "asphalt",  "width": 8,  "name": "Parking",  "raised": false, "objects": [ { "sprite": "vehicles/car-outbound.svg", "at": 0.5 } ] },
       { "surface": "asphalt",  "width": 11, "name": "Travel",   "raised": false, "centerline_right": true, "objects": [ { "sprite": "vehicles/car-inbound.svg", "at": 0.5 } ] },
       { "surface": "asphalt",  "width": 11, "name": "Travel",   "raised": false, "objects": [ { "sprite": "vehicles/car-outbound.svg", "at": 0.5 } ] },
       { "surface": "asphalt",  "width": 8,  "name": "Parking",  "raised": false, "objects": [ { "sprite": "vehicles/car-inbound.svg", "at": 0.5 } ] },
-      { "surface": "grass",    "width": 6,  "name": "Planting", "raised": true,  "objects": [ { "sprite": "trees/tree.svg", "at": 0.5 } ] },
-      { "surface": "concrete", "width": 10, "name": "Sidewalk", "raised": true,  "objects": [ { "sprite": "people/people-05.svg", "at": 0.45 } ] }
+      { "surface": "grass",    "width": 3,  "name": "Planting", "raised": true,  "objects": [ { "sprite": "trees/tree.svg", "at": 0.5 } ] },
+      { "surface": "concrete", "width": 6,  "name": "Sidewalk", "raised": true,  "objects": [ { "sprite": "people/people-05.svg", "at": 0.45 } ] }
     ],
     "standards": [
-      ["Right-of-way", "66–80 ft", "80 ft"],
+      ["Right-of-way", "50–62 ft", "56 ft"],
       ["Traveled way", "20–22 ft · 2 lanes @ 10–11 ft", "20 ft · 2 @ 10 ft"],
       ["On-street parking", "Both sides · 7–8 ft", "Both sides · 8 ft"],
       ["Curb", "Vertical", "Vertical"],
-      ["Planting strip", "5–8 ft, both sides", "8 ft, both sides"],
-      ["Sidewalk", "8–12 ft, both sides", "12 ft, both sides"],
+      ["Planting strip", "2–6 ft, both sides", "3 ft, both sides"],
+      ["Sidewalk", "6 ft, both sides", "6 ft, both sides"],
       ["Street trees", "Required", "Both sides"],
       ["Design speed", "20 mph", "20 mph"],
       ["Max. grade", "6%", "6%"],

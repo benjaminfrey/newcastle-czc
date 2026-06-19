@@ -178,12 +178,15 @@ MD_LIST=()
 for ART in "${ARTICLES[@]}"; do
   INDEX=$((INDEX + 1))
   PART="$TMPDIR_PDFS/$(printf "%02d" "$INDEX").pdf"
-  # Continuous flow: no recto-opening pads. The one unit needing an even offset is
-  # article-02.typ (its 2-page district spreads use pagebreak(to:"even") to land D1
-  # on a verso); pad to even only before it so the badges keep the LEFT fore-edge.
+  # Continuous flow: no recto-opening pads. The one unit needing parity alignment is
+  # article-02.typ — its 2-page district spreads must land D1 on a verso (even
+  # DISPLAYED page). D1 is that unit's FIRST page, so pad to an ODD running offset
+  # before it (offset+1 = even displayed page for D1). This keeps the district badges
+  # on the LEFT fore-edge with NO leading blank inside the unit. (Previously this
+  # padded to even AND the unit forced pagebreak(to:"even") — two redundant blanks.)
   case "$ART" in
     */article-02.typ)
-      if [ $((OFFSET % 2)) -eq 1 ]; then PDF_LIST+=("$BLANK_PDF"); OFFSET=$((OFFSET + 1)); fi ;;
+      if [ $((OFFSET % 2)) -eq 0 ]; then PDF_LIST+=("$BLANK_PDF"); OFFSET=$((OFFSET + 1)); fi ;;
   esac
   case "$ART" in
     *.typ)

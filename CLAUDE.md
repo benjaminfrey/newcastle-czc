@@ -69,10 +69,15 @@ Type (the §5 Inventory). Map/table legends show only Types actually present.
   → `releases/vX.Y-draft/Newcastle CZC (Integrated Draft vX.Y-draft).{pdf,md}`
 - **Standalone Article 3:** `bash build/build-article-3.sh vX.Y-draft "Month D, YYYY"`
   → `releases/.../Article 3 Thoroughfares (Standalone vX.Y-draft).{pdf,md}`
-- **Redlines:** `bash build/build-redline.sh <new-ver> <old-ver>` — TEXT diff of the
-  integrated markdown (layout/image-only edits don't appear, by construction).
-  Standard pair: vs the last *content* release **and** vs `v0.1-baseline`.
-- **Summary:** hand-write `releases/vX.Y-draft/Summary of Changes vX.Y-draft.md`.
+- **Redline (one, full-document):** `bash build/build-redline.sh <new-ver> <old-ver>`
+  → `releases/.../Newcastle CZC (Integrated Draft <new-ver>) — Redline.pdf` — the WHOLE
+  integrated draft with this version's changes struck/added inline, vs the **prior version**
+  (`redline-text.py --full`). TEXT only (layout/image edits don't appear, by construction).
+  *(Retired 2026-06: the vs-`v0.1-baseline` redline and the changed-passages `--digest`.)*
+- **Summary (md + PDF):** hand-write `releases/vX.Y-draft/Summary of Changes vX.Y-draft.md`
+  in **plain, human-readable** language — list changes by §/Table/Type/road name; **no file,
+  path, or script references**. Render to PDF with `bash build/build-memo.sh "<…Summary….md>"
+  "<…Summary….pdf>" "Summary of Changes — <ver>" "Newcastle Core Zoning Code · <date>"`.
 - **Re-cutting a shipped draft** (amending an already-pushed version, e.g. the v0.17
   column trim) needs a **force-push** (history rewrite); the harness gates that pending
   Ben's explicit OK. Default to a new version number unless Ben says "stay in vX.Y".
@@ -82,10 +87,13 @@ between pandoc passes; chrome (verso/recto binding margins, rotated Article tab,
 running head, footer page numbers) keys off `here().page() + page_offset`, so each
 unit must render at an offset that makes **logical == physical**.
 - **Integrated CZC:** threads the **true running** `page_offset` (continuous flow, no
-  recto-opening pads — v0.19); an even-guard pads only before `article-02.typ`, whose
-  2-page district spreads need a verso start. Front matter stays even (cover + blank +
-  TOC). 3 structural blanks remain (Article 2 ×2 + the front-matter blank). After
-  assembly, `build/toc_links.py` adds clickable GoTo links from each TOC row to its page.
+  recto-opening pads — v0.19). Only `article-02.typ` needs parity alignment: D1 (its first
+  page) must land on a verso, so the build pads to an **ODD** running offset before it
+  (offset+1 = even/verso for D1) and `article-02.typ` no longer self-forces
+  `pagebreak(to:"even")`. (Those two together previously produced **2 redundant blanks** —
+  removed 2026-06.) Front matter stays even (cover + blank + TOC). **Just 1 structural blank
+  remains (the front-matter blank).** After assembly, `build/toc_links.py` adds clickable
+  GoTo links from each TOC row to its page.
 - **Standalone Article 3 (excerpt):** threads the **true running page count** — no
   recto-opening blanks — so it flows continuously (`build-article-3.sh`, v0.15).
 - Article 3 is split by `build/split-article-03.py` at two markers:
@@ -112,8 +120,26 @@ rebuild. No code changes.
 
 ---
 
-## Current state (as of 2026-06-09)
+## Current state (as of 2026-06-18)
 
+- **Shipped `v0.21-draft`** — Article 3 batch + output cleanup. (1) §5 inventory: 4 Type
+  corrections (Academy Hill all S3; Stonebridge Circle end → R2; Route 1 Lewis Hill/Lynch →
+  Woods Island → R5) via `overrides.json` + promoted `inventory.json`; (2) **Exhibit 3.1 rows
+  numbered 1–215** (`street-type-inventory.typ`); (3) **S1 Main Street recalibrated** — sidewalk
+  6 ft, planting 2–6 ft (typ 3), ROW recomputed 50–62 ft (typ 56), SVG regenerated, + a
+  State-route/Route 1B caption (DOT controls the traveled way; S1 keeps its full standards, no
+  `maindot` flag); (4) **§6 New Thoroughfares tiered engineering/oversight** — new §6.e +
+  **Table 3.5** (Basic = S4/S5/R3 · Engineered = S2/S3/R1/R2 · State = S1/R4/R5) + safety floor
+  (stream/Shoreland crossings, Town-Way candidates, reviewing-authority bump-up); §6 subsections
+  renumbered e→h (§14 cross-ref 6.G→6.H); (5) RDEO **hammerhead/EMS turnaround** clause (>150 ft)
+  in §6.f; (6) **Article 9 definitions merged alphabetically** (the 25 Article-3 terms; Alley/
+  Driveway superseded; end-section removed); (7) **blank-page fix** — removed 2 redundant
+  Article-2 blanks (integrated now **116 pp / 1 blank**). **Output structure changed:** one
+  **full-document redline** vs prior version (dropped the vs-baseline + the changed-passages
+  digest); **Summary now md + PDF**, rewritten plain (no file/path refs). "cartway" left as-is
+  (already defined). Tags through v0.21-draft. *(Deferred: a fully-formatted redline carrying
+  the integrated draft's layout — Ben to plan next session; native-Typst figures can't carry
+  inline marks.)*
 - **Reviewed another planner's Fall-2026 redline of the CZC** (`docs/CZC Redline
   2026.06.docx` — a Google-Docs **color/strike legislative redline**, NOT Word
   track-changes: green/underline = add, red/strike = delete, yellow = moved;
