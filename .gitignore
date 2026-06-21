@@ -37,3 +37,10 @@ __pycache__/
 # Scratch / working review artifacts (not deliverables)
 review-d1/
 extract/_*
+
+# Generated release PDFs — large and fully regenerable from git tags + build
+# scripts, so track only the text record (markdown + Summaries). The immutable
+# baseline PDFs in docs/ and the analysis PDFs in memos/ are NOT matched here and
+# stay tracked. (Already-committed release PDFs, e.g. v0.21, remain tracked until
+# explicitly removed; this stops *new* release PDFs from being committed.)
+releases/**/*.pdf

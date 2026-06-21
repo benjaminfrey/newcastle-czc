@@ -1,0 +1,31 @@
+{
+  "_comment": "Per-Article native-unit manifest for build/build-standalone.sh. Only Articles with native-Typst units need an entry; any article NOT listed (4-9) renders as pure markdown in a single pandoc pass. Per unit: typ (native file under source/), splice (after-prose | at-marker:<NAME>), data (--input data= value), conditional_on (path under source/ that must exist or the unit is skipped), parity (pad-to-odd-before = pad a blank so the unit's first page lands on a verso, e.g. Art-2 D1), pad_to (even-block = pad a trailing blank to keep an even block; only relevant mid-document, a no-op when the unit is last).",
+
+  "1": {
+    "prose": "article-01-general.md",
+    "units": [
+      { "typ": "district-maps.typ", "splice": "after-prose", "pad_to": "even-block" }
+    ]
+  },
+
+  "2": {
+    "prose": "article-02-prefatory.md",
+    "units": [
+      { "typ": "article-02.typ", "splice": "after-prose", "parity": "pad-to-odd-before" }
+    ]
+  },
+
+  "3": {
+    "prose": "article-03-streets-roads-driveways.md",
+    "split_markers": ["TYPE-PAGES", "STREET-TYPE-EXHIBITS"],
+    "units": [
+      { "typ": "cross-section-plates.typ", "splice": "at-marker:TYPE-PAGES" },
+      { "typ": "street-type-inventory.typ", "splice": "at-marker:STREET-TYPE-EXHIBITS",
+        "data": "exhibits/street-types/inventory.json",
+        "conditional_on": "exhibits/street-types/inventory.json" },
+      { "typ": "street-type-map.typ", "splice": "at-marker:STREET-TYPE-EXHIBITS",
+        "data": "exhibits/street-types/inventory.json",
+        "conditional_on": "exhibits/street-types/inventory.json" }
+    ]
+  }
+}

@@ -44,6 +44,8 @@ in-house GIS capacity. All ordinance changes require a **Town Meeting** vote (Ma
   - `exhibits/street-types/inventory.json` — the promoted classification data.
 - `style/` — Typst template (`czc-template.typ`), fonts, colors, style analysis.
 - `build/` — build scripts (see below) + `street-types/` GIS pipeline.
+  `build-standalone.sh <article-NN> <ver>` builds any Article standalone, driven by
+  `build/article-manifest.json` (+ `manifest.py` reader); `build-article-3.sh` is a shim to it.
 - `releases/vX.Y-draft/` — shipped deliverables + redlines + Summary per version.
 - `docs/` — **baseline PDFs, do not modify.**
 - `memos/` — supporting justification/discussion memos. Rendered to PDF in CZC
@@ -67,8 +69,17 @@ Type (the §5 Inventory). Map/table legends show only Types actually present.
 
 - **Integrated CZC:** `bash build/build-full-czc.sh vX.Y-draft "Month D, YYYY"`
   → `releases/vX.Y-draft/Newcastle CZC (Integrated Draft vX.Y-draft).{pdf,md}`
-- **Standalone Article 3:** `bash build/build-article-3.sh vX.Y-draft "Month D, YYYY"`
-  → `releases/.../Article 3 Thoroughfares (Standalone vX.Y-draft).{pdf,md}`
+- **Standalone (any Article):** `bash build/build-standalone.sh <article-NN> vX.Y-draft`
+  → `releases/.../Article N <Name> (Standalone vX.Y-draft).{pdf,md}` — any Article 1–9 as its own
+  draft (no cover/TOC; pages 1..N). Native units splice per `build/article-manifest.json`
+  (Art 1 maps · Art 2 spreads w/ pad-to-odd D1-verso · Art 3 plates+exhibits); Articles 4–9 are
+  pure-prose single-pass. Reuses `build-article.sh` + `split-article-03.py`. **`build-article-3.sh`
+  is now a shim** → `build-standalone.sh 3` (so `build-article-3.sh vX.Y-draft` still works).
+- **Working on Article N:** edit `source/article-0N-*.md` (+ its native unit/data for Art 1/2/3);
+  `build-standalone.sh N <ver>` for a focused proof; then `build-full-czc.sh <ver> <date>` for the
+  integrated draft and `build-redline-full.sh <ver>` for the redline (both already Article-agnostic).
+  Inline images need NO tooling — `![](exhibits/foo.png)` renders in any Article via pandoc; only
+  full-page native exhibits need a manifest entry.
 - **Redline (formatted, full-layout — canonical):** `bash build/build-redline-full.sh <new-ver> [old-ver] [date]`
   → `releases/.../Newcastle CZC (Integrated Draft <new-ver>) — Redline.pdf` — the integrated draft
   in its **full publication layout** (chrome + all native figures) with **prose** changes marked
@@ -226,51 +237,33 @@ rebuild. No code changes.
   shapefile + re-run (the hand-eyeball of the distorted draft trace proved low-value —
   see NEXT); (2) Planning-Board review → Town-Meeting adoption.
 
-## ▶ NEXT: re-scope to all Articles + local-disk plan — AWAITING BEN'S DECISIONS (the morning topic)
+## ✅ DONE: per-Article standalone build system + safe-set disk reclaim (2026-06-21)
 
-**The ask (2026-06-06):** expand the project so we can work on **any** CZC Article the
-same way we've done Article 3 — drafts, markdown, redlines, and the full integrated CZC
-with the new changes. Ben's stated concern is **local hard-drive space** (NOT git/remote
-storage), and he **plans to add images/graphics to many Articles**. He asked whether to
-have **per-Article PDF generators** or **one unified script** — said **"either way is
-fine."** This was a **report-only** turn; **no code/commits** made. He said *"not right
-now… we'll pick this back up in the morning."* So: **nothing is decided yet — re-present
-the decisions below and wait.**
+**The ask (2026-06-06, built 2026-06-21):** work on **any** CZC Article the way Article 3 works —
+standalone draft + md, while the integrated CZC + redline pick up the changes. **Implemented in
+the working tree (pending Ben's commit):**
+- **`build/build-standalone.sh <article-NN> <version> [date]`** — unified standalone builder for
+  any Article 1–9, driven by **`build/article-manifest.json`** (+ tiny `build/manifest.py` reader).
+  Pure-prose fast path (Art 4–9); after-prose splice (Art 1 maps; Art 2 spreads with the
+  pad-to-odd D1-verso guard); at-marker splice (Art 3 plates + §5 exhibits). Reuses
+  `build-article.sh` + `split-article-03.py`. **`build-article-3.sh` is now a 3-line shim** →
+  `build-standalone.sh 3`. **`build-full-czc.sh` left untouched** (a shared-render-lib unification
+  is a future option). Verified: Art 7 (9 pp), Art 1 (maps), Art 2 (29 pp, D1 on a verso),
+  Art 3 (27 pp — matches the shipped v0.21 standalone); integrated build still **116 pp / 1 blank**.
+- **Disk reclaim — safe set done:** deleted `build/street-types/.venv` (−458 M, rebuilds from
+  `requirements.txt` via `run.sh`); pruned old release PDFs (80 → 5 on disk, keeping `v0.21-draft`
+  + `v0.1-baseline`), which removed the obsolete v0.8/v0.9 raster redlines. **~1.1 GB → ~446 M**
+  working tree. `.git` stays ~356 M — the `git filter-repo` history purge that would shrink it was
+  **declined for now** (revisit if local space gets tight; needs a force-push + reclone).
+- **PDF policy:** **stop committing generated PDFs** — `.gitignore` now ignores `releases/**/*.pdf`
+  (regenerable from tags); markdown/Summaries + the `docs/` baseline + `memos/` PDFs stay tracked.
+  The 75 pruned PDF deletions + the policy are **pending Ben's commit** (standing rule #1); the
+  v0.21 reference + baseline PDFs remain tracked + on disk.
 
-- **Local-disk findings (all on Ben's drive): ~1.1 GB total.** Three movers:
-  `build/street-types/.venv` **458 M** (gitignored, fully reproducible from
-  `requirements.txt`); `.git` **331 M** (bloated by committed PDFs — every draft adds
-  ~7.5 M ×, permanently, to the *local* `.git`); `releases/` **264 M** (PDFs regenerate
-  exactly from tags; v0.8/v0.9 carry ~140 M of obsolete raster redlines). Rest ~60 M
-  (docs 25 M baseline, source/exhibits 7.6 M / 41 images, etc.). **Graphics will
-  accelerate `.git` + `releases/` growth** (each draft's PDFs land in both).
-- **My recommendation (reclaim, ranked):** (1) delete `.venv`, make `run.sh`
-  self-heal/recreate it (−458 M, zero risk); (2) keep only recent PDFs in `releases/`
-  (latest + `v0.1-baseline`), prune the rest since regenerable from tags (≈ −240 M);
-  (3) **stop committing generated PDFs** — gitignore `releases/**/*.pdf`, keep the
-  text (md + Summary; redline inputs) — caps `.git` growth; (4) **optional one-time
-  `git filter-repo`** to purge historic PDFs from history (≈ −300 M now; **history
-  rewrite + force-push → needs Ben's explicit OK**); (5) delete v0.8/v0.9 legacy raster
-  redlines (−140 M). Safe set (1+2+3) ≈ 1.1 GB → ~350 M; add (4) ≈ ~100 M and flat
-  thereafter.
-- **Architecture recommendation (per-Article vs one script):** go with **one unified
-  `build-standalone.sh <article-NN> <version>`** driven by a tiny **per-Article exhibit
-  manifest** (which split markers + which `.typ` exhibits + splice points) — mirrors
-  what `build-full-czc.sh` already centralizes, DRY, no per-script drift. Key point for
-  Ben: **inline graphics need NO tooling** — `![](exhibits/foo.png)` already renders in
-  any Article via pandoc today; only **full-page native-Typst exhibits** (like Art. 3's
-  plates / Type map) need the splice machinery. (Per-Article scripts also fine per Ben,
-  just more duplication.) `build-article-3.sh` becomes Art. 3's manifest / can fold in.
-- **Re-scope is mostly already done:** `build-full-czc.sh` + `build-redline.sh` are
-  already Article-agnostic (they render all of `source/article-0N-*.md`). Only the
-  **standalone builder** needs generalizing. So the work = (a) safe disk reclaim,
-  (b) unified standalone builder + manifest, (c) document the "working on Article N"
-  flow in this file.
-- **OPEN DECISIONS to put to Ben (do not act until he answers):** (i) run the safe
-  reclaim set now? (deletes only regenerable files — `.venv` + old release PDFs);
-  (ii) stop committing PDFs going forward (recommended) or keep committing?;
-  (iii) the `git filter-repo` history purge — now / later / skip?; (iv) confirm unified
-  standalone builder (my rec) vs per-Article scripts.
+**Deferred (documented options):** per-Article *standalone* redline (the integrated
+`build-redline-full.sh` already isolates one Article's changes; a `build-redline-standalone.sh`
+would reuse `redline-text.py --source` on one file); the `git filter-repo` history purge; a shared
+render-lib unifying `build-standalone.sh` + `build-full-czc.sh`.
 
 - **Permit-application + automated-review system (Ben's 2026-06-09 question — UNRESOLVED):**
   should the project expand to include a **resident permit-intake portal** + an engine that
