@@ -107,6 +107,8 @@
 #block(above: 0pt, below: 9pt, text(size: 8pt, fill: subsection_gray, style: "italic")[
   The #text(weight: "bold")[Type] column is the binding classification of each segment (§5.C.2). The remaining
   columns record reference information (§5.C.3) the Town may update without amending this Code.
+  Segment names and termini are drawn from the Town's E-911 road centerline data; recorded
+  right-of-way, traveled way, and other field values are approximate.
   #text(weight: "bold")[#banner]])
 
 // ---- The inventory table (breakable; header repeats per page) ---------------

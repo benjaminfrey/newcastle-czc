@@ -129,6 +129,9 @@ A roofed structure covered on 2 or more sides with fabric, vinyl, plastic, or ot
 **Cartway:**
 The portion of a Thoroughfare's right-of-way that is paved, graveled, or otherwise improved for vehicular travel, including travel lanes, on-street parking lanes (where present), and shoulders (where present). The cartway does not include sidewalks, planting strips, or the frontage zone.
 
+**Certified Arborist:**
+An individual holding a current Certified Arborist credential from the International Society of Arboriculture, or an equivalent professional credential accepted by the Code Enforcement Officer. Used in Article 3 Section 3.G.
+
 **Change of Use:**
 The act of changing the categorization of activity within a building, structure, or portion thereof from one primary use to another.
 
@@ -173,6 +176,9 @@ Any bracket, especially one of brick or stone, that typically protrudes only sli
 
 **Corner Lot:**
 A building lot that has frontage on 2 private or public roads, where the roads intersect.
+
+**Critical Root Zone:**
+The area of soil around a tree within which the roots essential to the tree's health and stability are concentrated. Unless a Certified Arborist determines otherwise for a particular tree, the Critical Root Zone is the area within a radius, measured from the center of the trunk, of one foot for each inch of the tree's trunk diameter measured at breast height (4.5 feet above ground). Used in Article 3 Section 3.G and Article 4 Section 3.H.
 
 **Curb:**
 The edge of the vehicular pavement that may be raised or flush to a swale. It usually directs the flow of water to the drainage system.
@@ -666,6 +672,9 @@ The paved section of a right-of-way dedicated exclusively to pedestrian activity
 
 **Sign:**
 Any permanent or temporary name, identification, description, emblem, logo, structure, or device, that is illuminated or non-illuminated; visible or intended to be visible from any public place; and directs attention to a person, product, place, activity, institution, business, organization, activity, or service including any letter, numeral, character, figure, emblem, painting, illustration, banner, pennant, placard, or temporary sign designed to advertise, identify, solicit, or convey information. Signs include devices designed to attract the eye by intermittent or repeated motion and any permanently installed or situated merchandise, including any banner, pennant, placard, or temporary sign, with the exception of window displays.
+
+**Significant Street Tree:**
+An existing Street Tree within the right-of-way of a Street that is at least 6 inches in caliper, possesses a healthy and full canopy, and has incurred no damage that would undermine its long-term vitality. Caliper is measured as provided in the definition of Caliper. The standards for the preservation of Significant Street Trees are in Article 3 Section 3.G.
 
 **Single Unit Commercial Building**
 A building occupied soley by a commercial use and no other.
