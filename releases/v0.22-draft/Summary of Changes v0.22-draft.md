@@ -46,12 +46,14 @@ utility work occurs, a new "Street Trees" subsection was added. It applies to St
   a required sidewalk, and the Code Enforcement Officer may approve street trees elsewhere along a
   Street where space and growing conditions allow.
 - **Existing significant street trees are protected.** A "significant street tree" is a healthy
-  existing street tree at least six inches in caliper. When the Town, or an applicant, performs
-  work in a Street's right-of-way:
+  tree at least six inches in caliper whose roots (its critical root zone) or canopy reach into a
+  Street's right-of-way — so a large tree just outside the right-of-way can qualify if its roots or
+  overhanging canopy extend into it. When the Town, or an applicant, performs work in a Street's
+  right-of-way:
   - the work must avoid disturbing the tree's critical root zone unless there is no feasible
     alternative;
-  - if a significant street tree must be removed, it must be replaced in kind on the same segment;
-    and
+  - if a significant street tree must be removed, it must be replaced in kind on the same segment
+    (or on a nearby Street segment where that is not feasible); and
   - work near such a tree is reviewed by a certified arborist.
 - **Utilities** are asked to give notice, coordinate to avoid root damage, and restore the
   planting strip and any tree removed — the Code recognizes that it cannot override a utility's
