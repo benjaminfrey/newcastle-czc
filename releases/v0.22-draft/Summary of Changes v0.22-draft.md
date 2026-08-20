@@ -1,8 +1,9 @@
 # Summary of Changes — v0.22-draft
 
-Article 3 (Thoroughfares): two changes in response to resident comments — clearer rules about
-when a driveway must be improved to a road or street, and new protection for existing street
-trees. Builds on v0.21-draft.
+Article 3 (Thoroughfares): three changes in response to resident comments — clearer rules about
+when a driveway must be improved to a road or street, corrections to the Type assigned to a
+number of roads in the inventory, and new protection for existing street trees. Builds on
+v0.21-draft.
 
 ## Driveways listed in the inventory ("road stubs")
 
@@ -34,6 +35,30 @@ are, today, driveways. This release makes the Code's intent explicit and adds re
 - **The inventory's source is noted.** A line on the inventory table now explains that segment
   names and locations come from the Town's E-911 road data and that the recorded widths and other
   field values are approximate.
+
+## Corrections to the Thoroughfare Type of specific roads
+
+Review identified a number of roads that had been given the Type of the larger road they connect
+to, which is rarely how they are actually built. Small lanes running off Route 1, in particular,
+had picked up the highway Types of the corridor. The following corrections were made:
+
+- **Main Street** is now **Main Street (S1)** for its entire length; several northern segments had
+  been typed as a Connector Road or a Village Street.
+- **Mills Road** is now **Neighborhood Street (S3)** for its entire length; its two western
+  segments had been typed as a Connector Road.
+- **Timber Lane** and **Stonebridge Circle** are now **Rural Road (R2)** end to end; the ends
+  meeting Academy Hill had been typed Highway Commercial.
+- **Bay View Road**, **Gastaldo Farm Road**, and **Ledge Hill Crossing** are now **Rural Road
+  (R2)**; they had been typed Highway Commercial or Neighborhood Street.
+- **Teague Street** and **High Street** are now **Lane (S4)**; they had been typed Village Street
+  and Neighborhood Street.
+- **Camp Road**, **Desperado Lane**, and **Fern Birch Lane** — small lanes off Route 1 that
+  function today essentially as driveways — are now **Rural Lane (R3)**, the narrowest Road Type,
+  rather than the Highway Types of the Route 1 corridor.
+
+These corrections change only the Type recorded for the listed segments in the inventory and shown
+on the Type map. No standard, definition, or rule text changed, and — as described above — no
+existing road or driveway must be upgraded because of them.
 
 ## Street trees
 
