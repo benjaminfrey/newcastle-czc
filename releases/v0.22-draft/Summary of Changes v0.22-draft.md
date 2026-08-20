@@ -52,9 +52,17 @@ had picked up the highway Types of the corridor. The following corrections were 
   (R2)**; they had been typed Highway Commercial or Neighborhood Street.
 - **Teague Street** and **High Street** are now **Lane (S4)**; they had been typed Village Street
   and Neighborhood Street.
-- **Camp Road**, **Desperado Lane**, and **Fern Birch Lane** — small lanes off Route 1 that
-  function today essentially as driveways — are now **Rural Lane (R3)**, the narrowest Road Type,
-  rather than the Highway Types of the Route 1 corridor.
+- **Bailey Lane**, **Cole Cabin Road**, **Cottril Road**, **East View Road**, and **Middle Way**
+  are now **Rural Road (R2)**; these private dead-end lanes off Academy Hill and Mills Road had
+  taken on the Neighborhood Street Type of the road they connect to.
+- **Camp Road**, **Desperado Lane**, **Fern Birch Lane**, and **Hawthorn Road** — small lanes off
+  Route 1 that function today essentially as driveways — are now **Rural Lane (R3)**, the narrowest
+  Road Type, rather than the Highway Types of the Route 1 corridor.
+- **Pond Road** is now **Connector Road (R1)** for its full length; its short western segment had
+  been typed a Rural Road.
+- At the **Main Street / River Road junction**, two short pieces carried in the road data under the
+  name "River Road" are in fact part of the State-owned Main Street route; they are now **Main
+  Street (S1)**, and the short Town-owned connector there is now **Neighborhood Street (S3)**.
 
 These corrections change only the Type recorded for the listed segments in the inventory and shown
 on the Type map. No standard, definition, or rule text changed, and — as described above — no

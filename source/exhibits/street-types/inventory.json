@@ -874,7 +874,7 @@
     "Academy Hill",
     "end"
    ],
-   "type": "S3",
+   "type": "R2",
    "ownership": "Private Road",
    "row_ft": null,
    "traveled_ft": null,
@@ -2939,7 +2939,7 @@
     "Academy Hill",
     "end"
    ],
-   "type": "S3",
+   "type": "R2",
    "ownership": "Private Road",
    "row_ft": null,
    "traveled_ft": null,
@@ -3153,7 +3153,7 @@
     "Academy Hill",
     "end"
    ],
-   "type": "S3",
+   "type": "R2",
    "ownership": "Private Road",
    "row_ft": null,
    "traveled_ft": null,
@@ -4882,7 +4882,7 @@
     "Mills Road",
     "end"
    ],
-   "type": "S3",
+   "type": "R2",
    "ownership": "Private Road",
    "row_ft": null,
    "traveled_ft": null,
@@ -7442,7 +7442,7 @@
     "Route 1",
     "end"
    ],
-   "type": "R2",
+   "type": "R3",
    "ownership": "Private Road",
    "row_ft": null,
    "traveled_ft": null,
@@ -13098,7 +13098,7 @@
     "Academy Hill",
     "end"
    ],
-   "type": "S3",
+   "type": "R2",
    "ownership": "Private Road",
    "row_ft": null,
    "traveled_ft": null,
@@ -18138,7 +18138,7 @@
     "end",
     "Austin Road"
    ],
-   "type": "R2",
+   "type": "R1",
    "ownership": "Town Way",
    "row_ft": null,
    "traveled_ft": null,
@@ -20397,7 +20397,7 @@
     "Main Street",
     "end"
    ],
-   "type": "R1",
+   "type": "S1",
    "ownership": "State Highway",
    "row_ft": null,
    "traveled_ft": null,
@@ -20428,7 +20428,7 @@
     "end",
     "Main Street"
    ],
-   "type": "R1",
+   "type": "S1",
    "ownership": "State Highway",
    "row_ft": null,
    "traveled_ft": null,
@@ -20463,7 +20463,7 @@
     "Main Street",
     "end"
    ],
-   "type": "S2",
+   "type": "S3",
    "ownership": "Town Way",
    "row_ft": null,
    "traveled_ft": null,
