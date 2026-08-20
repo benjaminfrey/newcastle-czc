@@ -1,0 +1,2124 @@
+@charset "utf-8";
+/* ==========================================================================
+   Newcastle CZC — Thoroughfare Inventory Editor
+   styles.css · implements the class/id contract in CONTRACT.md §3 and §8
+
+   Contents
+     1  Fonts
+     2  Design tokens (house palette · Type colours · metrics)
+     3  Dark colour scheme
+     4  Reset and base
+     5  Primitives — buttons, selects, inputs, checkboxes, badges, swatches
+     6  Topbar — identity, summary bar, Type chips, banner
+     7  Filters
+     8  Layout — #main, panels, scroll discipline
+     9  Bulk bar and the Type palette
+    10  Segment table — head, road groups, segment rows, row state
+    11  Map panel — toolbar, SVG, legend
+    12  Inspector (#detail-panel)
+    13  Pending panel and the save dock
+    14  Dialogs
+    15  Toasts, chord hint, blocking overlay
+    16  Responsive
+    17  Motion, scrollbars, print
+
+   No external resources of any kind. Fonts are served from /fonts/ by serve.py;
+   if that directory is absent the system stack takes over and nothing breaks.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1  FONTS  (CONTRACT §3.3 / §5.6)
+   ========================================================================== */
+
+@font-face {
+  font-family: "Barlow";
+  src: url("/fonts/Barlow-Regular.ttf") format("truetype");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Barlow";
+  src: url("/fonts/Barlow-Medium.ttf") format("truetype");
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Barlow";
+  src: url("/fonts/Barlow-SemiBold.ttf") format("truetype");
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Barlow";
+  src: url("/fonts/Barlow-Bold.ttf") format("truetype");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+
+
+/* ==========================================================================
+   2  DESIGN TOKENS
+   ========================================================================== */
+
+:root {
+  /* ---- house palette, CONTRACT §3.3 (normative) ---- */
+  --article-blue: #367AAC;
+  --body-dark:    #231F20;
+  --muted:        #7C766F;
+  --hair:         #BFBFBF;
+  --bg:           #FFFFFF;
+  --bg-alt:       #F6F5F3;
+  --danger:       #A33A2A;
+  --pending:      #B4761F;
+
+  /* ---- supporting colours ---- */
+  --ok:           #2E6B4F;
+  --on-accent:    #FFFFFF;          /* text on a filled accent */
+  --panel:        #FDFCFB;
+  --panel-alt:    #F1EFEC;
+  --line:         color-mix(in srgb, var(--hair) 52%, transparent);
+  --line-strong:  color-mix(in srgb, var(--hair) 88%, transparent);
+  --shadow:       0 1px 2px rgba(35,31,32,.07), 0 6px 20px rgba(35,31,32,.06);
+  --shadow-lift:  0 10px 40px rgba(35,31,32,.18), 0 2px 6px rgba(35,31,32,.10);
+  --map-bg:       #FBFAF8;
+  --sel-bg:       color-mix(in srgb, var(--article-blue) 12%, var(--bg));
+  --hover-bg:     color-mix(in srgb, var(--article-blue) 5%, var(--bg));
+  --road-bg:      color-mix(in srgb, var(--body-dark) 7%, var(--panel-alt));
+
+  /* ---- the ten Thoroughfare Types, CONTRACT §3.1 (normative order) ---- */
+  --t-S1: #103E66;
+  --t-S2: #2E6FA0;
+  --t-S3: #4E97C8;
+  --t-S4: #74B2D6;
+  --t-S5: #9AC8E4;
+  --t-R1: #3D4A1F;
+  --t-R2: #5E6E33;
+  --t-R3: #84934A;
+  --t-R4: #A99A4B;
+  --t-R5: #C2B777;
+  --type-none: #BFBFBF;
+  --tint: 16%;                       /* Type-colour wash strength */
+
+  /* ---- metrics ---- */
+  --map-w:      clamp(320px, 27vw, 440px);
+  --pending-w:  clamp(300px, 22vw, 340px);
+  --head-h:     30px;                /* MUST match #segment-head th height */
+  --table-min:  820px;               /* narrows as columns drop out, §16 */
+  --radius:     4px;
+  --radius-lg:  7px;
+  --rail:       3px;
+
+  /* ---- type scale ---- */
+  --fs-micro: 9.5px;
+  --fs-xs:   10.5px;
+  --fs-sm:   11.5px;
+  --fs-base: 12.5px;
+  --fs-md:   13.5px;
+  --fs-lg:   15px;
+
+  --caret: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1 5 5 9 1' fill='none' stroke='%237C766F' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+
+  color-scheme: light dark;
+}
+
+/* ---- Type colour lookup: any element carrying data-type inherits --type-color
+        down to its swatches, rails and tints. ---- */
+[data-type="S1"] { --type-color: var(--t-S1); }
+[data-type="S2"] { --type-color: var(--t-S2); }
+[data-type="S3"] { --type-color: var(--t-S3); }
+[data-type="S4"] { --type-color: var(--t-S4); }
+[data-type="S5"] { --type-color: var(--t-S5); }
+[data-type="R1"] { --type-color: var(--t-R1); }
+[data-type="R2"] { --type-color: var(--t-R2); }
+[data-type="R3"] { --type-color: var(--t-R3); }
+[data-type="R4"] { --type-color: var(--t-R4); }
+[data-type="R5"] { --type-color: var(--t-R5); }
+[data-type=""]   { --type-color: var(--type-none); }
+
+
+/* ==========================================================================
+   3  DARK COLOUR SCHEME
+   The Type hues are lifted so they stay separable on a dark ground; the
+   relative spacing between the ten is preserved.
+   ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --article-blue: #6DB2E2;
+    --body-dark:    #E9E5E0;
+    --muted:        #9A938B;
+    --hair:         #4A4E54;
+    --bg:           #16181B;
+    --bg-alt:       #1D2024;
+    --danger:       #E4785F;
+    --pending:      #DFA149;
+    --ok:           #5FBE92;
+    --on-accent:    #10161C;
+    --panel:        #1A1D21;
+    --panel-alt:    #22262B;
+    --line:         color-mix(in srgb, var(--hair) 62%, transparent);
+    --line-strong:  color-mix(in srgb, var(--hair) 100%, transparent);
+    --shadow:       0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.34);
+    --shadow-lift:  0 12px 44px rgba(0,0,0,.62), 0 2px 8px rgba(0,0,0,.45);
+    --map-bg:       #101317;
+    --sel-bg:       color-mix(in srgb, var(--article-blue) 20%, var(--bg));
+    --hover-bg:     color-mix(in srgb, var(--article-blue) 9%, var(--bg));
+    --road-bg:      color-mix(in srgb, var(--body-dark) 0%, var(--panel-alt));
+
+    --t-S1: #3D7FB4;
+    --t-S2: #5A9CCB;
+    --t-S3: #7FBBE2;
+    --t-S4: #9ED0EA;
+    --t-S5: #C2E2F4;
+    --t-R1: #77873E;
+    --t-R2: #93A45B;
+    --t-R3: #B3C179;
+    --t-R4: #CFC07A;
+    --t-R5: #E2DAA8;
+    --type-none: #565B61;
+    --tint: 24%;
+
+    --caret: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1 5 5 9 1' fill='none' stroke='%239A938B' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+}
+
+
+/* ==========================================================================
+   4  RESET AND BASE
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* app.js drives visibility with the `hidden` attribute. Several of the elements
+   it hides are targeted here by id with a `display` of their own, which would
+   out-specify the UA `[hidden]` rule — so pin it. */
+[hidden] { display: none !important; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--body-dark);
+  font-family: "Barlow", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: var(--fs-base);
+  line-height: 1.35;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, p, ul, ol, dl, dd, blockquote, figure, pre { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+
+code, pre, kbd, .seg-id, .pending-id, .orphan-id {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+button, input, select, textarea { font: inherit; color: inherit; }
+
+a { color: var(--article-blue); }
+
+::selection { background: color-mix(in srgb, var(--article-blue) 26%, transparent); }
+
+:focus-visible {
+  outline: 2px solid var(--article-blue);
+  outline-offset: 1px;
+  border-radius: 2px;
+}
+
+/* visually hidden but available to assistive tech */
+.vh {
+  position: absolute; width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  clip-path: inset(50%); overflow: hidden; white-space: nowrap;
+}
+
+.bulk-spacer { flex: 1 1 auto; min-width: 0; }
+
+.num { font-variant-numeric: tabular-nums; }
+
+
+/* ==========================================================================
+   5  PRIMITIVES
+   ========================================================================== */
+
+/* ---- buttons ---------------------------------------------------------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  height: 26px; padding: 0 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--panel);
+  color: var(--body-dark);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color .11s ease, border-color .11s ease, color .11s ease;
+}
+.btn:hover:not(:disabled) { background: var(--panel-alt); border-color: var(--muted); }
+.btn:active:not(:disabled) { transform: translateY(.5px); }
+.btn:disabled { opacity: .42; cursor: default; }
+
+.btn-sm   { height: 23px; padding: 0 8px; font-size: var(--fs-xs); }
+.btn-icon { width: 26px; padding: 0; font-size: var(--fs-md); }
+.btn-sm.btn-icon { width: 23px; }
+
+.btn-quiet {
+  background: transparent;
+  border-color: transparent;
+  color: var(--muted);
+}
+.btn-quiet:hover:not(:disabled) {
+  background: var(--panel-alt);
+  border-color: var(--line);
+  color: var(--body-dark);
+}
+
+.btn-primary {
+  background: var(--article-blue);
+  border-color: var(--article-blue);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+.btn-primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--article-blue) 84%, var(--body-dark));
+  border-color: color-mix(in srgb, var(--article-blue) 84%, var(--body-dark));
+  color: var(--on-accent);
+}
+
+.btn.is-danger { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 42%, transparent); }
+.btn.is-danger:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--danger) 12%, var(--bg));
+  border-color: var(--danger);
+  color: var(--danger);
+}
+.btn-primary.is-danger {
+  background: var(--danger); border-color: var(--danger); color: #fff;
+}
+.btn-primary.is-danger:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--danger) 84%, #000); color: #fff;
+}
+
+/* ---- selects ---------------------------------------------------------- */
+select {
+  appearance: none; -webkit-appearance: none;
+  height: 24px;
+  padding: 0 18px 0 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background-color: var(--panel);
+  background-image: var(--caret);
+  background-repeat: no-repeat;
+  background-position: right 5px center;
+  background-size: 8px 5px;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  max-width: 100%;
+  text-overflow: ellipsis;
+}
+select:hover { border-color: var(--muted); }
+select:disabled { opacity: .45; cursor: default; }
+
+/* ---- text inputs ------------------------------------------------------ */
+input[type="search"], input[type="text"], input[type="number"], textarea {
+  height: 26px;
+  padding: 0 7px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--body-dark);
+  font-size: var(--fs-sm);
+  min-width: 0;
+}
+textarea { height: auto; padding: 6px 8px; line-height: 1.45; resize: vertical; }
+input::placeholder, textarea::placeholder { color: color-mix(in srgb, var(--muted) 78%, transparent); }
+input[type="search"]::-webkit-search-cancel-button { cursor: pointer; }
+input[type="number"] { font-variant-numeric: tabular-nums; }
+
+/* ---- checkboxes ------------------------------------------------------- */
+input[type="checkbox"] {
+  accent-color: var(--article-blue);
+  width: 13px; height: 13px;
+  margin: 0;
+  cursor: pointer;
+  flex: none;
+}
+
+.check-inline {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.check-inline:hover { color: var(--body-dark); }
+.check-block {
+  display: flex; align-items: flex-start; gap: 7px;
+  white-space: normal;
+  line-height: 1.4;
+}
+.check-block input[type="checkbox"] { margin-top: 2px; }
+
+/* ---- Type swatches, pills, chips -------------------------------------- */
+.swatch, .type-swatch, .legend-swatch, .type-chip-swatch, .type-btn-swatch {
+  display: inline-block;
+  width: 10px; height: 10px;
+  flex: none;
+  border-radius: 2px;
+  background: var(--type-color, var(--type-none));
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.18);
+}
+
+.type-pill {
+  display: inline-flex; align-items: center;
+  height: 15px; padding: 0 5px 0 6px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--type-color, var(--type-none)) var(--tint), transparent);
+  box-shadow: inset 2px 0 0 var(--type-color, var(--type-none));
+  color: var(--body-dark);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  letter-spacing: .03em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- badges ----------------------------------------------------------- */
+.seg-source {
+  display: inline-block;
+  padding: 1px 4px;
+  border: 1px solid;
+  border-radius: 3px;
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  /* Sentence case, no letter-spacing: uppercase + tracking needed 52 px for
+     "OVERRIDE" in a 38 px cell and clipped to a plausible-looking "OVERRI".
+     This is the cell that separates a human decision from a machine guess, so
+     it must never truncate silently. */
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.seg-source[data-source="auto"] {
+  color: var(--muted);
+  border-color: color-mix(in srgb, var(--muted) 34%, transparent);
+  background: transparent;
+}
+.seg-source[data-source="override"] {
+  color: var(--on-accent);
+  background: var(--article-blue);
+  border-color: var(--article-blue);
+}
+.seg-source[data-source="pending"] {
+  color: var(--on-accent);
+  background: var(--pending);
+  border-color: var(--pending);
+}
+
+kbd {
+  display: inline-block;
+  min-width: 17px; padding: 1px 4px;
+  border: 1px solid var(--line-strong);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  background: var(--panel-alt);
+  font-size: var(--fs-micro);
+  text-align: center;
+}
+
+
+/* ==========================================================================
+   6  TOPBAR  (§8.1)
+   ========================================================================== */
+
+#topbar {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line-strong);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--body-dark) 4%, transparent);
+  z-index: 30;
+}
+
+.topbar-main {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 7px 14px 6px;
+}
+
+.topbar-identity { flex: none; min-width: 0; }
+
+#app-title {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  letter-spacing: -.01em;
+  line-height: 1.1;
+  color: var(--article-blue);
+}
+#app-subtitle {
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  letter-spacing: .01em;
+  margin-top: 1px;
+}
+
+/* ---- summary bar ------------------------------------------------------ */
+#summary-bar {
+  flex: 1 1 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 0;
+  min-width: 0;
+}
+.summary-stat {
+  position: relative;
+  padding: 0 11px;
+  font-size: var(--fs-sm);
+  color: var(--body-dark);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.summary-stat + .summary-stat::before {
+  content: "";
+  position: absolute; left: 0; top: .18em; bottom: .1em;
+  border-left: 1px solid var(--line);
+}
+#summary-overrides { color: var(--article-blue); font-weight: 600; }
+#summary-noteonly, #summary-excluded { color: var(--muted); }
+
+#summary-pending { color: var(--muted); }
+#summary-pending.is-active {
+  color: var(--pending);
+  font-weight: 700;
+}
+#summary-pending.is-active::after {
+  content: "";
+  display: inline-block;
+  width: 6px; height: 6px;
+  margin-left: 5px;
+  border-radius: 50%;
+  background: var(--pending);
+  vertical-align: .08em;
+}
+
+.topbar-actions { flex: none; display: flex; align-items: center; gap: 6px; }
+
+#conn-status {
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  padding-left: 13px;
+  position: relative;
+  white-space: nowrap;
+}
+#conn-status::before {
+  content: "";
+  position: absolute; left: 0; top: 50%;
+  width: 7px; height: 7px; margin-top: -3.5px;
+  border-radius: 50%;
+  background: var(--hair);
+}
+#conn-status.is-ok::before      { background: var(--ok); }
+#conn-status.is-error::before   { background: var(--danger); }
+#conn-status.is-saving::before  { background: var(--pending); animation: pulse 1s ease-in-out infinite; }
+#conn-status.is-error { color: var(--danger); }
+
+@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: .3 } }
+
+/* ---- Type chips ------------------------------------------------------- */
+#summary-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 0 14px 6px;
+}
+#summary-types:empty { display: none; }
+
+.type-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 20px; padding: 0 7px 0 5px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  cursor: pointer;
+  transition: border-color .11s ease, background-color .11s ease;
+}
+.type-chip:hover { border-color: var(--muted); background: var(--panel-alt); }
+.type-chip-code {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+.type-chip-count {
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  min-width: 1.5em;
+  text-align: right;
+}
+.type-chip.is-empty { opacity: .38; }
+.type-chip.is-active {
+  border-color: var(--article-blue);
+  background: color-mix(in srgb, var(--article-blue) 10%, var(--bg));
+}
+
+/* ---- data banner ------------------------------------------------------ */
+#data-banner {
+  padding: 4px 14px 5px;
+  border-top: 1px solid var(--line);
+  background: color-mix(in srgb, var(--pending) 11%, var(--bg));
+  color: color-mix(in srgb, var(--pending) 62%, var(--body-dark));
+  font-size: var(--fs-xs);
+  letter-spacing: .01em;
+}
+#data-banner::before {
+  content: "▲";
+  margin-right: 6px;
+  font-size: 8px;
+  vertical-align: .12em;
+  color: var(--pending);
+}
+
+
+/* ==========================================================================
+   7  FILTERS  (§8.2)
+   ========================================================================== */
+
+#filters {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  padding: 6px 14px;
+  background: var(--bg-alt);
+  border-bottom: 1px solid var(--line-strong);
+  z-index: 20;
+}
+
+.filter-field { display: flex; align-items: center; gap: 5px; min-width: 0; }
+.filter-field > label {
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.filter-field-search { flex: 1 1 260px; max-width: 380px; }
+.filter-field-search input { flex: 1 1 auto; }
+
+.filter-check {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.filter-check:hover { color: var(--body-dark); }
+
+#filter-result-count {
+  margin-left: auto;
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+
+/* ==========================================================================
+   8  LAYOUT  (§8.0)
+   ========================================================================== */
+
+#main {
+  grid-column: 1;
+  grid-row: 3;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--map-w);
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* When the pending drawer is open, give the table back the space. Both side
+   columns tighten again on a 1440-class laptop so the table never scrolls
+   horizontally with all three panes open. */
+body:has(#pending-panel:not([hidden])) { --map-w: clamp(300px, 22vw, 360px); }
+@media (max-width: 1520px) {
+  body:has(#pending-panel:not([hidden])) {
+    --map-w: clamp(276px, 20vw, 320px);
+    --pending-w: clamp(276px, 20vw, 316px);
+  }
+}
+
+#table-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+#map-panel {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-left: 1px solid var(--line-strong);
+  background: var(--panel);
+}
+
+
+/* ==========================================================================
+   9  BULK BAR AND TYPE PALETTE  (§8.3.1)
+   ========================================================================== */
+
+#bulk-bar {
+  flex: none;
+  container-type: inline-size;
+  container-name: bulkbar;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 6px 10px 7px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line-strong);
+  z-index: 12;
+}
+/* app.js sets this whenever the selection is non-empty. The Type palette is
+   live only then, so the bar earns a visible "armed" state. */
+#bulk-bar.has-selection {
+  background: color-mix(in srgb, var(--article-blue) 6%, var(--panel));
+  border-bottom-color: color-mix(in srgb, var(--article-blue) 40%, var(--line-strong));
+}
+
+.bulk-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; min-width: 0; }
+
+#selection-count {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#selection-count.is-active { color: var(--article-blue); font-weight: 600; }
+
+.bulk-divider {
+  width: 1px; height: 17px;
+  background: var(--line);
+  margin: 0 2px;
+}
+
+#bulk-ownership { max-width: 150px; }
+
+/* ---- the Type palette ------------------------------------------------- */
+#type-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* button.type-btn[data-type][data-index] — created by app.js */
+.type-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 25px;
+  padding: 0 8px 0 7px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--type-color, var(--type-none));
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--type-color, var(--type-none)) calc(var(--tint) * .5), var(--bg));
+  color: var(--body-dark);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color .11s ease, border-color .11s ease, transform .06s ease;
+}
+.type-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--type-color, var(--type-none)) var(--tint), var(--bg));
+  border-color: var(--type-color, var(--muted));
+  border-left-color: var(--type-color, var(--muted));
+}
+.type-btn:active:not(:disabled) { transform: translateY(.5px); }
+.type-btn:disabled { opacity: .4; cursor: default; }
+
+.type-btn-code { font-weight: 700; letter-spacing: .02em; }
+.type-btn-name { color: var(--muted); }
+.type-btn:hover:not(:disabled) .type-btn-name { color: var(--body-dark); }
+.type-btn-key {
+  min-width: 14px; padding: 0 3px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--muted) 16%, transparent);
+  color: var(--muted);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* when the table pane is narrow, drop the long Type names */
+@container bulkbar (max-width: 1180px) {
+  .type-btn-name { display: none; }
+}
+
+
+/* ==========================================================================
+   10  SEGMENT TABLE  (§8.3.2 – §8.3.4)
+   ========================================================================== */
+
+.table-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  scrollbar-gutter: stable;
+}
+
+#segment-table {
+  width: 100%;
+  min-width: var(--table-min);
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--fs-base);
+}
+
+/* ---- column widths (sum = 100%; the table's min-width keeps them sane) ---- */
+/* Budget note: Type and Ownership both hold a <select>, so their widths are
+   set by the widest string each must render, not by aesthetics. Type has to
+   fit "S3 → ▪ R2" (the pending old→new form) and Ownership has to keep
+   "Private Road", "Town Way" and "State Highway" apart at a glance — a
+   half-read ownership value in a legal record is worse than a narrow name
+   column. Both were widened out of Name and Termini, which truncate harmlessly
+   and are repeated in full in the inspector. */
+.col-check     { width:  3.0%; }
+.col-name      { width: 15.0%; }
+.col-termini   { width: 14.0%; }
+.col-type      { width: 14.0%; }
+.col-length    { width:  6.5%; }
+.col-ownership { width: 13.5%; }
+.col-districts { width: 11.0%; }
+.col-maindot   { width:  8.5%; }
+.col-source    { width:  7.5%; }
+.col-actions   { width:  7.0%; }
+
+/* ---- sticky header ---- */
+#segment-head th {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  height: var(--head-h);
+  padding: 0 6px;
+  background: var(--panel-alt);
+  border-bottom: 1px solid var(--line-strong);
+  color: var(--muted);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  text-align: left;
+  white-space: nowrap;
+  user-select: none;
+}
+#segment-head th[data-sort] { cursor: pointer; }
+#segment-head th[data-sort]:hover { color: var(--body-dark); background: var(--road-bg); }
+#segment-head th[data-sort]::after {
+  content: "";
+  display: inline-block;
+  width: 0; height: 0;
+  margin-left: 4px;
+  vertical-align: .1em;
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+  opacity: 0;
+}
+#segment-head th.is-sorted { color: var(--article-blue); }
+#segment-head th.is-sorted::after { opacity: 1; }
+#segment-head th.is-sorted[data-dir="asc"]::after  { border-bottom: 4px solid currentColor; }
+#segment-head th.is-sorted[data-dir="desc"]::after { border-top: 4px solid currentColor; }
+.col-check { text-align: center; }
+#segment-head .col-check { padding: 0; text-align: center; }
+.col-length, .col-source { text-align: right; }
+#segment-head .col-actions { text-align: right; }
+
+/* ---- shared cell rhythm ---- */
+#segment-tbody td {
+  padding: 2px 6px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- ROAD GROUP ROW (§8.3.3) — sticky under the header ---- */
+.road-row > td {
+  position: sticky;
+  top: var(--head-h);
+  z-index: 4;
+  height: 27px;
+  background: var(--road-bg);
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+.road-row + .road-row > td { border-top-color: var(--line); }
+
+.cell-road { display: table-cell; }
+.road-toggle {
+  width: 16px; height: 16px;
+  margin-right: 2px;
+  padding: 0;
+  border: 0; border-radius: 3px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1;
+  cursor: pointer;
+  vertical-align: .05em;
+  transition: transform .12s ease, color .11s ease;
+}
+.road-toggle:hover { color: var(--body-dark); background: color-mix(in srgb, var(--muted) 14%, transparent); }
+.road-row.is-collapsed .road-toggle { transform: rotate(-90deg); }
+
+.road-name {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  letter-spacing: -.005em;
+  color: var(--body-dark);
+}
+.road-count {
+  margin-left: 7px;
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.road-flag-override {
+  margin-left: 7px;
+  padding: 0 5px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--article-blue) 15%, transparent);
+  color: var(--article-blue);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.road-flag-override:empty { display: none; }
+
+/* font-size:0 collapses the inline whitespace between the select and the
+   colour strip, which otherwise eats ~3px of a 106px content box. */
+.road-row .cell-type { font-size: 0; }
+
+/* The "all of Main Street is S1" control — the headline action of the tool.
+   Sized to its widest label ("Set road…" ≈ 47px + 20px of padding) and no
+   wider: the leftover width belongs to the mixed-Type colour strip beside it,
+   which is the whole reason a road is worth a second look. At 82px the strip
+   on a three-Type road (River Road) was clipped to a Type and a half. */
+.road-type-select {
+  width: 70px;
+  height: 22px;
+  vertical-align: middle;
+  font-size: var(--fs-xs);
+  background-color: var(--bg);
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--article-blue) 46%, transparent);
+  color: var(--article-blue);
+  font-weight: 500;
+}
+.road-type-select:hover { border-style: solid; border-color: var(--article-blue); }
+
+/* Distinct Types present in this road, as a compact colour strip. A road
+   showing two colours is the "suspicious road" tell; `.is-mixed` rings it. */
+.road-types {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 2px;
+  vertical-align: middle;
+  overflow: hidden;
+  /* Never push the select out of the cell; a road with more Types than fit
+     clips its last pills instead (the inspector and the rows carry the full
+     picture). Today's worst case is three — River Road. */
+  max-width: calc(100% - 74px);
+}
+.road-row .type-pill {
+  width: 6px; height: 13px;
+  padding: 0;
+  border-radius: 2px;
+  background: var(--type-color, var(--type-none));
+  box-shadow: none;
+  overflow: hidden;
+  text-indent: -999px;
+}
+.road-row.is-mixed .road-types {
+  padding: 1px;
+  outline: 1px dashed color-mix(in srgb, var(--danger) 60%, transparent);
+  border-radius: 3px;
+}
+.road-row.is-mixed .road-count::after {
+  content: " · mixed";
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.road-length {
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.cell-length { text-align: right; }
+
+.road-ownership {
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  letter-spacing: .01em;
+}
+.road-zoom {
+  width: 20px; height: 20px;
+  padding: 0;
+  border: 0; border-radius: 3px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+.road-zoom:hover { color: var(--article-blue); background: color-mix(in srgb, var(--article-blue) 12%, transparent); }
+.cell-actions { text-align: right; }
+
+/* ---- SEGMENT ROW (§8.3.4) ---- */
+.segment-row { transition: background-color .09s ease; }
+.segment-row > td { height: 27px; }
+
+.cell-check { text-align: center; padding-left: 0 !important; padding-right: 0 !important; }
+
+.seg-name { font-weight: 500; }
+.seg-seq {
+  margin-left: 4px;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+}
+.seg-id {
+  display: none;                      /* the id lives in the inspector; kept for search + a11y */
+  margin-left: 6px;
+  font-size: var(--fs-micro);
+  color: var(--muted);
+}
+
+.cell-termini { color: var(--muted); font-size: var(--fs-sm); }
+.seg-arrow { margin: 0 4px; opacity: .6; }
+.seg-from, .seg-to { color: var(--body-dark); }
+
+/* NOTE: `.cell-type` stays a real table-cell — giving a <td> `display: flex`
+   makes the browser wrap it in an anonymous cell and every column after it
+   shifts by one. Inline layout instead, so app.js must insert `.seg-type-was`
+   BEFORE the <select> (see the integration note in README/report). */
+/* `#segment-tbody td` sets `text-overflow: ellipsis`, which is right for the
+   text cells and actively harmful for these two. A <select> is an *atomic*
+   inline-level box: it cannot be elided halfway, so when the line overflows by
+   even a pixel the browser replaces the entire control with a lone "…". That
+   silently hid the current Type and Ownership on all 214 rows — the two values
+   this tool exists to show. These cells clip instead (their widths are
+   budgeted in the column table above so there is nothing to clip). The
+   selector has to out-specify `#segment-tbody td`, hence the id. */
+#segment-tbody td.cell-type,
+#segment-tbody td.cell-ownership { text-overflow: clip; }
+
+.cell-type { white-space: nowrap; }
+.cell-type > * { vertical-align: middle; }
+.cell-type .type-swatch { margin-right: 4px; }
+/* In-row selects carry a tighter caret gutter than the filter/dialog selects:
+   the 18px default costs more than the value it decorates in a 100px column. */
+.seg-type-select, .seg-ownership-select, .road-type-select {
+  padding-right: 14px;
+  background-position: right 4px center;
+}
+/* Reserve the swatch (10px + 4px margin) plus the ~3px of inline whitespace the
+   template's indentation contributes, so the control never overflows the cell. */
+.seg-type-select { width: 100%; max-width: calc(100% - 21px); font-weight: 600; }
+.seg-ownership-select { width: 100%; }
+
+.seg-length { font-size: var(--fs-sm); font-variant-numeric: tabular-nums; color: var(--body-dark); }
+
+.seg-districts, .seg-maindot { font-size: var(--fs-xs); color: var(--muted); }
+
+.cell-source { text-align: right; }
+
+.seg-detail-btn, .seg-note-btn, .seg-exclude-btn {
+  width: 20px; height: 20px;
+  padding: 0;
+  border: 0; border-radius: 3px;
+  background: transparent;
+  color: color-mix(in srgb, var(--muted) 62%, transparent);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color .1s ease, background-color .1s ease;
+}
+.segment-row:hover .seg-detail-btn,
+.segment-row:hover .seg-note-btn,
+.segment-row:hover .seg-exclude-btn { color: var(--muted); }
+.seg-detail-btn:hover, .seg-note-btn:hover {
+  color: var(--article-blue) !important;
+  background: color-mix(in srgb, var(--article-blue) 12%, transparent);
+}
+.seg-exclude-btn:hover {
+  color: var(--danger) !important;
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+}
+.seg-note-btn.has-note { color: var(--article-blue); }
+
+/* ---- ROW STATE — the left rail is the record channel -------------------
+   Order matters: later rules win. has-override → note-only → excluded → pending. */
+.segment-row.has-override > .cell-check {
+  box-shadow: inset var(--rail) 0 0 var(--article-blue);
+}
+.segment-row.is-note-only > .cell-check {
+  box-shadow: inset var(--rail) 0 0 color-mix(in srgb, var(--article-blue) 45%, transparent);
+}
+.segment-row.is-excluded > .cell-check {
+  box-shadow: inset var(--rail) 0 0 var(--danger);
+}
+.segment-row.is-pending > .cell-check {
+  box-shadow: inset var(--rail) 0 0 var(--pending);
+}
+
+/* interaction channel — background-color */
+.segment-row.is-hovered  { background-color: var(--hover-bg); }
+.segment-row:hover       { background-color: var(--hover-bg); }
+.segment-row.is-selected { background-color: var(--sel-bg); }
+
+/* pending channel — a background-image wash, so it composites over selection */
+.segment-row.is-pending {
+  background-image: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--pending) 20%, transparent) 0,
+    color-mix(in srgb, var(--pending) 7%, transparent) 280px,
+    transparent 460px);
+}
+
+.segment-row.is-focused { outline: 2px solid var(--article-blue); outline-offset: -2px; }
+
+.segment-row.is-excluded .seg-name,
+.segment-row.is-excluded .cell-termini,
+.segment-row.is-excluded .seg-length { text-decoration: line-through; color: var(--danger); }
+.segment-row.is-excluded .seg-exclude-btn { color: var(--danger); }
+
+.segment-row.is-drift .cell-type {
+  box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--danger) 65%, transparent);
+}
+.segment-row.is-blank-ownership .seg-ownership-select {
+  border-color: color-mix(in srgb, var(--pending) 70%, transparent);
+  border-style: dashed;
+  background-color: color-mix(in srgb, var(--pending) 9%, var(--panel));
+}
+
+/* pending Type cell: old → new */
+.cell-type.is-changed {
+  background: color-mix(in srgb, var(--pending) 15%, transparent);
+  border-radius: 3px;
+}
+.seg-type-was {
+  margin-right: 3px;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: line-through;
+  font-variant-numeric: tabular-nums;
+}
+.seg-type-was::after {
+  content: "→";
+  margin-left: 3px;
+  display: inline-block;
+  text-decoration: none;
+  color: var(--pending);
+  font-weight: 700;
+}
+.cell-ownership.is-changed .seg-ownership-select {
+  border-color: var(--pending);
+  color: color-mix(in srgb, var(--pending) 70%, var(--body-dark));
+  font-weight: 700;
+}
+.cell-type.is-changed .seg-type-select {
+  /* Reserve the real width of the old→new prefix: `.seg-type-was` (~37px incl.
+     the arrow) + its 3px margin + the 10px swatch + its 4px margin + the ~5px
+     of inline whitespace the template's indentation contributes between them.
+     At 46px the select overflowed the cell, which is `overflow: hidden`. */
+  max-width: calc(100% - 60px);
+  border-color: var(--pending);
+  color: color-mix(in srgb, var(--pending) 70%, var(--body-dark));
+  font-weight: 700;
+}
+
+#empty-state {
+  padding: 40px 16px;
+  text-align: center;
+  color: var(--muted);
+  font-size: var(--fs-md);
+}
+
+
+/* ==========================================================================
+   11  MAP PANEL  (§8.4)
+   ========================================================================== */
+
+#map-toolbar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+  position: sticky; top: 0; z-index: 8;
+}
+#map-hover-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: right;
+  font-size: var(--fs-micro);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#map {
+  flex: none;
+  display: block;
+  width: 100%;
+  height: clamp(240px, 34vh, 520px);
+  background: var(--map-bg);
+  border-bottom: 1px solid var(--line);
+  cursor: grab;
+  touch-action: none;
+}
+#map:active { cursor: grabbing; }
+/* app.js sets this for the duration of a drag; `:active` alone drops the
+   grabbing cursor as soon as the pointer leaves the svg mid-pan. */
+#map.is-panning, #map.is-panning * { cursor: grabbing; }
+
+.map-seg {
+  fill: none;
+  stroke: var(--type-color, var(--type-none));
+  /* Non-scaling: without it a viewBox stroke-width of 1.6 rendered as 0.32 CSS
+     px in the ~200 px rail, so most of the network was a hairline and the
+     village core was invisible. Non-scaling also keeps the line weight steady
+     as you zoom in, which is what makes a 56 ft segment clickable at all. */
+  vector-effect: non-scaling-stroke;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  cursor: pointer;
+  transition: stroke-width .08s ease, opacity .12s ease;
+}
+.map-seg.is-hovered  { stroke-width: 3.2; }
+.map-seg.is-selected { stroke-width: 4; }
+.map-seg.is-pending  { stroke-width: 4; stroke-dasharray: 5 3; stroke: var(--pending); }
+.map-seg.is-excluded { stroke: var(--danger); stroke-dasharray: 2 3; }
+.map-seg.is-filtered-out { opacity: .12; }
+/* CSS-only fallback for the "Dim filtered-out" toggle; app.js may also drive it. */
+#map-panel:has(#map-dim-filtered:not(:checked)) .map-seg.is-filtered-out { opacity: 1; }
+
+/* An invisible fat stroke under every line: the visible weight stays honest
+   while the click/hover target is finger-sized. */
+.map-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 10;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  cursor: pointer;
+}
+
+#map-halo path {
+  fill: none;
+  stroke-width: 9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: none;
+  opacity: .18;
+  pointer-events: none;
+}
+/* Hover reads as a lighter version of selection, never louder than it. */
+#map-halo path.map-halo-hover { opacity: .32; stroke-width: 11; }
+
+.map-mid {
+  fill: var(--bg);
+  stroke: var(--article-blue);
+  stroke-width: 2;
+  r: 4;
+  pointer-events: none;
+}
+
+/* ---- legend ---- */
+#map-legend {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 4px;
+  padding: 7px 8px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+#map-legend:empty { display: none; }
+
+.legend-item {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 2px 6px 2px 5px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  font-size: var(--fs-micro);
+  cursor: pointer;
+  max-width: 100%;
+}
+.legend-item:hover { background: var(--panel-alt); border-color: var(--line); }
+.legend-item.is-active { border-color: var(--article-blue); background: color-mix(in srgb, var(--article-blue) 10%, transparent); }
+.legend-code { font-weight: 700; letter-spacing: .02em; }
+.legend-name { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.legend-count { color: var(--muted); font-variant-numeric: tabular-nums; opacity: .8; }
+
+
+/* ==========================================================================
+   12  INSPECTOR  (§8.4.2)
+   ========================================================================== */
+
+#detail-panel {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 9px 10px 16px;
+  background: var(--bg);
+  border-top: 1px solid var(--line-strong);
+}
+
+.detail-head { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+#detail-name {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--article-blue);
+  letter-spacing: -.005em;
+}
+#detail-id {
+  font-size: var(--fs-micro);
+  color: var(--muted);
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: var(--panel-alt);
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 2px 8px;
+  align-items: baseline;
+  font-size: var(--fs-sm);
+}
+.detail-grid dt {
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-top: 1px;
+}
+.detail-grid dd { min-width: 0; overflow-wrap: anywhere; }
+#detail-type { display: flex; align-items: center; gap: 5px; font-weight: 600; }
+#detail-length, #detail-maindot { font-variant-numeric: tabular-nums; }
+#detail-source { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+.detail-block { display: flex; flex-direction: column; gap: 4px; }
+.detail-label {
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.detail-label em { font-weight: 400; text-transform: none; letter-spacing: 0; opacity: .8; }
+
+#detail-note {
+  padding: 6px 8px;
+  border-left: 2px solid var(--article-blue);
+  border-radius: 0 3px 3px 0;
+  background: var(--bg-alt);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  color: var(--body-dark);
+}
+#detail-note.is-empty { border-left-color: var(--hair); color: var(--muted); font-style: italic; }
+
+.detail-fields { display: flex; flex-wrap: wrap; gap: 6px; }
+.detail-field {
+  display: flex; flex-direction: column; gap: 2px;
+  flex: 0 1 76px;
+}
+.detail-field-wide { flex: 1 1 140px; }
+.detail-field > span {
+  font-size: var(--fs-micro);
+  color: var(--muted);
+}
+.detail-field input { width: 100%; height: 24px; }
+
+#detail-neighbors { display: flex; flex-wrap: wrap; gap: 3px; }
+.detail-neighbor {
+  display: inline-flex; align-items: center; gap: 4px;
+  height: 21px; padding: 0 6px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--panel);
+  font-size: var(--fs-micro);
+  cursor: pointer;
+  transition: border-color .1s ease, background-color .1s ease;
+}
+.detail-neighbor:hover { border-color: var(--article-blue); background: var(--hover-bg); }
+.detail-neighbor.is-current { border-color: var(--article-blue); background: var(--sel-bg); font-weight: 600; }
+.detail-neighbor-seq { font-variant-numeric: tabular-nums; font-weight: 600; }
+.detail-neighbor-length { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+#detail-raw {
+  padding: 7px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-alt);
+  color: var(--muted);
+  font-size: var(--fs-micro);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 160px;
+  overflow: auto;
+}
+
+
+/* ==========================================================================
+   13  PENDING PANEL AND SAVE DOCK  (§8.5)
+   ========================================================================== */
+
+#pending-panel {
+  grid-column: 2;
+  grid-row: 3;
+  width: var(--pending-w);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-left: 1px solid var(--line-strong);
+  background: var(--bg-alt);
+  box-shadow: -6px 0 18px -14px rgba(0,0,0,.5);
+}
+
+/* NOTE for app.js: `#save-report` lives in this drawer, and the drawer is
+   hidden when the pending count is 0 — so a report rendered *after*
+   clearAfterSave() is never seen. Keep the panel visible until the next edit,
+   or carry the outcome in the toast. Not fixable from CSS: `[hidden]` is
+   pinned with !important above, deliberately. */
+
+#pending-header {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 10px 7px;
+  border-bottom: 1px solid var(--line-strong);
+  background: var(--panel);
+}
+#pending-header h2 {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+#pending-count {
+  margin-left: auto;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--pending);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.pending-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 7px;
+}
+
+#pending-list { display: flex; flex-direction: column; gap: 5px; }
+
+.pending-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  grid-template-areas:
+    "road   edit   revert locate"
+    "id     id     id     id"
+    "fields fields fields fields"
+    "note   note   note   note";
+  gap: 1px 3px;
+  align-items: center;
+  padding: 6px 7px;
+  border: 1px solid color-mix(in srgb, var(--pending) 40%, transparent);
+  border-left: var(--rail) solid var(--pending);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--pending) 8%, var(--panel));
+}
+.pending-item.is-invalid {
+  border-color: var(--danger);
+  border-left-color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 9%, var(--panel));
+}
+.pending-item.is-delete, .pending-item.is-exclude {
+  border-left-color: var(--danger);
+}
+
+.pending-road {
+  grid-area: road;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pending-id {
+  grid-area: id;
+  font-size: var(--fs-micro);
+  color: var(--muted);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pending-fields { grid-area: fields; display: flex; flex-direction: column; gap: 1px; margin-top: 1px; }
+.pending-field {
+  display: flex; align-items: baseline; gap: 5px;
+  font-size: var(--fs-xs);
+  min-width: 0;
+}
+.pending-field-name {
+  min-width: 62px;
+  color: var(--muted);
+  font-size: var(--fs-micro);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  flex: none;
+}
+.pending-from { color: var(--muted); text-decoration: line-through; font-variant-numeric: tabular-nums; }
+.pending-arrow { color: var(--pending); font-weight: 700; }
+.pending-to {
+  font-weight: 700;
+  color: var(--body-dark);
+  font-variant-numeric: tabular-nums;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.pending-note {
+  grid-area: note;
+  margin-top: 2px;
+  padding-left: 6px;
+  border-left: 1px solid var(--line-strong);
+  color: var(--muted);
+  font-size: var(--fs-micro);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.pending-note:empty { display: none; }
+/* Which note is on the durable record after this change matters more than the
+   text itself, so the rail carries the answer: green = the note on disk is
+   kept verbatim, red-struck = this note is about to be discarded with its
+   entry. app.js sets both classes (§9.2) but no rule existed for either. */
+.pending-note.is-preserved {
+  border-left-color: var(--ok);
+  color: color-mix(in srgb, var(--ok) 62%, var(--body-dark));
+}
+.pending-note.is-discarded {
+  border-left-color: var(--danger);
+  color: color-mix(in srgb, var(--danger) 55%, var(--muted));
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--danger) 50%, transparent);
+}
+.pending-note-missing {
+  grid-area: note;
+  justify-self: start;
+  margin-top: 2px;
+  padding: 0 5px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
+  color: var(--danger);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+}
+.pending-error {
+  grid-column: 1 / -1;
+  margin-top: 3px;
+  color: var(--danger);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+}
+
+.pending-note-edit, .pending-revert, .pending-locate {
+  width: 20px; height: 20px;
+  padding: 0;
+  border: 0; border-radius: 3px;
+  background: transparent;
+  color: color-mix(in srgb, var(--muted) 70%, transparent);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+}
+.pending-note-edit { grid-area: edit; }
+.pending-revert    { grid-area: revert; }
+.pending-locate    { grid-area: locate; }
+.pending-note-edit:hover, .pending-locate:hover {
+  color: var(--article-blue);
+  background: color-mix(in srgb, var(--article-blue) 12%, transparent);
+}
+.pending-revert:hover {
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+}
+
+#pending-empty {
+  padding: 22px 10px;
+  text-align: center;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+/* ---- orphan overrides ---- */
+#orphan-section {
+  margin-top: 12px;
+  padding-top: 9px;
+  border-top: 1px dashed var(--line-strong);
+}
+#orphan-section h3 {
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.orphan-explainer {
+  margin: 3px 0 6px;
+  font-size: var(--fs-micro);
+  line-height: 1.4;
+  color: var(--muted);
+}
+#orphan-list { display: flex; flex-direction: column; gap: 4px; }
+.orphan-item {
+  padding: 5px 7px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+.orphan-id { font-size: var(--fs-xs); font-weight: 600; }
+.orphan-reason {
+  margin-left: 6px;
+  padding: 0 5px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--muted) 18%, transparent);
+  color: var(--muted);
+  font-size: var(--fs-micro);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.orphan-note {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: var(--fs-micro);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+/* ---- save dock — always reachable, never overlaid ---- */
+.save-dock {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 9px 10px 10px;
+  border-top: 1px solid var(--line-strong);
+  background: var(--panel);
+  box-shadow: 0 -6px 16px -14px rgba(0,0,0,.5);
+}
+.save-dock .check-block { font-size: var(--fs-micro); color: var(--muted); }
+.save-dock .check-block code { font-size: var(--fs-micro); color: var(--body-dark); }
+
+.save-buttons { display: flex; gap: 6px; }
+#validate-btn { flex: 0 0 auto; }
+#save-btn { flex: 1 1 auto; height: 30px; }
+
+#save-status {
+  font-size: var(--fs-xs);
+  line-height: 1.4;
+  color: var(--muted);
+}
+#save-status:empty { display: none; }
+#save-status[data-state="validating"], #save-status[data-state="saving"] { color: var(--pending); }
+#save-status[data-state="ok"]    { color: var(--ok); font-weight: 600; }
+#save-status[data-state="warn"]  { color: var(--pending); font-weight: 600; }
+#save-status[data-state="error"] { color: var(--danger); font-weight: 600; }
+
+/* The reset zeroes <p> margins, so the report's lines would otherwise butt up
+   against each other in one undifferentiated block. */
+.save-report-line { margin-top: 3px; }
+.save-report-line:first-child { margin-top: 0; }
+
+#save-report {
+  font-size: var(--fs-micro);
+  line-height: 1.5;
+  color: var(--muted);
+  max-height: 168px;
+  overflow: auto;
+  overflow-wrap: anywhere;
+}
+#save-report:empty { display: none; }
+#save-report code { color: var(--body-dark); }
+
+#last-save {
+  font-size: var(--fs-micro);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+#last-save:empty { display: none; }
+
+
+/* ==========================================================================
+   14  DIALOGS  (§8.6 – §8.8)
+   ========================================================================== */
+
+dialog {
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+  color: var(--body-dark);
+  box-shadow: var(--shadow-lift);
+  max-width: min(560px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  overflow: hidden;
+}
+dialog::backdrop { background: rgba(20,18,17,.42); backdrop-filter: blur(1.5px); }
+@media (prefers-color-scheme: dark) {
+  dialog::backdrop { background: rgba(0,0,0,.62); }
+}
+
+.dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  padding: 16px 18px 15px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+}
+.dialog-body-wide { gap: 14px; }
+#help-dialog { max-width: min(940px, calc(100vw - 32px)); }
+
+.dialog-head { display: flex; align-items: flex-start; gap: 10px; }
+.dialog-head h2 { flex: 1 1 auto; }
+
+dialog h2 {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  color: var(--article-blue);
+}
+dialog h3 {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+dialog p { font-size: var(--fs-sm); line-height: 1.5; }
+
+#note-dialog-summary {
+  padding: 7px 9px;
+  border-radius: var(--radius);
+  background: var(--bg-alt);
+  font-weight: 500;
+}
+
+.dialog-targets {
+  display: flex; flex-wrap: wrap; gap: 3px;
+  max-height: 92px;
+  overflow-y: auto;
+}
+.dialog-targets:empty { display: none; }
+.dialog-targets li {
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--panel-alt);
+  color: var(--muted);
+  font-size: var(--fs-micro);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.dialog-targets li.is-more {
+  background: transparent;
+  font-family: inherit;
+  font-style: italic;
+}
+
+.dialog-field { display: flex; flex-direction: column; gap: 4px; }
+.dialog-label {
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+/* the "Existing note" label disappears with its blockquote */
+.dialog-field:has(> #note-existing[hidden]) { display: none; }
+
+#note-existing {
+  padding: 7px 9px;
+  border-left: 2px solid var(--muted);
+  border-radius: 0 3px 3px 0;
+  background: var(--bg-alt);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  color: var(--muted);
+}
+/* >1 target already has a note: this is a warning about what confirming
+   destroys, not a quotation, so it reads in the caution colour. */
+#note-existing.is-multi {
+  border-left-color: var(--pending);
+  color: var(--body-dark);
+}
+
+#note-input { min-height: 62px; font-size: var(--fs-base); }
+.dialog-hint { font-size: var(--fs-micro); color: var(--muted); line-height: 1.45; }
+
+.dialog-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding-top: 3px; }
+
+#confirm-message { line-height: 1.55; }
+
+/* ---- help ---- */
+.help-cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(238px, 1fr));
+  gap: 18px 24px;
+}
+.help-section { min-width: 0; }
+.help-section p + h3 { margin-top: 12px; }
+.help-section p { margin-bottom: 7px; }
+.help-lead { font-size: var(--fs-xs); color: var(--muted); margin: 6px 0 3px; }
+
+.help-types { display: flex; flex-direction: column; gap: 1px; }
+.help-type {
+  display: flex; align-items: center; gap: 7px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-size: var(--fs-sm);
+}
+.help-type:nth-child(odd) { background: var(--bg-alt); }
+.help-type code { font-weight: 700; font-size: var(--fs-xs); min-width: 20px; }
+.help-type span:last-child { color: var(--muted); }
+
+.help-keys {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 3px 10px;
+  align-items: baseline;
+  font-size: var(--fs-sm);
+}
+.help-keys dt { white-space: nowrap; }
+.help-keys dd { color: var(--muted); }
+.help-or { color: var(--muted); font-size: var(--fs-micro); }
+
+.help-notes { display: flex; flex-direction: column; gap: 5px; font-size: var(--fs-sm); line-height: 1.45; }
+.help-notes li { display: flex; align-items: baseline; gap: 7px; }
+.help-key-swatch {
+  flex: none;
+  width: 4px; height: 13px;
+  border-radius: 2px;
+  background: var(--hair);
+  transform: translateY(2px);
+}
+.help-key-swatch.is-override { background: var(--article-blue); }
+.help-key-swatch.is-auto     { background: color-mix(in srgb, var(--muted) 45%, transparent); }
+.help-key-swatch.is-pending  { background: var(--pending); }
+.help-key-swatch.is-mixed    { background: linear-gradient(var(--t-S3) 50%, var(--t-R2) 50%); }
+.help-key-swatch.is-drift    { background: var(--danger); }
+.help-foot { color: var(--muted); font-size: var(--fs-xs); border-top: 1px solid var(--line); padding-top: 8px; margin-top: 4px; }
+
+
+/* ==========================================================================
+   15  TOASTS, CHORD HINT, BLOCKING OVERLAY
+   ========================================================================== */
+
+#toast-container {
+  position: fixed;
+  left: 14px; bottom: 14px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 7px;
+  max-width: min(400px, calc(100vw - 28px));
+  pointer-events: none;
+}
+
+.toast {
+  display: flex; align-items: flex-start; gap: 9px;
+  padding: 9px 10px 9px 12px;
+  border: 1px solid var(--line-strong);
+  border-left: var(--rail) solid var(--muted);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  pointer-events: auto;
+  animation: toast-in .16s ease-out;
+}
+.toast[data-level="info"]  { border-left-color: var(--article-blue); }
+.toast[data-level="warn"]  { border-left-color: var(--pending); }
+.toast[data-level="error"] { border-left-color: var(--danger); }
+.toast[data-level="error"] .toast-message { color: var(--danger); }
+.toast-message { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+.toast-close {
+  flex: none;
+  width: 18px; height: 18px;
+  padding: 0;
+  border: 0; border-radius: 3px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 10px;
+  cursor: pointer;
+}
+.toast-close:hover { background: var(--panel-alt); color: var(--body-dark); }
+
+@keyframes toast-in { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
+
+#shortcut-hint {
+  position: fixed;
+  left: 50%; bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 210;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: var(--body-dark);
+  color: var(--bg);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  letter-spacing: .1em;
+  box-shadow: var(--shadow-lift);
+}
+
+#blocking-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(20,18,17,.55);
+  backdrop-filter: blur(2px);
+}
+/* The card chrome lives on the wrapper so the dismiss button sits inside the
+   panel rather than orphaned on the backdrop. */
+.blocking-card {
+  max-width: 480px;
+  padding: 18px 20px;
+  border: 1px solid var(--danger);
+  border-top: var(--rail) solid var(--danger);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+  color: var(--body-dark);
+  box-shadow: var(--shadow-lift);
+  text-align: right;
+}
+#blocking-message {
+  margin: 0;
+  color: var(--body-dark);
+  font-size: var(--fs-md);
+  line-height: 1.55;
+  text-align: left;
+}
+#blocking-overlay button { margin: 14px 0 0 0; }
+
+
+/* ==========================================================================
+   16  RESPONSIVE
+   ========================================================================== */
+
+/* Below 1100px the map column collapses under the table (CONTRACT §8.0).
+   #main becomes the scroll owner; the bulk bar stays pinned to its top so the
+   Type palette is always in reach, and the pending drawer docks below. */
+@media (max-width: 1100px) {
+  body {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+  }
+  /* Each pane keeps its own bounded scroller: the table stays the tall one,
+     the map stays a reachable strip beneath it, and the sticky header and
+     group rows keep working because .table-scroll is still the scroll owner. */
+  #main {
+    grid-template-columns: minmax(0, 1fr);
+    /* Both rows are flexible with a floor. Left as `auto`, the map row sizes
+       to the panel's intrinsic height (map + legend + inspector ≈ 1000px) and
+       squeezes the table row to nothing; a fixed vh max overflows instead on a
+       short window. Sharing the space proportionally does neither. */
+    grid-template-rows: minmax(160px, 1.5fr) minmax(150px, 1fr);
+    overflow: hidden;
+  }
+  #map-panel {
+    position: static;
+    min-height: 0;
+    overflow-y: auto;
+    border-left: 0;
+    border-top: 1px solid var(--line-strong);
+  }
+  #pending-panel {
+    grid-column: 1;
+    grid-row: 4;
+    width: 100%;
+    max-height: 30vh;
+    border-left: 0;
+    border-top: 1px solid var(--line-strong);
+  }
+  /* a sticky error toast must not park on top of the save controls */
+  body:has(#pending-panel:not([hidden])) #toast-container { bottom: calc(30vh + 16px); }
+}
+
+/* app.js may also force the stacked map at any width */
+#main:has(#map-panel.is-stacked) { grid-template-columns: minmax(0, 1fr); }
+#map-panel.is-stacked {
+  position: static;
+  overflow: visible;
+  grid-column: 1 / -1;
+  width: auto;
+  border-left: 0;
+  border-top: 1px solid var(--line-strong);
+}
+/* Full width is most of the win, but the map is also the one panel worth
+   trading vertical space for when you are trying to identify a stub. */
+#map-panel.is-stacked #map { height: clamp(360px, 62vh, 900px); }
+
+/* Narrow windows: retire the lowest-value columns rather than clip Source and
+   Actions off the right edge. Both values stay visible in the inspector.
+   They are collapsed to zero width rather than `display: none` — the road
+   group row spans four columns with a colspan, and removing a column outright
+   would slide its Actions cell out of line with the segment rows below. */
+@media (max-width: 1400px) {
+  :root { --table-min: 700px; }
+  .col-maindot  { width: 0 !important; font-size: 0 !important; }
+  .col-maindot, .cell-maindot { padding: 0 !important; }
+  .cell-maindot > * { display: none; }
+}
+@media (max-width: 1240px) {
+  :root { --table-min: 620px; }
+  .col-districts { width: 0 !important; font-size: 0 !important; }
+  .col-districts, .cell-districts { padding: 0 !important; }
+  .cell-districts > * { display: none; }
+}
+
+@media (max-width: 760px) {
+  .topbar-main { flex-wrap: wrap; gap: 8px 14px; }
+  #summary-bar { order: 3; flex-basis: 100%; }
+  .filter-field-search { flex-basis: 100%; max-width: none; }
+}
+
+
+/* ==========================================================================
+   17  MOTION, SCROLLBARS, PRINT
+   ========================================================================== */
+
+* { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--muted) 45%, transparent) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--muted) 38%, transparent);
+  border: 3px solid transparent;
+  background-clip: content-box;
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--muted) 62%, transparent); background-clip: content-box; }
+::-webkit-scrollbar-corner { background: transparent; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+}
+
+@media print {
+  #topbar, #filters, #bulk-bar, #map-panel, #pending-panel,
+  #toast-container, #shortcut-hint, #blocking-overlay { display: none !important; }
+  html, body { height: auto; overflow: visible; }
+  body { display: block; }
+  .table-scroll { overflow: visible; }
+  #segment-table { min-width: 0; font-size: 9pt; }
+  .road-row > td, #segment-head th { position: static; }
+}
+
+
+/* ── review fixes ─────────────────────────────────────────────────────────
+   Added after the adversarial UX / correctness passes. Each rule below exists
+   because something was measured to be wrong, not because it looked plain. */
+
+/* The segment whose Type disagrees with the rest of its own road. Amber, not
+   red: it is a prompt to look, never an assertion that the value is wrong. */
+.seg-odd-flag {
+  margin-left: 4px;
+  color: var(--pending);
+  font-size: var(--fs-micro);
+  cursor: help;
+  user-select: none;
+}
+.segment-row.is-odd-type .cell-type { background: color-mix(in srgb, var(--pending) 9%, transparent); }
+
+/* A road whose Type control reaches further than its checkbox does. */
+.road-row.is-partly-filtered .road-count { color: var(--pending); font-style: italic; }
+
+/* The note a staged edit is about to overwrite. */
+.pending-note-replaced {
+  margin: 2px 0 0;
+  font-size: var(--fs-micro);
+  color: var(--pending);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--pending) 55%, transparent);
+}
+.pending-item.is-note-replaced { border-left-color: var(--pending); }
+
+#detail-note.is-changed  { color: var(--pending); font-weight: 500; }
+#detail-note.is-discarded { color: var(--danger); text-decoration: line-through; }
+
+/* A selection reaching outside the current filters is a hazard you can click
+   away, not a parenthetical. */
+.btn-warn {
+  color: var(--on-accent, #fff);
+  background: var(--pending);
+  border-color: var(--pending);
+}
+.btn-warn:hover { filter: brightness(1.08); }
+#bulk-bar.has-hidden-selection #selection-count { font-weight: 600; }
+
+.dialog-hint.is-warn { color: var(--pending); display: block; margin-top: 4px; }
+.dialog-hint.is-warn[hidden] { display: none; }
+
+.toast-action {
+  margin-left: 10px;
+  padding: 2px 8px;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  cursor: pointer;
+}
+.toast-action:hover { background: color-mix(in srgb, currentColor 14%, transparent); }

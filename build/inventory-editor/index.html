@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="referrer" content="no-referrer">
+<title>Thoroughfare Type Editor — Newcastle CZC</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23367AAC'/%3E%3Cpath d='M4.6 15 6.4 1M11.4 15 9.6 1' stroke='%23ffffff' stroke-width='1.15' fill='none'/%3E%3Cpath d='M8 2.6v2.2M8 6.9v2.2M8 11.2v2.2' stroke='%23ffffff' stroke-width='1.15'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+<script src="app.js" defer></script>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     §8.1  TOPBAR — identity, live summary, global actions
+     ══════════════════════════════════════════════════════════════════════ -->
+<header id="topbar">
+  <div class="topbar-main">
+
+    <div class="topbar-identity">
+      <h1 id="app-title">Thoroughfare Type Editor</h1>
+      <p id="app-subtitle">Newcastle Core Zoning Code · Article 3 §5 Inventory</p>
+    </div>
+
+    <div id="summary-bar" aria-label="Inventory summary">
+      <span id="summary-total"     class="summary-stat">— segments</span>
+      <span id="summary-roads"     class="summary-stat">— roads</span>
+      <span id="summary-overrides" class="summary-stat">— Type overrides</span>
+      <span id="summary-noteonly"  class="summary-stat">— open items</span>
+      <span id="summary-excluded"  class="summary-stat">— excluded</span>
+      <span id="summary-pending"   class="summary-stat">0 pending</span>
+    </div>
+
+    <div class="topbar-actions">
+      <span id="conn-status">Loading…</span>
+      <button type="button" id="reload-btn" class="btn btn-quiet" title="Re-read both files from disk"
+              aria-label="Reload data from disk">Reload</button>
+      <button type="button" id="help-btn" class="btn btn-quiet btn-icon" title="Help and keyboard shortcuts (?)"
+              aria-label="Help and keyboard shortcuts">?</button>
+    </div>
+
+  </div>
+
+  <!-- flow container of #tpl-type-chip clones -->
+  <div id="summary-types" aria-label="Segment count by Thoroughfare Type"></div>
+
+  <div id="data-banner" role="status" hidden></div>
+</header>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     §8.2  FILTERS
+     ══════════════════════════════════════════════════════════════════════ -->
+<section id="filters" aria-label="Search and filters">
+
+  <div class="filter-field filter-field-search">
+    <label for="filter-search">Search</label>
+    <input type="search" id="filter-search" autocomplete="off" spellcheck="false"
+           placeholder="Road, id, terminus or note…   ( / )">
+  </div>
+
+  <div class="filter-field">
+    <label for="filter-type">Type</label>
+    <select id="filter-type"><option value="">All Types</option></select>
+  </div>
+
+  <div class="filter-field">
+    <label for="filter-family">Family</label>
+    <select id="filter-family"><option value="">All</option></select>
+  </div>
+
+  <div class="filter-field">
+    <label for="filter-district">District</label>
+    <select id="filter-district"><option value="">All Districts</option></select>
+  </div>
+
+  <div class="filter-field">
+    <label for="filter-ownership">Ownership</label>
+    <select id="filter-ownership"><option value="">All Ownership</option></select>
+  </div>
+
+  <div class="filter-field">
+    <label for="filter-override">Override</label>
+    <select id="filter-override">
+      <option value="">Any</option>
+      <option value="has">Has override</option>
+      <option value="none">No override</option>
+      <option value="typed">Type overridden</option>
+      <option value="noteonly">Note-only</option>
+      <option value="excluded">Excluded</option>
+      <option value="drift">Drift vs inventory</option>
+      <option value="odd">Differs from its road</option>
+    </select>
+  </div>
+
+  <label class="filter-check" for="filter-pending">
+    <input type="checkbox" id="filter-pending">
+    <span>Only pending</span>
+  </label>
+
+  <button type="button" id="filter-clear" class="btn btn-quiet" title="Reset every filter and clear the selection">Clear</button>
+
+  <span id="filter-result-count" role="status"></span>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     §8.0  MAIN — table (primary surface) + linked map
+     ══════════════════════════════════════════════════════════════════════ -->
+<main id="main">
+
+  <!-- ─────────────────────────────── §8.3  TABLE PANEL ──────────────────── -->
+  <section id="table-panel" aria-label="Segment inventory">
+
+    <!-- §8.3.1 bulk bar -->
+    <div id="bulk-bar">
+
+      <div class="bulk-row bulk-row-selection">
+        <span id="selection-count" role="status">No segments selected</span>
+        <button type="button" id="selection-hidden-warn" class="btn btn-warn btn-sm" hidden
+                title="Drop the segments the current filters hide, so an action can only touch what you can see"></button>
+
+        <span class="bulk-spacer"></span>
+
+        <button type="button" id="selection-clear"  class="btn btn-quiet btn-sm" title="Clear the selection (Esc)">Clear</button>
+        <button type="button" id="selection-invert" class="btn btn-quiet btn-sm" title="Invert the selection among visible segments">Invert</button>
+
+        <span class="bulk-divider" aria-hidden="true"></span>
+
+        <select id="bulk-ownership" aria-label="Ownership Category to apply to the selection">
+          <option value="">Set ownership…</option>
+        </select>
+        <button type="button" id="bulk-ownership-apply" class="btn btn-sm" title="Stage this Ownership Category on the selection">Apply</button>
+
+        <button type="button" id="bulk-clear-note" class="btn btn-quiet btn-sm" title="Write a note on the selection without changing any value (n)">Note…</button>
+        <button type="button" id="bulk-exclude" class="btn btn-sm is-danger" title="Toggle exclusion from the Inventory for the selection (x)">Exclude…</button>
+      </div>
+
+      <!-- ten button.type-btn[data-type][data-index] injected by app.js -->
+      <div id="type-palette" role="group" aria-label="Apply a Thoroughfare Type to the selection"></div>
+
+    </div>
+
+    <!-- §8.3.2 the table itself -->
+    <div class="table-scroll">
+      <table id="segment-table">
+        <thead>
+          <tr id="segment-head">
+            <th class="col-check" scope="col">
+              <input type="checkbox" id="select-all" title="Select every segment currently visible"
+                     aria-label="Select every visible segment">
+            </th>
+            <th class="col-name"      scope="col" data-sort="name"      tabindex="0" title="Sort by road name">Road / Segment</th>
+            <th class="col-termini"   scope="col" data-sort="termini"   tabindex="0" title="Sort by from-terminus">From → To</th>
+            <th class="col-type"      scope="col" data-sort="type"      tabindex="0" title="Sort by Thoroughfare Type">Type</th>
+            <th class="col-length"    scope="col" data-sort="length"    tabindex="0" title="Sort by length">Length</th>
+            <th class="col-ownership" scope="col" data-sort="ownership" tabindex="0" title="Sort by Ownership Category">Ownership</th>
+            <th class="col-districts" scope="col" data-sort="district"  tabindex="0" title="Sort by District">Districts</th>
+            <th class="col-maindot"   scope="col" data-sort="maindot"   tabindex="0" title="Sort by MaineDOT functional class">MaineDOT</th>
+            <th class="col-source"    scope="col" data-sort="source"    tabindex="0" title="Sort by override / auto">Source</th>
+            <th class="col-actions"   scope="col"><span class="vh">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody id="segment-tbody" aria-live="off"></tbody>
+      </table>
+
+      <p id="empty-state" hidden>No segments match these filters.</p>
+    </div>
+
+  </section>
+
+
+  <!-- ─────────────────────────────── §8.4  MAP PANEL ────────────────────── -->
+  <section id="map-panel" aria-label="Map and segment inspector">
+
+    <div id="map-toolbar">
+      <button type="button" id="map-zoom-in"    class="btn btn-quiet btn-icon" title="Zoom in"  aria-label="Zoom in">+</button>
+      <button type="button" id="map-zoom-out"   class="btn btn-quiet btn-icon" title="Zoom out" aria-label="Zoom out">−</button>
+      <button type="button" id="map-zoom-reset" class="btn btn-quiet btn-sm"   title="Fit the whole town in view" aria-label="Fit map">Fit</button>
+      <button type="button" id="map-expand"     class="btn btn-quiet btn-sm"   title="Give the map the full width of the window"
+              aria-pressed="false">Expand</button>
+      <label class="check-inline" for="map-dim-filtered" title="Fade segments that the current filters exclude">
+        <input type="checkbox" id="map-dim-filtered" checked>
+        <span>Dim filtered</span>
+      </label>
+      <span id="map-hover-label" role="status"></span>
+    </div>
+
+    <svg id="map" viewBox="0 0 1000 1549" preserveAspectRatio="xMidYMid meet" role="img"
+         aria-label="Newcastle thoroughfare map coloured by Type">
+      <g id="map-viewport">
+        <!-- paint order matters: the halo is a wider, low-opacity duplicate that
+             must sit UNDER the selected line, not tint it. -->
+        <g id="map-halo"></g>
+        <!-- Transparent fat twins so a hairline segment is still clickable.
+             They sit UNDER the visible lines on purpose: a direct hit on the
+             line you are aiming at must win, and the fat twin only catches the
+             near-misses. On top, a neighbour's twin would steal the click. -->
+        <g id="map-hits"></g>
+        <g id="map-lines"></g>
+        <g id="map-markers"></g>
+      </g>
+    </svg>
+
+    <!-- clones of #tpl-legend-item; only Types with count > 0 -->
+    <div id="map-legend" aria-label="Map legend"></div>
+
+    <!-- §8.4.2 inspector -->
+    <section id="detail-panel" aria-label="Segment inspector" hidden>
+
+      <div class="detail-head">
+        <h2 id="detail-name">—</h2>
+        <code id="detail-id"></code>
+        <span class="bulk-spacer"></span>
+        <button type="button" id="detail-note-btn"    class="btn btn-quiet btn-sm" title="Edit the note for this segment">Note…</button>
+        <button type="button" id="detail-exclude-btn" class="btn btn-quiet btn-sm is-danger" title="Toggle exclusion from the Inventory">Exclude</button>
+        <!-- CONTRACT §8.7 routes "override deletion" through #confirm-dialog but
+             §8.4.2 never gave it a control, leaving the operation reachable only
+             by an undocumented Shift+Delete chord. Hidden unless the focused
+             segment actually has an entry to delete. -->
+        <button type="button" id="detail-delete-btn"  class="btn btn-quiet btn-sm is-danger"
+                title="Remove this segment's whole entry from overrides.json, note included" hidden>Delete override</button>
+      </div>
+
+      <dl class="detail-grid">
+        <dt>From → To</dt>   <dd id="detail-termini"></dd>
+        <dt>Length</dt>      <dd id="detail-length"></dd>
+        <dt>Type</dt>        <dd id="detail-type"></dd>
+        <dt>Source</dt>      <dd id="detail-source"></dd>
+        <dt>Ownership</dt>   <dd id="detail-ownership"></dd>
+        <dt>Districts</dt>   <dd id="detail-districts"></dd>
+        <dt>MaineDOT</dt>    <dd id="detail-maindot"></dd>
+      </dl>
+
+      <div class="detail-block">
+        <span class="detail-label">Note on the durable record</span>
+        <blockquote id="detail-note">no note</blockquote>
+      </div>
+
+      <div class="detail-block detail-measures">
+        <span class="detail-label">Recorded dimensions <em>(optional — staged like any other edit)</em></span>
+        <div class="detail-fields">
+          <label class="detail-field">
+            <span>ROW ft</span>
+            <input type="number" id="detail-row-ft" min="1" max="1000" step="1" inputmode="decimal" placeholder="—">
+          </label>
+          <label class="detail-field">
+            <span>Traveled ft</span>
+            <input type="number" id="detail-traveled-ft" min="1" max="1000" step="1" inputmode="decimal" placeholder="—">
+          </label>
+          <label class="detail-field detail-field-wide">
+            <span>Nonconformity</span>
+            <input type="text" id="detail-nonconformity" maxlength="2000" placeholder="—">
+          </label>
+        </div>
+      </div>
+
+      <div class="detail-block">
+        <span class="detail-label">Rest of this road</span>
+        <div id="detail-neighbors"></div>
+      </div>
+
+      <div class="detail-block">
+        <span class="detail-label">Override entry, verbatim</span>
+        <pre id="detail-raw" hidden></pre>
+      </div>
+
+    </section>
+
+  </section>
+
+</main>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     §8.5  PENDING PANEL — staged changes and save controls
+     ══════════════════════════════════════════════════════════════════════ -->
+<aside id="pending-panel" aria-label="Pending changes and save" hidden>
+
+  <div id="pending-header">
+    <h2>Pending changes</h2>
+    <span id="pending-count">0 pending changes</span>
+    <button type="button" id="pending-clear" class="btn btn-quiet btn-sm" title="Revert every staged change">Revert all</button>
+  </div>
+
+  <div class="pending-scroll">
+    <ul id="pending-list"></ul>
+    <p id="pending-empty">No unsaved changes.</p>
+
+    <section id="orphan-section" hidden>
+      <h3>Orphan overrides</h3>
+      <p class="orphan-explainer">Entries in the durable record with no matching segment. They are preserved on every save and are not editable here.</p>
+      <ul id="orphan-list"></ul>
+    </section>
+  </div>
+
+  <div class="save-dock">
+    <label class="check-inline check-block" for="apply-inventory">
+      <input type="checkbox" id="apply-inventory" checked>
+      <span>Also update the rendered inventory (<code>source/exhibits/street-types/inventory.json</code>) so the exhibits pick these up without a GIS re-run</span>
+    </label>
+
+    <div class="save-buttons">
+      <button type="button" id="validate-btn" class="btn btn-quiet" title="Dry run — check every staged change without writing anything">Check</button>
+      <button type="button" id="save-btn" class="btn btn-primary" title="Write overrides.json (⌘S / Ctrl+S)" disabled>Save changes</button>
+    </div>
+
+    <div id="save-status" data-state="idle" role="status"></div>
+    <div id="save-report"></div>
+    <span id="last-save"></span>
+  </div>
+
+</aside>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     §8.6  NOTE DIALOG
+     ══════════════════════════════════════════════════════════════════════ -->
+<dialog id="note-dialog" aria-labelledby="note-dialog-title">
+  <div class="dialog-body">
+
+    <h2 id="note-dialog-title">Note for this change</h2>
+    <p id="note-dialog-summary"></p>
+
+    <ul id="note-dialog-targets" class="dialog-targets"></ul>
+
+    <div class="dialog-field">
+      <span class="dialog-label">Existing note (will be replaced):</span>
+      <blockquote id="note-existing" hidden></blockquote>
+    </div>
+
+    <div class="dialog-field">
+      <label class="dialog-label" for="note-input">Note recorded on the durable record</label>
+      <textarea id="note-input" rows="3" maxlength="4000" spellcheck="true"
+                placeholder="Board correction: R4 -&gt; R2."></textarea>
+      <p class="dialog-hint">Every entry in <code>overrides.json</code> carries a note — it is the written record of the decision. ⌘/Ctrl + Enter stages the change.</p>
+    </div>
+
+    <label class="check-inline check-block" for="pref-auto-note">
+      <input type="checkbox" id="pref-auto-note">
+      <span>Use the suggested note without asking (editable later)</span>
+    </label>
+
+    <div class="dialog-actions">
+      <button type="button" id="note-suggest-btn" class="btn btn-quiet btn-sm" title="Restore the generated default note">Suggest again</button>
+      <button type="button" id="note-keep-btn"    class="btn btn-quiet btn-sm" title="Stage the change and leave the note already on disk untouched" disabled>Keep existing note</button>
+      <span class="bulk-spacer"></span>
+      <button type="button" id="note-cancel"  class="btn btn-quiet">Cancel</button>
+      <button type="button" id="note-confirm" class="btn btn-primary">Stage change</button>
+    </div>
+
+  </div>
+</dialog>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     §8.7  CONFIRM DIALOG
+     ══════════════════════════════════════════════════════════════════════ -->
+<dialog id="confirm-dialog" aria-labelledby="confirm-title">
+  <div class="dialog-body">
+    <h2 id="confirm-title">Are you sure?</h2>
+    <p id="confirm-message"></p>
+    <ul id="confirm-detail" class="dialog-targets"></ul>
+    <div class="dialog-actions">
+      <span class="bulk-spacer"></span>
+      <button type="button" id="confirm-cancel" class="btn btn-quiet">Cancel</button>
+      <button type="button" id="confirm-ok"     class="btn btn-primary">Continue</button>
+    </div>
+  </div>
+</dialog>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     §8.8  HELP DIALOG (static content)
+     ══════════════════════════════════════════════════════════════════════ -->
+<dialog id="help-dialog" aria-labelledby="help-title">
+  <div class="dialog-body dialog-body-wide">
+
+    <div class="dialog-head">
+      <h2 id="help-title">Thoroughfare Type Editor</h2>
+      <button type="button" id="help-close" class="btn btn-quiet btn-icon" title="Close" aria-label="Close help">✕</button>
+    </div>
+
+    <div class="help-cols">
+
+      <section class="help-section">
+        <h3>The ten Thoroughfare Types</h3>
+        <p class="help-lead"><strong>S — Street (urban)</strong></p>
+        <ul class="help-types">
+          <li class="help-type" data-type="S1"><span class="swatch"></span><code>S1</code><span>Main Street</span></li>
+          <li class="help-type" data-type="S2"><span class="swatch"></span><code>S2</code><span>Village Street</span></li>
+          <li class="help-type" data-type="S3"><span class="swatch"></span><code>S3</code><span>Neighborhood Street</span></li>
+          <li class="help-type" data-type="S4"><span class="swatch"></span><code>S4</code><span>Lane</span></li>
+          <li class="help-type" data-type="S5"><span class="swatch"></span><code>S5</code><span>Alley</span></li>
+        </ul>
+        <p class="help-lead"><strong>R — Road (rural)</strong></p>
+        <ul class="help-types">
+          <li class="help-type" data-type="R1"><span class="swatch"></span><code>R1</code><span>Connector Road</span></li>
+          <li class="help-type" data-type="R2"><span class="swatch"></span><code>R2</code><span>Rural Road</span></li>
+          <li class="help-type" data-type="R3"><span class="swatch"></span><code>R3</code><span>Rural Lane</span></li>
+          <li class="help-type" data-type="R4"><span class="swatch"></span><code>R4</code><span>Highway Commercial</span></li>
+          <li class="help-type" data-type="R5"><span class="swatch"></span><code>R5</code><span>Rural Highway</span></li>
+        </ul>
+      </section>
+
+      <section class="help-section">
+        <h3>Keyboard</h3>
+        <dl class="help-keys">
+          <dt><kbd>/</kbd> <span class="help-or">or</span> <kbd>⌘K</kbd></dt><dd>Focus the search box</dd>
+          <dt><kbd>1</kbd>–<kbd>5</kbd></dt><dd>Apply S1–S5 to the selection</dd>
+          <dt><kbd>6</kbd><kbd>7</kbd><kbd>8</kbd><kbd>9</kbd><kbd>0</kbd></dt><dd>Apply R1–R5 to the selection</dd>
+          <dt><kbd>s</kbd> then <kbd>1</kbd>–<kbd>5</kbd></dt><dd>Apply S1–S5 (chord)</dd>
+          <dt><kbd>r</kbd> then <kbd>1</kbd>–<kbd>5</kbd></dt><dd>Apply R1–R5 (chord)</dd>
+          <dt><kbd>↓</kbd> <kbd>j</kbd> / <kbd>↑</kbd> <kbd>k</kbd></dt><dd>Move the row cursor</dd>
+          <dt><kbd>⇧</kbd> + <kbd>↓</kbd> <kbd>↑</kbd></dt><dd>Extend the selection</dd>
+          <dt><kbd>Space</kbd></dt><dd>Toggle the focused row</dd>
+          <dt><kbd>a</kbd></dt><dd>Select all visible</dd>
+          <dt><kbd>x</kbd></dt><dd>Toggle exclusion on the selection</dd>
+          <dt><kbd>n</kbd></dt><dd>Write a note on the selection</dd>
+          <dt><kbd>Esc</kbd></dt><dd>Close a dialog · else clear the selection</dd>
+          <dt><kbd>⌘S</kbd> / <kbd>Ctrl S</kbd></dt><dd>Save</dd>
+          <dt><kbd>⌘Z</kbd> / <kbd>Ctrl Z</kbd></dt><dd>Revert the last staged change</dd>
+          <dt><kbd>⇧</kbd> + <kbd>Delete</kbd></dt><dd>Delete the focused segment's whole override entry (also the inspector's <em>Delete override</em> button)</dd>
+          <dt><kbd>?</kbd></dt><dd>This panel</dd>
+        </dl>
+      </section>
+
+      <section class="help-section">
+        <h3>What Save writes</h3>
+        <p><strong><code>build/street-types/overrides.json</code></strong> — the durable record. The GIS pipeline merges it on every re-run and it <em>always wins</em> over auto-classification, so it is the permanent written record of Planning-Board and staff decisions. Every entry carries a note for that reason.</p>
+        <p>With the checkbox ticked, the same values are also written into <strong><code>source/exhibits/street-types/inventory.json</code></strong> so Exhibit 3.1 and Exhibit 3.2 pick them up without a full pipeline re-run.</p>
+        <p>Each write takes a timestamped backup beside the file (<code>…json.bak-YYYYMMDD-HHMMSS</code>); the ten most recent are kept. Nothing is written until the whole batch validates, and the write is atomic.</p>
+
+        <h3>Reading the table</h3>
+        <ul class="help-notes">
+          <li><span class="help-key-swatch is-override"></span><strong>Override</strong> — a human decision on the durable record. Blue rail on the left of the row.</li>
+          <li><span class="help-key-swatch is-auto"></span><strong>Auto</strong> — whatever the classifier produced on the last pipeline run.</li>
+          <li><span class="help-key-swatch is-pending"></span><strong>Pending</strong> — staged here, not yet written. Amber rail, and the Type cell shows <em>old → new</em>.</li>
+          <li><span class="help-key-swatch is-mixed"></span><strong>Mixed road</strong> — the road carries more than one Type. Usually worth a look.</li>
+          <li><span class="help-key-swatch is-drift"></span><strong>Drift</strong> — the override and the rendered inventory disagree; an apply-to-inventory or a pipeline re-run is due.</li>
+        </ul>
+        <p class="help-foot">An override with a note but no value is an <strong>open item</strong> — a recorded question, not a decision. Two exist today. They are never touched unless you edit them directly.</p>
+      </section>
+
+    </div>
+  </div>
+</dialog>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     Transient surfaces
+     ══════════════════════════════════════════════════════════════════════ -->
+<div id="toast-container" aria-live="polite" aria-atomic="false"></div>
+<div id="shortcut-hint" hidden></div>
+<!-- The overlay's own copy tells the reader to dismiss it, so it needs a
+     visible control: clicking the backdrop and pressing Escape both work, but
+     neither announces itself, and this appears exactly when unsaved work is at
+     stake. styles.css already sizes `#blocking-overlay button`. -->
+<div id="blocking-overlay" hidden>
+  <div class="blocking-card">
+    <p id="blocking-message"></p>
+    <button type="button" id="blocking-dismiss" class="btn btn-primary btn-sm">Dismiss and keep working</button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     §8.9  TEMPLATES — every repeating node is cloned from here by app.js
+     ══════════════════════════════════════════════════════════════════════ -->
+
+<template id="tpl-road-row">
+  <tr class="road-row" data-road-key="">
+    <td class="cell-check"><input type="checkbox" class="road-check" aria-label="Select all of this road"></td>
+    <td class="cell-road" colspan="2">
+      <button type="button" class="road-toggle" aria-expanded="true" aria-label="Collapse this road">▾</button>
+      <span class="road-name"></span>
+      <span class="road-count"></span>
+      <span class="road-flag-override"></span>
+    </td>
+    <td class="cell-type">
+      <select class="road-type-select" aria-label="Set Type for the whole road"
+              title="Set the Thoroughfare Type for every segment of this road">
+        <option value="">Set road…</option>
+      </select>
+      <span class="road-types"></span>
+    </td>
+    <td class="cell-length"><span class="road-length"></span></td>
+    <td class="cell-ownership" colspan="4"><span class="road-ownership"></span></td>
+    <td class="cell-actions">
+      <button type="button" class="road-zoom" title="Show on map" aria-label="Show this road on the map">◎</button>
+    </td>
+  </tr>
+</template>
+
+<template id="tpl-segment-row">
+  <tr class="segment-row" data-id="" data-road-key="" data-seq="" tabindex="-1">
+    <td class="cell-check"><input type="checkbox" class="seg-check"></td>
+    <td class="cell-name">
+      <span class="seg-name"></span>
+      <span class="seg-seq"></span>
+      <code class="seg-id"></code>
+    </td>
+    <td class="cell-termini">
+      <span class="seg-from"></span>
+      <span class="seg-arrow">→</span>
+      <span class="seg-to"></span>
+    </td>
+    <td class="cell-type">
+      <span class="type-swatch"></span>
+      <select class="seg-type-select" aria-label="Thoroughfare Type">
+        <option value="">—</option>
+      </select>
+    </td>
+    <td class="cell-length"><span class="seg-length"></span></td>
+    <td class="cell-ownership">
+      <select class="seg-ownership-select" aria-label="Ownership Category">
+        <option value="">—</option>
+      </select>
+    </td>
+    <td class="cell-districts"><span class="seg-districts"></span></td>
+    <td class="cell-maindot"><span class="seg-maindot"></span></td>
+    <td class="cell-source"><span class="seg-source" data-source="auto"></span></td>
+    <td class="cell-actions">
+      <button type="button" class="seg-detail-btn"  title="Inspect"                 aria-label="Inspect this segment">i</button>
+      <button type="button" class="seg-note-btn"    title="Edit note"               aria-label="Edit the note for this segment">✎</button>
+      <button type="button" class="seg-exclude-btn" title="Exclude from inventory"  aria-label="Exclude this segment from the Inventory">⊘</button>
+    </td>
+  </tr>
+</template>
+
+<template id="tpl-pending-item">
+  <li class="pending-item" data-id="">
+    <span class="pending-road"></span>
+    <code class="pending-id"></code>
+    <ul class="pending-fields"></ul>
+    <p class="pending-note"></p>
+    <p class="pending-note-replaced" hidden></p>
+    <span class="pending-note-missing" hidden>no note</span>
+    <button type="button" class="pending-note-edit" title="Edit note"          aria-label="Edit the note for this change">✎</button>
+    <button type="button" class="pending-revert"    title="Revert this change" aria-label="Revert this change">⨯</button>
+    <button type="button" class="pending-locate"    title="Show on map"        aria-label="Show this segment on the map">◎</button>
+  </li>
+</template>
+
+<template id="tpl-type-chip">
+  <button type="button" class="type-chip" data-type="">
+    <span class="type-chip-swatch"></span>
+    <span class="type-chip-code"></span>
+    <span class="type-chip-count"></span>
+  </button>
+</template>
+
+<template id="tpl-legend-item">
+  <div class="legend-item" data-type="" role="button" tabindex="0">
+    <span class="legend-swatch"></span>
+    <span class="legend-code"></span>
+    <span class="legend-name"></span>
+    <span class="legend-count"></span>
+  </div>
+</template>
+
+<template id="tpl-detail-neighbor">
+  <button type="button" class="detail-neighbor" data-id="">
+    <span class="detail-neighbor-seq"></span>
+    <span class="type-pill" data-type=""></span>
+    <span class="detail-neighbor-length"></span>
+  </button>
+</template>
+
+<template id="tpl-orphan-item">
+  <li class="orphan-item" data-id="">
+    <code class="orphan-id"></code>
+    <span class="orphan-reason"></span>
+    <p class="orphan-note"></p>
+  </li>
+</template>
+
+<template id="tpl-toast">
+  <div class="toast" data-level="info" role="status">
+    <span class="toast-message"></span>
+    <button type="button" class="toast-close" title="Dismiss" aria-label="Dismiss">✕</button>
+  </div>
+</template>
+
+</body>
+</html>

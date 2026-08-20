@@ -44,3 +44,12 @@ extract/_*
 # stay tracked. (Already-committed release PDFs, e.g. v0.21, remain tracked until
 # explicitly removed; this stops *new* release PDFs from being committed.)
 releases/**/*.pdf
+
+# Inventory-editor safety copies. The editor (build/inventory-editor/serve.py)
+# writes a timestamped backup beside each data file before every save and keeps
+# the 10 newest; the .tmp- files are the atomic-write staging files. Neither is
+# a deliverable — the durable record is the committed overrides.json itself.
+build/street-types/*.bak-*
+build/street-types/*.tmp-*
+source/exhibits/street-types/*.bak-*
+source/exhibits/street-types/*.tmp-*
