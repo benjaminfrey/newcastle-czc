@@ -23562,33 +23562,6 @@
    ]
   },
   {
-   "id": "station-road-3",
-   "name": "Station Road",
-   "termini": [
-    "end",
-    "end"
-   ],
-   "type": "R2",
-   "ownership": "Town Way",
-   "row_ft": null,
-   "traveled_ft": null,
-   "districts": [
-    "D1"
-   ],
-   "maindot": "Local",
-   "nonconformity": null,
-   "geometry": [
-    [
-     450920.28,
-     4872430.81
-    ],
-    [
-     450919.31,
-     4872434.1
-    ]
-   ]
-  },
-  {
    "id": "stewart-street-1",
    "name": "Stewart Street",
    "termini": [

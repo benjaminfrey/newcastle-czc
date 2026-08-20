@@ -32,8 +32,20 @@ def main() -> None:
     cfg = lib.load_config()
     segs = gpd.read_file(lib.WORK / "classified.gpkg")
 
-    out_segments = []
+    # An override entry may carry "exclude": true to drop a source record that is
+    # not a real thoroughfare segment — e.g. an orphan digitizing fragment in the
+    # E-911 centerlines with no connection at either end. Excluding here (rather
+    # than deleting from the promoted inventory by hand) makes the decision stick
+    # across pipeline re-runs, like every other override.
+    ov = {}
+    if lib.OVERRIDES.exists():
+        ov = json.loads(lib.OVERRIDES.read_text()).get("overrides", {})
+
+    out_segments, excluded = [], []
     for _, r in segs.iterrows():
+        if ov.get(r["id"], {}).get("exclude"):
+            excluded.append(r["id"])
+            continue
         out_segments.append({
             "id": r["id"],
             "name": r["name"],
@@ -73,6 +85,8 @@ def main() -> None:
 
     segs.to_file(lib.WORK / "review.gpkg", driver="GPKG")
     print(f"[export] {len(out_segments)} segments  ->  {invf.relative_to(lib.REPO)}")
+    if excluded:
+        print(f"         excluded {len(excluded)} non-thoroughfare record(s): {', '.join(excluded)}")
     print(f"         + work/review.csv + work/review.gpkg")
 
 

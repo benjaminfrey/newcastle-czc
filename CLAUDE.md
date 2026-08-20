@@ -139,8 +139,46 @@ rebuild. No code changes.
 
 ---
 
-## Current state (as of 2026-06-18)
+## Current state (as of 2026-06-24)
 
+- **Shipped `v0.22-draft`** (re-cut several times; tag moved forward each time — main is never
+  rewritten, only the tag is force-pushed) — **two resident comments + a full §5 inventory audit.**
+  (1) **Driveway "road stubs":** §1.B.5 no-upgrade-on-adoption clause; §5.A.3 + §5.C.6 certainty
+  (the Inventory-assigned Type is fixed at adoption → **no CEO/PB Type determination and no
+  Town-Meeting amendment at development time**); §7.C.7 trigger (a driveway *expanded or altered to
+  serve* >2 SFD / >1 TFD is no longer a Driveway); **new §7.F phased obligation** — 3–4 dwellings =
+  safety-critical core only (Basic tier, no sidewalk/planting/full ROW), 5+/Subdivision/Town Way =
+  full Type, plus a stream/Shoreland safety floor; E-911 provenance on the Exhibit 3.1 caption.
+  (2) **Street trees:** new **§3.G** (Streets S1–S5) — strengthened planting + preservation of
+  **Significant Street Trees** (CRZ protection, required in-kind replacement, arborist review) for
+  Town/applicant ROW work; utilities *coordinate + restore* (no override of State/MPUC rights);
+  general maintenance ≠ removing a healthy mature tree; §6.D.4 canopy direction. New Art-9 defs:
+  **Critical Root Zone** (1 ft radius per inch DBH — also cures an undefined use in Art 4 §3.H),
+  **Significant Street Tree** (≥6 in caliper; qualifies when its **CRZ *or* canopy dripline reaches
+  into the ROW**, so a tree on adjacent land counts), **Certified Arborist**.
+  (3) **§5 inventory audit — 42 Type corrections across 18 roads** (the cause was the approximate
+  District trace, NOT the classifier): Main St all **S1**; Mills Rd all **S3**; Pond Rd all **R1**;
+  Timber Ln, Stonebridge Cir, Bay View, Gastaldo Farm, Ledge Hill, Bailey, Cole Cabin, Cottril,
+  East View, Middle Way → **R2**; Teague, High St → **S4**; Camp, Desperado, Fern Birch, Hawthorn →
+  **R3**; two State-Highway "River Road" junction pieces → **S1** (they are Main St / Route 1B) +
+  the Town Way connector → S3. Also **removed an 11 ft orphan `station-road-3`** fragment
+  (**215 → 214 segments**). All recorded in `overrides.json` (**48 entries**).
+  **S4 and R3 now appear for the first time** → both legends carry them (S5 Alley still absent).
+  Editorial pass: `is`→`shall` on the upgrade duty, `may`→required off-segment tree replacement,
+  "comes to serve"→"is expanded or altered to serve", §5.C.6 recast. Integrated **117 pp / 1 blank**.
+- **NEW pipeline capability:** an override entry may carry **`"exclude": true`** to drop a source
+  record that is not a real thoroughfare (orphan E-911 fragment) — implemented in `05_export.py`,
+  so the decision survives re-runs like every other override.
+- **▶ OPEN — R2 vs R3 scope (Board decision).** R3 is currently only the 4 private lanes off
+  Route 1. A town-wide test was **deferred to the Planning Board**; memo written + committed:
+  `memos/Thoroughfares — Rural Road (R2) vs Rural Lane (R3) — Board Decision Memo.{md,pdf}`
+  (recommends a **600 ft test on private dead-end ways = 31 segments**; notes R3 is the *lighter*
+  standard — 12 ft gravel / 33 ft ROW vs R2's 18 ft two-lane / 40 ft — so it *reduces* the §7.F
+  obligation; caveats that length is a weak proxy for R3's actual <400 vpd volume test).
+  Inconsistency to resolve: Eden Lane (277 ft) is R2 while Camp Rd (303 ft) is R3.
+- **▶ OPEN — 2 missing Ownership Categories:** `kavanagh-road-1` + `woods-island-road-1` matched no
+  MaineDOT/E-911 jurisdiction record. **Ben to confirm against the Town's road records**; marker
+  entries sit in `overrides.json` (note-only, no values set — they render as "—").
 - **Shipped `v0.21-draft`** — Article 3 batch + output cleanup. (1) §5 inventory: 4 Type
   corrections (Academy Hill all S3; Stonebridge Circle end → R2; Route 1 Lewis Hill/Lynch →
   Woods Island → R5) via `overrides.json` + promoted `inventory.json`; (2) **Exhibit 3.1 rows
