@@ -18,9 +18,10 @@
   var SVG_NS = "http://www.w3.org/2000/svg";
 
   /* Field order is normative for display and for note composition (§12). */
-  var FIELD_ORDER = ["type", "ownership", "row_ft", "traveled_ft", "nonconformity", "exclude"];
+  var FIELD_ORDER = ["type", "present_use", "ownership", "row_ft", "traveled_ft", "nonconformity", "exclude"];
   var FIELD_LABEL = {
     type: "Type",
+    present_use: "Present use",
     ownership: "Ownership",
     row_ft: "ROW width",
     traveled_ft: "Traveled way",
@@ -103,6 +104,8 @@
     types: [],
     typeByCode: new Map(),
     ownershipCategories: [],
+    presentUseValues: [],
+    drivewayDisplay: null,
     districts: [],
     maindotClasses: [],
     view: null,
@@ -120,7 +123,7 @@
     anchorId: null,
     focusId: null,
 
-    filters: { search: "", type: "", family: "", district: "", ownership: "", override: "", pendingOnly: false },
+    filters: { search: "", type: "", family: "", district: "", ownership: "", use: "", override: "", pendingOnly: false },
     sort: { key: "name", dir: "asc" },
     collapsedRoads: new Set(),
     zoom: { k: 1, tx: 0, ty: 0 },
@@ -201,6 +204,11 @@
   }
   function effType(seg) { return effective(seg, "type") || ""; }
   function effOwnership(seg) { return effective(seg, "ownership") || ""; }
+  /* Art 3 §5.C.3.g. Reference only — it never changes the Type, which stays the
+     Type that would apply on conversion. §7.C.8 is what makes an access way a
+     Driveway, so a blank here (not yet reviewed) protects the owner just the same. */
+  function effPresentUse(seg) { return effective(seg, "present_use") || ""; }
+  function isDriveway(seg) { return effPresentUse(seg) === "Driveway"; }
   function effExcluded(seg) {
     var pc = state.pending.get(seg.id);
     if (pc && pc.kind === "set" && hasOwn(pc.fields, "exclude")) return pc.fields.exclude.to === true;
@@ -360,6 +368,8 @@
     state.types = (data.types || []).slice();
     state.typeByCode = new Map(state.types.map(function (t) { return [t.code, t]; }));
     state.ownershipCategories = (data.ownership_categories || []).slice();
+    state.presentUseValues = (data.present_use_values || []).slice();
+    state.drivewayDisplay = data.driveway_display || null;
     state.districts = (data.districts || []).slice();
     state.maindotClasses = (data.maindot_classes || []).slice();
     state.view = data.view || null;
@@ -397,7 +407,7 @@
   }
 
   function resetViewState() {
-    state.filters = { search: "", type: "", family: "", district: "", ownership: "", override: "", pendingOnly: false };
+    state.filters = { search: "", type: "", family: "", district: "", ownership: "", use: "", override: "", pendingOnly: false };
     state.selection.clear();
     state.collapsedRoads.clear();
     state.focusId = null;
@@ -459,6 +469,11 @@
       if (f.ownership === "__blank__") { if (ow) return false; }
       else if (ow !== f.ownership) return false;
     }
+    if (f.use) {
+      var pu = effPresentUse(seg);
+      if (f.use === "__blank__") { if (pu) return false; }
+      else if (pu !== f.use) return false;
+    }
     if (f.override) {
       switch (f.override) {
         case "has": if (!seg.has_override) return false; break;
@@ -488,6 +503,10 @@
       case "district": {
         var d = segs.length && segs[0].districts && segs[0].districts.length ? segs[0].districts[0] : "\uffff";
         return d;
+      }
+      case "use": {
+        var uses = uniq(segs.map(effPresentUse));
+        return uses.length === 1 ? (uses[0] || "\uffff") : "mixed";
       }
       case "maindot": return (segs.length && segs[0].maindot) || "\uffff";
       case "termini": return fold((segs.length && segs[0].termini && segs[0].termini[0]) || "");
@@ -588,6 +607,23 @@
     return out;
   }
 
+  function presentUseOptionList(placeholder, blankLabel) {
+    var out = [{ value: "", label: placeholder }];
+    state.presentUseValues.forEach(function (v) {
+      out.push({ value: v, label: v === "Driveway" ? "Driveway (D)" : v });
+    });
+    if (blankLabel) out.push({ value: "__blank__", label: blankLabel });
+    return out;
+  }
+  /* Map/swatch colour: a segment recorded as a driveway today reads as D, not as
+     the Road Type it would become on conversion. Exhibit 3.1 does the same. */
+  function drivewayColor() {
+    return (state.drivewayDisplay && state.drivewayDisplay.color) || "#A2988C";
+  }
+  function segColor(seg) {
+    return isDriveway(seg) ? drivewayColor() : typeColor(effType(seg));
+  }
+
   function tplNode(id, sel) {
     var t = E(id);
     if (!t || !t.content) return null;
@@ -601,6 +637,7 @@
       if (!row) return null;
       fillOptions(qs(row, ".seg-type-select"), typeOptionList("—", true), { value: "" });
       fillOptions(qs(row, ".seg-ownership-select"), ownershipOptionList("—"), { value: "" });
+      fillOptions(qs(row, ".seg-use-select"), presentUseOptionList("—"), { value: "" });
       protos.segRow = row;
     }
     return protos.segRow.cloneNode(true);
@@ -854,6 +891,13 @@
       if (own.value !== ov) own.value = ov;
     }
 
+    var use = qs(row, ".seg-use-select");
+    if (use) {
+      var uv = effPresentUse(seg);
+      if (use.value !== uv) use.value = uv;
+    }
+    row.classList.toggle("is-driveway", isDriveway(seg));
+
     var src = qs(row, ".seg-source");
     if (src) {
       var source = pc ? "pending" : (seg.type_source || "auto");
@@ -1004,6 +1048,27 @@
       item.title = "Filter to " + typeLabel(t.code);
       frag.appendChild(item);
     });
+
+    /* Driveways (present use) are their own legend row, appended after the Types
+       and shown only once at least one segment is marked. They are not a Type:
+       each still carries the Type it would take on conversion (Art 3 §7.F). */
+    var nDrive = 0;
+    state.segments.forEach(function (sg) { if (isDriveway(sg)) nDrive++; });
+    if (nDrive) {
+      var d = state.drivewayDisplay || { code: "D", name: "Driveway (present use)" };
+      var ditem = tplNode("tpl-legend-item", ".legend-item") || tplNode("tpl-legend-item");
+      if (ditem) {
+        ditem.dataset.type = "D";
+        var dsw = qs(ditem, ".legend-swatch");
+        if (dsw) dsw.style.backgroundColor = drivewayColor();
+        setText(ditem, ".legend-code", d.code);
+        setText(ditem, ".legend-name", d.name);
+        setText(ditem, ".legend-count", fmtInt(nDrive));
+        ditem.title = "Filter to segments recorded as driveways today";
+        frag.appendChild(ditem);
+      }
+    }
+
     host.appendChild(frag);
   }
 
@@ -1045,7 +1110,7 @@
       p.setAttribute("class", "map-seg");
       p.setAttribute("d", d);
       p.setAttribute("fill", "none");
-      p.setAttribute("stroke", typeColor(effType(seg)));
+      p.setAttribute("stroke", segColor(seg));
       p.setAttribute("stroke-linecap", "round");
       p.setAttribute("stroke-linejoin", "round");
       p.setAttribute("vector-effect", "non-scaling-stroke");
@@ -1091,10 +1156,10 @@
     var seg = state.segById.get(id);
     if (!p || !seg) return;
     var pc = state.pending.get(id);
-    var t = effType(seg);
+    var t = isDriveway(seg) ? "D" : effType(seg);
     if (p.dataset.type !== t) {
       p.dataset.type = t;
-      p.setAttribute("stroke", typeColor(t));
+      p.setAttribute("stroke", segColor(seg));
     }
     p.classList.toggle("is-selected", state.selection.has(id));
     p.classList.toggle("is-hovered", state.hoverId === id);
@@ -1172,7 +1237,7 @@
     c.setAttribute("cx", String(seg.mid[0]));
     c.setAttribute("cy", String(seg.mid[1]));
     c.setAttribute("r", "4.5");
-    c.setAttribute("fill", typeColor(effType(seg)));
+    c.setAttribute("fill", segColor(seg));
     c.setAttribute("stroke", "#FFFFFF");
     c.setAttribute("stroke-width", "1.5");
     c.setAttribute("vector-effect", "non-scaling-stroke");
@@ -1882,7 +1947,7 @@
 
     var empty = sel.length === 0;
     qsa(E("type-palette"), "button.type-btn").forEach(function (b) { b.disabled = empty; });
-    ["bulk-ownership", "bulk-ownership-apply", "bulk-exclude", "bulk-clear-note", "selection-clear", "selection-invert"]
+    ["bulk-ownership", "bulk-ownership-apply", "bulk-use", "bulk-use-apply", "bulk-exclude", "bulk-clear-note", "selection-clear", "selection-invert"]
       .forEach(function (id) { var n = E(id); if (n) n.disabled = empty; });
     var bar = E("bulk-bar");
     if (bar) bar.classList.toggle("has-selection", !empty);
@@ -1949,6 +2014,16 @@
         } else {
           parts.push("Board correction: " + to + " applied to " + segs.length + " " +
             plural(segs.length, "segment") + " (was " + oldList(froms) + ").");
+        }
+      } else if (field === "present_use") {
+        if (to === null) {
+          parts.push("Present-use record removed.");
+        } else if (to === "Driveway") {
+          parts.push("Recorded as functioning today as a Driveway (Art 3 \u00a75.C.3.g); "
+                   + "the Type shown remains the Type that would apply on conversion "
+                   + "under \u00a77.F.");
+        } else {
+          parts.push("Present use recorded as " + to + " (Art 3 \u00a75.C.3.g).");
         }
       } else if (field === "ownership") {
         if (to === null) {
@@ -2373,6 +2448,13 @@
     applyTypeToIds(Array.from(state.selection), code);
   }
 
+  function applyPresentUseToIds(ids, value) {
+    return stageWithNote(ids, { present_use: value }, {
+      summary: ids.length + " " + plural(ids.length, "segment") + " → present use "
+             + (value || "not recorded")
+    });
+  }
+
   function applyOwnershipToIds(ids, value) {
     return stageWithNote(ids, { ownership: value }, {
       summary: ids.length + " " + plural(ids.length, "segment") + " → ownership " + (value || "not recorded")
@@ -2726,6 +2808,14 @@
         .concat([{ value: "__blank__", label: "Not recorded" }]),
       { value: state.filters.ownership });
 
+    fillOptions(E("filter-use"),
+      [{ value: "", label: "All present use" }]
+        .concat(state.presentUseValues.map(function (v) {
+          return { value: v, label: v === "Driveway" ? "Driveway (D)" : v };
+        }))
+        .concat([{ value: "__blank__", label: "Not reviewed" }]),
+      { value: state.filters.use });
+
     fillOptions(E("filter-override"),
       [{ value: "", label: "Any" },
        { value: "has", label: "Has override" },
@@ -2739,6 +2829,9 @@
 
     fillOptions(E("bulk-ownership"),
       ownershipOptionList("Set ownership…", "Clear (not recorded)"), { value: "" });
+
+    fillOptions(E("bulk-use"),
+      presentUseOptionList("Set present use…", "Clear (not reviewed)"), { value: "" });
 
     var search = E("filter-search");
     if (search && search.value !== state.filters.search) search.value = state.filters.search;
@@ -2784,6 +2877,7 @@
     f.family = E("filter-family") ? E("filter-family").value : "";
     f.district = E("filter-district") ? E("filter-district").value : "";
     f.ownership = E("filter-ownership") ? E("filter-ownership").value : "";
+    f.use = E("filter-use") ? E("filter-use").value : "";
     f.override = E("filter-override") ? E("filter-override").value : "";
     f.pendingOnly = E("filter-pending") ? !!E("filter-pending").checked : false;
     renderAll();
@@ -2795,8 +2889,8 @@
   }, 120);
 
   function clearFilters() {
-    state.filters = { search: "", type: "", family: "", district: "", ownership: "", override: "", pendingOnly: false };
-    ["filter-search", "filter-type", "filter-family", "filter-district", "filter-ownership", "filter-override"]
+    state.filters = { search: "", type: "", family: "", district: "", ownership: "", use: "", override: "", pendingOnly: false };
+    ["filter-search", "filter-type", "filter-family", "filter-district", "filter-ownership", "filter-use", "filter-override"]
       .forEach(function (id) { var n = E(id); if (n) n.value = ""; });
     var p = E("filter-pending"); if (p) p.checked = false;
     /* The selection is work in progress; widening the view to add to it must
@@ -2842,13 +2936,23 @@
     on(E("map-legend"), "click", function (e) {
       var item = e.target.closest(".legend-item");
       if (!item) return;
+      /* "D" is a present-use record, not a Type — it has no filter-type option,
+         so route it to the present-use filter instead of setting a value the
+         Type <select> does not carry (which would silently clear the filter). */
+      if (item.dataset.type === "D") {
+        var useSel = E("filter-use");
+        var typeSel = E("filter-type");
+        if (typeSel) typeSel.value = "";
+        if (useSel) { useSel.value = "Driveway"; readFilters(); }
+        return;
+      }
       var sel = E("filter-type");
       if (sel) { sel.value = item.dataset.type; readFilters(); }
     });
 
     /* filters */
     on(E("filter-search"), "input", applySearch);
-    ["filter-type", "filter-family", "filter-district", "filter-ownership", "filter-override", "filter-pending"]
+    ["filter-type", "filter-family", "filter-district", "filter-ownership", "filter-use", "filter-override", "filter-pending"]
       .forEach(function (id) { on(E(id), "change", readFilters); });
     on(E("filter-clear"), "click", clearFilters);
 
@@ -2864,6 +2968,14 @@
       var v = sel.value;
       if (!v) { toast("Pick an Ownership Category first.", "info"); return; }
       applyOwnershipToIds(Array.from(state.selection), v === "__blank__" ? null : v)
+        .then(function () { sel.value = ""; });
+    });
+    on(E("bulk-use-apply"), "click", function () {
+      var sel = E("bulk-use");
+      if (!sel) return;
+      var v = sel.value;
+      if (!v) { toast("Pick a present use first.", "info"); return; }
+      applyPresentUseToIds(Array.from(state.selection), v === "__blank__" ? null : v)
         .then(function () { sel.value = ""; });
     });
     on(E("bulk-exclude"), "click", function () { toggleExcludeIds(Array.from(state.selection)); });
@@ -2966,6 +3078,13 @@
           var wantO = t.value || null;
           t.value = effOwnership(seg2);
           applyOwnershipToIds([id], wantO);
+          return;
+        }
+        if (t.classList.contains("seg-use-select")) {
+          var seg3 = state.segById.get(id);
+          var wantU = t.value || null;
+          t.value = effPresentUse(seg3);                           // revert until staged
+          applyPresentUseToIds([id], wantU);
           return;
         }
         return;

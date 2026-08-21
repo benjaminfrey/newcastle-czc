@@ -101,11 +101,23 @@ TYPE_INDEX = {c: i for i, c in enumerate(TYPE_CODES)}
 FAMILIES = [
     {"code": "S", "label": "Street (urban)"},
     {"code": "R", "label": "Road (rural)"},
+    {"code": "D", "label": "Driveway (present use)"},
 ]
 OWNERSHIP_CATEGORIES = ["Town Way", "Public Easement", "Private Road", "State Highway"]
 
+# Art 3 §5.C.3.g -- PRESENT USE. Reference-only: it records what a segment is
+# TODAY, and never changes `type`, which stays the Type that would apply on
+# conversion (Exhibit 3.1 shows that as the "on conversion" column). Recording
+# it is not what makes an access way a Driveway -- §7.C.8 does that regardless
+# of what is recorded here or whether anything is -- so an unreviewed or even a
+# mis-marked segment is still protected. Absent = not yet reviewed.
+PRESENT_USE_VALUES = ["Driveway", "Thoroughfare"]
+DRIVEWAY_DISPLAY = {"code": "D", "name": "Driveway (present use)", "family": "D",
+                    "color": "#A2988C"}
+
 # §4.1 allowed per-entry keys, in serialisation order
-KEY_ORDER = ["type", "ownership", "row_ft", "traveled_ft", "nonconformity", "exclude", "note"]
+KEY_ORDER = ["type", "present_use", "ownership", "row_ft", "traveled_ft",
+             "nonconformity", "exclude", "note"]
 SETTABLE_FIELDS = set(KEY_ORDER)
 
 ID_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
@@ -556,6 +568,7 @@ def build_data_payload() -> dict:
             "districts": seg.get("districts") or [],
             "maindot": seg.get("maindot"),
             "nonconformity": seg.get("nonconformity"),
+            "present_use": seg.get("present_use"),
             "length_ft": length_ft,
             "has_override": has_override,
             "override": deepcopy(entry) if has_override else None,
@@ -617,6 +630,8 @@ def build_data_payload() -> dict:
         "types": TYPES,
         "families": FAMILIES,
         "ownership_categories": OWNERSHIP_CATEGORIES,
+        "present_use_values": PRESENT_USE_VALUES,
+        "driveway_display": DRIVEWAY_DISPLAY,
         "districts": district_list,
         "maindot_classes": maindot_list,
         "view": view,
@@ -780,6 +795,16 @@ def validate_payload(payload, ov_doc, inv_doc):
                 else:
                     errors.append(_err(i, sid, k, "invalid_type",
                                        f"{v!r} is not one of S1…S5, R1…R5."))
+                    bad = True
+            elif k == "present_use":
+                if v is None:
+                    ops.append((k, "remove", None))
+                elif isinstance(v, str) and v in PRESENT_USE_VALUES:
+                    ops.append((k, "set", v))
+                else:
+                    errors.append(_err(i, sid, k, "invalid_present_use",
+                                       f"{v!r} is not one of "
+                                       f"{', '.join(PRESENT_USE_VALUES)}."))
                     bad = True
             elif k == "ownership":
                 if v is None:
@@ -966,7 +991,7 @@ def apply_plan(ov_doc: dict, plan: list[dict], warn: WarnBag,
 # §7.6  Applying to inventory.json
 # --------------------------------------------------------------------------- #
 
-INV_FIELDS = {"type", "ownership", "row_ft", "traveled_ft", "nonconformity"}
+INV_FIELDS = {"type", "present_use", "ownership", "row_ft", "traveled_ft", "nonconformity"}
 
 
 def apply_to_inventory(inv_doc: dict, plan: list[dict]) -> dict:

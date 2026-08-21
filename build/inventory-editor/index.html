@@ -81,6 +81,11 @@
   </div>
 
   <div class="filter-field">
+    <label for="filter-use">Present use</label>
+    <select id="filter-use"><option value="">All present use</option></select>
+  </div>
+
+  <div class="filter-field">
     <label for="filter-override">Override</label>
     <select id="filter-override">
       <option value="">Any</option>
@@ -132,6 +137,10 @@
           <option value="">Set ownership…</option>
         </select>
         <button type="button" id="bulk-ownership-apply" class="btn btn-sm" title="Stage this Ownership Category on the selection">Apply</button>
+        <select id="bulk-use" aria-label="Present use to apply to the selection">
+          <option value="">Set present use…</option>
+        </select>
+        <button type="button" id="bulk-use-apply" class="btn btn-sm" title="Stage this present use on the selection — mark driveways in bulk">Apply</button>
 
         <button type="button" id="bulk-clear-note" class="btn btn-quiet btn-sm" title="Write a note on the selection without changing any value (n)">Note…</button>
         <button type="button" id="bulk-exclude" class="btn btn-sm is-danger" title="Toggle exclusion from the Inventory for the selection (x)">Exclude…</button>
@@ -154,6 +163,7 @@
             <th class="col-name"      scope="col" data-sort="name"      tabindex="0" title="Sort by road name">Road / Segment</th>
             <th class="col-termini"   scope="col" data-sort="termini"   tabindex="0" title="Sort by from-terminus">From → To</th>
             <th class="col-type"      scope="col" data-sort="type"      tabindex="0" title="Sort by Thoroughfare Type">Type</th>
+            <th class="col-use"       scope="col" data-sort="use"       tabindex="0" title="Sort by present use (Art 3 §5.C.3.g) — what the segment is TODAY">Present use</th>
             <th class="col-length"    scope="col" data-sort="length"    tabindex="0" title="Sort by length">Length</th>
             <th class="col-ownership" scope="col" data-sort="ownership" tabindex="0" title="Sort by Ownership Category">Ownership</th>
             <th class="col-districts" scope="col" data-sort="district"  tabindex="0" title="Sort by District">Districts</th>
@@ -509,6 +519,11 @@
     <td class="cell-type">
       <span class="type-swatch"></span>
       <select class="seg-type-select" aria-label="Thoroughfare Type">
+        <option value="">—</option>
+      </select>
+    </td>
+    <td class="cell-use">
+      <select class="seg-use-select" aria-label="Present use — what this segment is today">
         <option value="">—</option>
       </select>
     </td>

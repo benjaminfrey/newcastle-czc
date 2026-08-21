@@ -23,6 +23,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456979.49,
@@ -95,6 +96,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456841.57,
@@ -158,6 +160,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456653.49,
@@ -293,6 +296,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457103.75,
@@ -358,6 +362,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457234.13,
@@ -466,6 +471,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457274.24,
@@ -561,6 +567,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457563.65,
@@ -617,6 +624,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457870.71,
@@ -772,6 +780,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      452212.14,
@@ -884,6 +893,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456989.57,
@@ -986,7 +996,7 @@
     "Main Street / River Road",
     "end"
    ],
-   "type": "R2",
+   "type": "R3",
    "ownership": "Private Road",
    "row_ft": null,
    "traveled_ft": null,
@@ -995,6 +1005,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": "Driveway",
    "geometry": [
     [
      456789.32,
@@ -1074,6 +1085,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457888.08,
@@ -1145,6 +1157,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457213.7,
@@ -1212,6 +1225,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457342.55,
@@ -1315,6 +1329,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457407.78,
@@ -1422,6 +1437,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      454759.86,
@@ -1469,6 +1485,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457545.26,
@@ -1528,6 +1545,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453280.43,
@@ -1564,6 +1582,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      454839.95,
@@ -1719,6 +1738,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      450802.99,
@@ -1771,6 +1791,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      449889.45,
@@ -1879,6 +1900,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456847.1,
@@ -2238,6 +2260,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      452855.65,
@@ -2293,6 +2316,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      451293.68,
@@ -2376,6 +2400,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      455295.52,
@@ -2628,6 +2653,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      454239.42,
@@ -2699,6 +2725,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      451834.93,
@@ -2750,6 +2777,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      455649.21,
@@ -2801,6 +2829,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      450853.14,
@@ -2948,6 +2977,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457267.77,
@@ -3047,6 +3077,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456911.4,
@@ -3162,6 +3193,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457386.95,
@@ -3213,6 +3245,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457110.67,
@@ -3252,6 +3285,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      451200.49,
@@ -3359,6 +3393,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453422.12,
@@ -3446,6 +3481,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      455582.9,
@@ -3513,6 +3549,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      455810.27,
@@ -3608,6 +3645,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456819.49,
@@ -3684,6 +3722,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      454479.41,
@@ -3743,6 +3782,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453406.94,
@@ -3795,6 +3835,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453898.71,
@@ -4011,6 +4052,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      454499.99,
@@ -4466,6 +4508,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453738.53,
@@ -4546,6 +4589,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      451643.99,
@@ -4649,6 +4693,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      450961.79,
@@ -4684,6 +4729,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456653.49,
@@ -4893,6 +4939,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457473.43,
@@ -4980,6 +5027,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      451555.51,
@@ -5023,6 +5071,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      455025.83,
@@ -5066,6 +5115,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      454069.45,
@@ -5445,6 +5495,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      454956.54,
@@ -5580,6 +5631,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      450992.45,
@@ -5716,6 +5768,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453507.63,
@@ -5755,6 +5808,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      455390.55,
@@ -5877,7 +5931,7 @@
     "Academy Hill",
     "end"
    ],
-   "type": "R2",
+   "type": "R3",
    "ownership": "Private Road",
    "row_ft": null,
    "traveled_ft": null,
@@ -5886,6 +5940,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": "Driveway",
    "geometry": [
     [
      457265.69,
@@ -5929,6 +5984,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457143.03,
@@ -5964,6 +6020,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457222.42,
@@ -5995,6 +6052,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457253.06,
@@ -6043,6 +6101,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457382.97,
@@ -6286,6 +6345,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      455499.57,
@@ -6437,6 +6497,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456852.29,
@@ -6568,6 +6629,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      455011.13,
@@ -6655,6 +6717,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      452365.68,
@@ -6771,6 +6834,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456819.49,
@@ -6818,6 +6882,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453438.33,
@@ -6861,6 +6926,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453423.28,
@@ -7092,6 +7158,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      455139.32,
@@ -7452,6 +7519,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      451045.62,
@@ -7523,6 +7591,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453089.03,
@@ -7608,6 +7677,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456871.02,
@@ -7659,6 +7729,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457341.44,
@@ -7726,6 +7797,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      452968.96,
@@ -7945,6 +8017,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456653.49,
@@ -7980,6 +8053,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453235.24,
@@ -8007,6 +8081,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      455072.94,
@@ -8041,7 +8116,7 @@
     "Jones Woods Road",
     "end"
    ],
-   "type": "R2",
+   "type": "R3",
    "ownership": "Private Road",
    "row_ft": null,
    "traveled_ft": null,
@@ -8050,6 +8125,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      454277.08,
@@ -8177,6 +8253,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456177.81,
@@ -8384,6 +8461,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457827.01,
@@ -8443,6 +8521,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457295.01,
@@ -8766,6 +8845,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453630.76,
@@ -8997,6 +9077,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      450853.14,
@@ -9224,6 +9305,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      455583.03,
@@ -9271,6 +9353,7 @@
    ],
    "maindot": "Minor Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456847.1,
@@ -9622,6 +9705,7 @@
    ],
    "maindot": "Minor Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      454619.17,
@@ -9729,6 +9813,7 @@
    ],
    "maindot": "Minor Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453993.44,
@@ -9820,6 +9905,7 @@
    ],
    "maindot": "Minor Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453676.0,
@@ -9895,6 +9981,7 @@
    ],
    "maindot": "Minor Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453483.47,
@@ -9958,6 +10045,7 @@
    ],
    "maindot": "Minor Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453235.24,
@@ -9998,6 +10086,7 @@
    ],
    "maindot": "Minor Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453089.03,
@@ -10113,6 +10202,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457274.24,
@@ -10176,6 +10266,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      455606.08,
@@ -10239,6 +10330,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456853.29,
@@ -10442,6 +10534,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456729.73,
@@ -10745,6 +10838,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      454149.4,
@@ -10811,7 +10905,7 @@
     "Sheepscot Road",
     "end"
    ],
-   "type": "R2",
+   "type": "R3",
    "ownership": "Private Road",
    "row_ft": null,
    "traveled_ft": null,
@@ -10821,6 +10915,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      454519.95,
@@ -10857,6 +10952,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453765.4,
@@ -11044,6 +11140,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456842.89,
@@ -11239,6 +11336,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456324.46,
@@ -11298,6 +11396,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456878.68,
@@ -11429,6 +11528,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      455691.06,
@@ -11568,6 +11668,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      454938.09,
@@ -11747,6 +11848,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      451675.8,
@@ -11879,6 +11981,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453261.93,
@@ -12130,6 +12233,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456759.86,
@@ -12157,6 +12261,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456759.86,
@@ -12192,6 +12297,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456485.53,
@@ -12247,6 +12353,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456331.09,
@@ -12334,6 +12441,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456793.27,
@@ -12361,6 +12469,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456791.9,
@@ -12408,6 +12517,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456793.27,
@@ -12435,6 +12545,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456819.49,
@@ -12470,6 +12581,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456856.23,
@@ -12517,6 +12629,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456979.49,
@@ -12548,6 +12661,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457034.6,
@@ -12599,6 +12713,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457143.03,
@@ -12625,7 +12740,7 @@
     "North Newcastle Road",
     "end"
    ],
-   "type": "R2",
+   "type": "R3",
    "ownership": "Private Road",
    "row_ft": null,
    "traveled_ft": null,
@@ -12634,6 +12749,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": "Driveway",
    "geometry": [
     [
      452560.72,
@@ -12689,6 +12805,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457358.57,
@@ -12740,6 +12857,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      451642.38,
@@ -12919,6 +13037,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      450917.42,
@@ -12966,6 +13085,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456772.47,
@@ -13029,6 +13149,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      455815.02,
@@ -13076,6 +13197,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      450919.31,
@@ -13107,6 +13229,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456893.55,
@@ -13162,6 +13285,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457249.97,
@@ -13439,6 +13563,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456979.49,
@@ -13494,6 +13619,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457146.57,
@@ -13537,6 +13663,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457185.62,
@@ -13569,6 +13696,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457215.07,
@@ -13603,6 +13731,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457248.04,
@@ -13750,6 +13879,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457856.56,
@@ -13781,6 +13911,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457870.71,
@@ -13840,6 +13971,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456288.96,
@@ -13899,6 +14031,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457921.73,
@@ -14015,6 +14148,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453483.47,
@@ -14374,6 +14508,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      451449.11,
@@ -14887,6 +15022,7 @@
    ],
    "maindot": "Other Principal Arterial",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457248.04,
@@ -14930,6 +15066,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457856.56,
@@ -14969,6 +15106,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      455718.26,
@@ -15046,6 +15184,7 @@
    ],
    "maindot": "Other Principal Arterial",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457185.62,
@@ -15098,6 +15237,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      451643.28,
@@ -15185,6 +15325,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      455626.14,
@@ -15240,6 +15381,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      452219.98,
@@ -15311,6 +15453,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      455065.99,
@@ -17750,6 +17893,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      452829.62,
@@ -17893,6 +18037,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      452257.21,
@@ -17960,6 +18105,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      455249.25,
@@ -18032,6 +18178,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456435.29,
@@ -18148,6 +18295,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457640.78,
@@ -18240,6 +18388,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457549.09,
@@ -18303,6 +18452,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457414.2,
@@ -18462,6 +18612,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456615.59,
@@ -18745,6 +18896,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457034.6,
@@ -18784,6 +18936,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457110.67,
@@ -18844,6 +18997,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      452378.89,
@@ -19207,6 +19361,7 @@
    ],
    "maindot": "Minor Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      454619.17,
@@ -19398,6 +19553,7 @@
    ],
    "maindot": "Minor Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      455139.32,
@@ -19545,6 +19701,7 @@
    ],
    "maindot": "Minor Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456731.22,
@@ -19588,6 +19745,7 @@
    ],
    "maindot": "Minor Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456504.9,
@@ -19635,6 +19793,7 @@
    ],
    "maindot": "Minor Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456324.46,
@@ -19717,6 +19876,7 @@
    ],
    "maindot": "Minor Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456100.92,
@@ -20332,6 +20492,7 @@
    ],
    "maindot": "Minor Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456828.41,
@@ -20367,6 +20528,7 @@
    ],
    "maindot": "Minor Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456789.32,
@@ -20406,6 +20568,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456791.9,
@@ -20437,6 +20600,7 @@
    ],
    "maindot": "Major Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456828.41,
@@ -20473,6 +20637,7 @@
    ],
    "maindot": "Minor Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456856.23,
@@ -20509,6 +20674,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456027.8,
@@ -20576,6 +20742,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453011.19,
@@ -20653,6 +20820,7 @@
    ],
    "maindot": "Other Principal Arterial",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      458820.65,
@@ -20888,6 +21056,7 @@
    ],
    "maindot": "Other Principal Arterial",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457471.11,
@@ -20922,6 +21091,7 @@
    ],
    "maindot": "Other Principal Arterial",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457387.06,
@@ -20965,6 +21135,7 @@
    ],
    "maindot": "Other Principal Arterial",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457215.07,
@@ -21025,6 +21196,7 @@
    ],
    "maindot": "Other Principal Arterial",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456841.57,
@@ -21064,6 +21236,7 @@
    ],
    "maindot": "Other Principal Arterial",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456485.53,
@@ -21103,6 +21276,7 @@
    ],
    "maindot": "Other Principal Arterial",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456331.09,
@@ -21139,6 +21313,7 @@
    ],
    "maindot": "Other Principal Arterial",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456177.81,
@@ -21212,6 +21387,7 @@
    ],
    "maindot": "Other Principal Arterial",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      455788.05,
@@ -21313,6 +21489,7 @@
    ],
    "maindot": "Other Principal Arterial",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      454583.49,
@@ -21406,6 +21583,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453261.93,
@@ -21527,6 +21705,7 @@
    ],
    "maindot": "Other Principal Arterial",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      451981.22,
@@ -21622,6 +21801,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      455936.99,
@@ -21757,6 +21937,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453274.0,
@@ -21849,6 +22030,7 @@
    ],
    "maindot": "Minor Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      454583.49,
@@ -21997,6 +22179,7 @@
    ],
    "maindot": "Minor Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453765.4,
@@ -22488,6 +22671,7 @@
    ],
    "maindot": "Minor Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      451449.11,
@@ -22539,6 +22723,7 @@
    ],
    "maindot": "Minor Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      451234.03,
@@ -22586,6 +22771,7 @@
    ],
    "maindot": "Minor Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      451115.87,
@@ -22625,6 +22811,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      450776.68,
@@ -22694,6 +22881,7 @@
    ],
    "maindot": "Minor Collector",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456100.92,
@@ -22785,6 +22973,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      451115.87,
@@ -22983,7 +23172,7 @@
     "Ridge Road",
     "end"
    ],
-   "type": "R2",
+   "type": "R3",
    "ownership": "Private Road",
    "row_ft": null,
    "traveled_ft": null,
@@ -22992,6 +23181,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": "Driveway",
    "geometry": [
     [
      454994.28,
@@ -23087,6 +23277,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457501.45,
@@ -23210,6 +23401,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      450802.99,
@@ -23394,6 +23586,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      450853.14,
@@ -23580,6 +23773,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457146.57,
@@ -23620,6 +23814,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457234.13,
@@ -23720,6 +23915,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456679.61,
@@ -23820,6 +24016,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453024.31,
@@ -23899,6 +24096,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456010.39,
@@ -23951,6 +24149,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456054.72,
@@ -24015,6 +24214,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456793.11,
@@ -24143,6 +24343,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      451234.03,
@@ -24366,6 +24567,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457357.98,
@@ -24437,6 +24639,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      457103.75,
@@ -24532,6 +24735,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456781.09,
@@ -24671,6 +24875,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      450112.71,
@@ -24806,6 +25011,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      455663.49,
@@ -24981,6 +25187,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456880.13,
@@ -25116,6 +25323,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456140.22,
@@ -25227,6 +25435,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      456615.59,
@@ -25458,6 +25667,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      451449.11,
@@ -25526,6 +25736,7 @@
    ],
    "maindot": "Local",
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      451834.93,
@@ -25669,6 +25880,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      455430.4,
@@ -25788,6 +26000,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      453751.39,
@@ -26089,6 +26302,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
+   "present_use": null,
    "geometry": [
     [
      451981.22,

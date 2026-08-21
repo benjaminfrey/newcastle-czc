@@ -62,6 +62,13 @@
 )
 #let TYPE_ORDER = ("S1", "S2", "S3", "S4", "S5", "R1", "R2", "R3", "R4", "R5")
 
+// Present use "Driveway" (§5.C.3.g) is NOT an eleventh Type — it records what a
+// segment IS TODAY. A quiet neutral so it reads as "not a road" rather than
+// competing with the two Type ramps. The Type each of these would take on
+// conversion (§7.F) stays in Exhibit 3.1's "On conversion" column.
+#let DRIVEWAY_COLOR = rgb("#A2988C")
+#let is_driveway(s) = s.at("present_use", default: none) == "Driveway"
+
 // ---- Page geometry (identical to czc-template.typ / district-maps.typ) -------
 #set page(
   paper: "us-letter",
@@ -146,7 +153,8 @@
   for s in segs {
     // A segment may be unclassified (type null/pending) — draw it gray.
     let t = if s.type == none { "" } else { s.type }
-    let col = TYPE_COLORS.at(t, default: subsection_gray)
+    let col = if is_driveway(s) { DRIVEWAY_COLOR }
+              else { TYPE_COLORS.at(t, default: subsection_gray) }
     let pts = s.geometry.map(project)
     place(top + left, curve(stroke: 2.6pt + col,
       curve.move(pts.at(0)),
@@ -160,8 +168,13 @@
 
 // ---- Legend -----------------------------------------------------------------
 // Only the Types actually present, in canonical order, two columns.
-#let present = TYPE_ORDER.filter(t => segs.any(s => s.type == t))
-#let has_unclassified = segs.any(s => s.type == none or not (s.type in TYPE_ORDER))
+// A segment recorded as a driveway is drawn as D, so it must not also make its
+// conversion Type appear "present" in the legend — the legend describes what the
+// map actually shows.
+#let present = TYPE_ORDER.filter(t => segs.any(s => s.type == t and not is_driveway(s)))
+#let has_unclassified = segs.any(s => (s.type == none or not (s.type in TYPE_ORDER))
+                                      and not is_driveway(s))
+#let n_driveways = segs.filter(is_driveway).len()
 #let legend_cell(code) = box(inset: (y: 2.5pt))[
   #box(baseline: -1.5pt, rect(width: 18pt, height: 3.5pt, radius: 1pt,
     fill: TYPE_COLORS.at(code), stroke: none))
@@ -174,6 +187,13 @@
   v(4pt, weak: true)
   grid(columns: (1fr, 1fr), column-gutter: 24pt, row-gutter: 0pt,
     ..present.map(legend_cell))
+  if n_driveways > 0 {
+    box(inset: (y: 2.5pt))[
+      #box(baseline: -1.5pt, rect(width: 18pt, height: 3.5pt, radius: 1pt,
+        fill: DRIVEWAY_COLOR, stroke: none))
+      #h(6pt)#text(size: 8.5pt, fill: body_dark)[#text(weight: "bold")[D] #h(2pt)
+        Driveway today — no Street or Road standard applies (§7.C.8)]]
+  }
   if has_unclassified {
     box(inset: (y: 2.5pt))[
       #box(baseline: -1.5pt, rect(width: 18pt, height: 3.5pt, radius: 1pt,
@@ -197,7 +217,10 @@
 #let banner = data.at("_meta", default: (:)).at("banner",
   default: "Sample data shown — not Newcastle's adopted network.")
 #block(above: 11pt, text(fill: subsection_gray, size: 7.5pt, style: "italic")[
-  Illustrative companion to the Inventory of Existing Thoroughfares (Exhibit 3.1, §5.C);
+  Illustrative companion to the Inventory of Existing Thoroughfares (Exhibit 3.1, §5.C),
   generated from the Inventory and provided for convenience. The Type assignment shown is the
-  binding classification (§5.C.2); where this Map and the Inventory differ, the Inventory governs.
+  governing classification (§5.C.2) and requires no work on any existing thoroughfare or driveway
+  (§1.B.5). Segments drawn as #text(weight: "bold")[D] serve today as driveways and no Street or
+  Road standard applies to them (§7.C.8); the Type each would take on conversion is listed in
+  Exhibit 3.1. Where this Map and the Inventory differ, the Inventory governs.
   #text(weight: "bold")[#banner]])

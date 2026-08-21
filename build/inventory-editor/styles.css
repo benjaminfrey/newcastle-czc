@@ -93,6 +93,10 @@
   --t-R3: #84934A;
   --t-R4: #A99A4B;
   --t-R5: #C2B777;
+  /* Present use "Driveway" (Art 3 §5.C.3.g) — deliberately a quiet neutral, not
+     a Type colour: a driveway is not one of the ten Types, and on the map it
+     should read as "this is not a road" rather than competing with them. */
+  --t-D:  #A2988C;
   --type-none: #BFBFBF;
   --tint: 16%;                       /* Type-colour wash strength */
 
@@ -130,6 +134,7 @@
 [data-type="R3"] { --type-color: var(--t-R3); }
 [data-type="R4"] { --type-color: var(--t-R4); }
 [data-type="R5"] { --type-color: var(--t-R5); }
+[data-type="D"]  { --type-color: var(--t-D); }
 [data-type=""]   { --type-color: var(--type-none); }
 
 
@@ -172,6 +177,7 @@
     --t-R3: #B3C179;
     --t-R4: #CFC07A;
     --t-R5: #E2DAA8;
+    --t-D:  #B5AB9E;
     --type-none: #565B61;
     --tint: 24%;
 
@@ -803,14 +809,15 @@ body:has(#pending-panel:not([hidden])) { --map-w: clamp(300px, 22vw, 360px); }
    column. Both were widened out of Name and Termini, which truncate harmlessly
    and are repeated in full in the inspector. */
 .col-check     { width:  3.0%; }
-.col-name      { width: 15.0%; }
-.col-termini   { width: 14.0%; }
-.col-type      { width: 14.0%; }
-.col-length    { width:  6.5%; }
-.col-ownership { width: 13.5%; }
-.col-districts { width: 11.0%; }
-.col-maindot   { width:  8.5%; }
-.col-source    { width:  7.5%; }
+.col-name      { width: 13.5%; }
+.col-termini   { width: 12.0%; }
+.col-type      { width: 12.0%; }
+.col-use       { width: 11.0%; }
+.col-length    { width:  6.0%; }
+.col-ownership { width: 11.5%; }
+.col-districts { width: 10.0%; }
+.col-maindot   { width:  7.5%; }
+.col-source    { width:  6.5%; }
 .col-actions   { width:  7.0%; }
 
 /* ---- sticky header ---- */
@@ -1032,7 +1039,15 @@ body:has(#pending-panel:not([hidden])) { --map-w: clamp(300px, 22vw, 360px); }
    budgeted in the column table above so there is nothing to clip). The
    selector has to out-specify `#segment-tbody td`, hence the id. */
 #segment-tbody td.cell-type,
+#segment-tbody td.cell-use,
 #segment-tbody td.cell-ownership { text-overflow: clip; }
+
+/* A segment recorded as a driveway today: the Type it carries is the Type it
+   would take on CONVERSION (Art 3 §7.F), so the Type cell is de-emphasised and
+   the present-use cell carries the weight. */
+.segment-row.is-driveway .cell-type { opacity: .55; }
+.segment-row.is-driveway .cell-use  { font-weight: 600; color: var(--t-D); }
+.road-row .cell-use { font-size: 0; }
 
 .cell-type { white-space: nowrap; }
 .cell-type > * { vertical-align: middle; }

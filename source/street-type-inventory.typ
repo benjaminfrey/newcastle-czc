@@ -33,6 +33,10 @@
   S1: rgb("#103E66"), S2: rgb("#2E6FA0"), S3: rgb("#4E97C8"), S4: rgb("#74B2D6"), S5: rgb("#9AC8E4"),
   R1: rgb("#3D4A1F"), R2: rgb("#5E6E33"), R3: rgb("#84934A"), R4: rgb("#A99A4B"), R5: rgb("#C2B777"),
 )
+// Present use "Driveway" (§5.C.3.g) is NOT an eleventh Type. It is a deliberately
+// quiet neutral so a driveway reads as "not a road" instead of competing with the
+// ten Type colours. Its Type moves to the "On conversion" column.
+#let DRIVEWAY_COLOR = rgb("#A2988C")
 
 // ---- Page geometry + chrome (identical to street-type-map.typ) --------------
 #set page(
@@ -90,6 +94,21 @@
   box(baseline: 1pt, rect(width: 7pt, height: 7pt, radius: 1pt, fill: TYPE_COLORS.at(t), stroke: none))
   h(3pt); text(weight: "bold")[#t]
 }
+#let is_driveway(s) = s.at("present_use", default: none) == "Driveway"
+// What the segment IS today. A recorded driveway shows D; everything else shows
+// its Type. §7.C.8 is what makes an access way a Driveway, not this column.
+#let use_cell(s) = {
+  if is_driveway(s) {
+    box(baseline: 1pt, rect(width: 7pt, height: 7pt, radius: 1pt, fill: DRIVEWAY_COLOR, stroke: none))
+    h(3pt); text(weight: "bold")[D]
+  } else { type_cell(s.at("type", default: none)) }
+}
+// The Type that WOULD apply if the driveway is later expanded past the §7.C.7
+// threshold — filled only for a recorded driveway, since for every other segment
+// the Type column already states the standard that applies.
+#let conversion_cell(s) = {
+  if is_driveway(s) { type_cell(s.at("type", default: none)) } else { dash }
+}
 #let termini_str(s) = {
   let t = s.at("termini", default: ("", ""))
   [#t.at(0) #sym.arrow.r #t.at(1)]
@@ -104,29 +123,43 @@
   text(fill: subsection_gray, weight: "bold", stretch: 75%, size: 11pt, tracking: 0.3pt)[
     EXHIBIT 3.1#h(0.85em)INVENTORY OF EXISTING THOROUGHFARES])
 
-#block(above: 0pt, below: 9pt, text(size: 8pt, fill: subsection_gray, style: "italic")[
-  The #text(weight: "bold")[Type] column is the binding classification of each segment (§5.C.2). The remaining
-  columns record reference information (§5.C.3) the Town may update without amending this Code.
-  Segment names and termini are drawn from the Town's E-911 road centerline data; recorded
-  right-of-way, traveled way, and other field values are approximate.
+#block(above: 0pt, below: 9pt, text(size: 8pt, fill: subsection_gray)[
+  #text(weight: "bold", fill: body_dark)[Being listed here does not require anyone to do anything.]
+  Adoption of this Article does not require any existing thoroughfare or driveway to be widened,
+  rebuilt, or brought up to the standards of its Type (§1.B.5).
+  #linebreak()
+  The #text(weight: "bold")[Type] column states what a segment is today and the standard that
+  applies when it is built, rebuilt, or improved (§5.C.2). Segments marked #text(weight: "bold")[D]
+  serve today as #text(weight: "bold")[driveways]. For those, the standard that would apply
+  #emph[if and when] the driveway is later expanded to serve more than two single-family dwellings,
+  or more than one two-family dwelling, is shown under #text(weight: "bold")[On conversion]
+  (§7.C.7–8, §7.F). #text(style: "italic")[A driveway stays a driveway until that happens — no
+  Street or Road standard reaches it in the meantime, whatever Type is recorded for it.]
+  #linebreak()
+  The remaining columns are reference information (§5.C.3) the Town may update without amending
+  this Code. Names and termini are drawn from the Town's E-911 road centerline data and reflect
+  #text(style: "italic")[addressing, not regulatory status]. Recorded right-of-way, traveled way,
+  and other field values are approximate.
   #text(weight: "bold")[#banner]])
 
 // ---- The inventory table (breakable; header repeats per page) ---------------
 #let hd(s) = text(fill: subsection_gray, weight: "bold", size: 6.5pt, tracking: 0.3pt)[#upper(s)]
 #set text(size: 7pt)
 #table(
-  columns: (20pt, 1.5fr, 1.9fr, 0.75fr, 1.15fr, 0.7fr),
+  columns: (20pt, 1.4fr, 1.75fr, 0.7fr, 0.85fr, 1.05fr, 0.65fr),
   stroke: (x, y) => (bottom: 0.4pt + subsection_gray),
   inset: (x: 4pt, y: 3pt),
   align: (x, y) => if x == 0 { right + horizon } else { left + horizon },
   table.header(
-    hd("#"), hd("Thoroughfare"), hd("From → To"), hd("Type"), hd("Ownership"), hd("District"),
+    hd("#"), hd("Thoroughfare"), hd("From → To"), hd("Type"), hd("On conversion"),
+    hd("Ownership"), hd("District"),
   ),
   ..segs.enumerate().map(((i, s)) => (
     text(fill: subsection_gray)[#(i + 1)],
     [#s.name],
     text(fill: subsection_gray)[#termini_str(s)],
-    type_cell(s.at("type", default: none)),
+    use_cell(s),
+    conversion_cell(s),
     or_dash(s.at("ownership", default: none)),
     dist_str(s),
   )).flatten()

@@ -57,6 +57,13 @@ def main() -> None:
             "districts": [d.strip() for d in (r.get("districts", "") or "").split(";") if d.strip()],
             "maindot": (r.get("fedfunccls", "") or None),
             "nonconformity": (r.get("nonconformity", "") or None),
+            # Art 3 §5.C.3.g — REFERENCE only. "Driveway" records that the segment
+            # functions today as a driveway, so Exhibit 3.1 can show Type D with the
+            # recorded Type as the conversion Type. It never changes `type` (which
+            # stays the Type that would apply on conversion) and it is not what makes
+            # an access way a Driveway — §7.C.8 does that, whatever is recorded here.
+            # Absent/None = not yet reviewed, which §7.C.8 also protects.
+            "present_use": (ov.get(r["id"], {}).get("present_use") or None),
             "geometry": coords_of(r.geometry),
         })
 

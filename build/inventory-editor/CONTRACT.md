@@ -125,6 +125,23 @@ Untyped/unknown renders as `—` with colour `#BFBFBF` (`--type-none`).
 Blank/unrecorded is a legal state and renders `—`. Two segments are blank today
 (`kavanagh-road-1`, `woods-island-road-1`) and carry OPEN-ITEM note-only overrides.
 
+### 3.2b Present use (order normative) — Article 3 §5.C.3.g
+
+`"Driveway"`, `"Thoroughfare"`. Blank/unreviewed is a legal state and renders `—`.
+
+**Present use is REFERENCE, not classification.** It records what a segment *is today*. It
+**MUST NOT** change `type`, which continues to hold the Type that would apply *on conversion*
+(Article 3 §7.F) — Exhibit 3.1 shows that as the "on conversion" column. Recording it is also not
+what makes an access way a Driveway: Article 3 §7.C.8 does that regardless of what is recorded
+here, or whether anything is. An unreviewed or even a mis-marked segment is therefore protected
+either way, and nothing in the Code turns on this field being complete.
+
+A segment with `present_use == "Driveway"` displays as **`D`** — swatch, map stroke, and legend —
+with colour `#A2988C` (`--t-D`; dark theme `#B5AB9E`). `D` is **not** an eleventh Type: it has no
+entry in `TYPES`, no option in the Type `<select>`, and no `filter-type` value. The legend row for
+`D` appears only once at least one segment is marked, and clicking it **MUST** set `filter-use`,
+never `filter-type`.
+
 ### 3.3 House typography and palette
 
 ```css
@@ -162,6 +179,7 @@ Allowed per-entry keys and value domains:
 | key | type | domain |
 |---|---|---|
 | `type` | string | one of the 10 codes in §3.1 |
+| `present_use` | string | one of the 2 values in §3.2b |
 | `ownership` | string | one of the 4 categories in §3.2 |
 | `row_ft` | number | `> 0`, `<= 1000` |
 | `traveled_ft` | number | `> 0`, `<= 1000` |
@@ -178,7 +196,8 @@ The following algorithm reproduces the current `overrides.json` **byte-for-byte*
 do not substitute `json.dump`.
 
 ```python
-KEY_ORDER = ["type", "ownership", "row_ft", "traveled_ft", "nonconformity", "exclude", "note"]
+KEY_ORDER = ["type", "present_use", "ownership", "row_ft", "traveled_ft", "nonconformity",
+             "exclude", "note"]
 
 def natkey(s):
     # natural sort: main-street-2 before main-street-10. Every element is a
@@ -225,7 +244,7 @@ Properties that **MUST** hold:
   "segments": [ … 214 … ] }
 ```
 
-Segment object (all 11 keys always present; `null` is used for "not recorded"):
+Segment object (all 12 keys always present; `null` is used for "not recorded"):
 
 ```json
 { "id": "academy-hill-1", "name": "Academy Hill",
@@ -233,7 +252,7 @@ Segment object (all 11 keys always present; `null` is used for "not recorded"):
   "type": "S3", "ownership": "Town Way",
   "row_ft": null, "traveled_ft": null,
   "districts": ["SD-Fabrication", "D1"], "maindot": "Local",
-  "nonconformity": null,
+  "nonconformity": null, "present_use": null,
   "geometry": [[456979.49, 4875907.5], …] }
 ```
 
