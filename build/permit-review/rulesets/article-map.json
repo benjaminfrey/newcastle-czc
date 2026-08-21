@@ -1,0 +1,118 @@
+{
+  "schema": "newcastle.article-map/1.0.0",
+  "generated_at": "2026-08-21T12:07:06Z",
+  "source": {
+    "renum_owner": "app/citation.py:RENUM_ADOPTED_TO_DRAFT (seeded from extract/verso.py:18)",
+    "draft_names_from": "source/article-0N-*.md '# Article N Name' headings"
+  },
+  "section_numbers": "preserved across schemes; only article numbers shift (CONTRACT.md §5.3)",
+  "adopted_to_draft": {
+    "1": 1,
+    "2": 2,
+    "3": 4,
+    "4": 5,
+    "5": 6,
+    "6": 7,
+    "7": 8,
+    "8": 9
+  },
+  "draft_to_adopted": {
+    "1": 1,
+    "2": 2,
+    "4": 3,
+    "5": 4,
+    "6": 5,
+    "7": 6,
+    "8": 7,
+    "9": 8
+  },
+  "adopted": {
+    "1": {
+      "name": "General Standards",
+      "draft_counterpart": 1,
+      "source": "docs/Newcastle Core Zoning Code.pdf (read-only baseline)"
+    },
+    "2": {
+      "name": "District Standards",
+      "draft_counterpart": 2,
+      "source": "docs/Newcastle Core Zoning Code.pdf (read-only baseline)"
+    },
+    "3": {
+      "name": "Site Standards",
+      "draft_counterpart": 4,
+      "source": "docs/Newcastle Core Zoning Code.pdf (read-only baseline)"
+    },
+    "4": {
+      "name": "Building Standards",
+      "draft_counterpart": 5,
+      "source": "docs/Newcastle Core Zoning Code.pdf (read-only baseline)"
+    },
+    "5": {
+      "name": "Design Standards",
+      "draft_counterpart": 6,
+      "source": "docs/Newcastle Core Zoning Code.pdf (read-only baseline)"
+    },
+    "6": {
+      "name": "Use Standards",
+      "draft_counterpart": 7,
+      "source": "docs/Newcastle Core Zoning Code.pdf (read-only baseline)"
+    },
+    "7": {
+      "name": "Administration",
+      "draft_counterpart": 8,
+      "source": "docs/Newcastle Core Zoning Code.pdf (read-only baseline)"
+    },
+    "8": {
+      "name": "Definitions",
+      "draft_counterpart": 9,
+      "source": "docs/Newcastle Core Zoning Code.pdf (read-only baseline)"
+    }
+  },
+  "draft": {
+    "1": {
+      "name": "General Standards",
+      "adopted_counterpart": 1,
+      "source_file": "source/article-01-general.md"
+    },
+    "2": {
+      "name": "District Standards",
+      "adopted_counterpart": 2,
+      "source_file": "source/article-02-prefatory.md"
+    },
+    "3": {
+      "name": "Thoroughfares",
+      "adopted_counterpart": null,
+      "source_file": "source/article-03-streets-roads-driveways.md"
+    },
+    "4": {
+      "name": "Site Standards",
+      "adopted_counterpart": 3,
+      "source_file": "source/article-04-site-standards.md"
+    },
+    "5": {
+      "name": "Building Standards",
+      "adopted_counterpart": 4,
+      "source_file": "source/article-05-building-standards.md"
+    },
+    "6": {
+      "name": "Design Standards",
+      "adopted_counterpart": 5,
+      "source_file": "source/article-06-design-standards.md"
+    },
+    "7": {
+      "name": "Use Standards",
+      "adopted_counterpart": 6,
+      "source_file": "source/article-07-use-standards.md"
+    },
+    "8": {
+      "name": "Administration",
+      "adopted_counterpart": 7,
+      "source_file": "source/article-08-administration.md"
+    },
+    "9": {
+      "name": "Definitions",
+      "adopted_counterpart": 8,
+      "source_file": "source/article-09-definitions.md"
+    }
+  }
+}

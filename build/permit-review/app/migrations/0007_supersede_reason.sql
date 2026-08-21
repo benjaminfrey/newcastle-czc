@@ -1,0 +1,48 @@
+-- =============================================================================
+-- Newcastle Permit Review — 0007_supersede_reason.sql
+--
+-- N3 fix (adversarial re-review of the W3b deadline-engine repairs). Before
+-- this migration, `case_milestones.superseded_by` recorded THAT one row
+-- replaced another but never WHY, and engine/deadlines.py's
+-- `_first_satisfying_occurrence()` treated every superseded row the same
+-- way: always credit the EARLIEST dated occurrence, superseded or not, as
+-- the moment a statutory duty was performed. That is correct for a genuine
+-- RESCHEDULE / RE-NOTICE (F7's case: a hearing moves, a fresh notice goes
+-- out for the new date, but the FIRST notice really was mailed and really
+-- did satisfy the notice duty that was live at the time) and WRONG for a
+-- CORRECTION (N3's case: the first row was never a real occurrence at all
+-- -- it is a typo/data-entry error the operator is fixing -- so it must not
+-- be allowed to satisfy anything).
+--
+-- The two reasons are indistinguishable from the data alone (both are just
+-- "an earlier row, later superseded by a later row"), so CONTRACT.md §1 S7
+-- ("no silent guessing") requires the reason to be recorded EXPLICITLY, by
+-- a human, at the moment the row is superseded -- never inferred from the
+-- dates themselves. This migration adds the column that records it.
+--
+-- Plain ALTER TABLE ADD COLUMN (no CHECK-driven table rebuild needed --
+-- unlike case_milestones.kind's own widenings in 0003/0005, this is a new,
+-- independent, nullable column whose own CHECK only constrains ITS values,
+-- not a rule spanning the whole table, exactly the same shape as 0005's (b)
+-- ALTER TABLE ADD COLUMN on `deadlines`).
+--
+-- NULL means "superseded before this column existed, or superseded without
+-- a reason ever being recorded" -- a genuinely unknown legacy case. This
+-- checkout has zero real case rows (same as every migration before it), so
+-- no existing row is reclassified here; NULL is simply the honest starting
+-- value for every row that predates this migration. engine/deadlines.py's
+-- `_first_satisfying_occurrence()` treats NULL with the CONSERVATIVE
+-- reading -- same as an explicit 'correction' -- because assuming
+-- 'reschedule' by default would silently resurrect exactly the N3 defect
+-- for every unmarked legacy row (a superseded date crediting a duty it may
+-- never have actually satisfied); assuming 'correction' by default can only
+-- ever make the engine UNDER-credit compliance, never manufacture false
+-- compliance out of an unverified date. See DECISIONS-NEEDED.md D-0016.
+-- =============================================================================
+
+ALTER TABLE case_milestones ADD COLUMN supersede_reason TEXT
+    CHECK (supersede_reason IS NULL OR supersede_reason IN ('reschedule', 'correction'));
+
+-- =============================================================================
+-- END 0007_supersede_reason.sql
+-- =============================================================================

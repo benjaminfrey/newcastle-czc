@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block title %}Extraction Review — {{ case.label if review_available else "Case" }} — Newcastle Permit Review{% endblock %}
+{% block brand_sub %}Extraction Review{% endblock %}
+
+{% block content %}
+{% if not review_available %}
+  <section class="panel panel-empty">
+    <h1>Extraction Review</h1>
+    <p class="notice notice-warn">
+      No case found, or the extraction data layer (<code>app.extraction</code>) is not available yet.
+    </p>
+  </section>
+{% else %}
+
+  <section class="panel case-header">
+    <div>
+      <p class="breadcrumb"><a href="/cases/{{ case.id }}">&larr; {{ case.label }}</a></p>
+      <h1>Extraction Review</h1>
+      <p class="lede">
+        Every value below is EVIDENCE a document offered, never an answer. Confirm the one that is
+        right, type a correction, or mark a field not applicable — nothing here becomes a decision
+        until you say so.
+      </p>
+    </div>
+  </section>
+
+  {% if generation.unknown %}
+  <section class="unknown-generation-banner" role="alert" aria-live="polite">
+    <span class="icon">&#9888;&#65039;</span>
+    <span>
+      <strong>Unknown form generation.</strong> This case's intake form did not match the Gen-1
+      ("Zoning Permit Application") or Gen-2 ("PLANNING APPLICATION") fingerprint. Automatic
+      extraction was <strong>not attempted</strong> — every field on this case needs manual entry
+      below, and the absence worklist reflects the full expected field set, not just what a document
+      happened to supply.
+    </span>
+  </section>
+  {% elif generation.label %}
+  <p class="dim-note">Detected form generation: <strong>{{ generation.label }}</strong></p>
+  {% endif %}
+
+  <section class="panel review-summary">
+    <h3>Summary</h3>
+    <div class="review-summary-stats">
+      <div class="review-stat">
+        <span class="review-stat-n">{{ field_count }}</span>
+        <span class="review-stat-label">field{{ "s" if field_count != 1 else "" }} with evidence or a decision</span>
+      </div>
+      <div class="review-stat {{ 'review-stat-alert' if contested_count else '' }}">
+        <span class="review-stat-n">{{ contested_count }}</span>
+        <span class="review-stat-label">contested — sources disagree</span>
+      </div>
+      <div class="review-stat {{ 'review-stat-alert' if worklist.count else '' }}">
+        <span class="review-stat-n">{{ worklist.count }}</span>
+        <span class="review-stat-label">absent from the application</span>
+      </div>
+    </div>
+    {% if state_counts %}
+    <div class="state-breakdown">
+      {% for state in field_value_states %}
+        {% if state_counts.get(state) %}
+          <span class="field-state-badge field-state-badge-{{ state }}">{{ state_counts[state] }} {{ state.replace('_', ' ') }}</span>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+  </section>
+
+  <section class="panel absence-worklist">
+    <h3>Absence Worklist &mdash; {{ worklist.count }} field{{ "s" if worklist.count != 1 else "" }} with no evidence in this application</h3>
+    <p class="dim-note">
+      Roughly a third of what a real decision needs is never in the application at all — a deed
+      reference, a GIS shoreland classification, a staff use-taxonomy call, a post-submittal hearing
+      date. This is that gap, made visible, not a footnote.
+    </p>
+    {% if worklist.headline %}<p class="dim-note">{{ worklist.headline }}</p>{% endif %}
+    {% if worklist.groups %}
+      {% for group in worklist.groups %}
+        <details class="worklist-group" open>
+          <summary>{{ group.source }} <span class="worklist-group-count">({{ group.fields | length }})</span></summary>
+          <ul class="worklist-items">
+            {% for item in group.fields %}
+              <li class="worklist-item {{ 'worklist-item-materialized' if item.materialized else '' }}">
+                <span class="worklist-item-label">{{ item.label }}</span>
+                {% if item.citation_text %}<span class="worklist-item-citation">{{ item.citation_text }}</span>{% endif %}
+                <span class="worklist-item-note {{ '' if item.materialized else 'muted' }}">{{ item.note }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        </details>
+      {% endfor %}
+    {% else %}
+      <p class="notice">Nothing outstanding — either every expected field has evidence, or this
+        ruleset/district has no field catalogue seeded yet.</p>
+    {% endif %}
+  </section>
+
+  <section class="panel fields-panel">
+    <h3>Fields</h3>
+    {% if fields %}
+      <div class="field-card-list" data-case-id="{{ case.id }}">
+        {% for field in fields %}
+        <div class="field-card {{ 'field-card-contested' if field.contested else '' }}"
+             data-field-def-id="{{ field.field_def.id }}"
+             data-subject-key="{{ field.subject_key or '' }}">
+          <div class="field-card-head">
+            <div class="field-card-head-text">
+              <span class="field-label">{{ field.field_def.label }}</span>
+              {% if field.subject_key %}<span class="field-subject-tag">{{ field.subject_key }}</span>{% endif %}
+              {% if field.citation_text %}<div class="field-citation">{{ field.citation_text }}</div>{% endif %}
+            </div>
+            <span class="field-state-badge field-state-badge-{{ field.display_state }}">{{ field.display_state.replace('_', ' ') }}</span>
+          </div>
+
+          {% if field.contested %}
+            <p class="contested-note">
+              <strong>Sources disagree.</strong> The form is not automatically trusted over the plan
+              — pick the correct value below; both are shown, neither is pre-selected.
+            </p>
+          {% endif %}
+
+          {% if field.value and field.value.state in ('confirmed', 'overridden', 'not_applicable') %}
+            <div class="field-decision field-decision-{{ field.value.state }}">
+              <span class="field-decision-state">{{ field.value.state.replace('_', ' ') | capitalize }}</span>
+              {% if field.value.value_num is not none %}
+                <span class="field-decision-value">{{ field.value.value_num }} {{ field.value.unit or "" }}</span>
+              {% elif field.value.value_text %}
+                <span class="field-decision-value">{{ field.value.value_text }} {{ field.value.unit or "" }}</span>
+              {% endif %}
+              {% if field.value.override_reason %}
+                <div class="field-decision-reason">{{ field.value.override_reason }}</div>
+              {% endif %}
+              <div class="field-decision-meta">{{ field.value.confirmed_by or "—" }} &middot; {{ field.value.confirmed_at or "—" }}</div>
+            </div>
+          {% endif %}
+
+          <div class="candidate-list">
+            {% for c in field.candidates %}
+              <div class="candidate {{ 'candidate-chosen' if (field.value and field.value.chosen_candidate_id == c.id) else '' }}"
+                   data-candidate-id="{{ c.id }}">
+                <div class="candidate-value">
+                  {% if c.value_num is not none %}{{ c.value_num }}{% elif c.value_text %}{{ c.value_text }}{% else %}<span class="muted">(no parsed value)</span>{% endif %}
+                  {{ c.unit or "" }}
+                </div>
+                {% if c.raw_text %}<div class="candidate-raw">&ldquo;{{ c.raw_text }}&rdquo;</div>{% endif %}
+                <div class="candidate-meta">
+                  <span class="candidate-source">{{ c.document_title or "unknown document" }}{% if c.page_number %}, p.{{ c.page_number }}{% endif %}</span>
+                  <span class="candidate-tag">{{ c.extractor }}</span>
+                  {% if c.confidence is not none %}<span class="candidate-tag">{{ (c.confidence * 100) | round(0) | int }}% confidence</span>{% endif %}
+                  <span class="candidate-tag candidate-priority">priority {{ c.source_priority }}</span>
+                </div>
+                {% if c.bbox %}<div class="candidate-bbox">bbox: [{{ c.bbox | join(", ") }}]</div>{% endif %}
+                <div class="candidate-preview">
+                  {% if c.thumb_blob_id %}
+                    <img class="candidate-thumb" src="/api/blobs/{{ c.thumb_blob_id }}" alt="Page {{ c.page_number }} thumbnail">
+                  {% endif %}
+                  {% if c.document_blob_id %}
+                    <a class="candidate-source-link" target="_blank" rel="noopener"
+                       href="/api/blobs/{{ c.document_blob_id }}{% if c.page_number %}#page={{ c.page_number }}{% endif %}">
+                      View source{% if c.page_number %} (p.{{ c.page_number }}){% endif %}
+                    </a>
+                  {% else %}
+                    <span class="muted">no source document on file</span>
+                  {% endif %}
+                </div>
+                <button type="button" class="confirm-candidate-btn">Confirm this value</button>
+              </div>
+            {% endfor %}
+            {% if not field.candidates %}
+              <p class="notice">No candidates on file — a human already decided this field directly, or it is only reachable through the absence worklist above.</p>
+            {% endif %}
+          </div>
+
+          <div class="field-actions">
+            <label class="field-why-label">Why (used for Confirm)
+              <input type="text" class="field-confirm-why" placeholder="e.g. matches the plan, sheet C-2">
+            </label>
+            <form class="override-form">
+              <input type="text" name="value" placeholder="corrected value" required>
+              <input type="text" name="unit" placeholder="unit (optional)">
+              <input type="text" name="reason" placeholder="why this overrides the evidence (required)" required>
+              <button type="submit">Override</button>
+            </form>
+            <form class="not-applicable-form">
+              <input type="text" name="why" placeholder="why this standard does not apply (required)" required>
+              <button type="submit" class="btn-secondary">Not applicable</button>
+            </form>
+          </div>
+          <div class="field-result render-result" aria-live="polite"></div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="notice">No fields have evidence or a decision recorded on this case yet.</p>
+    {% endif %}
+  </section>
+
+{% endif %}
+<script src="/static/extraction-review.js"></script>
+{% endblock %}

@@ -1,0 +1,5207 @@
+{
+  "schema": "newcastle.crosswalk/1.0.0",
+  "generated_at": "2026-08-21T12:07:07Z",
+  "source": {
+    "adopted_pdf": "docs/Newcastle Core Zoning Code.pdf",
+    "adopted_pdf_sha256": "9b217fb90ba30c7101babef3b4ecc53fb7e5d754ba6925ccbfe0b5a03149c716",
+    "draft_dir": "source/",
+    "overrides_applied": "build/permit-review/rulesets/crosswalk-overrides.json"
+  },
+  "matched_articles": {
+    "1": {
+      "adopted": 1,
+      "draft": 1
+    },
+    "3": {
+      "adopted": 3,
+      "draft": 4
+    },
+    "4": {
+      "adopted": 4,
+      "draft": 5
+    },
+    "5": {
+      "adopted": 5,
+      "draft": 6
+    },
+    "6": {
+      "adopted": 6,
+      "draft": 7
+    },
+    "7": {
+      "adopted": 7,
+      "draft": 8
+    }
+  },
+  "excluded_articles": {
+    "adopted:2": {
+      "reason": "District Standards is district-keyed (13 districts x panels), not section/subsection prose. rulesets/adopted/districts.json is deliberately blocked on D-0001/D-0002 (CONTRACT.md §4.2.3, DECISIONS-NEEDED.md) -- this module does not touch it or work around its absence."
+    },
+    "draft:2": {
+      "reason": "Same as adopted:2 -- Article 2 is Article 2 in both schemes."
+    },
+    "adopted:8": {
+      "reason": "Definitions is a flat '**Term:**\\ndefinition' list (272 entries), not section/subsection prose."
+    },
+    "draft:9": {
+      "reason": "Same as adopted:8 -- Definitions, renumbered draft Article 9."
+    },
+    "draft:3": {
+      "reason": "Thoroughfares is new in the draft; it has no adopted counterpart (CONTRACT.md §5.3 NoCounterpart)."
+    }
+  },
+  "counts": {
+    "matches": 571,
+    "matches_section_level": 137,
+    "matches_subsection_level": 434,
+    "unmatched_adopted": 0,
+    "unmatched_draft": 0
+  },
+  "matches": [
+    {
+      "adopted_id": "adopted:a1.s1",
+      "draft_id": "draft:a1.s1",
+      "level": "section",
+      "adopted_title": "CORE ZONING CODE",
+      "draft_title": "CORE ZONING CODE",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a1.s1.a",
+      "draft_id": "draft:a1.s1.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a1.s1.b",
+      "draft_id": "draft:a1.s1.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a1.s2",
+      "draft_id": "draft:a1.s2",
+      "level": "section",
+      "adopted_title": "CODE INSTRUCTIONS",
+      "draft_title": "CODE INSTRUCTIONS",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a1.s2.a",
+      "draft_id": "draft:a1.s2.a",
+      "level": "subsection",
+      "adopted_title": "TITLE",
+      "draft_title": "TITLE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a1.s2.b",
+      "draft_id": "draft:a1.s2.b",
+      "level": "subsection",
+      "adopted_title": "MEANING & PURPOSE",
+      "draft_title": "MEANING & PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a1.s2.c",
+      "draft_id": "draft:a1.s2.c",
+      "level": "subsection",
+      "adopted_title": "TEXT & GRAPHICS",
+      "draft_title": "TEXT & GRAPHICS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a1.s2.d",
+      "draft_id": "draft:a1.s2.d",
+      "level": "subsection",
+      "adopted_title": "ORGANIZATIONAL STRUCTURE",
+      "draft_title": "ORGANIZATIONAL STRUCTURE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a1.s3",
+      "draft_id": "draft:a1.s3",
+      "level": "section",
+      "adopted_title": "DISTRICT MAP",
+      "draft_title": "DISTRICT MAP",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a1.s3.a",
+      "draft_id": "draft:a1.s3.a",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a1.s4",
+      "draft_id": "draft:a1.s4",
+      "level": "section",
+      "adopted_title": "AUTHORITY & COMPLIANCE",
+      "draft_title": "AUTHORITY & COMPLIANCE",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a1.s4.a",
+      "draft_id": "draft:a1.s4.a",
+      "level": "subsection",
+      "adopted_title": "AUTHORITY",
+      "draft_title": "AUTHORITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a1.s4.b",
+      "draft_id": "draft:a1.s4.b",
+      "level": "subsection",
+      "adopted_title": "COMPLIANCE",
+      "draft_title": "COMPLIANCE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a1.s4.c",
+      "draft_id": "draft:a1.s4.c",
+      "level": "subsection",
+      "adopted_title": "RELATIONSHIP TO OTHER STANDARDS",
+      "draft_title": "RELATIONSHIP TO OTHER STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a1.s5",
+      "draft_id": "draft:a1.s5",
+      "level": "section",
+      "adopted_title": "ADOPTION & EFFECT",
+      "draft_title": "ADOPTION & EFFECT",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a1.s5.a",
+      "draft_id": "draft:a1.s5.a",
+      "level": "subsection",
+      "adopted_title": "ADOPTION DATE",
+      "draft_title": "ADOPTION DATE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a1.s5.b",
+      "draft_id": "draft:a1.s5.b",
+      "level": "subsection",
+      "adopted_title": "IN EFFECT",
+      "draft_title": "IN EFFECT",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a1.s5.c",
+      "draft_id": "draft:a1.s5.c",
+      "level": "subsection",
+      "adopted_title": "PREVIOUS APPROVALS",
+      "draft_title": "PREVIOUS APPROVALS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a1.s5.d",
+      "draft_id": "draft:a1.s5.d",
+      "level": "subsection",
+      "adopted_title": "SEVERABILITY & INVALIDITY",
+      "draft_title": "SEVERABILITY & INVALIDITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s1",
+      "draft_id": "draft:a4.s1",
+      "level": "section",
+      "adopted_title": "SITE STANDARDS",
+      "draft_title": "SITE STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a3.s1.a",
+      "draft_id": "draft:a4.s1.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s1.b",
+      "draft_id": "draft:a4.s1.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s10",
+      "draft_id": "draft:a4.s10",
+      "level": "section",
+      "adopted_title": "LOADING DOCKS",
+      "draft_title": "LOADING DOCKS",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a3.s10.a",
+      "draft_id": "draft:a4.s10.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s10.b",
+      "draft_id": "draft:a4.s10.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s10.c",
+      "draft_id": "draft:a4.s10.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s11",
+      "draft_id": "draft:a4.s11",
+      "level": "section",
+      "adopted_title": "DRIVE-THROUGHS",
+      "draft_title": "DRIVE-THROUGHS",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a3.s11.a",
+      "draft_id": "draft:a4.s11.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s11.b",
+      "draft_id": "draft:a4.s11.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s11.c",
+      "draft_id": "draft:a4.s11.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s12",
+      "draft_id": "draft:a4.s12",
+      "level": "section",
+      "adopted_title": "LIGHTING",
+      "draft_title": "LIGHTING",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a3.s12.a",
+      "draft_id": "draft:a4.s12.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s12.b",
+      "draft_id": "draft:a4.s12.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s12.c",
+      "draft_id": "draft:a4.s12.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s12.d",
+      "draft_id": "draft:a4.s12.d",
+      "level": "subsection",
+      "adopted_title": "OFF-SITE IMPACTS",
+      "draft_title": "OFF-SITE IMPACTS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s12.e",
+      "draft_id": "draft:a4.s12.e",
+      "level": "subsection",
+      "adopted_title": "NONCONFORMING LIGHTING",
+      "draft_title": "NONCONFORMING LIGHTING",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s12.f",
+      "draft_id": "draft:a4.s12.f",
+      "level": "subsection",
+      "adopted_title": "FIXTURE HEIGHT",
+      "draft_title": "FIXTURE HEIGHT",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s12.g",
+      "draft_id": "draft:a4.s12.g",
+      "level": "subsection",
+      "adopted_title": "SHIELDING",
+      "draft_title": "SHIELDING",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s12.h",
+      "draft_id": "draft:a4.s12.h",
+      "level": "subsection",
+      "adopted_title": "PROHIBITED LIGHTING",
+      "draft_title": "PROHIBITED LIGHTING",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s12.i",
+      "draft_id": "draft:a4.s12.i",
+      "level": "subsection",
+      "adopted_title": "SPECIFIC LIGHTING REQUIREMENTS",
+      "draft_title": "SPECIFIC LIGHTING REQUIREMENTS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s2",
+      "draft_id": "draft:a4.s2",
+      "level": "section",
+      "adopted_title": "DRIVEWAYS",
+      "draft_title": "DRIVEWAYS",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a3.s2.a",
+      "draft_id": "draft:a4.s2.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s2.b",
+      "draft_id": "draft:a4.s2.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s2.c",
+      "draft_id": "draft:a4.s2.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s3",
+      "draft_id": "draft:a4.s3",
+      "level": "section",
+      "adopted_title": "VEHICULAR PARKING",
+      "draft_title": "VEHICULAR PARKING",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a3.s3.a",
+      "draft_id": "draft:a4.s3.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s3.b",
+      "draft_id": "draft:a4.s3.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s3.c",
+      "draft_id": "draft:a4.s3.c",
+      "level": "subsection",
+      "adopted_title": "REQUIRED SPACES",
+      "draft_title": "REQUIRED SPACES",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s3.d",
+      "draft_id": "draft:a4.s3.d",
+      "level": "subsection",
+      "adopted_title": "PARKING LOCATION",
+      "draft_title": "PARKING LOCATION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s3.e",
+      "draft_id": "draft:a4.s3.e",
+      "level": "subsection",
+      "adopted_title": "PARKING LOT SCREENING",
+      "draft_title": "PARKING LOT SCREENING",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s3.f",
+      "draft_id": "draft:a4.s3.f",
+      "level": "subsection",
+      "adopted_title": "VEHICULAR ACCESS",
+      "draft_title": "VEHICULAR ACCESS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s3.g",
+      "draft_id": "draft:a4.s3.g",
+      "level": "subsection",
+      "adopted_title": "PEDESTRIAN ACCESS",
+      "draft_title": "PEDESTRIAN ACCESS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s3.h",
+      "draft_id": "draft:a4.s3.h",
+      "level": "subsection",
+      "adopted_title": "DESIGN",
+      "draft_title": "DESIGN",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s3.i",
+      "draft_id": "draft:a4.s3.i",
+      "level": "subsection",
+      "adopted_title": "MAINTENANCE",
+      "draft_title": "MAINTENANCE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s3.j",
+      "draft_id": "draft:a4.s3.j",
+      "level": "subsection",
+      "adopted_title": "NONCONFORMING VEHICULAR PARKING",
+      "draft_title": "NONCONFORMING VEHICULAR PARKING",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s4",
+      "draft_id": "draft:a4.s4",
+      "level": "section",
+      "adopted_title": "BICYCLE PARKING",
+      "draft_title": "BICYCLE PARKING",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a3.s4.a",
+      "draft_id": "draft:a4.s4.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s4.b",
+      "draft_id": "draft:a4.s4.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s4.c",
+      "draft_id": "draft:a4.s4.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s4.d",
+      "draft_id": "draft:a4.s4.d",
+      "level": "subsection",
+      "adopted_title": "REQUIRED SPACES",
+      "draft_title": "REQUIRED SPACES",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s4.e",
+      "draft_id": "draft:a4.s4.e",
+      "level": "subsection",
+      "adopted_title": "DESIGN",
+      "draft_title": "DESIGN",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s5",
+      "draft_id": "draft:a4.s5",
+      "level": "section",
+      "adopted_title": "NATURAL SCREENING",
+      "draft_title": "NATURAL SCREENING",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a3.s5.a",
+      "draft_id": "draft:a4.s5.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s5.b",
+      "draft_id": "draft:a4.s5.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s5.c",
+      "draft_id": "draft:a4.s5.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s5.d",
+      "draft_id": "draft:a4.s5.d",
+      "level": "subsection",
+      "adopted_title": "LEVELS OF SCREENING",
+      "draft_title": "LEVELS OF SCREENING",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s5.e",
+      "draft_id": "draft:a4.s5.e",
+      "level": "subsection",
+      "adopted_title": "RATING SCORE",
+      "draft_title": "RATING SCORE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s6",
+      "draft_id": "draft:a4.s6",
+      "level": "section",
+      "adopted_title": "LANDSCAPING",
+      "draft_title": "LANDSCAPING",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a3.s6.a",
+      "draft_id": "draft:a4.s6.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s6.b",
+      "draft_id": "draft:a4.s6.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s6.c",
+      "draft_id": "draft:a4.s6.c",
+      "level": "subsection",
+      "adopted_title": "DESIGN & INSTALLATION",
+      "draft_title": "DESIGN & INSTALLATION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s7",
+      "draft_id": "draft:a4.s7",
+      "level": "section",
+      "adopted_title": "FIELDS",
+      "draft_title": "FIELDS",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a3.s7.a",
+      "draft_id": "draft:a4.s7.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s7.b",
+      "draft_id": "draft:a4.s7.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s7.c",
+      "draft_id": "draft:a4.s7.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s8",
+      "draft_id": "draft:a4.s8",
+      "level": "section",
+      "adopted_title": "FENCES & WALLS",
+      "draft_title": "FENCES & WALLS",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a3.s8.a",
+      "draft_id": "draft:a4.s8.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s8.b",
+      "draft_id": "draft:a4.s8.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s8.c",
+      "draft_id": "draft:a4.s8.c",
+      "level": "subsection",
+      "adopted_title": "FENCES & WALLS",
+      "draft_title": "FENCES & WALLS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s8.d",
+      "draft_id": "draft:a4.s8.d",
+      "level": "subsection",
+      "adopted_title": "RETAINING WALLS",
+      "draft_title": "RETAINING WALLS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s8.e",
+      "draft_id": "draft:a4.s8.e",
+      "level": "subsection",
+      "adopted_title": "NONCONFORMING FENCES & WALLS",
+      "draft_title": "NONCONFORMING FENCES & WALLS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s9",
+      "draft_id": "draft:a4.s9",
+      "level": "section",
+      "adopted_title": "MECHANICAL EQUIPMENT",
+      "draft_title": "MECHANICAL EQUIPMENT",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a3.s9.a",
+      "draft_id": "draft:a4.s9.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s9.b",
+      "draft_id": "draft:a4.s9.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s9.c",
+      "draft_id": "draft:a4.s9.c",
+      "level": "subsection",
+      "adopted_title": "ROOF-MOUNTED",
+      "draft_title": "ROOF-MOUNTED",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a3.s9.d",
+      "draft_id": "draft:a4.s9.d",
+      "level": "subsection",
+      "adopted_title": "BUILDING OR GROUND MOUNTED",
+      "draft_title": "BUILDING OR GROUND MOUNTED",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s1",
+      "draft_id": "draft:a5.s1",
+      "level": "section",
+      "adopted_title": "BUILDING TYPES",
+      "draft_title": "BUILDING TYPES",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a4.s1.a",
+      "draft_id": "draft:a5.s1.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s1.b",
+      "draft_id": "draft:a5.s1.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s1.c",
+      "draft_id": "draft:a5.s1.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s10",
+      "draft_id": "draft:a5.s10",
+      "level": "section",
+      "adopted_title": "TEMPORARY STRUCTURES",
+      "draft_title": "TEMPORARY STRUCTURES",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a4.s10.a",
+      "draft_id": "draft:a5.s10.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s10.b",
+      "draft_id": "draft:a5.s10.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s10.c",
+      "draft_id": "draft:a5.s10.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s11",
+      "draft_id": "draft:a5.s11",
+      "level": "section",
+      "adopted_title": "PRIMARY ENTRANCES",
+      "draft_title": "PRIMARY ENTRANCES",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a4.s11.a",
+      "draft_id": "draft:a5.s11.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s11.b",
+      "draft_id": "draft:a5.s11.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s11.c",
+      "draft_id": "draft:a5.s11.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s12",
+      "draft_id": "draft:a5.s12",
+      "level": "section",
+      "adopted_title": "SHOPFRONTS",
+      "draft_title": "SHOPFRONTS",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a4.s12.a",
+      "draft_id": "draft:a5.s12.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s12.b",
+      "draft_id": "draft:a5.s12.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s12.c",
+      "draft_id": "draft:a5.s12.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s12.d",
+      "draft_id": "draft:a5.s12.d",
+      "level": "subsection",
+      "adopted_title": "NONCONFORMING SHOPFRONTS",
+      "draft_title": "NONCONFORMING SHOPFRONTS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s13",
+      "draft_id": "draft:a5.s13",
+      "level": "section",
+      "adopted_title": "SLOPES & TERRACES",
+      "draft_title": "SLOPES & TERRACES",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a4.s13.a",
+      "draft_id": "draft:a5.s13.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s13.b",
+      "draft_id": "draft:a5.s13.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s13.c",
+      "draft_id": "draft:a5.s13.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s14",
+      "draft_id": "draft:a5.s14",
+      "level": "section",
+      "adopted_title": "MEZZANINES",
+      "draft_title": "MEZZANINES",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a4.s14.a",
+      "draft_id": "draft:a5.s14.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s14.b",
+      "draft_id": "draft:a5.s14.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s14.c",
+      "draft_id": "draft:a5.s14.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s15",
+      "draft_id": "draft:a5.s15",
+      "level": "section",
+      "adopted_title": "NONCONFORMING BUILDINGS",
+      "draft_title": "NONCONFORMING BUILDINGS",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a4.s15.a",
+      "draft_id": "draft:a5.s15.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s15.b",
+      "draft_id": "draft:a5.s15.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s15.c",
+      "draft_id": "draft:a5.s15.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s16",
+      "draft_id": "draft:a5.s16",
+      "level": "section",
+      "adopted_title": "LARGE SCALE BUILDINGS",
+      "draft_title": "LARGE SCALE BUILDINGS",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a4.s16.a",
+      "draft_id": "draft:a5.s16.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s16.b",
+      "draft_id": "draft:a5.s16.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s16.c",
+      "draft_id": "draft:a5.s16.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s17",
+      "draft_id": "draft:a5.s17",
+      "level": "section",
+      "adopted_title": "SIZE CAP",
+      "draft_title": "SIZE CAP",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a4.s17.a",
+      "draft_id": "draft:a5.s17.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s17.b",
+      "draft_id": "draft:a5.s17.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s17.c",
+      "draft_id": "draft:a5.s17.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s18",
+      "draft_id": "draft:a5.s18",
+      "level": "section",
+      "adopted_title": "BUILDING GROUPS",
+      "draft_title": "BUILDING GROUPS",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a4.s18.a",
+      "draft_id": "draft:a5.s18.a",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s18.b",
+      "draft_id": "draft:a5.s18.b",
+      "level": "subsection",
+      "adopted_title": "CONNECTED FARM",
+      "draft_title": "CONNECTED FARM",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s18.c",
+      "draft_id": "draft:a5.s18.c",
+      "level": "subsection",
+      "adopted_title": "SMALL RURAL COMPOUND",
+      "draft_title": "SMALL RURAL COMPOUND",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s18.d",
+      "draft_id": "draft:a5.s18.d",
+      "level": "subsection",
+      "adopted_title": "LARGE RURAL COMPOUND",
+      "draft_title": "LARGE RURAL COMPOUND",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s18.e",
+      "draft_id": "draft:a5.s18.e",
+      "level": "subsection",
+      "adopted_title": "MULTI-UNIT COURT",
+      "draft_title": "MULTI-UNIT COURT",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s2",
+      "draft_id": "draft:a5.s2",
+      "level": "section",
+      "adopted_title": "NUMBER OF BUILDINGS",
+      "draft_title": "NUMBER OF BUILDINGS",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a4.s2.a",
+      "draft_id": "draft:a5.s2.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s2.b",
+      "draft_id": "draft:a5.s2.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s2.c",
+      "draft_id": "draft:a5.s2.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s3",
+      "draft_id": "draft:a5.s3",
+      "level": "section",
+      "adopted_title": "BUILDING ASSEMBLY",
+      "draft_title": "BUILDING ASSEMBLY",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a4.s3.a",
+      "draft_id": "draft:a5.s3.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s3.b",
+      "draft_id": "draft:a5.s3.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s3.c",
+      "draft_id": "draft:a5.s3.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s3.d",
+      "draft_id": "draft:a5.s3.d",
+      "level": "subsection",
+      "adopted_title": "ATTACHMENTS",
+      "draft_title": "ATTACHMENTS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s4",
+      "draft_id": "draft:a5.s4",
+      "level": "section",
+      "adopted_title": "BUILDING ELEVATION",
+      "draft_title": "BUILDING ELEVATION",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a4.s4.a",
+      "draft_id": "draft:a5.s4.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s4.b",
+      "draft_id": "draft:a5.s4.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s4.c",
+      "draft_id": "draft:a5.s4.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s5",
+      "draft_id": "draft:a5.s5",
+      "level": "section",
+      "adopted_title": "ADDITIONS",
+      "draft_title": "ADDITIONS",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a4.s5.a",
+      "draft_id": "draft:a5.s5.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s5.b",
+      "draft_id": "draft:a5.s5.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s5.c",
+      "draft_id": "draft:a5.s5.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s6",
+      "draft_id": "draft:a5.s6",
+      "level": "section",
+      "adopted_title": "BUILDING ARTICULATION",
+      "draft_title": "BUILDING ARTICULATION",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a4.s6.a",
+      "draft_id": "draft:a5.s6.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s6.b",
+      "draft_id": "draft:a5.s6.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s6.c",
+      "draft_id": "draft:a5.s6.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s7",
+      "draft_id": "draft:a5.s7",
+      "level": "section",
+      "adopted_title": "HEIGHT",
+      "draft_title": "HEIGHT",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a4.s7.a",
+      "draft_id": "draft:a5.s7.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s7.b",
+      "draft_id": "draft:a5.s7.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s7.c",
+      "draft_id": "draft:a5.s7.c",
+      "level": "subsection",
+      "adopted_title": "STORY HEIGHT",
+      "draft_title": "STORY HEIGHT",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s7.d",
+      "draft_id": "draft:a5.s7.d",
+      "level": "subsection",
+      "adopted_title": "HEIGHT EXCEPTIONS",
+      "draft_title": "HEIGHT EXCEPTIONS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s8",
+      "draft_id": "draft:a5.s8",
+      "level": "section",
+      "adopted_title": "MATERIALS",
+      "draft_title": "MATERIALS",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a4.s8.a",
+      "draft_id": "draft:a5.s8.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s8.b",
+      "draft_id": "draft:a5.s8.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s8.c",
+      "draft_id": "draft:a5.s8.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s9",
+      "draft_id": "draft:a5.s9",
+      "level": "section",
+      "adopted_title": "ADDITIONAL STRUCTURES",
+      "draft_title": "ADDITIONAL STRUCTURES",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a4.s9.a",
+      "draft_id": "draft:a5.s9.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s9.b",
+      "draft_id": "draft:a5.s9.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s9.c",
+      "draft_id": "draft:a5.s9.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s9.d",
+      "draft_id": "draft:a5.s9.d",
+      "level": "subsection",
+      "adopted_title": "SCREENING",
+      "draft_title": "SCREENING",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a4.s9.e",
+      "draft_id": "draft:a5.s9.e",
+      "level": "subsection",
+      "adopted_title": "SETBACKS",
+      "draft_title": "SETBACKS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s1",
+      "draft_id": "draft:a6.s1",
+      "level": "section",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a5.s1.a",
+      "draft_id": "draft:a6.s1.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s1.b",
+      "draft_id": "draft:a6.s1.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s2",
+      "draft_id": "draft:a6.s2",
+      "level": "section",
+      "adopted_title": "COMPONENTS, GENERAL",
+      "draft_title": "COMPONENTS, GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a5.s2.a",
+      "draft_id": "draft:a6.s2.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s2.b",
+      "draft_id": "draft:a6.s2.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s2.c",
+      "draft_id": "draft:a6.s2.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s2.d",
+      "draft_id": "draft:a6.s2.d",
+      "level": "subsection",
+      "adopted_title": "ATTACHMENTS",
+      "draft_title": "ATTACHMENTS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s2.e",
+      "draft_id": "draft:a6.s2.e",
+      "level": "subsection",
+      "adopted_title": "ENCROACHMENTS",
+      "draft_title": "ENCROACHMENTS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s2.f",
+      "draft_id": "draft:a6.s2.f",
+      "level": "subsection",
+      "adopted_title": "NONCONFORMING COMPONENTS",
+      "draft_title": "NONCONFORMING COMPONENTS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s2.g",
+      "draft_id": "draft:a6.s2.g",
+      "level": "subsection",
+      "adopted_title": "EXTERIOR FIRE ESCAPES",
+      "draft_title": "EXTERIOR FIRE ESCAPES",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s3",
+      "draft_id": "draft:a6.s3",
+      "level": "section",
+      "adopted_title": "MASSING COMPONENTS",
+      "draft_title": "MASSING COMPONENTS",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a5.s3.a",
+      "draft_id": "draft:a6.s3.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s3.b",
+      "draft_id": "draft:a6.s3.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s3.c",
+      "draft_id": "draft:a6.s3.c",
+      "level": "subsection",
+      "adopted_title": "FRONT OR SIDE EXPANSION",
+      "draft_title": "FRONT OR SIDE EXPANSION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s3.d",
+      "draft_id": "draft:a6.s3.d",
+      "level": "subsection",
+      "adopted_title": "REAR EXPANSION",
+      "draft_title": "REAR EXPANSION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s3.e",
+      "draft_id": "draft:a6.s3.e",
+      "level": "subsection",
+      "adopted_title": "CONNECTOR",
+      "draft_title": "CONNECTOR",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s3.f",
+      "draft_id": "draft:a6.s3.f",
+      "level": "subsection",
+      "adopted_title": "TOWER",
+      "draft_title": "TOWER",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s3.g",
+      "draft_id": "draft:a6.s3.g",
+      "level": "subsection",
+      "adopted_title": "EXTENDED SHOPFRONT",
+      "draft_title": "EXTENDED SHOPFRONT",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s4",
+      "draft_id": "draft:a6.s4",
+      "level": "section",
+      "adopted_title": "ARCHITECTURAL COMPONENTS",
+      "draft_title": "ARCHITECTURAL COMPONENTS",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a5.s4.a",
+      "draft_id": "draft:a6.s4.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s4.b",
+      "draft_id": "draft:a6.s4.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s4.c",
+      "draft_id": "draft:a6.s4.c",
+      "level": "subsection",
+      "adopted_title": "PORCH",
+      "draft_title": "PORCH",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s4.d",
+      "draft_id": "draft:a6.s4.d",
+      "level": "subsection",
+      "adopted_title": "STOOP",
+      "draft_title": "STOOP",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s4.e",
+      "draft_id": "draft:a6.s4.e",
+      "level": "subsection",
+      "adopted_title": "GALLERY",
+      "draft_title": "GALLERY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s4.f",
+      "draft_id": "draft:a6.s4.f",
+      "level": "subsection",
+      "adopted_title": "CROSS GABLE",
+      "draft_title": "CROSS GABLE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s4.g",
+      "draft_id": "draft:a6.s4.g",
+      "level": "subsection",
+      "adopted_title": "SHED DORMER",
+      "draft_title": "SHED DORMER",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s4.h",
+      "draft_id": "draft:a6.s4.h",
+      "level": "subsection",
+      "adopted_title": "DORMER WINDOW",
+      "draft_title": "DORMER WINDOW",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s4.i",
+      "draft_id": "draft:a6.s4.i",
+      "level": "subsection",
+      "adopted_title": "BAY WINDOW",
+      "draft_title": "BAY WINDOW",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s4.j",
+      "draft_id": "draft:a6.s4.j",
+      "level": "subsection",
+      "adopted_title": "BALCONY",
+      "draft_title": "BALCONY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s4.k",
+      "draft_id": "draft:a6.s4.k",
+      "level": "subsection",
+      "adopted_title": "ARCADE",
+      "draft_title": "ARCADE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s4.l",
+      "draft_id": "draft:a6.s4.l",
+      "level": "subsection",
+      "adopted_title": "PORTICO",
+      "draft_title": "PORTICO",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s4.m",
+      "draft_id": "draft:a6.s4.m",
+      "level": "subsection",
+      "adopted_title": "CANOPY",
+      "draft_title": "CANOPY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s4.n",
+      "draft_id": "draft:a6.s4.n",
+      "level": "subsection",
+      "adopted_title": "CUPOLA",
+      "draft_title": "CUPOLA",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s4.o",
+      "draft_id": "draft:a6.s4.o",
+      "level": "subsection",
+      "adopted_title": "TURRET",
+      "draft_title": "TURRET",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s4.p",
+      "draft_id": "draft:a6.s4.p",
+      "level": "subsection",
+      "adopted_title": "DECK",
+      "draft_title": "DECK",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s4.q",
+      "draft_id": "draft:a6.s4.q",
+      "level": "subsection",
+      "adopted_title": "ROOF DECK",
+      "draft_title": "ROOF DECK",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s5",
+      "draft_id": "draft:a6.s5",
+      "level": "section",
+      "adopted_title": "ROOFS",
+      "draft_title": "ROOFS",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a5.s5.a",
+      "draft_id": "draft:a6.s5.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s5.b",
+      "draft_id": "draft:a6.s5.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s5.c",
+      "draft_id": "draft:a6.s5.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s5.d",
+      "draft_id": "draft:a6.s5.d",
+      "level": "subsection",
+      "adopted_title": "NONCONFORMING ROOFS",
+      "draft_title": "NONCONFORMING ROOFS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s6",
+      "draft_id": "draft:a6.s6",
+      "level": "section",
+      "adopted_title": "WINDOW & DOOR",
+      "draft_title": "WINDOW & DOOR",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a5.s6.a",
+      "draft_id": "draft:a6.s6.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s6.b",
+      "draft_id": "draft:a6.s6.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s6.c",
+      "draft_id": "draft:a6.s6.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s6.d",
+      "draft_id": "draft:a6.s6.d",
+      "level": "subsection",
+      "adopted_title": "NONCONFORMING WINDOWS & DOORS",
+      "draft_title": "NONCONFORMING WINDOWS & DOORS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s7",
+      "draft_id": "draft:a6.s7",
+      "level": "section",
+      "adopted_title": "BUILDING ORIENTATION",
+      "draft_title": "BUILDING ORIENTATION",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a5.s7.a",
+      "draft_id": "draft:a6.s7.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s7.b",
+      "draft_id": "draft:a6.s7.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a5.s7.c",
+      "draft_id": "draft:a6.s7.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s1",
+      "draft_id": "draft:a7.s1",
+      "level": "section",
+      "adopted_title": "USE STANDARDS",
+      "draft_title": "USE STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s1.a",
+      "draft_id": "draft:a7.s1.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s1.b",
+      "draft_id": "draft:a7.s1.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s1.c",
+      "draft_id": "draft:a7.s1.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s1.d",
+      "draft_id": "draft:a7.s1.d",
+      "level": "subsection",
+      "adopted_title": "USE CATEGORIES",
+      "draft_title": "USE CATEGORIES",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s1.e",
+      "draft_id": "draft:a7.s1.e",
+      "level": "subsection",
+      "adopted_title": "UNLISTED USES",
+      "draft_title": "UNLISTED USES",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s1.f",
+      "draft_id": "draft:a7.s1.f",
+      "level": "subsection",
+      "adopted_title": "NONCONFORMING USES",
+      "draft_title": "NONCONFORMING USES",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s1.g",
+      "draft_id": "draft:a7.s1.g",
+      "level": "subsection",
+      "adopted_title": "CHANGE OF USE",
+      "draft_title": "CHANGE OF USE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s1.h",
+      "draft_id": "draft:a7.s1.h",
+      "level": "subsection",
+      "adopted_title": "NUISANCE STANDARDS",
+      "draft_title": "NUISANCE STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s10",
+      "draft_id": "draft:a7.s10",
+      "level": "section",
+      "adopted_title": "BANKING & FINANCIAL SERVICES",
+      "draft_title": "BANKING & FINANCIAL SERVICES",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s10.a",
+      "draft_id": "draft:a7.s10.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s10.b",
+      "draft_id": "draft:a7.s10.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s11",
+      "draft_id": "draft:a7.s11",
+      "level": "section",
+      "adopted_title": "BAR OR TAVERN",
+      "draft_title": "BAR OR TAVERN",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s11.a",
+      "draft_id": "draft:a7.s11.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s11.b",
+      "draft_id": "draft:a7.s11.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s12",
+      "draft_id": "draft:a7.s12",
+      "level": "section",
+      "adopted_title": "BED & BREAKFAST",
+      "draft_title": "BED & BREAKFAST",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s12.a",
+      "draft_id": "draft:a7.s12.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s12.b",
+      "draft_id": "draft:a7.s12.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s13",
+      "draft_id": "draft:a7.s13",
+      "level": "section",
+      "adopted_title": "CAMPGROUND",
+      "draft_title": "CAMPGROUND",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s13.a",
+      "draft_id": "draft:a7.s13.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s13.b",
+      "draft_id": "draft:a7.s13.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s14",
+      "draft_id": "draft:a7.s14",
+      "level": "section",
+      "adopted_title": "CAR WASH",
+      "draft_title": "CAR WASH",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s14.a",
+      "draft_id": "draft:a7.s14.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s15",
+      "draft_id": "draft:a7.s15",
+      "level": "section",
+      "adopted_title": "COLLEGE/UNIVERSITY",
+      "draft_title": "COLLEGE/UNIVERSITY",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s15.a",
+      "draft_id": "draft:a7.s15.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s16",
+      "draft_id": "draft:a7.s16",
+      "level": "section",
+      "adopted_title": "COMMERCIAL AGRICULTURE",
+      "draft_title": "COMMERCIAL AGRICULTURE",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s16.a",
+      "draft_id": "draft:a7.s16.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s16.b",
+      "draft_id": "draft:a7.s16.b",
+      "level": "subsection",
+      "adopted_title": "GENERAL STANDARDS FOR USE.",
+      "draft_title": "GENERAL STANDARDS FOR USE.",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s17",
+      "draft_id": "draft:a7.s17",
+      "level": "section",
+      "adopted_title": "COMMERCIAL SCHOOL",
+      "draft_title": "COMMERCIAL SCHOOL",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s17.a",
+      "draft_id": "draft:a7.s17.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s18",
+      "draft_id": "draft:a7.s18",
+      "level": "section",
+      "adopted_title": "CULTURAL FACILITY",
+      "draft_title": "CULTURAL FACILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s18.a",
+      "draft_id": "draft:a7.s18.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s19",
+      "draft_id": "draft:a7.s19",
+      "level": "section",
+      "adopted_title": "DAY CARE CENTER",
+      "draft_title": "DAY CARE CENTER",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s19.a",
+      "draft_id": "draft:a7.s19.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s19.b",
+      "draft_id": "draft:a7.s19.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s2",
+      "draft_id": "draft:a7.s2",
+      "level": "section",
+      "adopted_title": "EXPANDED USE STANDARDS",
+      "draft_title": "EXPANDED USE STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s2.a",
+      "draft_id": "draft:a7.s2.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s2.b",
+      "draft_id": "draft:a7.s2.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s2.c",
+      "draft_id": "draft:a7.s2.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s20",
+      "draft_id": "draft:a7.s20",
+      "level": "section",
+      "adopted_title": "DAY CARE FACILITY",
+      "draft_title": "DAY CARE FACILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s20.a",
+      "draft_id": "draft:a7.s20.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s20.b",
+      "draft_id": "draft:a7.s20.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s21",
+      "draft_id": "draft:a7.s21",
+      "level": "section",
+      "adopted_title": "DISPATCH SERVICE",
+      "draft_title": "DISPATCH SERVICE",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s21.a",
+      "draft_id": "draft:a7.s21.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s21.b",
+      "draft_id": "draft:a7.s21.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s22",
+      "draft_id": "draft:a7.s22",
+      "level": "section",
+      "adopted_title": "DISTRICT ENERGY SYSTEM",
+      "draft_title": "DISTRICT ENERGY SYSTEM",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s22.a",
+      "draft_id": "draft:a7.s22.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s22.b",
+      "draft_id": "draft:a7.s22.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS FOR USE",
+      "draft_title": "STANDARDS FOR USE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s23",
+      "draft_id": "draft:a7.s23",
+      "level": "section",
+      "adopted_title": "DORMITORY",
+      "draft_title": "DORMITORY",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s23.a",
+      "draft_id": "draft:a7.s23.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s24",
+      "draft_id": "draft:a7.s24",
+      "level": "section",
+      "adopted_title": "DRIVE-THROUGH FACILITY",
+      "draft_title": "DRIVE-THROUGH FACILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s24.a",
+      "draft_id": "draft:a7.s24.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s25",
+      "draft_id": "draft:a7.s25",
+      "level": "section",
+      "adopted_title": "FARM/VENDOR MARKET",
+      "draft_title": "FARM/VENDOR MARKET",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s25.a",
+      "draft_id": "draft:a7.s25.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s25.b",
+      "draft_id": "draft:a7.s25.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s26",
+      "draft_id": "draft:a7.s26",
+      "level": "section",
+      "adopted_title": "FARMSTAND",
+      "draft_title": "FARMSTAND",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s26.a",
+      "draft_id": "draft:a7.s26.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s27",
+      "draft_id": "draft:a7.s27",
+      "level": "section",
+      "adopted_title": "FOOD PANTRY",
+      "draft_title": "FOOD PANTRY",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s27.a",
+      "draft_id": "draft:a7.s27.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s27.b",
+      "draft_id": "draft:a7.s27.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s28",
+      "draft_id": "draft:a7.s28",
+      "level": "section",
+      "adopted_title": "FUNERAL SERVICES",
+      "draft_title": "FUNERAL SERVICES",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s28.a",
+      "draft_id": "draft:a7.s28.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s28.b",
+      "draft_id": "draft:a7.s28.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s29",
+      "draft_id": "draft:a7.s29",
+      "level": "section",
+      "adopted_title": "GAS STATION",
+      "draft_title": "GAS STATION",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s29.a",
+      "draft_id": "draft:a7.s29.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s29.b",
+      "draft_id": "draft:a7.s29.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s3",
+      "draft_id": "draft:a7.s3",
+      "level": "section",
+      "adopted_title": "ADULT ESTABLISHMENT",
+      "draft_title": "ADULT ESTABLISHMENT",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s3.a",
+      "draft_id": "draft:a7.s3.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s3.b",
+      "draft_id": "draft:a7.s3.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s30",
+      "draft_id": "draft:a7.s30",
+      "level": "section",
+      "adopted_title": "HEALTH CARE PROVIDER",
+      "draft_title": "HEALTH CARE PROVIDER",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s30.a",
+      "draft_id": "draft:a7.s30.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s31",
+      "draft_id": "draft:a7.s31",
+      "level": "section",
+      "adopted_title": "HEALTH/FITNESS STUDIO",
+      "draft_title": "HEALTH/FITNESS STUDIO",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s31.a",
+      "draft_id": "draft:a7.s31.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s32",
+      "draft_id": "draft:a7.s32",
+      "level": "section",
+      "adopted_title": "HOSPITAL",
+      "draft_title": "HOSPITAL",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s32.a",
+      "draft_id": "draft:a7.s32.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s32.b",
+      "draft_id": "draft:a7.s32.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s33",
+      "draft_id": "draft:a7.s33",
+      "level": "section",
+      "adopted_title": "HOTEL & HOSTEL",
+      "draft_title": "HOTEL & HOSTEL",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s33.a",
+      "draft_id": "draft:a7.s33.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s33.b",
+      "draft_id": "draft:a7.s33.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s34",
+      "draft_id": "draft:a7.s34",
+      "level": "section",
+      "adopted_title": "HUMAN SERVICE FACILITY",
+      "draft_title": "HUMAN SERVICE FACILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s34.a",
+      "draft_id": "draft:a7.s34.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s34.b",
+      "draft_id": "draft:a7.s34.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s35",
+      "draft_id": "draft:a7.s35",
+      "level": "section",
+      "adopted_title": "INDUSTRIAL, ARTISAN",
+      "draft_title": "INDUSTRIAL, ARTISAN",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s35.a",
+      "draft_id": "draft:a7.s35.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s35.b",
+      "draft_id": "draft:a7.s35.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s36",
+      "draft_id": "draft:a7.s36",
+      "level": "section",
+      "adopted_title": "INDUSTRIAL, GENERAL",
+      "draft_title": "INDUSTRIAL, GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s36.a",
+      "draft_id": "draft:a7.s36.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s36.b",
+      "draft_id": "draft:a7.s36.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s37",
+      "draft_id": "draft:a7.s37",
+      "level": "section",
+      "adopted_title": "INDUSTRIAL, HEAVY",
+      "draft_title": "INDUSTRIAL, HEAVY",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s37.a",
+      "draft_id": "draft:a7.s37.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s37.b",
+      "draft_id": "draft:a7.s37.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s38",
+      "draft_id": "draft:a7.s38",
+      "level": "section",
+      "adopted_title": "JUNK/SALVAGE YARD",
+      "draft_title": "JUNK/SALVAGE YARD",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s38.a",
+      "draft_id": "draft:a7.s38.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s38.b",
+      "draft_id": "draft:a7.s38.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s39",
+      "draft_id": "draft:a7.s39",
+      "level": "section",
+      "adopted_title": "LIVE ENTERTAINMENT",
+      "draft_title": "LIVE ENTERTAINMENT",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s39.a",
+      "draft_id": "draft:a7.s39.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s39.b",
+      "draft_id": "draft:a7.s39.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s4",
+      "draft_id": "draft:a7.s4",
+      "level": "section",
+      "adopted_title": "AMUSEMENT, INDOOR",
+      "draft_title": "AMUSEMENT, INDOOR",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s4.a",
+      "draft_id": "draft:a7.s4.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s40",
+      "draft_id": "draft:a7.s40",
+      "level": "section",
+      "adopted_title": "MARINA, DRY STORAGE",
+      "draft_title": "MARINA, DRY STORAGE",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s40.a",
+      "draft_id": "draft:a7.s40.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s41",
+      "draft_id": "draft:a7.s41",
+      "level": "section",
+      "adopted_title": "MARINA, RECREATION",
+      "draft_title": "MARINA, RECREATION",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s41.a",
+      "draft_id": "draft:a7.s41.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s41.b",
+      "draft_id": "draft:a7.s41.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s42",
+      "draft_id": "draft:a7.s42",
+      "level": "section",
+      "adopted_title": "MOBILE HOME PARK",
+      "draft_title": "MOBILE HOME PARK",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s42.a",
+      "draft_id": "draft:a7.s42.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s42.b",
+      "draft_id": "draft:a7.s42.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s43",
+      "draft_id": "draft:a7.s43",
+      "level": "section",
+      "adopted_title": "OFFICE, LARGE",
+      "draft_title": "OFFICE, LARGE",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s43.a",
+      "draft_id": "draft:a7.s43.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s44",
+      "draft_id": "draft:a7.s44",
+      "level": "section",
+      "adopted_title": "OFFICE, MEDIUM",
+      "draft_title": "OFFICE, MEDIUM",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s44.a",
+      "draft_id": "draft:a7.s44.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s45",
+      "draft_id": "draft:a7.s45",
+      "level": "section",
+      "adopted_title": "OFFICE, SMALL",
+      "draft_title": "OFFICE, SMALL",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s45.a",
+      "draft_id": "draft:a7.s45.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s46",
+      "draft_id": "draft:a7.s46",
+      "level": "section",
+      "adopted_title": "OUTDOOR STORAGE",
+      "draft_title": "OUTDOOR STORAGE",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s46.a",
+      "draft_id": "draft:a7.s46.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s46.b",
+      "draft_id": "draft:a7.s46.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s47",
+      "draft_id": "draft:a7.s47",
+      "level": "section",
+      "adopted_title": "PACKAGED LIQUOR",
+      "draft_title": "PACKAGED LIQUOR",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s47.a",
+      "draft_id": "draft:a7.s47.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s48",
+      "draft_id": "draft:a7.s48",
+      "level": "section",
+      "adopted_title": "PARKING LOT",
+      "draft_title": "PARKING LOT",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s48.a",
+      "draft_id": "draft:a7.s48.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s48.b",
+      "draft_id": "draft:a7.s48.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s49",
+      "draft_id": "draft:a7.s49",
+      "level": "section",
+      "adopted_title": "PRIMARY/SECONDARY SCHOOL",
+      "draft_title": "PRIMARY/SECONDARY SCHOOL",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s49.a",
+      "draft_id": "draft:a7.s49.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s5",
+      "draft_id": "draft:a7.s5",
+      "level": "section",
+      "adopted_title": "AMUSEMENT, OUTDOOR",
+      "draft_title": "AMUSEMENT, OUTDOOR",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s5.a",
+      "draft_id": "draft:a7.s5.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s5.b",
+      "draft_id": "draft:a7.s5.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s50",
+      "draft_id": "draft:a7.s50",
+      "level": "section",
+      "adopted_title": "PRIVATE CLUB OR LODGE",
+      "draft_title": "PRIVATE CLUB OR LODGE",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s50.a",
+      "draft_id": "draft:a7.s50.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s50.b",
+      "draft_id": "draft:a7.s50.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s51",
+      "draft_id": "draft:a7.s51",
+      "level": "section",
+      "adopted_title": "RECYCLING FACILITY",
+      "draft_title": "RECYCLING FACILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s51.a",
+      "draft_id": "draft:a7.s51.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s51.b",
+      "draft_id": "draft:a7.s51.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s52",
+      "draft_id": "draft:a7.s52",
+      "level": "section",
+      "adopted_title": "RESEARCH LABORATORY",
+      "draft_title": "RESEARCH LABORATORY",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s52.a",
+      "draft_id": "draft:a7.s52.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s52.b",
+      "draft_id": "draft:a7.s52.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s53",
+      "draft_id": "draft:a7.s53",
+      "level": "section",
+      "adopted_title": "RESIDENCE",
+      "draft_title": "RESIDENCE",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s53.a",
+      "draft_id": "draft:a7.s53.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s53.b",
+      "draft_id": "draft:a7.s53.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s54",
+      "draft_id": "draft:a7.s54",
+      "level": "section",
+      "adopted_title": "RESIDENTIAL CARE FACILITY",
+      "draft_title": "RESIDENTIAL CARE FACILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s54.a",
+      "draft_id": "draft:a7.s54.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s55",
+      "draft_id": "draft:a7.s55",
+      "level": "section",
+      "adopted_title": "RESOURCE EXTRACTION",
+      "draft_title": "RESOURCE EXTRACTION",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s55.a",
+      "draft_id": "draft:a7.s55.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s55.b",
+      "draft_id": "draft:a7.s55.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s56",
+      "draft_id": "draft:a7.s56",
+      "level": "section",
+      "adopted_title": "RESTAURANT & CAFE",
+      "draft_title": "RESTAURANT & CAFE",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s56.a",
+      "draft_id": "draft:a7.s56.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s56.b",
+      "draft_id": "draft:a7.s56.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s57",
+      "draft_id": "draft:a7.s57",
+      "level": "section",
+      "adopted_title": "RETAIL & SERVICE, GENERAL",
+      "draft_title": "RETAIL & SERVICE, GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s57.a",
+      "draft_id": "draft:a7.s57.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s58",
+      "draft_id": "draft:a7.s58",
+      "level": "section",
+      "adopted_title": "RETAIL & SERVICE, HEAVY",
+      "draft_title": "RETAIL & SERVICE, HEAVY",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s58.a",
+      "draft_id": "draft:a7.s58.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s58.b",
+      "draft_id": "draft:a7.s58.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s59",
+      "draft_id": "draft:a7.s59",
+      "level": "section",
+      "adopted_title": "RETAIL FIREARM SALES FACILITY",
+      "draft_title": "RETAIL FIREARM SALES FACILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s59.a",
+      "draft_id": "draft:a7.s59.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s59.b",
+      "draft_id": "draft:a7.s59.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s6",
+      "draft_id": "draft:a7.s6",
+      "level": "section",
+      "adopted_title": "ANIMAL CARE, INDOOR",
+      "draft_title": "ANIMAL CARE, INDOOR",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s6.a",
+      "draft_id": "draft:a7.s6.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s6.b",
+      "draft_id": "draft:a7.s6.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s60",
+      "draft_id": "draft:a7.s60",
+      "level": "section",
+      "adopted_title": "ROOMING HOUSE",
+      "draft_title": "ROOMING HOUSE",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s60.a",
+      "draft_id": "draft:a7.s60.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s60.b",
+      "draft_id": "draft:a7.s60.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s61",
+      "draft_id": "draft:a7.s61",
+      "level": "section",
+      "adopted_title": "SELF-STORAGE FACILITY",
+      "draft_title": "SELF-STORAGE FACILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s61.a",
+      "draft_id": "draft:a7.s61.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s61.b",
+      "draft_id": "draft:a7.s61.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s62",
+      "draft_id": "draft:a7.s62",
+      "level": "section",
+      "adopted_title": "STABLES / RIDING CENTER",
+      "draft_title": "STABLES / RIDING CENTER",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s62.a",
+      "draft_id": "draft:a7.s62.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s62.b",
+      "draft_id": "draft:a7.s62.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s63",
+      "draft_id": "draft:a7.s63",
+      "level": "section",
+      "adopted_title": "TOURIST RENTAL",
+      "draft_title": "TOURIST RENTAL",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s63.a",
+      "draft_id": "draft:a7.s63.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s63.b",
+      "draft_id": "draft:a7.s63.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s64",
+      "draft_id": "draft:a7.s64",
+      "level": "section",
+      "adopted_title": "UTILITIES & SERVICES",
+      "draft_title": "UTILITIES & SERVICES",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s64.a",
+      "draft_id": "draft:a7.s64.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s64.b",
+      "draft_id": "draft:a7.s64.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s65",
+      "draft_id": "draft:a7.s65",
+      "level": "section",
+      "adopted_title": "VEHICLE RENTAL OR SALES",
+      "draft_title": "VEHICLE RENTAL OR SALES",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s65.a",
+      "draft_id": "draft:a7.s65.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s65.b",
+      "draft_id": "draft:a7.s65.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s66",
+      "draft_id": "draft:a7.s66",
+      "level": "section",
+      "adopted_title": "VEHICLE REPAIR",
+      "draft_title": "VEHICLE REPAIR",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s66.a",
+      "draft_id": "draft:a7.s66.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s66.b",
+      "draft_id": "draft:a7.s66.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s7",
+      "draft_id": "draft:a7.s7",
+      "level": "section",
+      "adopted_title": "ANIMAL CARE, OUTDOOR",
+      "draft_title": "ANIMAL CARE, OUTDOOR",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s7.a",
+      "draft_id": "draft:a7.s7.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s7.b",
+      "draft_id": "draft:a7.s7.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s8",
+      "draft_id": "draft:a7.s8",
+      "level": "section",
+      "adopted_title": "AQUACULTURE",
+      "draft_title": "AQUACULTURE",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s8.a",
+      "draft_id": "draft:a7.s8.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s8.b",
+      "draft_id": "draft:a7.s8.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s9",
+      "draft_id": "draft:a7.s9",
+      "level": "section",
+      "adopted_title": "ASSEMBLY",
+      "draft_title": "ASSEMBLY",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a6.s9.a",
+      "draft_id": "draft:a7.s9.a",
+      "level": "subsection",
+      "adopted_title": "DEFINITION",
+      "draft_title": "DEFINITION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a6.s9.b",
+      "draft_id": "draft:a7.s9.b",
+      "level": "subsection",
+      "adopted_title": "STANDARDS",
+      "draft_title": "STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s1",
+      "draft_id": "draft:a8.s1",
+      "level": "section",
+      "adopted_title": "CORE CODE ADMINISTRATION",
+      "draft_title": "CORE CODE ADMINISTRATION",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s1.a",
+      "draft_id": "draft:a8.s1.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s1.b",
+      "draft_id": "draft:a8.s1.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s10",
+      "draft_id": "draft:a8.s10",
+      "level": "section",
+      "adopted_title": "SMALL PROJECT PLAN",
+      "draft_title": "SMALL PROJECT PLAN",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s10.a",
+      "draft_id": "draft:a8.s10.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s10.b",
+      "draft_id": "draft:a8.s10.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s10.c",
+      "draft_id": "draft:a8.s10.c",
+      "level": "subsection",
+      "adopted_title": "AUTHORITY",
+      "draft_title": "AUTHORITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s10.d",
+      "draft_id": "draft:a8.s10.d",
+      "level": "subsection",
+      "adopted_title": "PROCEDURE",
+      "draft_title": "PROCEDURE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s10.e",
+      "draft_id": "draft:a8.s10.e",
+      "level": "subsection",
+      "adopted_title": "APPROVAL STANDARDS",
+      "draft_title": "APPROVAL STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s10.f",
+      "draft_id": "draft:a8.s10.f",
+      "level": "subsection",
+      "adopted_title": "CONDITIONS",
+      "draft_title": "CONDITIONS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s10.g",
+      "draft_id": "draft:a8.s10.g",
+      "level": "subsection",
+      "adopted_title": "AMENDMENTS",
+      "draft_title": "AMENDMENTS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s11",
+      "draft_id": "draft:a8.s11",
+      "level": "section",
+      "adopted_title": "LARGE PROJECT PLAN",
+      "draft_title": "LARGE PROJECT PLAN",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s11.a",
+      "draft_id": "draft:a8.s11.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s11.b",
+      "draft_id": "draft:a8.s11.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s11.c",
+      "draft_id": "draft:a8.s11.c",
+      "level": "subsection",
+      "adopted_title": "AUTHORITY",
+      "draft_title": "AUTHORITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s11.d",
+      "draft_id": "draft:a8.s11.d",
+      "level": "subsection",
+      "adopted_title": "PROCEDURE",
+      "draft_title": "PROCEDURE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s11.e",
+      "draft_id": "draft:a8.s11.e",
+      "level": "subsection",
+      "adopted_title": "APPROVAL STANDARDS",
+      "draft_title": "APPROVAL STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s11.f",
+      "draft_id": "draft:a8.s11.f",
+      "level": "subsection",
+      "adopted_title": "CONDITIONS",
+      "draft_title": "CONDITIONS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s11.g",
+      "draft_id": "draft:a8.s11.g",
+      "level": "subsection",
+      "adopted_title": "AMENDMENTS",
+      "draft_title": "AMENDMENTS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s11.h",
+      "draft_id": "draft:a8.s11.h",
+      "level": "subsection",
+      "adopted_title": "COMPLIANCE",
+      "draft_title": "COMPLIANCE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s12",
+      "draft_id": "draft:a8.s12",
+      "level": "section",
+      "adopted_title": "SUBDIVISION",
+      "draft_title": "SUBDIVISION",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s12.a",
+      "draft_id": "draft:a8.s12.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s12.b",
+      "draft_id": "draft:a8.s12.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s12.c",
+      "draft_id": "draft:a8.s12.c",
+      "level": "subsection",
+      "adopted_title": "AUTHORITY",
+      "draft_title": "AUTHORITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s12.d",
+      "draft_id": "draft:a8.s12.d",
+      "level": "subsection",
+      "adopted_title": "PHASING",
+      "draft_title": "PHASING",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s12.e",
+      "draft_id": "draft:a8.s12.e",
+      "level": "subsection",
+      "adopted_title": "PROCEDURE",
+      "draft_title": "PROCEDURE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s12.f",
+      "draft_id": "draft:a8.s12.f",
+      "level": "subsection",
+      "adopted_title": "APPROVAL STANDARDS",
+      "draft_title": "APPROVAL STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s12.g",
+      "draft_id": "draft:a8.s12.g",
+      "level": "subsection",
+      "adopted_title": "CONDITIONS",
+      "draft_title": "CONDITIONS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s12.h",
+      "draft_id": "draft:a8.s12.h",
+      "level": "subsection",
+      "adopted_title": "AMENDMENTS AND MODIFICATION",
+      "draft_title": "AMENDMENTS AND MODIFICATION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s12.i",
+      "draft_id": "draft:a8.s12.i",
+      "level": "subsection",
+      "adopted_title": "COMPLIANCE",
+      "draft_title": "COMPLIANCE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s12.j",
+      "draft_id": "draft:a8.s12.j",
+      "level": "subsection",
+      "adopted_title": "RECORDING OF PLAT",
+      "draft_title": "RECORDING OF PLAT",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s12.k",
+      "draft_id": "draft:a8.s12.k",
+      "level": "subsection",
+      "adopted_title": "MONUMENTS",
+      "draft_title": "MONUMENTS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s12.l",
+      "draft_id": "draft:a8.s12.l",
+      "level": "subsection",
+      "adopted_title": "REQUIRED IMPROVEMENTS",
+      "draft_title": "REQUIRED IMPROVEMENTS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s12.m",
+      "draft_id": "draft:a8.s12.m",
+      "level": "subsection",
+      "adopted_title": "INSPECTION OF IMPROVEMENTS",
+      "draft_title": "INSPECTION OF IMPROVEMENTS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s12.n",
+      "draft_id": "draft:a8.s12.n",
+      "level": "subsection",
+      "adopted_title": "CONVEYANCE OF IMPROVEMENTS",
+      "draft_title": "CONVEYANCE OF IMPROVEMENTS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s12.o",
+      "draft_id": "draft:a8.s12.o",
+      "level": "subsection",
+      "adopted_title": "DEFAULT OF SECURITY AGREEMENT",
+      "draft_title": "DEFAULT OF SECURITY AGREEMENT",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s12.p",
+      "draft_id": "draft:a8.s12.p",
+      "level": "subsection",
+      "adopted_title": "MODIFICATION OF SECURITY",
+      "draft_title": "MODIFICATION OF SECURITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s12.q",
+      "draft_id": "draft:a8.s12.q",
+      "level": "subsection",
+      "adopted_title": "ISSUANCE OF ZONING PERMITS FOR NEW BUILDINGS",
+      "draft_title": "ISSUANCE OF ZONING PERMITS FOR NEW BUILDINGS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s13",
+      "draft_id": "draft:a8.s13",
+      "level": "section",
+      "adopted_title": "MASTER PLAN",
+      "draft_title": "MASTER PLAN",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s13.a",
+      "draft_id": "draft:a8.s13.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s13.b",
+      "draft_id": "draft:a8.s13.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s13.c",
+      "draft_id": "draft:a8.s13.c",
+      "level": "subsection",
+      "adopted_title": "AUTHORITY",
+      "draft_title": "AUTHORITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s13.d",
+      "draft_id": "draft:a8.s13.d",
+      "level": "subsection",
+      "adopted_title": "PROCEDURE",
+      "draft_title": "PROCEDURE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s13.e",
+      "draft_id": "draft:a8.s13.e",
+      "level": "subsection",
+      "adopted_title": "APPROVAL STANDARDS",
+      "draft_title": "APPROVAL STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s13.f",
+      "draft_id": "draft:a8.s13.f",
+      "level": "subsection",
+      "adopted_title": "COMPLIANCE",
+      "draft_title": "COMPLIANCE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s13.g",
+      "draft_id": "draft:a8.s13.g",
+      "level": "subsection",
+      "adopted_title": "CONDITIONS",
+      "draft_title": "CONDITIONS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s14",
+      "draft_id": "draft:a8.s14",
+      "level": "section",
+      "adopted_title": "PLAN REVISION",
+      "draft_title": "PLAN REVISION",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s14.a",
+      "draft_id": "draft:a8.s14.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s14.b",
+      "draft_id": "draft:a8.s14.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s14.c",
+      "draft_id": "draft:a8.s14.c",
+      "level": "subsection",
+      "adopted_title": "AUTHORITY",
+      "draft_title": "AUTHORITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s14.d",
+      "draft_id": "draft:a8.s14.d",
+      "level": "subsection",
+      "adopted_title": "PROCEDURES",
+      "draft_title": "PROCEEDURES",
+      "confidence": 0.9524,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s15",
+      "draft_id": "draft:a8.s15",
+      "level": "section",
+      "adopted_title": "USE PERMIT",
+      "draft_title": "USE PERMIT",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s15.a",
+      "draft_id": "draft:a8.s15.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s15.b",
+      "draft_id": "draft:a8.s15.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s15.c",
+      "draft_id": "draft:a8.s15.c",
+      "level": "subsection",
+      "adopted_title": "AUTHORITY",
+      "draft_title": "AUTHORITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s15.d",
+      "draft_id": "draft:a8.s15.d",
+      "level": "subsection",
+      "adopted_title": "PROCEEDURE",
+      "draft_title": "PROCEEDURE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s16",
+      "draft_id": "draft:a8.s16",
+      "level": "section",
+      "adopted_title": "EXPANDED USE PERMIT",
+      "draft_title": "EXPANDED USE PERMIT",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s16.a",
+      "draft_id": "draft:a8.s16.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s16.b",
+      "draft_id": "draft:a8.s16.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s16.c",
+      "draft_id": "draft:a8.s16.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s17",
+      "draft_id": "draft:a8.s17",
+      "level": "section",
+      "adopted_title": "RESIDENTIAL COMPANION USE PERMIT",
+      "draft_title": "RESIDENTIAL COMPANION USE PERMIT",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s17.a",
+      "draft_id": "draft:a8.s17.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s17.b",
+      "draft_id": "draft:a8.s17.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s17.c",
+      "draft_id": "draft:a8.s17.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s18",
+      "draft_id": "draft:a8.s18",
+      "level": "section",
+      "adopted_title": "SPECIAL PERMIT",
+      "draft_title": "SPECIAL PERMIT",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s18.a",
+      "draft_id": "draft:a8.s18.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s18.b",
+      "draft_id": "draft:a8.s18.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s18.c",
+      "draft_id": "draft:a8.s18.c",
+      "level": "subsection",
+      "adopted_title": "AUTHORITY",
+      "draft_title": "AUTHORITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s18.d",
+      "draft_id": "draft:a8.s18.d",
+      "level": "subsection",
+      "adopted_title": "PROCEDURE",
+      "draft_title": "PROCEDURE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s18.e",
+      "draft_id": "draft:a8.s18.e",
+      "level": "subsection",
+      "adopted_title": "APPROVAL STANDARDS",
+      "draft_title": "APPROVAL STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s18.f",
+      "draft_id": "draft:a8.s18.f",
+      "level": "subsection",
+      "adopted_title": "CONDITIONS",
+      "draft_title": "CONDITIONS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s18.g",
+      "draft_id": "draft:a8.s18.g",
+      "level": "subsection",
+      "adopted_title": "VALIDITY",
+      "draft_title": "VALIDITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s19",
+      "draft_id": "draft:a8.s19",
+      "level": "section",
+      "adopted_title": "VARIANCE",
+      "draft_title": "VARIANCE",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s19.a",
+      "draft_id": "draft:a8.s19.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "GENERAL",
+      "confidence": 0.1429,
+      "match_basis": "section_number+subsection_letter",
+      "note": "titles diverge — verify by hand; section+letter still line up."
+    },
+    {
+      "adopted_id": "adopted:a7.s19.b",
+      "draft_id": "draft:a8.s19.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "AUTHORITY",
+      "confidence": 0.3636,
+      "match_basis": "section_number+subsection_letter",
+      "note": "titles diverge — verify by hand; section+letter still line up."
+    },
+    {
+      "adopted_id": "adopted:a7.s19.c",
+      "draft_id": "draft:a8.s19.c",
+      "level": "subsection",
+      "adopted_title": "PROCEDURE",
+      "draft_title": "PROCEDURE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s19.d",
+      "draft_id": "draft:a8.s19.d",
+      "level": "subsection",
+      "adopted_title": "APPROVAL STANDARDS",
+      "draft_title": "APPROVAL STANDARDS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s19.e",
+      "draft_id": "draft:a8.s19.e",
+      "level": "subsection",
+      "adopted_title": "CONDITIONS",
+      "draft_title": "CONDITIONS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s19.f",
+      "draft_id": "draft:a8.s19.f",
+      "level": "subsection",
+      "adopted_title": "DURATION AND EXTENSION",
+      "draft_title": "DURATION AND EXTENSION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s2",
+      "draft_id": "draft:a8.s2",
+      "level": "section",
+      "adopted_title": "GENERAL PROCEDURES",
+      "draft_title": "GENERAL PROCEDURES",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s2.a",
+      "draft_id": "draft:a8.s2.a",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s2.b",
+      "draft_id": "draft:a8.s2.b",
+      "level": "subsection",
+      "adopted_title": "COMPLETENESS",
+      "draft_title": "COMPLETENESS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s2.c",
+      "draft_id": "draft:a8.s2.c",
+      "level": "subsection",
+      "adopted_title": "FEES",
+      "draft_title": "FEES",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s2.d",
+      "draft_id": "draft:a8.s2.d",
+      "level": "subsection",
+      "adopted_title": "TECHNICAL REVIEW",
+      "draft_title": "TECHNICAL REVIEW",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s2.e",
+      "draft_id": "draft:a8.s2.e",
+      "level": "subsection",
+      "adopted_title": "RECORDING",
+      "draft_title": "RECORDING",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s20",
+      "draft_id": "draft:a8.s20",
+      "level": "section",
+      "adopted_title": "LAND CONVEYANCE",
+      "draft_title": "LAND CONVEYANCE",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s20.a",
+      "draft_id": "draft:a8.s20.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s20.b",
+      "draft_id": "draft:a8.s20.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s20.c",
+      "draft_id": "draft:a8.s20.c",
+      "level": "subsection",
+      "adopted_title": "AUTHORITY",
+      "draft_title": "AUTHORITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s20.d",
+      "draft_id": "draft:a8.s20.d",
+      "level": "subsection",
+      "adopted_title": "PROCEDURE",
+      "draft_title": "PROCEDURE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s20.e",
+      "draft_id": "draft:a8.s20.e",
+      "level": "subsection",
+      "adopted_title": "RECOMMENDATION",
+      "draft_title": "RECOMMENDATION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s20.f",
+      "draft_id": "draft:a8.s20.f",
+      "level": "subsection",
+      "adopted_title": "CONDITIONS",
+      "draft_title": "CONDITIONS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s21",
+      "draft_id": "draft:a8.s21",
+      "level": "section",
+      "adopted_title": "ZONING AMENDMENT",
+      "draft_title": "ZONING AMENDMENT",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s21.a",
+      "draft_id": "draft:a8.s21.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s21.b",
+      "draft_id": "draft:a8.s21.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s21.c",
+      "draft_id": "draft:a8.s21.c",
+      "level": "subsection",
+      "adopted_title": "AUTHORITY",
+      "draft_title": "AUTHORITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s21.d",
+      "draft_id": "draft:a8.s21.d",
+      "level": "subsection",
+      "adopted_title": "PROCEDURE",
+      "draft_title": "PROCEDURE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s22",
+      "draft_id": "draft:a8.s22",
+      "level": "section",
+      "adopted_title": "DEMOLITION OF HISTORIC ASSETS",
+      "draft_title": "DEMOLITION OF HISTORIC ASSETS",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s23",
+      "draft_id": "draft:a8.s23",
+      "level": "section",
+      "adopted_title": "ADMINISTRATIVE APPEAL",
+      "draft_title": "ADMINISTRATIVE APPEAL",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s23.a",
+      "draft_id": "draft:a8.s23.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s23.b",
+      "draft_id": "draft:a8.s23.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s23.c",
+      "draft_id": "draft:a8.s23.c",
+      "level": "subsection",
+      "adopted_title": "AUTHORITY",
+      "draft_title": "AUTHORITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s23.d",
+      "draft_id": "draft:a8.s23.d",
+      "level": "subsection",
+      "adopted_title": "PROCEDURE",
+      "draft_title": "PROCEDURE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s23.e",
+      "draft_id": "draft:a8.s23.e",
+      "level": "subsection",
+      "adopted_title": "RECONSIDERATION",
+      "draft_title": "RECONSIDERATION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s24",
+      "draft_id": "draft:a8.s24",
+      "level": "section",
+      "adopted_title": "JUDICIAL APPEAL",
+      "draft_title": "JUDICIAL APPEAL",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s24.a",
+      "draft_id": "draft:a8.s24.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s24.b",
+      "draft_id": "draft:a8.s24.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s24.c",
+      "draft_id": "draft:a8.s24.c",
+      "level": "subsection",
+      "adopted_title": "PROCEDURE",
+      "draft_title": "PROCEDURE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s25",
+      "draft_id": "draft:a8.s25",
+      "level": "section",
+      "adopted_title": "NONCONFORMITY",
+      "draft_title": "NONCONFORMITY",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s25.a",
+      "draft_id": "draft:a8.s25.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s25.b",
+      "draft_id": "draft:a8.s25.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s25.c",
+      "draft_id": "draft:a8.s25.c",
+      "level": "subsection",
+      "adopted_title": "CONTINUATION",
+      "draft_title": "CONTINUATION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s25.d",
+      "draft_id": "draft:a8.s25.d",
+      "level": "subsection",
+      "adopted_title": "PROOF OF NONCONFORMING CONDITIONS",
+      "draft_title": "PROOF OF NONCONFORMING CONDITIONS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s25.e",
+      "draft_id": "draft:a8.s25.e",
+      "level": "subsection",
+      "adopted_title": "DETERMINATIONS",
+      "draft_title": "DETERMINATIONS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s25.f",
+      "draft_id": "draft:a8.s25.f",
+      "level": "subsection",
+      "adopted_title": "RESTORATION OF NONCONFORMING CONDITIONS",
+      "draft_title": "RESTORATION OF NONCONFORMING CONDITIONS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s26",
+      "draft_id": "draft:a8.s26",
+      "level": "section",
+      "adopted_title": "CODE ENFORCEMENT OFFICER",
+      "draft_title": "CODE ENFORCEMENT OFFICER",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s26.a",
+      "draft_id": "draft:a8.s26.a",
+      "level": "subsection",
+      "adopted_title": "RESPONSIBILITIES",
+      "draft_title": "RESPONSIBILITIES",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s26.b",
+      "draft_id": "draft:a8.s26.b",
+      "level": "subsection",
+      "adopted_title": "ENFORCEMENT ACTIONS",
+      "draft_title": "ENFORCEMENT ACTIONS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s26.c",
+      "draft_id": "draft:a8.s26.c",
+      "level": "subsection",
+      "adopted_title": "FINES AND PENALTIES",
+      "draft_title": "FINES AND PENALTIES",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s27",
+      "draft_id": "draft:a8.s27",
+      "level": "section",
+      "adopted_title": "PLANNING BOARD",
+      "draft_title": "PLANNING BOARD",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s27.a",
+      "draft_id": "draft:a8.s27.a",
+      "level": "subsection",
+      "adopted_title": "RESPONSIBILITIES",
+      "draft_title": "RESPONSIBILITIES",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s27.b",
+      "draft_id": "draft:a8.s27.b",
+      "level": "subsection",
+      "adopted_title": "BOARD RULES",
+      "draft_title": "BOARD RULES",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s28",
+      "draft_id": "draft:a8.s28",
+      "level": "section",
+      "adopted_title": "BOARD OF APPEALS",
+      "draft_title": "BOARD OF APPEALS",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s28.a",
+      "draft_id": "draft:a8.s28.a",
+      "level": "subsection",
+      "adopted_title": "RESPONSIBILITIES",
+      "draft_title": "RESPONSIBILITIES",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s28.b",
+      "draft_id": "draft:a8.s28.b",
+      "level": "subsection",
+      "adopted_title": "BOARD RULES",
+      "draft_title": "BOARD RULES",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s29",
+      "draft_id": "draft:a8.s29",
+      "level": "section",
+      "adopted_title": "LIFE SAFETY",
+      "draft_title": "LIFE SAFETY",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s29.a",
+      "draft_id": "draft:a8.s29.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s29.b",
+      "draft_id": "draft:a8.s29.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s29.c",
+      "draft_id": "draft:a8.s29.c",
+      "level": "subsection",
+      "adopted_title": "AUTHORITY",
+      "draft_title": "AUTHORITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s29.d",
+      "draft_id": "draft:a8.s29.d",
+      "level": "subsection",
+      "adopted_title": "PROCEEDURE",
+      "draft_title": "PROCEEDURE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s3",
+      "draft_id": "draft:a8.s3",
+      "level": "section",
+      "adopted_title": "PRE-SUBMITTAL MEETING",
+      "draft_title": "PRE-SUBMITTAL MEETING",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s3.a",
+      "draft_id": "draft:a8.s3.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s3.b",
+      "draft_id": "draft:a8.s3.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s3.c",
+      "draft_id": "draft:a8.s3.c",
+      "level": "subsection",
+      "adopted_title": "PROCEDURE",
+      "draft_title": "PROCEDURE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s4",
+      "draft_id": "draft:a8.s4",
+      "level": "section",
+      "adopted_title": "OPTIONAL NEIGHBORHOOD MEETING",
+      "draft_title": "OPTIONAL NEIGHBORHOOD MEETING",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s4.a",
+      "draft_id": "draft:a8.s4.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s4.b",
+      "draft_id": "draft:a8.s4.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s4.c",
+      "draft_id": "draft:a8.s4.c",
+      "level": "subsection",
+      "adopted_title": "PROCEDURE",
+      "draft_title": "PROCEDURE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s5",
+      "draft_id": "draft:a8.s5",
+      "level": "section",
+      "adopted_title": "PUBLIC NOTICE",
+      "draft_title": "PUBLIC NOTICE",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s5.a",
+      "draft_id": "draft:a8.s5.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s5.b",
+      "draft_id": "draft:a8.s5.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s5.c",
+      "draft_id": "draft:a8.s5.c",
+      "level": "subsection",
+      "adopted_title": "MAILED NOTICE",
+      "draft_title": "MAILED NOTICE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s5.d",
+      "draft_id": "draft:a8.s5.d",
+      "level": "subsection",
+      "adopted_title": "PUBLISHED NOTICE",
+      "draft_title": "PUBLISHED NOTICE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s5.e",
+      "draft_id": "draft:a8.s5.e",
+      "level": "subsection",
+      "adopted_title": "POSTED NOTICE",
+      "draft_title": "POSTED NOTICE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s5.f",
+      "draft_id": "draft:a8.s5.f",
+      "level": "subsection",
+      "adopted_title": "NOTICE DEFECTS",
+      "draft_title": "NOTICE DEFECTS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s6",
+      "draft_id": "draft:a8.s6",
+      "level": "section",
+      "adopted_title": "PUBLIC HEARINGS",
+      "draft_title": "PUBLIC HEARINGS",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s6.a",
+      "draft_id": "draft:a8.s6.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s6.b",
+      "draft_id": "draft:a8.s6.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s6.c",
+      "draft_id": "draft:a8.s6.c",
+      "level": "subsection",
+      "adopted_title": "ACCESS TO DOCUMENTS",
+      "draft_title": "ACCESS TO DOCUMENTS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s6.d",
+      "draft_id": "draft:a8.s6.d",
+      "level": "subsection",
+      "adopted_title": "CONDUCT OF THE PUBLIC HEARING",
+      "draft_title": "CONDUCT OF THE PUBLIC HEARING",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s6.e",
+      "draft_id": "draft:a8.s6.e",
+      "level": "subsection",
+      "adopted_title": "CONTINUANCE",
+      "draft_title": "CONTINUANCE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s7",
+      "draft_id": "draft:a8.s7",
+      "level": "section",
+      "adopted_title": "WRITTEN INTERPRETATION",
+      "draft_title": "WRITTEN INTERPRETATION",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s7.a",
+      "draft_id": "draft:a8.s7.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s7.b",
+      "draft_id": "draft:a8.s7.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s7.c",
+      "draft_id": "draft:a8.s7.c",
+      "level": "subsection",
+      "adopted_title": "GENERAL",
+      "draft_title": "GENERAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s7.d",
+      "draft_id": "draft:a8.s7.d",
+      "level": "subsection",
+      "adopted_title": "PROCEDURE",
+      "draft_title": "PROCEDURE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s8",
+      "draft_id": "draft:a8.s8",
+      "level": "section",
+      "adopted_title": "MISC PROCEDURES",
+      "draft_title": "MISC PROCEDURES",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s8.a",
+      "draft_id": "draft:a8.s8.a",
+      "level": "subsection",
+      "adopted_title": "INSPECTION",
+      "draft_title": "INSPECTION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s8.b",
+      "draft_id": "draft:a8.s8.b",
+      "level": "subsection",
+      "adopted_title": "WITHDRAWAL",
+      "draft_title": "WITHDRAWAL",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s8.c",
+      "draft_id": "draft:a8.s8.c",
+      "level": "subsection",
+      "adopted_title": "REPETITIVE APPLICATIONS",
+      "draft_title": "REPETITIVE APPLICATIONS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s8.d",
+      "draft_id": "draft:a8.s8.d",
+      "level": "subsection",
+      "adopted_title": "FAILURE TO ACT",
+      "draft_title": "FAILURE TO ACT",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s8.e",
+      "draft_id": "draft:a8.s8.e",
+      "level": "subsection",
+      "adopted_title": "FINDINGS",
+      "draft_title": "FINDINGS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s8.f",
+      "draft_id": "draft:a8.s8.f",
+      "level": "subsection",
+      "adopted_title": "CERTIFICATION & RECORDING OF DECISION",
+      "draft_title": "CERTIFICATION & RECORDING OF DECISION",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s9",
+      "draft_id": "draft:a8.s9",
+      "level": "section",
+      "adopted_title": "APPLICATION TYPES",
+      "draft_title": "APPLICATION TYPES",
+      "confidence": 1.0,
+      "match_basis": "section_number"
+    },
+    {
+      "adopted_id": "adopted:a7.s9.a",
+      "draft_id": "draft:a8.s9.a",
+      "level": "subsection",
+      "adopted_title": "PURPOSE",
+      "draft_title": "PURPOSE",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s9.b",
+      "draft_id": "draft:a8.s9.b",
+      "level": "subsection",
+      "adopted_title": "APPLICABILITY",
+      "draft_title": "APPLICABILITY",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s9.c",
+      "draft_id": "draft:a8.s9.c",
+      "level": "subsection",
+      "adopted_title": "DEVELOPMENT REVIEW",
+      "draft_title": "DEVELOPMENT REVIEW",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    },
+    {
+      "adopted_id": "adopted:a7.s9.d",
+      "draft_id": "draft:a8.s9.d",
+      "level": "subsection",
+      "adopted_title": "ADDITIONAL PERMIT APPLICATIONS",
+      "draft_title": "ADDITIONAL PERMIT APPLICATIONS",
+      "confidence": 1.0,
+      "match_basis": "section_number+subsection_letter"
+    }
+  ],
+  "unmatched": {
+    "adopted": [],
+    "draft": []
+  }
+}

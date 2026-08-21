@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Newcastle Permit Review{% endblock %}</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="/">Newcastle Permit Review</a>
+      <span class="brand-sub">{% block brand_sub %}Phase 3 &middot; Case Review{% endblock %}</span>
+      <nav class="site-nav">
+        <a href="/cases">Cases</a>
+        <a href="/">Worksheet</a>
+      </nav>
+    </div>
+  </header>
+  <main class="site-main">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="site-footer">
+    <p>Working draft tool for the Planner / CEO / Chair. Nothing on this page is a Board decision.
+       All conclusions are the Planning Board's to make.</p>
+  </footer>
+</body>
+</html>

@@ -53,3 +53,5 @@ build/street-types/*.bak-*
 build/street-types/*.tmp-*
 source/exhibits/street-types/*.bak-*
 source/exhibits/street-types/*.tmp-*
+build/permit-review/data/
+build/permit-review/.venv/

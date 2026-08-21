@@ -1,0 +1,57 @@
+{
+  "schema": "newcastle.ruleset-manifest/1.1.0",
+  "id": "d3bc668556e34d4086edc169346d1ddf",
+  "ruleset_key": "draft-v0.22",
+  "kind": "draft-czc",
+  "title": "Newcastle Core Zoning Code (Draft v0.22)",
+  "label": "Newcastle Core Zoning Code (Draft v0.22)",
+  "status": "draft",
+  "binding": false,
+  "article_scheme": "draft",
+  "adopted_date": null,
+  "adopted_on": null,
+  "built_at": "2026-08-21T12:07:07Z",
+  "builder_version": "ruleset_build/2.0.0",
+  "files": {
+    "articles": "articles.json",
+    "definitions": "definitions.json",
+    "uses": "uses.json"
+  },
+  "content_sha256": {
+    "articles": "0c1bbb9b3a7a4447441912e99c8acec801eee79df919fd69c8ec43285229aace",
+    "definitions": "8068e6afd06370cab15e2b1b5e074aac4d61b1dc282ec9bccb2c8fc93fdbddd2",
+    "uses": "eac6cea51a442164e44d8dea9f554e36b430d8d9387086789112e66c110d0530"
+  },
+  "counts": {
+    "articles": {
+      "total_nodes": 1875,
+      "by_article": {
+        "1": 55,
+        "2": 56,
+        "3": 282,
+        "4": 212,
+        "5": 289,
+        "6": 240,
+        "7": 217,
+        "8": 524
+      }
+    },
+    "definitions": {
+      "terms": 272
+    },
+    "uses": {
+      "uses": 64
+    }
+  },
+  "source_sha256": {
+    "source/article-01-general.md": "42d476a7945518d8cab848316834a7edde29f86b95dc9a562f3ede0a872e359d",
+    "source/article-02-prefatory.md": "cee1edf1a84089ad3bd4c7796b8209dd024116a1eec9a5cdbc838db7ede02c21",
+    "source/article-03-streets-roads-driveways.md": "aaeaeb3c4693b39d79085bd0a4bcbf98311ce87d02705ba8288ed41a68acc1a4",
+    "source/article-04-site-standards.md": "96447491ae54b95e1a535ceee40554e3e675a66b44be7eaa80620fbf44371d22",
+    "source/article-05-building-standards.md": "90f92ac042c55b87a85e6ea2e666b6b17de0f1edf4378e6305911f410c213191",
+    "source/article-06-design-standards.md": "fb8350c00113cc52430d7df8188a9cfe25ccb66be3dbfe94fe957cead9bab347",
+    "source/article-07-use-standards.md": "b2bf05e5f0dd2ecabf61bfb8041d93fadf419f8dd36411a21792e19107ec7a64",
+    "source/article-08-administration.md": "5f0a667ea91b6e7ec92dfdd39f63e164c20e71e0a17b0d739824e0f6670bc458",
+    "source/article-09-definitions.md": "fbc2019f5d6f0f888a3dbe3a290017c23de7ada1b3dae209c5fc6a18c6c57048"
+  }
+}

@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+{% block title %}Dimensional Worksheet — Newcastle Permit Review{% endblock %}
+
+{% block content %}
+{% if not ruleset_available %}
+  <section class="panel panel-empty">
+    <h1>Dimensional Worksheet</h1>
+    <p class="notice notice-warn">
+      The <code>adopted</code> ruleset has not been built yet
+      (<code>rulesets/adopted/districts.json</code> / <code>use-matrix.json</code> are missing).
+      See <code>DECISIONS-NEEDED.md</code> — two dimensional values (SD&#8209;Historic and
+      SD&#8209;Marine, Frontage Zone Setback) are blocking the build until a human resolves them
+      in <code>overrides/dimension-qualifiers.json</code>.
+    </p>
+  </section>
+{% else %}
+
+  <section class="panel picker">
+    <h1>Dimensional Worksheet</h1>
+    <p class="lede">Pick a district and, optionally, a use. This page shows what the <strong>adopted</strong>
+      Code requires — it never concludes whether a proposal meets it. That is the Planning Board's call.</p>
+    <form class="picker-form" method="get" action="/">
+      <label for="district-select">District</label>
+      <select id="district-select" name="district" onchange="this.form.submit()">
+        <option value="">— select a district —</option>
+        {% for d in districts %}
+          <option value="{{ d.district_key }}" {% if d.district_key == selected_district %}selected{% endif %}>
+            {{ d.display_name }}
+          </option>
+        {% endfor %}
+      </select>
+
+      <label for="use-select">Use <span class="muted">(optional)</span></label>
+      <select id="use-select" name="use" onchange="this.form.submit()">
+        <option value="">— all 63 uses —</option>
+        {% for u in uses %}
+          <option value="{{ u.use_key }}" {% if u.use_key == selected_use %}selected{% endif %}>{{ u.label }}</option>
+        {% endfor %}
+      </select>
+      <noscript><button type="submit">Go</button></noscript>
+    </form>
+  </section>
+
+  {% if district_obj %}
+  <div id="worksheet-data" data-district="{{ selected_district }}" data-use="{{ selected_use or '' }}"></div>
+
+  <section class="panel">
+    <h2>{{ district_obj.display_name }}</h2>
+    {% if district_obj.description %}<p class="district-description">{{ district_obj.description }}</p>{% endif %}
+  </section>
+
+  <section class="panel">
+    <h3>Required Review(s)</h3>
+    {% if selected_use %}
+      <p class="muted">Showing the selected use only. Clear the use selector above to see all 63.</p>
+    {% endif %}
+    {% if review_rows %}
+    <div class="table-scroll">
+      <table class="review-table">
+        <thead><tr><th>Use</th><th>Permit</th><th>Authority</th><th>Applicability</th><th>Citation</th></tr></thead>
+        <tbody>
+        {% for row in review_rows %}
+          <tr class="{{ 'row-prohibited' if not row.permit else '' }}">
+            <td>{{ row.citation.use_label }}</td>
+            <td>{{ row.permit or '—' }}</td>
+            <td>{{ row.authority or '—' }}</td>
+            <td class="sentence">{{ row.sentence }}</td>
+            <td class="citation">{{ row.citation_text }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <p class="notice">No use selected, or the selected use has no matrix cell for this district.</p>
+    {% endif %}
+  </section>
+
+  <section class="panel">
+    <h3>Dimensional Standards</h3>
+    {% if dims %}
+    <div class="table-scroll">
+      <table class="dims-table">
+        <thead><tr><th>Label</th><th>Required (from the Code)</th><th>Proposed</th><th>Citation</th></tr></thead>
+        <tbody>
+        {% for dim in dims %}
+          <tr class="{{ 'row-unresolved' if dim.unresolved else '' }}">
+            <td>{{ dim.label }}{% if dim.footnote_refs %}
+              <span class="footnote-marker">{% for r in dim.footnote_refs %}({{ r }}){% endfor %}</span>
+            {% endif %}</td>
+            <td>
+              {% if dim.applicability == 'not_established' %}
+                <em>Article 2 establishes no standard for this field.</em>
+              {% else %}
+                {{ dim.raw }}
+              {% endif %}
+              {% if dim.notes %}
+                <div class="dim-note">{% for n in dim.notes %}{{ n }}<br>{% endfor %}</div>
+              {% endif %}
+            </td>
+            <td class="proposed-cell"><input type="text" class="proposed-input" placeholder="______" aria-label="Proposed value for {{ dim.label }} (not saved)"></td>
+            <td class="citation">{{ dim.citation_rendered }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <p class="notice">This district has no dimensional panels (or none loaded).</p>
+    {% endif %}
+  </section>
+
+  <section class="panel">
+    <h3>Permitted Buildings</h3>
+    {% if building_matrix %}
+    <div class="table-scroll">
+      <table class="matrix-table">
+        <thead><tr><th>Standard</th>{% for c in building_matrix.cols %}<th>{{ c }}</th>{% endfor %}</tr></thead>
+        <tbody>
+        {% for row in building_matrix.rows %}
+          <tr><td>{{ row[0] }}</td>{% for v in row[1:] %}<td>{{ v }}</td>{% endfor %}</tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% elif building_matrix_absent %}
+      <p class="notice notice-finding">{{ building_matrix_absent.finding }}</p>
+      {% if building_matrix_absent.board_question %}
+        <p class="board-question"><strong>Board question:</strong> {{ building_matrix_absent.board_question }}</p>
+      {% endif %}
+    {% else %}
+      <p class="notice">No building matrix data loaded for this district.</p>
+    {% endif %}
+  </section>
+
+  {% if use_standards and use_standards['items'] %}
+  <section class="panel">
+    <h3>{{ use_standards.title }}</h3>
+    <ul class="use-standards-list">
+      {% for item in use_standards['items'] %}
+        <li>{{ item.text if item is mapping else item }}
+          {% if item is mapping and item.sub %}
+            <ul>{% for s in item.sub %}<li>{{ s }}</li>{% endfor %}</ul>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  {% for panel in panels %}
+  <section class="panel">
+    <h3>{{ panel.title }}</h3>
+    {% if panel.kind == 'para' %}
+      <p>{{ panel.body }}</p>
+    {% elif panel.kind == 'lv' %}
+      <dl class="lv-panel">
+        {% for pair in panel.body %}
+          <dt>{{ pair[0] }}</dt><dd>{{ pair[1] }}</dd>
+        {% endfor %}
+      </dl>
+    {% elif panel.kind == 'list' %}
+      <ul>
+        {% for entry in panel.body %}
+          <li>{{ entry.text if entry is mapping else entry }}
+            {% if entry is mapping and entry.sub %}
+              <ul>{% for s in entry.sub %}<li>{{ s }}</li>{% endfor %}</ul>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </section>
+  {% endfor %}
+
+  <section class="panel actions-panel">
+    <h3>Actions</h3>
+    <div class="actions-row">
+      <button type="button" id="copy-md-btn">Copy as Markdown</button>
+      <button type="button" id="toggle-render-btn">Generate PDF&hellip;</button>
+    </div>
+    <div id="render-form" class="render-form" hidden>
+      {% if not render_available %}
+        <p class="notice notice-warn">The PDF renderer (<code>render/worksheet.py</code>) is not available in
+          this workflow yet. The form below is disabled until it lands.</p>
+      {% endif %}
+      <label for="case-label">Case label</label>
+      <input id="case-label" type="text" placeholder="M003, L059 (White Rd, Shattuck)">
+      <label for="meeting-month">Meeting month <span class="muted">(optional, YYYY-MM)</span></label>
+      <input id="meeting-month" type="text" placeholder="2026-09" pattern="\d{4}-\d{2}">
+      <label for="lots">Lots <span class="muted">(comma-separated labels, optional)</span></label>
+      <input id="lots" type="text" placeholder="Lot 1, Lot 2">
+      <label for="notes">Notes</label>
+      <textarea id="notes" rows="3"></textarea>
+      <label class="checkbox-label"><input id="scratch" type="checkbox"> Scratch run (dry-run a non-binding ruleset)</label>
+      <button type="button" id="render-submit-btn" {% if not render_available %}disabled{% endif %}>Render PDF</button>
+      <div id="render-result" class="render-result" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <textarea id="worksheet-markdown-source" hidden readonly>{{ markdown_text }}</textarea>
+  {% endif %}
+{% endif %}
+<script src="/static/app.js"></script>
+{% endblock %}

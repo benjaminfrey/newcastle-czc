@@ -1,0 +1,2737 @@
+{
+  "schema": "newcastle.definitions/1.0.0",
+  "ruleset_key": "draft-v0.22",
+  "generated_at": "2026-08-21T12:07:05Z",
+  "source": {
+    "article": 9,
+    "article_name": "Definitions",
+    "source_file": "source/article-09-definitions.md",
+    "sha256": "fbc2019f5d6f0f888a3dbe3a290017c23de7ada1b3dae209c5fc6a18c6c57048",
+    "term_count": 272
+  },
+  "counts": {
+    "terms": 272
+  },
+  "definitions": [
+    {
+      "id": "draft-v0.22:a9.def.abandoned",
+      "article": 9,
+      "term": "Abandoned",
+      "definition": "When a building, commercial unit, or property becomes vacant and unoccupied for a period of one year or more is deemed abandoned.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 9
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.absolute_height",
+      "article": 9,
+      "term": "Absolute Height",
+      "definition": "Height is measured from the surface of the ground to the highest point on a building, component, sign, or other structure.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 12
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.abutting",
+      "article": 9,
+      "term": "Abutting",
+      "definition": "Having any segment of a real property boundary in common, or separated by a right-of-way, alley, or easement.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 15
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.abutter",
+      "article": 9,
+      "term": "Abutter",
+      "definition": "An owner of property located within a certain distance of a subject property considered for development.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 18
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.access",
+      "article": 9,
+      "term": "Access",
+      "definition": "The way or means to enter and leave property or structure.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 21
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.accessory_building",
+      "article": 9,
+      "term": "Accessory Building",
+      "definition": "See Building, Accessory.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 24
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.accessory_dwelling_unit",
+      "article": 9,
+      "term": "Accessory Dwelling Unit",
+      "definition": "An additional permitted dwelling unit located in a component of a primary building or in an accessory building.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 27
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.accessory_unit",
+      "article": 9,
+      "term": "Accessory Unit",
+      "definition": "An additional permitted residential or commercial unit located in a component of a primary building or in an accessory building.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 30
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.additional_structure",
+      "article": 9,
+      "term": "Additional Structure",
+      "definition": "Any item constructed or erected, not including a primary or accessory buildings, the use of which requires more less permanent location on the ground, or attached to something having permanent location on the ground.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 33
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.adjacent",
+      "article": 9,
+      "term": "Adjacent",
+      "definition": "To be located in close proximity, or the closest instance of a referenced element, but not directly touching.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 36
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.affordable_housing_development",
+      "article": 9,
+      "term": "Affordable Housing Development",
+      "definition": "A development in which 51% or more of the dwelling units are deed restricted to meet the definition of Affordable Housing, Owned or Affordable Housing, Rental.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 39
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.affordable_housing_owned",
+      "article": 9,
+      "term": "Affordable Housing, Owned",
+      "definition": "An owner-occupied dwelling unit for which the occupying household's income does not exceed 120% of the median income for the area as defined by the United States Department of Housing and Urban Development under the United States Housing Act of 1937, Public Law 75-412, 50 Stat. 888, Section 8, as amended, and said household can afford the unit without spending more than 30% of the household's monthly income on housing costs.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 42
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.affordable_housing_rental",
+      "article": 9,
+      "term": "Affordable Housing, Rental",
+      "definition": "A dwelling unit which a household whose income does not exceed 80% of the median income for the area as defined by the United States Department of Housing and Urban Development under the United States Housing Act of 1937, Public Law 75-412, 50 Stat. 888, Section 8, as amended, can afford the unit without spending more than 30% of the household's monthly income on housing costs.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 45
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.agent",
+      "article": 9,
+      "term": "Agent",
+      "definition": "A person who acts on behalf of another person or group.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 48
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.agricultural_buildings",
+      "article": 9,
+      "term": "Agricultural Buildings",
+      "definition": "Buildings associated with the planting, cultivating, producing, growing, and harvesting of agricultural or horticultural products, the raising of livestock and poultry, and any work performed in conjunction with the above farm operations, including the packing, drying, and storing of products produced on-premises. Includes buildings for equine, or horse-related activities, including boarding, lessons, rides, breeding, veterinary care, races, events, and shows.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 51
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.agricultural_building",
+      "article": 9,
+      "term": "Agricultural Building",
+      "definition": "Includes storage sheds, apiaries, hoop houses, chicken coops, cold frames, compost bin, greenhouses, silos, rain barrels.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 54
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.agricultural_use",
+      "article": 9,
+      "term": "Agricultural Use",
+      "definition": "The commercial planting, cultivating, producing, growing, and harvesting of agricultural or horticultural products, the raising of livestock and poultry, and any work performed in conjunction with the above farm operations, including the packing, drying, and storing of products produced on-premises. Agriculture also includes all equine, or horse-related activities, including boarding, lessons, rides, breeding, veterinary care, races, events, and shows. Unless otherwise specified in this Code, the term 'agriculture' refers to commercial agriculture.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 57
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.alley_s5",
+      "article": 9,
+      "term": "Alley (S5)",
+      "definition": "A Street Type for narrow service streets internal to a block, providing access to the side or rear of lots for parking, loading, accessory buildings, and utility easements; buildings do not front on an Alley. Formerly combined with the Lane as Type \"S4 Lane/Alley\"; the two are now distinct Types (Lane = S4, fronting; Alley = S5, service). Defined in Article 3 Section 2 (Type S5).",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 60
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.alteration",
+      "article": 9,
+      "term": "Alteration",
+      "definition": "As applied to a building or structure, a change or rearrangement in the exterior structural parts or in the exit facilities; also an enlargement or addition where new construction is connected to an existing structure, whether by extending on a side or by increasing in height, or the moving from 1 location or position to another.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 63
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.applicant",
+      "article": 9,
+      "term": "Applicant",
+      "definition": "A person or entity who has submitted an application for review under applicable standards of this Code.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 66
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.assigned",
+      "article": 9,
+      "term": "Assigned",
+      "definition": "The process of determining the closest reasonable district, building type, component, roof type, use category or other feature of this Code to a nonconforming condition.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 69
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.attached",
+      "article": 9,
+      "term": "Attached",
+      "definition": "An object may be said to be attached to another when their outer surfaces are permanently in direct contact, or when they share part of their structural system.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 72
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.auto_oriented",
+      "article": 9,
+      "term": "Auto-Oriented",
+      "definition": "Businesses that relate to vehicular sales and service. All auto-oriented uses, definitions, and standards may be found in Article 7 Use Standards.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 75
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.average_ground_level",
+      "article": 9,
+      "term": "Average Ground Level",
+      "definition": "The mean (average) ground level at the corners of the main body of a building type.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 78
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.basement",
+      "article": 9,
+      "term": "Basement",
+      "definition": "A story of a building that is, in whole or in part, below the first story.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 81
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.beam",
+      "article": 9,
+      "term": "Beam",
+      "definition": "A large structural framing member.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 84
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.blank_wall",
+      "article": 9,
+      "term": "Blank Wall",
+      "definition": "A portion of any facade of a building that does not include windows, doors, columns, pilasters, or other architectural features.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 87
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.block",
+      "article": 9,
+      "term": "Block",
+      "definition": "The aggregate land area, including alleys, cross weaves, and footpaths, circumscribed by roads.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 90
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.bracket",
+      "article": 9,
+      "term": "Bracket",
+      "definition": "A visual and/or structural support, typically made of metal or wood, projecting from a building face to bear the weight or visually support a building element.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 93
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.build_to_standard",
+      "article": 9,
+      "term": "Build-To Standard",
+      "definition": "The value stated in the \"Build to\" column on a Type's page in Article 3 Section 2 — the configuration the applicant is to construct for that Type. It is drawn from the Type's authorized range under Article 3 Section 3.C.2 (the fuller value for the pedestrian and landscape components, the lower value for the traffic-calming dimensions). A Build-To Standard is distinguished from a minimum, which is the floor below which a waiver is required: an applicant may build less than a Build-To Standard by the written demonstration of Article 3 Section 3.C.4, whereas building below a stated minimum requires a waiver under Article 3 Section 13.H.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 96
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.building",
+      "article": 9,
+      "term": "Building",
+      "definition": "An assemblage of materials and components that form an enclosure including a roof, windows, doors and solid exterior walls, and designed, built, or occupied as a shelter for persons, animals, or property. Not synonymous with Structure.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 99
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.building_accessory",
+      "article": 9,
+      "term": "Building, Accessory",
+      "definition": "An additional building on a lot that may contain a dwelling, a non-dwelling unit, or a commercial unit.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 102
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.building_primary",
+      "article": 9,
+      "term": "Building, Primary",
+      "definition": "A permitted building capable of occupying a lot as the sole structure.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 105
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.building_element",
+      "article": 9,
+      "term": "Building Element",
+      "definition": "Any part of a building, including the main building mass, components, and accessory buildings.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 108
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.building_face",
+      "article": 9,
+      "term": "Building Face",
+      "definition": "Any exterior wall of a Building.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 111
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.building_height",
+      "article": 9,
+      "term": "Building Height",
+      "definition": "The measurement of building height by stories, where each full story above average ground level is counted as 1 story. For buildings with a pitched roofs, habitable space is allowed within the pitch and is not considered a full story.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 114
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.building_mass",
+      "article": 9,
+      "term": "Building Mass",
+      "definition": "See Main Building Mass.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 117
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.building_type",
+      "article": 9,
+      "term": "Building Type",
+      "definition": "A classification or kind of structure characterized and differentiated by its massing, composition, use, features, and placement on a lot.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 120
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.caliper",
+      "article": 9,
+      "term": "Caliper",
+      "definition": "A measurement of the diameter of a tree trunk. For trees less than 4 inches in diameter, caliper is measured 6 inches from the ground. For trees between 4 inches and 12 inches in diameter, caliper is measured 12 inches from the ground.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 123
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.carport",
+      "article": 9,
+      "term": "Carport",
+      "definition": "A roofed structure covered on 2 or more sides with fabric, vinyl, plastic, or other similar sheeting material that provides protection from the elements for vehicles or other items.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 126
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.cartway",
+      "article": 9,
+      "term": "Cartway",
+      "definition": "The portion of a Thoroughfare's right-of-way that is paved, graveled, or otherwise improved for vehicular travel, including travel lanes, on-street parking lanes (where present), and shoulders (where present). The cartway does not include sidewalks, planting strips, or the frontage zone.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 129
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.certified_arborist",
+      "article": 9,
+      "term": "Certified Arborist",
+      "definition": "An individual holding a current Certified Arborist credential from the International Society of Arboriculture, or an equivalent professional credential accepted by the Code Enforcement Officer. Used in Article 3 Section 3.G.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 132
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.change_of_use",
+      "article": 9,
+      "term": "Change of Use",
+      "definition": "The act of changing the categorization of activity within a building, structure, or portion thereof from one primary use to another.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 135
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.character",
+      "article": 9,
+      "term": "Character",
+      "definition": "The combined effect of the physical and design attributes of an area — including the form, scale, massing, and placement of buildings; the pattern of lots, blocks, and streets; the relationship of buildings to the street and to one another; and the streetscape and landscape — that distinguishes the area and that the form-based standards of this Code are intended to express. As used in this Code, character refers to these physical and design attributes; it does not refer to the ownership or occupancy of property, the identity of property owners or occupants, or the socioeconomic composition of an area.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 138
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.chine",
+      "article": 9,
+      "term": "Chine",
+      "definition": "The break-point or horizontal plane formed where two differently sloped portions of a complex roof system meet.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 141
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.civic_space",
+      "article": 9,
+      "term": "Civic Space",
+      "definition": "An outdoor open space designed to support social and recreational activities.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 144
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.civic_district",
+      "article": 9,
+      "term": "Civic District",
+      "definition": "An area protected from development and designated for use as civic space on the District Map.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 147
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.connector_road_r1",
+      "article": 9,
+      "term": "Connector Road (R1)",
+      "definition": "A Road Type providing connections in the rural-to-urban transition zone, with shoulders rather than curbs, no continuous sidewalks, and a design speed higher than any Street Type. Defined in Article 3 Section 2 (Type R1).",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 150
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.core_district",
+      "article": 9,
+      "term": "Core District",
+      "definition": "An area that shares common characteristics with other land in the same zoning designation, or is an area that is intended to transition toward a character that has been determined by the community. Core Districts span a range of development intensity from most rural, D1, to most urban, D6.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 153
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.civic_use",
+      "article": 9,
+      "term": "Civic Use",
+      "definition": "Activities, uses, purposes, and organizations which are dedicated to arts, culture, education, religion, recreation, government, transit, municipal parking, gardening, horticulture, public gathering, assembly, or meeting. All civic and institutional uses must serve and be open to the public and operate as a non-profit or otherwise be tax exempt. All civic and institutional uses, definitions, and standards may be found in Article 7 Use Standards.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 156
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.clear_height",
+      "article": 9,
+      "term": "Clear Height",
+      "definition": "The vertical distance between the underside of an overhanging building element and the horizontal surface below, free from obstruction.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 159
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.commercial",
+      "article": 9,
+      "term": "Commercial",
+      "definition": "Any retail, service, or auto-oriented use that deals with transactions with the public either directly or through remote communication.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 162
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.commercial_accessory_building",
+      "article": 9,
+      "term": "Commercial Accessory Building",
+      "definition": "A building that supports or compliments a commercial use, not a residential use.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 165
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.component",
+      "article": 9,
+      "term": "Component",
+      "definition": "One of the elements that make up a building, the other being the main building mass. Components are comprised of smaller attachments to the main building mass and provide architectural articulation and additional usable space.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 168
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.context",
+      "article": 9,
+      "term": "Context",
+      "definition": "The condition and qualities of the surrounding spaces and structures.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 171
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.corbel",
+      "article": 9,
+      "term": "Corbel",
+      "definition": "Any bracket, especially one of brick or stone, that typically protrudes only slightly from the face of a building.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 174
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.corner_lot",
+      "article": 9,
+      "term": "Corner Lot",
+      "definition": "A building lot that has frontage on 2 private or public roads, where the roads intersect.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 177
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.critical_root_zone",
+      "article": 9,
+      "term": "Critical Root Zone",
+      "definition": "The area of soil around a tree within which the roots essential to the tree's health and stability are concentrated. Unless a Certified Arborist determines otherwise for a particular tree, the Critical Root Zone is the area within a radius, measured from the center of the trunk, of one foot for each inch of the tree's trunk diameter measured at breast height (4.5 feet above ground). Used in Article 3 Section 3.G and Article 4 Section 3.H.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 180
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.curb",
+      "article": 9,
+      "term": "Curb",
+      "definition": "The edge of the vehicular pavement that may be raised or flush to a swale. It usually directs the flow of water to the drainage system.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 183
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.curb_radius",
+      "article": 9,
+      "term": "Curb Radius",
+      "definition": "The distance between the edge and center point of a curved section of curbing at the corner of two intersecting roads. This distance is determined by measuring the radius of a circle that approximates the size of the arc formed by the outside face of the curb.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 186
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.curb_return_radius",
+      "article": 9,
+      "term": "Curb Return Radius",
+      "definition": "The radius of the curve at the corner of two intersecting Thoroughfares, measured along the outside face of the curb or, where no curb is present, along the edge of the cartway. Calibrated by Type pair under Article 3 Section 9.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 189
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.depth",
+      "article": 9,
+      "term": "Depth",
+      "definition": "The perpendicular, horizontal distance from the primary facade of a building into the lot.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 192
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.detached",
+      "article": 9,
+      "term": "Detached",
+      "definition": "A dwelling that is physically separated from any other structure or structures except accessory buildings.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 195
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.development",
+      "article": 9,
+      "term": "Development",
+      "definition": "The construction, reconstruction, alteration, expansion, extension, or relocation of any building or structure; excavation, earth filling, grading, or mining; any use or change in use of any building or structure or land; any change in building type; or, any expansion in the use of land.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 198
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.development_site",
+      "article": 9,
+      "term": "Development Site",
+      "definition": "The land area encompassed in a development proposal irrespective of the number or configuration of lots, land ownership, and/or municipal boundaries.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 201
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.district_map",
+      "article": 9,
+      "term": "District Map",
+      "definition": "The map or set of maps that shows all land areas subject to, or potentially subject to, regulation by this Code and including Core Districts, Special Districts, and any special requirements.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 204
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.driveway",
+      "article": 9,
+      "term": "Driveway",
+      "definition": "A private vehicular access way from a Street or Road (per Article 3 Section 2) to the interior of a single lot, including access to homes, parking lots, or loading docks. A Driveway is not a Street or Road and is not subject to the construction specifications of Article 3 Section 11. See Article 3 Section 7 for full Driveway standards. Where this Code uses the prior definition of \"Driveway\" (a vehicular access way serving two single family dwellings or one two-family dwelling or less), the prior definition is superseded; use limits, if any, are set within Article 3 Section 7.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 207
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.dwelling_unit",
+      "article": 9,
+      "term": "Dwelling Unit",
+      "definition": "A single unit providing complete, independent, living facilities containing 1 or more rooms arranged for use by no more than 4 unrelated individuals living together as a single housekeeping unit with cooking, living, sanitary, and sleeping facilities.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 210
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.dwelling_unit_accessory",
+      "article": 9,
+      "term": "Dwelling Unit, Accessory",
+      "definition": "See Accessory Dwelling Unit.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 213
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.easement",
+      "article": 9,
+      "term": "Easement",
+      "definition": "A liberty, privilege, or advantage without profit, which a person(s) may have in the lands of another person(s).",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 216
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.eave",
+      "article": 9,
+      "term": "Eave",
+      "definition": "The soffit resulting from the junction of a building wall and an overhanging roof.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 219
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.element",
+      "article": 9,
+      "term": "Element",
+      "definition": "See Building Element.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 222
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.elevation",
+      "article": 9,
+      "term": "Elevation",
+      "definition": "The vertical distance between the average ground plane and the top of the finished first floor of a building.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 225
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.enclose_d",
+      "article": 9,
+      "term": "Enclose(d)",
+      "definition": "To fill in the spaces between structural supports with latticework, walls, windows, or other non-structural wall covering to increase the usability of an outdoor space.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 228
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.encroach",
+      "article": 9,
+      "term": "Encroach",
+      "definition": "To break the plane of a vertical or horizontal regulatory limit with a structural element, so that it extends into a Setback, above a height limit, or over the sidewalk of a public right-of-way.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 231
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.encroachment",
+      "article": 9,
+      "term": "Encroachment",
+      "definition": "Any structural element that breaks the plane of a vertical or horizontal regulatory limit, extending into a setback, above a height limit, or the breaking of such limit by a structural element.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 234
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.entrance_primary",
+      "article": 9,
+      "term": "Entrance (Primary)",
+      "definition": "(see 'Primary Entrance')",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 237
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.facade",
+      "article": 9,
+      "term": "Facade",
+      "definition": "The exterior wall of a building oriented in whole or in part toward a Public or Private Road, civic space, or on-site civic space (not including alleys).",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 240
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.face",
+      "article": 9,
+      "term": "Face",
+      "definition": "The surface of a structure or element, especially one that is presented to the view.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 243
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.farm",
+      "article": 9,
+      "term": "Farm",
+      "definition": "The land, plants, animals, buildings, structures, ponds and machinery used in the commercial production of agricultural products.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 246
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.field",
+      "article": 9,
+      "term": "Field",
+      "definition": "An area of undeveloped land primarily covered by grass, including uncultivated meadows and open areas traditionally used for agricultural purposes.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 249
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.first_floor",
+      "article": 9,
+      "term": "First Floor",
+      "definition": "The lowest floor of a building that is not considered a basement.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 252
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.first_floor_elevation",
+      "article": 9,
+      "term": "First Floor Elevation",
+      "definition": "The height from the average ground level to the surface of the first full floor, measured at the primary front facade of the building.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 255
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.flag_lot",
+      "article": 9,
+      "term": "Flag Lot",
+      "definition": "A building lot that has frontage along a private or public road which is narrower than the minimum permitted lot width or frontage line length for the district in which it is located. The term \"Flag Lot\" does not refer to the shape of a lot. Lots may take the shape of a flag provided they meet the standards of the district in which it is located.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 258
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.flat_roof",
+      "article": 9,
+      "term": "Flat Roof",
+      "definition": "see Roof, Flat.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 261
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.floor_area_gross",
+      "article": 9,
+      "term": "Floor Area, Gross",
+      "definition": "The sum area of all floors or accessible levels of a building as measured to the perimeter of the exterior faces of the walls with no deduction for corridors, stairs, closets, thickness of walls, columns or other features.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 264
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.floor_area_net_building",
+      "article": 9,
+      "term": "Floor Area, Net (Building)",
+      "definition": "The sum area of all floors or accessible levels of a building as measured to the perimeter of the exterior faces of the walls, including enclosed porches, but excluding areas used for accessory garage purposes, basement and cellar areas devoted exclusively to storage and mechanical uses accessory to the operation of the building, off-street loading facilities, malls, plazas, elevator shafts, escalators, stairways and stair landings, and those areas used for the storage, operation, or maintenance of mechanical equipment such as air conditioning and heating apparatus.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 267
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.floor_area_net_unit",
+      "article": 9,
+      "term": "Floor Area, Net (Unit)",
+      "definition": "The sum area of all floors or accessible levels of a single unit as measured to the perimeter of the interior faces of the walls, including enclosed porches, but excluding common spaces, shared areas, or areas not exclusively associated with that single unit.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 270
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.footprint",
+      "article": 9,
+      "term": "Footprint",
+      "definition": "The total gross floor area of a single story of a building, excluding all unenclosed components of a building.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 273
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.forecourt",
+      "article": 9,
+      "term": "Forecourt",
+      "definition": "A landscaped, semi-public area, open to the sky, formed by a recess in a portion of a building facade.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 276
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.front_noun",
+      "article": 9,
+      "term": "Front (noun)",
+      "definition": "A condition in which a building is required to be parallel or perpendicular with a frontage line.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 279
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.front_verb",
+      "article": 9,
+      "term": "Front (verb)",
+      "definition": "A condition in which a building is required to be parallel or perpendicular with a frontage line.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 282
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.front_setback",
+      "article": 9,
+      "term": "Front Setback",
+      "definition": "The distance from the front lot line to the point where any structure may be constructed.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 285
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.front_setback_primary",
+      "article": 9,
+      "term": "Front Setback, Primary",
+      "definition": "The setback required along a primary frontage.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 288
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.front_setback_secondary",
+      "article": 9,
+      "term": "Front Setback, Secondary",
+      "definition": "The setback required along a secondary frontage.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 291
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.frontage",
+      "article": 9,
+      "term": "Frontage",
+      "definition": "The land area that lies between a building and a public or private road, a right-of-way, an easement, a civic space, or a water body.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 294
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.frontage_primary",
+      "article": 9,
+      "term": "Frontage, Primary",
+      "definition": "The primary frontage is the frontage that abuts the primary road or, if there is no road, it is the frontage that abuts a civic space, right-of-way, or easement.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 297
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.frontage_secondary",
+      "article": 9,
+      "term": "Frontage, Secondary",
+      "definition": "On corner lots, the frontage that is oriented toward the road that is not the primary road.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 300
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.frontage_line",
+      "article": 9,
+      "term": "Frontage Line",
+      "definition": "A lot line bordering a public or private road, a right-of-way, an easement, a civic space, or a water body.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 303
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.frontage_line_primary",
+      "article": 9,
+      "term": "Frontage Line, Primary",
+      "definition": "The property line along the primary Frontage.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 306
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.frontage_zone",
+      "article": 9,
+      "term": "Frontage Zone",
+      "definition": "The Frontage Zone is the Frontage plus an additional Setback from the front facade of the primary building (see standards for individual districts under Article 2 District Standards). The frontage zone applies along both the primary and secondary frontages, but does not apply to alleys. In the case that a lot is undeveloped, the frontage zone is the area between the front lot line of a property and 30 ft into the site.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 309
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.fully_enclose_d",
+      "article": 9,
+      "term": "Fully Enclose(d)",
+      "definition": "To fill the space between structural supports with walls of windows.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 312
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.furnishing_zone",
+      "article": 9,
+      "term": "Furnishing Zone",
+      "definition": "An area of space that allows for the placement of furniture without impeding the 4 ft of clear width required for pedestrian movement.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 315
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.garage",
+      "article": 9,
+      "term": "Garage",
+      "definition": "An enclosed area integral to a primary building or accessory building that provides space for parking or storage of vehicles. Not synonymous with the parking garage building type.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 318
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.garage_doors",
+      "article": 9,
+      "term": "Garage Doors",
+      "definition": "Lifting, sliding, or swinging doors that open into an interior space used for vehicular parking, storage, retail sales, fabrication, or other uses.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 321
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.general_accessory_building",
+      "article": 9,
+      "term": "General Accessory Building",
+      "definition": "An accessory building that may be occupied by a residential use or a non-residential use.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 324
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.grade",
+      "article": 9,
+      "term": "Grade",
+      "definition": "The natural finished ground level of land ground level, or the elevation, at any given point.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 327
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.ground_plane",
+      "article": 9,
+      "term": "Ground Plane",
+      "definition": "The surface of the ground.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 330
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.gutter",
+      "article": 9,
+      "term": "Gutter",
+      "definition": "A channel at the side or in the middle of street, for leading off surface water.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 333
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.hardscape",
+      "article": 9,
+      "term": "Hardscape",
+      "definition": "Ground that has been altered with pavers, crushed materials, or compacted earth, with the intention to be used for pedestrian or vehicular travel.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 336
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.height",
+      "article": 9,
+      "term": "Height",
+      "definition": "The distance between two points along a vertical plane.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 339
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.height_absolute",
+      "article": 9,
+      "term": "Height, Absolute",
+      "definition": "See Absolute Height.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 342
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.highway_commercial_r4",
+      "article": 9,
+      "term": "Highway Commercial (R4)",
+      "definition": "A Road Type for auto-oriented commercial corridors with access management, sidewalks where feasible, and MaineDOT-coordinated cartway geometry. Defined in Article 3 Section 2 (Type R4).",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 345
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.improvements",
+      "article": 9,
+      "term": "Improvements",
+      "definition": "Any alteration of land, a lot, a building or a structure.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 348
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.industrial",
+      "article": 9,
+      "term": "Industrial",
+      "definition": "The processing or manufacturing of materials, and activities associated with this work. All industrial uses, definitions, and standards may be found in Article 7 Use Standards.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 351
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.insular_lot",
+      "article": 9,
+      "term": "Insular Lot",
+      "definition": "A building lot that does not have frontage on a private road, a public road, or a waterbody.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 354
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.intersect",
+      "article": 9,
+      "term": "Intersect",
+      "definition": "A condition where one element touches and/or overlaps with another element.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 357
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.integral",
+      "article": 9,
+      "term": "Integral",
+      "definition": "A condition that refers to one element being located within another.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 360
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.integrated",
+      "article": 9,
+      "term": "Integrated",
+      "definition": "See Integral.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 363
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.interior_lot",
+      "article": 9,
+      "term": "Interior Lot",
+      "definition": "A building lot that has a frontage along a single private or public road, easement, or right-of-way.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 366
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.lamp",
+      "article": 9,
+      "term": "Lamp",
+      "definition": "The source of illumination in a lighting fixture.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 369
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.landscaping",
+      "article": 9,
+      "term": "Landscaping",
+      "definition": "Landscaping includes areas of arranged plant materials.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 372
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.lane_s4",
+      "article": 9,
+      "term": "Lane (S4)",
+      "definition": "A Street Type for narrow, low-speed fronting streets internal to a neighborhood or village block, carrying two narrow travel lanes that operate in a yield fashion, with a sidewalk on one side or none. A Lane provides frontage and may connect to other Street Types or \"punch in\" to open the interior of a block; it is larger than an Alley (S5). Defined in Article 3 Section 2 (Type S4).",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 375
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.large_animals",
+      "article": 9,
+      "term": "Large Animals",
+      "definition": "Large domestic animals including cows, sheep, pigs, and horses raised for home use or for profit.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 378
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.length",
+      "article": 9,
+      "term": "Length",
+      "definition": "In a three-dimensional measurement system, length is a horizontal measurement, distinct and longer than width.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 381
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.light_source",
+      "article": 9,
+      "term": "Light Source",
+      "definition": "The lamp and all refractive, reflective, and translucent light transmitting parts of an outdoor light fixture.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 384
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.loading_dock",
+      "article": 9,
+      "term": "Loading Dock",
+      "definition": "A platform, dedicated to the loading or unloading of trucks.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 387
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.lodging",
+      "article": 9,
+      "term": "Lodging",
+      "definition": "Premises available for daily and weekly renting of bedrooms. All lodging uses, definitions, and standards may be found in Article 7 Use Standards.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 390
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.lot",
+      "article": 9,
+      "term": "Lot",
+      "definition": "A designated parcel, tract, or area of land established by a deed or plat, or as otherwise permitted by law. Syn: Parcel or Lot of Record.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 393
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.lot_building",
+      "article": 9,
+      "term": "Lot, Building",
+      "definition": "A surveyed, bounded, and deeded plot of land that meets the dimensional standards and requirements of this Code for the zoning district in which the plot of land exists, onto which a building or structure may be erected in compliance with this Code.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 396
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.lot_virtual",
+      "article": 9,
+      "term": "Lot, Virtual",
+      "definition": "A potential lot created by virtual lot lines demarcated on a plan to show and determine conformance with this Code, without the act of legal subdivision. Syn: Potential Lot Lines",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 399
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.lot_area",
+      "article": 9,
+      "term": "Lot Area",
+      "definition": "The total area contained within the boundary lines of a lot, excluding publicly dedicated and accepted rights-of-way.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 402
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.lot_depth",
+      "article": 9,
+      "term": "Lot Depth",
+      "definition": "Lot depth is defined as the perpendicular distance from the front lot line to the rear lot line; or, if the front and rear lot lines are not parallel, the distance from the midpoint of the front lot line to the mid point of the rear lot line.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 405
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.lot_line",
+      "article": 9,
+      "term": "Lot Line",
+      "definition": "The boundary that legally and geometrically demarcates a lot.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 408
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.lot_lines_multiple",
+      "article": 9,
+      "term": "Lot Lines, Multiple",
+      "definition": "The condition where the boundaries of a lot take an irregular form and more than one front, side, or rear lot line may exist for a single lot.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 411
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.lot_line_virtual",
+      "article": 9,
+      "term": "Lot Line, Virtual",
+      "definition": "Potential lot lines demarcated on a plan to show and determine conformance with this Code. Virtual lot lines do not require an act of legal subdivision.\nSyn: Potential Lot Lines",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 414
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.lot_line_primary_front",
+      "article": 9,
+      "term": "Lot Line, Primary Front",
+      "definition": "The lot line(s) that abuts the primary road(s).",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 418
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.lot_line_secondary_front",
+      "article": 9,
+      "term": "Lot Line, Secondary Front",
+      "definition": "The lot line(s) that abuts the secondary road(s).",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 421
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.lot_line_rear",
+      "article": 9,
+      "term": "Lot Line, Rear",
+      "definition": "Rear lot line(s) are located opposite the front lot line, do not abut a primary or secondary road, and do not intersect with a front lot line. Where side lot lines meet at a point, the rear lot line is that point.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 424
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.lot_line_side",
+      "article": 9,
+      "term": "Lot Line, Side",
+      "definition": "Any lot line(s) that connect, or connect to, front and rear lot lines. A lot may have multiple side lot lines depending on its shape.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 427
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.lot_width",
+      "article": 9,
+      "term": "Lot Width",
+      "definition": "The total length of the front lot line or the distance between side lot lines at the maximum front setback, whichever is greater.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 430
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.lumens",
+      "article": 9,
+      "term": "Lumens",
+      "definition": "The amount of light energy generated by a light source.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 433
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.main_building_mass",
+      "article": 9,
+      "term": "Main Building Mass",
+      "definition": "The volume of a primary or accessory building as defined by the dimensional standards for building type and onto which components and roofs may attach.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 436
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.main_street_s1",
+      "article": 9,
+      "term": "Main Street (S1)",
+      "definition": "The most urban Street Type, providing the central organizing thoroughfare of the Town Center with continuous building streetwalls, active ground-floor uses, wide sidewalks, on-street parking both sides, and the lowest design speed in the typology. Defined in Article 3 Section 2 (Type S1).",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 439
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.master_plan",
+      "article": 9,
+      "term": "Master Plan",
+      "definition": "A development plan and supporting illustrations and documents providing a framework for future development of a site. A Master Plan provides guidance to the applicant and Town regarding applicable permitting and decision making processes.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 442
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.mechanical_equipment",
+      "article": 9,
+      "term": "Mechanical Equipment",
+      "definition": "Equipment, devices, and accessories used for water supply, drainage, heating, ventilating, air conditioning, including elevator shafts, heating and cooling units, utility cabinets, and other visible structures that are located on or near a building or structure.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 445
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.multi_unit_commercial_building",
+      "article": 9,
+      "term": "Multi-unit Commercial Building",
+      "definition": "A building occupied by two or more commercial uses and no residential uses.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 448
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.neighborhood_street_s3",
+      "article": 9,
+      "term": "Neighborhood Street (S3)",
+      "definition": "A Street Type providing connections within and between residential and small-business neighborhoods, with a sidewalk on at least one side, a planting strip, on-street parking permitted, and a residential-scale design speed. Defined in Article 3 Section 2 (Type S3).",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 451
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.residential_building",
+      "article": 9,
+      "term": "Residential Building",
+      "definition": "A building occupied by one or more residential uses and no commercial uses.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 454
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.mixed_use_building",
+      "article": 9,
+      "term": "Mixed Use Building",
+      "definition": "A building occupied by a combination of 1 or more commercial uses and 1 or more residential uses.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 457
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.natural_materials",
+      "article": 9,
+      "term": "Natural Materials",
+      "definition": "Includes wood, metal, brick, stone, or composites from any of the aforementioned materials.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 460
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.natural_resources",
+      "article": 9,
+      "term": "Natural Resources",
+      "definition": "The processing or manufacturing of materials, and activities associated with this work. All natural resources uses, definitions, and standards may be found in Article 7 Use Standards.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 463
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.nonconformity",
+      "article": 9,
+      "term": "Nonconformity",
+      "definition": "An existing use, structure, lot, site characteristics or sign that, at the time of its legal establishment, was in compliance with the zoning regulations, but after the adoption date of this Code has been made wholly or partially nonconforming.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 466
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.non_dwelling_unit",
+      "article": 9,
+      "term": "Non-dwelling Unit",
+      "definition": "A single, internally connected space that comprises a building or a part of a building that can be occupied by any one of the use categories included in Article 7 Use Standards, except for those under the category of Residential.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 469
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.office",
+      "article": 9,
+      "term": "Office",
+      "definition": "The transaction of general business, including administrative, professional, and clerical activities, but excluding retail. All office uses, definitions, and standards may be found in Article 7 Use Standards.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 472
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.on_site_civic_space",
+      "article": 9,
+      "term": "On-Site Civic Space",
+      "definition": "Civic space owned, maintained, and administered by a private entity, provided on the same lot as a building or on a lot associated with a building group, for the purpose of adding publicly accessible amenity space to a development project.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 475
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.on_street_parking_lane",
+      "article": 9,
+      "term": "On-Street Parking Lane",
+      "definition": "A lane within the cartway, adjacent to the travel lanes, reserved for the parking of vehicles parallel or at an angle to the curb or edge of pavement. Where provided, an on-street parking lane is typically 7–8 ft wide per side and is counted separately from the traveled way (moving lanes) on each Type's page in Article 3 Section 2.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 478
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.opening",
+      "article": 9,
+      "term": "Opening",
+      "definition": "A void space in between the expanse of two solid structures or piers.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 481
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.outdoor_display",
+      "article": 9,
+      "term": "Outdoor Display",
+      "definition": "The outdoor exhibition or presentation of products and merchandise available for sale.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 484
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.outdoor_storage",
+      "article": 9,
+      "term": "Outdoor Storage",
+      "definition": "The storage of merchandise or material in boxes, crates, on pallets or other kinds of shipping containers; and, garden supplies, building supplies, materials, plants, vehicles and other similar equipment, inventory, merchandise, or supplies not normally brought indoors overnight.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 487
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.ownership_category",
+      "article": 9,
+      "term": "Ownership Category",
+      "definition": "The statutory ownership and maintenance classification of a Thoroughfare under Article 3 Section 4, independent of its Thoroughfare Type. The four Ownership Categories are Town Way, Public Easement, Private Road, and State Highway.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 490
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.parcel",
+      "article": 9,
+      "term": "Parcel",
+      "definition": "See Lot.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 493
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.parking_lot",
+      "article": 9,
+      "term": "Parking Lot",
+      "definition": "An uncovered area used or designed for the off-street parking of 2 or more motor vehicles, excluding a driveway.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 496
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.patio",
+      "article": 9,
+      "term": "Patio",
+      "definition": "A hard-surfaced, landscaped space constructed at ground level, usually directly adjacent to a building.  A patio is constructed with a finished walking surface laid or poured directly on finished grade. A patio has no permanent roof coverings.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 499
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.permeable",
+      "article": 9,
+      "term": "Permeable",
+      "definition": "A condition in which the ground is covered with previous or porous surfaces or materials, such as through soil, mulch, vegetation, and pavers that allow for the movement or passage of water back into the ground.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 502
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.permitting_authority",
+      "article": 9,
+      "term": "Permitting Authority",
+      "definition": "A person or board granted the authority to conduct project review and approval, in accordance with this Code.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 505
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.pier",
+      "article": 9,
+      "term": "Pier",
+      "definition": "A solid support designed to sustain vertical pressure, such as used in a section of a wall between windows or other adjacent openings or as structural members used in the construction of building foundations.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 508
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.planting_strip",
+      "article": 9,
+      "term": "Planting Strip",
+      "definition": "The portion of a Thoroughfare's right-of-way located between the curb (or edge of cartway, where no curb is present) and the sidewalk (where present), or between the curb and the front lot line where no sidewalk is present. The planting strip typically contains street trees, grass, low plantings, and tree pits; it may also contain on-street furniture in the furnishing zone.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 511
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.platform",
+      "article": 9,
+      "term": "Platform",
+      "definition": "An elevated flat structure meant to support the weight of people at or above the plane of the ground.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 514
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.nonconforming_conditions",
+      "article": 9,
+      "term": "Nonconforming Conditions",
+      "definition": "Any use, structure, building lot, site characteristics, or sign that was lawfully established prior to the adoption of this Ordinance and has been made nonconforming in result of the adoption of this Ordinance or subsequent amendments, may continue so long as the nonconformity remains otherwise lawful and complies with this section.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 517
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.primary_building",
+      "article": 9,
+      "term": "Primary Building",
+      "definition": "See Building, Primary.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 520
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.primary_entrance",
+      "article": 9,
+      "term": "Primary Entrance",
+      "definition": "The main point of access for pedestrians into a building, upper story use, or first floor tenant space.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 523
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.primary_frontage",
+      "article": 9,
+      "term": "Primary Frontage",
+      "definition": "See Frontage, Primary",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 526
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.primary_front_lot_line",
+      "article": 9,
+      "term": "Primary Front Lot Line",
+      "definition": "See Lot Line, Primary Front.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 529
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.primary_front_setback",
+      "article": 9,
+      "term": "Primary Front Setback",
+      "definition": "See Setback, Primary Front.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 532
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.primary_ridge_beam",
+      "article": 9,
+      "term": "Primary Ridge Beam",
+      "definition": "The highest framing member of a pitched roof to which all rafters attach.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 535
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.primary_road",
+      "article": 9,
+      "term": "Primary Road",
+      "definition": "See Road, Primary.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 538
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.project_ed",
+      "article": 9,
+      "term": "Project(ed)",
+      "definition": "When a building element extends perpendicular and away from the building face to which it is attached.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 541
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.property",
+      "article": 9,
+      "term": "Property",
+      "definition": "Any land, building, or other structure, or part thereof.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 544
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.provision_component",
+      "article": 9,
+      "term": "Provision Component",
+      "definition": "A Street element — a sidewalk, planting strip, street trees, or on-street parking — whose presence on a given segment is governed by the context triggers of Article 3 Section 3.F rather than by a fixed dimension stated for the Type.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 547
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.public_easement",
+      "article": 9,
+      "term": "Public Easement",
+      "definition": "A right of public access over a road or way, held by the municipality under 23 MRSA §3021. The road or way is open to public traffic, but the Town does not bear maintenance responsibility. Formerly referred to in some Maine usage as a \"private way.\" An Ownership Category under Article 3 Section 4.C.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 550
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.public_realm",
+      "article": 9,
+      "term": "Public Realm",
+      "definition": "All public and civic lands including roads, sidewalks, rights-of-way, and frontage zones.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 553
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.rafter",
+      "article": 9,
+      "term": "Rafter",
+      "definition": "One of several internal beams extending from the eaves to the peak of the roof and constituting its frame.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 556
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.rear_lot_line",
+      "article": 9,
+      "term": "Rear Lot Line",
+      "definition": "See Lot Line, Rear.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 559
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.rear_setback",
+      "article": 9,
+      "term": "Rear Setback",
+      "definition": "The horizontal distance from a rear lot line to the location of structures or use on a lot, measured perpendicularly from the lot line. This area must be maintained clear of permanent structures with the exception of permitted encroachments. See Setback, Rear.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 562
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.regional",
+      "article": 9,
+      "term": "Regional",
+      "definition": "Uses catering to patrons originating from locations both within the local municipality and elsewhere in the broader area.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 565
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.residential",
+      "article": 9,
+      "term": "Residential",
+      "definition": "Use characterizing premises available for long-term human dwelling. All residential uses, definitions, and standards may be found in Article 7 Use Standards.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 568
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.residential_accessory_building",
+      "article": 9,
+      "term": "Residential Accessory Building",
+      "definition": "A building occupied by a use that supports or compliments a residential use, not a commercial use.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 571
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.retail",
+      "article": 9,
+      "term": "Retail",
+      "definition": "Use characterizing premises available for the sale of merchandise and food service. All retail uses, definitions, and standards may be found in Article 7 Use Standards.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 574
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.retaining_wall",
+      "article": 9,
+      "term": "Retaining Wall",
+      "definition": "A wall that holds the earth at one side at a higher elevation than the earth on the other side.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 577
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.rezoning",
+      "article": 9,
+      "term": "Rezoning",
+      "definition": "An amendment to the Official District Map.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 580
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.right_of_way",
+      "article": 9,
+      "term": "Right-of-Way",
+      "definition": "The total width of any land reserved or dedicated as a road, alley, pedestrian or bicycle way, railway, waterway, or utility line.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 583
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.ridge_beam",
+      "article": 9,
+      "term": "Ridge Beam",
+      "definition": "See Primary Ridge Beam.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 586
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.road",
+      "article": 9,
+      "term": "Road",
+      "definition": "A route, track, or way consisting of a bed of exposed mineral soil, gravel, asphalt, or other surfacing material constructed for use by vehicular, pedestrian, and bicycle traffic, and which may have stormwater management facilities, shade trees, and utilities along its borders.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 589
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.road_primary",
+      "article": 9,
+      "term": "Road, Primary",
+      "definition": "In determining the Primary Road for Corner lots, Through lots, or any lot that abuts more than one road, the primary road is designated by one or more of the following conditions:\n- The road that existed first.\n- The widest road.\n- The road that carries the greatest amount of traffic.\nWhen a lot fronts on more than one road, and multiple roads meet the above criteria, all such roads shall be treated as primary roads.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 592
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.road_secondary",
+      "article": 9,
+      "term": "Road, Secondary",
+      "definition": "In determining the Secondary Road for Corner lots, Through lots, or any lot that abuts more than one road, the secondary road or roads are the roads determined not to be the primary road.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 601
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.road_private",
+      "article": 9,
+      "term": "Road, Private",
+      "definition": "A road in fully private ownership over which no public access right exists; an Ownership Category under Article 3 Section 4.C. Independent of the road's Thoroughfare Type. Maintenance is the responsibility of the private owner or association.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 604
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.road_public",
+      "article": 9,
+      "term": "Road, Public",
+      "definition": "Legacy term superseded by the Ownership Categories in Article 3 Section 4.C. Where the term appears in this Code without further qualification, it shall be construed to include both Town Way (formally accepted under 23 MRSA §3022) and Public Easement (under 23 MRSA §3021). See also **Town Way** and **Public Easement**.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 607
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.roof_line",
+      "article": 9,
+      "term": "Roof Line",
+      "definition": "The highest point on any building or structure where an exterior wall or parapet wall encloses roof or floor area, including floor area provided for housing mechanical equipment.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 610
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.row",
+      "article": 9,
+      "term": "ROW",
+      "definition": "See Right-of-Way",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 613
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.rural_highway_r5",
+      "article": 9,
+      "term": "Rural Highway (R5)",
+      "definition": "A Road Type for high-speed regional corridors through rural and conservation contexts, with deep front setbacks, vegetative screening, and MaineDOT-controlled cartway geometry. Defined in Article 3 Section 2 (Type R5).",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 616
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.rural_lane_r3",
+      "article": 9,
+      "term": "Rural Lane (R3)",
+      "definition": "A Road Type for low-volume rural yield roadways providing access to a small number of lots, working landscapes, or back land, with a single shared travel surface (or two very narrow lanes) on which opposing vehicles yield, a gravel or paved surface, and open-ditch drainage. The rural counterpart to the Lane (S4); generally carries fewer than 400 vehicles per day. Provides a conforming designation for existing narrow rural ways, including historic two-rod (33 ft) rights-of-way. Defined in Article 3 Section 2 (Type R3).",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 619
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.rural_road_r2",
+      "article": 9,
+      "term": "Rural Road (R2)",
+      "definition": "A rural Road Type providing access to working landscapes — farmland, forest, conservation lands — with the narrowest standard pavement, no curbs, and drainage by open ditches. Defined in Article 3 Section 2 (Type R2).",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 622
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.screen",
+      "article": 9,
+      "term": "Screen",
+      "definition": "A physical barrier between uses, buildings, or activities on adjacent lots or on lots adjacent to a public way, that may be comprised of vegetation, or man-made elements.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 625
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.shed",
+      "article": 9,
+      "term": "Shed",
+      "definition": "An enclosed, non-insulated building intended for storage.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 628
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.secondary_frontage",
+      "article": 9,
+      "term": "Secondary Frontage",
+      "definition": "See Frontage, Secondary.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 631
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.secondary_front_lot_line",
+      "article": 9,
+      "term": "Secondary Front Lot Line",
+      "definition": "See Lot Line, Secondary Front.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 634
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.secondary_front_setback",
+      "article": 9,
+      "term": "Secondary Front Setback",
+      "definition": "See Setback, Secondary Front.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 637
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.service",
+      "article": 9,
+      "term": "Service",
+      "definition": "Service uses include any enterprise that provides work performed in an expert manner by an individual or team for the benefit of its customers. The typical service business provides intangible products. Auto-oriented service uses are listed under a separate use category. All service uses, definitions, and standards may be found in Article 7 Use Standards.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 640
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.setback",
+      "article": 9,
+      "term": "Setback",
+      "definition": "The horizontal distance required between the closest exterior wall of a building or parking and a specified element, such as a lot line, easement, or water body, measured along a perpendicular angle at ground height regardless of natural contours of the land. This area must be maintained clear of permanent structures with the exception of allowed encroachments.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 643
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.setback_primary_front",
+      "article": 9,
+      "term": "Setback, Primary Front",
+      "definition": "The distance from a primary lot line bordering a primary road maintained clear from buildings with the exception of encroachments.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 646
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.setback_secondary_front",
+      "article": 9,
+      "term": "Setback, Secondary Front",
+      "definition": "The distance from a secondary lot line, bordering a secondary road, maintained clear from buildings with the exception of encroachments.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 649
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.setback_side",
+      "article": 9,
+      "term": "Setback, Side",
+      "definition": "The distance from a side lot line, maintained clear from buildings with the exception of encroachments.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 652
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.setback_rear",
+      "article": 9,
+      "term": "Setback, Rear",
+      "definition": "The distance from a rear lot line, maintained clear from buildings with the exception of encroachments.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 655
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.shade_tree",
+      "article": 9,
+      "term": "Shade Tree",
+      "definition": "Any tree grown specifically for its shade, specifically large trees with spreading canopies.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 658
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.shopfront",
+      "article": 9,
+      "term": "Shopfront",
+      "definition": "A first floor building facade, where substantial glazing is required, and the building entrance is located at the grade of the sidewalk or adjacent walkway.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 661
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.side_lot_line",
+      "article": 9,
+      "term": "Side Lot Line",
+      "definition": "See Lot Line, Side.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 664
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.side_setback",
+      "article": 9,
+      "term": "Side Setback",
+      "definition": "See Setback, Side.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 667
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.sidewalk",
+      "article": 9,
+      "term": "Sidewalk",
+      "definition": "The paved section of a right-of-way dedicated exclusively to pedestrian activity.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 670
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.sign",
+      "article": 9,
+      "term": "Sign",
+      "definition": "Any permanent or temporary name, identification, description, emblem, logo, structure, or device, that is illuminated or non-illuminated; visible or intended to be visible from any public place; and directs attention to a person, product, place, activity, institution, business, organization, activity, or service including any letter, numeral, character, figure, emblem, painting, illustration, banner, pennant, placard, or temporary sign designed to advertise, identify, solicit, or convey information. Signs include devices designed to attract the eye by intermittent or repeated motion and any permanently installed or situated merchandise, including any banner, pennant, placard, or temporary sign, with the exception of window displays.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 673
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.significant_street_tree",
+      "article": 9,
+      "term": "Significant Street Tree",
+      "definition": "A tree at least 6 inches in caliper that possesses a healthy and full canopy and has incurred no damage that would undermine its long-term vitality, whether or not it was planted as a Street Tree, where any portion of the tree's Critical Root Zone or canopy lies within the right-of-way of a Street. For this purpose, the extent of a tree's canopy is the area enclosed by the vertical projection of the outermost edge of the canopy onto the ground (the canopy dripline). Caliper is measured as provided in the definition of Caliper. The standards for the preservation of Significant Street Trees are in Article 3 Section 3.G.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 676
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.single_unit_commercial_building",
+      "article": 9,
+      "term": "Single Unit Commercial Building",
+      "definition": "A building occupied soley by a commercial use and no other.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 679
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.single_unit_residential_building",
+      "article": 9,
+      "term": "Single Unit Residential Building",
+      "definition": "A building occupied solely by one residential unit and no other.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 682
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.site",
+      "article": 9,
+      "term": "Site",
+      "definition": "A lot or parcel occupied or planned for occupation by a use, including structures and other improvements to the land.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 685
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.slope",
+      "article": 9,
+      "term": "Slope",
+      "definition": "The ratio of vertical to horizontal distance.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 688
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.small_animals",
+      "article": 9,
+      "term": "Small Animals",
+      "definition": "Small domestic animals including rabbits, chickens, goats, ducks, alpaca, emu, and other similarly sized animals raised for home use or for profit.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 691
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.solar_farm",
+      "article": 9,
+      "term": "Solar Farm",
+      "definition": "A site at which photovoltaic modules are used to generate and produce electric power for distribution to consumers, typically managed by a single entity.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 694
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.soffit",
+      "article": 9,
+      "term": "Soffit",
+      "definition": "The flat underside of an overhanging building element such as eaves or cornices.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 697
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.special_district",
+      "article": 9,
+      "term": "Special District",
+      "definition": "An area that due to its intrinsic size, arrangement of buildings, or other unique characteristics cannot meet the standards of an existing core district and is therefore established as a discrete district with a customized set of standards, building standards, and site standards.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 700
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.special_requirements",
+      "article": 9,
+      "term": "Special Requirements",
+      "definition": "Designations on the Town of Newcastle Official Zoning Map that indicate additional standards.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 703
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.state_highway",
+      "article": 9,
+      "term": "State Highway",
+      "definition": "A thoroughfare owned and maintained by the State of Maine through the Maine Department of Transportation. US Route 1 within Newcastle is a State Highway. An Ownership Category under Article 3 Section 4.C. Subject to the coordination protocol in Article 3 Section 12.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 706
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.story",
+      "article": 9,
+      "term": "Story",
+      "definition": "An occupiable floor of a building as distinct from the area contained under the pitch of a roof or a basement.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 709
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.street",
+      "article": 9,
+      "term": "Street",
+      "definition": "A thoroughfare classified under the Street family of Types (S1 Main Street, S2 Village Street, S3 Neighborhood Street, S4 Lane, S5 Alley) under Article 3 Section 2. Distinct from a Road in that pedestrian comfort is generally a primary design consideration.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 712
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.street_tree",
+      "article": 9,
+      "term": "Street Tree",
+      "definition": "A tree planted within the furnishing zone as an element of a road.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 715
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.streetwall",
+      "article": 9,
+      "term": "Streetwall",
+      "definition": "A condition where buildings, through their consistent arrangement along a street, create the impression of forming a wall.  While the buildings can be separated, a streetwall is predicated on the buildings all having a similar front setback that is in close proximity to the street or civic space.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 718
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.streetwall_continuous",
+      "article": 9,
+      "term": "Streetwall, Continuous",
+      "definition": "A streetwall condition comprised by buildings that are predominantly attached on the sides and that all have a consistent front setback directly on the property line.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 721
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.structure",
+      "article": 9,
+      "term": "Structure",
+      "definition": "Anything constructed or erected, the use of which requires more or less permanent location on the ground, or attached to something having permanent location on the ground.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 724
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.substantial_modification",
+      "article": 9,
+      "term": "Substantial Modification",
+      "definition": "Alteration of a primary building in such a way as to cause an expansion in the footprint of the main building mass.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 727
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.swale",
+      "article": 9,
+      "term": "Swale",
+      "definition": "A low or slightly depressed natural area for drainage.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 730
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.swimming_pool",
+      "article": 9,
+      "term": "Swimming Pool",
+      "definition": "Any structure that is intended for recreational bathing or swimming that contains water deeper than 24 inches. This includes in-ground swimming pools, above-ground or on-ground pools, hot tub, spa, and inflatable pools.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 733
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.terraced",
+      "article": 9,
+      "term": "Terraced",
+      "definition": "An area of sloped land that has been made into a series of level areas, resembling steps.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 736
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.thoroughfare",
+      "article": 9,
+      "term": "Thoroughfare",
+      "definition": "An umbrella term for any Street, Road, or Driveway. Includes all ten Thoroughfare Types (S1 through S5 and R1 through R5) plus the Driveway category.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 739
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.thoroughfare_type",
+      "article": 9,
+      "term": "Thoroughfare Type",
+      "definition": "The form-based classification assigned to a Thoroughfare under Article 3 Section 2, describing its character, dimensions, and design standards. Distinct from the Thoroughfare's Ownership Category.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 742
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.through_lot",
+      "article": 9,
+      "term": "Through Lot",
+      "definition": "A building lot that has two or more frontages along one or more non-intersecting private or public roads.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 745
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.top_plate",
+      "article": 9,
+      "term": "Top Plate",
+      "definition": "The topmost horizontal, load-bearing member of a framed wall system.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 748
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.town_way",
+      "article": 9,
+      "term": "Town Way",
+      "definition": "A road or way formally accepted by the Town under 23 MRSA §3022 by vote at Town Meeting. The Town owns and maintains a Town Way. An Ownership Category under Article 3 Section 4.C.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 751
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.travel_lane",
+      "article": 9,
+      "term": "Travel Lane",
+      "definition": "A portion of the cartway designated for the through movement of vehicular traffic in a single direction; does not include on-street parking lanes or shoulders.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 754
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.tree_pit",
+      "article": 9,
+      "term": "Tree Pit",
+      "definition": "A hole filled with soil for the planting and growth of a street tree. Tree pits have surface area open to air and water flow.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 757
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.tree_shade",
+      "article": 9,
+      "term": "Tree, Shade",
+      "definition": "See Shade Tree.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 760
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.tree_shape",
+      "article": 9,
+      "term": "Tree Shape",
+      "definition": "Refers to 6 unique categories of trees, defined by a unique shape and used as a way to regulate trees along roads or within civic space.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 763
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.tree_plantings",
+      "article": 9,
+      "term": "Tree Plantings",
+      "definition": "The required numbers of trees that must be planted per square foot of ground.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 766
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.unit",
+      "article": 9,
+      "term": "Unit",
+      "definition": "A single, internally connected space that comprises a building or a part of a building that can be occupied by any one of the use categories included in Article 7 Use Standards. (See Dwelling Unit and Non-dwelling Unit).",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 769
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.unit_floor_area",
+      "article": 9,
+      "term": "Unit Floor Area",
+      "definition": "The net Floor Area of any single Residential or Non-Residential unit.\n[See Floor Area, Net (Unit)]",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 772
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.upper_story",
+      "article": 9,
+      "term": "Upper Story",
+      "definition": "Syn:  Upper Floor",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 776
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.use",
+      "article": 9,
+      "term": "Use",
+      "definition": "Any actual or intended occupation, business, operation, function, or activity carried out on a lot, within a structure, or within part of a structure.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 779
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.use_temporary",
+      "article": 9,
+      "term": "Use, Temporary",
+      "definition": "A use established for a fixed period of time with the intent to discontinue such use upon expiration of the time period.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 782
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.use_category",
+      "article": 9,
+      "term": "Use Category",
+      "definition": "A group of uses collapsed into a category of similar types for the purpose of simplifying the regulation of uses.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 785
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.utility_equipment",
+      "article": 9,
+      "term": "Utility Equipment",
+      "definition": "Utility equipment includes vents, exhaust, and utility boxes.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 788
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.variance",
+      "article": 9,
+      "term": "Variance",
+      "definition": "A departure from the strict terms or expressed standards of this Code, where such departure is authorized in accordance with Section 10 of Chapter 40A of the Maine General Laws.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 791
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.vertical_plane",
+      "article": 9,
+      "term": "Vertical Plane",
+      "definition": "A flat surface perpendicular to the ground or horizontal plane.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 794
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.village_street_s2",
+      "article": 9,
+      "term": "Village Street (S2)",
+      "definition": "A Street Type providing mixed-use frontages in village centers, with sidewalks both sides, optional on-street parking, and a design speed appropriate to pedestrian-prioritized neighborhood streets. Defined in Article 3 Section 2 (Type S2).",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 797
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.waiver",
+      "article": 9,
+      "term": "Waiver",
+      "definition": "A predetermined type of deviation, within specific limitations, from the block, lot, and/or road standards of a specific district in this Code.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 800
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.wall",
+      "article": 9,
+      "term": "Wall",
+      "definition": "A low structure typically built of masonry that defines an area or a boundary.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 803
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.waterfront_lot",
+      "article": 9,
+      "term": "Waterfront Lot",
+      "definition": "A building lot that has frontage along a body of water and frontage along a private or public road.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 806
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.width",
+      "article": 9,
+      "term": "Width",
+      "definition": "In a three-dimensional measurement system, width is a horizontal measurement, distinct and shorter than length.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 809
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.wind_farm",
+      "article": 9,
+      "term": "Wind Farm",
+      "definition": "A group of wind turbines in the same location used to produce electricity.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 812
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.windows_doors",
+      "article": 9,
+      "term": "Windows & Doors",
+      "definition": "The arrangement, proportioning, and design of openings on every exterior wall of a building, including windows and doors but excluding entrances and doors for parking, loading, and service facilities. If a garage door is more than 50% glass, it is counted as a window and door.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 815
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.windows_doors_ground_story",
+      "article": 9,
+      "term": "Windows & Doors, Ground Story",
+      "definition": "The percentage of openings present on a building's ground floor.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 818
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.windows_doors_upper_story",
+      "article": 9,
+      "term": "Windows & Doors, Upper Story",
+      "definition": "The percentage of openings on the upper stories, each considered independently.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 821
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.worker",
+      "article": 9,
+      "term": "Worker",
+      "definition": "Workers include all people engaged in labor and who are either full-time, part-time, temporary, contract, or self-employed.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 824
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.yard",
+      "article": 9,
+      "term": "Yard",
+      "definition": "A privately-owned area that is adjacent to a building and often times described in relation to the building, such as front yard, side yard, or rear yard.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 827
+      }
+    },
+    {
+      "id": "draft-v0.22:a9.def.zoning_permit",
+      "article": 9,
+      "term": "Zoning Permit",
+      "definition": "An approval that certifies that a project complies with all applicable municipal ordinances.",
+      "source_ref": {
+        "file": "source/article-09-definitions.md",
+        "line": 830
+      }
+    }
+  ]
+}

@@ -1,0 +1,547 @@
+{
+  "schema": "newcastle.clocks/1.1.0",
+  "ruleset_key": "draft-v0.22",
+  "article_scheme": "draft",
+  "generated_at": "2026-08-21T09:52:58Z",
+  "source": {
+    "derived_from": "rulesets/adopted/clocks.json",
+    "renumbering": "adopted Article 7 -> draft Article 8 (RENUM_ADOPTED_TO_DRAFT)"
+  },
+  "counts": {
+    "clocks": 22
+  },
+  "clocks": [
+    {
+      "clock_key": "notice_mailed",
+      "label": "Notice of application mailed",
+      "citation": {
+        "article": 8,
+        "section": "5",
+        "subsection": "c.3"
+      },
+      "source_text": "Notices must be mailed within 7 business days of submission of an application.",
+      "start_event": "submitted_at",
+      "satisfying_event": "notice_mailed_at",
+      "days": 7,
+      "basis": "business",
+      "applies_to": [
+        "large_project_plan",
+        "subdivision",
+        "special_permit",
+        "variance"
+      ],
+      "duty_kind": "applicant_duty",
+      "duty_kind_note": "§5.c.3: \"The applicant must develop a notice containing pertinent information ...\" together with §5.c.4, \"Applicant must provide copy of mailing receipt to the Office of the Code Enforcement Officer\" -- the mailing duty runs to the applicant, not the Town; no Town official is ever named as the mailer. Not municipal_duty: a missed mailing is the applicant's own failure. LEDGER CORRECTION (2026-08-21, HARD-FINAL round): the transcribed clock text itself (\"Notices must be mailed within 7 business days...\") is, read alone, exactly as passive-voice/actor-unstated as §2.e.1 (subdivision_plat_recorded_90d, logged as DECISIONS-NEEDED D-0015) -- this entry originally declared the applicant-as-mailer reading \"not genuinely arguable\" and logged nothing, which was an inconsistent application of this project's own D-0015 rule (log a passive-voice actor inference; do not silently resolve it, however confident the inference feels). Now logged at DECISIONS-NEEDED D-0020 for consistency, though the evidentiary basis here IS stronger than D-0015's: \"the applicant must develop a notice...\" is the IMMEDIATELY PRECEDING sentence in the SAME §5.c.3 subsection (the notice the applicant just built is the thing that then \"must be mailed\"), not a cross-reference to a separate, only-parallel provision the way D-0015's §12.j.1/§8.f.5 inference is. See D-0020 for the full comparison.",
+      "failure_consequence": null,
+      "db_kind": "notice",
+      "notes": "The literal text ties the 7-business-day window to 'submission of an application'. For hearing-based tracks (subdivision, the Large Project Plan Planning Board track, special permit, variance) notice content includes 'time, date and location of first scheduled meeting' (§5.c.3), which cannot be known before a hearing date is set -- see DECISIONS-NEEDED D-0009. FINDING 4 CORRECTION (2026-08-21, HARD-FINAL round): applies_to narrowed to drop 'small_project_plan'. Table 7.1 (NOTICES & PUBLIC HEARINGS, art7.6.e.7.1, §5.c.1/§6.b.1's own authority for which application types require notice/a hearing -- 'Application types that are not listed, do not require a Public Hearing') marks BOTH the Notice and Public Hearing columns blank for Small Project plan; every other row this clock's applies_to reaches (Large Project Plan, Subdivision Plan, Special Permit, Variance) is marked '●' (Required) in the Notice column. 'small_project_plan' was included by hand-transcription error, not from the table; leaving it in produced a PERMANENT false MISSED notice_mailed clock on the CEO track (§10.d.4, the app's most common permit type -- no notice, no hearing, no Planning Board involvement at all). Per Finding 4's own rule (where the table and a hand-transcribed applies_to conflict, the table governs), applies_to is corrected to match the table; ruleset_build.verify_structure.check_table_7_1_applies_to now checks this agreement as a standing invariant."
+    },
+    {
+      "clock_key": "small_project_decision",
+      "label": "Small Project Plan decision (CEO)",
+      "citation": {
+        "article": 8,
+        "section": "10",
+        "subsection": "d.4"
+      },
+      "source_text": "Within 10 days after receiving a completed application for a Small Project Plan that does not require any further type of development review, the Code Enforcement Officer must issue a Zoning Permit or transmit in writing to the Applicant the reasons for failure to issue such permit.",
+      "start_event": "submitted_at",
+      "satisfying_event": "decision_at",
+      "days": 10,
+      "basis": "calendar",
+      "applies_to": [
+        "small_project_plan"
+      ],
+      "duty_kind": "municipal_duty",
+      "duty_kind_note": "§10.d.4: \"...the Code Enforcement Officer must issue a Zoning Permit or transmit in writing to the Applicant the reasons for failure to issue such permit.\" Named Town official (CEO), mandatory verb (\"must\") -- municipal_duty.",
+      "failure_consequence": "Failure by a Permitting Authority to hold a public hearing or take final action on an application within the maximum time requirement or permitted extensions, as applicable, must result in the approval of the application at the expiration of said time periods.",
+      "db_kind": "decision_due",
+      "notes": null
+    },
+    {
+      "clock_key": "large_project_ceo_decision",
+      "label": "Large Project Plan decision (CEO track)",
+      "citation": {
+        "article": 8,
+        "section": "11",
+        "subsection": "d.3"
+      },
+      "source_text": "Within 45 days after receiving a completed application for a Large Project Plan that does not require any further type of development review, the Code Enforcement Officer must issue a Zoning Permit or transmit in writing to the Applicant the reasons for failure to issue such permit.",
+      "start_event": "submitted_at",
+      "satisfying_event": "decision_at",
+      "days": 45,
+      "basis": "calendar",
+      "applies_to": [
+        "large_project_plan"
+      ],
+      "requires_absent": [
+        "forwarded_to_pb_at"
+      ],
+      "duty_kind": "municipal_duty",
+      "duty_kind_note": "§11.d.3, the identical \"the Code Enforcement Officer must issue ... or transmit ... reasons for failure\" pattern as small_project_decision -- municipal_duty.",
+      "failure_consequence": "Failure by a Permitting Authority to hold a public hearing or take final action on an application within the maximum time requirement or permitted extensions, as applicable, must result in the approval of the application at the expiration of said time periods.",
+      "db_kind": "decision_due",
+      "notes": "Only applies when the CEO does NOT forward the application to the Planning Board (§11.d.4) -- see requires_absent."
+    },
+    {
+      "clock_key": "large_project_pb_completeness_hearing",
+      "label": "Large Project Plan completeness review + public hearing (Planning Board track)",
+      "citation": {
+        "article": 8,
+        "section": "11",
+        "subsection": "d.4.a"
+      },
+      "source_text": "Within 30 days after receiving an application for Large Project Plan approval, the Planning Board must review the application for completeness and hold a public hearing.",
+      "start_event": "forwarded_to_pb_at",
+      "satisfying_event": "hearing_opened_at",
+      "days": 30,
+      "basis": "calendar",
+      "applies_to": [
+        "large_project_plan"
+      ],
+      "duty_kind": "municipal_duty",
+      "duty_kind_note": "§11.d.4.a: \"...the Planning Board must review the application for completeness and hold a public hearing.\" Town body, mandatory verb -- municipal_duty.",
+      "failure_consequence": "Failure by a Permitting Authority to hold a public hearing or take final action on an application within the maximum time requirement or permitted extensions, as applicable, must result in the approval of the application at the expiration of said time periods.",
+      "db_kind": "completeness_review",
+      "notes": null
+    },
+    {
+      "clock_key": "large_project_pb_decision",
+      "label": "Large Project Plan decision (Planning Board track)",
+      "citation": {
+        "article": 8,
+        "section": "11",
+        "subsection": "d.4.b"
+      },
+      "source_text": "Within thirty 30 days of the closing of the public hearing, the Planning Board must make a decision to approve, approve with conditions, deny, or grant withdrawal of the application in accordance with this section.",
+      "start_event": "hearing_closed_at",
+      "satisfying_event": "decision_at",
+      "days": 30,
+      "basis": "calendar",
+      "applies_to": [
+        "large_project_plan"
+      ],
+      "duty_kind": "municipal_duty",
+      "duty_kind_note": "§11.d.4.b: \"...the Planning Board must make a decision to approve, approve with conditions, deny, or grant withdrawal...\" -- municipal_duty.",
+      "failure_consequence": "Failure by a Permitting Authority to hold a public hearing or take final action on an application within the maximum time requirement or permitted extensions, as applicable, must result in the approval of the application at the expiration of said time periods.",
+      "db_kind": "decision_due",
+      "notes": null
+    },
+    {
+      "clock_key": "subdivision_completeness",
+      "label": "Subdivision Plan completeness determination",
+      "citation": {
+        "article": 8,
+        "section": "12",
+        "subsection": "e.3"
+      },
+      "source_text": "Within 30 days after receiving an application for Subdivision Plan approval, the Planning Board must determine if the application is complete and ready for review at a public hearing.",
+      "start_event": "submitted_at",
+      "satisfying_event": "completeness_at",
+      "days": 30,
+      "basis": "calendar",
+      "applies_to": [
+        "subdivision"
+      ],
+      "duty_kind": "municipal_duty",
+      "duty_kind_note": "§12.e.3: \"...the Planning Board must determine if the application is complete and ready for review at a public hearing.\" Town body, mandatory verb -- municipal_duty, independent of the separate, still-open D-0012 question of whether §8.d.1's own consequence text reaches this particular duty (that is failure_consequence's question, not duty_kind's).",
+      "failure_consequence": null,
+      "db_kind": "completeness_review",
+      "notes": "A completeness determination is neither 'holding a public hearing' nor 'taking final action', so §8.d.1 auto-approval is not attached to this clock."
+    },
+    {
+      "clock_key": "subdivision_hearing_decision",
+      "label": "Subdivision Plan public hearing + decision",
+      "citation": {
+        "article": 8,
+        "section": "12",
+        "subsection": "e.5"
+      },
+      "source_text": "Within 30 days after determining application completeness, the Planning Board must hold a public hearing and make a decision to approve, approve with modifications, deny, or grant withdrawal without prejudice the application for final plat plan approval.",
+      "start_event": "completeness_at",
+      "satisfying_event": "decision_at",
+      "days": 30,
+      "basis": "calendar",
+      "applies_to": [
+        "subdivision"
+      ],
+      "duty_kind": "municipal_duty",
+      "duty_kind_note": "§12.e.5: \"...the Planning Board must hold a public hearing and make a decision...\" -- municipal_duty.",
+      "failure_consequence": "Failure by a Permitting Authority to hold a public hearing or take final action on an application within the maximum time requirement or permitted extensions, as applicable, must result in the approval of the application at the expiration of said time periods.",
+      "db_kind": "decision_due",
+      "notes": null
+    },
+    {
+      "clock_key": "subdivision_findings_issued",
+      "label": "Subdivision findings of fact issued",
+      "citation": {
+        "article": 8,
+        "section": "12",
+        "subsection": "e.6"
+      },
+      "source_text": "Within 30 days, the Planning Board must issue findings of fact and provide a copy to the applicant and the Office of the Code Enforcement Officer.",
+      "start_event": "decision_at",
+      "satisfying_event": "findings_issued_at",
+      "days": 30,
+      "basis": "calendar",
+      "applies_to": [
+        "subdivision"
+      ],
+      "duty_kind": "municipal_duty",
+      "duty_kind_note": "§12.e.6: \"...the Planning Board must issue findings of fact and provide a copy...\" Town body, mandatory verb -- municipal_duty (a documentation duty, not itself hearing/final-action, so §8.d.1 stays unattached -- see failure_consequence).",
+      "failure_consequence": null,
+      "db_kind": "decision_due",
+      "notes": "Issuing findings of fact is a documentation duty following the §12.e.5 decision, not itself 'taking final action' -- §8.d.1 auto-approval is not attached to this clock."
+    },
+    {
+      "clock_key": "subdivision_plat_recorded_6mo",
+      "label": "Subdivision plat recorded (six-month clock)",
+      "citation": {
+        "article": 8,
+        "section": "12",
+        "subsection": "j.1"
+      },
+      "source_text": "The applicant will file a copy of the approved subdivision plat at the Lincoln County Registry of Deeds within 6 months of approval by the Planning Board.",
+      "start_event": "decision_at",
+      "satisfying_event": "plat_recorded_at",
+      "days": 6,
+      "basis": "months",
+      "applies_to": [
+        "subdivision",
+        "large_project_plan"
+      ],
+      "duty_kind": "applicant_duty",
+      "duty_kind_note": "§12.j.1 (also §8.f.5): \"The applicant will file a copy of the approved subdivision plat at the Lincoln County Registry of Deeds ...\" -- the actor is explicitly the applicant, not a Town body; mandatory (\"will file\"). applicant_duty: not party_right (there is no discretion here -- the applicant MUST record), not municipal_duty (the Town cannot itself cause this to be missed).",
+      "failure_consequence": null,
+      "db_kind": "condition_compliance",
+      "conflict_group": "subdivision_plat_recording",
+      "conflict_note": "Article 7 §2.e.1 requires recording within 90 days of approval, while §8.f.5 and §12.j.1 require recording within six months. This app carries BOTH clocks with their own citations and never auto-generates a 90-day recording condition -- the conflict is surfaced on the case, not resolved by this software (CONTRACT.md §1 S7).",
+      "never_autogenerate_condition": true,
+      "notes": "§8.f.5 (general plan recording) states the same six-month rule; §12.j.1 is the subdivision-specific citation used here. See conflict_note. F9c: applies_to widened from ['subdivision'] to also include large_project_plan -- §8.f.5's own text is 'Plans approved and signed by the Planning Board', which is not subdivision-specific; a Large Project Plan decided on the Planning Board track (§11.d.4, large_project_pb_decision) is squarely 'approved and signed by the Planning Board' too. Not widened to special_permit (§18 decisions are also Planning Board decisions and arguably meet the same text) -- logged, not silently decided, in DECISIONS-NEEDED D-0013."
+    },
+    {
+      "clock_key": "subdivision_plat_recorded_90d",
+      "label": "Subdivision plat recorded (90-day clock -- CONFLICTS with the six-month clock)",
+      "citation": {
+        "article": 8,
+        "section": "2",
+        "subsection": "e.1"
+      },
+      "source_text": "Plans containing lots, virtual lot lines, or building groups must be recorded in the Lincoln County Registry of Deeds within 90 days of the granting of an approval, variance, or a permit.",
+      "start_event": "decision_at",
+      "satisfying_event": "plat_recorded_at",
+      "days": 90,
+      "basis": "calendar",
+      "applies_to": [
+        "subdivision",
+        "large_project_plan"
+      ],
+      "duty_kind": "applicant_duty",
+      "duty_kind_note": "§2.e.1: \"Plans containing lots, virtual lot lines, or building groups must be recorded in the Lincoln County Registry of Deeds within 90 days...\" -- passive voice, no actor named explicitly. Classified applicant_duty by inference from the parallel §12.j.1/§8.f.5 clock above (the same underlying act -- recording an approved plan -- whose actor IS named there as \"the applicant\"), not from this subsection's own text alone. Because the actor is genuinely unstated in §2.e.1 itself, this inference is logged at DECISIONS-NEEDED D-0015 rather than silently assumed.",
+      "failure_consequence": null,
+      "db_kind": "condition_compliance",
+      "conflict_group": "subdivision_plat_recording",
+      "conflict_note": "Article 7 §2.e.1 requires recording within 90 days of approval, while §8.f.5 and §12.j.1 require recording within six months. This app carries BOTH clocks with their own citations and never auto-generates a 90-day recording condition -- the conflict is surfaced on the case, not resolved by this software (CONTRACT.md §1 S7).",
+      "never_autogenerate_condition": true,
+      "notes": "This is the SHORTER, conflicting clock. NEVER used, alone, to auto-generate a recording condition on a decision -- see conflict_note and CaseFacts docs. F9c: applies_to widened from ['subdivision'] to also include large_project_plan -- §2.e.1's own text is 'Plans containing lots, virtual lot lines, or building groups', a FACT about the plan's content, not a subdivision-specific rule; a Large Project Plan that creates building groups meets it exactly as a subdivision plat does. This clock's applies_to is necessarily coarser than the actual §2.e.1 trigger (not every large_project_plan creates lots/virtual lot lines/building groups) -- engine/deadlines.py should treat this the same way it already must treat large_project_ceo_decision's requires_absent condition, i.e. as a track-eligible-but-fact-gated clock, not an unconditional one."
+    },
+    {
+      "clock_key": "special_permit_review_hearing",
+      "label": "Special Permit review + public hearing",
+      "citation": {
+        "article": 8,
+        "section": "18",
+        "subsection": "d.1"
+      },
+      "source_text": "Within 30 days after receiving a completed application for development review that requires a special permit, the Planning Board must review the application and hold a public hearing.",
+      "start_event": "submitted_at",
+      "satisfying_event": "hearing_opened_at",
+      "days": 30,
+      "basis": "calendar",
+      "applies_to": [
+        "special_permit"
+      ],
+      "duty_kind": "municipal_duty",
+      "duty_kind_note": "§18.d.1: \"...the Planning Board must review the application and hold a public hearing.\" -- municipal_duty.",
+      "failure_consequence": "Failure by a Permitting Authority to hold a public hearing or take final action on an application within the maximum time requirement or permitted extensions, as applicable, must result in the approval of the application at the expiration of said time periods.",
+      "db_kind": "completeness_review",
+      "notes": null
+    },
+    {
+      "clock_key": "special_permit_decision",
+      "label": "Special Permit decision",
+      "citation": {
+        "article": 8,
+        "section": "18",
+        "subsection": "d.2"
+      },
+      "source_text": "Within 45 days after closing of the public hearing, the Planning Board must make a decision to approve, approve with modifications, deny, or grant withdrawal the application for a special permit, and file said decision with the Town Clerk.",
+      "start_event": "hearing_closed_at",
+      "satisfying_event": "decision_at",
+      "days": 45,
+      "basis": "calendar",
+      "applies_to": [
+        "special_permit"
+      ],
+      "duty_kind": "municipal_duty",
+      "duty_kind_note": "§18.d.2: \"...the Planning Board must make a decision to approve, approve with modifications, deny, or grant withdrawal the application ... and file said decision with the Town Clerk.\" -- municipal_duty.",
+      "failure_consequence": "Failure by a Permitting Authority to hold a public hearing or take final action on an application within the maximum time requirement or permitted extensions, as applicable, must result in the approval of the application at the expiration of said time periods.",
+      "db_kind": "decision_due",
+      "notes": null
+    },
+    {
+      "clock_key": "variance_review_hearing",
+      "label": "Variance review + public hearing (Board of Appeals)",
+      "citation": {
+        "article": 8,
+        "section": "19",
+        "subsection": "c.1"
+      },
+      "source_text": "Within 30 days after receiving a completed application for a Zoning Permit that requires a variance, the Board of Appeals must review the application and hold a public hearing.",
+      "start_event": "submitted_at",
+      "satisfying_event": "hearing_opened_at",
+      "days": 30,
+      "basis": "calendar",
+      "applies_to": [
+        "variance"
+      ],
+      "duty_kind": "municipal_duty",
+      "duty_kind_note": "§19.c.1: \"...the Board of Appeals must review the application and hold a public hearing.\" -- municipal_duty.",
+      "failure_consequence": "Failure by a Permitting Authority to hold a public hearing or take final action on an application within the maximum time requirement or permitted extensions, as applicable, must result in the approval of the application at the expiration of said time periods.",
+      "db_kind": "completeness_review",
+      "notes": null
+    },
+    {
+      "clock_key": "variance_decision",
+      "label": "Variance decision (Board of Appeals)",
+      "citation": {
+        "article": 8,
+        "section": "19",
+        "subsection": "c.2"
+      },
+      "source_text": "Within 45 days of the closing of the public hearing, the Board of Appeals must make a decision to approve, approve with conditions, deny, or grant withdrawal of the application for a variance and issue a certificate to the applicant stating the following:",
+      "start_event": "hearing_closed_at",
+      "satisfying_event": "decision_at",
+      "days": 45,
+      "basis": "calendar",
+      "applies_to": [
+        "variance"
+      ],
+      "duty_kind": "municipal_duty",
+      "duty_kind_note": "§19.c.2: \"...the Board of Appeals must make a decision to approve, approve with conditions, deny, or grant withdrawal ... and issue a certificate...\" -- municipal_duty.",
+      "failure_consequence": "Failure by a Permitting Authority to hold a public hearing or take final action on an application within the maximum time requirement or permitted extensions, as applicable, must result in the approval of the application at the expiration of said time periods.",
+      "db_kind": "decision_due",
+      "notes": null
+    },
+    {
+      "clock_key": "use_permit_decision",
+      "label": "Use Permit decision (designated permitting authority)",
+      "citation": {
+        "article": 8,
+        "section": "15",
+        "subsection": "d.1"
+      },
+      "source_text": "Within 30 days of receiving a completed application for a Use Permit, the designated permitting authority shall review the application and approve, approve with modifications, deny, or grant withdrawal of the application and file the decision with the Town Clerk.",
+      "start_event": "submitted_at",
+      "satisfying_event": "decision_at",
+      "days": 30,
+      "basis": "calendar",
+      "applies_to": [
+        "use",
+        "expanded_use"
+      ],
+      "duty_kind": "municipal_duty",
+      "duty_kind_note": "§15.d.1: \"...the designated permitting authority shall review the application and approve, approve with modifications, deny, or grant withdrawal of the application and file the decision with the Town Clerk.\" -- \"shall\" is mandatory and the actor is a designated Town permitting authority -- municipal_duty.",
+      "failure_consequence": "Failure by a Permitting Authority to hold a public hearing or take final action on an application within the maximum time requirement or permitted extensions, as applicable, must result in the approval of the application at the expiration of said time periods.",
+      "db_kind": "decision_due",
+      "notes": "F3 NEW CLOCK (coverage-assertion gap). §16.c.1 ('Expanded Use Permit Authority and Procedure follow those of Article 7 Section 15.C and 15.D respectively') incorporates this same 30-day duty for Expanded Use Permit by cross-reference, so applies_to includes both `use` and `expanded_use` -- the two application_type values CONTRACT.md's use-matrix legend (permit_key `u`/`ex`) already ties to this procedure. §17.c.1 makes the identical cross-reference for Residential Companion Use Permit, but `residential_companion` is not a `cases.application_type` value in the v1 schema, so this clock cannot yet apply to that track -- a schema gap, not a Code ambiguity, so not filed in DECISIONS-NEEDED (CONTRACT.md §7.2). The 30-day period may be extended by the permitting authority per §15.d.2.a -- see that citation's EXCLUDED_DUTIES entry below."
+    },
+    {
+      "clock_key": "variance_certificate_recorded",
+      "label": "Variance certificate recorded",
+      "citation": {
+        "article": 8,
+        "section": "19",
+        "subsection": "c.3"
+      },
+      "source_text": "Within 90 days of issuance of a certificate, the applicant must file a copy of the decision with the Lincoln County Registry of Deeds.",
+      "start_event": "decision_at",
+      "satisfying_event": "certificate_recorded_at",
+      "days": 90,
+      "basis": "calendar",
+      "applies_to": [
+        "variance"
+      ],
+      "duty_kind": "applicant_duty",
+      "duty_kind_note": "§19.c.3: \"Within 90 days of issuance of a certificate, the applicant must file a copy of the decision with the Lincoln County Registry of Deeds.\" -- explicit actor \"the applicant\", mandatory (\"must file\") -- applicant_duty.",
+      "failure_consequence": null,
+      "db_kind": "condition_compliance",
+      "notes": null
+    },
+    {
+      "clock_key": "decision_filed_with_clerk",
+      "label": "Decision filed with the Town Clerk",
+      "citation": {
+        "article": 8,
+        "section": "8",
+        "subsection": "f.1"
+      },
+      "source_text": "Decisions will be filed by the Permitting Authority as indicated for each type of development review with the Town Clerk within five business days after the decision is made. The Town Clerk will date stamp the decision, beginning the time period for which an appeal may be filed.",
+      "start_event": "decision_at",
+      "satisfying_event": "decision_filed_at",
+      "days": 5,
+      "basis": "business",
+      "applies_to": [
+        "small_project_plan",
+        "large_project_plan",
+        "subdivision",
+        "special_permit",
+        "variance",
+        "use",
+        "expanded_use"
+      ],
+      "duty_kind": "municipal_duty",
+      "duty_kind_note": "§8.f.1: \"Decisions will be filed by the Permitting Authority as indicated for each type of development review with the Town Clerk within five business days...\" -- explicit actor \"the Permitting Authority\" -- municipal_duty.",
+      "failure_consequence": null,
+      "db_kind": "decision_due",
+      "starts_clock": "administrative_appeal",
+      "notes": "This is a filing duty, not a 'hold a hearing or take final action' deadline -- §8.d.1 is not attached. Its satisfying event (the Clerk's date stamp) is the anchor for the administrative_appeal clock below. F5: applies_to widened to include use/expanded_use -- §8.f.1's own text is 'as indicated for each type of development review', not scoped to particular tracks, and §15.d.1 (use_permit_decision) itself commands 'file the decision with the Town Clerk' in the SAME sentence as the decision, the identical pattern special_permit_decision/variance_decision already carry alongside this general clock. Enforced going forward by _assert_track_coverage()."
+    },
+    {
+      "clock_key": "administrative_appeal",
+      "label": "Administrative appeal window",
+      "citation": {
+        "article": 8,
+        "section": "23",
+        "subsection": "d.1"
+      },
+      "source_text": "Within 30 days of an action or failure to act, any aggrieved party may file an appeal with the Appellate Authority.",
+      "start_event": "decision_filed_at",
+      "satisfying_event": "appeal_filed_at",
+      "days": 30,
+      "basis": "calendar",
+      "applies_to": [
+        "small_project_plan",
+        "large_project_plan",
+        "subdivision",
+        "special_permit",
+        "variance",
+        "use",
+        "expanded_use",
+        "administrative_appeal"
+      ],
+      "duty_kind": "party_right",
+      "duty_kind_note": "§23.d.1: \"Within 30 days of an action or failure to act, any aggrieved party may file an appeal with the Appellate Authority.\" -- \"may\", permissive, and the actor is a private aggrieved party, not the Town. party_right: this is what an aggrieved party is entitled to do, not a duty the Town can fail. THIS IS THE N1 FIX -- previously modeled with the same PENDING_START/OPEN/MET/MISSED branching as a real duty, so 'nobody appealed' silently became MISSED 30 days after filing, which the F4 predecessor-alert machinery then read as a stalled statutory duty behind administrative_appeal_hearing, which F1's broadened presents_auto_approval_risk() then reported as risk -- a false alarm on every decided, unappealed case. Under party_right semantics this clock reports OPEN while the window runs and ELAPSED (never MISSED) once it passes unexercised: it can no longer serve as a 'missed predecessor duty' for anything downstream, and duty_kind alone now excludes it from presents_auto_approval_risk().",
+      "failure_consequence": null,
+      "db_kind": "appeal",
+      "notes": "F3 CITATION FIX (was §23.b.1): §23.b.1's text is expressly limited to 'action or failure to act ... by a Code Enforcement Officer', but this clock is applied to every review track, including subdivision and large_project_plan's Planning Board track -- decisions the CEO never makes. §23.d.1 states the identical 30-day window in authority-neutral terms ('any aggrieved party may file an appeal with the Appellate Authority'), and §23.c.2 confirms the Board of Appeals hears appeals of Planning Board decisions too, so §23.d.1 is the correct citation for a clock that applies across all tracks. §8.f.1 ties the appeal window's start to the Town Clerk's date-stamp on the filed decision, not to the decision date itself -- start_event is decision_filed_at, not decision_at. F5: applies_to widened to include use/expanded_use -- §23.d.1's own text is authority-neutral ('any aggrieved party ... an action or failure to act'), not scoped to particular tracks, and a Use Permit decision filed under decision_filed_with_clerk above is exactly such an action. Enforced going forward by _assert_track_coverage()."
+    },
+    {
+      "clock_key": "administrative_appeal_hearing",
+      "label": "Appeal review + public hearing (Appellate Authority)",
+      "citation": {
+        "article": 8,
+        "section": "23",
+        "subsection": "d.2"
+      },
+      "source_text": "Within 30 days of receiving an appeal, the Appellate Authority must review the application and hold a public hearing.",
+      "start_event": "appeal_filed_at",
+      "satisfying_event": "appeal_hearing_opened_at",
+      "days": 30,
+      "basis": "calendar",
+      "applies_to": [
+        "small_project_plan",
+        "large_project_plan",
+        "subdivision",
+        "special_permit",
+        "variance",
+        "use",
+        "expanded_use",
+        "administrative_appeal"
+      ],
+      "duty_kind": "conditional_duty",
+      "predicate_event": "appeal_filed_at",
+      "duty_kind_note": "§23.d.2: \"Within 30 days of receiving an appeal, the Appellate Authority must review the application and hold a public hearing.\" -- mandatory verb, Town body (the Board of Appeals acting as Appellate Authority) -- but the duty to hold this hearing exists ONLY once an appeal has actually been filed (the party_right at §23.d.1, immediately above). This is the taxonomy's own paradigm case (\"an appeal hearing exists only if an appeal was filed\") -- conditional_duty, predicate_event=appeal_filed_at (here the same field as this clock's own start_event). NOT_TRIGGERED, not PENDING_START, while no appeal has been filed -- the common case for a decided, unappealed application. failure_consequence stays attached per the conservative D-0011 reading (whether 'Appellate Authority' is a 'Permitting Authority' for §8.d.1 purposes remains open, logged, not decided here); presents_auto_approval_risk() now derives ONLY from municipal_duty clocks, so this conditional_duty clock does not feed the case-level risk banner even once triggered -- appropriate given its own satisfying event still cannot be recorded under the current schema (see N2, out of this task's scope).",
+      "failure_consequence": "Failure by a Permitting Authority to hold a public hearing or take final action on an application within the maximum time requirement or permitted extensions, as applicable, must result in the approval of the application at the expiration of said time periods.",
+      "db_kind": "completeness_review",
+      "notes": "F3 NEW CLOCK. Matches applies_to to the administrative_appeal clock above -- an appeal of ANY track's decision (§23.c.1 CEO actions de novo, §23.c.2 Planning Board decisions on appeal) starts this clock once the appeal is filed. satisfying_event is deliberately appeal_hearing_opened_at, NOT the shared hearing_opened_at field -- the underlying case may already have its OWN hearing_opened_at from its original review (e.g. special_permit_review_hearing, variance_review_hearing); reusing that field for the Appellate Authority's later, separate hearing would silently overwrite the original hearing's date and corrupt that clock's own status if ever recomputed. engine/deadlines.py's CaseFacts and the case_milestones.kind CHECK constraint (app/migrations/0003_case_lifecycle.sql) do not yet carry appeal_hearing_opened_at / an 'appeal_hearing_opened' milestone kind -- adding them is a prerequisite for this clock to compute, not a clocks.json concern. Whether 'Appellate Authority' is a species of the defined 'Permitting Authority' §8.d.1 speaks of is logged, non-blocking, in DECISIONS-NEEDED (see D-0011); this clock is built conservatively assuming yes, per the app's stated posture of surfacing auto-approval risk rather than narrowing it. F5: applies_to widened to include use/expanded_use -- an appeal of a Use Permit decision (filed under decision_filed_with_clerk / administrative_appeal above, both now reaching use/expanded_use) triggers this same 30-day review-and-hearing duty exactly as an appeal of any other track's decision does. Enforced going forward by _assert_track_coverage()."
+    },
+    {
+      "clock_key": "administrative_appeal_decision",
+      "label": "Appeal decision (Appellate Authority)",
+      "citation": {
+        "article": 8,
+        "section": "23",
+        "subsection": "d.3"
+      },
+      "source_text": "Within 45 days after the closing of the public hearing, the Appellate Authority must make a decision to uphold or reverse the decision of the Code Enforcement Officer, and file said decision with the Town Clerk.",
+      "start_event": "appeal_hearing_closed_at",
+      "satisfying_event": "appeal_decision_at",
+      "days": 45,
+      "basis": "calendar",
+      "applies_to": [
+        "small_project_plan",
+        "large_project_plan",
+        "subdivision",
+        "special_permit",
+        "variance",
+        "use",
+        "expanded_use",
+        "administrative_appeal"
+      ],
+      "duty_kind": "conditional_duty",
+      "predicate_event": "appeal_filed_at",
+      "duty_kind_note": "§23.d.3: \"Within 45 days after the closing of the public hearing, the Appellate Authority must make a decision to uphold or reverse the decision of the Code Enforcement Officer, and file said decision with the Town Clerk.\" -- mandatory verb, Town body -- but, like administrative_appeal_hearing immediately above, this entire duty branch exists only if an appeal was filed at all. predicate_event is the ROOT gate (appeal_filed_at), deliberately distinct from this clock's own start_event (appeal_hearing_closed_at, a later event downstream of the predicate): once an appeal IS filed, this clock behaves as an ordinary PENDING_START/OPEN/MET/MISSED duty from that point forward; it is NOT_TRIGGERED only while no appeal exists at all. conditional_duty.",
+      "failure_consequence": "Failure by a Permitting Authority to hold a public hearing or take final action on an application within the maximum time requirement or permitted extensions, as applicable, must result in the approval of the application at the expiration of said time periods.",
+      "db_kind": "decision_due",
+      "notes": "F3 NEW CLOCK. The Town Clerk filing is bundled into the same sentence/duty as the decision (mirrors special_permit_decision and variance_decision's pattern above) -- no separate filing clock is spawned. start_event/satisfying_event are the appeal-specific appeal_hearing_closed_at / appeal_decision_at fields for the same reason given on administrative_appeal_hearing's notes (avoiding collision with the underlying case's own hearing_closed_at / decision_at). The literal text says 'uphold or reverse the decision of the Code Enforcement Officer' even though §23.c.2 also gives the Board of Appeals appellate jurisdiction over Planning Board decisions; treated as the same 45-day duty regardless of which authority's decision is under appeal, since §23.d.3 states one procedure for 'the Appellate Authority' generally and the CEO-specific phrase reads as an incomplete edit, not a substantive limit -- not logged to DECISIONS-NEEDED because it does not change any qualifier, day count, or citation, only which decisions this clock's plain description covers. F5: applies_to widened to include use/expanded_use, for the same reason as administrative_appeal_hearing immediately above -- enforced going forward by _assert_track_coverage()."
+    },
+    {
+      "clock_key": "reconsideration",
+      "label": "Board of Appeals reconsideration window",
+      "citation": {
+        "article": 8,
+        "section": "23",
+        "subsection": "e.1"
+      },
+      "source_text": "In accordance with MRSA Title 30 Section 2691, an applicant may file a request to the Board of Appeals to reconsider its decision within 10 days of the decision.",
+      "start_event": "decision_at",
+      "satisfying_event": "reconsideration_requested_at",
+      "days": 10,
+      "basis": "calendar",
+      "applies_to": [
+        "variance",
+        "administrative_appeal"
+      ],
+      "duty_kind": "party_right",
+      "duty_kind_note": "§23.e.1: \"...an applicant may file a request to the Board of Appeals to reconsider its decision within 10 days of the decision.\" -- \"may\", permissive, private-party actor (the applicant) -- party_right, the same reasoning as administrative_appeal above. Reports OPEN while the window runs, ELAPSED (never MISSED) once it passes with no request filed.",
+      "failure_consequence": null,
+      "db_kind": "appeal",
+      "notes": "Reconsideration is specific to Board of Appeals decisions (variance, administrative appeal), not Planning Board decisions."
+    },
+    {
+      "clock_key": "reconsideration_decision",
+      "label": "Board of Appeals reconsideration -- conclude + vote",
+      "citation": {
+        "article": 8,
+        "section": "23",
+        "subsection": "e.4"
+      },
+      "source_text": "If the Board of Appeals reconsiders its original decision, the Board must conclude its deliberations and vote within 45 days of the original decision.",
+      "start_event": "decision_at",
+      "satisfying_event": "reconsideration_decided_at",
+      "days": 45,
+      "basis": "calendar",
+      "applies_to": [
+        "variance",
+        "administrative_appeal"
+      ],
+      "duty_kind": "conditional_duty",
+      "predicate_event": "reconsideration_voted_at",
+      "duty_kind_note": "§23.e.4: \"If the Board of Appeals reconsiders its original decision, the Board must conclude its deliberations and vote within 45 days of the original decision.\" -- the clock's own governing sentence is textually conditional (\"If ... reconsiders\"), and \"reconsiders\" is a defined step upstream: §23.e.2 (\"The Board of Appeals will hold a public hearing, and vote to reconsider its decision\") and §23.e.3 (\"If a majority of Board members who originally voted on the decision vote to reconsider, the Board of Appeals may conduct additional hearings...\") -- i.e. the Board actually RECONSIDERS only once that majority VOTE TO RECONSIDER passes, not merely once someone REQUESTS it under §23.e.1. F6 FIX (HARD-FINAL round, Finding 6): predicate_event narrowed from reconsideration_requested_at (the §23.e.1 REQUEST -- an applicant's party_right, which the Board may or may not act on) to reconsideration_voted_at (the §23.e.2/.e.3 VOTE TO RECONSIDER), so this clock's NOT_TRIGGERED/triggered boundary now matches its OWN governing sentence's actual conditional, not merely the fact that an applicant asked. A request that never reaches a vote -- or a vote that fails the §23.e.3 majority threshold -- correctly stays NOT_TRIGGERED forever, exactly as it should: §23.e.4 imposes no duty at all unless the Board reconsiders. This IS THE RECONSIDERATION HALF OF THE ORIGINAL N2 FIX, refined -- previously (pre-N2) this clock started unconditionally from decision_at and went MISSED 45 days after EVERY decision; N2 first gated it on the REQUEST, which stopped the false MISSED but over-triggered relative to the clock's own \"if ... reconsiders\" text (a request with no vote still flipped this clock live); F6 closes that remaining gap. failure_consequence stays None (unchanged; never characterized as an §8.d.1-bearing duty -- see notes).",
+      "failure_consequence": null,
+      "db_kind": "appeal",
+      "notes": "F3 NEW CLOCK, deliberately WITHOUT failure_consequence -- unlike administrative_appeal_hearing (§23.d.2) and administrative_appeal_decision (§23.d.3), this is not characterized as a §8.d.1-bearing duty: it is a vote on whether to alter a decision the Board has ALREADY made, not itself 'holding a public hearing' (that is §23.e.2, which carries no day count) or unambiguously 'taking final action on an application' in the §8.d.1 sense when an action was already taken. start_event is decision_at (the ORIGINAL decision, per the text's own 'within 45 days of the original decision' -- not reconsideration_voted_at or reconsideration_requested_at). satisfying_event is reconsideration_decided_at, distinct from reconsideration_voted_at (the predicate -- §23.e.2/.e.3's VOTE TO RECONSIDER), reconsideration_requested_at (the §23.e.1 REQUEST), and decision_at (the ORIGINAL decision this clock's due date is computed from) -- four genuinely different events, never collapsed into one another. F6 (2026-08, HARD-FINAL round, Finding 6): predicate_event is now reconsideration_voted_at, a first-class, independently recordable CaseFacts field / case_milestones.kind ('reconsideration_voted') -- see engine/deadlines.py's CaseFacts and _MILESTONE_TO_FIELD, and app/migrations/0010_reconsideration_vote.sql. Before F6, this clock's own comment here candidly said 'engine/deadlines.py should treat an OPEN status here as informational only until that [vote] fact is captured, not as an active deadline on every reconsideration request' -- that gap is now closed structurally (NOT_TRIGGERED, not merely an informational OPEN) rather than left as a caller-side caveat. See DECISIONS-NEEDED D-0011 for the still-open, unrelated §8.d.1-attachment question (whether the Appellate Authority is a \"Permitting Authority\"), logged rather than decided."
+    }
+  ]
+}

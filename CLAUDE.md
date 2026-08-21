@@ -303,19 +303,29 @@ the working tree (pending Ben's commit):**
 would reuse `redline-text.py --source` on one file); the `git filter-repo` history purge; a shared
 render-lib unifying `build-standalone.sh` + `build-full-czc.sh`.
 
-- **Permit-application + automated-review system (Ben's 2026-06-09 question — UNRESOLVED):**
-  should the project expand to include a **resident permit-intake portal** + an engine that
-  reviews applications against the Code and **drafts Findings of Fact / Conclusions of Law**
-  for the CEO or Planning Board — or be a **separate project**? My provisional lean:
-  **separate repo/stack** (it's a stateful, multi-user, hosted, PII-handling web app — near-
-  zero code reuse with this batch document toolchain), **bridged by a shared machine-readable
-  model of the CZC's substantive standards** (the real reusable core; would also sharpen the
-  code). Caveat: CZC is still a *draft*, so production adjudication is premature — but
-  *prototyping* could dogfood/sharpen the code pre-adoption (Art. 3 driveway permit = natural
-  first slice). I asked Ben ~8 scoping questions (automation depth / human-in-loop; permit
-  types first; public vs internal + hosting; existing town software; legal weight of AI-drafted
-  findings + Maine process; the CZC-as-data bridge + parcel GIS; build-vs-buy + funding; who
-  maintains it). **Awaiting his answers** — he pivoted to the "character" task before answering.
+- **▶ PAUSED (resumable) — Permit-review app, `build/permit-review/`.** The 2026-06-09 question
+  ("should we build a permit-review + Findings-of-Fact drafter?") was **answered yes** and the app
+  was designed and largely built 2026-08-20/21. **Read `build/permit-review/BUILD-STATE.md` first**
+  — it is the resume document (status, verify commands, open decisions, known issues, and the
+  orchestration lessons). Short version:
+  - **W1–W4 complete; W5 is next and is BLOCKED on decision D-0025.** ~31k lines Python,
+    **592 tests**, `run.py --selftest` 10/10, `--verify-citations` 157/157. Everything runs
+    **offline** — no network, no LLM, no PII, so far.
+  - **D-0025 is Ben's call and gates W5:** may application content (names, addresses, deed refs,
+    and page images of scans that *cannot* be name-redacted) go to a third-party API? Note it may
+    already be public record under **Maine FOAA** — confirm with counsel, don't assume.
+  - **Architecture:** FastAPI on 127.0.0.1, SQLite/WAL + numbered migrations, append-only
+    hash-chained `events` table, rules-as-data with per-case ruleset pinning (`rulesets.binding`
+    means real cases run against the **adopted** Code only; the draft CZC is for dogfooding),
+    pandoc→Typst output to `data/exports/`.
+  - **The design reframe that governs everything:** the app produces the **working draft the Board
+    marks up**, never a decision. It never concludes, never signs. Honest blanks beat confident
+    guesses — a long confident draft on a contradictory application is a *failure*.
+  - **`DECISIONS-NEEDED.md` (27 entries) is the "never guess a legal value" ledger.** Only D-0025
+    blocks anything; the rest are deliberately collected, incl. the missing appeal-rights paragraph
+    (D-0026) and the "preparer of record" issue (D-0027 — Ben is Chair, author and operator).
+  - ⚠ **Nothing in `build/permit-review/` is committed** — it is one untracked directory and HEAD
+    is still `e956296`. No recovery point exists if it is lost.
 - **100% map (the real fix):** the draft district trace is a ~0.77-IoU georeferenced
   approximation — spatially distorted, so a hand polygon-review is low-value (we did the
   v0.18 engine tweak instead, which sharpened the *village* classification on the

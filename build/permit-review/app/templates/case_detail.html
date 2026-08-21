@@ -1,0 +1,370 @@
+{% extends "base.html" %}
+{% block title %}{{ case.label if case_available else "Case" }} — Newcastle Permit Review{% endblock %}
+{% block brand_sub %}Case Detail{% endblock %}
+
+{% block content %}
+{% if not case_available %}
+  <section class="panel panel-empty">
+    <h1>Case Detail</h1>
+    <p class="notice notice-warn">
+      The case data layer (<code>app.cases</code> / <code>app.db</code>) is not available yet in this workflow.
+    </p>
+  </section>
+{% else %}
+
+  {% if auto_approval_risk %}
+  <section class="auto-approval-banner" role="alert" aria-live="polite">
+    <span class="icon">&#9888;&#65039;</span>
+    <span>
+      This case has a deadline approaching or past that triggers
+      <strong>Article&nbsp;7&nbsp;&sect;8.d.1 automatic approval</strong> on failure to act. See the
+      Deadlines table below.
+    </span>
+  </section>
+  {% endif %}
+
+  <section class="panel case-header">
+    <div>
+      <h1>{{ case.label }}</h1>
+      <div class="case-badges">
+        <span class="status-badge status-{{ case.status }}">{{ status_label }}</span>
+        {% if ruleset_info %}
+          <span class="ruleset-badge {{ 'binding' if ruleset_info.binding else 'non-binding' }}">
+            {{ ruleset_info.label }} &middot; {{ "BINDING" if ruleset_info.binding else "NON-BINDING" }}
+          </span>
+        {% endif %}
+        {% if case.is_scratch %}<span class="scratch-badge">scratch case</span>{% endif %}
+        {% if case.binding_override %}<span class="override-badge">binding override</span>{% endif %}
+      </div>
+      <dl>
+        <dt>Case No.</dt><dd>{{ case.case_number or "(not yet assigned)" }}</dd>
+        <dt>Map/Lot</dt><dd>{{ case.map_lot or "—" }}</dd>
+        <dt>Address</dt><dd>{{ case.situs_address or "—" }}</dd>
+        <dt>Applicant</dt><dd>{{ case.applicant_name or "—" }}</dd>
+        <dt>Review Type</dt><dd>{{ application_type_label }}</dd>
+        <dt>District</dt>
+        <dd>
+          {% if district_display %}
+            {% if district_worksheet_available %}
+              <a href="/?district={{ case.district_key }}">{{ district_display }}</a>
+            {% else %}
+              {{ district_display }}
+            {% endif %}
+            {% if district_note %}<div class="dim-note">{{ district_note }}</div>{% endif %}
+          {% else %}
+            <span class="muted">not recorded</span>
+          {% endif %}
+        </dd>
+        {% if case.binding_override and case.override_reason %}
+          <dt>Override reason</dt><dd>{{ case.override_reason }}</dd>
+        {% endif %}
+      </dl>
+
+      {% if allowed_transitions %}
+      <form class="transitions-form" id="status-form" data-case-id="{{ case.id }}">
+        <label for="to-status">Change status</label>
+        <select id="to-status" name="to_status">
+          {% for s in allowed_transitions %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+        </select>
+        <input type="text" id="status-why" placeholder="why (required)" required>
+        <button type="submit">Update</button>
+        <span id="status-result" class="render-result" aria-live="polite"></span>
+      </form>
+      {% endif %}
+    </div>
+  </section>
+
+  {% if extraction_review_available %}
+  <section class="panel extraction-summary-panel">
+    <h3>Extraction Review</h3>
+    {% if extraction_summary %}
+      {% if extraction_summary.generation.unknown %}
+        <p class="notice notice-warn">
+          <strong>Unknown form generation.</strong> Automatic extraction was not attempted for this
+          case's intake form — every field needs manual entry.
+        </p>
+      {% endif %}
+      <div class="extraction-summary-stats">
+        <a class="extraction-stat" href="/cases/{{ case.id }}/extraction">
+          <span class="extraction-stat-n">{{ extraction_summary.field_count }}</span>
+          <span class="extraction-stat-label">field{{ "s" if extraction_summary.field_count != 1 else "" }} to review</span>
+        </a>
+        <a class="extraction-stat {{ 'extraction-stat-alert' if extraction_summary.contested_count else '' }}" href="/cases/{{ case.id }}/extraction">
+          <span class="extraction-stat-n">{{ extraction_summary.contested_count }}</span>
+          <span class="extraction-stat-label">contested</span>
+        </a>
+        <a class="extraction-stat" href="/cases/{{ case.id }}/extraction">
+          <span class="extraction-stat-n">{{ extraction_summary.worklist_count }}</span>
+          <span class="extraction-stat-label">absent from application</span>
+        </a>
+      </div>
+      <a href="/cases/{{ case.id }}/extraction" class="extraction-open-link">Open the extraction review screen &rarr;</a>
+    {% else %}
+      <p class="notice">No extraction data available for this case yet.</p>
+    {% endif %}
+  </section>
+  {% endif %}
+
+  <section class="panel">
+    <h3>Key Dates</h3>
+    {% if dates_history %}
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Event</th><th>Date</th><th>Note</th><th></th></tr></thead>
+        <tbody>
+        {% for m in dates_history %}
+          <tr class="{{ 'row-unresolved' if not m.superseded_by else '' }} {{ 'row-missed' if m.occurred_on_invalid else '' }}">
+            <td class="{{ 'milestone-superseded' if m.superseded_by else '' }}">{{ m.kind_label }}</td>
+            <td class="{{ 'milestone-superseded' if m.superseded_by else '' }}">{{ m.occurred_on }}</td>
+            <td>
+              {% if m.note %}<span class="milestone-note">{{ m.note }}</span>{% endif %}
+              {% if m.target_clock_key %}
+                {#- Finding 3 -- the audit trail for extension_agreed / clock_waived /
+                    clock_not_applicable rows: which clock, and (for an extension) how
+                    many days and the §6.e.2 written-agreement reference. -#}
+                <div class="milestone-note">clock: <code>{{ m.target_clock_key }}</code>
+                  {%- if m.extension_days %} &middot; +{{ m.extension_days }} day{{ "s" if m.extension_days != 1 else "" }}{% endif %}
+                  {%- if m.written_agreement_ref %} &middot; writing: {{ m.written_agreement_ref }}{% endif %}</div>
+              {% endif %}
+              {% if m.superseded_by %}
+                <div class="milestone-note">superseded{% if m.superseded_by_occurred_on %} by an entry recorded {{ m.superseded_by_occurred_on }}{% endif %} — kept, never deleted
+                  {%- if m.supersede_reason == 'reschedule' %} (reschedule/re-notice — this occurrence still counts toward deadlines){% elif m.supersede_reason == 'correction' %} (correction — this occurrence does not count toward deadlines){% else %} (reason not recorded — treated conservatively as a correction; see DECISIONS-NEEDED.md D-0016){% endif %}</div>
+              {% endif %}
+              {% if m.occurred_on_invalid and not m.superseded_by %}
+                <div class="deadline-consequence">&#9888;&#65039; not a valid calendar date — deadlines cannot be computed until this is corrected</div>
+              {% endif %}
+            </td>
+            <td>
+              {% if m.occurred_on_invalid and not m.superseded_by %}
+                <button type="button" class="correct-date-btn"
+                        data-milestone-id="{{ m.id }}" data-kind="{{ m.kind }}">Correct this date</button>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <p class="notice">No dates recorded yet.</p>
+    {% endif %}
+
+    <form class="add-date-form" id="add-date-form" data-case-id="{{ case.id }}">
+      <input type="hidden" name="supersedes_id" id="add-date-supersedes-id" value="">
+      <p id="add-date-correcting-note" class="dim-note" hidden>
+        Correcting a flagged row — this will be recorded as a new entry, and the old one kept
+        (marked superseded), never deleted. <button type="button" id="add-date-cancel-correct">cancel</button>
+      </p>
+      <p id="add-date-reason-field" hidden>
+        <label for="add-date-supersede-reason">Why is the earlier entry superseded?</label>
+        <select name="supersede_reason" id="add-date-supersede-reason">
+          <option value="correction">Correction — the earlier date was wrong (e.g. a typo); it never counts toward deadlines</option>
+          <option value="reschedule">Reschedule / re-notice — the earlier date really happened and still counts toward deadlines</option>
+        </select>
+      </p>
+      <select name="kind" required>
+        <option value="">— event —</option>
+        {% for k in milestone_kinds %}<option value="{{ k }}">{{ milestone_kind_labels.get(k, k) }}</option>{% endfor %}
+      </select>
+      <input type="date" name="occurred_on" required>
+      <input type="text" name="note" placeholder="note (optional)">
+      <input type="text" name="why" placeholder="why (required)" required>
+      <button type="submit">Record date</button>
+      <span id="add-date-result" class="render-result" aria-live="polite"></span>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h3>Deadlines</h3>
+    {% if deadlines_error %}
+      <p class="notice notice-warn">{{ deadlines_error }}</p>
+    {% endif %}
+    {% if deadlines %}
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Deadline</th><th>Citation</th><th>Start</th><th>Due</th><th>Status</th><th>Remaining</th></tr>
+        </thead>
+        <tbody>
+        {% for row in deadlines %}
+          {% set d = row.d %}
+          <tr class="{{ 'row-auto-approval' if (d.auto_approval_alert or (d.start_not_recorded_alert and d.failure_consequence)) else '' }} {{ 'row-missed' if d.status == 'missed' else '' }}">
+            <td>
+              {{ d.label }}
+              {% if d.extension_days_applied %}
+                {#- Finding 3 -- "see which clocks it moved": a clock with a
+                    live §6.e.1 agreement on record shows the extension right
+                    where an operator is already looking, not only in the
+                    audit trail below. -#}
+                <div class="deadline-note">extended +{{ d.extension_days_applied }}
+                  day{{ "s" if d.extension_days_applied != 1 else "" }} by written agreement (§6.e.1-.e.2)</div>
+              {% endif %}
+              {% if d.notes %}<div class="deadline-note">{{ d.notes }}</div>{% endif %}
+              {% if d.conflict_note %}<div class="deadline-conflict">{{ d.conflict_note }}</div>{% endif %}
+              {% if d.auto_approval_alert %}<div class="deadline-consequence">{{ d.auto_approval_alert }}</div>{% endif %}
+              {% if d.start_not_recorded_alert %}<div class="deadline-consequence">{{ d.start_not_recorded_alert }}</div>{% endif %}
+            </td>
+            <td class="citation">{{ d.citation_short }}</td>
+            <td>{{ d.start_date.isoformat() if d.start_date else "—" }}</td>
+            <td>{{ d.due_date.isoformat() if d.due_date else "—" }}</td>
+            <td>{{ clock_status_labels.get(d.status, d.status) }}</td>
+            <td>
+              {% if d.status == 'elapsed' %}
+                {#- A party_right window closed unexercised -- never a Town
+                    failure, so never rendered as "overdue" (that reads as
+                    an alarm; this is a neutral, expected outcome). -#}
+                <span class="days-remaining not-started">elapsed</span>
+              {% elif d.status == 'not_triggered' %}
+                <span class="days-remaining not-started">not triggered</span>
+              {% elif row.days_remaining is not none %}
+                {% set cls = "overdue" if row.days_remaining < 0 else ("due-soon" if row.days_remaining <= 7 else "upcoming") %}
+                <span class="days-remaining {{ 'satisfied' if d.status == 'met' else cls }}">
+                  {% if d.status == 'met' %}met
+                  {% elif row.days_remaining < 0 %}{{ -row.days_remaining }}d overdue
+                  {% else %}{{ row.days_remaining }}d{% endif %}
+                </span>
+              {% elif d.status == 'not_started' or d.status == 'pending_start' %}
+                <span class="days-remaining not-started">not started</span>
+              {% else %}
+                <span class="muted">—</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="dim-note">Business-day clocks (notice mailed, decision filed) exclude weekends and the 12 Maine
+      legal holidays (4 M.R.S. &sect;1051). Newcastle's own Town Office closures may not match that list exactly
+      (it may close additional days, or observe fewer). See DECISIONS-NEEDED.md D-0006, D-0008, D-0009, D-0010.</p>
+    {% else %}
+      <p class="notice">No statutory clocks apply to this case's review type yet.</p>
+    {% endif %}
+  </section>
+
+  <section class="panel">
+    <h3>Clock Extensions &amp; Overrides</h3>
+    <p class="dim-note">Article 7 &sect;6.e.1: upon mutual agreement by the applicant and the Permitting
+      Authority, a hearing-commencement or decision time limit may be extended; &sect;6.e.2 requires the
+      agreement recorded in writing. &sect;8.d.1's auto-approval trigger is itself qualified &ldquo;&hellip;within
+      the maximum time requirement or permitted extensions, as applicable&rdquo; &mdash; a lawfully extended
+      clock is recorded here so the Deadlines table above reflects the real, extended due date rather than a
+      false auto-approval alarm. See DECISIONS-NEEDED.md D-0022 (extends vs. tolls &mdash; the conservative
+      reading implemented), D-0024 (which clocks &sect;6.e.1 reaches).</p>
+
+    {% if extendable_clock_choices %}
+    <form class="add-date-form" id="add-extension-form" data-case-id="{{ case.id }}">
+      <select name="target_clock_key" required>
+        <option value="">— clock to extend —</option>
+        {% for c in extendable_clock_choices %}
+          <option value="{{ c.clock_key }}">{{ c.label }} ({{ c.citation }})</option>
+        {% endfor %}
+      </select>
+      <input type="number" name="extension_days" placeholder="days added" min="1" step="1" required>
+      <input type="date" name="occurred_on" placeholder="agreement date" required>
+      <input type="text" name="written_agreement_ref" placeholder="written agreement (e.g. letter dated ..., or a document id)" required>
+      <input type="text" name="note" placeholder="note (optional)">
+      <input type="text" name="why" placeholder="why (required)" required>
+      <button type="submit">Record extension</button>
+      <span id="add-extension-result" class="render-result" aria-live="polite"></span>
+    </form>
+    {% else %}
+      <p class="notice">No clock on this case's review track is eligible for a &sect;6.e.1 extension
+        (or no statutory clocks apply to this case yet).</p>
+    {% endif %}
+
+    {% if overridable_clock_choices %}
+    <form class="add-date-form" id="add-override-form" data-case-id="{{ case.id }}">
+      <select name="kind" required>
+        <option value="">— mark a clock —</option>
+        <option value="clock_waived">Waived</option>
+        <option value="clock_not_applicable">Not applicable</option>
+      </select>
+      <select name="target_clock_key" required>
+        <option value="">— which clock —</option>
+        {% for c in overridable_clock_choices %}
+          <option value="{{ c.clock_key }}">{{ c.label }} ({{ c.citation }})</option>
+        {% endfor %}
+      </select>
+      <input type="date" name="occurred_on" placeholder="date recorded" required>
+      <input type="text" name="note" placeholder="why (required)" required>
+      <input type="text" name="why" placeholder="why (required, audit trail)" required>
+      <button type="submit">Record</button>
+      <span id="add-override-result" class="render-result" aria-live="polite"></span>
+    </form>
+    {% endif %}
+  </section>
+
+  <section class="panel">
+    <h3>Documents</h3>
+    {% if documents %}
+    <div class="doc-list">
+      {% for item in documents %}
+        {% set doc = item.document %}
+        <div class="doc-card">
+          <div class="doc-card-head">
+            <span class="doc-title">{{ doc.title }}</span>
+            <span class="doc-role-tag">{{ item.doc_role_label }}</span>
+          </div>
+          <div class="muted">{{ doc.sheet_label or "" }} {{ doc.doc_date or "" }} &middot; {{ item.page_count }} page{{ "s" if item.page_count != 1 else "" }} &middot; kind: {{ doc.kind }} &middot; priority: {{ doc.source_priority }}</div>
+          <div class="tier-badges">
+            {% for tier in ["A", "B", "C", "D"] %}
+              {% if item.tier_census[tier] %}
+                <span class="tier-badge tier-{{ tier }}">{{ tier }}: {{ item.tier_census[tier] }}</span>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <p class="tier-legend">A = native text &middot; B = hybrid &middot; C = scan (needs OCR) &middot; D = plan sheet (forces source_priority to 100)</p>
+    {% else %}
+      <p class="notice">No documents uploaded yet.</p>
+    {% endif %}
+
+    {% if upload_available %}
+    <div class="upload-dropzone" id="upload-dropzone" tabindex="0" role="button"
+         aria-label="Upload a document: click to choose a file, or drag and drop a PDF here">
+      <p>Drag &amp; drop a PDF here, or click to choose a file.</p>
+      <input type="file" id="upload-file-input" accept="application/pdf">
+    </div>
+    <div class="upload-file-name" id="upload-file-name"></div>
+    <form class="upload-fields" id="upload-form" data-case-id="{{ case.id }}">
+      <select name="doc_role" required>
+        <option value="">— document role —</option>
+        {% for r in doc_role_choices %}<option value="{{ r }}">{{ doc_role_labels.get(r, r) }}</option>{% endfor %}
+      </select>
+      <input type="text" name="title" placeholder="title (optional)">
+      <input type="text" name="sheet_label" placeholder="sheet label (optional)">
+      <button type="submit" id="upload-submit-btn" disabled>Upload</button>
+    </form>
+    <div class="upload-progress-track" id="upload-progress-track" hidden>
+      <div class="upload-progress-bar" id="upload-progress-bar"></div>
+    </div>
+    <div class="upload-status" id="upload-status" aria-live="polite"></div>
+    {% else %}
+      <p class="notice notice-warn">Upload is not available in this workflow yet (<code>app.routes.documents</code>
+        did not load).</p>
+    {% endif %}
+  </section>
+
+  <section class="panel">
+    <h3>Audit Trail</h3>
+    {% if audit_trail %}
+      <ul class="audit-list">
+        {% for e in audit_trail %}
+          <li class="audit-entry">
+            <span class="audit-kind">{{ e.kind }}</span>
+            <span class="audit-meta">&middot; {{ e.at }} &middot; {{ e.actor_user_id or "system" }}</span>
+            <pre class="audit-payload">{{ e.payload | tojson(indent=2) }}</pre>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="notice">No recorded events yet.</p>
+    {% endif %}
+  </section>
+
+{% endif %}
+<script src="/static/case-detail.js"></script>
+{% endblock %}

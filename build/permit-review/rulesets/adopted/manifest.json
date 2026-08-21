@@ -1,0 +1,49 @@
+{
+  "schema": "newcastle.ruleset-manifest/1.1.0",
+  "id": "2c6efca9c9b841dd9ed2a44291818a6a",
+  "ruleset_key": "adopted",
+  "kind": "adopted-czc",
+  "title": "Newcastle Core Zoning Code (Adopted)",
+  "label": "Newcastle Core Zoning Code (Adopted)",
+  "status": "active",
+  "binding": true,
+  "article_scheme": "adopted",
+  "adopted_date": "2020-11-03",
+  "adopted_on": "2020-11-03",
+  "built_at": "2026-08-21T12:07:07Z",
+  "builder_version": "ruleset_build/2.0.0",
+  "files": {
+    "articles": "articles.json",
+    "use_matrix": "use-matrix.json"
+  },
+  "content_sha256": {
+    "articles": "0ca385a9900db7337d808ac88e16b52f1f637cab5ee2d78c644db71f3c1060a8",
+    "use_matrix": "78c299a015b0e6496f7bbbc1303f8e19fd22fa275f88633317e92cc199296190"
+  },
+  "counts": {
+    "articles": {
+      "article": 8,
+      "section": 142,
+      "subsection": 453,
+      "item": 1503,
+      "table": 7,
+      "para": 65,
+      "definition": 239
+    },
+    "use_matrix": {
+      "districts": 13,
+      "uses": 63,
+      "cells": 819,
+      "by_code": {
+        "u": 218,
+        "rc": 53,
+        "sp": 58,
+        "ex": 40,
+        "": 450
+      }
+    }
+  },
+  "source_sha256": {
+    "docs/Newcastle Core Zoning Code.pdf": "9b217fb90ba30c7101babef3b4ecc53fb7e5d754ba6925ccbfe0b5a03149c716"
+  }
+}

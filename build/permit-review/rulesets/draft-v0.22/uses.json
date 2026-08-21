@@ -1,0 +1,1284 @@
+{
+  "schema": "newcastle.uses/1.0.0",
+  "ruleset_key": "draft-v0.22",
+  "generated_at": "2026-08-21T12:07:05Z",
+  "source_article": 7,
+  "counts": {
+    "uses": 64
+  },
+  "uses": {
+    "ADULT ESTABLISHMENT": {
+      "section": "3",
+      "definition": "A business that sells or disseminates explicit sexual material, and at which access to the public display of explicit sexual material is restricted by law to persons 18 years of age or older.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "An adult establishment may not be located or operated within: 1,500 feet of a building which is used primarily for religious worship and related religious activities; 1,500 feet of a public or private educational facility, including but not limited to child care facility, nursery schools, preschools, kindergartens, elementary schools, intermediate schools, junior high schools, middle schools, high schools, vocational schools, secondary schools, continuation schools, special education school, junior colleges, and universities; school includes the school ground, but does not include the facilities used primarily for another purpose and only incidentally as a school; 1,500 feet of a public park or recreational area which has been designated for park or recreational activities including but not limited to a park, playground, nature trails, swimming pool, reservoir, athletic field, basketball or tennis courts, pedestrian/bicycle paths, wilderness areas, or other similar public land within the village which is under the control, operation, or management of the village park and recreation authorities; or 1,500 feet of another adult entertainment establishment.",
+          "id": "draft-v0.22:a7.s3.b.1"
+        },
+        {
+          "path": [
+            "1",
+            "a"
+          ],
+          "depth": 1,
+          "text": "For the purpose of this Code, measurement must be made in a straight line, without regard to intervening structures or objects, from the nearest portion of the building or structure used as a part of the premises where an adult entertainment establishment is conducted, to the nearest property line of the premises of a church, synagogue, regular place of worship, or public or private elementary or secondary school, or to the nearest boundary of an affected public park, lot containing a residence, district not listed at the beginning of this section, or licensed child care facility.",
+          "id": "draft-v0.22:a7.s3.b.1.a"
+        },
+        {
+          "path": [
+            "1",
+            "b"
+          ],
+          "depth": 1,
+          "text": "The distance between any two adult entertainment establishment uses must be measured in a straight line, without regard to intervening structures or objects, from the closest exterior wall of the structure in which each business is located.",
+          "id": "draft-v0.22:a7.s3.b.1.b"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "An adult entertainment establishment may not be operated in the same building, structure, or portion thereof, containing another adult entertainment establishment.",
+          "id": "draft-v0.22:a7.s3.b.2"
+        },
+        {
+          "path": [
+            "3"
+          ],
+          "depth": 0,
+          "text": "An adult establishment may be only one type of adult establishment: adult bookstore, adult cabaret, adult massage parlor, or adult motion picture theater. An adult establishment may not combine these uses.",
+          "id": "draft-v0.22:a7.s3.b.3"
+        },
+        {
+          "path": [
+            "4"
+          ],
+          "depth": 0,
+          "text": "An adult establishment must not display obscene or indecent lights, posters, photographs, sketches, painted signs, laminated signs, or similar materials that are visible from the exterior of the building or visible through windows adjacent to a public right-of-way.",
+          "id": "draft-v0.22:a7.s3.b.4"
+        }
+      ]
+    },
+    "AMUSEMENT, INDOOR": {
+      "section": "4",
+      "definition": "A commercial facility for spectator and participatory uses conducted within an enclosed building, such as movie theaters, sports arenas, bowling alleys, tumbling centers, skating centers, roller rinks, and pool halls.",
+      "standards": []
+    },
+    "AMUSEMENT, OUTDOOR": {
+      "section": "5",
+      "definition": "A commercial facility for spectator and participatory uses conducted outdoors or within partially enclosed structures, such as fairgrounds, campgrounds, batting cages, drive-in movie theater, recreational vehicle parks, petting zoos, golf courses, miniature golf courses, and amusement parks.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.",
+          "id": "draft-v0.22:a7.s5.b.1"
+        }
+      ]
+    },
+    "ANIMAL CARE, INDOOR": {
+      "section": "6",
+      "definition": "A facility where animals not owned by the proprietor are sheltered and fed, and where all activities are located indoors. Includes veterinarian offices, grooming services, or training services for dogs, cats, and other household pets.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.",
+          "id": "draft-v0.22:a7.s6.b.1"
+        }
+      ]
+    },
+    "ANIMAL CARE, OUTDOOR": {
+      "section": "7",
+      "definition": "A facility where animals not owned by the proprietor are sheltered and fed. Includes animal rescue shelters, boarding facilities, pet resorts/hotels, or training services for dogs, cats, and other household pets.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "Exterior exercise areas",
+          "id": "draft-v0.22:a7.s7.b.1"
+        },
+        {
+          "path": [
+            "1",
+            "a"
+          ],
+          "depth": 1,
+          "text": "shall not be located within the frontage zone.",
+          "id": "draft-v0.22:a7.s7.b.1.a"
+        },
+        {
+          "path": [
+            "1",
+            "b"
+          ],
+          "depth": 1,
+          "text": "must be located no less than 200 feet from any abutting residential use.",
+          "id": "draft-v0.22:a7.s7.b.1.b"
+        },
+        {
+          "path": [
+            "1",
+            "c"
+          ],
+          "depth": 1,
+          "text": "must meet state and federal regulations regarding shelter against weather.",
+          "id": "draft-v0.22:a7.s7.b.1.c"
+        },
+        {
+          "path": [
+            "1",
+            "d"
+          ],
+          "depth": 1,
+          "text": "must provide fencing of adequate height to prevent escape.",
+          "id": "draft-v0.22:a7.s7.b.1.d"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.",
+          "id": "draft-v0.22:a7.s7.b.2"
+        }
+      ]
+    },
+    "AQUACULTURE": {
+      "section": "8",
+      "definition": "The commercial production of cultured fish, shellfish, seaweed, or other marine plants for human and animal consumption, including all cultivating activities occurring at hatcheries or nurseries, from the egg, larval or spore stages to the transfer of the product to a growing site and all cultivating activities occurring on water, from the receipt of fish, shellfish or other marine plants from onshore facilities to the delivery of harvested products to onshore facilities for processing.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "All onshore aquaculture facilities must be located within fully enclosed structures designed for holding and rearing fish.",
+          "id": "draft-v0.22:a7.s8.b.1"
+        }
+      ]
+    },
+    "ASSEMBLY": {
+      "section": "9",
+      "definition": "A facility that has organized services, meetings, events, or programs to benefit, educate, entertain, or promote discourse in a public or private setting. Examples include community centers, places of worship, meeting or lecture halls, exhibition rooms, or auditoria.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "Meeting facilities and places of worship may include functionally related internal facilities such as kitchens, multi-purpose rooms, and offices. Places of worship may establish schools, daycare centers, and on-site social programs such as health care clinics, and food banks.",
+          "id": "draft-v0.22:a7.s9.b.1"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.",
+          "id": "draft-v0.22:a7.s9.b.2"
+        }
+      ]
+    },
+    "BANKING & FINANCIAL SERVICES": {
+      "section": "10",
+      "definition": "Uses related to the exchange, lending, borrowing, and safe-keeping of money.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "A freestanding Automated Teller Machine is not permitted, unless as part of a bank or financial building that shares the same site. An ATM must be integrated into the building if it is not housed inside the building in a lobby or vestibule.",
+          "id": "draft-v0.22:a7.s10.b.1"
+        }
+      ]
+    },
+    "BAR OR TAVERN": {
+      "section": "11",
+      "definition": "A business that serves food and alcoholic beverages for on-premises consumption.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "A Bar or Tavern may include live entertainment without a separate approval, under the following conditions:",
+          "id": "draft-v0.22:a7.s11.b.1"
+        },
+        {
+          "path": [
+            "1",
+            "a"
+          ],
+          "depth": 1,
+          "text": "No permanent space is dedicated for live entertainment;",
+          "id": "draft-v0.22:a7.s11.b.1.a"
+        },
+        {
+          "path": [
+            "1",
+            "b"
+          ],
+          "depth": 1,
+          "text": "No admission is charged for live entertainment;",
+          "id": "draft-v0.22:a7.s11.b.1.b"
+        },
+        {
+          "path": [
+            "1",
+            "c"
+          ],
+          "depth": 1,
+          "text": "When live entertainment is offered incidental and subordinate to the restaurant use.",
+          "id": "draft-v0.22:a7.s11.b.1.c"
+        },
+        {
+          "path": [
+            "1",
+            "d"
+          ],
+          "depth": 1,
+          "text": "Complies with Live Entertainment use standards.",
+          "id": "draft-v0.22:a7.s11.b.1.d"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "Ventilation systems may not be installed on the facade of any primary or secondary frontage unless the applicant can prove that no other feasible alternative is available. To the maximum extent feasible, ventilation systems must be directed away from adjacent residential properties.",
+          "id": "draft-v0.22:a7.s11.b.2"
+        }
+      ]
+    },
+    "BED & BREAKFAST": {
+      "section": "12",
+      "definition": "When a permanent resident provides rooms within a single unit residential building for temporary, overnight lodging for compensation in guest rooms with no in-room cooking facilities. A bed and breakfast may include dining facilities and meeting rooms.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "No more than five guest rooms are permitted.",
+          "id": "draft-v0.22:a7.s12.b.1"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "Hourly rate lodging is not permitted.",
+          "id": "draft-v0.22:a7.s12.b.2"
+        },
+        {
+          "path": [
+            "3"
+          ],
+          "depth": 0,
+          "text": "Guest stays are limited to a maximum of 30 consecutive days, with the exception of the winter months, when 3 month stays are permitted.",
+          "id": "draft-v0.22:a7.s12.b.3"
+        }
+      ]
+    },
+    "CAMPGROUND": {
+      "section": "13",
+      "definition": "A site where one or more lots are used, or are intended to be used, by campers with tents or recreational vehicles.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.",
+          "id": "draft-v0.22:a7.s13.b.1"
+        }
+      ]
+    },
+    "CAR WASH": {
+      "section": "14",
+      "definition": "An establishment for the washing of motor vehicles, which may employ production-line methods, mechanical devices, staffed hand wash facilities, or unstaffed self-wash facilities.",
+      "standards": []
+    },
+    "COLLEGE/UNIVERSITY": {
+      "section": "15",
+      "definition": "A post-secondary institution for higher learning that grants associate, bachelor, masters, or doctoral degrees, and theological schools.",
+      "standards": []
+    },
+    "COMMERCIAL AGRICULTURE": {
+      "section": "16",
+      "definition": "The commercial planting, cultivating, producing, growing, and harvesting of agricultural or horticultural products, the raising of livestock and poultry, and any work performed in conjunction with the above farm operations, including the packing, drying, and storing of products produced on-premises.",
+      "standards": []
+    },
+    "COMMERCIAL SCHOOL": {
+      "section": "17",
+      "definition": "A school that teaches industrial, clerical, managerial, commercial, artistic, or other select skills; conducts a commercial enterprise, such as a driving school; or a privately operated school that does not offer a complete educational curriculum.",
+      "standards": []
+    },
+    "CULTURAL FACILITY": {
+      "section": "18",
+      "definition": "A facility open to the public for cultural services and exhibitions including, but not limited to, museums, cultural centers, historical societies, and libraries operated by a government or non-profit establishment.",
+      "standards": []
+    },
+    "DAY CARE CENTER": {
+      "section": "19",
+      "definition": "A residential companion use that provides licensed care in a protective setting for children or elderly or disabled adults.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "Adult day care and child day care facilities must be licensed by and comply with all relevant state requirements.",
+          "id": "draft-v0.22:a7.s19.b.1"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "Outdoor play areas must be provided, and must be safely segregated from parking, loading, or service areas.",
+          "id": "draft-v0.22:a7.s19.b.2"
+        }
+      ]
+    },
+    "DAY CARE FACILITY": {
+      "section": "20",
+      "definition": "A facility where licensed care, protection, and supervision is provided in a protective setting for children or adults, with or without compensation, on a regular basis away from a primary residence.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "Adult day care and child day care facilities must be licensed by and comply with all relevant state requirements.",
+          "id": "draft-v0.22:a7.s20.b.1"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "Outdoor play areas must be provided and must be safely segregated from parking, loading, or service areas.",
+          "id": "draft-v0.22:a7.s20.b.2"
+        }
+      ]
+    },
+    "DISPATCH SERVICE": {
+      "section": "21",
+      "definition": "The storage and dispatch of ambulances, taxis, limousines, armored cars, tow trucks, buses, and similar vehicles for specialized transportation, including where ambulance crews not located at a hospital or fire department stand by for emergency calls, ancillary professional offices, and/or minor vehicle service and maintenance repair.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "The storage of vehicles must be within a fully-enclosed structure or behind a 25 ft deep Level 2 Natural Screen or a 50% opaque fence.",
+          "id": "draft-v0.22:a7.s21.b.1"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.",
+          "id": "draft-v0.22:a7.s21.b.2"
+        },
+        {
+          "path": [
+            "2",
+            "a"
+          ],
+          "depth": 1,
+          "text": "Emergency Services are exempt from noise and glare requirements.",
+          "id": "draft-v0.22:a7.s21.b.2.a"
+        }
+      ]
+    },
+    "DISTRICT ENERGY SYSTEM": {
+      "section": "22",
+      "definition": "A community-based energy system shared by property owners for common use, or managed by a homeowners' association, institution, or similar organization.",
+      "standards": []
+    },
+    "DORMITORY": {
+      "section": "23",
+      "definition": "Residential housing exclusively occupied by full or part-time students and/or educational staff and owned or operated by an educational institution.",
+      "standards": []
+    },
+    "DRIVE-THROUGH FACILITY": {
+      "section": "24",
+      "definition": "A facility that dispenses goods through an attendant window or automated machine to persons remaining in vehicles in a designated drive aisle.",
+      "standards": []
+    },
+    "FARM/VENDOR MARKET": {
+      "section": "25",
+      "definition": "The direct sales of goods and/or products by multiple farmers or vendors from individual booths, tables, or stands, whether indoors or outdoors.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "Temporary markets may not operate more than three days per week for more than six hours per day.",
+          "id": "draft-v0.22:a7.s25.b.1"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "If located on private property, must receive written permission from the property owner. If located on public property, must receive written permission from the governmental agency.",
+          "id": "draft-v0.22:a7.s25.b.2"
+        },
+        {
+          "path": [
+            "3"
+          ],
+          "depth": 0,
+          "text": "In D2, farm/vendor markets may occur only in accessory buildings.",
+          "id": "draft-v0.22:a7.s25.b.3"
+        }
+      ]
+    },
+    "FARMSTAND": {
+      "section": "26",
+      "definition": "The direct sale of produce, grown or processed on the property, located within a permanent or semi-permanent structure also on the property.",
+      "standards": []
+    },
+    "FOOD PANTRY": {
+      "section": "27",
+      "definition": "A not-for-profit use that distributes or facilitates the giving of food, clothing, and/or other essential items at no charge or for less than fair market value to persons in need of assistance.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "A food center or supply pantry is allowed within any place of worship or emergency shelter, regardless of district.",
+          "id": "draft-v0.22:a7.s27.b.1"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "The owner/operator must ensure that persons receiving assistance do not block public access to sidewalks, rights-of-way, or private property, and that emergency access points are clearly identified and maintained.",
+          "id": "draft-v0.22:a7.s27.b.2"
+        }
+      ]
+    },
+    "FUNERAL SERVICES": {
+      "section": "28",
+      "definition": "A facility where the deceased are prepared for burial display and for rituals before burial or cremation. Such facilities may include chapels and showrooms for the display and sale of caskets, vaults, urns, and other items related to burial services.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "A crematorium requires a permit for a general industrial use.",
+          "id": "draft-v0.22:a7.s28.b.1"
+        }
+      ]
+    },
+    "GAS STATION": {
+      "section": "29",
+      "definition": "A facility engaged in the retail sales of personal or commercial vehicle fuels.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.",
+          "id": "draft-v0.22:a7.s29.b.1"
+        }
+      ]
+    },
+    "HEALTH CARE PROVIDER": {
+      "section": "30",
+      "definition": "An office providing outpatient health services involving the diagnosis and treatment of physical or mental ailments and disorders, including doctors, dentists, mental health practitioners, physical therapists, and their substantial equivalents.",
+      "standards": []
+    },
+    "HEALTH/FITNESS STUDIO": {
+      "section": "31",
+      "definition": "A facility that provides interactive classes, personal or small group instruction, or other activities related to the improvement of the body, mind, and soul.",
+      "standards": []
+    },
+    "HOSPITAL": {
+      "section": "32",
+      "definition": "A facility that provides health, medical, or surgical care to the sick or injured and contains offices integral to function of the facility.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "Hospitals often include related ancillary facilities, such as laboratories, outpatient clinics, cafeterias, gift shops, training facilities, classrooms, central service facilities, which require separate use permits.",
+          "id": "draft-v0.22:a7.s32.b.1"
+        }
+      ]
+    },
+    "HOTEL & HOSTEL": {
+      "section": "33",
+      "definition": "A commercial building(s) with guest rooms designed primarily for sleeping, and usually including a lobby, reception area, conference rooms, recreational amenities, and common kitchen cooking facilities providing meals for paying guests in a dining rooms or restaurants.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "Hourly rate lodging is not permitted.",
+          "id": "draft-v0.22:a7.s33.b.1"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "Guest stays are limited to a maximum of 30 consecutive days.",
+          "id": "draft-v0.22:a7.s33.b.2"
+        },
+        {
+          "path": [
+            "3"
+          ],
+          "depth": 0,
+          "text": "Hotel and Hostel may include related ancillary facilities, such as cafeterias, restaurants, retail, indoor or outdoor recreational facilities, and similar uses, which require separate use permits.",
+          "id": "draft-v0.22:a7.s33.b.3"
+        }
+      ]
+    },
+    "HUMAN SERVICE FACILITY": {
+      "section": "34",
+      "definition": "An establishment that provides services to persons in need of assistance due to age, physical or mental disability, addiction, illness, or injury, that does not provide residential dwelling units.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "A special permit application for a human services facility must document the community's need for the proposed facility and provide a detailed description of the uses, including an estimation of the number of individuals to be served at the facility over a stated time period, activities and programs anticipate at the facility, hours of operations, degree of supervision at the facility, and any other information as may be reasonably necessary to ascertain the impact of the proposal facility on public safety, health, and welfare.",
+          "id": "draft-v0.22:a7.s34.b.1"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "A special permit for a human services facility may be granted only where the use is found to be consistent with the following criteria: The proposed use will not alter the essential nature and character of the community; The proposed use will not result in a duplication of services, in relation to need, cost, and service efficiency, that would hinder the community integration goals of the facility and create service capacity in excess of the overall need in the community. Considerations relevant for this determination are the distance between the proposed facility and to other facilities which offer the same services, the capacity of the proposed facility and the total capacity of all similar human service facilities in the community, the access or failure of other such facilities operated by the individual or group seeking approval, and the ability of the community to meet the special needs, if any, of the applicant facility.",
+          "id": "draft-v0.22:a7.s34.b.2"
+        }
+      ]
+    },
+    "INDUSTRIAL, ARTISAN": {
+      "section": "35",
+      "definition": "A manufacturing use involving small-scale production or assembly with no noxious by-products, and which may include a showroom as well as incidental storage, sales, and distribution of products.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.",
+          "id": "draft-v0.22:a7.s35.b.1"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "Parking lots are not permitted within the frontage zone and must not be visible from any road, excluding alleys.",
+          "id": "draft-v0.22:a7.s35.b.2"
+        }
+      ]
+    },
+    "INDUSTRIAL, GENERAL": {
+      "section": "36",
+      "definition": "Uses that are associated with retail sales, outdoor storage, or light manufacturing of finished or semi-finished products and may include trucking associated with the movement of materials or wholesale distribution.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.",
+          "id": "draft-v0.22:a7.s36.b.1"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "A Level 3 Screen, 25 ft deep, is required along all side and rear lot lines that abut residential uses.",
+          "id": "draft-v0.22:a7.s36.b.2"
+        }
+      ]
+    },
+    "INDUSTRIAL, HEAVY": {
+      "section": "37",
+      "definition": "The processing, manufacturing, compounding, or storage of materials, products, or energy, where the scale and method of operation regularly produce noise, heat, glare, dust, smoke, fumes, odors, vibration, and that may result in external impacts beyond the lot lines of the property. May regularly employ hazardous material or produce hazardous by-products.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "A minimum lot size of 10 acres is required.",
+          "id": "draft-v0.22:a7.s37.b.1"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "State-level environmental review is required.",
+          "id": "draft-v0.22:a7.s37.b.2"
+        },
+        {
+          "path": [
+            "3"
+          ],
+          "depth": 0,
+          "text": "A 50 ft deep Level 4 Natural Screen is required to extend the entire length of the front, side, and rear lot lines.",
+          "id": "draft-v0.22:a7.s37.b.3"
+        }
+      ]
+    },
+    "JUNK/SALVAGE YARD": {
+      "section": "38",
+      "definition": "Outdoor establishments primarily engaged in assembling, breaking up, sorting, and the temporary storage and distribution of recyclable or reusable scrap and waste materials, including auto wreckers engaged in dismantling automobiles for scrap, and the incidental wholesale or retail sales of parts from those vehicles. An area or building where waste or scrap materials are bought, sold, exchanged, stored, baled, packed, disassembled, or handled for reclamation, disposal or other like purposes, including but not limited to scrap iron and other metals, paper, rags, rubber tires, and bottles. A junk or salvage yard or building includes an auto wrecking yard or building.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "Junk/salvage yards must be located at least 500 feet from any abutting residential use.",
+          "id": "draft-v0.22:a7.s38.b.1"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "A 50 ft deep Level 4 Natural Screen is required to extend the entire length of the front, side, and rear lot lines.",
+          "id": "draft-v0.22:a7.s38.b.2"
+        },
+        {
+          "path": [
+            "3"
+          ],
+          "depth": 0,
+          "text": "Outside storage of motor vehicles, equipment, parts, junk, or other materials must not be visible from roadways or adjacent residential uses.",
+          "id": "draft-v0.22:a7.s38.b.3"
+        },
+        {
+          "path": [
+            "4"
+          ],
+          "depth": 0,
+          "text": "Burning of junk or vehicles in any junk or salvage yard is prohibited.",
+          "id": "draft-v0.22:a7.s38.b.4"
+        }
+      ]
+    },
+    "LIVE ENTERTAINMENT": {
+      "section": "39",
+      "definition": "Any activity provided for pleasure, quiet enjoyment, recreation, relaxation, diversion or other similar purpose by a person or persons who are physically present when providing an activity to a patron or group of patrons who are physically present.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.",
+          "id": "draft-v0.22:a7.s39.b.1"
+        }
+      ]
+    },
+    "MARINA, DRY STORAGE": {
+      "section": "40",
+      "definition": "A site used for the long-term dry storage of recreational watercraft in racks or other storage systems, and which may include ancillary repair facilities for watercraft.",
+      "standards": []
+    },
+    "MARINA, RECREATION": {
+      "section": "41",
+      "definition": "A facility that has frontage on navigable water and allows for the short- or long-term docking and mooring of boats and that may provide supply, repair, and other services.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "State-level environmental review is required.",
+          "id": "draft-v0.22:a7.s41.b.1"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "See Shoreland Zoning Ordinance",
+          "id": "draft-v0.22:a7.s41.b.2"
+        }
+      ]
+    },
+    "MOBILE HOME PARK": {
+      "section": "42",
+      "definition": "See Mobile Home Parks Ordinance",
+      "standards": [
+        {
+          "path": [
+            "p1"
+          ],
+          "depth": 0,
+          "text": "See Mobile Home Parks Ordinance",
+          "id": "draft-v0.22:a7.s42.b.p1"
+        }
+      ]
+    },
+    "OFFICE, LARGE": {
+      "section": "43",
+      "definition": "A medium office use involves the conduct of business relating to administration, clerical work, and consulting activities, not including medical offices, retail, or service uses. May include single or multiple companies within one unit or building. A large office has no maximum number of workers in a single building and no parking space limitations.",
+      "standards": []
+    },
+    "OFFICE, MEDIUM": {
+      "section": "44",
+      "definition": "A medium office use involves the conduct of business relating to administration, clerical work, and consulting activities, not including medical offices, retail, or service uses. May include single or multiple companies within one unit or building. A medium office has up to 35 workers in a single building and no parking space limitations.",
+      "standards": []
+    },
+    "OFFICE, SMALL": {
+      "section": "45",
+      "definition": "An small office use involves the conduct of business relating to administration, clerical work, and consulting activities, not including medical offices, retail, or service uses. May include single or multiple companies within one unit or building. A small office has up to 5 workers in a single building and 6 parking spaces per lot.",
+      "standards": []
+    },
+    "OUTDOOR STORAGE": {
+      "section": "46",
+      "definition": "The outdoor keeping of equipment, vehicles, waste, and any materials associated with uses or activities occurring within buildings on the same lot for a period greater than 48 hours.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "The storage of refuse, recycling, or other materials is not permitted within the frontage zone.",
+          "id": "draft-v0.22:a7.s46.b.1"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "Outdoor storage is not permitted within the frontage zone and must not be visible from any road (excluding alleys) except when located behind a 25 ft deep Level 3 Natural Screen.",
+          "id": "draft-v0.22:a7.s46.b.2"
+        },
+        {
+          "path": [
+            "3"
+          ],
+          "depth": 0,
+          "text": "Storage areas must be located at least 20 ft from any structure used as a dwelling.",
+          "id": "draft-v0.22:a7.s46.b.3"
+        }
+      ]
+    },
+    "PACKAGED LIQUOR": {
+      "section": "47",
+      "definition": "Any alcoholic beverage sales establishment involving the sale of alcohol where beer, wine or distilled spirits are sold for off-sale consumption.",
+      "standards": []
+    },
+    "PARKING LOT": {
+      "section": "48",
+      "definition": "A non-accessory parking lot made available to the general public in exchange for a fee.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "Parking lots must follow the standards for Vehicular Parking in Article 4 Site Standards.",
+          "id": "draft-v0.22:a7.s48.b.1"
+        }
+      ]
+    },
+    "PRIMARY/SECONDARY SCHOOL": {
+      "section": "49",
+      "definition": "A public, private, or parochial institution with a primary function of offering instruction at any of all primary or secondary education levels, inclusive of kindergarten through the 12th grade. This use shall not include businesses that offer exclusively recreational classes, such as art classes, musical instruction, or other similar classes open to the general public.",
+      "standards": []
+    },
+    "PRIVATE CLUB OR LODGE": {
+      "section": "50",
+      "definition": "A facility operated for an organization, which is open to people upon invitation, nomination, or payment of fees or dues, for social, recreational, and/or entertainment activities.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.",
+          "id": "draft-v0.22:a7.s50.b.1"
+        }
+      ]
+    },
+    "RECYCLING FACILITY": {
+      "section": "51",
+      "definition": "A facility that accepts materials, such as dry paper, glass, cans, or plastics, for storage and processing by power-driven equipment for the subsequent reuse in the secondary materials market.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "Outdoor storage or operations of the recycling facility may not be located within the frontage zone and must be located behind a 50 ft deep Level 3 Natural Screen, or a 6 ft to 8 ft tall opaque fence. Outdoor storage or operations of any kind are prohibited outside the screened area.",
+          "id": "draft-v0.22:a7.s51.b.1"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "Recycling drop-off facilities, manned or unmanned, must be located behind the frontage zone.",
+          "id": "draft-v0.22:a7.s51.b.2"
+        },
+        {
+          "path": [
+            "3"
+          ],
+          "depth": 0,
+          "text": "The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.",
+          "id": "draft-v0.22:a7.s51.b.3"
+        }
+      ]
+    },
+    "RESEARCH LABORATORY": {
+      "section": "52",
+      "definition": "A facility for research and development that does not involve the use of human testing, animal husbandry, incinerators, heavy equipment, mass manufacturing, fabrication, processing, or sale of products.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.",
+          "id": "draft-v0.22:a7.s52.b.1"
+        }
+      ]
+    },
+    "RESIDENCE": {
+      "section": "53",
+      "definition": "A dwelling unit used, intended, or designed to be rented, leased, let, or hired out to be occupied for living purposes.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "Dwelling units are not permitted in first floor units that front shopfront streets identified on the District Map.",
+          "id": "draft-v0.22:a7.s53.b.1"
+        }
+      ]
+    },
+    "RESIDENTIAL CARE FACILITY": {
+      "section": "54",
+      "definition": "A licensed care facility that provides 24-hour medical or non-medical care to persons in need of personal services, supervision, protection, or assistance essential for sustaining the activities of daily living. Residential care facilities include nursing homes, independent living, assisted living, continuum of care, and hospice facilities.",
+      "standards": []
+    },
+    "RESOURCE EXTRACTION": {
+      "section": "55",
+      "definition": "Any use that involves the removal of raw materials from the lot, such as soil, rock, timber, or water for commercial activity.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "Ensure compliance with the Shoreland Zoning Ordinance.",
+          "id": "draft-v0.22:a7.s55.b.1"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "The use of raw materials from the lot, for landowner use on the lot, is permitted.",
+          "id": "draft-v0.22:a7.s55.b.2"
+        },
+        {
+          "path": [
+            "3"
+          ],
+          "depth": 0,
+          "text": "A 100 ft deep Level 4 Natural Screen is required between the primary road and the resource extraction activity and associated buildings.",
+          "id": "draft-v0.22:a7.s55.b.3"
+        },
+        {
+          "path": [
+            "3",
+            "a"
+          ],
+          "depth": 1,
+          "text": "The Planning Board may determine that a 100 ft deep Level 4 Natural Screen is required on the side and rear lot lines to protect abutters.",
+          "id": "draft-v0.22:a7.s55.b.3.a"
+        },
+        {
+          "path": [
+            "4"
+          ],
+          "depth": 0,
+          "text": "State-level environmental review is required.",
+          "id": "draft-v0.22:a7.s55.b.4"
+        },
+        {
+          "path": [
+            "5"
+          ],
+          "depth": 0,
+          "text": "Water extraction for commercial processing, selling, or distributing is prohibited.",
+          "id": "draft-v0.22:a7.s55.b.5"
+        }
+      ]
+    },
+    "RESTAURANT & CAFE": {
+      "section": "56",
+      "definition": "A business where food and beverages are prepared and served to patrons for consumption either on-premises or off-premises.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "The sale of alcohol for on-premises consumption requires separate approval as a Bar or Tavern. Sale of alcohol for off-premises consumption requires separate approval for a Packaged Liquor.",
+          "id": "draft-v0.22:a7.s56.b.1"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "A restaurant may include live entertainment without a separate approval, under the following conditions:",
+          "id": "draft-v0.22:a7.s56.b.2"
+        },
+        {
+          "path": [
+            "2",
+            "a"
+          ],
+          "depth": 1,
+          "text": "No permanent space is dedicated for live entertainment;",
+          "id": "draft-v0.22:a7.s56.b.2.a"
+        },
+        {
+          "path": [
+            "2",
+            "b"
+          ],
+          "depth": 1,
+          "text": "No admission is charged for live entertainment;",
+          "id": "draft-v0.22:a7.s56.b.2.b"
+        },
+        {
+          "path": [
+            "2",
+            "c"
+          ],
+          "depth": 1,
+          "text": "When live entertainment is offered incidental and subordinate to the restaurant use.",
+          "id": "draft-v0.22:a7.s56.b.2.c"
+        },
+        {
+          "path": [
+            "2",
+            "d"
+          ],
+          "depth": 1,
+          "text": "Complies with Live Entertainment use standards.",
+          "id": "draft-v0.22:a7.s56.b.2.d"
+        },
+        {
+          "path": [
+            "3"
+          ],
+          "depth": 0,
+          "text": "Ventilation systems may not be installed on the facade of any primary or secondary frontage unless the applicant can prove that no other feasible alternative is available. To the maximum extent feasible, ventilation systems must be directed away from adjacent residential properties.",
+          "id": "draft-v0.22:a7.s56.b.3"
+        }
+      ]
+    },
+    "RETAIL & SERVICE, GENERAL": {
+      "section": "57",
+      "definition": "A business that provides goods or services directly to the consumer, where such goods or services are available for immediate purchase on the premises by the purchaser.",
+      "standards": []
+    },
+    "RETAIL & SERVICE, HEAVY": {
+      "section": "58",
+      "definition": "A retail and service business with permanent outdoor display, service, and storage areas, such as vendors of lumber and building supplies, landscaping supplies and equipment, industrial equipment, commercial and recreational vehicles, watercraft, and outdoor structures such as prefabricated sheds, decks and patios, swimming pools, and play equipment.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "A 50 ft deep Level 2 Natural Screen or 6 ft to 8 ft tall opaque fence is required along all side and rear lot lines that abut residential uses.",
+          "id": "draft-v0.22:a7.s58.b.1"
+        }
+      ]
+    },
+    "RETAIL FIREARM SALES FACILITY": {
+      "section": "59",
+      "definition": "A business which publicly displays or offers Firearms, as defined by the Code of Federal Regulations, Title 27, Chapter I, Subchapter C, §53.11 Meaning of terms, for sale to the public, where such Firearms are available for purchase on the premises. Public display or offer does not include online-only displays or offers.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "A Retail Firearm Sales Facility use, whether primary, accessory, or otherwise, shall not be located on any lot, or virtual lot, that is located completely, or partially, within 300 feet of any lot which contains a Primary/Secondary School use, College/University use, or a Dormitory use associated with a Primary/Secondary School use or College/University use.",
+          "id": "draft-v0.22:a7.s59.b.1"
+        }
+      ]
+    },
+    "ROOMING HOUSE": {
+      "section": "60",
+      "definition": "A structure occupied, designed, or intended to be occupied by individuals who may share common areas and facilities, but do not form a single household, and do not provide compensation under a single lease for occupancy. A rooming unit provides sleeping accommodations, but no in-room cooking facilities.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "One on-site supervisor is required at all times for any rooming house with ten or more rooming units.",
+          "id": "draft-v0.22:a7.s60.b.1"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "Hourly rate lodging is not permitted. Lodging must be arranged on a week-to-week or longer basis.",
+          "id": "draft-v0.22:a7.s60.b.2"
+        }
+      ]
+    },
+    "SELF-STORAGE FACILITY": {
+      "section": "61",
+      "definition": "A facility where individual secured areas inside a structure are rented for short-term storage of a variety of non-hazardous, non-perishable durable goods and where the lessee has direct access and responsibility for loading and unloading the storage.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "The individual storage units of a self-storage facility may be located in a fully-enclosed building, with access to individual storage units provided from common areas located indoors.",
+          "id": "draft-v0.22:a7.s61.b.1"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "Where the individual storage units of a self-storage facility are accessed from outside a structure, a 25 ft deep Level 2 Natural Screen or 6 ft to 8 ft tall opaque fence is required along all side and rear lot lines that abut residential uses.",
+          "id": "draft-v0.22:a7.s61.b.2"
+        },
+        {
+          "path": [
+            "3"
+          ],
+          "depth": 0,
+          "text": "Garage doors serving individual storage units must be perpendicular to the primary road.",
+          "id": "draft-v0.22:a7.s61.b.3"
+        },
+        {
+          "path": [
+            "4"
+          ],
+          "depth": 0,
+          "text": "Outdoor storage must be visually screened from any road by a 25 ft deep Level 2 Natural Screen or 6 ft to 8 ft tall opaque fence. Outdoor storage of any kind are prohibited outside the screened area.",
+          "id": "draft-v0.22:a7.s61.b.4"
+        }
+      ]
+    },
+    "STABLES / RIDING CENTER": {
+      "section": "62",
+      "definition": "A structure or land used, designed, and arranged for the care and shelter of equines, for riding, shows, or training, which may include horses not boarded on-site.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "A fence is required around all paddock areas.",
+          "id": "draft-v0.22:a7.s62.b.1"
+        }
+      ]
+    },
+    "TOURIST RENTAL": {
+      "section": "63",
+      "definition": "The rental of a dwelling unit, or a portion of a dwelling unit, on an overnight or short-term basis for less than 30 days at a time.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "Tourist rentals require an annual license from the Code Enforcement Officer and may be approved or denied based on enforcement history at the location, whether or not the rental is unduly taxing public infrastructure, public services, has demonstrated a hazard to public safety, or otherwise disturbs the peace of neighbors and the community.",
+          "id": "draft-v0.22:a7.s63.b.1"
+        }
+      ]
+    },
+    "UTILITIES & SERVICES": {
+      "section": "64",
+      "definition": "Buildings and structures that provide or facilitate the transmission of services consumed by the public including electricity, Internet, natural gas, water, and sewage.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "Standards related to wind energy facilitates are located in the Wind Energy Ordinance.",
+          "id": "draft-v0.22:a7.s64.b.1"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "Buildings required for the production and distribution of utility services must meet the following standards:",
+          "id": "draft-v0.22:a7.s64.b.2"
+        },
+        {
+          "path": [
+            "2",
+            "a"
+          ],
+          "depth": 1,
+          "text": "Utility buildings must be built to the standards of a permitted building within the district in which they are located.",
+          "id": "draft-v0.22:a7.s64.b.2.a"
+        },
+        {
+          "path": [
+            "2",
+            "b"
+          ],
+          "depth": 1,
+          "text": "Utility equipment that cannot be located indoors must utilize screening elements and walls to blend into the surrounding context.",
+          "id": "draft-v0.22:a7.s64.b.2.b"
+        },
+        {
+          "path": [
+            "3"
+          ],
+          "depth": 0,
+          "text": "Where real windows are impractical, a utility building may meet window and door requirements with recessed panels and applying any of the following finishes to the panel to simulate window patterns:",
+          "id": "draft-v0.22:a7.s64.b.3"
+        },
+        {
+          "path": [
+            "3",
+            "a"
+          ],
+          "depth": 1,
+          "text": "Glass cladding.",
+          "id": "draft-v0.22:a7.s64.b.3.a"
+        },
+        {
+          "path": [
+            "3",
+            "b"
+          ],
+          "depth": 1,
+          "text": "Louvered or paneled shutters covering the panel in a \"closed\" position.",
+          "id": "draft-v0.22:a7.s64.b.3.b"
+        },
+        {
+          "path": [
+            "3",
+            "c"
+          ],
+          "depth": 1,
+          "text": "A trellis, grille, grate, or fretwork.",
+          "id": "draft-v0.22:a7.s64.b.3.c"
+        },
+        {
+          "path": [
+            "4"
+          ],
+          "depth": 0,
+          "text": "The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.",
+          "id": "draft-v0.22:a7.s64.b.4"
+        }
+      ]
+    },
+    "VEHICLE RENTAL OR SALES": {
+      "section": "65",
+      "definition": "A business that sells, leases, or rents automobiles, vans, three-wheelers, motorcycles, scooters, or other powered personal transportation or conveyance, and which may include on-site facilities for the repair and service of vehicles sold, leased, or rented. This does not include the sale, lease, or rental of recreational vehicles, commercial vehicles, or watercraft, which is considered a heavy retail and service use.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "The display of vehicles for rental or sale shall not occur within the frontage zone.",
+          "id": "draft-v0.22:a7.s65.b.1"
+        }
+      ]
+    },
+    "VEHICLE REPAIR": {
+      "section": "66",
+      "definition": "A business that repairs, installs, or maintains automobiles, small trucks or vans, motorcycles, motor homes, or recreational vehicles or that wash, clean, or otherwise protect the exterior or interior surfaces of these types of vehicles.",
+      "standards": [
+        {
+          "path": [
+            "1"
+          ],
+          "depth": 0,
+          "text": "Any repair and service operations must be performed within a fully enclosed building. Garage doors may be open during hours of operation.",
+          "id": "draft-v0.22:a7.s66.b.1"
+        },
+        {
+          "path": [
+            "2"
+          ],
+          "depth": 0,
+          "text": "No partially dismantled, wrecked, or unregistered vehicle may be stored outdoors for more than 30 days.",
+          "id": "draft-v0.22:a7.s66.b.2"
+        },
+        {
+          "path": [
+            "3"
+          ],
+          "depth": 0,
+          "text": "Temporary storage of vehicles may not be located within the frontage zone and must be located behind a 25 ft Level 2 Natural Screen or a 6ft to 8 ft tall opaque fence.",
+          "id": "draft-v0.22:a7.s66.b.3"
+        },
+        {
+          "path": [
+            "4"
+          ],
+          "depth": 0,
+          "text": "Outdoor storage or operations of any kind are prohibited in the frontage zone.",
+          "id": "draft-v0.22:a7.s66.b.4"
+        },
+        {
+          "path": [
+            "5"
+          ],
+          "depth": 0,
+          "text": "The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.",
+          "id": "draft-v0.22:a7.s66.b.5"
+        }
+      ]
+    }
+  }
+}

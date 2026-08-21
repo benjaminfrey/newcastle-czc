@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Case Dashboard — Newcastle Permit Review{% endblock %}
+{% block brand_sub %}Case Dashboard{% endblock %}
+
+{% block content %}
+{% if not cases_available %}
+  <section class="panel panel-empty">
+    <h1>Case Dashboard</h1>
+    <p class="notice notice-warn">
+      The case data layer (<code>app.cases</code> / <code>app.deadlines</code> / <code>app.db</code>) is not
+      available yet in this workflow.
+    </p>
+  </section>
+{% else %}
+
+  <section class="panel">
+    <div class="cases-toolbar">
+      <div>
+        <h1>Case Dashboard</h1>
+        <p class="lede">Every case before the Board, its lifecycle status, and the single deadline it should be
+          judged against today. Nothing here is a Board decision — see each case for the full record.</p>
+      </div>
+    </div>
+  </section>
+
+  {% if urgent_count > 0 %}
+  <section class="auto-approval-banner" role="alert" aria-live="polite">
+    <span class="icon">&#9888;&#65039;</span>
+    <span>
+      {{ urgent_count }} case{{ "s" if urgent_count != 1 else "" }} approaching or past a deadline that
+      triggers <strong>Article&nbsp;7&nbsp;&sect;8.d.1 automatic approval</strong> on failure to act.
+      See the highlighted row{{ "s" if urgent_count != 1 else "" }} below.
+    </span>
+  </section>
+  {% endif %}
+
+  <section class="panel">
+    {% if rows %}
+    <div class="table-scroll">
+      <table class="cases-table">
+        <thead>
+          <tr>
+            <th>Case</th>
+            <th>Map/Lot</th>
+            <th>Applicant</th>
+            <th>Review Type</th>
+            <th>Status</th>
+            <th>Next Deadline</th>
+            <th>Days Remaining</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for row in rows %}
+          {% set c = row.case %}
+          {% set h = row.headline %}
+          <tr class="{{ 'row-auto-approval' if row.auto_approval_risk else '' }}">
+            <td><a href="/cases/{{ c.id }}">{{ c.label }}</a>{% if c.is_scratch %} <span class="scratch-badge">scratch</span>{% endif %}</td>
+            <td>{{ c.map_lot or "—" }}</td>
+            <td>{{ c.applicant_name or "—" }}</td>
+            <td>{{ row.application_type_label }}</td>
+            <td><span class="status-badge status-{{ c.status }}">{{ row.status_label }}</span></td>
+            <td>
+              {% if h %}
+                {{ h.label }}
+                <div class="citation" style="display:inline;">&middot; {{ h.citation_short }}</div>
+                {% if row.auto_approval_risk %}
+                  <div class="deadline-consequence">&#9888;&#65039; auto-approval risk</div>
+                {% endif %}
+              {% elif row.deadlines_error %}
+                <span class="muted">clocks unavailable</span>
+              {% else %}
+                <span class="muted">no open deadline</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if h and h.due_date %}
+                {% set cls = "overdue" if row.days_remaining < 0 else ("due-soon" if row.days_remaining <= 7 else "upcoming") %}
+                <span class="days-remaining {{ cls }}">
+                  {% if row.days_remaining < 0 %}{{ -row.days_remaining }} day{{ "s" if -row.days_remaining != 1 else "" }} overdue
+                  {% else %}{{ row.days_remaining }} day{{ "s" if row.days_remaining != 1 else "" }}{% endif %}
+                </span>
+                <div class="dim-note">due {{ h.due_date.isoformat() }}</div>
+              {% else %}
+                <span class="muted">—</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <div class="case-empty-state">
+        <p>No cases yet.</p>
+      </div>
+    {% endif %}
+    {% if rows %}
+    <p class="dim-note">Business-day clocks (notice mailed, decision filed) exclude weekends and the 12 Maine
+      legal holidays (4 M.R.S. &sect;1051). Newcastle's own Town Office closures may not match that list exactly.
+      See DECISIONS-NEEDED.md D-0006, D-0010.</p>
+    {% endif %}
+  </section>
+
+{% endif %}
+{% endblock %}

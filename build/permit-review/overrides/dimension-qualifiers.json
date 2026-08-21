@@ -1,0 +1,24 @@
+{
+  "_README": "Resolves unqualified Article 2 dimensional values. One entry per '<district_key>:<field_key>'. CONTRACT.md \u00a74.2.4. A HUMAN with the adopted Code in hand fills 'qualifier', 'decided_by', 'decided_at' and 'basis'. NEVER machine-generated. A null 'qualifier' is NOT a resolution: ruleset_build still raises AmbiguousDimension and writes nothing. Only qualifier in {min,max} WITH a non-null decided_by AND basis resolves an entry, and the resulting constraint carries source='override' plus the decided_by/basis in dimensions[].notes so the provenance reaches the printed worksheet.",
+  "_schema": "newcastle.dimension-qualifiers/1.0.0",
+  "entries": {
+    "sd-historic:primary_building_placement.frontage_zone_setback": {
+      "raw": "20 ft",
+      "qualifier": "min",
+      "decided_by": "Ben Frey (Planning Board Chair)",
+      "decided_at": "2026-08-21",
+      "basis": "Determined by the Planning Board Chair, 2026-08-21: the value is a MINIMUM setback. Article 2 states the figure without a qualifier, but every sibling district renders this same field as '20 ft min' and nothing in Article 2 or its footnotes indicates a maximum.",
+      "decision_id": "D-0001",
+      "note": "Article 2 states '20 ft' with no min/max. Sibling districts render this field '20 ft min'; that is a hint, not evidence. See DECISIONS-NEEDED.md D-0001."
+    },
+    "sd-marine:building_placement.frontage_zone_setback": {
+      "raw": "20 ft",
+      "qualifier": "min",
+      "decided_by": "Ben Frey (Planning Board Chair)",
+      "decided_at": "2026-08-21",
+      "basis": "Determined by the Planning Board Chair, 2026-08-21: the value is a MINIMUM setback. Article 2 states the figure without a qualifier, but every sibling district renders this same field as '20 ft min' and nothing in Article 2 or its footnotes indicates a maximum.",
+      "decision_id": "D-0002",
+      "note": "Article 2 states '20 ft' with no min/max, in the combined BUILDING PLACEMENT panel. Must be read separately from D-0001. See DECISIONS-NEEDED.md D-0002."
+    }
+  }
+}
