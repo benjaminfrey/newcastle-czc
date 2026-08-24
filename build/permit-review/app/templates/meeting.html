@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Meeting — {{ case.label if case else "Case" }} — Newcastle Permit Review{% endblock %}
+{% block brand_sub %}Live Meeting{% endblock %}
+
+{% block content %}
+<section class="panel meeting-header" id="meeting-header" data-case-id="{{ case_id }}">
+  <div class="meeting-header-top">
+    <div>
+      <p class="breadcrumb"><a href="/cases/{{ case_id }}">&larr; Case detail</a></p>
+      <h1>{{ case.label if case else case_id }}</h1>
+      <p class="lede">Live meeting workflow. Nothing on this page is a decision until the Board votes on it.
+        Every conclusion is a recorded human act.</p>
+    </div>
+    <div class="meeting-status" id="meeting-status" aria-live="polite">
+      <div class="meeting-status-item">
+        <span class="meeting-status-n" id="status-position">&mdash;</span>
+        <span class="meeting-status-label">on item</span>
+      </div>
+      <div class="meeting-status-item">
+        <span class="meeting-status-n" id="status-unresolved">&mdash;</span>
+        <span class="meeting-status-label">unresolved</span>
+      </div>
+      <div class="meeting-status-item">
+        <span class="meeting-status-n" id="status-resolved">&mdash;</span>
+        <span class="meeting-status-label">resolved</span>
+      </div>
+    </div>
+  </div>
+  <div class="meeting-keys-bar">
+    <span><kbd>j</kbd>/<kbd>k</kbd> or <kbd>&darr;</kbd>/<kbd>&uarr;</kbd> move</span>
+    <span><kbd>Enter</kbd> open</span>
+    <span><kbd>n</kbd> next unresolved</span>
+    <span><kbd>Esc</kbd> close</span>
+    <span><kbd>a</kbd> amend (standards)</span>
+    <span><kbd>?</kbd> all keys</span>
+    <button type="button" id="btn-refresh" class="btn-secondary">Refresh</button>
+  </div>
+  <div id="meeting-error" class="render-result error" hidden aria-live="assertive"></div>
+</section>
+
+<section class="meeting-body">
+  <nav class="panel meeting-agenda" id="meeting-agenda" aria-label="Meeting agenda">
+    <h3>Agenda</h3>
+    <ol class="agenda-list" id="agenda-list">
+      <li class="agenda-loading">Loading agenda&hellip;</li>
+    </ol>
+  </nav>
+
+  <div class="panel meeting-detail" id="meeting-detail">
+    <p class="notice">Select an agenda item (<kbd>j</kbd>/<kbd>k</kbd>, then <kbd>Enter</kbd>) to record
+      disclosures, votes, or amendments.</p>
+  </div>
+</section>
+
+<div class="modal-overlay" id="help-overlay" hidden>
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts">
+    <h3>Keyboard shortcuts</h3>
+    <dl class="keys-help">
+      <dt><kbd>j</kbd> / <kbd>&darr;</kbd></dt><dd>next agenda item</dd>
+      <dt><kbd>k</kbd> / <kbd>&uarr;</kbd></dt><dd>previous agenda item</dd>
+      <dt><kbd>Enter</kbd></dt><dd>open the selected item</dd>
+      <dt><kbd>n</kbd></dt><dd>jump to the next unresolved item</dd>
+      <dt><kbd>Esc</kbd></dt><dd>close the open item / this help</dd>
+      <dt><kbd>a</kbd></dt><dd>amend the drafted finding (standards only)</dd>
+      <dt><kbd>c</kbd></dt><dd>set outcome: carried (in a vote form)</dd>
+      <dt><kbd>f</kbd></dt><dd>set outcome: failed (in a vote form)</dd>
+      <dt><kbd>t</kbd></dt><dd>set outcome: tabled (in a vote form)</dd>
+      <dt><kbd>w</kbd></dt><dd>set outcome: withdrawn (in a vote form)</dd>
+      <dt><kbd>Ctrl/Cmd+Enter</kbd></dt><dd>save the open vote form</dd>
+      <dt><kbd>?</kbd></dt><dd>toggle this help</dd>
+    </dl>
+    <button type="button" id="help-close" class="btn-secondary">Close</button>
+  </div>
+</div>
+
+<template id="tmpl-vote-form">
+  <form class="vote-form" data-role="vote-form">
+    <div class="vote-form-motion">
+      <label class="vote-form-label">Motion (as it will print)</label>
+      <p class="vote-form-motion-text" data-field="motion-text"></p>
+    </div>
+    <div class="vote-form-grid">
+      <label>Moved by
+        <select name="moved_by" data-field="moved_by" required></select>
+      </label>
+      <label>Second
+        <select name="seconded_by" data-field="seconded_by" required></select>
+      </label>
+      <label>Yea
+        <input type="number" name="votes_yes" data-field="votes_yes" min="0" required>
+      </label>
+      <label>Nay
+        <input type="number" name="votes_no" data-field="votes_no" min="0" required>
+      </label>
+      <label>Abstain
+        <input type="number" name="votes_abstain" data-field="votes_abstain" min="0" required>
+      </label>
+    </div>
+    <div class="vote-outcome-row" data-field="outcome-row">
+      <span class="vote-form-label">Result</span>
+      <label class="outcome-choice"><input type="radio" name="outcome" value="carried" required> Carried <kbd>c</kbd></label>
+      <label class="outcome-choice"><input type="radio" name="outcome" value="failed"> Failed <kbd>f</kbd></label>
+      <label class="outcome-choice"><input type="radio" name="outcome" value="tabled"> Tabled <kbd>t</kbd></label>
+      <label class="outcome-choice"><input type="radio" name="outcome" value="withdrawn"> Withdrawn <kbd>w</kbd></label>
+    </div>
+    <label class="vote-form-discussion">Discussion (optional)
+      <textarea name="discussion" data-field="discussion" rows="2" placeholder="none"></textarea>
+    </label>
+    <p class="conclusion-note" data-field="conclusion-note" hidden></p>
+    <div class="actions-row">
+      <button type="submit">Save vote</button>
+      <span class="render-result" data-field="vote-result" aria-live="polite"></span>
+    </div>
+  </form>
+</template>
+
+<script src="/static/meeting.js"></script>
+{% endblock %}

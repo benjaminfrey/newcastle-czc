@@ -16,16 +16,28 @@ THE FRAMING RULE, IN CODE, NOT JUST IN COMMENTS
 CONTRACT.md's framing rule: "The app MUST NEVER state, imply, or store that a
 standard *is met* or *is not met* -- that is the Board acting." create_node()
 and amend_node() below have NO parameter for `conclusion` -- not "a parameter
-that defaults to None", no parameter at all. There is no call shape in this
-module that can set findings_nodes.conclusion to anything but the NULL every
-INSERT already gives it. A future human-facing "the Board voted" endpoint
-sets it directly with UPDATE, never through this module.
+that defaults to None", no parameter at all. There is no call shape in
+either public function that can set findings_nodes.conclusion to anything
+but the NULL every INSERT already gives it.
+
+W7 (see the bottom of this file, "THE ONLY WRITER OF findings_nodes.
+conclusion") is that "future human-facing endpoint": one private, non-
+transactional function, `_write_conclusion()`, whose one caller is
+`engine/meeting.py:apply_motion()` -- reachable only after a motion has
+CARRIED (a recorded human vote, motions' own CHECK constraint). The framing
+rule is not weakened by this; it is satisfied BY it -- a conclusion is still
+never the app's own assertion, only ever the Board's recorded act, now with
+a concrete path for that act to reach the database instead of remaining a
+promise in a docstring.
 
 THE AMENDMENT MODEL
 --------------------
 CONTRACT.md §3.6: "An amendment INSERTs a new revision and points the old
 row's superseded_by at it. Nothing is ever overwritten and nothing is ever
-deleted." amend_node() below does exactly that, inside one transaction, and
+deleted." W7 brief, layered on top: amend_node()'s `reason` parameter is
+REQUIRED and MUST be non-empty -- a blank why is REJECTED (ValidationError),
+never defaulted to something like "amended" or silently allowed as None.
+amend_node() below does exactly that, inside one transaction, and
 appends exactly ONE `events` row for the whole amendment (one logical
 mutation, matching the "one INSERT + one events row" shape app/cases.py's
 create_case() already established for a single-row mutation) even though it
@@ -98,6 +110,12 @@ APPLICABILITY_VERDICTS: frozenset[str] = frozenset({"true", "false", "unknown"})
 
 FINDING_SOURCES: frozenset[str] = frozenset({"engine", "model", "operator"})
 
+#: findings_nodes.conclusion's own three legal values (0001_init.sql CHECK).
+#: Duplicated here, not imported from anywhere, because nothing in this
+#: module is allowed to construct one on its own authority -- see THE ONLY
+#: WRITER OF findings_nodes.conclusion, at the bottom of this file.
+CONCLUSIONS: frozenset[str] = frozenset({"met", "not_met", "n_a"})
+
 #: Sentinel distinguishing "caller did not pass this" (carry the prior
 #: revision's value forward on amend_node()) from "caller passed None"
 #: (clear the field in the new revision). A bare `None` default can't do
@@ -121,6 +139,25 @@ class NodeNotFound(KeyError):
     def __init__(self, node_id: str):
         self.node_id = node_id
         super().__init__(f"findings_nodes row {node_id!r} not found")
+
+
+class NodeNotEligibleForConclusion(ValueError):
+    """Raised by the internal conclusion writer (see THE ONLY WRITER, below)
+    when the target row is not a live, not-yet-concluded current revision --
+    i.e. the UPDATE it issues matched zero rows. Covers three cases at once,
+    deliberately not distinguished further: the node id does not exist, the
+    node has since been superseded by an amendment (stale motion target), or
+    the node already carries a conclusion (double-application). All three are
+    "this motion can no longer be applied to this node as it stands" -- the
+    caller's fix in every case is the same: draft a fresh motion against the
+    CURRENT revision."""
+
+    def __init__(self, node_id: str):
+        self.node_id = node_id
+        super().__init__(
+            f"findings_nodes row {node_id!r} is not eligible to receive a conclusion "
+            "(not found, not the current revision, or already concluded)"
+        )
 
 
 class NotCurrentRevision(ValueError):
@@ -285,6 +322,87 @@ def get_node(conn: sqlite3.Connection, node_id: str) -> dict[str, Any] | None:
     return _row_to_dict(row) if row is not None else None
 
 
+class OrphanConclusionError(ValueError):
+    """A findings_nodes row carries a conclusion with no carried motion behind it.
+
+    The `conclusion IS NULL OR (conclusion_by IS NOT NULL AND conclusion_at IS
+    NOT NULL)` CHECK in 0013_findings_tree.sql guarantees that a conclusion is
+    ATTRIBUTED to a named human at a named time. It does NOT, and cannot,
+    guarantee that a MOTION stands behind it -- that is a cross-table fact.
+
+    The `motions` side is already tight (0015/0016: `applied_node_id` is
+    write-once and settable only on a carried motion carrying a
+    `proposed_conclusion`), so a motion cannot claim an application it never
+    made. This is the missing REVERSE direction: a conclusion with nothing
+    pointing at it.
+
+    Why it matters more as a regression guard than as an anti-tamper measure:
+    anyone holding the SQLite file can write whatever they like, and the
+    hash-chained `events` table detects tampering with the LOG, not divergence
+    between the log and the state -- a direct UPDATE writes no event, so the
+    chain still verifies. The likelier failure is a future code path that sets
+    a conclusion without going through apply_motion(). Either way the result is
+    the same and is the worst thing this app could produce: a conclusion in an
+    adopted document that the Board never voted.
+
+    Found 2026-08-24 by attacking the W7 build: three of four forgery attempts
+    were blocked by the CHECK, and the fourth -- a fully attributed conclusion
+    with no motion -- succeeded and was invisible to every check the app ran.
+    """
+
+
+def find_orphan_conclusions(
+    conn: sqlite3.Connection, case_id: str | None = None
+) -> list[dict[str, Any]]:
+    """Every LIVE findings node whose conclusion has no carried motion behind it.
+
+    Returns [] when the record is sound. Scoped to one case when `case_id` is
+    given, otherwise the whole database. Only live revisions are checked
+    (`superseded_by IS NULL`): a superseded revision's conclusion is history,
+    and the motion that set it may legitimately have been applied to the
+    revision that replaced it.
+    """
+    sql = """
+        SELECT n.id, n.case_id, n.number_label, n.heading, n.conclusion,
+               n.conclusion_by, n.conclusion_at
+          FROM findings_nodes n
+         WHERE n.conclusion IS NOT NULL
+           AND n.superseded_by IS NULL
+           AND NOT EXISTS (
+                 SELECT 1 FROM motions m
+                  WHERE m.applied_node_id = n.id
+                    AND m.outcome = 'carried'
+               )
+    """
+    params: tuple[Any, ...] = ()
+    if case_id is not None:
+        sql += " AND n.case_id = ?"
+        params = (case_id,)
+    sql += " ORDER BY n.sort_order, n.id;"
+    # A diagnostic projection, not a node: built directly rather than through
+    # _row_to_dict(), which expects every node column and coerces `unresolved`.
+    return [dict(r) for r in conn.execute(sql, params).fetchall()]
+
+
+def assert_no_orphan_conclusions(
+    conn: sqlite3.Connection, case_id: str | None = None
+) -> None:
+    """Raise OrphanConclusionError if any live conclusion lacks a carried motion."""
+    orphans = find_orphan_conclusions(conn, case_id)
+    if not orphans:
+        return
+    detail = "; ".join(
+        f"{o['number_label'] or o['id']}={o['conclusion']!r}"
+        f" (by {o['conclusion_by']} at {o['conclusion_at']})"
+        for o in orphans[:10]
+    )
+    more = "" if len(orphans) <= 10 else f" (and {len(orphans) - 10} more)"
+    raise OrphanConclusionError(
+        f"{len(orphans)} finding(s) carry a conclusion with no carried motion "
+        f"behind it: {detail}{more}. A conclusion must trace to a recorded vote."
+    )
+
+
 def get_current_nodes_for_case(conn: sqlite3.Connection, case_id: str) -> list[dict[str, Any]]:
     """The live tree for a case -- every node WHERE superseded_by IS NULL,
     in print order (CONTRACT.md §3.6: "The current tree is
@@ -444,7 +562,7 @@ def amend_node(
     *,
     node_id: str,
     actor_user_id: str | None,
-    reason: str | None = None,
+    reason: str,
     sort_order: Any = _UNSET,
     number_label: Any = _UNSET,
     heading: Any = _UNSET,
@@ -470,6 +588,18 @@ def amend_node(
     row's id. Nothing is ever overwritten and nothing is ever deleted
     (CONTRACT.md §3.6).
 
+    `reason` is REQUIRED and MUST be non-empty (W7 brief: "AMENDMENTS insert
+    a new revision with a REQUIRED `why`. An amendment with a blank why must
+    be REJECTED, not defaulted."). A blank/whitespace-only/None reason raises
+    ValidationError before anything is written -- there is no default that
+    silently stands in for a missing explanation. `reason` is stored on the
+    `events` row (kind='findings_node.amended', payload.reason) -- append-
+    only and hash-chained, so the why is on the record exactly as durably as
+    the amendment itself, queryable forever by entity_id/root_id even though
+    it is not a column on findings_nodes (the node's own columns describe
+    WHAT changed; `events` is where WHY a mutation happened has always lived
+    in this schema -- CONTRACT.md §3.3).
+
     Any content parameter left unpassed carries the prior revision's value
     forward unchanged (see _UNSET above); pass a field explicitly (including
     `None`) to change or clear it in the new revision.
@@ -477,8 +607,16 @@ def amend_node(
     Writes exactly ONE `events` row (kind='findings_node.amended') for the
     whole amendment, in the same transaction as both writes -- one logical
     mutation, matching CONTRACT.md §3.3 ("every mutation appends an events
-    row in the same transaction").
+    row in the same transaction"). A validation failure (including a blank
+    reason) writes nothing at all -- checked before either write below.
     """
+    if reason is None or not reason.strip():
+        raise ValidationError([{
+            "field": "reason",
+            "message": "an amendment must state why (CONTRACT.md §3.6 / W7 brief) -- "
+                       "a blank reason is rejected, never defaulted",
+        }])
+
     old = get_node(conn, node_id)
     if old is None:
         raise NodeNotFound(node_id)
@@ -602,3 +740,92 @@ def amend_node(
         _rollback_and_raise(conn, exc)
 
     return get_node(conn, new_id)  # type: ignore[return-value]  -- just inserted, always found
+
+
+# --------------------------------------------------------------------------- #
+# THE ONLY WRITER OF findings_nodes.conclusion
+# --------------------------------------------------------------------------- #
+#
+# W7 brief: "A passed motion is what sets findings_nodes.conclusion ... make
+# the motion path the only way they are ever populated." create_node() and
+# amend_node() above structurally cannot do it -- neither has a `conclusion`
+# parameter at all (see this module's docstring, written at W6, before a
+# motion path existed: "A future human-facing 'the Board voted' endpoint
+# sets it directly with UPDATE, never through this module.") This is that
+# endpoint's one moving part.
+#
+# _write_conclusion() below is INTENTIONALLY non-transactional (no BEGIN/
+# COMMIT of its own) and INTENTIONALLY private (a leading underscore, not
+# exported in __all__ -- this module carries no __all__ at all, so the
+# underscore is the only signal, matched by a grep-based test that treats it
+# as load-bearing). Its ONE caller, by design, is
+# engine/meeting.py:apply_motion() -- the function that first proves a
+# motion CARRIED (motions.outcome = 'carried', which motions' own CHECK
+# constraint already ties to a non-NULL recorded_by/voted_at -- a real,
+# recorded human act) before ever reaching this code. apply_motion() opens
+# ONE transaction that both calls this function and stamps
+# motions.applied_node_id (write-once, CHECK-enforced to require
+# outcome='carried') -- so the conclusion write and its motion backpointer
+# are always the same atomic fact, never two separately-crashable writes.
+#
+# Deliberately NOT wrapped in its own BEGIN/COMMIT/events-row here: unlike
+# create_node()/amend_node() (each a complete, standalone logical mutation),
+# this write is only ever meaningful as HALF of "a motion was applied" --
+# the caller owns that whole transaction and that whole events row
+# (kind='motion.applied'), exactly the way engine/subdivision_review.py's
+# _write_condition() is a plain non-transactional-by-itself insert that
+# nonetheless always runs inside a caller-owned transaction in practice.
+#
+# tests/test_findings.py:test_conclusion_has_exactly_one_writer_in_the_whole_tree
+# greps engine/ and app/ for every literal appearance of the substring
+# "SET conclusion" (case-insensitive) outside this file and outside
+# tests/ and migrations/, and asserts there are zero -- i.e. this is
+# mechanically, not just by convention, the only UPDATE statement in the
+# whole application that can ever change the column.
+
+
+def _write_conclusion(
+    conn: sqlite3.Connection,
+    *,
+    node_id: str,
+    conclusion: str,
+    conclusion_by: str,
+    conclusion_at: str,
+) -> None:
+    """The one raw UPDATE that can ever set findings_nodes.conclusion. Not a
+    public API -- see the section docstring above. Requires the caller to
+    already be inside a transaction (does not open or close one) and to
+    have already proven `conclusion_by`/`conclusion_at` name a real, recorded
+    human act; this function's own job is narrower: refuse to write unless
+    the target is a LIVE (superseded_by IS NULL), NOT YET CONCLUDED
+    (conclusion IS NULL) row. Zero rows matched -> NodeNotEligibleForConclusion,
+    never silently ignored.
+    """
+    if conclusion not in CONCLUSIONS:
+        raise ValidationError([{
+            "field": "conclusion",
+            "message": f"must be one of {sorted(CONCLUSIONS)}",
+        }])
+    if not conclusion_by:
+        raise ValidationError([{
+            "field": "conclusion_by",
+            "message": "a conclusion must name the human who is answerable for it "
+                       "(findings_nodes' own CHECK requires this too, but that would "
+                       "surface as a bare IntegrityError -- this is the clearer form)",
+        }])
+    if not conclusion_at:
+        raise ValidationError([{
+            "field": "conclusion_at",
+            "message": "a conclusion must record when the Board voted",
+        }])
+
+    cur = conn.execute(
+        """
+        UPDATE findings_nodes
+           SET conclusion = ?, conclusion_by = ?, conclusion_at = ?, unresolved = 0
+         WHERE id = ? AND superseded_by IS NULL AND conclusion IS NULL;
+        """,
+        (conclusion, conclusion_by, conclusion_at, node_id),
+    )
+    if cur.rowcount != 1:
+        raise NodeNotEligibleForConclusion(node_id)

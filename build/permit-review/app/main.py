@@ -74,6 +74,8 @@ case_findings_render_mod, _case_findings_render_err = _try_import("render.case_f
 cases_routes_mod, _cases_routes_err = _try_import("app.routes.cases")  # W3 case-lifecycle endpoints
 documents_routes_mod, _documents_routes_err = _try_import("app.routes.documents")  # W3 upload/triage endpoints
 extraction_routes_mod, _extraction_routes_err = _try_import("app.routes.extraction")  # W4 operator confirm UI
+meeting_routes_mod, _meeting_routes_err = _try_import("app.routes.meeting")  # W7 live meeting workflow
+board_mod, _board_err = _try_import("app.board")  # W7 Planning Board roster seed
 cases_mod, _cases_mod_err = _try_import("app.cases")  # W3 case business logic (dashboard/detail reads)
 extraction_mod, _extraction_mod_err = _try_import("app.extraction")  # W4 field-review business logic
 deadlines_mod, _deadlines_err = _try_import("app.deadlines")  # W3 statutory clocks (re-exports engine.deadlines)
@@ -93,6 +95,8 @@ MODULE_STATUS: dict[str, dict[str, Any]] = {
     "app.routes.cases": {"available": cases_routes_mod is not None, "error": _cases_routes_err},
     "app.routes.documents": {"available": documents_routes_mod is not None, "error": _documents_routes_err},
     "app.routes.extraction": {"available": extraction_routes_mod is not None, "error": _extraction_routes_err},
+    "app.routes.meeting": {"available": meeting_routes_mod is not None, "error": _meeting_routes_err},
+    "app.board": {"available": board_mod is not None, "error": _board_err},
     "app.cases": {"available": cases_mod is not None, "error": _cases_mod_err},
     "app.extraction": {"available": extraction_mod is not None, "error": _extraction_mod_err},
     "app.deadlines": {"available": deadlines_mod is not None, "error": _deadlines_err},
@@ -689,6 +693,12 @@ def create_app(*, port: int | None = None) -> FastAPI:
                         # actor_user_id FK this app writes (e.g. audit events)
                         # resolves -- app/security.py's documented seam.
                         security_mod.ensure_synthetic_user(conn)
+                    if board_mod is not None:
+                        # W7: seeds the real sitting Planning Board (idempotent,
+                        # no-op once any board_members row exists) so the
+                        # meeting workflow has seats to move/second from on
+                        # first run -- app/board.py's documented seam.
+                        board_mod.ensure_seed_board(conn)
                 finally:
                     conn.close()
             except Exception as exc:  # noqa: BLE001
@@ -723,6 +733,15 @@ def create_app(*, port: int | None = None) -> FastAPI:
     # Same defensive-import degrade as every sibling router above.
     if extraction_routes_mod is not None:
         app.include_router(extraction_routes_mod.router)
+
+    # W7 live meeting workflow (GET /case/{id}/meeting, GET .../meeting/agenda,
+    # POST .../meeting/prepare|disclosures|attendance|motions, PATCH
+    # .../meeting/motions/{id}, POST .../meeting/nodes/{id}/amend) -- a
+    # self-contained APIRouter, see app/routes/meeting.py + app/meeting.py +
+    # engine/meeting.py. Same defensive-import degrade as every sibling
+    # router above.
+    if meeting_routes_mod is not None:
+        app.include_router(meeting_routes_mod.router)
 
     # ----------------------------------------------------------------- #
     # CONTRACT.md §1 S4 -- Host / Origin guard.
@@ -1635,6 +1654,40 @@ def selftest() -> int:
         except Exception as exc:  # noqa: BLE001
             report("10. Maine legal holiday calendar (4 M.R.S. §1051) matches the real Shattuck clocks",
                    "FAIL", str(exc))
+
+    # 11: no conclusion without a carried motion behind it.
+    # The 0013 CHECK proves a conclusion was ATTRIBUTED to a human; it cannot
+    # prove a VOTE stands behind it, because that is a cross-table fact. A
+    # conclusion nothing points at would print in an adopted document as though
+    # the Board voted it, and writes no `events` row, so the hash chain -- which
+    # detects tampering with the LOG, not divergence between log and state --
+    # still verifies. Cheap to check, and mainly a REGRESSION guard against a
+    # future code path that sets a conclusion outside apply_motion().
+    NAME_11 = "11. every findings conclusion traces to a carried motion"
+    try:
+        from engine import findings as _findings
+
+        with db_mod.connect(config_mod.DB_PATH) as _c:
+            _has_table = _c.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='findings_nodes';"
+            ).fetchone()
+            # No table means no case database has been created here yet, so
+            # there are no conclusions and trivially no orphans. Say that
+            # plainly rather than reporting a bare PASS that looks like the
+            # real query ran, or a SKIP that hides a dormant check.
+            orphans = _findings.find_orphan_conclusions(_c) if _has_table else []
+        if not _has_table:
+            report(NAME_11, "PASS", "no case database here yet -- nothing to check")
+        elif orphans:
+            detail = "; ".join(
+                f"{o['case_id']}/{o['number_label'] or o['id']}={o['conclusion']!r}"
+                for o in orphans[:5]
+            )
+            report(NAME_11, "FAIL", f"{len(orphans)} orphan conclusion(s): {detail}")
+        else:
+            report(NAME_11, "PASS")
+    except Exception as exc:  # noqa: BLE001
+        report(NAME_11, "SKIP", f"could not run: {exc}")
 
     print("selftest:", "ALL OK" if all_ok else "FAILURES ABOVE (see FAIL lines)")
     return 0 if all_ok else 1

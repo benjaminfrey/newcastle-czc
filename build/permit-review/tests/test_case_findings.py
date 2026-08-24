@@ -263,6 +263,114 @@ def test_signature_grid_lists_sitting_board_members_chair_first(conn):
     assert grid["members"][1] == {"name": "A. Member"}
 
 
+def test_signature_grid_prefers_recorded_attendance_over_every_sitting_member(conn):
+    # Mirrors the real Blood and Sons adopted final: 7 sitting seats, but
+    # only the 5 who actually attended sign -- render/case_findings.py must
+    # follow the roll call, not just list whoever currently holds a seat.
+    case = _make_case(conn)
+    conn.execute(
+        "INSERT INTO users (id, display_name, role, created_at) VALUES "
+        "('u_a', 'A. Member', 'board_member', '2026-08-20T00:00:00.000Z'), "
+        "('u_b', 'B. Chairperson', 'chair', '2026-08-20T00:00:00.000Z'), "
+        "('u_c', 'C. Absent', 'board_member', '2026-08-20T00:00:00.000Z');"
+    )
+    conn.execute(
+        "INSERT INTO board_members (id, user_id, is_chair, term_start, created_at) VALUES "
+        "('bm_a', 'u_a', 0, '2026-01-01', '2026-08-20T00:00:00.000Z'), "
+        "('bm_b', 'u_b', 1, '2026-01-01', '2026-08-20T00:00:00.000Z'), "
+        "('bm_c', 'u_c', 0, '2026-01-01', '2026-08-20T00:00:00.000Z');"
+    )
+    # Only A and B attended this case's meeting; C never got an attendance row.
+    conn.execute(
+        "INSERT INTO attendance (id, case_id, board_member_id, present, recorded_at, "
+        "created_at) VALUES "
+        "('att_a', ?, 'bm_a', 1, '2026-08-20T00:00:00.000Z', '2026-08-20T00:00:00.000Z'), "
+        "('att_b', ?, 'bm_b', 1, '2026-08-20T00:00:00.000Z', '2026-08-20T00:00:00.000Z');",
+        (case["id"], case["id"]),
+    )
+    nodes, _ = cf.build_case_findings_nodes(conn, case["id"])
+    grid = next(n for n in nodes if n["type"] == "signaturegrid")
+    names = [m["name"] for m in grid["members"]]
+    assert names == ["B. Chairperson", "A. Member"]
+    assert "C. Absent" not in names
+
+
+# --------------------------------------------------------------------------- #
+# Conflict of Interest Disclosures -- app/meeting.py's write side;
+# render/case_findings.py's `_conflict_disclosures_render_node()` here is
+# the read side. The zero-rows case is the decisive test (W7 task brief):
+# it must render as the real DRAFT samples do -- an honest TBD blank --
+# and NEVER as "no conflicts declared".
+# --------------------------------------------------------------------------- #
+
+
+def test_conflict_disclosures_zero_rows_renders_tbd_never_none_declared(conn):
+    case = _make_case(conn)
+    nodes, _ = cf.build_case_findings_nodes(conn, case["id"])
+    idx = next(i for i, n in enumerate(nodes) if n["type"] == "heading" and n["text"] == "Conflict of Interest Disclosures")
+    body = nodes[idx + 1]
+    assert body["type"] == "unresolved"
+    assert body["text"] == "TBD…"
+    # It must never, under any circumstance, read as an actual finding of
+    # "no conflicts" when no roll call has happened.
+    all_text = " ".join(n.get("text", "") for n in nodes)
+    assert "No Planning Board members identified" not in all_text
+    assert "no conflicts declared" not in all_text.lower()
+
+
+def test_conflict_disclosures_none_disclosed_renders_the_real_wording(conn):
+    case = _make_case(conn)
+    conn.execute(
+        "INSERT INTO users (id, display_name, role, created_at) VALUES "
+        "('u_a', 'A. Member', 'board_member', '2026-08-20T00:00:00.000Z');"
+    )
+    conn.execute(
+        "INSERT INTO board_members (id, user_id, term_start, created_at) VALUES "
+        "('bm_a', 'u_a', '2026-01-01', '2026-08-20T00:00:00.000Z');"
+    )
+    conn.execute(
+        "INSERT INTO conflict_disclosures (id, case_id, board_member_id, disclosed, recused, "
+        "created_at) VALUES ('cd_a', ?, 'bm_a', 0, 0, '2026-08-20T00:00:00.000Z');",
+        (case["id"],),
+    )
+    nodes, _ = cf.build_case_findings_nodes(conn, case["id"])
+    idx = next(i for i, n in enumerate(nodes) if n["type"] == "heading" and n["text"] == "Conflict of Interest Disclosures")
+    body = nodes[idx + 1]
+    assert body["type"] == "para"
+    assert body["text"] == (
+        "No Planning Board members identified any potential conflicts of "
+        "interest in taking up the submitted application for review."
+    )
+
+
+def test_conflict_disclosures_disclosed_narrates_the_recusal(conn):
+    case = _make_case(conn)
+    conn.execute(
+        "INSERT INTO users (id, display_name, role, created_at) VALUES "
+        "('u_a', 'A. Member', 'board_member', '2026-08-20T00:00:00.000Z');"
+    )
+    conn.execute(
+        "INSERT INTO board_members (id, user_id, term_start, created_at) VALUES "
+        "('bm_a', 'u_a', '2026-01-01', '2026-08-20T00:00:00.000Z');"
+    )
+    conn.execute(
+        "INSERT INTO conflict_disclosures (id, case_id, board_member_id, disclosed, recused, "
+        "nature, created_at) VALUES "
+        "('cd_a', ?, 'bm_a', 1, 1, 'abutting property owner', '2026-08-20T00:00:00.000Z');",
+        (case["id"],),
+    )
+    nodes, _ = cf.build_case_findings_nodes(conn, case["id"])
+    idx = next(i for i, n in enumerate(nodes) if n["type"] == "heading" and n["text"] == "Conflict of Interest Disclosures")
+    body = nodes[idx + 1]
+    assert body["type"] == "para"
+    # md_escape() escapes the period in "A. Member" (a DB-sourced string,
+    # correctly escaped before it reaches para() per this module's own
+    # docstring) -- assert on the un-escaped substrings either side of it.
+    assert "A" in body["text"] and "Member" in body["text"]
+    assert "abutting property owner" in body["text"]
+    assert "recused" in body["text"]
+
+
 # --------------------------------------------------------------------------- #
 # render_case_findings -- end to end, a real PDF
 # --------------------------------------------------------------------------- #

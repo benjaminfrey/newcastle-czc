@@ -11,6 +11,10 @@ for the W3 case-lifecycle endpoints:
 
     POST   /api/cases/{id}/findings/render
 
+...and the W7 "adopted final" endpoint (render/case_findings.py:render_adopted_final()):
+
+    POST   /api/cases/{id}/findings/adopt
+
 Pure HTTP translation layer -- every rule (the binding gate, the state
 machine, date-kind validation) lives in app/cases.py; this module opens a DB
 connection per request, calls into app.cases, and maps its typed exceptions
@@ -372,5 +376,176 @@ def list_findings_documents_endpoint(case_id: str):
                 d.pop("unresolved_json", None)
             docs.append(d)
         return ok({"documents": docs})
+    finally:
+        conn.close()
+
+
+# --------------------------------------------------------------------------- #
+# POST /api/cases/{id}/findings/adopt -- W7: "produce adopted final".
+#
+# Refuses (409) unless render.case_findings.verify_adopted() finds a REAL
+# carried adoption motion (verbatim wording) and a REAL recorded decision --
+# this endpoint never adopts anything itself, it only records what already
+# happened. On success: renders via render.case_findings.render_adopted_final()
+# (draft=False, provenance=False, no second renderer -- it reuses
+# build_case_findings_nodes()/render_nodes()/build-findings.sh exactly like
+# the draft route above), writes ONE generated_documents row (kind=
+# 'findings_final', carrying BOTH the PDF file's own sha256/byte_size AND
+# the separate content_sha256 + snapshot_rel_path 0018_adopted_final.sql
+# added) plus ONE events row, in the same transaction (CONTRACT.md §3.3) --
+# exactly the draft route's own
+# pattern above. THEN, in a second transaction, feeds the decision date into
+# the EXISTING clock engine (app.cases.record_dates -> a 'decision_issued'
+# case_milestones row -> engine.deadlines picks it up the next time anything
+# computes this case's deadlines, e.g. the case-detail page) so the §8.f.1
+# Clerk-filing clock and the §23.d.1 appeal window it starts become visible
+# without this route reimplementing any clock arithmetic itself. The
+# response's `downstream_clocks` block reports what engine.deadlines.
+# compute_deadlines() returns immediately after that write, for the caller
+# to see without a second round trip.
+# --------------------------------------------------------------------------- #
+
+
+def _deadline_view(d) -> dict[str, Any]:
+    return {
+        "clock_key": d.clock_key,
+        "label": d.label,
+        "citation": d.citation_short,
+        "status": d.status,
+        "start_event": d.start_event,
+        "start_date": d.start_date.isoformat() if d.start_date else None,
+        "due_date": d.due_date.isoformat() if d.due_date else None,
+        "satisfying_event": d.satisfying_event,
+        "satisfied_at": d.satisfied_at.isoformat() if d.satisfied_at else None,
+    }
+
+
+@router.post("/api/cases/{case_id}/findings/adopt")
+async def produce_adopted_final_endpoint(case_id: str):
+    if shutil.which("pandoc") is None or shutil.which("typst") is None:
+        missing = "pandoc" if shutil.which("pandoc") is None else "typst"
+        return err("render_unavailable", f"required tool not found on PATH: {missing}", 500)
+
+    user = current_user()
+    conn = _conn()
+    try:
+        case = cases_mod.get_case(conn, case_id)
+        if case is None:
+            return err("case_not_found", f"no case with id {case_id!r}", 404)
+
+        try:
+            result = case_findings_mod.render_adopted_final(conn, case_id, EXPORTS_DIR)
+        except case_findings_mod.CaseNotFound:
+            return err("case_not_found", f"no case with id {case_id!r}", 404)
+        except case_findings_mod.NotAdoptedError as exc:
+            return err("not_adopted", str(exc), 409)
+        except case_findings_mod.FindingsRenderError as exc:
+            return err("render_failed", str(exc), 500)
+
+        try:
+            pdf_rel = _rel_export_path(result.pdf_path)
+            snapshot_rel = _rel_export_path(result.snapshot_path)
+        except ValueError as exc:
+            return err("render_failed", str(exc), 500)
+
+        doc_id = uuid.uuid4().hex
+        now = _utc_now_iso()
+        conn.execute("BEGIN;")
+        try:
+            conn.execute(
+                """
+                INSERT INTO generated_documents (
+                    id, case_id, case_review_id, ruleset_id, kind, rel_path, sha256,
+                    byte_size, template, renderer, unresolved_json, content_sha256,
+                    snapshot_rel_path, generated_at, created_at, actor_user_id
+                ) VALUES (?, ?, NULL, ?, 'findings_final', ?, ?, ?, ?, 'pandoc->typst', ?, ?, ?, ?, ?, ?);
+                """,
+                (
+                    doc_id, case_id, case["ruleset_id"], pdf_rel, result.pdf_sha256,
+                    result.pdf_byte_size, "style/findings-template.typ",
+                    json.dumps(result.unresolved_inventory), result.content_sha256,
+                    snapshot_rel, now, now, user.id,
+                ),
+            )
+            append_event(
+                conn,
+                actor_user_id=user.id,
+                kind="findings.adopted",
+                payload={
+                    "case_id": case_id, "generated_document_id": doc_id,
+                    "rel_path": pdf_rel, "pdf_sha256": result.pdf_sha256,
+                    "content_sha256": result.content_sha256,
+                    "snapshot_rel_path": snapshot_rel,
+                    "byte_size": result.pdf_byte_size,
+                    "adoption_motion_id": result.adoption_motion_id,
+                    "decision_id": result.decision_id,
+                },
+                case_id=case_id,
+                entity_table="generated_documents",
+                entity_id=doc_id,
+            )
+            conn.execute("COMMIT;")
+        except Exception as exc:  # noqa: BLE001 -- roll back, then re-raise unchanged
+            if conn.in_transaction:
+                conn.execute("ROLLBACK;")
+            raise exc
+
+        # Second, separate transaction (app.cases.record_dates manages its
+        # own BEGIN/COMMIT) -- feeds the recorded decision into the existing
+        # deadline engine. Skipped if a live 'decision_issued' milestone for
+        # this exact date is already recorded, so re-running this endpoint
+        # (e.g. after an operator re-triggers it) never piles up duplicate
+        # milestone rows for the same real-world fact.
+        decision_row = conn.execute(
+            "SELECT decided_at FROM decisions WHERE id = ?;", (result.decision_id,)
+        ).fetchone()
+        decided_on = (decision_row["decided_at"] or "")[:10] if decision_row else None
+        milestones_recorded: list[str] = []
+        if decided_on:
+            already = conn.execute(
+                """
+                SELECT 1 FROM case_milestones
+                WHERE case_id = ? AND kind = 'decision_issued' AND superseded_by IS NULL
+                  AND substr(occurred_on, 1, 10) = ?;
+                """,
+                (case_id, decided_on),
+            ).fetchone()
+            if already is None:
+                cases_mod.record_dates(
+                    conn, case_id,
+                    entries=[{
+                        "kind": "decision_issued", "occurred_on": decided_on,
+                        "note": f"Adopted final produced; decision {result.decision_id} recorded.",
+                    }],
+                    why="Board adopted the findings of fact and decided the application "
+                        f"(decisions.id={result.decision_id}); recording the decision date "
+                        "starts the §8.f.1 Clerk-filing clock.",
+                    actor_user_id=user.id,
+                )
+                milestones_recorded.append("decision_issued")
+
+        try:
+            clocks = case_findings_mod.downstream_clocks(conn, case_id)
+            downstream = [_deadline_view(d) for d in clocks]
+            downstream_error = None
+        except Exception as exc:  # noqa: BLE001 -- reporting-only; the adopted final is already saved
+            downstream = []
+            downstream_error = str(exc)
+
+        return ok({
+            "id": doc_id,
+            "path": pdf_rel,
+            "bytes": result.pdf_byte_size,
+            "pdf_sha256": result.pdf_sha256,
+            "content_sha256": result.content_sha256,
+            "snapshot_path": snapshot_rel,
+            "unresolved": result.unresolved_inventory,
+            "adoption_motion_id": result.adoption_motion_id,
+            "decision_id": result.decision_id,
+            "generated_at": now,
+            "milestones_recorded": milestones_recorded,
+            "downstream_clocks": downstream,
+            "downstream_clocks_error": downstream_error,
+        })
     finally:
         conn.close()

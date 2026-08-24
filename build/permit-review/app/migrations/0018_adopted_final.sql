@@ -1,0 +1,74 @@
+-- =============================================================================
+-- Newcastle Permit Review — 0018_adopted_final.sql
+--
+-- W7 task: "the adopted final + downstream clocks". `generated_documents`
+-- already accepts kind='findings_final' (0001_init.sql's own CHECK), and
+-- render/case_findings.py's render_case_findings() already supports
+-- draft=False/provenance=False -- this migration adds exactly the two
+-- columns the new render_adopted_final() (same file) needs that no
+-- existing column covers. Both purely additive (plain ALTER TABLE ADD
+-- COLUMN, same recipe 0009_document_formgen.sql already used -- no CHECK
+-- references another column, so no rebuild-under-temp-name dance is
+-- needed):
+--
+--   content_sha256    -- sha256 of the rendered markdown TEXT (the
+--                        deterministic content this app actually controls),
+--                        NOT of the PDF file's bytes. Proven empirically
+--                        before this migration was written: rendering the
+--                        SAME findings tree + SAME votes twice in a row
+--                        produces byte-IDENTICAL markdown but two
+--                        DIFFERENT PDF files -- `pdfinfo` on both showed
+--                        CreationDate/ModDate a few seconds apart, because
+--                        Typst stamps the wall clock into PDF metadata on
+--                        every run, upstream of anything this app writes.
+--                        `sha256` (existing column) keeps meaning "sha256
+--                        of the actual PDF bytes on disk" for every
+--                        `generated_documents` row, findings_final included
+--                        -- still useful for detecting whether a specific
+--                        FILE was tampered with -- but it is NOT the column
+--                        that answers "did this adopted text change",
+--                        because it always changes, even when nothing did.
+--                        `content_sha256` is that column: reproducible by
+--                        construction, and it is what a caller compares to
+--                        prove "same tree + same votes -> same content".
+--                        Nullable -- only findings_final rows populate it;
+--                        a findings_draft row (unchanged by this migration)
+--                        leaves it NULL.
+--
+--   snapshot_rel_path -- path (relative to APP, same convention as
+--                        rel_path) to the JSON node-tree snapshot
+--                        render_adopted_final() also writes to
+--                        `data/exports/` -- the exact findings_nodes tree,
+--                        motions, conditions, decision and signing board
+--                        membership USED for this render, captured as data
+--                        so the adopted text stays recoverable byte-for-
+--                        byte even after the LIVE `findings_nodes` tree
+--                        moves on (a later, unrelated amendment on some
+--                        OTHER case's node sharing a rule_id, a future
+--                        board_members roster change, ...). A sibling
+--                        `<base>.md` (the persisted markdown `content_sha256`
+--                        hashes) is written alongside the PDF at the same
+--                        base filename -- no separate column needed for it,
+--                        since its path is always `rel_path` with `.pdf`
+--                        replaced by `.md`. Nullable for the same reason as
+--                        content_sha256 -- only findings_final rows carry
+--                        one.
+--
+-- (A design alternative -- an inline `snapshot_json` column instead of a
+-- separate file -- was considered and rejected: `data/exports/` is already
+-- CONTRACT.md's one designated artifact directory, findings_draft's own
+-- persisted PDF lives there as a real file rather than a DB blob, and a
+-- full node-tree snapshot for a real multi-standard subdivision case is
+-- large enough that keeping it as a file, addressed by path like every
+-- other artifact this app produces, is the more consistent shape.)
+--
+-- Zero rows exist in `generated_documents` in every checkout to date, so
+-- this is a schema-only change: nothing is migrated, nothing can be lost.
+-- =============================================================================
+
+ALTER TABLE generated_documents ADD COLUMN content_sha256 TEXT;
+ALTER TABLE generated_documents ADD COLUMN snapshot_rel_path TEXT;
+
+-- =============================================================================
+-- END 0018_adopted_final.sql
+-- =============================================================================

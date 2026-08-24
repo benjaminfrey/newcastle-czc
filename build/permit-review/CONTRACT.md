@@ -231,12 +231,18 @@ draft_due(meeting_date)   = meeting_date - 7 days
 the computed result plus the `rule_key` that produced it, so a stored value can always be re-derived
 and checked.
 
-### 3.5 The v1 table list (23 tables + `schema_migrations`)
+### 3.5 The v1 table list (24 tables + `schema_migrations`)
 
 `users`, `board_members`, `rulesets`, `cases`, `case_reviews`, `blobs`, `documents`, `pages`,
 `field_defs`, `field_candidates`, `field_values`, `rules`, `criteria_sets`, `criteria_set_rules`,
-`findings_nodes`, `conditions`, `motions`, `decisions`, `conflict_disclosures`, `deadlines`,
-`events`, `generated_documents`, `jobs`.
+`findings_nodes`, `conditions`, `motions`, `decisions`, `conflict_disclosures`, `attendance`,
+`deadlines`, `events`, `generated_documents`, `jobs`.
+
+`attendance` (0017_meeting_attendance.sql, W7's "meeting model") is the one addition past the
+original 23: one row per (case, board_member) roll call, `present` 0/1. Absence of a row is not a
+finding either way -- same posture as `conflict_disclosures`. `motions`, `decisions`, and
+`conflict_disclosures` themselves needed no schema change; 0001_init.sql already specified all
+three in full, they simply had zero readers or writers anywhere in the codebase before app/meeting.py.
 
 **No referral table.** Referral tracking (Road Commissioner / Fire Chief / Life Safety / GSBSWD) is
 explicitly **out of v1**. Do not add it.

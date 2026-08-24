@@ -1,0 +1,70 @@
+-- =============================================================================
+-- Newcastle Permit Review — 0016_motion_disposition_discussion.sql
+--
+-- W7 task: the meeting UI. Reconciliation note: 0015_motion_conclusion.sql
+-- (a concurrently-built sibling session's own W7 migration, discovered
+-- mid-build in this same directory -- the same shape of parallel
+-- construction BUILD-STATE.md's W5 section, and 0013_findings_tree.sql's
+-- own header, both already document once each) rebuilt `motions` to add the
+-- findings_node_id/proposed_conclusion/applied_node_id/applied_at columns
+-- the Conclusion-of-Law path needs. It did not need, and did not add, two
+-- more fields the OTHER two motion kinds in the real 7-step sequence need:
+--
+--   discussion   -- the free-text "Discussion:" line every motion in the
+--                    real adopted Shattuck decision carries (p.13-15:
+--                    "Discussion: none" on most motions, real substantive
+--                    text on a few -- e.g. "The Planner reviewed the two
+--                    proposed conditions of approval..."). NULL renders as
+--                    "none", matching that house style.
+--                    render/findings_to_md.py's `motionblock()` node type
+--                    has carried a `discussion` field since the W6 build
+--                    with no caller ever populating it, and
+--                    style/findings-template.typ's `#motionblock` already
+--                    prints it -- this column is the missing write side of
+--                    an already-built render feature, not a new one.
+--
+--   disposition  -- ONLY meaningful for `kind = 'decision'` motions: which
+--                    of the five real outcomes (approve / approve with
+--                    conditions / deny / table / withdraw -- the real
+--                    Shattuck "Board Decision" motion: "To approve, with
+--                    conditions, the subdivision application as discussed
+--                    and amended.") THIS motion proposes. Recorded at
+--                    motion-creation time (engine/meeting.py:
+--                    create_decision_motion()), not inferred later from
+--                    free-text -- the same "no silent guessing" posture
+--                    0015_motion_conclusion.sql's own header already states
+--                    for `proposed_conclusion`. engine/meeting.py:
+--                    record_vote() only ever writes a `decisions` row when
+--                    a `kind='decision'` motion with a `disposition` set
+--                    actually CARRIES; a motion that fails records nothing
+--                    (the parallel case: if the Board votes down "to
+--                    approve", nothing is decided yet -- a different motion
+--                    follows).
+--
+-- Both are plain nullable columns with, at most, a CHECK on the column
+-- itself (never another column), so -- like 0015_adopted_final.sql's own
+-- two additions -- a simple ALTER TABLE ADD COLUMN is enough; no rebuild.
+-- `motions` still carries zero rows in every checkout to date, so this is
+-- schema-only: nothing is migrated, nothing can be lost.
+-- =============================================================================
+
+ALTER TABLE motions ADD COLUMN discussion TEXT;
+
+ALTER TABLE motions ADD COLUMN disposition TEXT
+    CHECK (disposition IS NULL OR disposition IN ('approve', 'approve_with_conditions', 'deny', 'table', 'withdraw'));
+
+-- A disposition only ever means something on a decision motion -- the same
+-- rule 0015_motion_conclusion.sql states for `findings_node_id` (there,
+-- "IS NULL OR kind = 'findings'"). That migration enforced its version as a
+-- DB CHECK because it was ALREADY doing a full table rebuild for other
+-- reasons (a new FK + a cross-column CHECK on `applied_node_id`); this
+-- migration is a plain ADD COLUMN specifically so it does NOT need one, so
+-- "disposition implies kind='decision'" is enforced in Python instead
+-- (engine/meeting.py:create_decision_motion() is the only caller that ever
+-- sets `disposition`, and it hard-codes kind='decision') -- the same
+-- "DB CHECK for the narrowest, highest-value invariants; Python for the
+-- rest" split 0013_findings_tree.sql's own header comment already explains
+-- for this exact tradeoff (its dropped cross-column provenance CHECK).
+-- =============================================================================
+-- END 0016_motion_disposition_discussion.sql
+-- =============================================================================

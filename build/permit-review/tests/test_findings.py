@@ -448,15 +448,61 @@ def test_amend_node_on_a_superseded_revision_raises(conn, case_id):
         conn, case_id=case_id, node_type="section", heading="II. Findings of Fact",
         actor_user_id=ACTOR,
     )
-    rev2 = findings.amend_node(conn, node_id=rev1["id"], actor_user_id=ACTOR, heading="II. Findings of Fact (Amended)")
+    rev2 = findings.amend_node(
+        conn, node_id=rev1["id"], actor_user_id=ACTOR,
+        reason="renaming the section heading", heading="II. Findings of Fact (Amended)",
+    )
     with pytest.raises(findings.NotCurrentRevision) as exc:
-        findings.amend_node(conn, node_id=rev1["id"], actor_user_id=ACTOR, heading="stale amendment attempt")
+        findings.amend_node(
+            conn, node_id=rev1["id"], actor_user_id=ACTOR,
+            reason="stale amendment attempt", heading="stale amendment attempt",
+        )
     assert exc.value.current_id == rev2["id"]
 
 
 def test_amend_node_unknown_id_raises_node_not_found(conn, case_id):
     with pytest.raises(findings.NodeNotFound):
-        findings.amend_node(conn, node_id="does-not-exist", actor_user_id=ACTOR, heading="x")
+        findings.amend_node(conn, node_id="does-not-exist", actor_user_id=ACTOR, reason="probe", heading="x")
+
+
+# --------------------------------------------------------------------------- #
+# W7: amend_node()'s `reason` is REQUIRED and MUST be non-empty -- a blank
+# why is REJECTED, never defaulted. (Deliberate semantic change from W6,
+# where `reason` was optional; every pre-existing amend_node() call site in
+# this file above was updated to pass a real reason as part of this same
+# change -- see engine/findings.py's module docstring, "THE AMENDMENT
+# MODEL".)
+# --------------------------------------------------------------------------- #
+
+
+def test_amend_node_requires_a_non_empty_reason(conn, case_id):
+    rev1 = findings.create_node(
+        conn, case_id=case_id, node_type="section", heading="II. Findings of Fact",
+        actor_user_id=ACTOR,
+    )
+    # Baseline AFTER create_node(), not a hardcoded literal -- the `case_id`
+    # fixture itself already wrote a 'case.created' events row before this
+    # test's own create_node() call, so the true baseline is whatever it is
+    # at this point, not "1".
+    count_before = conn.execute("SELECT COUNT(*) c FROM findings_nodes;").fetchone()["c"]
+    events_before = conn.execute("SELECT COUNT(*) c FROM events;").fetchone()["c"]
+
+    for bad_reason in (None, "", "   ", "\t\n"):
+        with pytest.raises(findings.ValidationError) as exc:
+            findings.amend_node(
+                conn, node_id=rev1["id"], actor_user_id=ACTOR,
+                reason=bad_reason, heading="attempted amendment with no why",
+            )
+        assert any(d["field"] == "reason" for d in exc.value.details)
+
+    # None of the rejected attempts superseded the node or wrote anything.
+    still_current = findings.get_node(conn, rev1["id"])
+    assert still_current["superseded_by"] is None
+    assert still_current["heading"] == "II. Findings of Fact"
+    count_after = conn.execute("SELECT COUNT(*) c FROM findings_nodes;").fetchone()["c"]
+    events_after = conn.execute("SELECT COUNT(*) c FROM events;").fetchone()["c"]
+    assert count_after == count_before
+    assert events_after == events_before  # no amendment event for any rejected attempt
 
 
 def test_amend_node_failed_validation_writes_nothing_and_does_not_supersede(conn, case_id):
@@ -471,6 +517,7 @@ def test_amend_node_failed_validation_writes_nothing_and_does_not_supersede(conn
     with pytest.raises(findings.ValidationError):
         findings.amend_node(
             conn, node_id=rev1["id"], actor_user_id=ACTOR,
+            reason="probing an invalid applicability_verdict",
             applicability_verdict="not-a-real-value",
         )
 
@@ -491,7 +538,7 @@ def test_amend_node_failed_validation_writes_nothing_and_does_not_supersede(conn
 
 def test_supersede_once_trigger_survives_the_0013_rebuild(conn, case_id):
     rev1 = findings.create_node(conn, case_id=case_id, node_type="note", body=None, actor_user_id=ACTOR)
-    rev2 = findings.amend_node(conn, node_id=rev1["id"], actor_user_id=ACTOR, heading="renamed")
+    rev2 = findings.amend_node(conn, node_id=rev1["id"], actor_user_id=ACTOR, reason="renaming", heading="renamed")
     rev3 = findings.create_node(conn, case_id=case_id, node_type="note", body=None, actor_user_id=ACTOR)
     with pytest.raises(sqlite3.IntegrityError):
         conn.execute("BEGIN;")
@@ -502,3 +549,38 @@ def test_supersede_once_trigger_survives_the_0013_rebuild(conn, case_id):
     conn.execute("ROLLBACK;")
     # rev1 still points at its real successor, unchanged by the failed attempt.
     assert findings.get_node(conn, rev1["id"])["superseded_by"] == rev2["id"]
+
+
+# --------------------------------------------------------------------------- #
+# THE ONLY WRITER OF findings_nodes.conclusion -- mechanical proof, not just
+# convention. engine/findings.py's own "THE ONLY WRITER" section names this
+# exact test by path before engine/meeting.py (W7) existed to exercise it;
+# see tests/test_meeting_apply.py for the functional (does it actually work)
+# proof this one complements -- this one proves NOTHING ELSE in the
+# application can even attempt the write.
+# --------------------------------------------------------------------------- #
+
+
+def test_conclusion_has_exactly_one_writer_in_the_whole_tree():
+    import re
+    from pathlib import Path
+
+    app_root = Path(__file__).resolve().parent.parent
+    pattern = re.compile(r"SET\s+conclusion\b", re.IGNORECASE)
+    offenders: list[str] = []
+
+    for base in (app_root / "engine", app_root / "app"):
+        for py_file in base.rglob("*.py"):
+            if "__pycache__" in py_file.parts:
+                continue
+            if py_file == app_root / "engine" / "findings.py":
+                continue  # the one writer itself
+            text = py_file.read_text(encoding="utf-8")
+            if pattern.search(text):
+                offenders.append(str(py_file.relative_to(app_root)))
+
+    assert offenders == [], (
+        f"found a second writer of findings_nodes.conclusion outside engine/findings.py: "
+        f"{offenders} -- only engine.findings._write_conclusion() (called exclusively by "
+        f"engine.meeting.apply_motion()) may ever set this column"
+    )

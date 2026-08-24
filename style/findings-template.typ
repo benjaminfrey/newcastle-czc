@@ -249,9 +249,20 @@
 // #signaturegrid — a two-column grid of signature lines. `members` is an
 // array of either plain strings (a name) or dictionaries with `name` and,
 // optionally, `title` (e.g. "Chair"). Signature and date are both blank.
+//
+// The certification line above the grid is copied VERBATIM from every
+// sample in docs/Findings of Fact and Conclusions of Law/*.pdf, draft and
+// adopted alike (`pdftotext -layout`, checked against Uberoi/Profenno/Z38
+// DRAFTs and the Shattuck ADOPTED FINAL, 2026-08-23) -- INCLUDING the
+// "Conditions of Law" wording where "Conclusions" is plainly meant
+// (permit-review DECISIONS-NEEDED.md D-0028: the Town's settled house
+// wording, error or not; correcting it is the Board's call, not this
+// template's).
 #let signaturegrid(members) = block(width: 100%, above: 16pt, breakable: false)[
   #set text(size: 10pt, fill: body_dark)
   #set par(justify: false)
+  We, the undersigned, certify the above Findings of Fact and Conditions of Law.
+  #v(14pt)
   #grid(columns: (1fr, 1fr), row-gutter: 22pt, column-gutter: 26pt,
     ..members.map(m => {
       let name  = if type(m) == dictionary { m.at("name", default: "") } else { m }

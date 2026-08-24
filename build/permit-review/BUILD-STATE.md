@@ -8,7 +8,7 @@ Read this first, then `CONTRACT.md` (the authority on how the app must behave), 
 
 ## Where we are
 
-**W1–W6 complete. W7 (the meeting workflow) is next.**
+**W1–W7 complete. W8 (the eval harness) is next.**
 
 | Unit | Scope | Status |
 |---|---|---|
@@ -19,14 +19,14 @@ Read this first, then `CONTRACT.md` (the authority on how the app must behave), 
 | **W4** | Ingest Tier A/B, form-generation detection, confirm UI, absence worklist | ✅ complete |
 | **W5** | LLM behind the interface: `llm/` package (4 providers), redaction, output guards, few-shot index, vision path | ✅ **complete 2026-08-21** — D-0025 now RESOLVED (approved); still not exercised against a real key, because none is set in this environment |
 | **W6** | Subdivision criteria set, review engine, findings tree, draft PDF | ✅ **complete 2026-08-22** — the engine never concludes; verified directly, not via test names |
-| **W7** | Meeting workflow, amendments, adopted final | not started -- next |
-| **W8** | Eval harness + held-out run (Dalton, Stantec) | not started (`eval/` is empty; `llm/fewshot.py` + `build_fewshot.py` are ready for it to build on) |
+| **W7** | Meeting workflow, amendments, adopted final | ✅ **complete 2026-08-24** — only a carried motion can conclude; verified by attacking it |
+| **W8** | Eval harness + held-out run (Dalton, Stantec) | not started -- next (`eval/` is empty; `llm/fewshot.py` + `build_fewshot.py` are ready for it to build on) |
 
 Plan-phase mapping: W1 ≈ plan Phases 0–1, W2 ≈ Phase 2, W3 ≈ Phase 3, W4 ≈ Phase 4,
 W5 ≈ Phase 5, W6 ≈ Phase 6, W7 ≈ Phase 7, W8 ≈ Phase 8. Phase 9 (Shoreland) is deferred
 pending Ben supplying the ordinance.
 
-**Size:** ~42,300 lines of Python, 43 test files, **903 tests**, 14 uniquely-numbered migrations,
+**Size:** ~47,800 lines of Python, 50 test files, **1001 tests**, 18 uniquely-numbered migrations,
 2 built rulesets.
 
 **W5, done 2026-08-21 (D-0025 is RESOLVED — approved; see DECISIONS-NEEDED.md for the verbatim
@@ -121,6 +121,42 @@ on the way, both recorded in the files themselves: `#set par(hanging-indent:)` *
 nothing** inside a Typst block body (use `#par(hanging-indent:)[...]`), and a `#box` reports as a
 separate "line" to PyMuPDF at the SAME `y` — read both coordinates before concluding a line broke.
 
+**W7, done 2026-08-24 — the meeting workflow. The invariant INVERTS here, and holds.**
+Through W6 the app never concludes and structurally cannot: `0013_findings_tree.sql` enforces
+`CHECK (conclusion IS NULL OR (conclusion_by IS NOT NULL AND conclusion_at IS NOT NULL))`, and the
+engine has no human to attribute a conclusion to, so it writes NULL. W7 is how a conclusion
+*legitimately* gets set — by a named human, through a recorded motion, with a vote behind it. The
+app still never decides; it RECORDS what the Board decided.
+
+What is built: `app/meeting.py` (conflict disclosures, completeness, attendance, outcome — note
+`app/meetings.py` is the unrelated, pre-existing meeting-SCHEDULE helper; confusing pair of names,
+no conflict), `engine/meeting.py`, `app/routes/meeting.py` + `app/templates/meeting.html` +
+`app/static/meeting.js` for the keyboard-first `/case/{id}/meeting`, and migrations
+`0015_motion_conclusion` · `0016_motion_disposition_discussion` · `0017_meeting_attendance` ·
+`0018_adopted_final`. The adopted final renders from the POST-amendment tree with votes filled,
+provenance off and no DRAFT stamp, storing md + pdf + a JSON node-tree snapshot; `content_sha256`
+hashes the rendered MARKDOWN, not the PDF, so reproducibility does not break on an embedded
+timestamp. Amendments insert a revision and require a non-empty `why`. The decision feeds the
+existing W3 engine, emitting Clerk filing (5 business days) and then the §23 appeal window.
+Reproduced, not fixed, per the ledger: the "Conditions of Law" certification typo (D-0028); and no
+appeal-rights paragraph was invented (D-0026).
+
+**Verified by attacking it, 2026-08-24.** Four forgery attempts against `findings_nodes.conclusion`.
+Three were blocked by the CHECK (unattributed, missing time, missing person). **The fourth
+succeeded**: a FULLY ATTRIBUTED conclusion with NO motion behind it. It wrote no `events` row — so
+the hash chain, which detects tampering with the LOG rather than divergence between log and state,
+still verified — and no check in the app looked for it. It would have printed in an adopted document
+as though the Board had voted it. **Fixed the same day:** `engine/findings.find_orphan_conclusions()`
+/ `assert_no_orphan_conclusions()`, wired into `verify_adopted()` (so it cannot reach an adopted
+document) and into `--selftest` as check 11, with `tests/test_orphan_conclusion.py` covering both
+directions. The `motions` side was already tight — `applied_node_id` is write-once and settable only
+on a carried motion — so this was purely the missing REVERSE direction. Its real value is as a
+regression guard against a future code path that concludes outside `apply_motion()`, which is far
+likelier than tampering.
+
+Also confirmed directly: zero conflict disclosures render as a blank/TBD and never as "no conflicts"
+(absence of a record is not a finding of none), and zero board members invents no attendee.
+
 ---
 
 ## Verify the build is healthy
@@ -135,7 +171,7 @@ cd "build/permit-review" && .venv/bin/python -m pytest -q
 cd "build/permit-review" && .venv/bin/python run.py --selftest
 ```
 
-Expected right now: **903 passed**, and `selftest: ALL OK` with **10 of 10 PASS** (no SKIPs —
+Expected right now: **1001 passed**, and `selftest: ALL OK` with **11 of 11 PASS** (no SKIPs —
 four checks were skipped until D-0001/D-0002 were resolved on 2026-08-21). Both hold with **no
 `ANTHROPIC_API_KEY`/`ANTHROPIC_AUTH_TOKEN` in the environment and no network available** —
 verified 2026-08-22, including with `PERMIT_REVIEW_LLM_PROVIDER=anthropic` forced and still no key
@@ -288,10 +324,11 @@ tests specifically assert the package is not installed in this environment.
 
 ## Resuming the orchestrator
 
-The next unit is **W7** (the meeting workflow: conflict disclosures → completeness → a motion per
-contested node → amendments that insert revisions with a required `why` → conditions vote →
-"to accept and adopt the draft findings of fact and conclusions of law, **as amended**" → outcome,
-then "produce adopted final" from the post-amendment tree with votes filled and provenance off).
+The next unit is **W8** (the eval harness: structural recall, fact fidelity, `silent_error_rate`
+— target 0, any nonzero is stop-ship — and over-conclusion rate, reported SEPARATELY and never
+averaged; then the held-out run on Dalton and Stantec, which `llm/fewshot.py` already refuses to
+read). Structural recall needs no model and can be measured today; the fidelity metrics need a key.
+
 Nothing blocks starting it.
 
 The orchestration pattern that worked for W1–W6: parallel scoped builds → integrate → **adversarial

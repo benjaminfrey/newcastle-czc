@@ -49,6 +49,7 @@ EXPECTED_TABLES = {
     "motions",
     "decisions",
     "conflict_disclosures",
+    "attendance",
     "deadlines",
     "events",
     "generated_documents",
@@ -72,7 +73,8 @@ def test_connect_sets_and_asserts_pragmas(db_path: Path) -> None:
         conn.close()
 
 
-def test_migrate_creates_all_23_tables_plus_bookkeeping(db_path: Path) -> None:
+def test_migrate_creates_all_24_tables_plus_bookkeeping(db_path: Path) -> None:
+    # 23 + `attendance` (0017_meeting_attendance.sql, W7's "meeting model").
     conn = db.connect(db_path)
     try:
         applied = db.migrate(conn, MIGRATIONS_DIR)
