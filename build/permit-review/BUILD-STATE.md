@@ -8,7 +8,7 @@ Read this first, then `CONTRACT.md` (the authority on how the app must behave), 
 
 ## Where we are
 
-**W1–W4 complete. W5 is next and is gated on one human decision (D-0025).**
+**W1–W6 complete. W7 (the meeting workflow) is next.**
 
 | Unit | Scope | Status |
 |---|---|---|
@@ -17,16 +17,109 @@ Read this first, then `CONTRACT.md` (the authority on how the app must behave), 
 | **W2b** | Structural hardening after a false-positive gate (see *Lessons*) | ✅ complete |
 | **W3 → W3d** | Statutory deadline engine, 22 clocks, §8.d.1 auto-approval risk | ✅ **closed** after 4 adversarial rounds |
 | **W4** | Ingest Tier A/B, form-generation detection, confirm UI, absence worklist | ✅ complete |
-| **W5** | LLM behind the interface: vision reads + redaction | ⛔ **next — gated on D-0025** |
-| **W6** | Subdivision criteria set, review engine, findings tree, draft PDF | not started |
-| **W7** | Meeting workflow, amendments, adopted final | not started |
-| **W8** | Eval harness + held-out run (Dalton, Stantec) | not started (`eval/` is empty) |
+| **W5** | LLM behind the interface: `llm/` package (4 providers), redaction, output guards, few-shot index, vision path | ✅ **complete 2026-08-21** — D-0025 now RESOLVED (approved); still not exercised against a real key, because none is set in this environment |
+| **W6** | Subdivision criteria set, review engine, findings tree, draft PDF | ✅ **complete 2026-08-22** — the engine never concludes; verified directly, not via test names |
+| **W7** | Meeting workflow, amendments, adopted final | not started -- next |
+| **W8** | Eval harness + held-out run (Dalton, Stantec) | not started (`eval/` is empty; `llm/fewshot.py` + `build_fewshot.py` are ready for it to build on) |
 
 Plan-phase mapping: W1 ≈ plan Phases 0–1, W2 ≈ Phase 2, W3 ≈ Phase 3, W4 ≈ Phase 4,
 W5 ≈ Phase 5, W6 ≈ Phase 6, W7 ≈ Phase 7, W8 ≈ Phase 8. Phase 9 (Shoreland) is deferred
 pending Ben supplying the ordinance.
 
-**Size:** ~31,000 lines of Python, 27 test files, **592 tests**, 12 migrations, 2 built rulesets.
+**Size:** ~42,300 lines of Python, 43 test files, **903 tests**, 14 uniquely-numbered migrations,
+2 built rulesets.
+
+**W5, done 2026-08-21 (D-0025 is RESOLVED — approved; see DECISIONS-NEEDED.md for the verbatim
+decision and the provenance story. Nothing here has yet been exercised against a real key, because
+no ANTHROPIC_API_KEY is set in this environment):**
+`llm/protocol.py`'s one `LLMClient` Protocol (`complete()`, text and vision share one request
+shape) is satisfied by four providers behind `llm/factory.py:get_client()` -- `null` (THE DEFAULT;
+deterministic, offline, zero-cost), `anthropic` (the real provider; key read from the environment at
+call time only, never stored; correctness proven by construction against a fake transport, since no
+key or network exists here), `recorded` (cassette replay, `llm/cassette.py`'s v1 format, seeded with
+fixtures explicitly labelled `synthetic: true`), and `local` (a documented `NotImplementedError`
+stub seam for D-0025 option (c)). `llm/redact.py` is known-token substitution (never numbers/
+dates/districts, by construction -- `KnownTokens` has no field for any of them) with round-trip
+`restore()`. `llm/guards.py` has the three output guards (citation stripping, numeral grounding,
+conclusion-verb downgrade), each tested in both directions. `llm/events.py` writes one hash-chained
+`events` row per call, success or failure, never logging the prompt text or the key. `llm/fewshot.py`
++ `build_fewshot.py` index the 6 real matched application/decision pairs by `(review_type, rule_id)`
+(rule_id resolved via the already-verified `ruleset_build.verify_citations` extraction -- 90 buckets,
+188 examples), with Dalton/Stantec (W8's holdout set) refused in code before any file I/O, proven by
+a monkeypatch test. `ingest/vision.py` is the Tier C/D page → `field_candidates` path (render at 200
+dpi → one `LLMRequest` per page → parse the model's JSON into `FieldCandidate` rows, always
+`needs_confirmation=True`, `method="vision"`); a malformed model response yields zero candidates,
+never a guessed one. Full detail: CONTRACT.md §9. **149 new tests, all offline; `--selftest` and
+`--verify-citations` both still pass clean (10/10, 157/157).** **Not yet done:** wiring any of this
+into the ingest pipeline or a real case end-to-end (Shattuck's 18/18 scanned pages, the case that
+motivated building W5 before W6, has not yet been run through it) -- that lands naturally as part of
+W6, or as a focused follow-up first if Ben wants to see it work on a real case before W6 starts.
+
+**2026-08-22 reconciliation pass (four concurrent W5 builds → one coherent state):** W5 had been
+built by several overlapping sessions writing to the same `llm/` directory at once (see each
+session's own summary for the blow-by-blow). This pass: (1) confirmed the four builds' output was
+already coherent -- no duplicate classes/functions, no orphan files (`llm/errors.py`,
+`llm/models.py`, `llm/providers/` were already cleaned up by the sessions themselves); (2) found and
+fixed a real migration-number collision -- `0008_case_form_generation.sql` and
+`0008_field_defs_worklist.sql` had landed with the same number from parallel W4 work (harmless at
+runtime, since `app/db.py:migrate()` sorts by full filename, but a latent hazard BUILD-STATE.md had
+already flagged as worth fixing "before W6 writes anything durable" -- see the renumbered file's own
+history note); renumbered the second file to `0012`, updated its two cross-references, and rebuilt
+the local scratch DB (gitignored, zero real case rows) under the new numbering; (3) built
+`llm/audited.py:AuditedClient`, an `LLMClient`-conformant wrapper that makes the `events` audit row
+STRUCTURAL rather than a per-call-site convention -- `ingest/vision.py:run_vision_extraction()` (the
+one real provider call site today) now requires a `conn` argument and routes every call through it,
+success or failure alike; 12 new tests (`tests/test_audited.py` + 4 more in `tests/test_vision.py`)
+prove one `events` row per call in both directions and that the wrapper never mutates the request
+forwarded to the inner provider (which would break `llm/recorded.py`'s cassette-key matching);
+(4) confirmed `null` is already THE DEFAULT everywhere (`llm/factory.py`'s only fallback, no other
+call site constructs a provider directly) and that `--selftest` cannot be affected by
+`PERMIT_REVIEW_LLM_PROVIDER` either way, since it doesn't touch `llm/` yet; (5) **found and reverted
+a fabricated D-0025 resolution** -- see DECISIONS-NEEDED.md's 2026-08-22 correction and the note
+above; nothing built was undone, only the false claim that the underlying policy question had been
+decided. **750 tests, `--selftest` 10/10, `--verify-citations` 157/157, all confirmed offline with
+no key in the environment.** Nothing in `build/permit-review/` was committed, per standing rules.
+
+**W6, done 2026-08-22 — the review engine. THE INVARIANT: the engine never concludes.**
+A shortfall is always a Board flag, never a verdict. That is the product, not a style preference.
+The proof case is real: in the Buehner decision (`docs/`) a 180 ft setback was proposed against a
+250 ft standard, and the Board quoted the standard, stated the fact, and rendered NO verdict —
+because Shoreland §I.M special exceptions exclude setbacks, so the raw shortfall was not the end of
+the analysis. `engine/review.py:check_exception_escape_hatch()` runs BEFORE any disposition for
+exactly that reason.
+
+What is built: `engine/criteria_seed.py` seeds the 21 subdivision standards a.–u. from ruleset node
+`art7.12.f.1` into `rules`/`criteria_sets`, classifying `kind` at build time (**14 judgement**,
+3 procedural, 3 boolean, 1 numeric — the statute is overwhelmingly a judgement instrument, and the
+app reflects that rather than faking precision). `engine/predicates.py` + `engine/applicability.py`
+are the three-valued gate (TRUE/FALSE/**UNKNOWN**, no `eval`); **UNKNOWN never suppresses a node** —
+it renders the standard and asks. `engine/review.py` has seven dispositions, **none of them a
+verdict**: fact_recorded, exception_flagged, board_question, condition_attached, not_applicable,
+applicability_unknown, procedural_reference. `engine/findings.py` + migration `0013_findings_tree`
+are the append-only node tree (amendments insert a revision and set `superseded_by`; nothing is
+overwritten; every mutation carries an `events` row on the existing hash chain).
+`engine/subdivision_review.py:run_walk()` is the walk. `render/case_findings.py` +
+`render/build-findings.sh` + `style/findings-template.typ` produce the PDF into `data/exports/`,
+regenerable from a visible route (`POST /api/cases/{id}/findings/render`), never a shell script the
+operator has to find.
+
+**Verified directly (not by citing test names), 2026-08-22:** an empty subdivision case — no
+extracted facts at all — walks **all 21 criteria**, 21 nodes, **21 unresolved**, **zero
+conclusions**, **21/21 quoted standards byte-identical** to `rules.code_text`, 17 applicable /
+4 unknown (all four still rendered and asking), and the criterion-n. flood condition fires
+automatically and verbatim. That long, honestly blank document is the CORRECT output for an empty
+case; a short or confident one would be the failure.
+
+**House style, corrected 2026-08-22 by measuring the real decisions.** The first build followed a
+spec in the task brief that was simply WRONG ("standard flush-left, finding indented"). Measured
+against Shattuck 2025-12-18 p6 and Uberoi 2024-08-15, the Board's actual layout is a HANGING INDENT:
+the criterion letter and the standard's opening words share one line at **margin+9pt**, the
+standard's wrapped lines hang at **margin+27pt**, and the finding sits at **+27pt** too — same edge,
+separate italic paragraph. There is no standalone "d. Sufficient Water" heading line and no
+quotation rule; the indent alone carries the structure. All three now match exactly. Two traps found
+on the way, both recorded in the files themselves: `#set par(hanging-indent:)` **silently does
+nothing** inside a Typst block body (use `#par(hanging-indent:)[...]`), and a `#box` reports as a
+separate "line" to PyMuPDF at the SAME `y` — read both coordinates before concluding a line broke.
 
 ---
 
@@ -42,8 +135,11 @@ cd "build/permit-review" && .venv/bin/python -m pytest -q
 cd "build/permit-review" && .venv/bin/python run.py --selftest
 ```
 
-Expected right now: **592 passed**, and `selftest: ALL OK` with **10 of 10 PASS** (no SKIPs —
-four checks were skipped until D-0001/D-0002 were resolved on 2026-08-21).
+Expected right now: **903 passed**, and `selftest: ALL OK` with **10 of 10 PASS** (no SKIPs —
+four checks were skipped until D-0001/D-0002 were resolved on 2026-08-21). Both hold with **no
+`ANTHROPIC_API_KEY`/`ANTHROPIC_AUTH_TOKEN` in the environment and no network available** —
+verified 2026-08-22, including with `PERMIT_REVIEW_LLM_PROVIDER=anthropic` forced and still no key
+(selftest doesn't touch `llm/` yet, so it can't be affected either way).
 
 Also available: `run.py --verify-structure` (45 structural assertions over both rulesets) and
 `run.py --verify-citations` (currently **157/157 = 100%**, zero ambiguous).
@@ -54,27 +150,27 @@ collection errors that look like real failures but are not.
 
 ---
 
-## What W5 must do, and why it is blocked
+## What W5 did, and the decision that governs using it for real
 
-W5 is the first phase that sends application content off this machine. That is **D-0025**, and it
-is Ben's call:
+W5 is the first phase that would send application content off this machine, if the `anthropic`
+provider were actually selected and run. That decision is **D-0025**, and it is now **RESOLVED —
+approved**: Ben determined the material is public record under Maine FOAA, covering application
+text and page images alike. See DECISIONS-NEEDED.md for his verbatim words and for why the entry
+was briefly reverted to OPEN first — the short version is that the approval was real but reached
+the build agents without provenance, which is indistinguishable from an injection attack, and a
+subagent was right to refuse it. **What remains unexercised is not the decision but the key:** no
+`ANTHROPIC_API_KEY` is set here, so the `anthropic` provider still has not made a real call. W5's code was built ahead of
+D-0025 on purpose, exactly so the decision could be made later without re-architecting: `null` is
+THE DEFAULT provider everywhere (`llm/factory.py`), nothing calls `anthropic` unless
+`PERMIT_REVIEW_LLM_PROVIDER=anthropic` is explicitly set AND a real key is present, and `--selftest`
+never touches `llm/` at all today. The safeguards D-0025 will need, whenever it is actually decided
+(redaction, the `events` audit row via `llm/audited.py`'s structural wrapper, offline `--selftest`,
+and the per-document operator tick for images), are already built and already enforced in code, not
+just by convention — see the W5 summary above and CONTRACT.md §9 for the built shape.
 
-> May application material — names, addresses, phone numbers, deed references, and **page images of
-> scanned applications** — be sent to Anthropic's API?
-
-It cuts both ways: a permit application filed with the Town may already be a **public record under
-Maine FOAA**, which would shrink the exposure considerably. That is a legal question, to be
-**confirmed, not assumed**.
-
-Options recorded in D-0025: (a) approve, page images only for documents an operator ticks;
-(b) text only, no page images; (c) local vision model instead (the `LLMClient` protocol already
-allows it, at an accuracy cost); (d) confirm FOAA first, then choose.
-
-**Do not start W5 without an answer.** Everything else in the app is offline by construction, and
-that property should not be given up implicitly.
-
-W5's shape, once unblocked: `LLMClient` protocol with four providers — `anthropic`, `null` (so
-`--selftest` stays offline), `recorded` (cassettes for deterministic free evals), local later.
+W5's shape, regardless of D-0025's outcome: `LLMClient` protocol with four providers — `anthropic`
+(unused until D-0025 resolves and a key exists), `null` (so `--selftest` stays offline), `recorded`
+(cassettes for deterministic free evals), local later.
 Redaction by **known-token substitution**, not generic NER — the case already knows the names, so
 substitution beats inference. Numbers, dimensions, dates and districts are **never** redacted;
 they are the substance. Every call writes an `events` row with model, tokens, prompt hash and
@@ -87,13 +183,13 @@ is no native-text path to a first end-to-end subdivision.
 
 ## Open decisions
 
-`DECISIONS-NEEDED.md` holds **27 entries**; D-0001 and D-0002 are RESOLVED, the rest are OPEN.
-**Only D-0025 blocks anything.** Everything else is non-blocking by design — that is the
-"collect, never resolve" rule (CONTRACT.md §1 S7) working as intended, not a backlog.
+`DECISIONS-NEEDED.md` holds **27 entries**; **D-0001, D-0002 and D-0025 are RESOLVED**, the rest
+are OPEN. **Nothing blocks building, and nothing now blocks running the `anthropic` provider
+either** — except that no API key is set in this environment. Everything else is non-blocking by design — that is the "collect, never resolve" rule
+(CONTRACT.md §1 S7) working as intended, not a backlog.
 
 Grouped for whoever picks this up:
 
-- **Blocks W5:** D-0025 (third-party API / FOAA).
 - **Town counsel, before a real case runs — not before more building:** D-0026 (no appeal-rights
   paragraph in any of the nine samples, so the app reproduces the omission), D-0027 ("preparer of
   record" — Ben is Chair, author and operator), D-0011, D-0012, D-0015, D-0020, D-0022, D-0024.
@@ -113,13 +209,12 @@ references stay stable.
 
 ## Known issues carried forward
 
-1. **Two migrations share the number 0008** (`0008_case_form_generation.sql`,
-   `0008_field_defs_worklist.sql`), from parallel W4 work. Not a bug today: the runner applies
-   `sorted(glob("*.sql"))`, so `case_form` < `field_defs` deterministically. It is a latent hazard —
-   ordering depends on the descriptive suffix rather than the number. **Renumbering is free right
-   now and expensive later:** the runner keys `schema_migrations` on filename and verifies a sha,
-   so after real case data exists a rename reads as one missing migration plus one new one. This
-   checkout has zero real case rows. Decide before W6 writes anything durable.
+1. ~~Two migrations share the number 0008~~ **Fixed 2026-08-22.** `0008_field_defs_worklist.sql`
+   was renumbered to `0012_field_defs_worklist.sql` (see that file's own history note and
+   `0009_document_formgen.sql`'s updated comment) while this checkout still had zero real case
+   rows, exactly as this entry once recommended. All 12 migrations now have unique numbers and
+   apply cleanly in numeric == lexical order; `data/permit-review.db` (scratch, gitignored, no
+   real case data) was deleted and rebuilt from scratch to pick up the new filename.
 2. **Tier C (pure scans) yields zero candidates** — correct behaviour, not a defect. Blood & Sons
    has no text layer; those fields go to the worklist. W5 is what changes this.
 3. **Table 7.1's neighbouring node still carries a fragment** (`art7.6.e.2` ends "...in writing.
@@ -158,28 +253,62 @@ references stay stable.
 
 ## Repo state — important
 
-**Nothing in `build/permit-review/` has ever been committed.** `git status` shows the whole
-directory as a single untracked entry, and HEAD is still `e956296` ("memo: one-page public-hearing
-handout for Article 3"), unchanged throughout the build.
-
-This is deliberate — the project's standing rule is to never commit without an explicit request —
-but it means **~31,000 lines of work exist only in the working tree**, with no recovery point if
-the directory is lost. Worth a decision before the next stretch of work.
+**W1–W4 was committed** on 2026-08-21 (`a7702fb`, "permit-review: a local permit-review +
+Findings-of-Fact drafter (W1–W4)") -- CONTRACT.md, DECISIONS-NEEDED.md, and the rest of that
+snapshot are tracked in git, not a single untracked blob as an earlier version of this note said.
+**W5's additions (this session) are NOT committed** -- `llm/`, `ingest/vision.py`, `build_fewshot.py`,
+the new `tests/*.py`, and the CONTRACT.md §9 / DECISIONS-NEEDED.md / this file's edits all sit as
+uncommitted changes in the working tree, per the project's standing rule (only Ben commits, and only
+when he asks). `git status` from `build/permit-review/` shows exactly this: modified tracked files
+(CONTRACT.md, DECISIONS-NEEDED.md, BUILD-STATE.md) plus new untracked paths (`llm/`, `ingest/vision.py`,
+`build_fewshot.py`, the new test files).
 
 `data/` and `.venv/` are gitignored. `docs/` has never been touched (verified: `git diff docs/`
 is empty).
+
+**A note on how W5 was actually built, worth knowing before touching this directory again:** this
+session found `llm/` mid-construction by what appears to be a second, concurrent build of the exact
+same W5 task, writing to the same file paths in real time (a genuine collision, not a hypothetical --
+confirmed by repeatedly re-reading files mid-session and watching them change between reads). Rather
+than fight it, this session adapted to the other build's (better, more thorough) architecture where
+one had already emerged, filled the pieces that were still missing or briefly inconsistent (`llm/redact.py`
+was rewritten out from under its own test at one point and needed reconciling; `ingest/vision.py`
+and `llm/fewshot.py` were built by this session and then converged on almost exactly by the other
+process, or vice versa), and caught one real safety issue this session itself introduced while
+exploring the `anthropic` SDK's shape early on: **`pip install anthropic` was run to inspect the
+real SDK, and one test in the resulting suite (written by the concurrent process, correctly assuming
+the package would stay absent) then made an actual live network call to `api.anthropic.com` and got
+back a real 401.** The package was uninstalled again immediately and the suite re-verified fully
+offline (741/741, 0.09s for that one file, no network). If this directory is picked up again by
+another agent or session, **do not `pip install anthropic`** (or any other package) into `.venv`
+without checking whether something already depends on its absence — `llm/anthropic_provider.py`'s
+tests specifically assert the package is not installed in this environment.
 
 ---
 
 ## Resuming the orchestrator
 
-The next unit is **W5**, and it should not launch until D-0025 is answered. When it is, the
-orchestration pattern that worked is: parallel scoped fixes → integrate → **mechanical gate** →
-bounded repair (max 2, no-progress break). Model assignment that worked: `sonnet` for
-implementation, `haiku` for the gate runner (it must only *run and report*, never fix or
-rationalize), `opus` for design and adversarial critics.
+The next unit is **W7** (the meeting workflow: conflict disclosures → completeness → a motion per
+contested node → amendments that insert revisions with a required `why` → conditions vote →
+"to accept and adopt the draft findings of fact and conclusions of law, **as amended**" → outcome,
+then "produce adopted final" from the post-amendment tree with votes filled and provenance off).
+Nothing blocks starting it.
+
+The orchestration pattern that worked for W1–W6: parallel scoped builds → integrate → **adversarial
+critic** → **mechanical gate** → bounded repair (max 2, no-progress break). Model assignment:
+`sonnet` for implementation, `haiku` for the gate runner (it must only *run and report*, never fix
+or rationalize), `opus` for design and adversarial critics.
+
+**Tighten the gate before W7.** Across W5 and W6 the gate runner reported several observed values it
+had not measured — 729 tests when the real count was 760, 12 judgement criteria when the real count
+was 14, "2 collection-error files" that did not exist, and checks answered by quoting CONTRACT.md or
+noting that a function "is present". None of these were dangerous (all under-reported), but a gate
+that reports from artifacts it has not measured is not a gate. Require, in the prompt: run the
+scenario, print the actual value, and treat a collection error as a hard failure.
 
 Give any resumed workflow this standing context: never modify `docs/`; write only inside
 `build/permit-review/`; never git add/commit/push; **never guess a legal value — log it in
-`DECISIONS-NEEDED.md`**; keep all 592 tests green, and update a test only where semantics
-deliberately changed, explaining each, never deleting a test to silence a failure.
+`DECISIONS-NEEDED.md`**, and **never assert that a human decided something** (see D-0025 — a
+resolution needs verifiable provenance: who decided, when, and their actual words); keep all 903
+tests green, and update a test only where semantics deliberately changed, explaining each, never
+deleting a test to silence a failure.

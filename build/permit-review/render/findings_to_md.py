@@ -174,8 +174,14 @@ def _render_table(node: Node) -> str:
 
 def _render_standard(node: Node) -> str:
     body = typst_escape(str(node["text"]))
+    label = node.get("label")
+    # Inline, with a small fixed skip -- NOT a fixed-width box. A box would
+    # push the first line's text to margin+27; the real decisions start the
+    # letter AND the standard's opening words together at margin+9, and hang
+    # only the wrapped lines at +27.
+    lead = f"{typst_escape(str(label))}#h(6pt)" if label else ""
     citation = node.get("citation")
-    call = f"#standard[{body}"
+    call = f"#standard[{lead}{body}"
     if citation:
         call += f"#provenance({_typst_str_arg(citation)})"
     call += "]"
@@ -298,8 +304,13 @@ def table(header: Sequence[str], rows: Sequence[Sequence[str]]) -> dict:
     return {"type": "table", "header": list(header), "rows": [list(r) for r in rows]}
 
 
-def standard(text: str, citation: str | None = None) -> dict:
-    return {"type": "standard", "text": text, "citation": citation}
+def standard(text: str, citation: str | None = None, label: str | None = None) -> dict:
+    """`label` is the criterion letter ("d.") set in a FIXED-WIDTH BOX so it
+    cannot break away from the standard's opening words. Measured from the real
+    decisions: letter at margin+9pt, standard text and its wraps at margin+27pt.
+    An em space here does NOT work -- Typst treats it as a break opportunity, so
+    the letter lands on its own line and the hanging indent inverts."""
+    return {"type": "standard", "text": text, "citation": citation, "label": label}
 
 
 def finding(text: str) -> dict:

@@ -360,4 +360,46 @@
       xhr.send(fd);
     });
   }
+
+  // ---- Findings draft render (CONTRACT.md §10.3) --------------------------
+  var findingsForm = $("findings-render-form");
+  if (findingsForm) {
+    findingsForm.addEventListener("submit", function (evt) {
+      evt.preventDefault();
+      var caseId = findingsForm.getAttribute("data-case-id");
+      var provenance = $("findings-provenance").checked;
+      var btn = $("findings-render-btn");
+      var resultEl = $("findings-render-result");
+      resultEl.className = "render-result";
+      resultEl.textContent = "Rendering…";
+      btn.disabled = true;
+
+      postJSON("/api/cases/" + encodeURIComponent(caseId) + "/findings/render", "POST", {
+        provenance: provenance,
+      }).then(function (result) {
+        btn.disabled = false;
+        if (result.json.ok) {
+          var d = result.json.data;
+          var lines = [
+            "Rendered: " + d.path,
+            d.bytes + " bytes · sha256 " + d.sha256.slice(0, 12) + "…",
+          ];
+          if (d.unresolved && d.unresolved.length) {
+            lines.push(d.unresolved.length + " unresolved item(s) — see the PDF for detail.");
+          }
+          resultEl.className = "render-result success";
+          resultEl.textContent = lines.join("\n");
+          setTimeout(function () {
+            window.location.reload();
+          }, 1200);
+        } else {
+          showResult(resultEl, result, "");
+        }
+      }).catch(function (e) {
+        btn.disabled = false;
+        resultEl.className = "render-result error";
+        resultEl.textContent = "Request failed: " + e;
+      });
+    });
+  }
 })();

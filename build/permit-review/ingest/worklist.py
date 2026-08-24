@@ -68,7 +68,7 @@ from app.citation import Citation
 # --------------------------------------------------------------------------- #
 
 #: CONTRACT.md task brief: "Group the worklist by WHERE the value must come
-#: from." Mirrors app/migrations/0008_field_defs_worklist.sql's
+#: from." Mirrors app/migrations/0012_field_defs_worklist.sql's
 #: field_defs.source_category CHECK exactly.
 SOURCE_CATEGORIES: frozenset[str] = frozenset({
     "applicant", "registry", "gis", "plan_survey", "staff", "post_submittal",

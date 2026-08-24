@@ -150,15 +150,22 @@
 // output. These eight names are the contract between that script and this file.
 // ==============================================================================
 
-// #standard — flush-left quoted ordinance text (the Code's own words, verbatim,
-// per the citation attached alongside it). A thin rule marks it as a quotation
-// without indenting it, so it stays visually distinct from #finding beneath it.
+// #standard — the Code's own words, verbatim, in the Board's own house style.
+//
+// MEASURED from the real decisions (Shattuck 2025-12-18 p6 and Uberoi 2024-08-15,
+// both in docs/): the criterion letter and the standard's opening run together on
+// ONE line hanging at margin+9pt, and the standard's wrapped lines sit at
+// margin+27pt. The finding beneath then shares that same +27pt edge. There is no
+// quotation rule and no standalone heading line in the real documents — the
+// hanging indent alone carries the structure.
 #let standard(body) = block(
   width: 100%, above: 7pt, below: 2pt, breakable: true,
-  inset: (left: 9pt), stroke: (left: 1.5pt + rule_faint),
+  inset: (left: 9pt),
 )[
   #set text(fill: body_dark, size: 10pt)
-  #body
+  // #par(hanging-indent:) -- NOT `#set par(...)`, which silently does nothing
+  // inside a block body (verified against typst 0.14).
+  #par(hanging-indent: 18pt)[#body]
 ]
 
 // #finding — the Board's finding in response to the standard immediately
@@ -167,22 +174,33 @@
 // up the bulk of every real decision.
 #let finding(body) = block(
   width: 100%, above: 2pt, below: 9pt, breakable: true,
-  inset: (left: 22pt),
+  inset: (left: 27pt),
 )[
   #set text(fill: body_dark, size: 10pt, style: "italic")
   #body
 ]
 
 // #unresolved — a yellow-highlighted blank: a TBD field, a missing number, an
-// item the record does not yet answer. Works inline or as its own block.
-#let unresolved(body) = box(fill: highlight_yellow, inset: (x: 3pt, y: 1pt), radius: 1pt)[
-  #body
+// item the record does not yet answer.
+//
+// Indented to margin+27pt, the same edge the Board's finding sits on in the
+// real decisions (measured: Shattuck 2025-12-18, Uberoi 2024-08-15) — because
+// that is exactly what it stands in for when nothing has been drafted yet.
+#let unresolved(body) = block(width: 100%, above: 2pt, below: 9pt,
+  inset: (left: 27pt))[
+  #box(fill: highlight_yellow, inset: (x: 3pt, y: 1pt), radius: 1pt)[#body]
 ]
 
 // #boardq — a highlighted, italic, first-person question addressed to the
 // Board. Never a conclusion — a question the Board must answer on the record.
-#let boardq(body) = box(fill: highlight_yellow, inset: (x: 3pt, y: 1pt), radius: 1pt)[
-  #text(style: "italic")[#body]
+//
+// Sits at margin+27pt, the finding's own edge in the real decisions: it occupies
+// the place a finding will occupy once the Board answers it.
+#let boardq(body) = block(width: 100%, above: 2pt, below: 9pt,
+  inset: (left: 27pt))[
+  #box(fill: highlight_yellow, inset: (x: 3pt, y: 1pt), radius: 1pt)[
+    #text(style: "italic")[#body]
+  ]
 ]
 
 // A blank fill-in-the-line cell, shared by #motionblock and #signaturegrid:

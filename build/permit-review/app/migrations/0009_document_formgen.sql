@@ -16,12 +16,16 @@
 -- rollup is computed FROM: one case can carry several documents (a native
 -- Gen-2 cover sheet plus a scanned attachment, say), and ingest/formgen.py's
 -- detect_generation() runs once per document, never once per case. Two
--- concurrently-authored migrations both numbered 0008 already exist in this
--- directory (case_form_generation, field_defs_worklist) — app/db.py's
+-- concurrently-authored migrations briefly both numbered 0008 existed in
+-- this directory (case_form_generation, field_defs_worklist) — app/db.py's
 -- migrate() applies app/migrations/*.sql in lexical (filename) order, not
--- numeric order, so two files sharing a number is a naming collision risk,
--- not a runtime one; this file is numbered 0009 to stay unambiguous and
--- because both 0008 files landed first.
+-- numeric order, so two files sharing a number was a naming collision
+-- risk, not a runtime one; this file was numbered 0009 at the time to stay
+-- unambiguous, because both 0008 files landed first. The collision was
+-- resolved 2026-08-21 by renumbering field_defs_worklist to 0012 (see that
+-- file's own history note) — case_form_generation kept 0008 since it
+-- landed there first and nothing outside this comment ever referenced the
+-- other file's old name.
 --
 -- doc_role vs generation: a document's doc_role/kind (0004_page_triage.sql,
 -- app/routes/documents.py) is a human/upload-time classification of WHAT

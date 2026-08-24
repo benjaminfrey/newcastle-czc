@@ -1,0 +1,27 @@
+{
+  "format_version": 1,
+  "synthetic": true,
+  "note": "SYNTHETIC FIXTURE CASSETTE -- hand-authored for offline testing (W5 task brief). These two entries are NOT real Anthropic API recordings; no such call has ever been made from this repo (no ANTHROPIC_API_KEY exists in this environment). A real cassette gets recorded, with synthetic set to false, only once a key exists and an actual call is made through llm/anthropic_provider.py. The `response.text` values below were typed by hand to look like plausible model output, purely to exercise llm/recorded.py's replay path and (for the second entry) ingest/vision.py's parsing path in tests.",
+  "entries": [
+    {
+      "key": "e9c6645c39d3fe3ecef5cdd40e39d608073001966188625fe166370e2c1b5f83",
+      "description": "Text-only field extraction, matching the fixture LLMRequest built in tests/test_llm_recorded.py (prompt asks for applicant.name + parcel.acreage from a short native-text excerpt).",
+      "response": {
+        "text": "[{\"field_key\": \"applicant.name\", \"value_raw\": \"Jane Sample\", \"value_norm\": \"Jane Sample\", \"unit\": null, \"confidence\": 0.9, \"rationale\": \"Labeled 'Applicant:' line, synthetic fixture text\"}, {\"field_key\": \"parcel.acreage\", \"value_raw\": \"2.5 acres\", \"value_norm\": 2.5, \"unit\": \"acres\", \"confidence\": 0.9, \"rationale\": \"Labeled 'Acreage:' line, synthetic fixture text\"}]",
+        "model": "claude-opus-5",
+        "stop_reason": "end_turn",
+        "usage": {"input_tokens": 142, "output_tokens": 96}
+      }
+    },
+    {
+      "key": "a27c432b186948a468c466f7262aef21a97b3f91fbdc34642a35d62db759e1b2",
+      "description": "Vision-shaped extraction, matching the fixture VisionRequest built in tests/test_vision.py's recorded-provider integration test (one synthetic page image, Tier C page 3).",
+      "response": {
+        "text": "[{\"field_key\": \"applicant.name\", \"value_raw\": \"Jane Sample\", \"value_norm\": \"Jane Sample\", \"unit\": null, \"confidence\": 0.72, \"rationale\": \"Printed text near top of scanned page, synthetic fixture\", \"bbox\": [72.0, 90.0, 260.0, 108.0]}, {\"field_key\": \"parcel.acreage\", \"value_raw\": \"2.5 acres\", \"value_norm\": 2.5, \"unit\": \"acres\", \"confidence\": 0.55, \"rationale\": \"Handwritten figure, synthetic fixture\", \"bbox\": [72.0, 140.0, 180.0, 158.0], \"handwritten\": true}]",
+        "model": "claude-opus-5",
+        "stop_reason": "end_turn",
+        "usage": {"input_tokens": 1180, "output_tokens": 112}
+      }
+    }
+  ]
+}

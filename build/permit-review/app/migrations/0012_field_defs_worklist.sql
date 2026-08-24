@@ -1,5 +1,18 @@
 -- =============================================================================
--- Newcastle Permit Review — 0008_field_defs_worklist.sql
+-- Newcastle Permit Review — 0012_field_defs_worklist.sql
+--
+-- Renumbered from 0008_field_defs_worklist.sql (2026-08-21 reconciliation
+-- pass): two independently-authored migrations both landed as "0008"
+-- (this one and 0008_case_form_generation.sql — see that file's own
+-- history note, and 0009_document_formgen.sql's comment, which already
+-- flagged the pair as "a naming collision risk, not a runtime one" back
+-- when it happened). Renumbering to 0012 (after the highest number then
+-- in use, 0011) removes the ambiguity outright rather than leaving two
+-- files sharing a prefix relying on lexical tie-breaking. Purely a
+-- filename change — the DDL below is byte-identical to what shipped as
+-- 0008_field_defs_worklist.sql; any database that already recorded that
+-- name in schema_migrations needs a fresh (or manually re-keyed) DB, since
+-- app/db.py:migrate() treats a changed filename as a new migration.
 --
 -- W4 task: "the absence worklist" (ingest/worklist.py). CONTRACT.md §3.6
 -- already gives field_defs a full row shape for an ARTICLE-2 DIMENSIONAL
@@ -63,5 +76,5 @@ CREATE INDEX IF NOT EXISTS ix_field_defs_case_level
     ON field_defs(ruleset_id, sort_order) WHERE district_key IS NULL;
 
 -- =============================================================================
--- END 0008_field_defs_worklist.sql
+-- END 0012_field_defs_worklist.sql
 -- =============================================================================

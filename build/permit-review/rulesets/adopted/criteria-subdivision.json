@@ -1,0 +1,869 @@
+{
+  "schema": "newcastle.criteria-subdivision/1.0.0",
+  "ruleset_key": "adopted",
+  "generated_at": "2026-08-22T01:43:51Z",
+  "source": {
+    "path": "rulesets/adopted/articles.json",
+    "sha256": "0ca385a9900db7337d808ac88e16b52f1f637cab5ee2d78c644db71f3c1060a8"
+  },
+  "node_id": "art7.12.f.1",
+  "criteria_set": {
+    "set_key": "subdivision",
+    "label": "Subdivision — Article 7 §12.f.1 Approval Standards",
+    "application_type": "subdivision",
+    "authority": "planning_board",
+    "citation": {
+      "ruleset_key": "adopted",
+      "scheme": "adopted",
+      "article": 7,
+      "section": "12",
+      "subsection": "f.1"
+    }
+  },
+  "rules": [
+    {
+      "rule_key": "art7.12.f.1.a",
+      "standard_letter": "a",
+      "title": "The standards of this Code",
+      "kind": "procedural",
+      "source_text": "The standards of this Code.",
+      "applicability": {
+        "op": "always"
+      },
+      "exceptions": [],
+      "mandates_condition": null,
+      "judgement_tells": [],
+      "test_json": null,
+      "citation": {
+        "ruleset_key": "adopted",
+        "scheme": "adopted",
+        "article": 7,
+        "section": "12",
+        "standard_letter": "a",
+        "standard_title": "The standards of this Code"
+      },
+      "source_ref": {
+        "pdf_page": 87,
+        "bbox": [
+          114.0,
+          594.1,
+          219.7,
+          603.9
+        ]
+      },
+      "sort_order": 1,
+      "build_reason": "A blanket incorporation of every other applicable standard in the Code into subdivision review -- not itself a discrete test, so it does not classify as numeric/boolean/judgement; it is a procedural cross-reference to the rest of the ruleset, exactly the same duty real decisions carry out under a separate 'Article 1' / 'Article 2' ... review, not as one of standards c-u's own findings."
+    },
+    {
+      "rule_key": "art7.12.f.1.b",
+      "standard_letter": "b",
+      "title": "The Newcastle Road, Driveway, and Entrance Ordinance",
+      "kind": "procedural",
+      "source_text": "The Newcastle Road, Driveway, and Entrance Ordinance.",
+      "applicability": {
+        "op": "always"
+      },
+      "exceptions": [],
+      "mandates_condition": null,
+      "judgement_tells": [],
+      "test_json": null,
+      "citation": {
+        "ruleset_key": "adopted",
+        "scheme": "adopted",
+        "article": 7,
+        "section": "12",
+        "standard_letter": "b",
+        "standard_title": "The Newcastle Road, Driveway, and Entrance Ordinance"
+      },
+      "source_ref": {
+        "pdf_page": 87,
+        "bbox": [
+          114.0,
+          609.6,
+          275.7,
+          619.4
+        ],
+        "more_pages": [
+          87
+        ]
+      },
+      "sort_order": 2,
+      "build_reason": "Same shape as (a): a procedural cross-reference to a whole other instrument, not a self-contained test. NOTE (flag only, not resolved here): the Newcastle RDEO this clause names is REPEALED in the draft CZC being built elsewhere in this repo (CLAUDE.md project memory) -- but this ruleset is the ADOPTED Code, under which the RDEO is still in force, so the citation is a live legal reference here, not a stale one; nothing about that repeal belongs in this build."
+    },
+    {
+      "rule_key": "art7.12.f.1.c",
+      "standard_letter": "c",
+      "title": "Pollution",
+      "kind": "judgement",
+      "source_text": "Pollution: The proposed subdivision will not result in undue water or air pollution. In making this determination, it will at least consider:\n(i) The elevation of the land above sea level and its relation to the flood plains;\n(ii) The nature of soils and subsoils and their ability to adequately support waste disposal;\n(iii) The slope of the land and its effect on effluents;\n(iv) The availability of streams for disposal of effluents; and\n(v) The applicable state and local health and water resource rules and regulations.",
+      "applicability": {
+        "op": "always"
+      },
+      "exceptions": [],
+      "mandates_condition": null,
+      "judgement_tells": [
+        "undue"
+      ],
+      "test_json": null,
+      "citation": {
+        "ruleset_key": "adopted",
+        "scheme": "adopted",
+        "article": 7,
+        "section": "12",
+        "standard_letter": "c",
+        "standard_title": "Pollution"
+      },
+      "source_ref": {
+        "pdf_page": 87,
+        "bbox": [
+          114.0,
+          636.1,
+          290.6,
+          645.9
+        ],
+        "more_pages": [
+          87
+        ]
+      },
+      "sort_order": 3,
+      "build_reason": "\"will not result in undue water or air pollution\" -- 'undue' is a listed tell."
+    },
+    {
+      "rule_key": "art7.12.f.1.d",
+      "standard_letter": "d",
+      "title": "Sufficient Water",
+      "kind": "judgement",
+      "source_text": "Sufficient Water: The proposed subdivision has sufficient water available for the reasonably foreseeable needs of the subdivision.",
+      "applicability": {
+        "op": "always"
+      },
+      "exceptions": [],
+      "mandates_condition": null,
+      "judgement_tells": [
+        "sufficient",
+        "reasonably foreseeable"
+      ],
+      "test_json": null,
+      "citation": {
+        "ruleset_key": "adopted",
+        "scheme": "adopted",
+        "article": 7,
+        "section": "12",
+        "standard_letter": "d",
+        "standard_title": "Sufficient Water"
+      },
+      "source_ref": {
+        "pdf_page": 87,
+        "bbox": [
+          375.0,
+          118.8,
+          543.2,
+          128.5
+        ],
+        "more_pages": [
+          87
+        ]
+      },
+      "sort_order": 4,
+      "build_reason": "\"has sufficient water available for the reasonably foreseeable needs\" -- 'sufficient' is evaluative in the same register as the listed tell 'adequate', and 'reasonably foreseeable' is the listed tell 'reasonably be expected' in its adjectival form; either alone would be enough."
+    },
+    {
+      "rule_key": "art7.12.f.1.e",
+      "standard_letter": "e",
+      "title": "Municipal water supply",
+      "kind": "judgement",
+      "source_text": "Municipal water supply: The proposed subdivision will not cause an unreasonable burden on an existing water supply and the project can be served as planned, if one is to be used.",
+      "applicability": {
+        "op": "always"
+      },
+      "exceptions": [],
+      "mandates_condition": null,
+      "judgement_tells": [
+        "unreasonable"
+      ],
+      "test_json": null,
+      "citation": {
+        "ruleset_key": "adopted",
+        "scheme": "adopted",
+        "article": 7,
+        "section": "12",
+        "standard_letter": "e",
+        "standard_title": "Municipal water supply"
+      },
+      "source_ref": {
+        "pdf_page": 87,
+        "bbox": [
+          375.0,
+          156.3,
+          553.0,
+          166.0
+        ],
+        "more_pages": [
+          87
+        ]
+      },
+      "sort_order": 5,
+      "build_reason": "\"will not cause an unreasonable burden\" -- 'unreasonable' is a listed tell."
+    },
+    {
+      "rule_key": "art7.12.f.1.f",
+      "standard_letter": "f",
+      "title": "Erosion",
+      "kind": "judgement",
+      "source_text": "Erosion: The proposed subdivision will not cause unreasonable soil erosion or a reduction in the land’s capacity to hold water so that a dangerous or unhealthy condition results.",
+      "applicability": {
+        "op": "always"
+      },
+      "exceptions": [],
+      "mandates_condition": null,
+      "judgement_tells": [
+        "unreasonable"
+      ],
+      "test_json": null,
+      "citation": {
+        "ruleset_key": "adopted",
+        "scheme": "adopted",
+        "article": 7,
+        "section": "12",
+        "standard_letter": "f",
+        "standard_title": "Erosion"
+      },
+      "source_ref": {
+        "pdf_page": 87,
+        "bbox": [
+          375.0,
+          204.8,
+          548.2,
+          214.5
+        ],
+        "more_pages": [
+          87
+        ]
+      },
+      "sort_order": 6,
+      "build_reason": "\"will not cause unreasonable soil erosion\" -- 'unreasonable' is a listed tell."
+    },
+    {
+      "rule_key": "art7.12.f.1.g",
+      "standard_letter": "g",
+      "title": "Traffic",
+      "kind": "judgement",
+      "source_text": "Traffic: The proposed subdivision will not cause unreasonable highway or public road congestion or unsafe conditions with respect to the use of the highways or public roads existing or proposed. If the proposed subdivision requires driveways or entrances onto a state or state aid highway, the Department of Transportation has provided documentation indicating that the driveways or entrances meet Title 23, Section 704.",
+      "applicability": {
+        "op": "always"
+      },
+      "exceptions": [],
+      "mandates_condition": null,
+      "judgement_tells": [
+        "unreasonable",
+        "unsafe"
+      ],
+      "test_json": null,
+      "citation": {
+        "ruleset_key": "adopted",
+        "scheme": "adopted",
+        "article": 7,
+        "section": "12",
+        "standard_letter": "g",
+        "standard_title": "Traffic"
+      },
+      "source_ref": {
+        "pdf_page": 87,
+        "bbox": [
+          375.0,
+          253.3,
+          543.7,
+          263.0
+        ],
+        "more_pages": [
+          87
+        ]
+      },
+      "sort_order": 7,
+      "build_reason": "\"will not cause unreasonable ... congestion or unsafe conditions\" -- 'unreasonable' is a listed tell ('unsafe' is the same register). The standard ALSO embeds a conditional sub-duty (DOT documentation, only when the subdivision needs driveways or entrances onto a state/state-aid highway) -- that sub-duty is a boolean, factual check (was the documentation provided, yes/no), but it does not change the governing standard's own kind: it is a precondition INSIDE g, not a gate ON g, so g's applicability stays {'op':'always'} and the DOT sub-duty is left for the (out of scope here) review engine to test as a fact, not modeled as a second rule."
+    },
+    {
+      "rule_key": "art7.12.f.1.h",
+      "standard_letter": "h",
+      "title": "Sewage Disposal",
+      "kind": "judgement",
+      "source_text": "Sewage Disposal: The proposed subdivision will provide for adequate sewage waste disposal and will not cause an unreasonable burden on municipal services if they are utilized.",
+      "applicability": {
+        "op": "always"
+      },
+      "exceptions": [],
+      "mandates_condition": null,
+      "judgement_tells": [
+        "adequate",
+        "unreasonable"
+      ],
+      "test_json": null,
+      "citation": {
+        "ruleset_key": "adopted",
+        "scheme": "adopted",
+        "article": 7,
+        "section": "12",
+        "standard_letter": "h",
+        "standard_title": "Sewage Disposal"
+      },
+      "source_ref": {
+        "pdf_page": 87,
+        "bbox": [
+          375.0,
+          356.8,
+          545.0,
+          366.5
+        ],
+        "more_pages": [
+          87
+        ]
+      },
+      "sort_order": 8,
+      "build_reason": "\"adequate sewage waste disposal\" and \"unreasonable burden\" -- both listed tells."
+    },
+    {
+      "rule_key": "art7.12.f.1.i",
+      "standard_letter": "i",
+      "title": "Municipal Solid Waste Disposal",
+      "kind": "judgement",
+      "source_text": "Municipal Solid Waste Disposal: The proposed subdivision will not cause an unreasonable burden on the municipality’s ability to dispose of solid waste, if municipal services are to be utilized.",
+      "applicability": {
+        "op": "always"
+      },
+      "exceptions": [],
+      "mandates_condition": null,
+      "judgement_tells": [
+        "unreasonable"
+      ],
+      "test_json": null,
+      "citation": {
+        "ruleset_key": "adopted",
+        "scheme": "adopted",
+        "article": 7,
+        "section": "12",
+        "standard_letter": "i",
+        "standard_title": "Municipal Solid Waste Disposal"
+      },
+      "source_ref": {
+        "pdf_page": 87,
+        "bbox": [
+          375.0,
+          405.3,
+          539.8,
+          415.0
+        ],
+        "more_pages": [
+          87
+        ]
+      },
+      "sort_order": 9,
+      "build_reason": "\"will not cause an unreasonable burden\" -- 'unreasonable' is a listed tell."
+    },
+    {
+      "rule_key": "art7.12.f.1.j",
+      "standard_letter": "j",
+      "title": "Aesthetic, cultural, and Natural Values",
+      "kind": "judgement",
+      "source_text": "Aesthetic, cultural, and Natural Values: The proposed subdivision will not have an undue adverse effect on the scenic or natural beauty of the area, aesthetics, historic sites, significant wildlife habitat identified by the Department of Inland Fisheries and Wildlife or the municipality, or rare and irreplaceable natural areas or any public rights for physical or visual access to the shoreline.",
+      "applicability": {
+        "op": "always"
+      },
+      "exceptions": [],
+      "mandates_condition": null,
+      "judgement_tells": [
+        "undue",
+        "adverse effect"
+      ],
+      "test_json": null,
+      "citation": {
+        "ruleset_key": "adopted",
+        "scheme": "adopted",
+        "article": 7,
+        "section": "12",
+        "standard_letter": "j",
+        "standard_title": "Aesthetic, cultural, and Natural Values"
+      },
+      "source_ref": {
+        "pdf_page": 87,
+        "bbox": [
+          375.0,
+          453.8,
+          562.4,
+          463.5
+        ],
+        "more_pages": [
+          87
+        ]
+      },
+      "sort_order": 10,
+      "build_reason": "\"will not have an undue adverse effect\" -- BOTH 'undue' and 'adverse effect' are listed tells, present in the same clause."
+    },
+    {
+      "rule_key": "art7.12.f.1.k",
+      "standard_letter": "k",
+      "title": "Financial and Technical Capacity",
+      "kind": "judgement",
+      "source_text": "Financial and Technical Capacity: The subdivider has adequate financial and technical capacity to meet the standards of this section.",
+      "applicability": {
+        "op": "always"
+      },
+      "exceptions": [],
+      "mandates_condition": null,
+      "judgement_tells": [
+        "adequate"
+      ],
+      "test_json": null,
+      "citation": {
+        "ruleset_key": "adopted",
+        "scheme": "adopted",
+        "article": 7,
+        "section": "12",
+        "standard_letter": "k",
+        "standard_title": "Financial and Technical Capacity"
+      },
+      "source_ref": {
+        "pdf_page": 87,
+        "bbox": [
+          375.0,
+          546.3,
+          561.4,
+          556.0
+        ],
+        "more_pages": [
+          87
+        ]
+      },
+      "sort_order": 11,
+      "build_reason": "\"has adequate financial and technical capacity\" -- 'adequate' is a listed tell."
+    },
+    {
+      "rule_key": "art7.12.f.1.l",
+      "standard_letter": "l",
+      "title": "Surface Waters",
+      "kind": "judgement",
+      "source_text": "Surface Waters: Whenever situated entirely or partially within the watershed of any pond or lake or within 250 feet of any wetland, great pond, or river as defined in Title 38, Chapter 3, Subchapter I, Article 2-B, the proposed subdivision will not adversely affect the quality of that body of water or unreasonably affect the shoreline of that body of water.",
+      "applicability": {
+        "op": "or",
+        "of": [
+          {
+            "op": "fact_true",
+            "key": "site.within_watershed_of_pond_or_lake"
+          },
+          {
+            "op": "numeric_lte",
+            "key": "site.distance_to_protected_water_ft",
+            "value": 250
+          }
+        ]
+      },
+      "exceptions": [],
+      "mandates_condition": null,
+      "judgement_tells": [
+        "adverse effect",
+        "unreasonably"
+      ],
+      "test_json": null,
+      "citation": {
+        "ruleset_key": "adopted",
+        "scheme": "adopted",
+        "article": 7,
+        "section": "12",
+        "standard_letter": "l",
+        "standard_title": "Surface Waters"
+      },
+      "source_ref": {
+        "pdf_page": 87,
+        "bbox": [
+          375.0,
+          583.8,
+          541.3,
+          593.5
+        ],
+        "more_pages": [
+          87
+        ]
+      },
+      "sort_order": 12,
+      "build_reason": "\"will not adversely affect the quality ... or unreasonably affect the shoreline\" -- 'adverse effect' and 'unreasonably' are both listed tells. The standard's own lead clause ('Whenever situated ... within the watershed of any pond or lake or within 250 feet of any wetland, great pond, or river') is a genuine applicability gate, not part of the substantive test -- modeled as OR(within-watershed, distance<=250ft), UNKNOWN when neither fact is on record."
+    },
+    {
+      "rule_key": "art7.12.f.1.m",
+      "standard_letter": "m",
+      "title": "Ground Water",
+      "kind": "judgement",
+      "source_text": "Ground Water: The proposed subdivision will not, alone or in conjunction with existing activities, adversely affect the quality or quantity of ground water.",
+      "applicability": {
+        "op": "always"
+      },
+      "exceptions": [],
+      "mandates_condition": null,
+      "judgement_tells": [
+        "adverse effect"
+      ],
+      "test_json": null,
+      "citation": {
+        "ruleset_key": "adopted",
+        "scheme": "adopted",
+        "article": 7,
+        "section": "12",
+        "standard_letter": "m",
+        "standard_title": "Ground Water"
+      },
+      "source_ref": {
+        "pdf_page": 87,
+        "bbox": [
+          375.0,
+          665.3,
+          568.6,
+          675.0
+        ],
+        "more_pages": [
+          87
+        ]
+      },
+      "sort_order": 13,
+      "build_reason": "\"will not ... adversely affect the quality or quantity\" -- 'adverse effect' tell."
+    },
+    {
+      "rule_key": "art7.12.f.1.n",
+      "standard_letter": "n",
+      "title": "Flood Areas",
+      "kind": "procedural",
+      "source_text": "Flood Areas: Based on the Federal Emergency Management Agency’s Flood Boundary and Floodway Maps and Flood Insurance Rate Maps, if the subdivision, or any part of it, is in such an area, the subdivider will determine the 100-year flood elevation and flood hazard boundaries within the subdivision. The proposed subdivision plan must include a condition of plan approval requiring that principal structures in the subdivision will be constructed with their lowest floor, including the basement, at least three feet above the 100-year flood elevation.",
+      "applicability": {
+        "op": "fact_true",
+        "key": "site.in_fema_flood_zone"
+      },
+      "exceptions": [],
+      "mandates_condition": {
+        "text": "All principal structures proposed on any lot within the subdivision shall be constructed with their lowest floor, including the basement, at least three feet above the 100-year flood elevation. This condition shall remain in effect indefinitely and shall not prevent commencement of work which does not conflict with the condition.",
+        "fires": "always",
+        "provenance": {
+          "source": "real decision, not Code text",
+          "documents": [
+            "docs/Findings of Fact and Conclusions of Law/M003, L059 (White Rd, Shattuck), Subdivision FoF & CoL 2025.12.18.pdf (FINAL) -- Conditions of Approval, item 1",
+            "docs/Findings of Fact and Conclusions of Law/M004, L084 (Uberoi, 130 Lewis Hill Rd), Subdivision FoF & CoL 2024.08.15 DRAFT.pdf -- Conditions of Approval, item 1"
+          ],
+          "note": "Verbatim text taken from the FINAL (Shattuck) decision, which carries an extra trailing sentence ('This condition shall remain in effect indefinitely...') the DRAFT (Uberoi) decision's condition #1 does not have; the load-bearing clause (3 ft above 100-year flood elevation) is identical in both."
+        }
+      },
+      "judgement_tells": [],
+      "test_json": null,
+      "citation": {
+        "ruleset_key": "adopted",
+        "scheme": "adopted",
+        "article": 7,
+        "section": "12",
+        "standard_letter": "n",
+        "standard_title": "Flood Areas"
+      },
+      "source_ref": {
+        "pdf_page": 87,
+        "bbox": [
+          375.0,
+          702.8,
+          541.3,
+          712.5
+        ],
+        "more_pages": [
+          87,
+          88
+        ]
+      },
+      "sort_order": 14,
+      "build_reason": "No evaluative tell anywhere in the text -- it is a mandatory-content/condition-of-approval requirement (determine the 100-year flood elevation; include a plan condition), not a discretionary standard the Board weighs. See MANDATES_CONDITION_N above for the separate, unconditional condition-firing behaviour."
+    },
+    {
+      "rule_key": "art7.12.f.1.o",
+      "standard_letter": "o",
+      "title": "Freshwater Wetlands",
+      "kind": "boolean",
+      "source_text": "Freshwater Wetlands: All freshwater wetlands within the proposed subdivision have been identified on any maps submitted as part of the application.",
+      "applicability": {
+        "op": "always"
+      },
+      "exceptions": [],
+      "mandates_condition": null,
+      "judgement_tells": [],
+      "test_json": null,
+      "citation": {
+        "ruleset_key": "adopted",
+        "scheme": "adopted",
+        "article": 7,
+        "section": "12",
+        "standard_letter": "o",
+        "standard_title": "Freshwater Wetlands"
+      },
+      "source_ref": {
+        "pdf_page": 88,
+        "bbox": [
+          69.0,
+          158.3,
+          253.1,
+          168.0
+        ],
+        "more_pages": [
+          88
+        ]
+      },
+      "sort_order": 15,
+      "build_reason": "\"have been identified on any maps submitted\" -- a directly verifiable yes/no fact, no evaluative language."
+    },
+    {
+      "rule_key": "art7.12.f.1.p",
+      "standard_letter": "p",
+      "title": "River, Stream, or Brook",
+      "kind": "boolean",
+      "source_text": "River, Stream, or Brook: Any river, stream or brook within or abutting the proposed subdivision has been identified on any maps submitted as part of the application. For purposes of this section, “river, stream or brook” has the same meaning as in Title 38, Section 480-B, subsection 9.",
+      "applicability": {
+        "op": "always"
+      },
+      "exceptions": [],
+      "mandates_condition": null,
+      "judgement_tells": [],
+      "test_json": null,
+      "citation": {
+        "ruleset_key": "adopted",
+        "scheme": "adopted",
+        "article": 7,
+        "section": "12",
+        "standard_letter": "p",
+        "standard_title": "River, Stream, or Brook"
+      },
+      "source_ref": {
+        "pdf_page": 88,
+        "bbox": [
+          69.0,
+          195.8,
+          247.3,
+          205.5
+        ],
+        "more_pages": [
+          88
+        ]
+      },
+      "sort_order": 16,
+      "build_reason": "Same shape as (o): a directly verifiable yes/no identification fact."
+    },
+    {
+      "rule_key": "art7.12.f.1.q",
+      "standard_letter": "q",
+      "title": "Storm Water",
+      "kind": "judgement",
+      "source_text": "Storm Water: The proposed subdivision will provide for adequate storm water management and comply with State Stormwater Management Law 38 M.R.S.A. Section 420-D.",
+      "applicability": {
+        "op": "always"
+      },
+      "exceptions": [],
+      "mandates_condition": null,
+      "judgement_tells": [
+        "adequate"
+      ],
+      "test_json": null,
+      "citation": {
+        "ruleset_key": "adopted",
+        "scheme": "adopted",
+        "article": 7,
+        "section": "12",
+        "standard_letter": "q",
+        "standard_title": "Storm Water"
+      },
+      "source_ref": {
+        "pdf_page": 88,
+        "bbox": [
+          69.0,
+          266.3,
+          251.3,
+          276.0
+        ],
+        "more_pages": [
+          88
+        ]
+      },
+      "sort_order": 17,
+      "build_reason": "\"provide for adequate storm water management\" -- 'adequate' is a listed tell."
+    },
+    {
+      "rule_key": "art7.12.f.1.r",
+      "standard_letter": "r",
+      "title": "Spaghetti-Lots",
+      "kind": "numeric",
+      "source_text": "Spaghetti-Lots: If any lots in the proposed subdivision have shore frontage on a river, stream, brook, great pond or coastal wetland as these features are defined in Title 38, Section 480-B, none of the lots created within the subdivision may have a lot depth to shore frontage ratio greater than 5 to 1.",
+      "applicability": {
+        "op": "fact_true",
+        "key": "subdivision.has_shore_frontage_lots"
+      },
+      "exceptions": [],
+      "mandates_condition": null,
+      "judgement_tells": [],
+      "test_json": {
+        "comparison": "lte",
+        "field": "lot_depth_to_shore_frontage_ratio",
+        "threshold": 5.0,
+        "unit": "ratio",
+        "note": "Code states this as '5 to 1 (5.00)'."
+      },
+      "citation": {
+        "ruleset_key": "adopted",
+        "scheme": "adopted",
+        "article": 7,
+        "section": "12",
+        "standard_letter": "r",
+        "standard_title": "Spaghetti-Lots"
+      },
+      "source_ref": {
+        "pdf_page": 88,
+        "bbox": [
+          69.0,
+          314.8,
+          259.1,
+          324.5
+        ],
+        "more_pages": [
+          88
+        ]
+      },
+      "sort_order": 18,
+      "build_reason": "A clean quantifiable comparison -- lot depth to shore frontage ratio must not exceed 5 to 1 -- with no evaluative language at all. Gated on shore-frontage lots existing at all (the standard's own 'If any lots ... have shore frontage on a river, stream, brook, great pond or coastal wetland' clause)."
+    },
+    {
+      "rule_key": "art7.12.f.1.s",
+      "standard_letter": "s",
+      "title": "Lake Phosphorus Concentration",
+      "kind": "judgement",
+      "source_text": "Lake Phosphorus Concentration: The long-term cumulative effects of the proposed subdivision will not unreasonably increase the phosphorus concentration in a Great Pond, (as defined in MRSA Title 38 Section 480-B), during the construction phase and life of the proposed subdivision, or in the absence of a Great Pond, otherwise cause phosphorous concentration in fresh water bodies.",
+      "applicability": {
+        "op": "always"
+      },
+      "exceptions": [],
+      "mandates_condition": null,
+      "judgement_tells": [
+        "unreasonably"
+      ],
+      "test_json": null,
+      "citation": {
+        "ruleset_key": "adopted",
+        "scheme": "adopted",
+        "article": 7,
+        "section": "12",
+        "standard_letter": "s",
+        "standard_title": "Lake Phosphorus Concentration"
+      },
+      "source_ref": {
+        "pdf_page": 88,
+        "bbox": [
+          69.0,
+          385.3,
+          240.2,
+          395.0
+        ],
+        "more_pages": [
+          88
+        ]
+      },
+      "sort_order": 19,
+      "build_reason": "\"will not unreasonably increase the phosphorus concentration\" -- listed tell."
+    },
+    {
+      "rule_key": "art7.12.f.1.t",
+      "standard_letter": "t",
+      "title": "Impact on Adjoining Municipality",
+      "kind": "judgement",
+      "source_text": "Impact on Adjoining Municipality: For any proposed subdivision that crosses municipal boundaries, the proposed subdivision will not cause unreasonable traffic congestion or unsafe conditions with respect to the use of existing public ways in an adjoining municipality in which part of the subdivision is located.",
+      "applicability": {
+        "op": "fact_true",
+        "key": "subdivision.crosses_municipal_boundary"
+      },
+      "exceptions": [],
+      "mandates_condition": null,
+      "judgement_tells": [
+        "unreasonable",
+        "unsafe"
+      ],
+      "test_json": null,
+      "citation": {
+        "ruleset_key": "adopted",
+        "scheme": "adopted",
+        "article": 7,
+        "section": "12",
+        "standard_letter": "t",
+        "standard_title": "Impact on Adjoining Municipality"
+      },
+      "source_ref": {
+        "pdf_page": 88,
+        "bbox": [
+          69.0,
+          477.8,
+          251.0,
+          487.5
+        ],
+        "more_pages": [
+          88
+        ]
+      },
+      "sort_order": 20,
+      "build_reason": "\"will not cause unreasonable traffic congestion or unsafe conditions\" -- listed tell. Gated on the subdivision actually crossing a municipal boundary (the standard's own 'For any proposed subdivision that crosses municipal boundaries' clause)."
+    },
+    {
+      "rule_key": "art7.12.f.1.u",
+      "standard_letter": "u",
+      "title": "Lands Subject to Liquidation Harvesting",
+      "kind": "boolean",
+      "source_text": "Lands Subject to Liquidation Harvesting: Timber on the parcel being subdivided has not been harvested in violation of rules adopted pursuant to Title 12, Section 8869, subsection 14. If a violation of rules adopted by the Maine Forest Service to substantially eliminate liquidation harvesting has occurred, the Planning Board must determine prior to granting approval for the subdivision that 5 years have elapsed from the date the landowner under whose ownership the harvest occurred acquired the parcel.",
+      "applicability": {
+        "op": "always"
+      },
+      "exceptions": [],
+      "mandates_condition": null,
+      "judgement_tells": [],
+      "test_json": null,
+      "citation": {
+        "ruleset_key": "adopted",
+        "scheme": "adopted",
+        "article": 7,
+        "section": "12",
+        "standard_letter": "u",
+        "standard_title": "Lands Subject to Liquidation Harvesting"
+      },
+      "source_ref": {
+        "pdf_page": 88,
+        "bbox": [
+          69.0,
+          548.3,
+          252.0,
+          558.0
+        ],
+        "more_pages": [
+          88
+        ]
+      },
+      "sort_order": 21,
+      "build_reason": "Primary test is a directly verifiable yes/no fact (has an illegal-harvesting violation occurred), no evaluative language. The Code embeds a conditional NUMERIC sub-test (5 years elapsed) that only applies if the boolean fires true -- left as a downstream fact for the (out of scope here) review engine rather than modeled as its own rule, the same treatment given (g)'s embedded DOT sub-duty."
+    }
+  ],
+  "counts": {
+    "rules": 21,
+    "by_kind": {
+      "procedural": 3,
+      "judgement": 14,
+      "boolean": 3,
+      "numeric": 1
+    },
+    "judgement_letters": [
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "i",
+      "j",
+      "k",
+      "l",
+      "m",
+      "q",
+      "s",
+      "t"
+    ]
+  }
+}

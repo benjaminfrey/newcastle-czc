@@ -35,6 +35,8 @@ the section in its docstring, e.g. `"""Implements CONTRACT.md §4.2 (dimension n
 6. [HTTP API — this phase only](#6-http-api--this-phase-only)
 7. [The DECISIONS-NEEDED protocol](#7-the-decisions-needed-protocol)
 8. [Repo hygiene](#8-repo-hygiene)
+9. [The LLM layer](#9-the-llm-layer)
+10. [The findings render mapping](#10-the-findings-render-mapping)
 
 ---
 
@@ -264,6 +266,66 @@ explicitly **out of v1**. Do not add it.
     framing rule.
 - **`events`** — §3.3.
 - Every table: `created_at TEXT NOT NULL`, and every mutating table `actor_user_id TEXT`.
+
+### 3.7 `findings_nodes` — the W6 additions (`0013_findings_tree.sql`)
+
+The table itself (§3.6) shipped in full at W1, unread and unwritten by any code until W6.
+`0013_findings_tree.sql` is purely additive — four new nullable columns, carrying the same
+"honest blanks" discipline as everything else in this table:
+
+- **`quoted_standard_text TEXT`** — the VERBATIM standard THIS ROW quotes, separate from `body`
+  (the finding prose beneath it), because the one formatting rule that is ~80% of every real
+  Newcastle decision is that the quoted standard prints **flush left** and the finding prints
+  **indented** underneath it. Never regenerated, reworded or summarised — same discipline as
+  `rules.code_text`'s own comment. (§10.1's render mapping keys the printed standard off THIS
+  column, not off `rules.code_text` via `rule_id` — the node is the record.)
+- **`finding_source TEXT CHECK (... IN ('engine','model','operator'))`** — who is answerable for
+  `body`'s wording, so "a reader must always be able to tell which produced a sentence" is a
+  queryable fact, not a convention. `NULL` for nodes with no authored prose yet (a section
+  heading, an unfilled question carrying only `board_question`). DB CHECK: a stated
+  `finding_source` requires a non-NULL `body` — a source can't be claimed for text that doesn't
+  exist.
+- **`applicability_verdict TEXT CHECK (... IN ('true','false','unknown'))`** — the (separately
+  built) applicability gate's three-valued output for this node's standard. **Not** the banned
+  met/not_met Conclusion of Law (`conclusion`, unchanged, still nullable and human-only) — it
+  answers "does this standard apply at all," not "is it met." `'unknown'` is a first-class value,
+  not an absence: §10.1's render mapping never suppresses a node on `'unknown'`, it renders the
+  standard and asks the Board.
+- **`citation_display TEXT`** — a CACHE of `app.citation.render(citation_json)`, written by
+  `engine/findings.py` at the same time as `citation_json`. Per §5.1 this is never the source of
+  truth and no consumer is obliged to read it; `render/case_findings.py`'s own mapping (§10.1)
+  deliberately re-renders from `citation_json` instead and does not read this column at all —
+  the cache exists for a caller who wants the string without deserializing, not as a second
+  authority.
+
+**Provenance shape (`provenance_json`), as `engine/findings.py:validate_provenance()` enforces it**
+at the Python layer (this is deliberately *not* a DB CHECK — see the note below):
+a node carrying `body` or `quoted_standard_text` must carry non-empty `provenance_json`, and
+depending on `finding_source`:
+
+- `'engine'` → must trace to at least one of `rule_id`, `citation`, or `document_id`.
+- `'model'` → must carry `provenance_json.model = {provider, model, prompt_sha256[, generation_id]}`
+  — never raw prompt text (same discipline as §9.5's `record_llm_call()`).
+- `'operator'` → must carry `provenance_json.operator = {user_id[, note]}`.
+
+**Why this is Python-level, not a DB CHECK:** a cross-column CHECK enforcing the same rule in DDL
+was drafted for `0013_findings_tree.sql` and then deliberately dropped before it shipped — it broke
+`render/case_findings.py`'s own already-written test fixtures (`tests/test_case_findings.py`'s
+`_insert_node()` helper defaults `provenance_json` to `'{}'`), a concurrently-built W6 workflow
+(§10, discovered mid-build in this same directory — the same shape of parallel construction §9's
+own W5 section documents once already). The rule is real and enforced for every call through
+`engine.findings.create_node()`/`amend_node()` (raises `ValidationError` before any write); a raw
+SQL insert bypassing this module — as test fixtures elsewhere in this repo already do for other
+tables — is not blocked by the DDL, matching how most of this schema's business rules already work.
+
+**The amendment model, restated in code terms:** `engine/findings.py:amend_node()` INSERTs a new
+row (`revision = old.revision + 1`, same `root_id`) and UPDATEs the old row's `superseded_by` to
+point at it, both inside one transaction, with exactly ONE `events` row for the whole amendment
+(`kind='findings_node.amended'`). `root_id` is set to a node's own `id` at first creation
+(`create_node()`) and carried forward unchanged by every amendment — the stable identity §3.6
+already promised. `get_revision_chain(root_id)` returns every revision, current and superseded,
+oldest first; the chain is walkable by following `superseded_by` pointers forward from the first
+revision to the row whose `superseded_by IS NULL`.
 
 ---
 
@@ -842,3 +904,238 @@ Binding on every agent working in this project.
    be committed** (by Ben) — they are the reproducible, reviewable ruleset.
 8. Python 3.14. FastAPI + uvicorn (127.0.0.1 only), Jinja2 server-rendered, vanilla JS.
    SQLite WAL, raw SQL, numbered `.sql` migrations. **No ORM. No npm. No build step.**
+
+---
+
+## 9. The LLM layer
+
+Built ahead of **D-0025**, which is now **RESOLVED — approved** (see DECISIONS-NEEDED.md for the
+verbatim decision, the FOAA basis, and why the entry was briefly reverted). Building ahead of it was
+deliberate, so the decision could land without re-architecting: the safeguards below apply
+regardless of how it resolved, `null` remains THE DEFAULT provider everywhere, and nothing here has
+yet been exercised against a real key or network — no key is set in this environment. Implements §1.1 S6/S7/S10 at the model boundary: `--selftest` and
+every test in this repo run fully offline; a shortfall is a Board flag, never a conclusion; a
+model-authored citation or numeral is never trusted on its say-so.
+
+### 9.1 The protocol
+
+ONE interface, `llm/protocol.py:LLMClient` (`@runtime_checkable` `Protocol`), covers both a
+text-only call and a vision call — a vision call is simply an `LLMRequest` with `images` populated;
+there is no separate method or request type.
+
+```python
+class LLMClient(Protocol):
+    provider_name: str
+    def complete(self, request: LLMRequest) -> LLMResponse: ...
+```
+
+`llm/types.py` carries the request/response shapes and the error hierarchy every provider maps its
+own failures onto (`LLMError` → `LLMAuthError` / `LLMRateLimitError` / `LLMBadRequestError` /
+`LLMServerError` / `LLMTransportError` / `LLMResponseParseError`), so a caller writes one `except`
+chain regardless of which provider raised.
+
+### 9.2 The four providers (`llm/factory.py:get_client()`)
+
+Resolution order: explicit `provider` argument → `PERMIT_REVIEW_LLM_PROVIDER` env var → `"null"`.
+
+- **`null`** (`llm/null.py`) — **THE DEFAULT.** Deterministic, offline, zero-cost; always answers a
+  syntactically valid empty field-candidate envelope (`"[]"`). Makes `--selftest` and every test in
+  this repo runnable with no key and no network.
+- **`anthropic`** (`llm/anthropic_provider.py`) — the real provider. Reads `ANTHROPIC_API_KEY` from
+  the environment at **call time only**, never stores or logs it; a missing key raises
+  `LLMAuthError` with an actionable message before any transport is attempted. Model id is the
+  single constant `DEFAULT_MODEL = "claude-opus-5"`. Retries transient failures
+  (`LLMRateLimitError`/`LLMServerError`/`LLMTransportError`) with exponential backoff (default 2
+  retries), never retries a bad request. **Not exercised by any test or by `--selftest`** — every
+  test injects a fake `transport` callable; correctness is proven by construction
+  (`build_message_params()`, `parse_message()`, `_map_exception()` are each pure and independently
+  tested). The `anthropic` package itself is deliberately **not** a declared dependency; its import
+  in the real (uninjected) transport is lazy, so this whole module loads and every test passes
+  whether or not the package happens to be installed.
+- **`recorded`** (`llm/recorded.py` + `llm/cassette.py`) — replays a cassette file. Deterministic
+  and free; used for reproducible evals (W8) and for exercising real-shaped prompts without a key.
+  Cassette format v1 (`llm/cassette.py`): a JSON file with `format_version: 1`, a **required**
+  boolean `synthetic` field, a `note` that must say so in plain language when `synthetic: true`, and
+  `entries[]` keyed by `compute_key()` (a SHA-256 over prompt + system + sorted metadata + per-image
+  content hash — never the image bytes). Every cassette shipped in this repo is `synthetic: true`
+  and hand-authored (`llm/cassettes/fixtures/`); a **real** recording (`synthetic: false`) can only
+  ever be produced once a key exists and an actual call is made — nothing in this repo does that.
+- **`local`** (`llm/local.py`) — a documented stub seam for a future local model (D-0025 option
+  (c)). Constructible and protocol-conformant today; `complete()` raises `NotImplementedError`.
+
+### 9.3 Redaction (`llm/redact.py`)
+
+Known-token substitution, not generic NER — the case already knows its own names, addresses,
+phones, emails, and deed references. `KnownTokens` is a closed 5-field dataclass (names, addresses,
+phones, emails, deed_refs); there is no field for a number, dimension, date, or district, so there
+is no call shape that can ever redact one. `redact_text()` returns a `RedactionResult` (redacted
+text, a class-and-count-only `RedactionReport`, and a `token_map` for round-trip `restore()` before
+a model's answer is shown to anyone). **Honest limitation, enforced in code:** a page image cannot
+be name-redacted; `require_operator_ticked_for_image()` raises `ImagePagesNotRedactable` unless the
+caller passes `operator_ticked=True` for that specific document.
+
+### 9.4 The output guards (`llm/guards.py`)
+
+Run in this order (`run_guards()`): **(1) citation stripping** — every citation-shaped substring a
+model wrote is removed and the real citation(s), if any, are re-rendered from `app/citation.py`
+(§5.1) — a model-authored citation never reaches a document. Case-insensitive (critic finding
+A3.1): a lowercase `article 7, section 15.d` is stripped exactly like `Article 7, Section 15.D`.
+**(2) numeral grounding** — every numeral in the (citation-stripped) text must already appear in
+the caller's fact set (handling `1,330` vs `1330`, `74.2` vs `74.20`, and mixed fractions honestly,
+never by loosening); an ungrounded numeral flags its whole sentence and the caller sets
+`findings_nodes.unresolved = 1`. **(3) conclusion-verb downgrade** — output containing "complies",
+"satisfies", "fails to meet", "does not meet", "is/are consistent with", "in compliance with", and
+the house-style equivalents read off the real decisions downgrades the node to a Board flag; a
+modal-obligation *clause* (critic finding A2.1 — scoped to the clause, not the whole sentence, so a
+modal earlier in a compound sentence can't swallow a real conclusion later in it) stating what the
+Code *requires* (not what this application *achieved*) is excluded. **(4) residual placeholder**
+(critic finding A4.3) — a `[REDACTED_..._N]` redaction placeholder still present in text *after*
+`llm/redact.py`'s `restore()` step means the model referenced a token this call gave it no grounds
+to use; the node is flagged rather than shown as clean prose. Each guard is tested in **both
+directions** — it fires on the bad case and stays silent on the good one.
+
+### 9.5 The `events` row (D-0025's audit safeguard)
+
+`llm/events.py:record_llm_call()` appends one `events` row (via `app/audit.py:append_event()`,
+`kind="llm.call"`) for **every** LLM call, success or failure alike. Payload fields: `purpose`,
+`provider`, `prompt_sha256` (never the prompt text itself), `image_count`, `max_tokens`, a
+`redaction_report` (class/count only), `success`, and on success `model` / `provider` /
+`stop_reason` / `input_tokens` / `output_tokens`, or on failure `error_type` / `error_message`.
+Never logs: the prompt text, image bytes, or the API key.
+
+**This is enforced structurally, not by call-site convention.** `llm/audited.py:AuditedClient`
+wraps any `LLMClient` and itself satisfies the `LLMClient` protocol (`provider_name` + one
+`complete()` method), so a call site holding an `AuditedClient` cannot reach the wrapped provider's
+`complete()` without the wrapper's `record_llm_call()` write happening around it — success or a
+raised `LLMError` alike, in that order (call, then record, then return-or-reraise). The one real
+call site today, `ingest/vision.py:run_vision_extraction()`, requires a `conn` argument for exactly
+this reason and builds an `AuditedClient` internally before ever calling `client.complete()`; a
+future `engine/` call site is expected to do the same rather than calling a raw provider directly.
+`tests/test_audited.py` covers the wrapper in isolation (success, failure, redaction-report
+pass-through, and that the request forwarded to the inner provider is never mutated — `llm/recorded.py`
+computes its cassette key from the exact request, `metadata` included).
+
+### 9.6 Few-shot index (`llm/fewshot.py`) and the vision path (`ingest/vision.py`)
+
+`llm/fewshot.py` indexes the **6 matched pairs** in `docs/Findings of Fact and Conclusions of Law/`
+(an application PDF plus its Board decision PDF) by `(review_type, rule_id)`, `rule_id` resolved via
+`ruleset_build.verify_citations`'s already-verified citation extraction. **Dalton** and **Stantec**
+(applications with no matching decision on file yet — the W8 held-out eval set) are marked
+`holdout=True` and are refused, in code, before any file I/O — proven by a test that monkeypatches
+the PDF-open primitive to fail loudly if it is ever reached for either one.
+
+`ingest/vision.py` is the Tier C/D page → `field_candidates` path: render one page to PNG at 200 dpi
+→ build one `LLMRequest` (one call per page, not per field) → `client.complete()` → parse the
+model's JSON array into `ingest.fields.FieldCandidate` rows. `require_operator_ticked_for_image()`
+is called first, before any byte is rendered. Every candidate this module produces carries
+`method="vision"`, `page_no`, and `confidence`, and — like every `FieldCandidate`
+(`ingest/fields.py`) — `needs_confirmation=True` always, enforced by the dataclass itself. A
+malformed or unparsable model response yields **zero** candidates, never a guessed one.
+
+---
+
+## 10. The findings render mapping
+
+`render/case_findings.py` implements CONTRACT.md's W6 "draft document" step: a case's CURRENT
+`findings_nodes` tree (§3.6, widened by `0013_findings_tree.sql`) → the `render.findings_to_md`
+node list → `render/build-findings.sh` → a PDF in `data/exports/`. It is the last mile only — it
+builds nothing that isn't already durable in the database (no applicability decisions, no engine
+logic, no drafted prose); that is engine/'s job. This module is read-only against every table it
+touches except `generated_documents`, written by its one HTTP caller (below), never by this module
+itself — mirroring `render/worksheet.py`'s existing split from a built ruleset to a PDF.
+
+**THE FRAMING RULE, restated for this mapping specifically:** nothing here ever renders a
+conclusion. The DB enforces this structurally — `findings_nodes.conclusion` is nullable and only a
+human may set it (§3.6's own CHECK) — so every node this mapping cannot fill honestly renders as a
+highlighted blank (`#unresolved`/`#boardq`) rather than being omitted. A case with an empty or
+near-empty `findings_nodes` tree still produces a COMPLETE document: Project Information, a single
+board flag noting no findings have been drafted yet, a blank Decision section, one blank numbered
+condition slot, and a signature grid — never a short document, because a short document on a
+contradictory or unbuilt record is the one thing this app must never produce.
+
+### 10.1 node_type → render nodes
+
+Walks the tree `WHERE case_id = ? AND superseded_by IS NULL`, parent before children, siblings in
+`sort_order`. A root node (depth 0) is Code-derived (an Article, a District) → heading level 2; its
+children → level 3; deeper → level 4 (clamped) — level 1 is reserved for the document's own top
+divisions (FINDINGS OF FACT / CONCLUSIONS OF LAW / DECISION OF THE PLANNING BOARD), which this
+module assembles itself, never from a `findings_nodes` row.
+
+- **`section` / `required_review`** → `heading(row.heading, level)` + `para(row.body)` if present.
+  (`required_review` does not yet get its own table — a future enhancement could join
+  `criteria_sets.authority` via `criteria_set_id` for a Permitting-Authority column; today it
+  renders exactly like a `section`, honestly, rather than fabricating columns nothing populates.)
+- **`finding`** → the core mapping, keyed on the three `0013_findings_tree.sql` columns:
+  - `quoted_standard_text` (VERBATIM, never `rules.code_text` — the row is the record) →
+    `standard(text, citation=...)`, flush left. `citation` is *always* re-rendered from the row's
+    own `citation_json` via `app/citation.py:render()` (§5.1) — the `citation_display` cache column
+    is never read here, matching §5.1's "any consumer re-renders rather than trusting it".
+  - `body` ("the finding prose — facts, not verdicts") → `finding(text)`, indented, beneath it.
+  - `applicability_verdict` (`'true'|'false'|'unknown'|NULL`, the applicability gate's output):
+    **`'unknown'` NEVER suppresses the node** — the standard still renders, `body` (if any) still
+    renders, and a `boardq()` is always appended (the node's own `board_question`, or a generic
+    "Does this standard apply to this application?" if none was supplied). `'false'` still renders
+    the standard and whatever reasoning `body` carries (the real decisions' "does not address, and
+    therefore does not apply to, …" pattern) — never dropped from the document. `'true'` or `NULL`
+    (not yet gated) render normally.
+  - `board_question` → `boardq(text)` when present (for `'true'`/`NULL`/`'false'` verdicts; always
+    present for `'unknown'`, per above).
+  - No `body` and no `board_question` at all → `unresolved(row.placeholder or a generic TBD)` — the
+    honest-blank fallback that keeps the decisive W6 test true: an empty case still lists every
+    standard, each one flagged.
+  - `finding_source` (`'engine'|'model'|'operator'|NULL`) → when set, a small gray provenance tag
+    via the template's existing `#provenance()` helper (reused generically, not citation-specific),
+    shown only when the PDF is rendered with `PROVENANCE=1`. This is how §9's "a reader must always
+    be able to tell which produced a sentence" requirement reaches the actual document.
+- **`conclusion`** → the terser "Conclusions of Law" restatement the real decisions use (one line
+  per applicable standard, e.g. Uberoi's lettered a./c./d./…/u. list) — `number_label` + (`body` or
+  `quoted_standard_text` or `heading`, in that preference order) as a bold-labelled `para()`, plus
+  the same `finding_source` marker. `conclusion` itself is always NULL here (framing rule); nothing
+  in this mapping can render "met"/"not met" — the renderer has no node type for it at all.
+- **`condition_ref`** → skipped in the tree walk. Conditions are rendered once, consolidated, from
+  the `conditions` table directly (§10.2), not scattered through the tree at each reference point.
+- **`question`** → `boardq(board_question or body)`.
+- **`note`** → `para(body)` if present.
+
+Free text pulled from the database and handed to `para()`/`kv()` is always passed through
+`render.findings_to_md.md_escape()` first — `para()` itself does not escape (by design, so a
+caller-composed string like a bold label prefix survives), so this module is the one responsible
+for escaping anything DB-sourced before it reaches `para()`.
+
+### 10.2 The Decision section
+
+Assembled once, after the tree walk, never per-node:
+
+- **Motions.** `SELECT * FROM motions WHERE case_id = ? ORDER BY sort_order`. If any rows exist,
+  one `motionblock()` per row, with `moved_by`/`seconded_by` resolved to `users.display_name` via
+  `board_members`, and `yea`/`nay`/`abstain`/`result` from the row. **If none exist — the normal
+  state before W7's meeting workflow — exactly one blank `motionblock()`** (every field `none`,
+  rendering as a highlighted `…`), matching every pre-meeting DRAFT sample in
+  `docs/Findings of Fact and Conclusions of Law/` (the Profenno and Uberoi drafts both do this;
+  only the ADOPTED FINAL documents carry real vote counts). Per-standard motion blocks (as the
+  Shattuck ADOPTED FINAL shows for a subdivision) are a W7 concern — this module does not fabricate
+  them ahead of a real recorded vote.
+- **Conditions.** `SELECT * FROM conditions WHERE case_id = ? AND superseded_by IS NULL ORDER BY
+  number_label, created_at` → one `conditions([...])` call. Empty list still renders one genuinely
+  blank numbered slot (the renderer's own behavior, per style/findings-template.typ).
+- **Signatures.** Currently sitting `board_members` (`term_end IS NULL`), chair first
+  (`is_chair DESC`), then alphabetically → `signaturegrid([...])`, chair carrying the title "Chair",
+  everyone else untitled — matching every real decision's signature block.
+
+### 10.3 `generated_documents` and the render route
+
+`render_case_findings(conn, case_id, out_dir, *, draft=True, provenance=False)` returns
+`(pdf_path, unresolved_inventory)` — it does not itself write `generated_documents`; that write
+(kind `'findings_draft'`, `template='style/findings-template.typ'`, `renderer='pandoc->typst'`,
+`unresolved_json` = the returned inventory) happens in its one caller,
+`POST /api/cases/{case_id}/findings/render` (`app/routes/cases.py`), inside the same
+BEGIN/COMMIT transaction as the `events` row it appends (`kind="findings.rendered"`) — mirroring
+`app/cases.py`'s own write pattern (§3.3: every mutation appends an `events` row in the same
+transaction). This is the row `engine/deadlines.py`'s F8 check already reads
+(`generated_documents.kind IN ('findings_draft','findings_final')`) to know a draft has been
+produced for a case — so wiring this write is not optional polish, it is what makes that already-
+built deadline check ever see a real row. `draft` defaults `True` (every document this app produces
+is a draft until a human Board adopts it — CONTRACT.md's framing rule; there is no honest way to
+call this `draft=False` for a real case before W7's adoption workflow exists). The route is a
+visible action in `app/templates/case_detail.html` ("Findings Draft" panel), not a shell script an
+operator has to find.

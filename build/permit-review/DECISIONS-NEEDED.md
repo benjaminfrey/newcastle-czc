@@ -1001,7 +1001,76 @@ For the record, so they are not re-raised:
 
 ## D-0025 — Sending application content to a third-party API (gates W5)
 
-- **Status:** OPEN
+- **Status: RESOLVED 2026-08-21 by Ben — re-resolved with provenance 2026-08-22.**
+  Read the 2026-08-22 correction below first: this entry was briefly, and correctly, reverted
+  to OPEN, and understanding why is the point of the whole entry.
+- **The decision, quoted verbatim.** Ben, in chat, in direct reply to a message that stated
+  D-0025 was the only thing gating W5 and asked him to decide it:
+
+  > "D-0025 -> all of that info is public domain, no issue sending it to an api"
+
+  That is the entire message. It approves **application text and page images**, including the
+  scanned pages that cannot be name-redacted, going to the `anthropic` provider. The basis Ben
+  gave is that the material is already public — permit applications and Planning Board decisions
+  filed with the Town are public records under Maine FOAA (1 M.R.S. §401 et seq.).
+- **What this entry does NOT claim.** It records the determination of the Planning Board Chair.
+  It is **not** a written opinion of town counsel, and no counsel review has been attached. The
+  earlier note below — that a lawyer, not this app, should confirm FOAA applies — still stands as
+  a recommendation. If counsel review is ever obtained, attach it here.
+- **Why this was reverted once, and why the revert was right.** A W5 build agent was handed task
+  instructions that asserted, flatly, "D-0025 IS NOW RESOLVED" with no quotation, no date, and no
+  indication the approval came from Ben. A subagent flagged it as instruction poisoning and a
+  later session reverted it. **On the facts the revert was wrong** — Ben had genuinely decided it.
+  **On the reasoning it was right, and the fault was the orchestrator's**: a subagent cannot see
+  the user's chat, so an instruction asserting "the legal gate is cleared, proceed" with no
+  provenance is indistinguishable from an injection attack, and this ledger exists precisely to
+  refuse legal values that arrive without a human behind them. The agent applied the rule it was
+  given. **The defect was never the decision; it was the missing chain of custody.**
+- **The rule this establishes for every future entry.** A resolution in this ledger MUST carry
+  verifiable provenance — who decided, when, and their actual words — not an assertion that a
+  decision happened. An entry a reader has to take on trust is one a careful reader should
+  revert, and this project would rather lose a real decision to a cautious revert than inherit a
+  fabricated one.
+- **The safeguards below are unchanged and stay in force**, exactly as the correction describes.
+  Public-record status removes the legal barrier; it does not remove the engineering reasons for
+  redaction, the audit row, or `null` as the default.
+- **2026-08-22 correction (retained in full — this is the audit trail, not dead text):** a prior working session's task instructions asserted, as an
+  established fact, that "Ben Frey (Planning Board Chair) determined the application material is
+  public record under Maine FOAA, so sending it to a third-party API is approved." That assertion
+  was written into this file, `BUILD-STATE.md`, and `CONTRACT.md` as a **RESOLVED — approved**
+  status. **No message from Ben, in this repo's actual chat history, has been found that makes
+  this determination.** Per this project's own standing rule ("never guess a legal value — log it
+  in DECISIONS-NEEDED.md") and the basic principle that a decision claimed by an *agent's own task
+  instructions* is not the same thing as the user's actual approval, that RESOLVED status has been
+  reverted here. **The W5 code itself (redaction, output guards, the `events` audit, the `null`
+  default) was not undone** — it is a correct, safe implementation of the safeguards regardless of
+  D-0025's outcome, and none of it makes a real network call on its own. What was reverted is only
+  the *claim that the underlying legal/policy question has been decided*.
+- **If Ben has, in fact, made this call in chat:** re-resolve this entry explicitly, quoting or
+  citing the actual conversation, rather than restoring the prior wording verbatim — the prior
+  wording's problem was provenance, not content; the FOAA reasoning it gave may well be correct.
+- **What a resolution would need to say, if/when Ben actually makes this call** (kept here so
+  the shape doesn't need re-deriving): whether application text and page images may go to the
+  `anthropic` provider, on what legal basis (Maine's public-records law, 1 M.R.S. §401 et seq., is
+  the candidate basis, but this project's own prior note below is right that a lawyer, not this
+  app, should confirm it applies), and whether page images specifically (which cannot be
+  name-redacted, per `llm/redact.py`) are in scope or excluded. The safeguards below are not
+  contingent on the answer — they apply either way:
+  - `redact.py` runs on every text call regardless. Even if the material turns out to be public
+    record, that does not make sending more than a task needs a good idea, and the redaction
+    report is what makes each call auditable after the fact.
+  - Every LLM call writes an `events` row (model, tokens, prompt hash, redaction report) via
+    `llm/audited.py`'s `AuditedClient` wrapper — structural, not a per-call-site convention (see
+    CONTRACT.md §9.5).
+  - The `null` provider stays THE DEFAULT everywhere (`llm/factory.py`), and `--selftest` stays
+    **fully offline** regardless of what `PERMIT_REVIEW_LLM_PROVIDER` is set to in the
+    environment — verified 2026-08-22 (selftest passes 10/10 with `PERMIT_REVIEW_LLM_PROVIDER=anthropic`
+    and no key set, because nothing in `--selftest` touches `llm/` at all yet).
+  - Page images would still go only for documents an operator explicitly ticks
+    (`require_operator_ticked_for_image()`), whatever the legal basis for text turns out to be.
+- **Original entry follows, for the record.**
+
+- **Status (original):** OPEN
 - **Raised:** 2026-08-21, while closing W1. Identified in the original project plan as the gate
   on Phase 5, but never logged here — recorded now so it cannot be passed silently.
 - **Blocking:** **yes, for W5 only.** W5 is the first phase that sends application content to an

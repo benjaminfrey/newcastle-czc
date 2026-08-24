@@ -349,6 +349,49 @@
   </section>
 
   <section class="panel">
+    <h3>Findings Draft</h3>
+    <p class="muted">Renders the Findings of Fact &amp; Conclusions of Law draft for this case from
+      its current findings tree &mdash; the working draft the Board marks up, never a decision.
+      Every document is stamped DRAFT with blank vote slots until the Board adopts one at a
+      meeting.</p>
+    {% if findings_render_available %}
+    <form class="findings-render-form" id="findings-render-form" data-case-id="{{ case.id }}">
+      <label class="findings-provenance-toggle">
+        <input type="checkbox" id="findings-provenance" name="provenance">
+        show provenance markers (citation &amp; source tags)
+      </label>
+      <button type="submit" id="findings-render-btn">Generate Findings Draft</button>
+    </form>
+    <div id="findings-render-result" class="render-result" aria-live="polite"></div>
+
+    {% if findings_documents %}
+    <table class="findings-doc-table">
+      <thead>
+        <tr><th>Generated</th><th>Path</th><th>Bytes</th><th>Unresolved</th><th>sha256</th></tr>
+      </thead>
+      <tbody>
+        {% for d in findings_documents %}
+        <tr>
+          <td>{{ d.generated_at }}</td>
+          <td><code>{{ d.rel_path }}</code></td>
+          <td>{{ d.byte_size }}</td>
+          <td>{{ d.unresolved_count if d.unresolved_count is not none else "—" }}</td>
+          <td><code>{{ d.sha256[:12] }}&hellip;</code></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p class="notice">No findings draft has been generated for this case yet.</p>
+    {% endif %}
+    {% else %}
+      <p class="notice notice-warn">Findings rendering is not available in this workflow yet
+        (<code>render.case_findings</code> did not load, or <code>pandoc</code>/<code>typst</code>
+        is not on PATH).</p>
+    {% endif %}
+  </section>
+
+  <section class="panel">
     <h3>Audit Trail</h3>
     {% if audit_trail %}
       <ul class="audit-list">

@@ -70,6 +70,7 @@ dates_mod, _dates_err = _try_import("app.dates")  # CONTRACT.md §2's named home
 meetings_mod, _meetings_err = _try_import("app.meetings")  # same §3.4 rule, shipped under this name too
 rulesets_mod, _rulesets_err = _try_import("app.rulesets")
 render_mod, _render_err = _try_import("render.worksheet")
+case_findings_render_mod, _case_findings_render_err = _try_import("render.case_findings")  # CONTRACT.md §10
 cases_routes_mod, _cases_routes_err = _try_import("app.routes.cases")  # W3 case-lifecycle endpoints
 documents_routes_mod, _documents_routes_err = _try_import("app.routes.documents")  # W3 upload/triage endpoints
 extraction_routes_mod, _extraction_routes_err = _try_import("app.routes.extraction")  # W4 operator confirm UI
@@ -87,6 +88,8 @@ MODULE_STATUS: dict[str, dict[str, Any]] = {
     "app.meetings": {"available": meetings_mod is not None, "error": _meetings_err},
     "app.rulesets": {"available": rulesets_mod is not None, "error": _rulesets_err},
     "render.worksheet": {"available": render_mod is not None, "error": _render_err},
+    "render.case_findings": {"available": case_findings_render_mod is not None,
+                              "error": _case_findings_render_err},
     "app.routes.cases": {"available": cases_routes_mod is not None, "error": _cases_routes_err},
     "app.routes.documents": {"available": documents_routes_mod is not None, "error": _documents_routes_err},
     "app.routes.extraction": {"available": extraction_routes_mod is not None, "error": _extraction_routes_err},
@@ -1258,6 +1261,26 @@ def create_app(*, port: int | None = None) -> FastAPI:
             else:
                 deadlines_error = "app.deadlines is not available."
 
+            # CONTRACT.md §10.3 -- prior findings-draft renders, newest first,
+            # for the "Findings Draft" panel's history table.
+            findings_documents: list[dict[str, Any]] = []
+            for r in conn.execute(
+                """
+                SELECT id, rel_path, sha256, byte_size, unresolved_json, generated_at
+                FROM generated_documents
+                WHERE case_id = ? AND kind IN ('findings_draft', 'findings_final')
+                ORDER BY generated_at DESC;
+                """,
+                (case_id,),
+            ).fetchall():
+                fd = dict(r)
+                try:
+                    fd["unresolved_count"] = len(json.loads(fd.pop("unresolved_json")))
+                except (TypeError, ValueError):
+                    fd["unresolved_count"] = None
+                    fd.pop("unresolved_json", None)
+                findings_documents.append(fd)
+
             documents: list[dict[str, Any]] = []
             doc_rows = conn.execute(
                 "SELECT * FROM documents WHERE case_id = ? ORDER BY created_at;", (case_id,)
@@ -1363,6 +1386,8 @@ def create_app(*, port: int | None = None) -> FastAPI:
                     "upload_available": documents_routes_mod is not None,
                     "extraction_summary": extraction_summary,
                     "extraction_review_available": extraction_routes_mod is not None,
+                    "findings_render_available": case_findings_render_mod is not None,
+                    "findings_documents": findings_documents,
                     "today": date.today().isoformat(),
                     "modules": MODULE_STATUS,
                 },
