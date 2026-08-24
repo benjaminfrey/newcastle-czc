@@ -244,7 +244,7 @@ Properties that **MUST** hold:
   "segments": [ … 214 … ] }
 ```
 
-Segment object (all 12 keys always present; `null` is used for "not recorded"):
+Segment object (all 13 keys always present; `null` is used for "not recorded"):
 
 ```json
 { "id": "academy-hill-1", "name": "Academy Hill",
@@ -253,8 +253,25 @@ Segment object (all 12 keys always present; `null` is used for "not recorded"):
   "row_ft": null, "traveled_ft": null,
   "districts": ["SD-Fabrication", "D1"], "maindot": "Local",
   "nonconformity": null, "present_use": null,
+  "addresses": {"residential": 11, "unknown_type": 2, "total": 13},
   "geometry": [[456979.49, 4875907.5], …] }
 ```
+
+`addresses` is the per-segment E-911 address-point count (nearest segment within 60 m), written by
+`build/street-types/05_export.py`. It is a **REVIEW AID ONLY** — decision support for the Article 3
+§5.C.3.g present-use review, never a determination; §7.C.8 decides what is a Driveway whatever is
+counted here. **`unknown_type` matters as much as `residential`:** 311 of Newcastle's 1227 address
+points carry no `PLACE_TYPE` at all, so `residential: 0, unknown_type: 2` means NOT REVIEWED, not
+NOT PRESENT. The UI **MUST** render the two distinctly (`.seg-homes` + `.seg-homes-unk`, "0 +2?")
+and **MUST NOT** fold them into one number — a confident-looking zero that is not one is exactly
+the failure this record cannot afford. Address RANGES on the road layer (`L_ADD_FROM`/`L_ADD_TO`)
+are **not** a substitute: measured 2026-08-24, Barrol Point Road (a driveway serving one house)
+reads 2-24, identical to Academy Hill, a real Neighborhood Street. Ranges are addressing capacity,
+not structures.
+
+The `districts` and `maindot` fields remain in the data but are **no longer displayed** (columns
+removed 2026-08-24) — the same treatment `row_ft`/`traveled_ft` received when Exhibit 3.1's columns
+were trimmed. The District *filter* is retained; only the columns went.
 
 Serialisation: `json.dumps(doc, indent=1)` — **no trailing newline**, `ensure_ascii=True` (default).
 Verified byte-identical against the current file. Segment order **MUST** be preserved exactly as
@@ -905,8 +922,7 @@ pending set — a pending change on a filtered-out segment stays pending and sta
       <th class="col-type"      data-sort="type">Type</th>
       <th class="col-length"    data-sort="length">Length</th>
       <th class="col-ownership" data-sort="ownership">Ownership</th>
-      <th class="col-districts" data-sort="district">Districts</th>
-      <th class="col-maindot"   data-sort="maindot">MaineDOT</th>
+      <th class="col-homes"     data-sort="homes">Homes</th>
       <th class="col-source"    data-sort="source">Source</th>
       <th class="col-actions"></th>
     </tr>
@@ -982,8 +998,7 @@ segments within a road are **always** ordered by `seq` (they are a physical sequ
       <!-- 4 options, injected by app.js -->
     </select>
   </td>
-  <td class="cell-districts"><span class="seg-districts">D6, SD-Historic</span></td>
-  <td class="cell-maindot"><span class="seg-maindot">Other Principal Arterial</span></td>
+  <td class="cell-homes"><span class="seg-homes">11</span><span class="seg-homes-unk"> +2?</span></td>
   <td class="cell-source"><span class="seg-source" data-source="override">override</span></td>
   <td class="cell-actions">
     <button class="seg-detail-btn" title="Inspect">i</button>

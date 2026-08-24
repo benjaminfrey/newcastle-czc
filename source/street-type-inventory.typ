@@ -113,10 +113,6 @@
   let t = s.at("termini", default: ("", ""))
   [#t.at(0) #sym.arrow.r #t.at(1)]
 }
-#let dist_str(s) = {
-  let d = s.at("districts", default: ())
-  if d.len() == 0 { dash } else { d.join(", ") }
-}
 
 // ---- Exhibit caption + reading note -----------------------------------------
 #block(above: 0pt, below: 7pt,
@@ -146,13 +142,13 @@
 #let hd(s) = text(fill: subsection_gray, weight: "bold", size: 6.5pt, tracking: 0.3pt)[#upper(s)]
 #set text(size: 7pt)
 #table(
-  columns: (20pt, 1.4fr, 1.75fr, 0.7fr, 0.85fr, 1.05fr, 0.65fr),
+  columns: (20pt, 1.6fr, 2.0fr, 0.75fr, 0.9fr, 1.1fr),
   stroke: (x, y) => (bottom: 0.4pt + subsection_gray),
   inset: (x: 4pt, y: 3pt),
   align: (x, y) => if x == 0 { right + horizon } else { left + horizon },
   table.header(
     hd("#"), hd("Thoroughfare"), hd("From → To"), hd("Type"), hd("On conversion"),
-    hd("Ownership"), hd("District"),
+    hd("Ownership"),
   ),
   ..segs.enumerate().map(((i, s)) => (
     text(fill: subsection_gray)[#(i + 1)],
@@ -161,6 +157,5 @@
     use_cell(s),
     conversion_cell(s),
     or_dash(s.at("ownership", default: none)),
-    dist_str(s),
   )).flatten()
 )

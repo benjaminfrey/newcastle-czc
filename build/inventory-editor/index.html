@@ -166,8 +166,7 @@
             <th class="col-use"       scope="col" data-sort="use"       tabindex="0" title="Sort by present use (Art 3 §5.C.3.g) — what the segment is TODAY">Present use</th>
             <th class="col-length"    scope="col" data-sort="length"    tabindex="0" title="Sort by length">Length</th>
             <th class="col-ownership" scope="col" data-sort="ownership" tabindex="0" title="Sort by Ownership Category">Ownership</th>
-            <th class="col-districts" scope="col" data-sort="district"  tabindex="0" title="Sort by District">Districts</th>
-            <th class="col-maindot"   scope="col" data-sort="maindot"   tabindex="0" title="Sort by MaineDOT functional class">MaineDOT</th>
+            <th class="col-homes"     scope="col" data-sort="homes"     tabindex="0" title="E-911 address points on this segment: residential count, and (in brackets) points carrying no PLACE_TYPE at all. A 0 beside a nonzero bracket means NOT REVIEWED, not NOT PRESENT. Review aid only — §7.C.8 decides what is a Driveway.">Homes</th>
             <th class="col-source"    scope="col" data-sort="source"    tabindex="0" title="Sort by override / auto">Source</th>
             <th class="col-actions"   scope="col"><span class="vh">Actions</span></th>
           </tr>
@@ -533,8 +532,9 @@
         <option value="">—</option>
       </select>
     </td>
-    <td class="cell-districts"><span class="seg-districts"></span></td>
-    <td class="cell-maindot"><span class="seg-maindot"></span></td>
+    <td class="cell-homes">
+      <span class="seg-homes"></span><span class="seg-homes-unk"></span>
+    </td>
     <td class="cell-source"><span class="seg-source" data-source="auto"></span></td>
     <td class="cell-actions">
       <button type="button" class="seg-detail-btn"  title="Inspect"                 aria-label="Inspect this segment">i</button>

@@ -508,7 +508,13 @@
         var uses = uniq(segs.map(effPresentUse));
         return uses.length === 1 ? (uses[0] || "\uffff") : "mixed";
       }
-      case "maindot": return (segs.length && segs[0].maindot) || "\uffff";
+      case "homes": {
+        // Sum across the road's segments: a road is a driveway candidate on its
+        // whole length, not segment by segment.
+        return segs.reduce(function (a, s) {
+          return a + ((s.addresses && s.addresses.residential) || 0);
+        }, 0);
+      }
       case "termini": return fold((segs.length && segs[0].termini && segs[0].termini[0]) || "");
       case "source": return segs.filter(function (s) { return s.has_override; }).length;
       case "name":
@@ -799,8 +805,21 @@
     setText(row, ".seg-from", (seg.termini && seg.termini[0]) || "—");
     setText(row, ".seg-to", (seg.termini && seg.termini[1]) || "—");
     setText(row, ".seg-length", fmtFt(segLength(seg)));
-    setText(row, ".seg-districts", (seg.districts || []).join(", ") || "—");
-    setText(row, ".seg-maindot", seg.maindot || "—");
+    // Homes: the Art 3 §7.C.7 driveway threshold as decision support. The
+    // unknown-type count is shown ALONGSIDE, never folded in -- 311 of the
+    // town's 1227 address points carry no PLACE_TYPE, so "0" and "0 (+2?)"
+    // are different situations and must not look the same.
+    var addr = seg.addresses || { residential: 0, unknown_type: 0, total: 0 };
+    setText(row, ".seg-homes", String(addr.residential || 0));
+    var unkEl = qs(row, ".seg-homes-unk");
+    if (unkEl) {
+      unkEl.textContent = addr.unknown_type ? " +" + addr.unknown_type + "?" : "";
+      unkEl.title = addr.unknown_type
+        ? addr.unknown_type + " address point(s) here carry no PLACE_TYPE — unreviewed, not absent"
+        : "";
+    }
+    row.classList.toggle("is-at-threshold",
+      (addr.residential || 0) <= 2 && seg.ownership === "Private Road");
     var chk = qs(row, ".seg-check");
     if (chk) chk.setAttribute("aria-label", "Select " + seg.name + " #" + seg.seq);
     var noteBtn = qs(row, ".seg-note-btn");

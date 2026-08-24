@@ -569,6 +569,11 @@ def build_data_payload() -> dict:
             "maindot": seg.get("maindot"),
             "nonconformity": seg.get("nonconformity"),
             "present_use": seg.get("present_use"),
+            # Art 3 §7.C.7 driveway threshold, as decision support only. See
+            # 05_export.address_counts(): `unknown_type` matters as much as
+            # `residential` -- a 0 beside a nonzero unknown means NOT REVIEWED,
+            # not NOT PRESENT, and the UI must not let those read the same.
+            "addresses": seg.get("addresses") or {"residential": 0, "unknown_type": 0, "total": 0},
             "length_ft": length_ft,
             "has_override": has_override,
             "override": deepcopy(entry) if has_override else None,

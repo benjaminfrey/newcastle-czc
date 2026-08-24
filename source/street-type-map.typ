@@ -122,10 +122,17 @@
 #let data = json(data_path)
 #let segs = data.segments
 
-// Collect all geometry points to find the bounding box.
+// Municipal outline (§5.C.3 reference information, not a standard). Absent from
+// older inventory files, so default to none and simply draw no outline.
+#let boundary = data.at("_meta", default: (:)).at("town_boundary", default: ())
+
+// Collect all geometry points to find the bounding box. The OUTLINE IS INCLUDED:
+// it reaches further west and south than any road, and the panel clips, so
+// leaving it out of the extent would slice the town's own edge off the map.
 #let xs = ()
 #let ys = ()
 #for s in segs { for p in s.geometry { xs.push(p.at(0)); ys.push(p.at(1)) } }
+#for ring in boundary { for p in ring { xs.push(p.at(0)); ys.push(p.at(1)) } }
 #let minx = calc.min(..xs)
 #let maxx = calc.max(..xs)
 #let miny = calc.min(..ys)
@@ -149,6 +156,23 @@
 // ---- The map panel ----------------------------------------------------------
 #let map_panel = box(width: MAPW, height: MAPH, radius: 2pt,
   fill: rgb("#F7F9FB"), stroke: hair, clip: true, {
+  // The town outline goes down FIRST, so every road draws on top of it: it is
+  // context for reading the map, never a feature competing with the network.
+  // Quiet grey hairline with a barely-there fill -- enough to place a road in
+  // the town, not enough to read as a regulatory boundary.
+  for ring in boundary {
+    let pts = ring.map(project)
+    if pts.len() > 2 {
+      place(top + left, curve(
+        stroke: 0.7pt + subsection_gray,
+        fill: rgb(0, 0, 0, 6),
+        curve.move(pts.at(0)),
+        ..pts.slice(1).map(p => curve.line(p)),
+        curve.close(),
+      ))
+    }
+  }
+
   // each segment as one Type-colored polyline
   for s in segs {
     // A segment may be unclassified (type null/pending) — draw it gray.

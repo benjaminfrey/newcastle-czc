@@ -24,6 +24,21 @@ sources:
     where: "UPPER(TOWN)='NEWCASTLE'"
     name_field: ST_FULLNAME
 
+  e911_addresses:
+    # MEGIS NG911 Address Points — one record per ADDRESSED STRUCTURE. This is the
+    # only layer that can answer "how many dwellings does this segment serve",
+    # which is the Art 3 §7.C.7 driveway threshold (>2 SFD / >1 TFD).
+    # NOT the road layer's L_ADD_FROM/L_ADD_TO ranges: those are addressing
+    # CAPACITY windows, sized generously so new lots can be numbered later.
+    # Measured 2026-08-24: Barrol Point Road (a driveway serving one house) reads
+    # 2-24, identical to Academy Hill, a real Neighborhood Street. The ranges
+    # count nothing.
+    # Key fields: PLACE_TYPE (Residential / Single Family / Apartment / ...),
+    # UNIT, BUILDING, ST_FULLNAME, ADDRESS_NUMBER, TOWN.
+    url: "https://services1.arcgis.com/RbMX0mRVOFNTdLzd/arcgis/rest/services/Maine_E911_Addresses_Feature/FeatureServer/0"
+    where: "UPPER(TOWN)='NEWCASTLE'"
+    name_field: ST_FULLNAME
+
   maindot_roads:
     # MaineDOT Public Roads (GeoLibrary MapServer layer 52) — VERIFY/attributes.
     # Key fields: strtname (name), fedfunccls (federal functional class),

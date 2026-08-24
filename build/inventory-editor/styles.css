@@ -809,15 +809,14 @@ body:has(#pending-panel:not([hidden])) { --map-w: clamp(300px, 22vw, 360px); }
    column. Both were widened out of Name and Termini, which truncate harmlessly
    and are repeated in full in the inspector. */
 .col-check     { width:  3.0%; }
-.col-name      { width: 13.5%; }
-.col-termini   { width: 12.0%; }
+.col-name      { width: 16.0%; }
+.col-termini   { width: 16.0%; }
 .col-type      { width: 12.0%; }
 .col-use       { width: 11.0%; }
-.col-length    { width:  6.0%; }
-.col-ownership { width: 11.5%; }
-.col-districts { width: 10.0%; }
-.col-maindot   { width:  7.5%; }
-.col-source    { width:  6.5%; }
+.col-homes     { width:  8.0%; }
+.col-length    { width:  7.0%; }
+.col-ownership { width: 13.0%; }
+.col-source    { width:  7.0%; }
 .col-actions   { width:  7.0%; }
 
 /* ---- sticky header ---- */
@@ -1045,6 +1044,20 @@ body:has(#pending-panel:not([hidden])) { --map-w: clamp(300px, 22vw, 360px); }
 /* A segment recorded as a driveway today: the Type it carries is the Type it
    would take on CONVERSION (Art 3 §7.F), so the Type cell is de-emphasised and
    the present-use cell carries the weight. */
+/* Homes: the residential count reads as the number; the unknown-type count sits
+   beside it, smaller and muted but NEVER hidden -- "0" and "0 +2?" are different
+   situations (nothing there vs nothing reviewed) and must not look alike. */
+.cell-homes { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.seg-homes-unk { color: var(--pending); font-size: 0.85em; margin-left: 2px; }
+
+/* At or under the Art 3 §7.C.7 driveway threshold AND privately owned: a
+   candidate worth looking at, not a determination. A left tick, nothing louder. */
+.segment-row.is-at-threshold .cell-homes { font-weight: 600; }
+.segment-row.is-at-threshold .cell-homes::before {
+  content: ""; display: inline-block; width: 3px; height: 0.9em;
+  background: var(--pending); margin-right: 5px; vertical-align: -1px; border-radius: 1px;
+}
+
 .segment-row.is-driveway .cell-type { opacity: .55; }
 .segment-row.is-driveway .cell-use  { font-weight: 600; color: var(--t-D); }
 .road-row .cell-use { font-size: 0; }
