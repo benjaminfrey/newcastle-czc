@@ -8,6 +8,11 @@
     python3 run.py --verify-structure  # W2 gate hardening: ruleset_build/verify_structure.py
                                         # (mechanical structural assertions -- also runs as
                                         # part of --selftest, see app/main.py:selftest())
+    python3 run.py --eval              # W8 eval harness: eval/run_eval.py -- structural
+                                        # recall + coverage, over-conclusion rate, fact fidelity
+                                        # + silent_error_rate, all offline; prints "not measured
+                                        # (no API key)" (never a fake number) for anything that
+                                        # needs a model, incl. prose usefulness
 
 Equivalent to `python -m app.main --selftest` for the self-test form CONTRACT.md
 names explicitly; this file is the convenience entry point for everything else.
@@ -39,10 +44,17 @@ def main() -> int:
                               "and exit; mechanical set-equality/count/sequence assertions over BOTH "
                               "rulesets' Article/Section/Standard node indexes -- the W2 gate hardening "
                               "that replaces a prose 'discrepancy note' with an unskippable assertion")
+    parser.add_argument("--eval", action="store_true",
+                         help="run the W8 eval harness (eval/run_eval.py) and exit")
     parser.add_argument("--out", type=Path, default=None,
-                         help="--verify-citations only: report path (default: data/citation-report.json)")
+                         help="--verify-citations / --eval only: report path "
+                              "(default: data/citation-report.json / stdout only for --eval)")
     parser.add_argument("--quiet", action="store_true",
-                         help="--verify-citations / --verify-structure only: print only the final summary line(s)")
+                         help="--verify-citations / --verify-structure / --eval only: "
+                              "print only the final summary line(s)")
+    parser.add_argument("--demonstrate-holdout-read", action="store_true",
+                         help="--eval only: prove live that the eval harness can read Dalton/Stantec "
+                              "(llm/fewshot.py refuses the same read -- see eval/pairs.py)")
     args = parser.parse_args()
 
     if args.verify_citations:
@@ -52,6 +64,13 @@ def main() -> int:
     if args.verify_structure:
         from ruleset_build import verify_structure
         return verify_structure.run(quiet=args.quiet)
+
+    if args.eval:
+        from eval import run_eval
+        return run_eval.run(
+            out_path=args.out, quiet=args.quiet,
+            demonstrate_holdout_read=args.demonstrate_holdout_read,
+        )
 
     from app import main as app_main
 

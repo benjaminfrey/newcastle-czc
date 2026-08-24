@@ -357,8 +357,20 @@ def strip_and_rerender_citations(
 # comply with the Roads, Driveways and Entrances Ordinance.") -- not
 # asserting that this application satisfies it. Both quoted sentences are
 # real, verbatim, from the Blood & Sons and Verney decisions.
+#
+# WIDENED 2026-08-24 (W8 over-conclusion round) to also cover "will be
+# required to" / "was required to" / etc, not just the bare "is/are
+# required to" the guard previously matched. Real corpus trigger: Shattuck
+# and Uberoi both write "...future development of the proposed lots will be
+# required to conform with all State and local regulations..." -- a
+# requirement statement about FUTURE development, not this application's
+# own compliance -- and the new "conform_to"/"conformance_conformity"
+# conclusion patterns below would otherwise false-positive on it every
+# time, exactly the false-alarm-fatigue failure mode this file's own
+# docstring warns against.
 _MODAL_RE = re.compile(
-    r"\b(?:must|shall|should|needs?\s+to|will\s+need\s+to|is\s+required\s+to|are\s+required\s+to)\b",
+    r"\b(?:must|shall|should|needs?\s+to|will\s+need\s+to|"
+    r"(?:is|are|was|were|will|would)\s+(?:be\s+)?required\s+to)\b",
     re.IGNORECASE,
 )
 
@@ -421,6 +433,55 @@ _CONCLUSION_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("inconsistent", re.compile(r"\binconsistent\s+with\b", re.IGNORECASE)),
     ("conclude", re.compile(r"\bconclude[sd]?\s+that\b", re.IGNORECASE)),
     ("adversely_affect", re.compile(r"\bwill\s+(?:not\s+)?adversely\s+affect\b", re.IGNORECASE)),
+    # "will (not) have {a|no} (undue) adverse impact/effect on X" -- the
+    # SAME merits-conclusion shape as "adversely_affect" above, different
+    # verb ("have ... impact/effect" vs "affect"). Real, verbatim: Buehner
+    # ("Will not have an adverse impact on spawning grounds, fish, aquatic
+    # life, bird or other wildlife habitat"), Shattuck and Uberoi both
+    # ("...will not have an undue adverse effect on the scenic or natural
+    # beauty of the area"). The "no" alternative (matching the task brief's
+    # own worked example, "will have no adverse impact") is the SAME claim
+    # phrased as a determiner instead of a negated verb -- "will have no X"
+    # and "will not have an X" assert the identical thing.
+    ("have_adverse_impact", re.compile(
+        r"\bwill\s+(?:not\s+have|have\s+no)\s+(?:an?\s+)?(?:undue\s+)?adverse\s+(?:impact|effect)s?\s+on\b",
+        re.IGNORECASE)),
+    # --- Added 2026-08-24 (W8 over-conclusion round) -- read the module
+    # docstring's THE NINE REAL DECISIONS section before touching these.
+    # Each was found by grepping the real extracted text of all nine
+    # decisions (not invented) and confirmed missed by the pre-existing
+    # pattern set (2 of 12 real dodge phrasings caught before this pass --
+    # see tests/test_over_conclusion_dodges.py, which is the literal proof
+    # this docstring claim rests on, not a description of it).
+    ("conform_to", re.compile(r"\bconforms?\s+(?:to|with)\b", re.IGNORECASE)),
+    # "in conformance with" / "in conformity with" -- real, verbatim, Buehner
+    # ("Is in conformance with the provisions of Article III") and the
+    # boilerplate opening every one of the nine decisions repeats ("...may
+    # be undertaken unless in conformity with this Code"). The second real
+    # use is itself a general procedural statement, not a per-application
+    # merits conclusion, but it carries no modal this guard can key off of
+    # -- flagged here as a genuine, accepted over-flagging risk (the safe
+    # failure per this file's own docstring) rather than silently excluded;
+    # see BORDERLINE VERBS below.
+    ("conformance_conformity", re.compile(r"\bin\s+conform(?:ance|ity)\s+with\b", re.IGNORECASE)),
+    # "will (not) cause/result in an unreasonable X" -- the DOMINANT
+    # conclusion phrasing in both real subdivision decisions on file
+    # (Shattuck, Uberoi repeat "The proposed subdivision will not cause
+    # unreasonable soil erosion" / "...an unreasonable burden on..." for
+    # SEVEN separate standards each) and structurally identical to the
+    # already-included "adversely_affect" pattern just above -- this is the
+    # single biggest real gap the pre-existing pattern set had.
+    ("cause_or_result_in_unreasonable", re.compile(
+        r"\bwill\s+(?:not\s+)?(?:cause|result\s+in)\s+(?:an?\s+)?unreasonable\b", re.IGNORECASE)),
+    # Passive-voice reorder of the existing "meets_standard" pattern (which
+    # requires the active-voice "meets ... standard" word order and misses
+    # its own passive form). Real, verbatim, Academy Hill Z38: "Overview
+    # explanation of how applicable standards are met." "satisfied" is
+    # already covered by the bare "satisfy" pattern above; "met" was not
+    # covered in ANY word order until this pattern.
+    ("standard_met_passive", re.compile(
+        r"\b(?:standards?|requirements?|criteria)\s+(?:is|are|was|were|has\s+been|have\s+been)\s+met\b",
+        re.IGNORECASE)),
 )
 
 # --- BORDERLINE VERBS -- logged, not guessed away ---------------------------
@@ -456,6 +517,26 @@ _CONCLUSION_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
 #   definition asserting that a specific legal test is met -- exactly the
 #   merits conclusion this guard exists to catch, even though catching it
 #   means a paragraph that quotes the standard's own name risks a flag too.
+#
+# "in conformance with" / "in conformity with" -- INCLUDED 2026-08-24, the
+#   same call as "adversely affect" above and for the same reason, WITH a
+#   known, accepted over-flagging risk logged rather than hidden: every one
+#   of the nine real decisions opens its Core Zoning Code Review section
+#   with "No development activity contemplated by this Code may be
+#   undertaken unless in conformity with this Code" -- boilerplate
+#   procedural framing, not a per-application merits conclusion, and it
+#   carries no modal word this guard's clause-scoped exclusion can key off
+#   of ("may be undertaken unless" is not on _MODAL_RE, and adding it would
+#   be too broad -- "unless" governs a huge range of unrelated clauses).
+#   This sentence WILL flag under the new pattern. That is the accepted,
+#   safe-side failure this file's own docstring names ("over-flagging is
+#   the safe failure... under-flagging is not"): one more Board-reviewed
+#   node on a sentence that turns out to be boilerplate costs a human one
+#   extra glance; silently excluding "in conformance with" to avoid that
+#   glance would also silently un-flag Buehner's REAL per-application use
+#   ("Is in conformance with the provisions of Article III") -- and that
+#   one is exactly what the guard exists to catch. Logged here rather than
+#   guessed away, per this section's own header.
 #
 # Any future verb added to the default set should get the same treatment:
 # a real quote showing the conclusory use, and a real quote showing the

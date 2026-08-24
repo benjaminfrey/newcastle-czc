@@ -1,0 +1,82 @@
+{
+  "_source_of_truth": "mirrors llm.fewshot.PAIRS field-for-field (the older, already-tested source of truth for this same fixture set). Do not hand-edit the pairs[] list without also updating llm/fewshot.py's PAIRS to match -- tests/test_eval_pairs.py fails on any drift between the two.",
+  "_fixtures_dir": "docs/Findings of Fact and Conclusions of Law",
+  "_note_on_nine": "run.py --verify-citations and ruleset_build/verify_citations.py describe 'the nine real decisions' -- that is a DIFFERENT set (every file under _fixtures_dir with 'FoF & CoL' in its name, used for citation extraction; includes 3 decisions with no matching application: buehner, midcoast_solar, uberoi -- see excluded_decision_only below). This file's pairs[] is the matched APPLICATION+DECISION pair set (llm/fewshot.py's 6+2), which is what the W8 eval brief actually asked for ('the matched application/decision pairs, with Dalton and Stantec marked holdout'). The two sets overlap but are not the same thing.",
+  "pairs": [
+    {
+      "name": "verney",
+      "holdout": false,
+      "review_types": ["expanded_use"],
+      "application_filename": "4.B1. M004, L036 (461 Sheepscot Rd, Verney) Use Application 2025.04.02.pdf",
+      "decision_filename": "4.B2. M004, L036 (461 Sheepscot Rd, Verney) 2025.04.13 FoF & CoL.pdf"
+    },
+    {
+      "name": "blood_and_sons",
+      "holdout": false,
+      "review_types": ["small_project_plan", "use_permit"],
+      "application_filename": "5.A.2 M012, L004 (15 Hall St, Blood and Sons) Zoning Application.pdf",
+      "decision_filename": "5.A.x1 M012, L004 (15 Hall St, Blood and Sons) 2024.10.15 FoF & CoL.pdf"
+    },
+    {
+      "name": "shattuck",
+      "holdout": false,
+      "review_types": ["subdivision"],
+      "application_filename": "4.A.1. M003, L059 (White Rd, Shattuck) Subdivision Application 2025.10.07.pdf",
+      "decision_filename": "M003, L059 (White Rd, Shattuck), Subdivision FoF & CoL 2025.12.18.pdf"
+    },
+    {
+      "name": "profenno",
+      "holdout": false,
+      "review_types": ["shoreland_zoning", "small_project_plan"],
+      "application_filename": "M003, L065-B (Profenno, Perkins Point Rd) Planning Board Application 2024.06.05.pdf",
+      "decision_filename": "M003, L065-B (Profenno, Perkins Point Rd) FoF & CoL 2024.06.13 DRAFT.pdf"
+    },
+    {
+      "name": "morrissey",
+      "holdout": false,
+      "review_types": ["shoreland_zoning", "small_project_plan"],
+      "application_filename": "M011, L046-A (Morrissey, 53 Pleasant Street) SLZ Application, 2025 Submitted Documents.pdf",
+      "decision_filename": "M011, L046-A (Morrissey, Plesant Street) FoF & CoL 2024.05.21.pdf"
+    },
+    {
+      "name": "academy_hill",
+      "holdout": false,
+      "review_types": ["large_project_plan", "subdivision"],
+      "application_filename": "M012, L011 (Z38, 38 Academy Hill Rd) Application 2024.07.03 04 Zoning Permit App.pdf",
+      "decision_filename": "M012, L011 (Z38, 38 Academy Hill Rd) _FoF & CoL 2024.07.11 DRAFT.pdf"
+    },
+    {
+      "name": "dalton",
+      "holdout": true,
+      "review_types": [],
+      "application_filename": "M002, L053 (976 US Rt 1, Dalton) 2025.09.09 Application.pdf",
+      "decision_filename": null,
+      "_holdout_reason": "no Board decision on file yet -- incomplete/internally-contradictory application, W8's designated 'short document, full of honest blanks' held-out case"
+    },
+    {
+      "name": "stantec",
+      "holdout": true,
+      "review_types": [],
+      "application_filename": "M004, L087 (NT Land III, 684 US Route 1) (Stantec) application 2024.05.08.pdf",
+      "decision_filename": null,
+      "_holdout_reason": "no Board decision on file yet -- the 56-page mixed-tier packet used elsewhere in this build (W4) to prove the Tier B trap fix; pp.9-12 are native text"
+    }
+  ],
+  "excluded_decision_only": [
+    {
+      "name": "buehner",
+      "decision_filename": "4.A2. M004, L071 (156 Sheepscot Rd, Buehner) Shoreland Only FoF & CoL 2025.03.18.pdf",
+      "reason": "decision on file, no matching application in this folder -- not a pair, never indexed, never held out (nothing to hold out)"
+    },
+    {
+      "name": "midcoast_solar",
+      "decision_filename": "745 US Route 1 (Midcoast Solar, LLC) FoF & CoL 2024.03.14.pdf",
+      "reason": "decision on file, no matching application in this folder -- not a pair"
+    },
+    {
+      "name": "uberoi",
+      "decision_filename": "M004, L084 (Uberoi, 130 Lewis Hill Rd), Subdivision FoF & CoL 2024.08.15 DRAFT.pdf",
+      "reason": "decision on file, no matching application in this folder -- not a pair"
+    }
+  ]
+}

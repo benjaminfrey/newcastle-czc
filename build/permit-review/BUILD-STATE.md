@@ -8,7 +8,7 @@ Read this first, then `CONTRACT.md` (the authority on how the app must behave), 
 
 ## Where we are
 
-**W1–W7 complete. W8 (the eval harness) is next.**
+**W1–W8 complete — the planned phases are built. The open work is now D-0029, not a numbered phase.**
 
 | Unit | Scope | Status |
 |---|---|---|
@@ -20,14 +20,14 @@ Read this first, then `CONTRACT.md` (the authority on how the app must behave), 
 | **W5** | LLM behind the interface: `llm/` package (4 providers), redaction, output guards, few-shot index, vision path | ✅ **complete 2026-08-21** — D-0025 now RESOLVED (approved); still not exercised against a real key, because none is set in this environment |
 | **W6** | Subdivision criteria set, review engine, findings tree, draft PDF | ✅ **complete 2026-08-22** — the engine never concludes; verified directly, not via test names |
 | **W7** | Meeting workflow, amendments, adopted final | ✅ **complete 2026-08-24** — only a carried motion can conclude; verified by attacking it |
-| **W8** | Eval harness + held-out run (Dalton, Stantec) | not started -- next (`eval/` is empty; `llm/fewshot.py` + `build_fewshot.py` are ready for it to build on) |
+| **W8 + W8b** | Eval harness: four metrics reported separately, never averaged | ✅ **complete 2026-08-24** — W8 built it and it passed its own gate 17/17; **W8b made it able to FAIL**, which is the only reason to trust it. See the W8/W8b section below. |
 
 Plan-phase mapping: W1 ≈ plan Phases 0–1, W2 ≈ Phase 2, W3 ≈ Phase 3, W4 ≈ Phase 4,
 W5 ≈ Phase 5, W6 ≈ Phase 6, W7 ≈ Phase 7, W8 ≈ Phase 8. Phase 9 (Shoreland) is deferred
 pending Ben supplying the ordinance.
 
-**Size:** ~47,800 lines of Python, 50 test files, **1001 tests**, 18 uniquely-numbered migrations,
-2 built rulesets.
+**Size:** ~52,400 lines of Python, 57 test files, **1065 tests**, 18 uniquely-numbered migrations,
+2 built rulesets. `DECISIONS-NEEDED.md` holds **31 entries**.
 
 **W5, done 2026-08-21 (D-0025 is RESOLVED — approved; see DECISIONS-NEEDED.md for the verbatim
 decision and the provenance story. Nothing here has yet been exercised against a real key, because
@@ -157,6 +157,41 @@ likelier than tampering.
 Also confirmed directly: zero conflict disclosures render as a blank/TBD and never as "no conflicts"
 (absence of a record is not a finding of none), and zero board members invents no attendee.
 
+**W8b, done 2026-08-24 — the round that made the harness worth having.**
+W8 passed its own gate 17/17 and was still wrong: **three of the four metrics could not fail.**
+`silent_error_rate` was computed over `field_candidates`, a layer where
+`FieldCandidate.__post_init__` makes an unflagged candidate impossible to construct — so it printed
+0.0000 and always would, whether or not the app was safe. `precision = |intersection|/|predicted|`
+stayed at 1.000 when a criterion was DROPPED (only recall moved) — penalising completeness and
+rewarding omission, the exact inversion this app must never make. The over-conclusion scan missed
+11 of 12 dodge phrasings. Ground truth resolved through `rulesets/adopted/articles.json`, the same
+artifact being graded, so the eval agreed with itself. Structural recall was n=1 printed as an
+"AGGREGATE". And it closed with *"RESULT: no stop-ship condition detected"* — the one sentence a
+reader would quote — resting on metrics that could not produce a stop-ship condition.
+
+The W8 gate marked all of that **passed** while its own `observed` text said "DEFECT", the same
+rationalisation that cost this project a workflow at W2. **An eval that cannot fail is worse than no
+eval: it converts "we do not know" into reassurance.** So W8b ran under one inverted acceptance
+test — CAN I MAKE EACH METRIC REPORT A BAD NUMBER BY FEEDING IT BAD INPUT? — and its gate carried a
+new rule: *if your own observed text describes a defect, `passed` MUST be false; there is no
+"passes with a note."*
+
+All five fixed, verified live in both directions: `dirty_unverified_wrong_facts=1.0000` →
+`verified_human_confirmed_facts=0.0000` → `no_facts_asserted=not computable`. **The app invariant was
+NOT traded away to get there** — the measurement moved to the findings-node/render layer;
+`__post_init__` still raises and no escape hatch exists anywhere (checked directly). Precision was
+REMOVED in favour of recall + an explicit coverage assertion (D-0030); ground truth now reads each
+decision's own PDF (D-0031); the aggregate REFUSES below n=3; `academy_hill` prints "not computable"
+with its reason rather than padding n; and the closing line is now *"no violation was detected in
+what this run actually measured. This is NOT a certification that the app is safe on a real case."*
+
+**The harness then immediately earned its keep.** Its own NOT MEASURED section reports that the
+`field_candidates` silent_error_rate "is 0 by construction ... and proves nothing about safety on its
+own", names the real silent-error surface it found — **a NOT_APPLICABLE finding renders identically
+to an already-reviewed one, with no `board_question`/`#unresolved` box** — and admits the mechanism
+has never run against a real case, because **no case's extracted fields reach `run_walk()`'s facts
+dict yet (D-0029)**. A harness that only produced good numbers would never have said any of that.
+
 ---
 
 ## Verify the build is healthy
@@ -171,7 +206,7 @@ cd "build/permit-review" && .venv/bin/python -m pytest -q
 cd "build/permit-review" && .venv/bin/python run.py --selftest
 ```
 
-Expected right now: **1001 passed**, and `selftest: ALL OK` with **11 of 11 PASS** (no SKIPs —
+Expected right now: **1065 passed**, and `selftest: ALL OK` with **11 of 11 PASS** (no SKIPs —
 four checks were skipped until D-0001/D-0002 were resolved on 2026-08-21). Both hold with **no
 `ANTHROPIC_API_KEY`/`ANTHROPIC_AUTH_TOKEN` in the environment and no network available** —
 verified 2026-08-22, including with `PERMIT_REVIEW_LLM_PROVIDER=anthropic` forced and still no key
@@ -219,7 +254,8 @@ is no native-text path to a first end-to-end subdivision.
 
 ## Open decisions
 
-`DECISIONS-NEEDED.md` holds **27 entries**; **D-0001, D-0002 and D-0025 are RESOLVED**, the rest
+`DECISIONS-NEEDED.md` holds **28 entries** (added D-0029, 2026-08-24, during W8 -- see the W8 row
+above); **D-0001, D-0002 and D-0025 are RESOLVED**, the rest
 are OPEN. **Nothing blocks building, and nothing now blocks running the `anthropic` provider
 either** — except that no API key is set in this environment. Everything else is non-blocking by design — that is the "collect, never resolve" rule
 (CONTRACT.md §1 S7) working as intended, not a backlog.
@@ -237,6 +273,11 @@ Grouped for whoever picks this up:
   invented number — the Code states no limit), D-0016, D-0018, D-0021, D-0023.
 - **Board's call, one line either way:** D-0028 (the "Conditions of Law" certification typo, present
   in all nine samples **including the adopted one**, so it is settled house wording).
+- **Build task, not a legal decision (whoever resumes W8):** D-0029, part (ii) -- wire
+  `ingest/pipeline.py`'s crosswalk onto `engine.subdivision_review.run_walk()`'s
+  `facts["standard.<letter>.value"]` keys, so a real case's extracted candidates can actually
+  reach the engine (today, no case does). Part (i) of D-0029 (Dalton's real content) needs D-0025's
+  key, not a decision.
 
 There is **no D-0019** — the number was skipped during parallel work and is left unused so external
 references stay stable.
@@ -324,12 +365,26 @@ tests specifically assert the package is not installed in this environment.
 
 ## Resuming the orchestrator
 
-The next unit is **W8** (the eval harness: structural recall, fact fidelity, `silent_error_rate`
-— target 0, any nonzero is stop-ship — and over-conclusion rate, reported SEPARATELY and never
-averaged; then the held-out run on Dalton and Stantec, which `llm/fewshot.py` already refuses to
-read). Structural recall needs no model and can be measured today; the fidelity metrics need a key.
+**All eight planned phases are built.** What remains is not a numbered phase but the gap the eval
+harness itself surfaced:
 
-Nothing blocks starting it.
+**D-0029 — no case's extracted fields reach `run_walk()`'s facts dict.** The subdivision engine
+walks all 21 criteria correctly, and the ingest layer extracts real values from native-text
+applications, but the two are not wired together. Today a contradictory application and an empty one
+are indistinguishable to the engine. Until that is closed, every fidelity number is measured against
+synthetic scenarios rather than a real Newcastle case. This is the highest-value next piece of work,
+and it needs no API key.
+
+Then, in rough order: the remaining review-type criteria sets (only Subdivision exists — expanded_use,
+small_project_plan, use_permit, large_project_plan, shoreland); the real silent-error surface the
+harness named (a NOT_APPLICABLE finding renders identically to an already-reviewed one, with no
+`board_question`/`#unresolved` box); and, once an `ANTHROPIC_API_KEY` exists, the first real vision
+run — Shattuck's 18/18 scanned pages have still never been read, and no claim about vision accuracy
+appears anywhere in this repo.
+
+Counsel items, none blocking: D-0026 (no appeal-rights paragraph in any of the nine samples),
+D-0027 (preparer of record — Ben is Chair, author and operator), D-0028 (the "Conditions of Law"
+certification typo, settled house wording).
 
 The orchestration pattern that worked for W1–W6: parallel scoped builds → integrate → **adversarial
 critic** → **mechanical gate** → bounded repair (max 2, no-progress break). Model assignment:

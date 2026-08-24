@@ -385,39 +385,87 @@ def test_procedural_reference_disposition():
 
 
 def test_no_rendered_text_is_a_verdict():
-    samples: list[str] = []
+    """Every one of these samples must clear `contains_banned_verdict_language`
+    -- that check is a blunt substring net over words like "compliant" /
+    "approved" that should never appear ANYWHERE this engine renders,
+    quoted Code text included (Article 7's own standards never use those
+    exact words for themselves).
 
-    samples.append(
+    `check_conclusion_verbs` (the sentence-aware guard) is asserted clean
+    on every sample's own AUTHORED wrapper text. One sample --
+    render_judgement_question()'s real quoted `code_text` -- is checked
+    SEPARATELY (2026-08-24, W8 over-conclusion round: see
+    engine.review.render_judgement_question's own docstring, "THIS PROMISE
+    IS SCOPED TO THE WRAPPER"): a real Article 7 standard's own words can be
+    conclusion-shaped ("will not cause unreasonable..."), and now that the
+    guard's pattern list is wide enough to catch that real dodge phrasing
+    (previously missed -- see tests/test_over_conclusion_dodges.py), it
+    correctly fires on the QUOTED portion. That is not a leak: it is the
+    guard doing its job on the Code's own text, exactly the case
+    eval/over_conclusion.py's `question_hits` bucket exists to record
+    rather than assume can never happen. What must still hold, and is
+    asserted below, is that the engine's OWN wrapper words around the quote
+    ("The standard ... provides: ... What is the Board's finding...")
+    never themselves trigger the guard."""
+    clean_samples: list[str] = []
+
+    clean_samples.append(
         rv.compare_numeric(
             label="Structure setback", proposed=180.0, required=250.0,
             unit="ft", comparator=">=", citation=None,
         ).as_fact_sentence()
     )
-    samples.append(
-        rv.render_judgement_question(
-            subject="the proposed subdivision",
-            code_text="Erosion: The proposed subdivision will not cause unreasonable soil erosion.",
-            citation_display="Article 7, Section 12, Standard f. (Erosion)",
-        )
-    )
-    samples.append(
+    clean_samples.append(
         rv.check_exception_escape_hatch("setback", _buehner_context()).reason or ""
     )
-    samples.append(rv.fire_flood_condition().reason)
-    samples.append(
+    clean_samples.append(rv.fire_flood_condition().reason)
+    clean_samples.append(
         rv.evaluate_not_applicable(
             rule_category="x", subject="shore frontage", citation_display="Article 7"
         ).body
         or ""
     )
-    samples.append(
+    clean_samples.append(
         rv.evaluate_applicability_unknown(
             rule_category="x", code_text="some standard text", citation_display=None
         ).board_question
         or ""
     )
 
-    for text in samples:
+    for text in clean_samples:
         assert rv.contains_banned_verdict_language(text) is None, text
         guard = check_conclusion_verbs(text)
         assert guard.board_flag is False, (text, guard.matches)
+
+    # render_judgement_question(): check the banned-substring net over the
+    # FULL rendered question (quoted Code text included -- Article 7's own
+    # words never use these exact banned substrings for themselves), and
+    # check the sentence-aware guard against the WRAPPER ALONE by rendering
+    # with an inert, non-conclusion-shaped code_text stand-in -- proving the
+    # engine's own authored words ("The standard ... provides ... What is
+    # the Board's finding...") are what stays clean, independent of
+    # whatever real standard text a caller supplies.
+    real_code_text = "Erosion: The proposed subdivision will not cause unreasonable soil erosion."
+    rendered_with_real_standard = rv.render_judgement_question(
+        subject="the proposed subdivision", code_text=real_code_text,
+        citation_display="Article 7, Section 12, Standard f. (Erosion)",
+    )
+    assert rv.contains_banned_verdict_language(rendered_with_real_standard) is None, rendered_with_real_standard
+
+    wrapper_only = rv.render_judgement_question(
+        subject="the proposed subdivision", code_text="INERT_PLACEHOLDER_NOT_A_CONCLUSION",
+        citation_display="Article 7, Section 12, Standard f. (Erosion)",
+    )
+    wrapper_guard = check_conclusion_verbs(wrapper_only)
+    assert wrapper_guard.board_flag is False, (
+        "the engine's OWN wrapper words around a quoted standard must never "
+        f"themselves read as a conclusion: {wrapper_only!r} -> {wrapper_guard.matches}"
+    )
+
+    # And confirm the guard DOES fire when the real standard's own words are
+    # conclusion-shaped (documenting the expected behaviour, not just
+    # tolerating it) -- every match must be a real dodge pattern, never the
+    # banned-substring net's job duplicated incorrectly.
+    real_guard = check_conclusion_verbs(rendered_with_real_standard)
+    assert real_guard.board_flag is True
+    assert any(m.category == "cause_or_result_in_unreasonable" for m in real_guard.matches)

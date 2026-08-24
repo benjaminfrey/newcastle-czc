@@ -307,11 +307,24 @@ def render_judgement_question(*, subject: str, code_text: str, citation_display:
     """A first-person question TO the Board, never an answer. `subject` is a
     short noun phrase for what's being asked about ("the proposed
     subdivision", "the proposed lot layout"). The rendered question quotes
-    no verdict -- it asks, and it deliberately avoids the guard's own
+    no verdict -- it asks, and its OWN authored wrapper text (everything
+    outside the quoted `code_text`) deliberately avoids the guard's own
     conclusion-verb vocabulary ("meets", "satisfies", "consistent with",
     "complies", ...) so a genuine open question never reads as a disguised
-    answer. tests/test_review_engine.py checks this against
-    llm.guards.check_conclusion_verbs directly."""
+    answer. tests/test_review_engine.py checks the wrapper against
+    llm.guards.check_conclusion_verbs directly.
+
+    THIS PROMISE IS SCOPED TO THE WRAPPER, NOT `code_text` (2026-08-24, W8
+    over-conclusion round): `code_text` is the Code's OWN verbatim words,
+    supplied by the caller, and Article 7 Section 12.f.1's real standards
+    themselves use conclusion-shaped language ("will not cause unreasonable
+    soil erosion", "will not have an undue adverse effect...") -- the guard
+    is EXPECTED to sometimes fire on that quoted portion once its pattern
+    list is wide enough to catch real dodge phrasings, and that is correct
+    behaviour, not a leak: eval/over_conclusion.py's `question_hits` bucket
+    exists specifically to record this (a question quoting a Code standard
+    verbatim, never counted as an over-conclusion) rather than assume it
+    can never happen."""
     cite = f" ({citation_display})" if citation_display else ""
     return (
         f'The standard{cite} provides: "{code_text}" '

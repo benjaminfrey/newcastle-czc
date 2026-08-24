@@ -1139,6 +1139,193 @@ For the record, so they are not re-raised:
 
 ---
 
+## D-0029 — Dalton's "internally contradictory" character is not verifiable offline, and no
+extraction wiring feeds real facts into the subdivision engine for any case yet
+
+- **Status:** OPEN
+- **Raised:** 2026-08-24 (W8 eval harness build: `eval/dalton_case.py`, `eval/over_conclusion.py`).
+- **Blocking:** no — but it caps what the W8 held-out Dalton run can honestly claim today, and it
+  is a real capability gap independent of Dalton specifically.
+- **The finding, in two parts:**
+  1. Dalton's real application PDF (`docs/Findings of Fact and Conclusions of Law/"M002, L053
+     (976 US Rt 1, Dalton) 2025.09.09 Application.pdf"`) is a pure scan — measured directly via
+     `ingest.triage.triage_pdf()`: all 5 pages are Tier C, 0/5 reach even the Tier-B floor (20
+     chars). There is no OCR path anywhere in this codebase; the only extractor for a Tier C/D
+     page is `ingest/vision.py`, which needs a real `LLMClient` call, which needs
+     `ANTHROPIC_API_KEY`, not set in this environment. Consequence: whether Dalton's application is
+     actually "incomplete" or "internally contradictory" — the premise of the W8 held-out Dalton
+     scenario — **cannot be verified from the real document offline today.** The eval harness
+     reports this claim as NOT MEASURED rather than assuming it; it must not be cited as an
+     established fact about the real case until a vision run (post D-0025, once a key exists)
+     actually reads the five pages.
+  2. Independent of Dalton: `ingest/pipeline.py`'s crosswalk does not currently map ANY extracted
+     `field_key` onto `engine.subdivision_review.run_walk()`'s `facts["standard.<letter>.value"]`
+     keys, for ANY case (verified by grep — this wiring does not exist yet). Practically, this
+     means the real, deterministic, offline Tier A/B extraction pipeline cannot currently populate
+     the subdivision engine's numeric/boolean criteria (o., p., r., u.) for any real case, Dalton
+     included — a case with genuinely contradictory real facts and a case with zero facts at all
+     are, today, mathematically indistinguishable to `run_walk()`, because contradiction is a
+     property of *disagreeing field candidates* and there is nothing to disagree over when
+     extraction returns nothing. `ingest.fields.merge_field_group()`'s `contested` mechanism is
+     real and correctly detects a disagreement when one reaches it (verified directly,
+     `eval/dalton_case.py:demonstrate_contested_mechanism()`); it simply has no live path from any
+     case's real extracted candidates into the subdivision walk yet.
+- **What the app already does:** honestly renders all 21 criteria as blanks/questions when no facts
+  exist (never invents a value), and the eval harness reports the vision-dependent claim as "not
+  measured (no API key)" rather than as a pass or a fabricated finding.
+- **Needs:** (i) D-0025's key, whenever it exists, to actually run Dalton's five pages through
+  `ingest/vision.py` and see what the application really says; (ii) separately, a crosswalk from
+  `ingest/pipeline.py`'s extracted field_keys onto the subdivision engine's `standard.<letter>.value`
+  facts (a real build task, not a legal/policy decision — logged here because it changes what any
+  future held-out run can claim, not because it needs a human legal judgement call).
+
+---
+
+## D-0030 — Precision was removed from the structural metric (replaced by recall + a coverage assertion), and the recall aggregate now refuses to report below n=3 — build task, not a legal decision, logged for the method
+
+- **Status:** RESOLVED (as a build decision — this describes what was built and why, not an open
+  question needing a human to answer).
+- **Raised / Resolved:** 2026-08-24, W8 eval-harness hardening round (the round's brief: "an eval
+  that cannot fail is worse than no eval" — specifically, "if a metric could be improved by
+  omitting a standard, that metric is wrong").
+- **Blocking:** no.
+- **The defect this replaced:** `eval/metrics.py`'s structural metric used to report
+  `precision = |predicted ∩ truth| / |predicted|` alongside recall. This app is a COMPLETE-WALK
+  design — `engine.subdivision_review.run_walk()` renders all 21 standards on every case,
+  unconditionally, by design (dropping a criterion is the worst failure this app can make). Under
+  that design `|predicted|` is pinned at the full 21 regardless of what the real decision's prose
+  happened to cite, so precision could only ever FALL when the app rendered a standard the real
+  decision folded into shared prose without a per-letter citation — i.e. it penalised exactly the
+  completeness behaviour this app exists to guarantee. Worse, it could not detect the actual
+  failure that matters: dropping standard k from the render shrinks `|predicted|` and
+  `|intersection|` together, leaving precision UNCHANGED (proven directly,
+  `tests/test_eval_structural_metrics.py::TestPrecisionWasCorrectlyRemoved`, which reimplements the
+  discredited formula inline on purpose so the proof survives even though production code no
+  longer computes it). A metric a real regression cannot move is not measuring anything.
+- **What was built, as two separate numbers, never averaged:**
+  1. **Recall** — unchanged formula (`|predicted ∩ truth| / |truth|`), still needs ground truth,
+     but DOES detect a dropped criterion: if the engine's predicted set is missing a letter the
+     real decision cited, that letter drops the intersection while `|truth|` stays fixed, so recall
+     falls (`tests/test_eval_structural_metrics.py::
+     test_recall_degrades_when_a_criterion_is_dropped_from_predicted` drops one deterministically,
+     at both the pure-scoring layer and end-to-end through the real subdivision walk via a
+     monkeypatched `_run_subdivision_walk`, and asserts the number moves in both).
+  2. **Coverage** (new) — a per-pair boolean assertion, not a rate: `predicted_letters == {every
+     standard_letter in the criteria set the walk actually loaded}` (the universe comes from
+     `engine.subdivision_review.load_rules_for_criteria_set()`'s own rule list, not a hardcoded
+     "a".."u", so it stays correct if the criteria set's size ever changes). Coverage needs NO
+     ground truth, so it is reported for every subdivision pair the walk runs against — including
+     Academy Hill, whose ground truth is empty (its "CONCLUSIONS OF LAW" section is a never-filled-
+     in draft template — see D-0031) and therefore has no computable recall at all. It is a
+     completeness AUDIT of an invariant supposed to hold on every case, not a performance estimate
+     meant to generalise — see the next bullet for why that distinction matters for the n-policy.
+- **The n-policy (`MIN_AGGREGATE_N = 3` in `eval/metrics.py`):** the recall AGGREGATE (a
+  micro-averaged rate pooled across matched pairs) is now withheld — printed as `"insufficient
+  pairs (n=N); no aggregate reported"` — until at least 3 pairs have a computable recall. n=1 is a
+  single anecdote (cannot show whether a number is typical or a fluke); n=2 cannot distinguish a
+  real pattern from a coin flip between two data points; n=3 is the smallest sample at which one
+  outlier pair can no longer single-handedly define the reported figure. It is a floor, not a
+  statistically comfortable target — raising real n needs more matched pairs with a built criteria
+  set (today only Subdivision has one, and only 2 of the 6 matched pairs carry it), not a lower bar
+  here. **The coverage tally is deliberately NOT gated by this minimum** — see
+  `eval/metrics.py:aggregate_structural()`'s own docstring and
+  `tests/test_eval_structural_metrics.py::TestAggregateNPolicy::
+  test_coverage_tally_is_never_gated_by_the_minimum`: coverage is a pass/fail audit of a structural
+  invariant, not a rate meant to generalise, so suppressing it below some n would hide a genuine
+  stop-ship signal (a dropped criterion) for no honest reason. A coverage failure among any measured
+  pair now also feeds `eval/run_eval.py`'s `stop_ship` flag directly.
+- **Consequence for today's real run:** with the current fixture set, structural recall's aggregate
+  is `insufficient pairs (n=1); no aggregate reported` (only Shattuck has a nonzero ground truth
+  under D-0031's extraction; Academy Hill's is genuinely empty), while coverage reports `2/2` —
+  both are real, both are printed with their `n`, and neither is silently omitted or padded to
+  clear the bar.
+- **Needs:** nothing further to decide. If a third real subdivision decision is ever added to
+  `docs/` (or a second criteria set is built for another review type), recall's aggregate will
+  become reportable once 3 pairs have computable ground truth — no code change required.
+
+---
+
+## D-0031 — Structural recall's ground truth now reads the decision PDF directly, not articles.json — build task, not a legal decision, logged for the method + its stated failure modes
+
+- **Status:** RESOLVED (as a build decision — this describes what was built and why, not an open
+  question needing a human to answer).
+- **Raised / Resolved:** 2026-08-24, W8 eval-harness hardening round (the round's brief: "an eval
+  that cannot fail is worse than no eval").
+- **Blocking:** no.
+- **The defect this replaced:** `eval/metrics.py`'s structural recall used to derive "which
+  subdivision standards did the real decision address" by resolving citations in the decision's
+  text against `rulesets/adopted/articles.json` (`ruleset_build.verify_citations.build_report()`)
+  — the SAME artifact `engine/criteria_seed.py` builds the criteria set (the "predicted" side) from.
+  A node id missing from articles.json would silently shrink BOTH sides of the recall fraction at
+  once (the citation fails to resolve, and the criteria set never seeds that standard), so the
+  metric could report a clean recall even while a real standard vanished from the app — an eval
+  that agrees with itself is worse than no eval.
+- **What was built:** `eval/ground_truth.py` — reads the decision PDF's own text directly (pymupdf,
+  already a hard dependency), locates the "APPROVAL STANDARDS" section by its real heading, and
+  extracts the lettered standards list (a., b., c., ... u.) the real decisions render there, with a
+  Roman-numeral-collision filter for the one letter (i.) that can be confused with a nested
+  sub-item list. Zero import of `rulesets/adopted/articles.json`, `ruleset_build.verify_citations`,
+  or `engine.criteria_seed` anywhere in the module — checked mechanically by
+  `tests/test_ground_truth.py::test_module_has_no_articles_json_dependency` (greps the module's own
+  source, outside its docstrings) and proven behaviourally by
+  `tests/test_ground_truth.py::test_independence_from_articles_json` (blocks every attempt to open
+  the real articles.json file and confirms Shattuck's extracted letter set — the full, correct
+  21/21 — is unaffected).
+- **Cross-check against the old (circular) method, both real decisions on file:** they agree —
+  Shattuck 21/21 (a-u), Academy Hill 0 (its "CONCLUSIONS OF LAW" section is a literal, never-filled-in
+  DRAFT template — "Motion: … Moved by: … Second: …" — so there is genuinely nothing to extract by
+  either method). Agreement is a sanity check that the new method is not obviously wrong; it is NOT
+  what proves independence — the blocked-file test above is what proves that.
+- **Stated failure modes (see eval/ground_truth.py's own module docstring for the full list, not
+  repeated in full here):** a pure-scan decision PDF yields "not extractable," never a misleading
+  empty-but-clean zero; a decision using a different template/heading also yields "not extractable"
+  rather than a guessed answer; the method is verified against only the two real subdivision
+  decisions on file (Shattuck, Academy Hill) and is unverified on a hypothetical third decision that
+  might format its standards list differently; the Roman-numeral filter is a heuristic tuned against
+  real corpus text, not a real outline parser.
+- **Needs:** nothing further to decide. If a third real subdivision decision is ever added to
+  `docs/`, re-run `tests/test_ground_truth.py` against it and read the module docstring's failure
+  modes before trusting a low or unexpected letter count from it.
+
+---
+
+## D-0032 — Two of eval/over_conclusion.py's escape-phrase checks were not found verbatim in the nine real decisions when audited (2026-08-24) — judgement call, not blocking
+
+- **Status:** OPEN (a logged judgement call, not something needing a yes/no answer — see "What we
+  did" below; reopen only if someone wants to change the call).
+- **Raised:** 2026-08-24, W8 over-conclusion widening round, while grepping all nine real decisions'
+  extracted text for the real corpus language behind each dodge phrasing added that round (the task
+  brief's instruction: "using the REAL language of the nine decisions ... rather than inventing
+  phrases").
+- **Blocking:** no.
+- **The finding:** `eval/over_conclusion.py`'s pre-existing `_ESCAPE_PHRASES` list ("no deficiency
+  identified", "no issue(s) found/identified", "no violation", "no concerns identified") does not
+  appear verbatim anywhere in the nine real decisions' extracted text (checked directly, this
+  round — not merely absent from a quick read). They were written for a plausible dodge SHAPE
+  ("no <problem-noun> <past-participle>"), not lifted from the corpus, unlike every dodge added in
+  this same round (`_ABSENCE_RE` and the new `llm.guards._CONCLUSION_PATTERNS` entries — see
+  `tests/test_over_conclusion_dodges.py`, where every entry carries a real-corpus source note).
+- **What we did:** left them in place. Removing a working check narrows detection coverage, the
+  wrong direction for a safety scanner, and "no deficiency identified" (etc.) is a plausible real
+  phrasing an LLM provider could produce even though it happens not to appear in these nine
+  particular Board decisions. Logged here rather than silently kept, per the task brief's own
+  instruction to log borderline judgement calls rather than making them invisibly.
+- **A second, related judgement call logged in the same pass:** `llm/guards.py`'s new
+  `conformance_conformity` pattern ("in conformance with" / "in conformity with") WILL fire on the
+  boilerplate opening every one of the nine decisions repeats ("No development activity contemplated
+  by this Code may be undertaken unless in conformity with this Code") — a procedural framing
+  sentence, not a per-application merits conclusion, and one that carries no modal word the
+  guard's clause-scoped exclusion can key off of. Accepted as the safe-side failure (over-flagging
+  costs a human one extra glance; excluding the phrase to avoid that glance would also silently
+  un-flag Buehner's REAL per-application use, "Is in conformance with the provisions of Article
+  III," which is exactly what the guard exists to catch). See the `# "in conformance with" ...
+  INCLUDED 2026-08-24` comment in `llm/guards.py`'s BORDERLINE VERBS section for the full reasoning.
+- **Needs:** nothing to decide unless a future audit of more real decisions turns up either phrase
+  verbatim (strengthening the case to keep `_ESCAPE_PHRASES` as-is) or shows the conformance/
+  conformity over-flagging is common enough in real Board prose to warrant a narrower pattern.
+
+---
+
 ## Numbering note — D-0019
 
 There is no D-0019. The identifier was skipped when entries were added in parallel during the
