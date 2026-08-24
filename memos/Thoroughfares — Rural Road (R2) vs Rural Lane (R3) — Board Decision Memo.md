@@ -2,28 +2,50 @@
 
 **A classification question for the Planning Board — Article 3, Thoroughfares**
 
-## The question
+*Revised August 24, 2026. An earlier version of this memo asked the Board to choose a test for
+applying R3 more broadly. Since then the information needed to apply the better test became
+available and the classification has been carried out. The question before the Board has changed
+accordingly, and is now narrower.*
 
-Article 3 gives every existing road in Newcastle a Thoroughfare Type. Two rural Types sit
-next to each other on the scale:
+## What has changed since this memo was first written
 
-- **R2 Rural Road** — the standard rural road: two lanes, an 18 ft traveled way, a 40 ft
-  right-of-way.
-- **R3 Rural Lane** — the narrowest Road Type: a single shared surface, a 12 ft traveled way,
-  a 33 ft right-of-way, gravel acceptable. The Code describes it as the designation for
-  low-volume ways "generally under 400 [vehicles] per day" and for narrow historic two-rod
-  rights-of-way.
+The earlier memo set out four options. Option 3 was to classify by **how many dwellings a way
+actually serves** — the test that matches the Code's own language, which describes R3 in terms of
+traffic volume rather than length. That memo recommended against it for one reason only: *"the Town
+does not currently hold dwellings-served counts for each way; they would have to be gathered."*
 
-Today **four** segments are classified R3 — Camp Road, Desperado Lane, Fern Birch Lane, and
-Hawthorn Road, the small private lanes running off Route 1. Every other small rural way in
-Town, including many that are shorter, is classified R2.
+They have since been gathered. The Town's E-911 address data records one point for every addressed
+structure in Newcastle — 1,227 of them. Counting the residential addresses along each segment gives
+a direct reading of how many homes it serves.
 
-**The question for the Board: should R3 apply more broadly — and if so, on what test?**
+Two things about this deserve to be stated plainly:
 
-## Why the answer matters
+- **The counts sorted the work; they did not decide it.** Every classification below was reviewed
+  and set by hand. The counts said where to look first.
+- **About a quarter of the Town's address points carry no record of what kind of structure they
+  are.** Where a segment shows no residential address but does show a structure of unrecorded type,
+  that means *not yet reviewed*, not *nothing there*. Those were judged individually.
 
-R3 is the *lighter* standard. This is not a technicality; it decides how much work a
-property owner must do if a lane is ever improved.
+The length test this memo previously recommended was not used. It is not needed now, and it was
+always a rough stand-in: a 900 ft lane serving three houses carries no more traffic than a 400 ft
+lane serving three houses.
+
+## Where the classification now stands
+
+| | Before | Now |
+|---|---|---|
+| R3 Rural Lane | 4 segments | **66** |
+| R2 Rural Road | 126 segments | **70** |
+| Recorded as a driveway today | 4 | **61** |
+
+Measured against the dwellings-served test, the R3 group is coherent: of the 66 segments now
+classified R3, **46 serve one or two homes, 19 serve none on record, and one serves three or four.
+None serves five or more.**
+
+## Why this reduces obligations rather than increasing them
+
+R3 is the *lighter* standard. This is not a technicality; it decides how much work a property owner
+must do if a lane is ever improved.
 
 | | R2 Rural Road | R3 Rural Lane |
 |---|---|---|
@@ -35,145 +57,48 @@ property owner must do if a lane is ever improved.
 | Maximum grade | 12% | 12% |
 | Sight distance | Per Table 3.2 | Per Table 3.2 |
 
-The safety standards — sight distance, maximum grade, drainage — are identical. What differs
-is width and surface.
+The safety standards — sight distance, maximum grade, drainage — are identical. What differs is
+width and surface.
 
-This connects directly to the concern residents raised about "road stubs." Under the new
-Section 7.F, a driveway that grows to serve more than two dwellings must be improved to the
-Type assigned to it. If a small lane is classified R2, that improvement means an 18 ft
-traveled way in a 40 ft right-of-way. If it is classified R3, it means a 12 ft shared gravel
-surface in a 33 ft right-of-way. **Classifying these lanes correctly as R3 substantially
-reduces what a future owner would have to build.**
+Under Section 7.F, a driveway that grows to serve more than two dwellings must be improved to the
+Type assigned to it. At R2 that means an 18 ft traveled way in a 40 ft right-of-way; at R3 it means
+a 12 ft shared gravel surface in a 33 ft right-of-way. **Moving these lanes to R3 substantially
+reduces what a future owner would have to build.** Nothing about the reclassification requires any
+work on any existing way.
 
-## What is on the table
+## What the Board is now asked to do
 
-There are **122** dead-end segments currently classified R2. Of those, **61**
-are 1,000 ft or shorter — the range in which a "lane" reading is plausible. The four existing
-R3 segments run 303 ft, 444 ft, 508 ft, and 593 ft.
+**First: ratify the classification as it stands** — 66 segments at R3, and 61 segments recorded as
+functioning today as driveways.
 
-If the Board sets a length test, the number of segments that would move from R2 to R3 is:
+**Second: decide nineteen remaining segments.** Nineteen privately owned segments still classified
+R2 serve two homes or fewer on the current record. Under the test as applied to everything else,
+they would be R3. They were left as they are pending the Board's view.
 
-| If the test is … | Private ways only | All owners |
-|---|---|---|
-| 300 ft or less | 8 | 9 |
-| 400 ft or less | 19 | 21 |
-| 500 ft or less | 29 | 32 |
-| **600 ft or less** | **31** | **34** |
-| 800 ft or less | 45 | 49 |
-| 1,000 ft or less | 54 | 61 |
+They fall into three groups:
 
-## Options
+- **Eight serve two homes** — Bradley Shore Road, Cottage Road, Deer Meadow Road, Dickenson Road,
+  Eagle Point Road, Estey Road, Happy Valley Road, and Jackies Way. Two homes is the driveway
+  threshold itself, so these sit exactly on the line.
+- **Four serve one home** — Barrol Point Road, Bay View Road, Osprey Point Road, and Sheepscott
+  River Way.
+- **Seven show no residential address on record**, though several show a structure of unrecorded
+  type. These are the least certain of the group and may simply need a look on the ground.
 
-**Option 1 — Leave R3 as it is.** R3 remains the four lanes off Route 1. Simple, but it
-leaves an inconsistency that is visible on the map: Eden Lane is 277 ft, shorter than Camp
-Road at 303 ft, yet Eden Lane is a Rural Road and Camp Road is a Rural Lane. The only thing
-separating them is which road they connect to.
+**Third: resolve one inconsistency this memo raised before, which is still open.** Eden Lane and
+Camp Road are both privately owned, both show no residential address, and both are short dead-end
+ways. **Camp Road is classified R3; Eden Lane is still R2.** Nothing in the record distinguishes
+them. Whatever the Board decides for the nineteen segments above should settle Eden Lane too.
 
-**Option 2 — A length test.** Any private dead-end way at or under the chosen length becomes
-R3. Objective, easy to apply, and easy for a property owner to check. Its weakness is that
-length is only a rough stand-in for how much traffic a way actually carries.
+## Two items carried forward
 
-**Option 3 — A use test.** R3's own definition is about traffic volume, not length. The Board
-could instead classify by the number of dwellings a way serves — for example, a private way
-serving four or fewer dwellings is R3. This matches the Code's language most closely, but the
-Town does not currently hold dwellings-served counts for each way; they would have to be
-gathered.
+- **Kavanagh Road and Woods Island Road still have no Ownership Category recorded.** Neither matched
+  a State or E-911 jurisdiction record. This needs checking against the Town's own road records.
+- **The 11-foot Station Road fragment has been removed** from the Inventory as a mapping artifact.
+  That item is closed.
 
-**Option 4 — Case by case.** The Board reviews the list below and names individual roads.
+## A note on how this carries forward
 
-## Recommendation
-
-**Option 2, with the test set at 600 ft or less for private dead-end ways** — 31 segments.
-
-The reasons: it is consistent with the four lanes already classified R3, the longest of which
-is 593 ft; it captures the ways that function today as shared driveways; it is objective, so
-a property owner can determine the answer without asking anyone; and because R3 is the
-lighter standard, it reduces rather than increases the obligation on rural landowners.
-
-The Board should know that length is a proxy. A 900 ft lane serving three houses carries no
-more traffic than a 400 ft lane serving three houses. If the Board prefers the more accurate
-test, Option 3 is the better planning answer and the Town can gather the counts.
-
-Whatever the Board decides is recorded permanently and carries forward automatically when
-the Town's district mapping is finalized — no decision has to be made twice.
-
-## Also noticed
-
-Three entries in the road data look like mapping artifacts rather than real roads. They do
-not affect the question above, but the Board may wish to have them corrected:
-
-- **Station Road** carries an 11-foot segment with no connection at either end.
-- **Kavanagh Road** and **Woods Island Road** have no ownership category recorded.
-
----
-
-## The full list
-
-Every dead-end road segment currently classified **R2 Rural Road** at 1,000 ft or less,
-shortest first. The four segments already classified R3 are not listed. A further
-61 R2 dead-end segments are longer than 1,000 ft and are not proposed for change
-under any option.
-
-| Length (ft) | Road | Ownership | District(s) | Connects to |
-|---:|---|---|---|---|
-| 11 | Station Road | Town Way | D1 | end |
-| 277 | Eden Lane | Private | D1 | Sheepscot Road |
-| 283 | Mechanics Way | Private | D1 | Station Road |
-| 287 | Mandys Way | Private | D1 | North Newcastle Road |
-| 291 | Cherry Lane | Private | D1 | River Road |
-| 291 | Marsh View Lane | Private | D1 | Station Road |
-| 291 | Phils Hill Road | Private | D1 | Jones Woods Road |
-| 295 | Gastaldo Farm Road | Private | D2 | Academy Hill |
-| 295 | Dickenson Road | Private | D1 | North Newcastle Road |
-| 303 | East Branch Road | Private | D1 | The Kings Highway |
-| 304 | Deer Meadow Road | Private | D1 | end |
-| 307 | Middle Way | Private | SD-Campus | Academy Hill |
-| 314 | Hodkins Road | Private | D1 | River Road |
-| 319 | Cottril Road | Private | D4 | Academy Hill |
-| 341 | Birch Road | Private | D1 | Ridge Road |
-| 350 | Hall Street | Private | D1, D5 | Academy Hill |
-| 358 | Swallow Hill Road | Private | D1, SD-Rural Highway | River Road |
-| 362 | Elm Road | Private | D1 | Ridge Road |
-| 377 | Bartlet Neck Road | Private | D1 | end |
-| 383 | Bay View Road | Private | SD-Highway Commercial | end |
-| 383 | Old Austin Road | Town Way | SD-Conservation | Mills Road |
-| 405 | Meadow Ridge Lane | Private | D1 | Jones Woods Road |
-| 421 | Blueberry Hill Road | Private | D1 | Bunker Hill Road |
-| 421 | Jackies Way | Private | D1 | West Hamlet Road |
-| 422 | Maple Lane | Private | D1 | Bunker Hill Road |
-| 449 | Hillcrest Road | Town Way | D1 | Academy Hill / East Old County Road |
-| 458 | Morgan Brook Lane | Private | D1 | Jones Woods Road |
-| 461 | Granite Point Road | Private | D1 | Ridge Road |
-| 462 | Doe Run | Private | D1 | Lewis Hill Road |
-| 478 | Depot Street | Private | D1 | Academy Hill |
-| 489 | Bay View Road | Private | SD-Highway Commercial | Academy Hill |
-| 495 | Ledge Hill Crossing | Private | SD-Highway Commercial, D1 | Sheepscot Road |
-| 517 | Alder Shore Road | Private | D1 | end |
-| 592 | Chandler Way | Private | D1, D6 | end |
-| 613 | Pine Ledge Drive | Private | D1 | West Old County Road |
-| 620 | Hillside Road | Town Way | D1 | Jones Woods Road |
-| 651 | Rocky Ledge Road | Private | D1 | North Newcastle Road |
-| 652 | Strix Hill Road | Private | D1 | Jones Woods Road |
-| 657 | Oyster Lane | Private | D1 | River Road |
-| 677 | Curlewis Lane | Private | D1 | North Newcastle Road |
-| 689 | High View Road | Private | D1 | Bunker Hill Road |
-| 694 | Paradise Road | Private | D1 | North Newcastle Road |
-| 699 | Osprey Point Road | Private | SD-Conservation, D1 | Route 1 |
-| 716 | Layden Lane | Private | D1 | Sheepscot Road |
-| 723 | East View Road | Private | D2, D1, SD-Highway Commercial | Mills Road |
-| 734 | Barrol Point Road | Private | D1 | Main Street / River Road |
-| 758 | Deer Meadow Road | Private | D1 | Ridge Road |
-| 764 | Thistle Way | Private | D1 | Bunker Hill Road |
-| 796 | Stony Ridge Lane | Private | D1, D5 | West Old County Road |
-| 809 | Briarwood Lane | Private | D1 | Station Road |
-| 825 | Waterview Lane | Private | D1 | River Road |
-| 844 | Cottage Road | Private | D1 | end |
-| 847 | High Ground Road | Town Way | D1 | Jones Woods Road |
-| 867 | Schraft Road | Private | D1 | River Road |
-| 893 | Nob Hill Road | Private | D1 | end |
-| 895 | Robinson Road | Town Way | D1, SD-Rural Highway | River Road |
-| 902 | Cole Cabin Road | Private | D2 | Academy Hill |
-| 916 | Grace Lily Lane | Private | D1 | Pond Road |
-| 945 | Kiln Road | Private | D1 | River Road |
-| 953 | Woods Island Road | (not recorded) | D1, SD-Civic, SD-Rural Highway | Route 1 |
-| 987 | Sheepscott River Way | Private | D1 | end |
+Every classification recorded here is durable. When the Town's district mapping is finalized and the
+underlying data is refreshed, these decisions carry forward automatically — no decision has to be
+made twice, and nothing the Board settles today will need revisiting because of a data update.
