@@ -247,6 +247,8 @@ echo "Frozen from commit $FROZEN_COMMIT (source tree $FROZEN_SOURCE_TREE)"
 echo
 echo "NEXT:"
 echo "  1. Write the Summary by hand, then re-run this command to render its PDF."
+echo "     Pass --freeze-date=\"$FREEZE_DATE\" on that re-run. Without it the freeze date"
+echo "     restamps to today and frozen-from.json is rewritten from current HEAD."
 echo "  2. Commit releases/$VERSION/ and tag $VERSION at that commit."
 echo "     The tag's source/ tree must stay $FROZEN_SOURCE_TREE — build-adopted.sh"
 echo "     refuses if the tag is later moved onto different source."
