@@ -45,10 +45,45 @@ NEAR_WHITE = (254 / 255, 254 / 255, 254 / 255)  # matches the scan background
 # Stays left of "NEWCASTLE, MAINE" (x>=317) and covers label+signature+date.
 ATTEST_RECT = fitz.Rect(48, 626, 306, 754)
 
+# "AMENDED THROUGH: MARCH 24, 2025" -- the third of the three date lines under
+# "NEWCASTLE, MAINE". It is part of the scanned cover art, so restating it means
+# masking the old line and reprinting it. ADOPTED MODE ONLY: before the vote
+# nothing has been amended, so the draft and Town Meeting editions keep the
+# baseline date untouched. The two lines above it (EFFECTIVE / ADOPTED) stay as
+# they are in every mode -- the Code really was adopted November 3, 2020, and
+# this edition amends it rather than replacing it.
+#
+# Measured off the baseline scan at 600 dpi: ink runs x 388.8..563.9,
+# cap-top 722.9, baseline 731.9 (comma descends to 732.8).
+AMENDED_RECT = fitz.Rect(386, 721.0, 566, 733.8)
+AMENDED_RIGHT = 563.9      # right edge all three date lines align to
+AMENDED_BASELINE = 731.9
+AMENDED_SIZE = 12.86       # 9.0 pt caps in Barlow Condensed (cap ratio 0.70)
+AMENDED_TRACK = 0.777      # per-char, matching the scanned line's letterspacing
+SCAN_INK = (96 / 255, 100 / 255, 101 / 255)  # sampled from the line being replaced
+
 FONTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "style", "fonts")
 BARLOW_BOLD = os.path.join(FONTS_DIR, "Barlow-Bold.ttf")
 BARLOW_MED = os.path.join(FONTS_DIR, "Barlow-Medium.ttf")
 BARLOW_REG = os.path.join(FONTS_DIR, "Barlow-Regular.ttf")
+BARLOW_COND = os.path.join(FONTS_DIR, "BarlowCondensed-Regular.otf")
+
+
+def _draw_tracked(page, text, right_x, baseline_y, size, track, color):
+    """Right-aligned text with per-character letterspacing.
+
+    insert_textbox has no tracking control, and the baseline cover's date lines
+    are noticeably letterspaced -- set solid, a replacement line reads as
+    visibly tighter than the two lines above it. Draw glyph by glyph instead.
+    """
+    font = fitz.Font(fontfile=BARLOW_COND)
+    width = font.text_length(text, size) + track * (len(text) - 1)
+    x = right_x - width
+    for ch in text:
+        page.insert_text((x, baseline_y), ch, fontfile=BARLOW_COND,
+                         fontname="barlow-cond", fontsize=size, color=color)
+        x += font.text_length(ch, size) + track
+    return width
 
 
 def build_cover(baseline_pdf, out_pdf, version, date_str, caveat=None,
@@ -58,6 +93,11 @@ def build_cover(baseline_pdf, out_pdf, version, date_str, caveat=None,
     The clerk attestation is masked in EVERY mode (see module docstring): it
     certifies the originally adopted code, not an amendment to it.
     """
+    if mode not in ("draft", "meeting", "adopted"):
+        raise ValueError(f"unknown cover mode {mode!r}")
+    if mode in ("meeting", "adopted") and not event_date:
+        raise ValueError(f"mode {mode!r} requires event_date")
+
     src = fitz.open(baseline_pdf)
     w, h = src[0].rect.width, src[0].rect.height
     # Baseline page 0 is /Rotate 90 over a landscape mediabox: rendering to a
@@ -74,6 +114,16 @@ def build_cover(baseline_pdf, out_pdf, version, date_str, caveat=None,
 
     # 2. Mask the personal attestation (invisible white-on-white).
     page.draw_rect(ATTEST_RECT, color=None, fill=NEAR_WHITE)
+
+    # 2b. ADOPTED ONLY: restate the amended-through date. On an adopted edition
+    #     the baseline's "AMENDED THROUGH: MARCH 24, 2025" is simply wrong --
+    #     this Code is amended through the adoption date. Draft and meeting
+    #     editions leave it alone: nothing is amended until the vote passes.
+    if mode == "adopted":
+        page.draw_rect(AMENDED_RECT, color=None, fill=NEAR_WHITE)
+        _draw_tracked(page, f"AMENDED THROUGH: {event_date.upper()}",
+                      AMENDED_RIGHT, AMENDED_BASELINE, AMENDED_SIZE,
+                      AMENDED_TRACK, SCAN_INK)
 
     # 3. Banner in the upper white space (centered). A filled article-blue bar
     #    with white text = on-brand and unmistakable. Barlow (embedded) so the
@@ -101,11 +151,6 @@ def build_cover(baseline_pdf, out_pdf, version, date_str, caveat=None,
             f"adopted November 3, 2020.",
         ),
     }
-    if mode not in BANNERS:
-        raise ValueError(f"unknown cover mode {mode!r}")
-    if mode in ("meeting", "adopted") and not event_date:
-        raise ValueError(f"mode {mode!r} requires event_date")
-
     headline, line2, line3 = BANNERS[mode]
 
     if headline is not None:

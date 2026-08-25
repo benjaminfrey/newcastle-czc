@@ -153,11 +153,17 @@ local only). **Nothing here changes the ordinary draft flow** — with no adopti
   `ADOPTION_EVENT_DATE`, shared by the integrated and standalone builds through
   `build/adoption-footer.sh` and `build/adoption-name.sh` (one `czc_integrated_name` — the
   filename is chrome too; a page-text-only residue check cannot see it).
-- **▶ OPEN — the adopted cover contradicts itself on dates** (spec §7). The baseline cover carries
-  "AMENDED THROUGH: MARCH 24, 2025", which is stale on an adopted edition but is the Town's own
-  attestation line. **Ben's call:** mask it, overprint the new date, or leave it.
+- **The adopted cover restates its own amended-through date** (spec §7, decided 2026-08-25). The
+  baseline cover art reads "AMENDED THROUGH: MARCH 24, 2025"; in **adopted mode only**, that one
+  line is masked and reprinted as **"AMENDED THROUGH: <adoption date>"**. Draft and Town Meeting
+  editions keep the baseline date — before the vote nothing has been amended. EFFECTIVE and ADOPTED
+  stay untouched in every mode: the Code was adopted November 3, 2020 and this edition *amends* it.
+  ⚠ **That line is scanned art with no text layer**, so a text-only assertion cannot see the stale
+  line and passes with the mask deleted. The real gate is a **pixel** test (`test_cover_modes.py`)
+  using a short adoption date so the stale line's left end stays uncovered, with meeting mode as the
+  positive control. Geometry measured at 600 dpi; don't nudge `AMENDED_RECT` without re-measuring.
 
-**Tests:** `python3 -m pytest build/tests -q` — **97**, ~2.5 min (they build real PDFs).
+**Tests:** `python3 -m pytest build/tests -q` — **102**, ~2.5 min (they build real PDFs).
 
 **Parity invariant (critical, don't break):** native-Typst units are spliced
 between pandoc passes; chrome (verso/recto binding margins, rotated Article tab,

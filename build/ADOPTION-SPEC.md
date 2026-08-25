@@ -331,16 +331,23 @@ recorded for each artifact.
   the moment at which correcting them would be legitimate, since the Board is voting on the text.
   Handled exactly as the "Conditions of Law" question in the permit-review app: **surfaced, never
   silently fixed.** Correcting the Town's own adopted wording is the Board's decision.
-- **The adopted cover contradicts itself on dates — NEEDS BEN'S DECISION, blocks a Task 4b.**
-  Found in the Task 4 review, 2026-08-24. The cover reuses the baseline scan art, whose lower block
-  reads **"AMENDED THROUGH: MARCH 24, 2025"**. In `adopted` mode the banner directly above it reads
-  "Adopted March 15, 2027, amending the Core Zoning Code adopted November 3, 2020." On the durable,
-  authoritative cover of an adopted legal instrument, those are two competing claims about currency.
-  The technique to fix it already exists — `ATTEST_RECT` masks a region of the same scan — but the
-  question is what the line should then SAY, and that is not a decision an implementer should invent:
-  (a) mask the line entirely, (b) overprint it with the new adoption date, or (c) leave it and accept
-  that the art records the baseline's own state. Draft and meeting modes are unaffected: in those the
-  art's statement is still true.
+- ~~**The adopted cover contradicts itself on dates.**~~ **RESOLVED 2026-08-25 — Ben chose (b),
+  overprint, scoped to `adopted` mode only.** The cover reuses the baseline scan art, whose lower
+  block reads "AMENDED THROUGH: MARCH 24, 2025", while the `adopted` banner above it reads "Adopted
+  <date>, amending the Core Zoning Code adopted November 3, 2020" — two competing claims about
+  currency on the cover of a legal instrument. `build-cover.py` now masks that one line and reprints
+  it as **"AMENDED THROUGH: <adoption date>"** in adopted mode. **Draft and meeting editions are
+  untouched**: before the vote nothing has been amended, so there the baseline's statement is still
+  true. The two lines above it (EFFECTIVE / ADOPTED) stay as they are in every mode — the Code
+  really was adopted November 3, 2020, and this edition amends it rather than replacing it.
+  Implementation notes: the line is scanned art with **no text layer**, so a text-only assertion
+  cannot see the stale line and would pass with the mask deleted — the gate is a **pixel** test that
+  renders with a short adoption date (leaving the stale line's left end uncovered by the
+  replacement) and asserts zero ink there, with meeting mode as the positive control. Verified by
+  mutation: both deleting the mask and mis-positioning it fail the test. Geometry was measured off
+  the baseline at 600 dpi (ink x 388.8–563.9, cap-top 722.9, baseline 731.9); the replacement is
+  Barlow Condensed at 12.86 pt with +0.777 pt tracking, matching the scanned line's cap height and
+  letterspacing, in the sampled scan ink (96,100,101).
 - **Whether the adopted edition ships a standalone Article 3 at all.** Once adopted, Article 3 is
   simply part of the Code; a standalone excerpt may be a convenience or may be a confusion. Not
   decided.
