@@ -135,3 +135,62 @@ def test_missing_current_file_fails_loudly(tmp_path):
                        cwd=REPO, capture_output=True, text=True)
     assert r.returncode != 0
     assert "fix the map" in r.stderr.lower()
+
+
+# --- The freeze date and the meeting date are DIFFERENT facts ----------------
+# Cover line 2 says "for adoption at Town Meeting, <meeting-date>"; line 3 says
+# "Frozen <date>". build-adoption.sh passed the MEETING date for both, so the
+# packet's own provenance line read "Frozen March 15, 2027" on a document
+# frozen months earlier — a statement about the future, on the line that exists
+# to say where the document came from.
+
+def test_freeze_date_is_separate_from_the_meeting_date():
+    r = subprocess.run(["bash", "build/build-adoption.sh", "v1.0", "March 15, 2027",
+                        "--dry-run", "--freeze-date=January 2, 2027"],
+                       cwd=REPO, capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    assert "Town Meeting, March 15, 2027" in r.stdout
+    assert "frozen January 2, 2027" in r.stdout
+
+
+def test_freeze_date_defaults_to_today_not_the_meeting_date():
+    from datetime import date
+    today = date.today().strftime("%B %-d, %Y")
+    r = subprocess.run(["bash", "build/build-adoption.sh", "v1.0", "March 15, 2027",
+                        "--dry-run"], cwd=REPO, capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    assert f"frozen {today}" in r.stdout
+
+
+def test_rejects_an_empty_freeze_date():
+    r = subprocess.run(["bash", "build/build-adoption.sh", "v1.0", "March 15, 2027",
+                        "--freeze-date="], cwd=REPO, capture_output=True, text=True)
+    assert r.returncode != 0
+
+
+# --- The freeze must be tied to a commit ------------------------------------
+
+def test_refuses_to_freeze_a_dirty_source_tree(tmp_path):
+    """The meeting edition renders from the working tree; the adopted edition
+    renders from the tag. If the tree is dirty at freeze time there is no
+    commit that represents what the voters were shown, so the tie cannot be
+    recorded and the freeze must refuse."""
+    release_dir = REPO / "releases" / "v1.0"
+    assert not release_dir.exists(), "a prior test/run left releases/v1.0 behind"
+    stray = REPO / "source" / "ZZZ-uncommitted-test-file.md"
+    assert not stray.exists()
+    stray.write_text("stray\n")
+    try:
+        r = subprocess.run(["bash", "build/build-adoption.sh", "v1.0", "March 15, 2027"],
+                           cwd=REPO, capture_output=True, text=True)
+        assert r.returncode != 0
+        out = (r.stdout + r.stderr).lower()
+        assert "refusing to freeze" in out
+        assert "zzz-uncommitted-test-file.md" in out
+        assert not release_dir.exists(), (
+            "a refused freeze left a shipped-looking release directory behind")
+    finally:
+        stray.unlink(missing_ok=True)
+        if release_dir.exists():
+            import shutil
+            shutil.rmtree(release_dir)

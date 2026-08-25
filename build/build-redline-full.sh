@@ -27,7 +27,12 @@
 #     [date-str]  cover date (default: today; pass explicitly for reproducible
 #                 rebuilds, per build-full-czc.sh).
 #
-# Output: releases/<new-ver>/Newcastle CZC (Integrated Draft <new-ver>) — Redline.pdf
+# Output: releases/<new-ver>/<integrated name> — Redline.pdf, where the
+#   integrated name follows ADOPTION_MODE (build/adoption-name.sh):
+#   "Newcastle CZC (Integrated Draft <ver>)" in the ordinary draft case,
+#   "Newcastle CZC (Town Meeting Edition <ver>)" for an adoption packet.
+#   With ADOPTION_BASELINE=1 the cover caveat also changes and a
+#   structural-changes page is inserted facing the cover (ADOPTION-SPEC.md §4.3).
 #   Override the destination with REDLINE_OUT=/path/out.pdf — e.g. a /tmp
 #   dry-run that must not overwrite a shipped release deliverable.
 
@@ -131,18 +136,49 @@ echo "Marked $n article markdown file(s) (vs $OLD_V)."
 # 3. Build the integrated draft against the staged (marked) source. SRC_DIR
 #    redirects the build's content; OUT_DIR keeps its output out of releases/;
 #    REDLINE_CAVEAT stamps the cover. Neither source/ nor releases/ is touched.
-CAVEAT="REDLINE vs $OLD_V  ·  additions in red, deletions struck  ·  figures & tables shown at current state (see the Summary of Changes)"
+#
+#    THE CAVEAT AND THE STRUCTURAL NOTE VARY BY MODE (ADOPTION-SPEC.md §4.3).
+#    A draft-to-draft redline has exactly one limitation to disclose: figures
+#    and tables render at current state. A BASELINE redline has three, and the
+#    two extra ones were invented by this feature — Article 2 is reproduced
+#    unmarked, and ~126 renumbering marks are deliberately suppressed. Until
+#    the final whole-branch review this file hardcoded the draft-to-draft
+#    caveat for both, so the packet redline showed Article 2 with zero marks
+#    and no renumbering marks and said nothing about either. A citizen reads
+#    that as "Article 2 untouched, nothing renumbered." Suppressing those
+#    marks is honest only if the reader is told once, plainly — so in baseline
+#    mode a full structural-changes page is inserted as the verso facing the
+#    cover, before any marked text, and the cover caveat points at it.
+FRONT_NOTE=""
+if [ "${ADOPTION_BASELINE:-0}" = "1" ]; then
+  FRONT_NOTE="$OUTDIR/structural-note.pdf"
+  python3 "$REPO_ROOT/build/structural_note.py" "$FRONT_NOTE" --old-label \
+    "the Core Zoning Code adopted November 3, 2020 and amended through March 24, 2025"
+  CAVEAT="REDLINE vs the adopted Code  ·  additions in red, deletions struck  ·  Article 2 and all figures are reproduced UNMARKED and article renumbering is not marked — READ THE FACING PAGE"
+else
+  CAVEAT="REDLINE vs $OLD_V  ·  additions in red, deletions struck  ·  figures & tables shown at current state (see the Summary of Changes)"
+fi
+
+# FRONT_NOTE_PDF="" is equivalent to not setting it at all (build-full-czc.sh
+# tests it with -n), so the draft-to-draft path is unchanged, and the variable
+# is passed as one properly quoted assignment rather than a word-split
+# conditional prefix.
 SRC_DIR="$STAGE" OUT_DIR="$OUTDIR" REDLINE_CAVEAT="$CAVEAT" \
+  FRONT_NOTE_PDF="$FRONT_NOTE" \
   bash "$REPO_ROOT/build/build-full-czc.sh" "$NEW_V" "$DATE_STR"
 
-BUILT="$OUTDIR/Newcastle CZC (Integrated Draft $NEW_V).pdf"
+# The built artifact's name follows the adoption mode this redline was run in
+# (build/adoption-name.sh — one definition, read by producer and consumer).
+source "$REPO_ROOT/build/adoption-name.sh"
+RL_NAME="$(czc_integrated_name "${ADOPTION_MODE:-draft}" "$NEW_V")"
+BUILT="$OUTDIR/$RL_NAME.pdf"
 if [ ! -f "$BUILT" ]; then
   echo "Build did not produce the expected PDF: $BUILT" >&2
   exit 1
 fi
 
 # 4. Place the result (default: the release dir; override with REDLINE_OUT).
-DEST="${REDLINE_OUT:-$REPO_ROOT/releases/$NEW_V/Newcastle CZC (Integrated Draft $NEW_V) — Redline.pdf}"
+DEST="${REDLINE_OUT:-$REPO_ROOT/releases/$NEW_V/$RL_NAME — Redline.pdf}"
 mkdir -p "$(dirname "$DEST")"
 cp "$BUILT" "$DEST"
 PAGES=$(python3 - "$DEST" <<'PY'

@@ -34,15 +34,11 @@ VERSION="${1:-v0.0-dev}"
 DATE_STR="${2:-$(date +"%B %-d, %Y")}"
 
 # Adoption state. Defaults to 'draft', so every existing invocation is unchanged.
-# See build/ADOPTION-SPEC.md §4. Shared with build-standalone.sh.
+# See build/ADOPTION-SPEC.md §4. Shared with build-standalone.sh. Sets
+# FOOTER_TEXT, enforces the version-state rule in BOTH directions (§6.1 — a
+# whole number cannot wear draft chrome, and adoption chrome cannot be stamped
+# on a decimal), and provides czc_integrated_name().
 source "$REPO_ROOT/build/adoption-footer.sh"
-
-# A whole number means adopted law; refuse to stamp one with draft chrome
-# (ADOPTION-SPEC.md §2.1 / §6.1). Only fires in draft mode — build-adoption.sh
-# and build-adopted.sh (Tasks 7-8) call this with a whole number on purpose.
-if [ "$ADOPTION_MODE" = "draft" ]; then
-  python3 "$REPO_ROOT/build/version_state.py" --require draft "$VERSION" || exit 1
-fi
 
 BASELINE_PDF="$REPO_ROOT/docs/Newcastle Core Zoning Code.pdf"
 DATA_JSON="$SOURCE_DIR/article-02-data.json"
@@ -172,16 +168,13 @@ fi
 # The artifact's own filename is chrome too: an ADOPTED document filed under a
 # name containing "Integrated Draft" or "Draft v..." carries exactly the
 # strings build/adopted_residue.py's CHROME list exists to catch, but the
-# residue gate reads PAGE TEXT -- it cannot see its own filename. So the name
-# must not say "draft" in adopted mode (Task 8 review, Important 1). draft and
-# meeting mode keep the existing name unchanged (build-adoption.sh hardcodes
-# it for the meeting edition; both are pre-vote and were never in scope for
-# the residue gate).
-if [ "$ADOPTION_MODE" = "adopted" ]; then
-  OUT_NAME="Newcastle CZC (Adopted $VERSION)"
-else
-  OUT_NAME="Newcastle CZC (Integrated Draft $VERSION)"
-fi
+# residue gate reads PAGE TEXT -- it cannot see its own filename (Task 8
+# review, Important 1). The same defect applied to the MEETING edition, one
+# mode short: the warrant-packet file a voter downloads was named "Integrated
+# Draft v1.0" while its cover said TOWN MEETING EDITION. Both now come from
+# one shared definition (build/adoption-name.sh) that every consumer reads,
+# so a rename cannot leave a caller behind. Draft mode is unchanged.
+OUT_NAME="$(czc_integrated_name "$ADOPTION_MODE" "$VERSION")"
 OUTPUT_PDF="$RELEASE_DIR/$OUT_NAME.pdf"
 COMBINED_MD="$RELEASE_DIR/$OUT_NAME.md"
 
@@ -314,11 +307,43 @@ PY
 )
 
 # cover, blank verso, TOC, then a trailing blank iff the TOC page count is odd.
-FRONT_PARTS=("$COVER_PDF" "$BLANK_PDF" "$TOC_PDF")
+#
+# FRONT_NOTE_PDF (optional seam, used by build-redline-full.sh in baseline
+# mode) replaces that blank verso with the redline's structural-changes note —
+# ADOPTION-SPEC.md §4.3 requires the note to come BEFORE any marked text, and
+# the verso facing the cover is exactly that position. Parity invariant (1)
+# still governs: the page count BEFORE the TOC must be EVEN, so a note of any
+# length is padded to an even run rather than assumed to be one page. With the
+# seam unset, PRE_TOC_PARTS is [cover, blank] and FRONT_COUNT is 2 + TOC + pad
+# exactly as before, so an ordinary build is byte-identical.
+PRE_TOC_PARTS=("$COVER_PDF")
+if [ -n "${FRONT_NOTE_PDF:-}" ]; then
+  if [ ! -f "$FRONT_NOTE_PDF" ]; then
+    echo "FRONT_NOTE_PDF is set but does not exist: $FRONT_NOTE_PDF" >&2
+    exit 1
+  fi
+  NOTE_PAGES=$(python3 - "$FRONT_NOTE_PDF" <<'PY'
+import sys, fitz
+print(fitz.open(sys.argv[1]).page_count)
+PY
+)
+  PRE_TOC_PARTS+=("$FRONT_NOTE_PDF")
+  PRE_TOC_COUNT=$(( 1 + NOTE_PAGES ))
+  echo "Front matter: inserting a $NOTE_PAGES-page structural note after the cover"
+else
+  PRE_TOC_PARTS+=("$BLANK_PDF")
+  PRE_TOC_COUNT=2
+fi
+if [ $((PRE_TOC_COUNT % 2)) -eq 1 ]; then
+  PRE_TOC_PARTS+=("$BLANK_PDF")
+  PRE_TOC_COUNT=$((PRE_TOC_COUNT + 1))
+fi
+
+FRONT_PARTS=("${PRE_TOC_PARTS[@]}" "$TOC_PDF")
 if [ $((TOC_PAGES % 2)) -eq 1 ]; then
   FRONT_PARTS+=("$BLANK_PDF")
 fi
-FRONT_COUNT=$(( 2 + TOC_PAGES + (TOC_PAGES % 2) ))
+FRONT_COUNT=$(( PRE_TOC_COUNT + TOC_PAGES + (TOC_PAGES % 2) ))
 
 echo "Assembling: $FRONT_COUNT front-matter pages + $OFFSET body pages -> $OUTPUT_PDF"
 pdfunite "${FRONT_PARTS[@]}" "$BODY_PDF" "$OUTPUT_PDF"

@@ -9,6 +9,7 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+source "$REPO_ROOT/build/adoption-name.sh"
 VERSION="${1:-}"
 ADOPTION_DATE="${2:-}"
 
@@ -26,10 +27,11 @@ if ! git -C "$REPO_ROOT" rev-parse -q --verify "refs/tags/$VERSION" >/dev/null; 
   exit 1
 fi
 
-# The Town Meeting edition to verify against. Named explicitly (build-full-czc.sh's
-# name for meeting mode, unchanged) rather than discovered by globbing — see the
-# ADOPTED_MD/ADOPTED_PDF comment below for why glob discovery is the wrong tool here.
-MEETING_MD="$REPO_ROOT/releases/$VERSION/Newcastle CZC (Integrated Draft $VERSION).md"
+# The Town Meeting edition to verify against. Named explicitly (via the shared
+# build/adoption-name.sh definition, so a rename cannot leave this consumer
+# behind) rather than discovered by globbing — see the ADOPTED_MD/ADOPTED_PDF
+# comment below for why glob discovery is the wrong tool here.
+MEETING_MD="$REPO_ROOT/releases/$VERSION/$(czc_integrated_name meeting "$VERSION").md"
 
 # Fail fast, and with a legible message, before spending a build on a release
 # that has no meeting edition to verify against. Worth calling out because the
@@ -45,6 +47,53 @@ if [ ! -f "$MEETING_MD" ]; then
   echo "but was pruned from disk, rebuild it from the '$VERSION' tag first." >&2
   exit 1
 fi
+
+# --- Freeze-to-adoption provenance gate. ------------------------------------
+# The safety property is "the adopted document cannot contain anything the
+# voters did not see", and it rests entirely on the '<version>' tag pointing at
+# the source that was frozen. Nothing used to check that. This repo's own
+# release habit is to MOVE TAGS FORWARD on a re-cut, so a re-cut v1.0 would
+# have made the content-identity gate below compare two equally-new artifacts
+# and pass vacuously — the gate would still be green while the property it
+# exists to protect was gone.
+#
+# build-adoption.sh records the git tree object of source/ it rendered the
+# meeting edition from (having first refused to freeze a dirty source/ tree).
+# Here we require the tag to still resolve to that same tree. It is the TREE,
+# not the commit: the release directory is committed and tagged after the
+# freeze, so the tag's commit legitimately differs from the freeze commit — but
+# its source/ must be identical, byte for byte, or the voters saw something
+# else.
+PROVENANCE="$REPO_ROOT/releases/$VERSION/frozen-from.json"
+if [ ! -f "$PROVENANCE" ]; then
+  echo "No freeze record found:" >&2
+  echo "  $PROVENANCE" >&2
+  echo "build-adoption.sh writes it at freeze time, and it is the only thing" >&2
+  echo "that ties the '$VERSION' tag to the content the voters were shown." >&2
+  echo "Without it that tie cannot be checked, so this refuses rather than" >&2
+  echo "producing an adopted document on an unverifiable premise." >&2
+  exit 1
+fi
+FROZEN_TREE="$(python3 -c "
+import json, sys
+d = json.load(open(sys.argv[1]))
+t = d.get('frozen_source_tree')
+if not t:
+    sys.exit('frozen-from.json carries no frozen_source_tree')
+print(t)" "$PROVENANCE")"
+TAG_TREE="$(git -C "$REPO_ROOT" rev-parse "$VERSION^{commit}:source")"
+if [ "$FROZEN_TREE" != "$TAG_TREE" ]; then
+  echo "THE '$VERSION' TAG NO LONGER POINTS AT THE FROZEN SOURCE." >&2
+  echo "  frozen at freeze time: $FROZEN_TREE" >&2
+  echo "  source/ at tag $VERSION: $TAG_TREE" >&2
+  echo >&2
+  echo "The tag was moved after the freeze, or the meeting edition was built" >&2
+  echo "from different content. The adopted edition is rendered from the tag," >&2
+  echo "so adopting now could stamp text the voters never saw. Re-cut the" >&2
+  echo "Town Meeting edition and put it to a vote, or restore the tag." >&2
+  exit 1
+fi
+echo "Freeze provenance verified (source tree ${FROZEN_TREE:0:16}… at tag $VERSION)"
 
 # 1. Check out the tagged source into a staging tree. The working tree is not consulted.
 STAGE="$(mktemp -d)"
@@ -72,8 +121,9 @@ ADOPTION_MODE=adopted ADOPTION_EVENT_DATE="$ADOPTION_DATE" \
 # unverified. build-full-czc.sh names the adopted-mode output "Adopted
 # $VERSION" (not "Integrated Draft $VERSION") precisely so the filename itself
 # carries no draft chrome (see build-full-czc.sh's OUT_NAME).
-ADOPTED_MD="$SCRATCH_OUT/Newcastle CZC (Adopted $VERSION).md"
-ADOPTED_PDF="$SCRATCH_OUT/Newcastle CZC (Adopted $VERSION).pdf"
+ADOPTED_NAME="$(czc_integrated_name adopted "$VERSION")"
+ADOPTED_MD="$SCRATCH_OUT/$ADOPTED_NAME.md"
+ADOPTED_PDF="$SCRATCH_OUT/$ADOPTED_NAME.pdf"
 
 # 3. Content-identity gate. Frontmatter is stripped: it carries footer-date,
 #    which is chrome and differs by state by design. Comparing the raw file

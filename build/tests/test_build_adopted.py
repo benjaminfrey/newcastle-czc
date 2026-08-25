@@ -1,4 +1,5 @@
 """The adopted edition: same content as the voters saw, different chrome only."""
+import json
 import os
 import shutil
 import subprocess
@@ -8,6 +9,38 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO / "build"))
+
+
+def meeting_name(version):
+    """The meeting edition's filename, from the one shared shell definition, so
+    these tests break loudly if the producer is renamed without them."""
+    r = subprocess.run(
+        ["bash", "-c",
+         f'source "{REPO}/build/adoption-name.sh"; czc_integrated_name meeting "{version}"'],
+        capture_output=True, text=True, check=True)
+    return r.stdout
+
+
+def write_provenance(meeting_dir, version, tree=None):
+    """Stand in for build-adoption.sh's freeze record.
+
+    build-adopted.sh now requires it: it is the only thing tying the tag to the
+    content the voters saw. These tests exercise the gates DOWNSTREAM of the
+    freeze, so they synthesise the record rather than paying for a real
+    freeze (which builds the packet, the baseline redline and the standalone).
+    Pass `tree` to simulate a tag that was moved after the freeze."""
+    if tree is None:
+        tree = subprocess.run(
+            ["git", "rev-parse", f"{version}^{{commit}}:source"],
+            cwd=REPO, capture_output=True, text=True, check=True).stdout.strip()
+    meeting_dir.mkdir(parents=True, exist_ok=True)
+    (meeting_dir / "frozen-from.json").write_text(json.dumps({
+        "version": version,
+        "meeting_date": "March 1, 2099",
+        "frozen_on": "March 1, 2099",
+        "frozen_from_commit": "0" * 40,
+        "frozen_source_tree": tree,
+    }))
 
 
 @contextmanager
@@ -110,8 +143,9 @@ def test_identity_gate_failure_leaves_no_release_dir():
                            cwd=REPO, env=env, capture_output=True, text=True)
         assert r.returncode == 0, r.stderr
 
-        meeting_md = meeting_dir / f"Newcastle CZC (Integrated Draft {version}).md"
+        meeting_md = meeting_dir / f"{meeting_name(version)}.md"
         assert meeting_md.exists(), r.stdout
+        write_provenance(meeting_dir, version)
         # Simulate the tagged source having diverged from the meeting edition on
         # disk -- exactly the case the identity gate exists to catch.
         with meeting_md.open("a", encoding="utf-8") as f:
@@ -136,7 +170,8 @@ def test_adopted_artifact_filenames_carry_no_draft_chrome():
         r = subprocess.run(["bash", "build/build-full-czc.sh", version, "March 1, 2099"],
                            cwd=REPO, env=env, capture_output=True, text=True)
         assert r.returncode == 0, r.stderr
-        assert (meeting_dir / f"Newcastle CZC (Integrated Draft {version}).md").exists()
+        assert (meeting_dir / f"{meeting_name(version)}.md").exists()
+        write_provenance(meeting_dir, version)
 
         r2 = subprocess.run(["bash", "build/build-adopted.sh", version, "March 1, 2099"],
                             cwd=REPO, capture_output=True, text=True)
@@ -146,3 +181,55 @@ def test_adopted_artifact_filenames_carry_no_draft_chrome():
         assert names, "the adopted build produced no files"
         for n in names:
             assert "draft" not in n.lower(), f"draft chrome survived in filename: {n!r}"
+
+
+# --- The freeze and the adoption must be tied to the SAME content ------------
+# build-adoption.sh renders the meeting edition from the WORKING TREE;
+# build-adopted.sh renders the adopted edition from the TAG. Nothing used to
+# assert those are the same content — and this repo's documented release habit
+# is to move tags forward on a re-cut, which would have made the content-
+# identity gate compare two equally-new artifacts and pass vacuously. The whole
+# "cannot contain anything the voters did not see" property rested on an
+# assumption nobody checked.
+
+def test_refuses_without_a_freeze_record():
+    version = "v916.0"
+    with _temp_tag(version) as (meeting_dir, adopted_dir):
+        meeting_dir.mkdir(parents=True, exist_ok=True)
+        (meeting_dir / f"{meeting_name(version)}.md").write_text("# placeholder\n")
+        r = subprocess.run(["bash", "build/build-adopted.sh", version, "March 1, 2099"],
+                           cwd=REPO, capture_output=True, text=True)
+        assert r.returncode != 0
+        assert "freeze record" in (r.stdout + r.stderr).lower()
+        assert not adopted_dir.exists()
+
+
+def test_refuses_when_the_tag_was_moved_after_the_freeze():
+    """The re-cut case, which is the realistic one: a tag moved forward onto
+    newer source. The tree recorded at freeze no longer matches the tag's."""
+    version = "v915.0"
+    with _temp_tag(version) as (meeting_dir, adopted_dir):
+        meeting_dir.mkdir(parents=True, exist_ok=True)
+        (meeting_dir / f"{meeting_name(version)}.md").write_text("# placeholder\n")
+        write_provenance(meeting_dir, version, tree="d" * 40)
+        r = subprocess.run(["bash", "build/build-adopted.sh", version, "March 1, 2099"],
+                           cwd=REPO, capture_output=True, text=True)
+        assert r.returncode != 0
+        out = (r.stdout + r.stderr).lower()
+        assert "no longer points at the frozen source" in out
+        assert not adopted_dir.exists()
+
+
+def test_accepts_a_freeze_record_that_matches_the_tag():
+    """The positive control: the gate must not be refusing everything."""
+    version = "v914.0"
+    with _temp_tag(version) as (meeting_dir, adopted_dir):
+        meeting_dir.mkdir(parents=True, exist_ok=True)
+        (meeting_dir / f"{meeting_name(version)}.md").write_text("# placeholder\n")
+        write_provenance(meeting_dir, version)
+        r = subprocess.run(["bash", "build/build-adopted.sh", version, "March 1, 2099"],
+                           cwd=REPO, capture_output=True, text=True)
+        # It still fails later (the placeholder body will not match the render),
+        # but it must get PAST the provenance gate.
+        assert "Freeze provenance verified" in r.stdout, (r.stdout, r.stderr)
+        assert not adopted_dir.exists()

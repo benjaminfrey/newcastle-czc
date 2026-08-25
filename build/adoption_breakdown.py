@@ -32,7 +32,6 @@ Exit codes:
 from __future__ import annotations
 
 import argparse
-import difflib
 import subprocess
 import sys
 from pathlib import Path
@@ -76,10 +75,13 @@ def run(map_path: str | None = None) -> int:
                   f"does not exist in the working tree. Fix the map.", file=sys.stderr)
             return 1
 
-        on = nz.normalize(old.stdout, amap=m, is_baseline_side=True).splitlines()
-        nn = nz.normalize(cur_path.read_text(), amap=m, is_baseline_side=False).splitlines()
-        c = sum(1 for l in difflib.unified_diff(on, nn, n=0)
-                if l[:1] in "+-" and l[:3] not in ("+++", "---"))
+        # nz.changed_line_count, NOT a local difflib call: this number is read
+        # as "what the packet marks", so it is computed by the same code path
+        # the packet renders through (normalize_old_side on the old side, the
+        # new side verbatim). This module used to re-implement the comparison
+        # with normalize() -- which rewraps -- and could have drifted from the
+        # rendered redline without anything noticing.
+        c = nz.changed_line_count(old.stdout, cur_path.read_text(), amap=m)
         total += c
         print(f"  {cur:40s} {c:5d} lines")
 

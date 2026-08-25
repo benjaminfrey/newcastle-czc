@@ -198,6 +198,34 @@ def normalize_old_side(text: str, *, amap) -> str:
     return out
 
 
+def changed_line_count(old: str, new: str, *, amap) -> int:
+    """How many lines the redline will MARK for this article pair.
+
+    ONE definition, shared by the operator-facing breakdown
+    (build/adoption_breakdown.py) and provably matching what the packet
+    renders. It deliberately mirrors the RENDER path exactly:
+
+        old side  ->  normalize_old_side(old)   (what redline_resolve.py writes)
+        new side  ->  verbatim                  (the staged working-tree file)
+
+    Before this existed, the breakdown computed its number with `normalize()`
+    on BOTH sides -- which rewraps -- while the redline rendered with
+    `normalize_old_side()` on one side and nothing on the other. The two agreed
+    (151, and identically per article) but only by coincidence of the corpus,
+    and nothing asserted it. A number an operator reads as "this is what is in
+    the packet" must be computed the way the packet is computed, or it can
+    drift silently from what the packet shows. See
+    build/tests/test_normalize_for_diff.py for the test that pins the
+    agreement.
+    """
+    import difflib
+
+    o = normalize_old_side(old, amap=amap).splitlines()
+    n = new.splitlines()
+    return sum(1 for line in difflib.unified_diff(o, n, n=0)
+               if line[:1] in "+-" and line[:3] not in ("+++", "---"))
+
+
 def report(old: str, new: str, *, amap) -> dict[str, int]:
     """How many differences each rule suppressed. Printed by the build so the
     normaliser's effect is visible rather than assumed.

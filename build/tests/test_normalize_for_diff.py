@@ -232,3 +232,68 @@ def test_report_counts_each_rule_separately():
     r = nz.report(old, new, amap=AMAP)
     assert r["heading_case"] >= 1
     assert r["renumber"] >= 1
+
+
+# --- The operator's number and the packet's marks are ONE computation --------
+# build/adoption_breakdown.py prints the per-article change counts an operator
+# reviews before the packet exists; build/redline_resolve.py + redline-text.py
+# produce the marks a citizen reads in the packet. Those had two independent
+# implementations of "the old side": normalize() (which rewraps) versus
+# normalize_old_side() (which does not). They agreed -- 151, identically per
+# article -- but nothing asserted it, so the reviewed number could have drifted
+# from the shown marks with no test going red. changed_line_count() is now the
+# single definition, computed the way the packet is; these tests pin both the
+# agreement and the fact that it follows the RENDER path.
+
+def test_changed_line_count_follows_the_render_path():
+    """The old side is normalize_old_side()'d, the new side is verbatim --
+    exactly what redline_resolve.py writes and what build-redline-full.sh
+    stages. If this ever diverges, the count stops describing the packet."""
+    import difflib
+    old = "### A. PURPOSE\nSee Article 7 and TABLE 6.1 Design Standards.\n"
+    new = "### a. PURPOSE\nSee Article 8 and TABLE 7.1 Design Standards.\n"
+    expected = sum(
+        1 for line in difflib.unified_diff(
+            nz.normalize_old_side(old, amap=AMAP).splitlines(),
+            new.splitlines(), n=0)
+        if line[:1] in "+-" and line[:3] not in ("+++", "---"))
+    assert nz.changed_line_count(old, new, amap=AMAP) == expected
+    # And it is genuinely suppressed to zero: heading case + both renumberings.
+    assert nz.changed_line_count(old, new, amap=AMAP) == 0
+
+
+def test_changed_line_count_still_sees_a_real_amendment():
+    old = "### A. PURPOSE\nThe applicant shall provide 20 feet.\n"
+    new = "### a. PURPOSE\nThe applicant may provide 24 feet.\n"
+    assert nz.changed_line_count(old, new, amap=AMAP) == 2
+
+
+def test_breakdown_and_render_paths_agree_on_the_real_corpus():
+    """The agreement the reviewer asked to have asserted rather than assumed:
+    across every mappable baseline->current article pair, the comparison-only
+    path (normalize() both sides, with rewrap) and the render path
+    (changed_line_count) must report the same number PER ARTICLE. If a future
+    normaliser rule breaks that, the operator's number and the packet's marks
+    have parted company and one of them is lying."""
+    import difflib
+    import subprocess
+
+    REPO = BUILD.parent
+    for cur, base in sorted(AMAP.files.items()):
+        if base is None or AMAP.not_text_comparable_reason(cur) is not None:
+            continue
+        old = subprocess.run(
+            ["git", "-C", str(REPO), "show", f"{AMAP.baseline_version}:source/{base}"],
+            capture_output=True, text=True)
+        assert old.returncode == 0, cur
+        new = (REPO / "source" / cur).read_text()
+
+        comparison = sum(
+            1 for line in difflib.unified_diff(
+                nz.normalize(old.stdout, amap=AMAP, is_baseline_side=True).splitlines(),
+                nz.normalize(new, amap=AMAP, is_baseline_side=False).splitlines(), n=0)
+            if line[:1] in "+-" and line[:3] not in ("+++", "---"))
+        render = nz.changed_line_count(old.stdout, new, amap=AMAP)
+        assert comparison == render, (
+            f"{cur}: the reviewed count ({comparison}) and the rendered count "
+            f"({render}) disagree")
