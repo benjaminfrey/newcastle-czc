@@ -63,17 +63,59 @@ OUTDIR="$(mktemp -d)"
 trap 'rm -rf "$STAGE" "$OUTDIR"' EXIT
 cp -R "$SRC/." "$STAGE/"
 
-# 2. Rewrite each article markdown in place: OLD = that file at <old-ver> (from
-#    git), NEW = the staged working-tree file. --source preserves frontmatter +
-#    split markers, marks prose, and emits figures/tables/headings unmarked.
+# 2. Rewrite each article markdown in place: OLD = that file at <old-ver>, NEW
+#    = the staged working-tree file. --source preserves frontmatter + split
+#    markers, marks prose, and emits figures/tables/headings unmarked.
+#
+#    Old-side resolution goes through build/redline_resolve.py, which knows
+#    two things a plain `git show <old>:source/<same-name>` does not:
+#      - ADOPTION_BASELINE=1 (an adoption-release redline against the
+#        previously adopted Code): articles were renamed/renumbered at the
+#        Article-3 insertion, so the old side must be looked up via
+#        adoption-map.json, not by filename (build/redline_resolve.py, exit 0).
+#      - An article whose content moved out of markdown into a native-Typst
+#        unit since the baseline (Article 2's district standards) cannot be
+#        text-diffed without reporting a phantom mass deletion; it must render
+#        UNMARKED instead (exit 4 — see below).
+#    Without ADOPTION_BASELINE=1 this resolves by filename exactly as before
+#    (exit 3 on a genuinely new file), so an ordinary draft-to-draft redline
+#    is untouched.
 OLDTMP="$OUTDIR/old.md"
+BASELINE_FLAG=""
+if [ "${ADOPTION_BASELINE:-0}" = "1" ]; then BASELINE_FLAG="--baseline"; fi
+
 shopt -s nullglob
 n=0
 for nf in "$STAGE"/article-*.md; do
   base="$(basename "$nf")"
-  if ! git -C "$REPO_ROOT" show "$OLD_V:source/$base" > "$OLDTMP" 2>/dev/null; then
-    : > "$OLDTMP"   # file is new since OLD: empty OLD -> whole body marked added
-    echo "  ($base is new since $OLD_V — whole body marked as added)"
+  set +e
+  python3 "$REPO_ROOT/build/redline_resolve.py" "$base" "$OLD_V" "$OLDTMP" $BASELINE_FLAG
+  rc=$?
+  set -e
+  case "$rc" in
+    0) ;;
+    3) : > "$OLDTMP"   # new since OLD: empty OLD -> whole body marked added
+       echo "  ($base is new since $OLD_V — whole body marked as added)" ;;
+    4) echo "  ($base is not text-comparable against $OLD_V — rendered unmarked)" ;;
+    *) echo "redline: could not resolve the old side for $base (exit $rc)." >&2
+       exit 1 ;;
+  esac
+  # In baseline mode the NEW side is normalised too, so both sides are
+  # compared on equal terms. is_baseline_side=False -- the current side is
+  # never renumbered (renumbering only makes sense old-baseline -> current).
+  if [ -n "$BASELINE_FLAG" ]; then
+    python3 - "$nf" <<PYEOF
+import sys
+sys.path.insert(0, "$REPO_ROOT/build")
+from pathlib import Path
+import adoption_map, normalize_for_diff as nz
+p = Path(sys.argv[1])
+p.write_text(nz.normalize(p.read_text(), amap=adoption_map.load(), is_baseline_side=False))
+PYEOF
+  fi
+  if [ "$rc" = "4" ]; then
+    # Not text-comparable: force old == new so redline-text.py marks nothing.
+    cp "$nf" "$OLDTMP"
   fi
   python3 "$REDLINE_PY" "$OLDTMP" "$nf" "$nf" --source
   n=$((n + 1))

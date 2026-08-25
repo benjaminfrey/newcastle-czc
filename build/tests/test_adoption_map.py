@@ -51,3 +51,27 @@ def test_renumber_rewrites_cross_references():
     assert m.renumber("See Article 7 and Article 3.") == "See Article 8 and Article 4."
     assert m.renumber("Article 1 and Article 2 are unchanged.") == \
         "Article 1 and Article 2 are unchanged."
+
+
+def test_not_text_comparable_reason_flags_article_2():
+    """article-02-prefatory.md's baseline counterpart carried the district
+    standards as markdown; they now live in article-02.typ. A text diff
+    against that baseline would read as ~2,319 deleted lines, so this article
+    must be flagged rather than diffed."""
+    m = adoption_map.load()
+    reason = m.not_text_comparable_reason("article-02-prefatory.md")
+    assert reason is not None
+    assert "district" in reason.lower()
+
+
+def test_not_text_comparable_reason_is_none_for_ordinary_articles():
+    m = adoption_map.load()
+    assert m.not_text_comparable_reason("article-01-general.md") is None
+    assert m.not_text_comparable_reason("article-08-administration.md") is None
+
+
+def test_not_text_comparable_reason_is_none_for_unmapped_names():
+    """Absence here must mean 'comparable' (fall through to the normal path),
+    not raise -- the unmapped-file guard lives in baseline_path_for."""
+    m = adoption_map.load()
+    assert m.not_text_comparable_reason("article-99-invented.md") is None

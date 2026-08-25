@@ -26,6 +26,7 @@ class AdoptionMap:
     baseline_version: str
     article_numbers: dict[int, int]
     files: dict[str, str | None]
+    not_text_comparable: dict[str, str]
 
     def baseline_path_for(self, current_basename: str) -> str | None:
         """Baseline filename for a current article file, or None if it is new.
@@ -40,6 +41,18 @@ class AdoptionMap:
                 f"adoption) rather than letting it render as wholly new."
             )
         return self.files[current_basename]
+
+    def not_text_comparable_reason(self, current_basename: str) -> str | None:
+        """Why this article cannot be diffed against the baseline, or None.
+
+        Present when the article's content moved OUT of markdown into a
+        native-Typst unit between the baseline and now (e.g. Article 2's
+        district standards -> article-02.typ). A caller that gets a reason
+        back must render the article UNMARKED (old side == new side) rather
+        than diff it -- a text diff here would show thousands of phantom
+        deletions for content that only moved, not disappeared.
+        """
+        return self.not_text_comparable.get(current_basename)
 
     def renumber(self, text: str) -> str:
         """Rewrite 'Article N' cross-references from baseline to current numbering."""
@@ -56,4 +69,5 @@ def load(path: str | Path | None = None) -> AdoptionMap:
         baseline_version=doc["baseline_version"],
         article_numbers={int(k): int(v) for k, v in doc["article_numbers"].items()},
         files=dict(doc["files"]),
+        not_text_comparable=dict(doc.get("not_text_comparable", {})),
     )
