@@ -495,6 +495,15 @@ Report both totals. A human commits.
 
 **Why:** The existing loop (`build-redline-full.sh:72-82`) resolves the old side by identical filename and, on failure, writes an empty file and prints a note — which is exactly how the whole Code would render as new against the baseline.
 
+**AMENDED 2026-08-24 after Task 2 (spec §1.2b).** The resolver must ALSO honour
+`adoption-map.json`'s `not_text_comparable` map. `article-02-prefatory.md` is 125 lines where its
+baseline counterpart was 2,444 — Article 2's district standards moved into `article-02.typ`. A text
+diff would mark ~2,319 lines DELETED, reading in a Town Meeting packet as though the Town deleted
+all its district standards. For such an article the resolver must exit **4**, and the caller renders
+it UNMARKED (old side == new side), exactly as every other native figure in this redline is handled.
+Add a test asserting exit 4 for `article-02-prefatory.md` and that the rendered article carries no
+marks.
+
 - [ ] **Step 1: Write the failing test**
 
 ```python

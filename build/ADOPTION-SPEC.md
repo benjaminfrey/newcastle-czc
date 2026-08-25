@@ -55,6 +55,26 @@ headings itself.
 Without normalisation the redline buries 243 real changes under 1,018 cosmetic ones, and a reader
 cannot tell which is which.
 
+### 1.2b Article 2's content is no longer text-comparable
+
+Found 2026-08-24 while implementing the normaliser. Article 2's district standards moved out of
+markdown into a native-Typst unit between the baseline and now:
+
+| | Lines |
+|---|---|
+| `article-02-districts.md` at `v0.1-baseline` | **2,444** |
+| `article-02-prefatory.md` now | **125** |
+| moved into `article-02.typ` + `article-02-data.json` | the remaining ~2,319 |
+
+A text diff cannot see the `.typ`, so it would mark roughly 2,319 lines as **deleted** — which in a
+Town Meeting packet reads as *the Town deleted all of its district standards*. This is the same
+class of failure as §1.1: a structural change the text diff cannot see, surfacing as an enormous
+false change.
+
+Handled the same way the redline already handles every other native figure — **rendered at current
+state, unmarked**, and described in the structural note (§4.3). `adoption-map.json` carries a
+`not_text_comparable` entry naming the article and why.
+
 ### 1.3 A document must never claim it was adopted before the vote
 
 At freeze time the vote has not happened. Only the scheduled meeting date is known. A document
@@ -225,6 +245,11 @@ The Meeting-edition redline opens with a stated structural summary, before any m
 - Article 3 *Thoroughfares* is new.
 - Every Article after 2 shifts up by one (old 3→4, 4→5, 5→6, 6→7, 7→8, 8→9).
 - Cross-references throughout were renumbered accordingly and are **not** individually marked.
+- **Article 2's district standards are now rendered as full-page spreads** rather than prose. Their
+  text is unchanged in substance but is not markdown any more, so it is shown at current state and
+  **not** marked — the same treatment every figure in this redline receives (§1.2b). A reader must
+  not infer from the absence of marks that Article 2 was untouched, nor from a text diff that it
+  was deleted.
 
 This is what makes suppressing 126 renumbering marks honest rather than concealing: the reader is
 told the fact once, plainly, instead of encountering it 126 times.
