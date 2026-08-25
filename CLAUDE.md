@@ -43,7 +43,8 @@ in-house GIS capacity. All ordinance changes require a **Town Meeting** vote (Ma
   - `exhibits/cross-sections/types.json` — the 10 Types' spec (standards, etc.).
   - `exhibits/street-types/inventory.json` — the promoted classification data.
 - `style/` — Typst template (`czc-template.typ`), fonts, colors, style analysis.
-- `build/` — build scripts (see below) + `street-types/` GIS pipeline.
+- `build/` — build scripts (see below) + `street-types/` GIS pipeline
+  + the adoption-release scripts (see “Adoption release”).
   `build-standalone.sh <article-NN> <ver>` builds any Article standalone, driven by
   `build/article-manifest.json` (+ `manifest.py` reader); `build-article-3.sh` is a shim to it.
 - `releases/vX.Y-draft/` — shipped deliverables + redlines + Summary per version.
@@ -101,6 +102,63 @@ Type (the §5 Inventory). Map/table legends show only Types actually present.
   column trim) needs a **force-push** (history rewrite); the harness gates that pending
   Ben's explicit OK. Default to a new version number unless Ben says "stay in vX.Y".
 
+### Adoption release (the Town-Meeting path) — merged 2026-08-25
+
+Full design in **`build/ADOPTION-SPEC.md`** (authoritative); the 8-task build log and the
+adjudicated fix-later items are in `.superpowers/sdd/ADOPTION-PLAN/progress.md` (gitignored,
+local only). **Nothing here changes the ordinary draft flow** — with no adoption env vars set,
+`build-full-czc.sh` is byte-identical to before.
+
+- **The version number IS the state.** Decimal (`v0.24-draft`) = draft. **Whole (`v1.0`) = an
+  adoption version.** `build/version_state.py` enforces it **in both directions**: draft chrome
+  refuses a whole number, and meeting/adopted chrome refuses a decimal. Never bypass this — it is
+  the only thing standing between an env var and a document that claims adoption.
+- **⛔ Nothing may claim adoption before the vote.** The frozen packet says **NOT YET ADOPTED**.
+  The clerk attestation is masked in *every* mode.
+- **Freeze (before the meeting):** `bash build/build-adoption.sh v1.0 "<meeting date>"
+  [--freeze-date=<date>] [--dry-run]` → `releases/v1.0/`: the **Town Meeting edition**
+  (`Newcastle CZC (Town Meeting Edition v1.0).pdf`), a redline + Summary skeleton vs the
+  **previously adopted** Code, and **`frozen-from.json`**. Refuses a dirty `source/`. Then commit
+  `releases/v1.0/` and tag `v1.0` at that commit.
+  *Re-running to render the Summary PDF? Pass the same `--freeze-date=` or the cover restamps.*
+- **Adopt (after the vote):** `bash build/build-adopted.sh v1.0 "<adoption date>"` →
+  `releases/v1.0-adopted/Newcastle CZC (Adopted v1.0).{pdf,md}`. It renders **from the tag, never
+  the working tree**, so the adopted document structurally cannot contain anything the voters did
+  not see. Three gates: **provenance** (the tag's `source/` **tree** must still match
+  `frozen-from.json` — the *tree*, not the commit, so a legitimate re-tag of identical source still
+  passes, but moving the tag onto different source refuses), **identity** (adopted body byte-equal
+  to the meeting edition, frontmatter stripped — frontmatter is chrome and differs by design), and
+  **residue** (no draft chrome in page text *or* filename). Gates run **before** anything is
+  written, so a refusal leaves no shipped-looking release dir.
+  ⚠ **The residue gate matches chrome strings, never the bare word "draft"** — the Code's own
+  adopted text reads *"The Planning Board, or its designnee, **drafts** the official map of the
+  Town of Newcastle."* A blanket search fails on the Town's own words, and the natural 11pm fix is
+  to delete the gate. It also asserts that sentence is still **present**: a substitution that
+  damaged the Code's text would be far worse than a leftover banner.
+- **The baseline redline is not a plain diff.** `ADOPTION_BASELINE=1` compares against the
+  **adopted** Code, where ~80% of raw diff lines are formatting noise. `build/normalize_for_diff.py`
+  suppresses rewrap, heading case, **article renumbering** (`build/adoption-map.json`: adopted 3→
+  draft 4 … 8→9) and **table renumbering**; `build/redline_resolve.py` maps each file (exit 1
+  unmapped/refuse · 3 new · 4 not text-comparable). **Article 2 is not text-comparable across the
+  baseline** (native-Typst, rebuilt from data) — it renders **unmarked**. v0.24 → adopted baseline
+  = **151** substantive changed lines.
+  ⚠ **Normalise the OLD side only.** The NEW side gets *typeset*: normalising it flattens the
+  Code's hierarchy (measured: Article 8 went 211 indented sub-clause lines → 4). `normalize()` is
+  comparison-only; **`normalize_old_side()`** is the render-safe one.
+  ⚠ **A suppressed mark is honest only if the reader is told once.** `build/structural_note.py`
+  puts a **"HOW TO READ THIS REDLINE"** page on the verso facing the cover in baseline mode —
+  it says in plain words that Article 2 rendering unmarked is *not* a statement that it was
+  untouched, and prints the article map. It **replaces** the front-matter blank, so parity holds.
+- **Chrome is three-mode** (`draft` | `meeting` | `adopted`) via `ADOPTION_MODE` +
+  `ADOPTION_EVENT_DATE`, shared by the integrated and standalone builds through
+  `build/adoption-footer.sh` and `build/adoption-name.sh` (one `czc_integrated_name` — the
+  filename is chrome too; a page-text-only residue check cannot see it).
+- **▶ OPEN — the adopted cover contradicts itself on dates** (spec §7). The baseline cover carries
+  "AMENDED THROUGH: MARCH 24, 2025", which is stale on an adopted edition but is the Town's own
+  attestation line. **Ben's call:** mask it, overprint the new date, or leave it.
+
+**Tests:** `python3 -m pytest build/tests -q` — **97**, ~2.5 min (they build real PDFs).
+
 **Parity invariant (critical, don't break):** native-Typst units are spliced
 between pandoc passes; chrome (verso/recto binding margins, rotated Article tab,
 running head, footer page numbers) keys off `here().page() + page_offset`, so each
@@ -139,8 +197,11 @@ rebuild. No code changes.
 
 ---
 
-## Current state (as of 2026-06-24)
+## Current state (as of 2026-08-25)
 
+- **Shipped `v0.24-draft`**; the **adoption-release machinery is merged to `main`** (20 commits,
+  `7a22319`) — see “Adoption release” above. The next release is the one that gets **frozen at
+  `v1.0`** for the special Town Meeting. Editing continues exactly as before until then.
 - **Shipped `v0.22-draft`** (re-cut several times; tag moved forward each time — main is never
   rewritten, only the tag is force-pushed) — **two resident comments + a full §5 inventory audit.**
   (1) **Driveway "road stubs":** §1.B.5 no-upgrade-on-adoption clause; §5.A.3 + §5.C.6 certainty
