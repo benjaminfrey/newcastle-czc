@@ -12,7 +12,13 @@
 
 - **Spec:** `build/ADOPTION-SPEC.md` is authoritative. Where this plan and the spec disagree, the spec wins and the plan is wrong.
 - **Never modify `docs/`.** It is the immutable baseline (original CZC, Comp Plan, RDEO). Read-only.
-- **Never commit unless explicitly asked.** Build, verify, report, wait. Steps below say "Commit" — perform the `git add` staging, then STOP and report; a human runs the commit.
+- **Commits: authorised for this branch only.** Ben was asked, 2026-08-24, how to run this given
+  the standing rule *"NEVER commit unless explicitly asked"*, and chose: **"Feature branch, commit
+  per task, you review before merge."** So on branch `adoption-release`, each task commits its own
+  work. `main` is untouched until Ben reviews the branch and says merge. This authorisation is
+  recorded in `.superpowers/sdd/ADOPTION-PLAN/progress.md`; a reviewer can verify it there rather
+  than taking an agent's word for it. **Never push. Never `git add -A` or `git add .` — stage by
+  name.** Task steps below that say "stage and report (do not commit)" are superseded by this line.
 - **Never `git add -A` or `git add .`** — stage files by name.
 - **Parity invariant:** chrome keys off `here().page() + page_offset`; logical page must equal physical page. Any change that breaks the constant footer offset is a defect.
 - **A whole version number means adopted law; a decimal means a draft.** Enforced in Task 6.
