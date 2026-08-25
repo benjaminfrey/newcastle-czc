@@ -20,9 +20,16 @@ by vector-copying baseline page 0, then:
 
 Usage:
   build-cover.py BASELINE_PDF OUT_PDF VERSION DATE_STR [REDLINE_CAVEAT]
+                 [--mode draft|meeting|adopted] [--event-date DATE]
 Example:
   build-cover.py "docs/Newcastle Core Zoning Code.pdf" /tmp/cover.pdf \
       v0.6-draft "May 30, 2026"
+  build-cover.py "docs/Newcastle Core Zoning Code.pdf" /tmp/cover.pdf \
+      v1.0 "March 15, 2027" --mode adopted --event-date "March 15, 2027"
+
+mode defaults to "draft" (today's behaviour, unchanged). "meeting" and
+"adopted" require --event-date: the Town Meeting date in meeting mode, the
+adoption date in adopted mode. See build/ADOPTION-SPEC.md §4.
 """
 import os
 import sys
@@ -44,7 +51,13 @@ BARLOW_MED = os.path.join(FONTS_DIR, "Barlow-Medium.ttf")
 BARLOW_REG = os.path.join(FONTS_DIR, "Barlow-Regular.ttf")
 
 
-def build_cover(baseline_pdf, out_pdf, version, date_str, caveat=None):
+def build_cover(baseline_pdf, out_pdf, version, date_str, caveat=None,
+                mode="draft", event_date=None):
+    """mode: 'draft' | 'meeting' | 'adopted'.  See build/ADOPTION-SPEC.md §4.
+
+    The clerk attestation is masked in EVERY mode (see module docstring): it
+    certifies the originally adopted code, not an amendment to it.
+    """
     src = fitz.open(baseline_pdf)
     w, h = src[0].rect.width, src[0].rect.height
     # Baseline page 0 is /Rotate 90 over a landscape mediabox: rendering to a
@@ -62,28 +75,62 @@ def build_cover(baseline_pdf, out_pdf, version, date_str, caveat=None):
     # 2. Mask the personal attestation (invisible white-on-white).
     page.draw_rect(ATTEST_RECT, color=None, fill=NEAR_WHITE)
 
-    # 3. Draft banner in the upper white space (centered). A filled article-blue
-    #    bar with white text = on-brand and unmistakable. Barlow (embedded) so
-    #    the em-dash and middle-dot encode correctly.
+    # 3. Banner in the upper white space (centered). A filled article-blue bar
+    #    with white text = on-brand and unmistakable. Barlow (embedded) so the
+    #    em-dash and middle-dot encode correctly. Wording and layout vary by
+    #    mode (see BANNERS below); the adopted mode drops the bar entirely.
     bar = fitz.Rect(96, 250, w - 96, 366)
-    page.draw_rect(bar, color=None, fill=ARTICLE_BLUE)
+
+    BANNERS = {
+        "draft": (
+            "INTEGRATED DRAFT — NOT ADOPTED",
+            f"{version}  ·  includes proposed Article 3: Thoroughfares",
+            f"Generated {date_str} from the adopted Core Zoning Code "
+            f"(amended through March 24, 2025).\nFor review only — not a certified copy.",
+        ),
+        "meeting": (
+            "TOWN MEETING EDITION — NOT YET ADOPTED",
+            f"{version}  ·  for adoption at Town Meeting, {event_date}",
+            f"Frozen {date_str}. The text put before the voters.\n"
+            f"Not a certified copy.",
+        ),
+        "adopted": (
+            None,
+            f"{version}  ·  Adopted {event_date}",
+            f"Adopted {event_date}, amending the Core Zoning Code "
+            f"adopted November 3, 2020.",
+        ),
+    }
+    if mode not in BANNERS:
+        raise ValueError(f"unknown cover mode {mode!r}")
+    if mode in ("meeting", "adopted") and not event_date:
+        raise ValueError(f"mode {mode!r} requires event_date")
+
+    headline, line2, line3 = BANNERS[mode]
+
+    if headline is not None:
+        page.draw_rect(bar, color=None, fill=ARTICLE_BLUE)
+        page.insert_textbox(
+            fitz.Rect(bar.x0, bar.y0 + 14, bar.x1, bar.y0 + 52), headline,
+            fontfile=BARLOW_BOLD, fontname="barlow-bold", fontsize=20, color=WHITE,
+            align=fitz.TEXT_ALIGN_CENTER,
+        )
+        page.insert_textbox(
+            fitz.Rect(bar.x0 + 8, bar.y0 + 56, bar.x1 - 8, bar.y0 + 86), line2,
+            fontfile=BARLOW_MED, fontname="barlow-med", fontsize=12, color=WHITE,
+            align=fitz.TEXT_ALIGN_CENTER,
+        )
+    else:
+        # Adopted: no blue bar. The version/date line sits in the white space, in
+        # article blue on white, so the page reads as a code rather than a notice.
+        page.insert_textbox(
+            fitz.Rect(bar.x0, bar.y0 + 30, bar.x1, bar.y0 + 62), line2,
+            fontfile=BARLOW_MED, fontname="barlow-med", fontsize=13,
+            color=ARTICLE_BLUE, align=fitz.TEXT_ALIGN_CENTER,
+        )
 
     page.insert_textbox(
-        fitz.Rect(bar.x0, bar.y0 + 14, bar.x1, bar.y0 + 52),
-        "INTEGRATED DRAFT — NOT ADOPTED",
-        fontfile=BARLOW_BOLD, fontname="barlow-bold", fontsize=20, color=WHITE,
-        align=fitz.TEXT_ALIGN_CENTER,
-    )
-    page.insert_textbox(
-        fitz.Rect(bar.x0 + 8, bar.y0 + 56, bar.x1 - 8, bar.y0 + 86),
-        f"{version}  ·  includes proposed Article 3: Thoroughfares",
-        fontfile=BARLOW_MED, fontname="barlow-med", fontsize=12, color=WHITE,
-        align=fitz.TEXT_ALIGN_CENTER,
-    )
-    page.insert_textbox(
-        fitz.Rect(96, bar.y1 + 10, w - 96, bar.y1 + 48),
-        f"Generated {date_str} from the adopted Core Zoning Code "
-        f"(amended through March 24, 2025).\nFor review only — not a certified copy.",
+        fitz.Rect(96, bar.y1 + 10, w - 96, bar.y1 + 48), line3,
         fontfile=BARLOW_REG, fontname="barlow-reg", fontsize=9.5, color=GRAY,
         align=fitz.TEXT_ALIGN_CENTER,
     )
@@ -105,7 +152,31 @@ def build_cover(baseline_pdf, out_pdf, version, date_str, caveat=None):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) not in (5, 6):
-        sys.exit("usage: build-cover.py BASELINE_PDF OUT_PDF VERSION DATE_STR [REDLINE_CAVEAT]")
-    caveat = sys.argv[5] if len(sys.argv) == 6 else None
-    build_cover(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], caveat)
+    # Positional arguments: BASELINE_PDF OUT_PDF VERSION DATE_STR [REDLINE_CAVEAT]
+    # --mode/--event-date are optional flags, filtered out before positional
+    # parsing so build-full-czc.sh's existing call keeps working unchanged.
+    args = sys.argv[1:]
+    mode = "draft"
+    event_date = None
+    positional = []
+    i = 0
+    while i < len(args):
+        arg = args[i]
+        if arg == "--mode":
+            mode = args[i + 1]
+            i += 2
+        elif arg == "--event-date":
+            event_date = args[i + 1]
+            i += 2
+        else:
+            positional.append(arg)
+            i += 1
+
+    if len(positional) not in (4, 5):
+        sys.exit(
+            "usage: build-cover.py BASELINE_PDF OUT_PDF VERSION DATE_STR "
+            "[REDLINE_CAVEAT] [--mode draft|meeting|adopted] [--event-date DATE]"
+        )
+    caveat = positional[4] if len(positional) == 5 else None
+    build_cover(positional[0], positional[1], positional[2], positional[3],
+                caveat, mode=mode, event_date=event_date)
