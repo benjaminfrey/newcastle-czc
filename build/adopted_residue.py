@@ -13,6 +13,7 @@ banner.
 """
 from __future__ import annotations
 
+import os
 import sys
 
 CHROME = (
@@ -37,10 +38,25 @@ def find_damage(text: str) -> list[str]:
     return [s for s in MUST_SURVIVE if s.lower() not in text.lower()]
 
 
+def check(text: str, filenames: list[str] | None = None) -> tuple[list[str], list[str]]:
+    """Run both gates over `text` (the rendered PDF's extracted page text)
+    PLUS the basenames of `filenames`.
+
+    The filename is checked because the page-text scan alone cannot see it: a
+    filename like "Newcastle CZC (Integrated Draft v1.0).pdf" carries the
+    exact chrome strings this gate exists to catch, and Task 8's review found
+    exactly that defect surviving a page-text-only gate (Important 1). Damage
+    (MUST_SURVIVE) is checked against `text` only -- a filename is never where
+    the Code's own "drafts the official map" text would live.
+    """
+    names = "\n".join(os.path.basename(f) for f in (filenames or []))
+    combined = text + ("\n" + names if names else "")
+    return find_residue(combined), find_damage(text)
+
+
 def main() -> int:
     text = sys.stdin.read()
-    residue = find_residue(text)
-    damage = find_damage(text)
+    residue, damage = check(text, sys.argv[1:])
     for r in residue:
         print(f"DRAFT CHROME SURVIVED in the adopted document: {r!r}", file=sys.stderr)
     for d in damage:

@@ -169,7 +169,19 @@ if [ -f "$PLATES_TYP" ] && [ -n "$ART3_SRC" ]; then
   fi
 fi
 
-OUT_NAME="Newcastle CZC (Integrated Draft $VERSION)"
+# The artifact's own filename is chrome too: an ADOPTED document filed under a
+# name containing "Integrated Draft" or "Draft v..." carries exactly the
+# strings build/adopted_residue.py's CHROME list exists to catch, but the
+# residue gate reads PAGE TEXT -- it cannot see its own filename. So the name
+# must not say "draft" in adopted mode (Task 8 review, Important 1). draft and
+# meeting mode keep the existing name unchanged (build-adoption.sh hardcodes
+# it for the meeting edition; both are pre-vote and were never in scope for
+# the residue gate).
+if [ "$ADOPTION_MODE" = "adopted" ]; then
+  OUT_NAME="Newcastle CZC (Adopted $VERSION)"
+else
+  OUT_NAME="Newcastle CZC (Integrated Draft $VERSION)"
+fi
 OUTPUT_PDF="$RELEASE_DIR/$OUT_NAME.pdf"
 COMBINED_MD="$RELEASE_DIR/$OUT_NAME.md"
 
