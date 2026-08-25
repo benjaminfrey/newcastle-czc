@@ -33,6 +33,13 @@ DATE_STR="${3:-}"        # reserved (standalone has no cover); kept for signatur
 # Shared with build-full-czc.sh; sets FOOTER_TEXT.
 source "$REPO_ROOT/build/adoption-footer.sh"
 
+# A whole number means adopted law; refuse to stamp one with draft chrome
+# (ADOPTION-SPEC.md §2.1 / §6.1). Only fires in draft mode — build-adoption.sh
+# and build-adopted.sh (Tasks 7-8) call this with a whole number on purpose.
+if [ "$ADOPTION_MODE" = "draft" ]; then
+  python3 "$REPO_ROOT/build/version_state.py" --require draft "$VERSION" || exit 1
+fi
+
 if [ -z "$NN_RAW" ]; then
   echo "usage: build-standalone.sh <article-NN> <version> [date-str]" >&2
   exit 1
