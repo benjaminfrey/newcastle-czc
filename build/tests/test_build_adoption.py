@@ -14,7 +14,18 @@ REPO = Path(__file__).resolve().parent.parent.parent
 # per-article breakdown) BEFORE this constant is updated to match. Do not
 # "fix the test" without doing that reading; the whole point of this command
 # is that the number is reviewed, not merely reproduced.
-EXPECTED_TOTAL = 243
+#
+# 243 -> 151 on 2026-08-24 (Task 2b) is a NORMALISATION IMPROVEMENT, NOT a
+# content change: normalize_for_diff.py gained a table-number rule (`TABLE
+# 4.1` / `Table 4.1` / `table 4.1` -> the current article's number, all three
+# casings) and a frontmatter `article-number: "N"` rule, both driven by the
+# same baseline->current article map the existing cross-reference renumbering
+# already used. ~90 of the old 243 lines were table captions/refs and
+# frontmatter fields that only moved because their article number moved --
+# Articles 1, 5, 6, and 7 now report ZERO substantive changes (their entire
+# prior diff was this renumbering noise). Nothing in the Code shrank; re-run
+# `python3 build/adoption_breakdown.py` to see the same per-article split.
+EXPECTED_TOTAL = 151
 
 
 def test_refuses_a_decimal_version(tmp_path):

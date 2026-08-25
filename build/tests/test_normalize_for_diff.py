@@ -59,6 +59,64 @@ def test_the_new_side_is_never_renumbered():
     assert norm_new("See Article 7.") == "See Article 7."
 
 
+# --- Rule 4: table-number renumbering ---------------------------------------
+
+def test_table_number_renumbering_is_suppressed_all_caps():
+    assert norm_old("TABLE 6.1 DESIGN STANDARDS BY DISTRICT") == \
+        norm_new("TABLE 7.1 DESIGN STANDARDS BY DISTRICT")
+
+
+def test_table_number_renumbering_is_suppressed_title_case():
+    assert norm_old("See Table 4.2 Site Lumens.") == norm_new("See Table 5.2 Site Lumens.")
+
+
+def test_table_number_renumbering_is_suppressed_lowercase():
+    """The real case found in the corpus: article-06-design-standards.md's
+    baseline reads 'table 5.1 Design Standards By District' (lowercase)."""
+    assert norm_old("designated in table 5.1 Design Standards By District.") == \
+        norm_new("designated in table 6.1 Design Standards By District.")
+
+
+def test_but_a_table_renumbered_for_a_different_reason_still_differs():
+    """The article shift predicts TABLE 6.1 -> TABLE 7.1. A table actually
+    renumbered to something else (inserted/reordered table) must still show."""
+    assert norm_old("TABLE 6.1 DESIGN STANDARDS BY DISTRICT") != \
+        norm_new("TABLE 7.3 DESIGN STANDARDS BY DISTRICT")
+
+
+def test_but_a_renamed_table_title_still_differs():
+    assert norm_old("TABLE 6.1 DESIGN STANDARDS BY DISTRICT") != \
+        norm_new("TABLE 7.1 DIMENSIONAL STANDARDS BY DISTRICT")
+
+
+def test_the_new_side_table_numbers_are_never_renumbered():
+    assert norm_new("TABLE 7.1 DESIGN STANDARDS BY DISTRICT") == \
+        "TABLE 7.1 DESIGN STANDARDS BY DISTRICT"
+
+
+def test_normalize_old_side_also_renumbers_tables():
+    assert nz.normalize_old_side("TABLE 6.1 DESIGN STANDARDS BY DISTRICT", amap=AMAP) == \
+        "TABLE 7.1 DESIGN STANDARDS BY DISTRICT"
+
+
+# --- Rule 5: frontmatter article-number renumbering -------------------------
+
+def test_frontmatter_article_number_renumbering_is_suppressed():
+    assert norm_old('article-number: "6"') == norm_new('article-number: "7"')
+
+
+def test_but_an_unpredicted_frontmatter_article_number_still_differs():
+    assert norm_old('article-number: "6"') != norm_new('article-number: "3"')
+
+
+def test_the_new_side_frontmatter_is_never_renumbered():
+    assert norm_new('article-number: "6"') == 'article-number: "6"'
+
+
+def test_normalize_old_side_also_renumbers_frontmatter():
+    assert nz.normalize_old_side('article-number: "6"', amap=AMAP) == 'article-number: "7"'
+
+
 # --- Rule 3: paragraph re-wrapping ------------------------------------------
 
 def test_rewrapping_is_suppressed():
