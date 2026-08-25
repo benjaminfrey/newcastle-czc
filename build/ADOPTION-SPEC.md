@@ -331,6 +331,16 @@ recorded for each artifact.
   the moment at which correcting them would be legitimate, since the Board is voting on the text.
   Handled exactly as the "Conditions of Law" question in the permit-review app: **surfaced, never
   silently fixed.** Correcting the Town's own adopted wording is the Board's decision.
+- **The adopted cover contradicts itself on dates — NEEDS BEN'S DECISION, blocks a Task 4b.**
+  Found in the Task 4 review, 2026-08-24. The cover reuses the baseline scan art, whose lower block
+  reads **"AMENDED THROUGH: MARCH 24, 2025"**. In `adopted` mode the banner directly above it reads
+  "Adopted March 15, 2027, amending the Core Zoning Code adopted November 3, 2020." On the durable,
+  authoritative cover of an adopted legal instrument, those are two competing claims about currency.
+  The technique to fix it already exists — `ATTEST_RECT` masks a region of the same scan — but the
+  question is what the line should then SAY, and that is not a decision an implementer should invent:
+  (a) mask the line entirely, (b) overprint it with the new adoption date, or (c) leave it and accept
+  that the art records the baseline's own state. Draft and meeting modes are unaffected: in those the
+  art's statement is still true.
 - **Whether the adopted edition ships a standalone Article 3 at all.** Once adopted, Article 3 is
   simply part of the Code; a standalone excerpt may be a convenience or may be a confusion. Not
   decided.
