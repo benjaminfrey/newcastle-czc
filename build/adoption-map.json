@@ -1,0 +1,17 @@
+{
+  "_README": "Baseline->current article correspondence for an adoption release. The article files were renamed when Article 3 (Thoroughfares) was inserted, so a redline against the previously adopted Code cannot resolve the old side by filename. This map supplies that. Superseded ONLY when a future amendment renumbers articles again; after v1.0 is adopted it resets to identity. See build/ADOPTION-SPEC.md §3.1. The article_numbers map was previously hardcoded at extract/verso.py:18 and is duplicated nowhere else.",
+  "baseline_version": "v0.1-baseline",
+  "article_numbers": {"1": 1, "2": 2, "3": 4, "4": 5, "5": 6, "6": 7, "7": 8, "8": 9},
+  "files": {
+    "article-01-general.md": "article-01-general.md",
+    "article-02-prefatory.md": "article-02-districts.md",
+    "article-03-streets-roads-driveways.md": null,
+    "article-04-site-standards.md": "article-03-site-standards.md",
+    "article-05-building-standards.md": "article-04-building-standards.md",
+    "article-06-design-standards.md": "article-05-design-standards.md",
+    "article-07-use-standards.md": "article-06-use-standards.md",
+    "article-08-administration.md": "article-07-administration.md",
+    "article-09-definitions.md": "article-08-definitions.md"
+  },
+  "new_at_this_adoption": ["article-03-streets-roads-driveways.md"]
+}
