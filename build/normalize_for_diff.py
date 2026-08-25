@@ -67,7 +67,52 @@ _SPACES = re.compile(r"[ \t]{2,}")
 # cross-references use lowercase `table 5.1`. Matched case-insensitively;
 # the matched word's original case is preserved in the output (group(1) is
 # the literal matched text, unaffected by the IGNORECASE flag).
-_TABLE_NUM = re.compile(r"\b(table)\s+(\d+)\.(\d+)", re.IGNORECASE)
+#
+# CONTEXT ANCHOR (added after a review finding, 2026-08-24). Bare `table N.M`
+# is not unique to captions/cross-references -- "seasonal high water table
+# 5.2 feet" contains it too, as an ordinary compound noun ("water table")
+# followed by an unrelated measurement. Renumbering that would silently
+# suppress a real amendment to a groundwater depth. This is not hypothetical:
+# "water table" is standard septic/soils/groundwater language and a Shoreland
+# article is planned (see CLAUDE.md Phase 9), so the phrase is very likely to
+# appear followed by a depth in feet.
+#
+# The chosen anchor requires what immediately FOLLOWS the number to look like
+# a real caption/reference continuation, not requiring anything about what
+# precedes it: every `table N.M` in this corpus (both the v0.1-baseline and
+# the current source, checked exhaustively at 2026-08-24) is followed either
+# by a clause/sentence boundary (`:` `.` `,` `;` or end of line) or by the
+# start of the table's title, which always begins with a capital letter (all-
+# caps caption or Title Case reference: "TABLE 4.1 SCREENING FORMULA", "Table
+# 5.2: Additional Structures", "table 6.1 Design Standards By District"). A
+# compound noun like "water table" is instead followed by an ordinary
+# lowercase word -- a unit, a verb, a preposition -- which this anchor does
+# not accept.
+#
+# This was chosen over a precedes-instead-of-follows anchor (e.g. excluding
+# "water"/"ground"/"high" before "table") because that is exactly the kind of
+# blocklist-by-guesswork the module's own rule against it warns against: it
+# would need to enumerate every possible compound-noun modifier rather than
+# rely on one structural fact that already holds for 100% of the real corpus.
+#
+# The anchor is deliberately NARROW rather than broad: a genuine reference
+# this pattern fails to match (e.g. "Table 3.2 for the higher design speed",
+# present in Article 3, which is new-at-adoption and not diffed against the
+# baseline) simply stays unsuppressed -- a recoverable false "still differs".
+# The failure this module cannot recover from is the opposite one: a real
+# amendment suppressed because it merely resembled a table reference.
+#
+# NOTE the case-insensitivity is scoped to the word "table" only -- `(?i:...)`
+# -- rather than applied to the whole pattern via re.IGNORECASE. A prior draft
+# used a pattern-wide IGNORECASE flag, which also made the `[A-Z]` in the
+# lookahead accept lowercase letters, silently defeating the anchor it exists
+# to provide (it would have renumbered "water table 5.2 feet" after all,
+# since "f" satisfied `[A-Z]` under that flag). Scoping the flag to just the
+# word keeps the title-case signal in the lookahead genuinely case-sensitive.
+_TABLE_NUM = re.compile(
+    r"\b(?P<word>(?i:table))\s+(\d+)\.(\d+)(?=[:.,;]|\s+[A-Z]|\s*$)",
+    re.MULTILINE,
+)
 
 # Rule 5. Frontmatter `article-number: "6"` -> `article-number: "7"`. Every
 # article file's YAML frontmatter states its own number; that number shifts

@@ -99,6 +99,40 @@ def test_normalize_old_side_also_renumbers_tables():
         "TABLE 7.1 DESIGN STANDARDS BY DISTRICT"
 
 
+# --- Rule 4 context anchor: "table" in prose is not a caption/reference -----
+#
+# Review finding (2026-08-24): the un-anchored rule renumbered ANY "table N.M"
+# in prose, including a compound noun like "water table" followed by an
+# unrelated measurement. Not hypothetical: "water table" is standard septic/
+# soils/groundwater language and a Shoreland article is planned (CLAUDE.md
+# Phase 9), so this phrase is very likely to occur followed by a depth in
+# feet. A real amendment to that depth must never be silently suppressed.
+
+def test_the_reviewers_water_table_case_is_not_renumbered():
+    """THE test for this fix. A genuine numeric amendment inside a phrase that
+    merely contains the word 'table' followed by N.M must survive -- not be
+    mistaken for a table caption/cross-reference."""
+    old = "The seasonal high water table 5.2 feet below grade shall govern."
+    new = "The seasonal high water table 6.2 feet below grade shall govern."
+    assert norm_old(old) != norm_new(new)
+
+
+def test_a_second_prose_table_case_is_not_renumbered():
+    """A different compound-noun shape, same hazard class: 'rate table 9.1
+    percent' is not a table caption or cross-reference either."""
+    old = "The applicable tax rate table 9.1 percent applies to this parcel."
+    new = "The applicable tax rate table 3.1 percent applies to this parcel."
+    assert norm_old(old) != norm_new(new)
+
+
+def test_but_a_genuine_bare_caption_reference_is_still_suppressed_with_the_anchor():
+    """The anchor must not have thrown out real cases along with the hazard:
+    a caption/reference immediately followed by sentence punctuation (no
+    title text) still suppresses, same as one followed by a title."""
+    assert norm_old("See Table 6.1.") == norm_new("See Table 7.1.")
+    assert norm_old("per Table 6.1, as applicable.") == norm_new("per Table 7.1, as applicable.")
+
+
 # --- Rule 5: frontmatter article-number renumbering -------------------------
 
 def test_frontmatter_article_number_renumbering_is_suppressed():
