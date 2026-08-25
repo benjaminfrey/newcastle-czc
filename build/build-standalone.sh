@@ -27,10 +27,11 @@ NN_RAW="${1:-}"
 VERSION="${2:-v0.0-dev}"
 DATE_STR="${3:-}"        # reserved (standalone has no cover); kept for signature parity
 
-# Adoption state, for the §5 exhibit banners (street-type-inventory.typ /
-# street-type-map.typ). Defaults to 'draft', so every existing invocation is
-# unchanged. See build/ADOPTION-SPEC.md §4.2.
-ADOPTION_MODE="${ADOPTION_MODE:-draft}"
+# Adoption state, for the page footer and the §5 exhibit banners
+# (street-type-inventory.typ / street-type-map.typ). Defaults to 'draft', so
+# every existing invocation is unchanged. See build/ADOPTION-SPEC.md §4 / §4.2.
+# Shared with build-full-czc.sh; sets FOOTER_TEXT.
+source "$REPO_ROOT/build/adoption-footer.sh"
 
 if [ -z "$NN_RAW" ]; then
   echo "usage: build-standalone.sh <article-NN> <version> [date-str]" >&2
@@ -92,12 +93,13 @@ d = fitz.open(); d.new_page(width=612, height=792); d.save(sys.argv[1]); d.close
 PY
 
 # Render one prose segment via the generic primitive. article-number/name come
-# from the markdown frontmatter; we override footer-date to the draft version and
-# thread the running page offset. Extra -V args (e.g. continuation=true) pass through.
+# from the markdown frontmatter; we override footer-date to the adoption-mode
+# footer text (see adoption-footer.sh) and thread the running page offset.
+# Extra -V args (e.g. continuation=true) pass through.
 render_seg() {  # <src.md> <out.pdf> <page-offset> [extra -V ...]
   local src="$1" out="$2" off="$3"; shift 3
   bash "$REPO_ROOT/build/build-article.sh" "$src" "$out" \
-    -V "footer-date=Draft $VERSION" -V "page-offset=$off" "$@" >/dev/null
+    -V "footer-date=$FOOTER_TEXT" -V "page-offset=$off" "$@" >/dev/null
 }
 
 PARTS=()
@@ -119,7 +121,7 @@ render_units_matching() {  # <splice-value>
     fi
     out="$TMP/unit-${#PARTS[@]}.pdf"
     local args=( --font-path "$REPO_ROOT/style/fonts"
-                 --input "page_offset=$OFF" --input "footer_date=Draft $VERSION"
+                 --input "page_offset=$OFF" --input "footer_date=$FOOTER_TEXT"
                  --input "adoption_mode=$ADOPTION_MODE" )
     [ -n "$data" ] && args+=( --input "data=$data" )
     echo "Rendering $typ (page offset $OFF)"

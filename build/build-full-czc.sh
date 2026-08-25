@@ -34,18 +34,8 @@ VERSION="${1:-v0.0-dev}"
 DATE_STR="${2:-$(date +"%B %-d, %Y")}"
 
 # Adoption state. Defaults to 'draft', so every existing invocation is unchanged.
-# See build/ADOPTION-SPEC.md §4.
-ADOPTION_MODE="${ADOPTION_MODE:-draft}"
-ADOPTION_EVENT_DATE="${ADOPTION_EVENT_DATE:-}"
-case "$ADOPTION_MODE" in
-  draft)    FOOTER_TEXT="Draft $VERSION" ;;
-  meeting)  FOOTER_TEXT="Town Meeting Edition $VERSION" ;;
-  adopted)  FOOTER_TEXT="Adopted: $ADOPTION_EVENT_DATE" ;;
-  *) echo "unknown ADOPTION_MODE '$ADOPTION_MODE'" >&2; exit 1 ;;
-esac
-if [ "$ADOPTION_MODE" != "draft" ] && [ -z "$ADOPTION_EVENT_DATE" ]; then
-  echo "ADOPTION_MODE=$ADOPTION_MODE requires ADOPTION_EVENT_DATE" >&2; exit 1
-fi
+# See build/ADOPTION-SPEC.md §4. Shared with build-standalone.sh.
+source "$REPO_ROOT/build/adoption-footer.sh"
 
 BASELINE_PDF="$REPO_ROOT/docs/Newcastle Core Zoning Code.pdf"
 DATA_JSON="$SOURCE_DIR/article-02-data.json"
