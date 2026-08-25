@@ -32,6 +32,21 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SOURCE_DIR="${SRC_DIR:-$REPO_ROOT/source}"
 VERSION="${1:-v0.0-dev}"
 DATE_STR="${2:-$(date +"%B %-d, %Y")}"
+
+# Adoption state. Defaults to 'draft', so every existing invocation is unchanged.
+# See build/ADOPTION-SPEC.md §4.
+ADOPTION_MODE="${ADOPTION_MODE:-draft}"
+ADOPTION_EVENT_DATE="${ADOPTION_EVENT_DATE:-}"
+case "$ADOPTION_MODE" in
+  draft)    FOOTER_TEXT="Draft $VERSION" ;;
+  meeting)  FOOTER_TEXT="Town Meeting Edition $VERSION" ;;
+  adopted)  FOOTER_TEXT="Adopted: $ADOPTION_EVENT_DATE" ;;
+  *) echo "unknown ADOPTION_MODE '$ADOPTION_MODE'" >&2; exit 1 ;;
+esac
+if [ "$ADOPTION_MODE" != "draft" ] && [ -z "$ADOPTION_EVENT_DATE" ]; then
+  echo "ADOPTION_MODE=$ADOPTION_MODE requires ADOPTION_EVENT_DATE" >&2; exit 1
+fi
+
 BASELINE_PDF="$REPO_ROOT/docs/Newcastle Core Zoning Code.pdf"
 DATA_JSON="$SOURCE_DIR/article-02-data.json"
 RELEASE_DIR="${OUT_DIR:-$REPO_ROOT/releases/$VERSION}"
@@ -207,7 +222,8 @@ for ART in "${ARTICLES[@]}"; do
       typst compile "$ART" "$PART" \
         --font-path "$REPO_ROOT/style/fonts" \
         --input "page_offset=$OFFSET" \
-        --input "footer_date=Draft $VERSION" \
+        --input "footer_date=$FOOTER_TEXT" \
+        --input "adoption_mode=$ADOPTION_MODE" \
         --input "data=exhibits/street-types/inventory.json"
       ;;
     *)
@@ -220,13 +236,13 @@ for ART in "${ARTICLES[@]}"; do
          { [ -n "$SPLIT_03C" ] && [ "$ART" = "$SPLIT_03C" ]; }; then
         echo "Rendering article $INDEX (page offset $OFFSET) [Art. 3 continuation]: $(basename "$ART")"
         bash "$REPO_ROOT/build/build-article.sh" "$ART" "$PART" \
-          -V "footer-date=Draft $VERSION" \
+          -V "footer-date=$FOOTER_TEXT" \
           -V "page-offset=$OFFSET" \
           -V "continuation=true" >/dev/null
       else
         echo "Rendering article $INDEX (page offset $OFFSET): $(basename "$ART")"
         bash "$REPO_ROOT/build/build-article.sh" "$ART" "$PART" \
-          -V "footer-date=Draft $VERSION" \
+          -V "footer-date=$FOOTER_TEXT" \
           -V "page-offset=$OFFSET" >/dev/null
         if [ -n "$SPLIT_03A" ] && [ "$ART" = "$SPLIT_03A" ]; then
           MD_LIST+=("$ART3_SRC")
@@ -270,8 +286,8 @@ COVER_PDF="$TMPDIR_PDFS/cover.pdf"
 TOC_JSON="$TMPDIR_PDFS/toc.json"
 TOC_PDF="$TMPDIR_PDFS/toc.pdf"
 
-echo "Building cover (baseline art + $VERSION draft banner)"
-python3 "$REPO_ROOT/build/build-cover.py" "$BASELINE_PDF" "$COVER_PDF" "$VERSION" "$DATE_STR" ${REDLINE_CAVEAT:+"$REDLINE_CAVEAT"}
+echo "Building cover (baseline art + $VERSION $ADOPTION_MODE banner)"
+python3 "$REPO_ROOT/build/build-cover.py" "$BASELINE_PDF" "$COVER_PDF" "$VERSION" "$DATE_STR" ${REDLINE_CAVEAT:+"$REDLINE_CAVEAT"} --mode "$ADOPTION_MODE" --event-date "$ADOPTION_EVENT_DATE"
 
 echo "Deriving TOC entries by scanning the built body"
 python3 "$REPO_ROOT/build/toc_entries.py" "$BODY_PDF" "$DATA_JSON" "$TOC_JSON"

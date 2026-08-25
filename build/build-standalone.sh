@@ -27,6 +27,11 @@ NN_RAW="${1:-}"
 VERSION="${2:-v0.0-dev}"
 DATE_STR="${3:-}"        # reserved (standalone has no cover); kept for signature parity
 
+# Adoption state, for the §5 exhibit banners (street-type-inventory.typ /
+# street-type-map.typ). Defaults to 'draft', so every existing invocation is
+# unchanged. See build/ADOPTION-SPEC.md §4.2.
+ADOPTION_MODE="${ADOPTION_MODE:-draft}"
+
 if [ -z "$NN_RAW" ]; then
   echo "usage: build-standalone.sh <article-NN> <version> [date-str]" >&2
   exit 1
@@ -114,7 +119,8 @@ render_units_matching() {  # <splice-value>
     fi
     out="$TMP/unit-${#PARTS[@]}.pdf"
     local args=( --font-path "$REPO_ROOT/style/fonts"
-                 --input "page_offset=$OFF" --input "footer_date=Draft $VERSION" )
+                 --input "page_offset=$OFF" --input "footer_date=Draft $VERSION"
+                 --input "adoption_mode=$ADOPTION_MODE" )
     [ -n "$data" ] && args+=( --input "data=$data" )
     echo "Rendering $typ (page offset $OFF)"
     typst compile "$SOURCE_DIR/$typ" "$out" "${args[@]}"

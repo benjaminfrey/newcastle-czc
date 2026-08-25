@@ -19,6 +19,15 @@
 #let footer_date = sys.inputs.at("footer_date", default: "Draft")
 #let data_path   = sys.inputs.at("data", default: "exhibits/street-types/inventory-sample.json")
 
+// Adoption state, passed by build-full-czc.sh / build-standalone.sh. The DRAFT
+// banner (from inventory.json's _meta.banner) asserts "not yet reviewed or
+// adopted", which is false once adopted -- but the provenance note must survive
+// in every mode: the district geometry is still an approximation
+// (ADOPTION-SPEC.md §4.2). The MEETING banner carries its own not-yet-adopted
+// marker because this exhibit runs five pages and gets separated from the cover.
+#let adoption_mode = sys.inputs.at("adoption_mode", default: "draft")
+#let PROVENANCE = "Types derived from a trace of the District Map; recorded right-of-way, traveled way and other field values are approximate."
+
 #let article_number = "3"
 #let article_name = "Thoroughfares"
 
@@ -83,8 +92,14 @@
 #let data = json(data_path)
 #let segs = data.segments.sorted(key: s => (s.name, s.at("termini", default: ("", "")).at(0)))
 
-#let banner = data.at("_meta", default: (:)).at("banner",
-  default: "Sample data shown — not Newcastle's adopted network.")
+#let banner = if adoption_mode == "adopted" {
+  PROVENANCE
+} else if adoption_mode == "meeting" {
+  "NOT YET ADOPTED — for adoption at Town Meeting. " + PROVENANCE
+} else {
+  data.at("_meta", default: (:)).at("banner",
+    default: "Sample data shown — not Newcastle's adopted network.")
+}
 
 // ---- Cell helpers -----------------------------------------------------------
 #let dash = text(fill: subsection_gray)[—]
