@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Normalisation applied to BOTH sides before a baseline redline diff.
+"""Normalisation for a baseline redline diff.
 
 WHY. Measured 2026-08-24 across the seven mappable article pairs: the raw diff
 is 1,261 changed lines; after normalisation it is 243. Article 1 goes from 30 to
@@ -20,6 +20,19 @@ from a redline is invisible to the reader. So:
     word not covered by a rule below.
   * If you are tempted to add a rule that "cleans up" anything semantic, don't.
     A noisier redline is recoverable; a redline missing an amendment is not.
+
+RENDER SAFETY -- added after a Task 3 review finding (2026-08-24). `normalize()`
+(all three rules, including `_rewrap`) is COMPARISON-ONLY: it decides what
+counts as a difference, and its output must never be fed to a renderer.
+`redline-text.py --source` is line-based and emits the lines it is handed, so
+if normalised text reaches it, normalisation stops being invisible cosmetics
+and becomes a silent rewrite of the document -- `_rewrap` collapses indented
+sub-clause continuations into run-on prose. Measured on the real baseline
+build: article-08-administration.md's 211 indented sub-clause lines fell to 4,
+and body pages dropped 113 -> 110. `normalize_old_side()` below is the
+render-safe alternative (heading case + renumbering, no rewrap) for the side
+that a baseline redline actually renders; it costs nothing -- the marked-line
+count across all seven pairs is 243 either way, with or without rewrap.
 """
 from __future__ import annotations
 
@@ -47,6 +60,16 @@ def _rewrap(text: str) -> str:
 def normalize(text: str, *, amap, is_baseline_side: bool) -> str:
     """Normalise one side of the diff.
 
+    COMPARISON-ONLY. NOT render-safe. This includes `_rewrap`, which collapses
+    indented continuation lines -- fine for computing a diff, but ruinous if
+    the result is ever fed to a line-based renderer (as `redline-text.py
+    --source` is): it flattens the Code's lettered sub-clause hierarchy into
+    run-on prose. Measured: article-08-administration.md 211 indented
+    sub-clause lines -> 4, body pages 113 -> 110. A caller that emits this
+    function's output into the rendered document -- rather than only using it
+    to decide what differs -- will damage the document. Use
+    `normalize_old_side` for the side that gets rendered.
+
     `is_baseline_side` matters: cross-reference renumbering maps baseline ->
     current, so it is applied to the OLD side only. Applying it to both would
     double-shift every reference and corrupt the comparison silently.
@@ -55,6 +78,22 @@ def normalize(text: str, *, amap, is_baseline_side: bool) -> str:
     if is_baseline_side:
         out = amap.renumber(out)
     return _rewrap(out)
+
+
+def normalize_old_side(text: str, *, amap) -> str:
+    """Render-SAFE normalisation for the OLD side of a redline.
+
+    Heading case and cross-reference renumbering only -- NO re-wrapping.
+
+    WHY NO REWRAP. redline_source() is line-based and EMITS the lines it is
+    given, so anything done here reaches the rendered PDF. _rewrap() collapses
+    indented continuations, which flattens the Code's lettered hierarchy into
+    run-on prose -- measured: article-08-administration.md 211 sub-clause lines
+    -> 4, body pages 113 -> 110. And it buys nothing: across all seven
+    comparable pairs the marked-line count is 243 either way. Normalisation is
+    legitimate for COMPARISON; feeding normalised text to the RENDERER is not.
+    """
+    return amap.renumber(_heading_case(text))
 
 
 def report(old: str, new: str, *, amap) -> dict[str, int]:

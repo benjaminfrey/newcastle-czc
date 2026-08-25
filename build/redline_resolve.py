@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Resolve the OLD side of one article's redline diff, and normalise both sides.
+"""Resolve and render-safely normalise the OLD side of one article's redline diff.
+
+The NEW side is never touched here or by the caller: it is the document being
+published, staged verbatim from the working tree. See normalize_for_diff.py's
+module docstring for why only the OLD side may be normalised for rendering.
 
 Exit codes:
   0  wrote the old-side file
@@ -83,7 +87,11 @@ def main() -> int:
               f"exist at {a.old_ver}. Fix the map.", file=sys.stderr)
         return 1
 
-    Path(a.out_path).write_text(nz.normalize(text, amap=amap, is_baseline_side=True))
+    # normalize_old_side, NOT normalize: this text is what gets RENDERED (the
+    # old side of redline-text.py --source), and normalize()'s rewrap rule
+    # flattens indented sub-clauses into run-on prose when it reaches a
+    # renderer. See normalize_for_diff.py's module docstring.
+    Path(a.out_path).write_text(nz.normalize_old_side(text, amap=amap))
     return 0
 
 

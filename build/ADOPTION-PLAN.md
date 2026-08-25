@@ -687,6 +687,67 @@ PYEOF
 done
 ```
 
+**AMENDED 2026-08-24 after the Task 3 review — CRITICAL, and a defect in this plan's own Step 5.**
+
+The wiring above normalises the STAGED NEW SIDE in place, and that staged file is what
+`build-full-czc.sh` typesets into the voter-facing PDF. `redline_source()` is LINE-BASED
+(`difflib.SequenceMatcher` over line lists) and EMITS the lines it was given — so normalising the
+new side does not merely affect the comparison, it rewrites the document. `_rewrap` collapses
+indented continuations, flattening the Code's lettered hierarchy into run-on prose. Measured on the
+real baseline run: `article-08-administration.md` 211 indented sub-clause lines → 4; body pages
+113 → 110. Article 8's notice, appeal and permit sub-clauses are the worst affected.
+
+**Normalisation is legitimate for COMPARISON; feeding normalised text to the RENDERER is not.**
+
+The fix, and it costs nothing — measured across all seven comparable pairs:
+
+| | marked lines |
+|---|---|
+| raw | 1,261 |
+| normalise both sides (current, damaging) | **243** |
+| normalise OLD side only, no rewrap (correct) | **243** |
+
+The rewrap rule buys **zero** fewer marks on this corpus. It only ever cost the hierarchy.
+
+Required changes:
+
+1. Add to `build/normalize_for_diff.py`:
+
+```python
+def normalize_old_side(text: str, *, amap) -> str:
+    """Render-SAFE normalisation for the OLD side of a redline.
+
+    Heading case and cross-reference renumbering only -- NO re-wrapping.
+
+    WHY NO REWRAP. redline_source() is line-based and EMITS the lines it is
+    given, so anything done here reaches the rendered PDF. _rewrap() collapses
+    indented continuations, which flattens the Code's lettered hierarchy into
+    run-on prose -- measured: article-08-administration.md 211 sub-clause lines
+    -> 4, body pages 113 -> 110. And it buys nothing: across all seven
+    comparable pairs the marked-line count is 243 either way. Normalisation is
+    legitimate for COMPARISON; feeding normalised text to the RENDERER is not.
+    """
+```
+
+   Leave `normalize()` as it is, and add to its docstring that it is **comparison-only and NOT
+   render-safe** — a caller that emits its output will damage the document.
+
+2. `build/redline_resolve.py` `--baseline` mode calls `normalize_old_side`, not `normalize`.
+
+3. **Remove the new-side normalisation block entirely** from `build-redline-full.sh`. The new side
+   is the document; it is never rewritten.
+
+4. Tests: assert `normalize_old_side` preserves indentation on a nested sub-clause block, and that
+   a real baseline run leaves `article-08-administration.md`'s indented line count unchanged from
+   `source/`.
+
+5. Verify parity on the BASELINE path (the Important finding): logical page == physical page, one
+   constant offset, on the `ADOPTION_BASELINE=1` build.
+
+Two Minor findings to fix while here: quote the heredoc (`<<'PYEOF'`) if any remains, and make the
+exit-4 path's dependence on `OLDTMP` fail-loud rather than relying on a `cp` that a later edit could
+reorder.
+
 - [ ] **Step 6: Verify a draft-to-draft redline is unchanged**
 
 Run: `REDLINE_OUT=/tmp/rl-check bash build/build-redline-full.sh v0.24-draft v0.23-draft "August 24, 2026"`

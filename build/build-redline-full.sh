@@ -73,6 +73,9 @@ cp -R "$SRC/." "$STAGE/"
 #        previously adopted Code): articles were renamed/renumbered at the
 #        Article-3 insertion, so the old side must be looked up via
 #        adoption-map.json, not by filename (build/redline_resolve.py, exit 0).
+#        It also normalises the old side it writes (heading case + cross-ref
+#        renumbering ONLY, via normalize_old_side -- see normalize_for_diff.py)
+#        so cosmetic drift doesn't bury real changes under invisible ones.
 #      - An article whose content moved out of markdown into a native-Typst
 #        unit since the baseline (Article 2's district standards) cannot be
 #        text-diffed without reporting a phantom mass deletion; it must render
@@ -80,6 +83,15 @@ cp -R "$SRC/." "$STAGE/"
 #    Without ADOPTION_BASELINE=1 this resolves by filename exactly as before
 #    (exit 3 on a genuinely new file), so an ordinary draft-to-draft redline
 #    is untouched.
+#
+#    The NEW side ($nf) is NEVER normalised or otherwise rewritten here: it is
+#    the staged working-tree file that build-full-czc.sh typesets verbatim
+#    into the published PDF. redline-text.py's --source mode is line-based and
+#    emits the lines it is given, so anything done to a side that gets
+#    rendered reaches the document, not just the comparison. (A prior version
+#    of this loop normalised the new side too "for equal terms" -- that
+#    silently flattened indented sub-clauses into run-on prose. Fixed
+#    2026-08-24 after review; see normalize_for_diff.py.)
 OLDTMP="$OUTDIR/old.md"
 BASELINE_FLAG=""
 if [ "${ADOPTION_BASELINE:-0}" = "1" ]; then BASELINE_FLAG="--baseline"; fi
@@ -88,6 +100,11 @@ shopt -s nullglob
 n=0
 for nf in "$STAGE"/article-*.md; do
   base="$(basename "$nf")"
+  # Every branch of the case below must (re)create OLDTMP. Removing it first
+  # means a branch that fails to do so is caught by the existence check right
+  # after the case, rather than silently reusing the previous article's old
+  # side (OLDTMP is one file, reused every iteration).
+  rm -f "$OLDTMP"
   set +e
   python3 "$REPO_ROOT/build/redline_resolve.py" "$base" "$OLD_V" "$OLDTMP" $BASELINE_FLAG
   rc=$?
@@ -96,26 +113,14 @@ for nf in "$STAGE"/article-*.md; do
     0) ;;
     3) : > "$OLDTMP"   # new since OLD: empty OLD -> whole body marked added
        echo "  ($base is new since $OLD_V — whole body marked as added)" ;;
-    4) echo "  ($base is not text-comparable against $OLD_V — rendered unmarked)" ;;
+    4) cp "$nf" "$OLDTMP"   # not text-comparable: force old == new -> unmarked
+       echo "  ($base is not text-comparable against $OLD_V — rendered unmarked)" ;;
     *) echo "redline: could not resolve the old side for $base (exit $rc)." >&2
        exit 1 ;;
   esac
-  # In baseline mode the NEW side is normalised too, so both sides are
-  # compared on equal terms. is_baseline_side=False -- the current side is
-  # never renumbered (renumbering only makes sense old-baseline -> current).
-  if [ -n "$BASELINE_FLAG" ]; then
-    python3 - "$nf" <<PYEOF
-import sys
-sys.path.insert(0, "$REPO_ROOT/build")
-from pathlib import Path
-import adoption_map, normalize_for_diff as nz
-p = Path(sys.argv[1])
-p.write_text(nz.normalize(p.read_text(), amap=adoption_map.load(), is_baseline_side=False))
-PYEOF
-  fi
-  if [ "$rc" = "4" ]; then
-    # Not text-comparable: force old == new so redline-text.py marks nothing.
-    cp "$nf" "$OLDTMP"
+  if [ ! -e "$OLDTMP" ]; then
+    echo "redline: internal error — no old side was produced for $base (exit $rc)." >&2
+    exit 1
   fi
   python3 "$REDLINE_PY" "$OLDTMP" "$nf" "$nf" --source
   n=$((n + 1))

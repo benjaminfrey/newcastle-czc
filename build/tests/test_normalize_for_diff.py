@@ -82,6 +82,56 @@ def test_shall_to_may_still_differs():
     assert norm_old("The Board shall require") != norm_new("The Board may require")
 
 
+# --- normalize_old_side: render-safe (no rewrap) ----------------------------
+#
+# Added after a Task 3 review finding (2026-08-24): the old side of a baseline
+# redline is what redline-text.py --source RENDERS, not just compares. Rule 3
+# (rewrap) collapses indented continuation lines, which flattens the Code's
+# lettered sub-clause hierarchy into run-on prose once it reaches the
+# renderer. normalize_old_side applies heading-case + renumbering only.
+
+def test_normalize_old_side_still_suppresses_heading_case():
+    assert nz.normalize_old_side("### A. PURPOSE", amap=AMAP) == "### a. PURPOSE"
+
+
+def test_normalize_old_side_still_renumbers():
+    assert nz.normalize_old_side("See Article 7.", amap=AMAP) == "See Article 8."
+
+
+def test_normalize_old_side_preserves_indentation_on_a_nested_sub_clause_block():
+    """THE test for the bug the review caught. A lettered sub-clause list, each
+    line indented under its parent, must come out with every line intact --
+    not merged into one run-on line the way `normalize()`'s rewrap rule would."""
+    block = (
+        "1. The reviewing authority may:\n"
+        "    a. Determine the application is complete and ready for review.\n"
+        "    b. Determine the application is incomplete and deny the application.\n"
+        "    c. Determine the application is incomplete and allow withdrawal.\n"
+    )
+    out = nz.normalize_old_side(block, amap=AMAP)
+    assert out == block, "indentation/line structure must be untouched"
+    assert out.count("\n") == block.count("\n")
+
+
+def test_normalize_old_side_does_not_collapse_a_wrapped_paragraph_either():
+    """Unlike normalize(), this function must leave line breaks exactly where
+    they were -- rewrap is Rule 3 and normalize_old_side never applies it."""
+    wrapped = "1. The proposed subdivision will not\n   result in undue water pollution."
+    assert nz.normalize_old_side(wrapped, amap=AMAP) == wrapped
+
+
+def test_normalize_is_not_render_safe_for_the_same_block():
+    """Documents the contrast directly: normalize() (comparison-only) DOES
+    collapse the block that normalize_old_side (render-safe) leaves alone."""
+    block = (
+        "1. The reviewing authority may:\n"
+        "    a. Determine the application is complete and ready for review.\n"
+        "    b. Determine the application is incomplete and deny the application.\n"
+    )
+    assert norm_old(block) != block
+    assert nz.normalize_old_side(block, amap=AMAP) == block
+
+
 # --- The report --------------------------------------------------------------
 
 def test_report_counts_each_rule_separately():

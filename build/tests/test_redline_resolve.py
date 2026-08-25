@@ -68,6 +68,32 @@ def test_article_2_prefatory_is_not_text_comparable(tmp_path):
         "exit 4 must not write a diffable old side; the caller supplies old==new"
 
 
+def _count_indented_lines(text: str) -> int:
+    return sum(1 for ln in text.split("\n") if ln[:1] in (" ", "\t") and ln.strip())
+
+
+def test_a_real_baseline_run_preserves_administrations_indented_sub_clauses(tmp_path):
+    """THE regression for the 2026-08-24 review finding: resolving
+    article-08-administration.md against the real v0.1-baseline must not
+    flatten its lettered sub-clauses (a., b., c. ...) the way feeding
+    normalize()'s rewrap rule to the renderer did -- that measured as 211
+    indented lines collapsing to 4. redline_resolve.py must use
+    normalize_old_side, which preserves indentation, so the resolved old side
+    has exactly as many indented lines as the raw baseline text it came from.
+    """
+    raw_baseline = subprocess.run(
+        ["git", "-C", str(REPO), "show", "v0.1-baseline:source/article-07-administration.md"],
+        capture_output=True, text=True,
+    ).stdout
+    expected = _count_indented_lines(raw_baseline)
+    assert expected > 100, "sanity check: the baseline article has this many sub-clauses"
+
+    out = tmp_path / "old.md"
+    r = run("article-08-administration.md", "v0.1-baseline", str(out), "--baseline")
+    assert r.returncode == 0, r.stderr
+    assert _count_indented_lines(out.read_text()) == expected
+
+
 def test_not_text_comparable_article_renders_with_no_marks(tmp_path):
     """The exit-4 caller contract, exercised directly: when the caller honours
     it (old side = new side), redline-text.py --source must mark nothing --
