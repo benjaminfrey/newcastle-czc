@@ -638,7 +638,37 @@
      ],
      [
       "Primary & Accessory Roofs",
-      "Gable 5/12 min"
+      "(see roof pitch table)"
+     ]
+    ]
+   },
+   {
+    "title": "ROOF PITCH",
+    "kind": "lv",
+    "body": [
+     [
+      "Gable",
+      "5/12 min"
+     ],
+     [
+      "Hipped",
+      "5/12 min"
+     ],
+     [
+      "Gambrel",
+      "Permitted"
+     ],
+     [
+      "Mansard",
+      "Permitted"
+     ],
+     [
+      "Shed",
+      "2.5/12 min"
+     ],
+     [
+      "Flat",
+      "Not Permitted"
      ]
     ]
    },
@@ -1114,11 +1144,11 @@
     "body": [
      [
       "Front of buildings",
-      ""
+      "Massing & Architectural Components"
      ],
      [
       "Side of buildings",
-      "Massing & Architectural"
+      "Massing & Architectural Components"
      ],
      [
       "Rear of buildings",
@@ -1134,7 +1164,37 @@
      ],
      [
       "Primary & Accessory Roofs",
-      "Gable 5/12 min"
+      "(see roof pitch table)"
+     ]
+    ]
+   },
+   {
+    "title": "ROOF PITCH",
+    "kind": "lv",
+    "body": [
+     [
+      "Gable",
+      "5/12 min"
+     ],
+     [
+      "Hipped",
+      "5/12 min"
+     ],
+     [
+      "Gambrel",
+      "Permitted"
+     ],
+     [
+      "Mansard",
+      "Permitted"
+     ],
+     [
+      "Shed",
+      "2.5/12 min"
+     ],
+     [
+      "Flat",
+      "Not Permitted"
      ]
     ]
    },
@@ -1420,7 +1480,7 @@
      ],
      [
       "Retail & Service, General",
-      "rc"
+      "rc sp"
      ],
      [
       "Retail & Service, Heavy",
@@ -1619,11 +1679,11 @@
     "body": [
      [
       "Front of buildings",
-      ""
+      "Massing & Architectural Components"
      ],
      [
       "Side of buildings",
-      "Massing & Architectural"
+      "Massing & Architectural Components"
      ],
      [
       "Rear of buildings",
@@ -1639,7 +1699,37 @@
      ],
      [
       "Primary & Accessory Roofs",
-      "Gable 5/12 min"
+      "(see roof pitch table)"
+     ]
+    ]
+   },
+   {
+    "title": "ROOF PITCH",
+    "kind": "lv",
+    "body": [
+     [
+      "Gable",
+      "5/12 min"
+     ],
+     [
+      "Hipped",
+      "5/12 min"
+     ],
+     [
+      "Gambrel",
+      "Permitted"
+     ],
+     [
+      "Mansard",
+      "Permitted"
+     ],
+     [
+      "Shed",
+      "2.5/12 min"
+     ],
+     [
+      "Flat",
+      "Not Permitted"
      ]
     ]
    },
@@ -2107,11 +2197,11 @@
     "body": [
      [
       "Front of buildings",
-      ""
+      "Massing & Architectural Components"
      ],
      [
       "Side of buildings",
-      ""
+      "Massing & Architectural Components"
      ],
      [
       "Rear of buildings",
@@ -2127,7 +2217,37 @@
      ],
      [
       "Primary & Accessory Roofs",
-      "Gable 5/12 min"
+      "(see roof pitch table)"
+     ]
+    ]
+   },
+   {
+    "title": "ROOF PITCH",
+    "kind": "lv",
+    "body": [
+     [
+      "Gable",
+      "5/12 min"
+     ],
+     [
+      "Hipped",
+      "5/12 min"
+     ],
+     [
+      "Gambrel",
+      "Permitted"
+     ],
+     [
+      "Mansard",
+      "Permitted"
+     ],
+     [
+      "Shed",
+      "2.5/12 min"
+     ],
+     [
+      "Flat",
+      "Not Permitted"
      ]
     ]
    },
@@ -2617,15 +2737,15 @@
     "body": [
      [
       "Front of buildings",
-      ""
+      "Massing & Architectural Components"
      ],
      [
       "Side of buildings",
-      ""
+      "Massing & Architectural Components"
      ],
      [
       "Rear of buildings",
-      "Components"
+      "Massing & Architectural Components"
      ],
      [
       "Building Orientation",
@@ -2637,7 +2757,37 @@
      ],
      [
       "Primary & Accessory Roofs",
-      "Gable 5/12 min"
+      "(see roof pitch table)"
+     ]
+    ]
+   },
+   {
+    "title": "ROOF PITCH",
+    "kind": "lv",
+    "body": [
+     [
+      "Gable",
+      "5/12 min"
+     ],
+     [
+      "Hipped",
+      "5/12 min"
+     ],
+     [
+      "Gambrel",
+      "Permitted"
+     ],
+     [
+      "Mansard",
+      "Permitted"
+     ],
+     [
+      "Shed",
+      "2.5/12 min"
+     ],
+     [
+      "Flat",
+      "Not Permitted"
      ]
     ]
    },
@@ -3122,15 +3272,15 @@
     "body": [
      [
       "Front of buildings",
-      ""
+      "Massing & Architectural Components"
      ],
      [
       "Side of buildings",
-      ""
+      "Massing & Architectural Components"
      ],
      [
       "Rear of buildings",
-      "Components"
+      "Massing & Architectural Components"
      ],
      [
       "Building Orientation",
@@ -3142,7 +3292,37 @@
      ],
      [
       "Primary & Accessory Roofs",
-      "Gable 5/12 min"
+      "(see roof pitch table)"
+     ]
+    ]
+   },
+   {
+    "title": "ROOF PITCH",
+    "kind": "lv",
+    "body": [
+     [
+      "Gable",
+      "5/12 min"
+     ],
+     [
+      "Hipped",
+      "5/12 min"
+     ],
+     [
+      "Gambrel",
+      "Permitted"
+     ],
+     [
+      "Mansard",
+      "Permitted"
+     ],
+     [
+      "Shed",
+      "2.5/12 min"
+     ],
+     [
+      "Flat",
+      "Not Permitted"
      ]
     ]
    },
@@ -4015,7 +4195,37 @@
      ],
      [
       "Primary & Accessory Roofs",
-      "Gable 5/12 min"
+      "(see roof pitch table)"
+     ]
+    ]
+   },
+   {
+    "title": "ROOF PITCH",
+    "kind": "lv",
+    "body": [
+     [
+      "Gable",
+      "5/12 min"
+     ],
+     [
+      "Hipped",
+      "5/12 min"
+     ],
+     [
+      "Gambrel",
+      "Permitted"
+     ],
+     [
+      "Mansard",
+      "Permitted"
+     ],
+     [
+      "Shed",
+      "2.5/12 min"
+     ],
+     [
+      "Flat",
+      "Permitted"
      ]
     ]
    },
@@ -4540,7 +4750,37 @@
      ],
      [
       "Primary & Accessory Roofs",
-      "Gable 5/12 min"
+      "(see roof pitch table)"
+     ]
+    ]
+   },
+   {
+    "title": "ROOF PITCH",
+    "kind": "lv",
+    "body": [
+     [
+      "Gable",
+      "5/12 min"
+     ],
+     [
+      "Hipped",
+      "5/12 min"
+     ],
+     [
+      "Gambrel",
+      "Permitted"
+     ],
+     [
+      "Mansard",
+      "Permitted"
+     ],
+     [
+      "Shed",
+      "2.5/12 min"
+     ],
+     [
+      "Flat",
+      "Not Permitted"
      ]
     ]
    },
@@ -5053,7 +5293,7 @@
      ],
      [
       "Primary & Accessory Roofs",
-      ""
+      "n/a"
      ]
     ]
    },
@@ -5478,7 +5718,7 @@
      ],
      [
       "Primary & Accessory Roofs",
-      ""
+      "n/a"
      ]
     ]
    },
@@ -5922,7 +6162,37 @@
      ],
      [
       "Primary & Accessory Roofs",
-      "Gable 3/12 min"
+      "(see roof pitch table)"
+     ]
+    ]
+   },
+   {
+    "title": "ROOF PITCH",
+    "kind": "lv",
+    "body": [
+     [
+      "Gable",
+      "3/12 min"
+     ],
+     [
+      "Hipped",
+      "3/12 min"
+     ],
+     [
+      "Gambrel",
+      "Permitted"
+     ],
+     [
+      "Mansard",
+      "Permitted"
+     ],
+     [
+      "Shed",
+      "2.5/12 min"
+     ],
+     [
+      "Flat",
+      "Permitted"
      ]
     ]
    },

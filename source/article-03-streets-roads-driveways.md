@@ -121,7 +121,7 @@ footer-date: "Draft v0.2-draft"
     a. on both sides of a Street in D5 Village Business and D6 Town Center;
     b. on at least one side of a Thoroughfare where any part of the frontage lies within ¼ mile, measured along the public way, of a school, the Town Office, the library, the post office, a public park or public landing, or a place of public assembly;
     c. on at least one side where the segment connects to an existing sidewalk; and
-    d. on at least one side of a new Street that will serve more than [12] dwelling units.
+    d. on at least one side of a new Street that will serve more than 12 dwelling units.
 3. **On-street parking.** On-street parking shall be provided on at least one side where the abutting frontage permits a ground-floor retail, restaurant, or personal-service use under Articles 2 and 7.
 4. **Planting strip and street trees.** A planting strip with street trees shall be provided on any segment on which a sidewalk is required under Section 3.F.2, unless the Code Enforcement Officer finds in writing that a planting strip is infeasible because of a utility conflict, insufficient right-of-way remaining after the safety-critical widths are met, or ledge.
 5. **Connectivity.** A new Street shall connect to any stubbed street abutting the parcel and shall provide a stub to each abutting developable parcel where a future through-connection is feasible.

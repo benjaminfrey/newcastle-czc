@@ -222,9 +222,14 @@
 
 // ---- Use-status glyph -------------------------------------------------------
 #let glyphs = (u: "●", rc: "❶", sp: "❷", ex: "✪")
+// A cell may carry MORE THAN ONE status. The adopted Code marks "Retail &
+// Service, General" in D3 Neighborhood Business with both the Residential
+// Companion symbol and the Special Permit symbol, i.e. CEO and Planning Board.
+// Codes are space-separated ("rc sp"); a single code behaves exactly as before.
 #let status(code) = {
   if code == none or code == "" { return [] }
-  text(font: glyph_font, fill: body_dark, size: 8pt, glyphs.at(code))
+  text(font: glyph_font, fill: body_dark, size: 8pt,
+       code.split(" ").map(c => glyphs.at(c)).join(h(2pt)))
 }
 
 // ---- One use category (heading + under-rule + use rows, no row rules) --------
