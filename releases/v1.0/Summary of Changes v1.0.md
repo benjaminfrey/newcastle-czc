@@ -3,11 +3,11 @@
 **For adoption at Town Meeting, September 14, 2026.** Changes are stated against the
 Core Zoning Code adopted November 3, 2020 and amended through March 24, 2025.
 
-This summary exists because a redline cannot show everything. Four things in particular are
+This summary exists because a redline cannot show everything. Three things in particular are
 invisible in the marked-up document, and each is explained below: the new Article 3 (marked
 entirely as an addition, which tells a reader nothing about what matters in it), the renumbering
-of every article after Article 2, the district pages of Article 2 (which carry no marks at all),
-and the maps, tables and exhibits (which are printed as they now stand, unmarked).
+of every article after Article 2, and the maps, tables and exhibits (which are printed as they
+now stand, unmarked).
 
 ---
 
@@ -113,17 +113,7 @@ The prose sections of Article 2 changed in three places, all of them consequence
   lower-numbered Type takes precedence. This replaces a judgment call with a rule anyone can apply
   and get the same answer.
 
-**The district pages of Article 2 carry no marks in this redline.** The thirteen district pages
-(D1–D6 and the seven Special Districts) are now generated from district data and printed as
-full-page spreads rather than written out as prose tables, and a text comparison cannot mark
-them. That is not a statement that they were untouched, and it is not a statement that anything
-in them was deleted.
-
-Every value on those pages was checked against the adopted Code in preparing this summary —
-all seventy-two design-standard entries across the thirteen districts, plus the lot dimensions
-and building placement figures. **They reproduce the adopted standards exactly**, including the
-roof pitch standards for each district and the permitted-use tables. No district standard has
-been changed, added, or removed.
+No district standard has been changed, added, or removed.
 
 ### Article 4, Site Standards (formerly Article 3)
 
