@@ -2,45 +2,43 @@
 
 **A classification question for the Planning Board — Article 3, Thoroughfares**
 
-*Revised August 24, 2026. An earlier version of this memo asked the Board to choose a test for
-applying R3 more broadly. Since then the information needed to apply the better test became
-available and the classification has been carried out. The question before the Board has changed
-accordingly, and is now narrower.*
+*Revised August 25, 2026. This memo has now been revised twice. The first version asked the Board
+to choose a test for applying R3 more broadly. The second reported that the information needed to
+apply the better test had become available and the classification had been carried out. This
+revision brings the figures up to date after a further round of field research, records that one
+inconsistency the Board was asked to resolve is now settled, and raises one new question the
+research itself uncovered.*
 
-## What has changed since this memo was first written
+## What has changed since the last revision
 
-The earlier memo set out four options. Option 3 was to classify by **how many dwellings a way
-actually serves** — the test that matches the Code's own language, which describes R3 in terms of
-traffic volume rather than length. That memo recommended against it for one reason only: *"the Town
-does not currently hold dwellings-served counts for each way; they would have to be gathered."*
+A resident carried out field research on the small private ways in town, walking or driving them
+and recording what each actually serves. The Town reviewed that research and, on August 25, 2026,
+recorded **eleven further ways as functioning today as driveways**, each with Rural Lane (R3) as
+the Type that would apply if it were ever converted:
 
-They have since been gathered. The Town's E-911 address data records one point for every addressed
-structure in Newcastle — 1,227 of them. Counting the residential addresses along each segment gives
-a direct reading of how many homes it serves.
+Alder Shore Road · Averill Road · Bailey Lane · Bradley Shore Road · Camp Road ·
+Dickenson Road · Eden Lane · Elm Road · Lucky Lane · Paradise Road · Swallow Hill Road
 
-Two things about this deserve to be stated plainly:
+Ten of the eleven had been carrying the automatic Rural Road (R2) classification. Camp Road was
+already R3 and needed only the present-use record.
 
-- **The counts sorted the work; they did not decide it.** Every classification below was reviewed
-  and set by hand. The counts said where to look first.
-- **About a quarter of the Town's address points carry no record of what kind of structure they
-  are.** Where a segment shows no residential address but does show a structure of unrecorded type,
-  that means *not yet reviewed*, not *nothing there*. Those were judged individually.
-
-The length test this memo previously recommended was not used. It is not needed now, and it was
-always a rough stand-in: a 900 ft lane serving three houses carries no more traffic than a 400 ft
-lane serving three houses.
+**This reduces what could ever be required of these ways.** Nothing about the change requires any
+work on any existing way, and recording present use is descriptive — it is not what decides
+whether something is a driveway. Section 7.C.8 does that.
 
 ## Where the classification now stands
 
-| | Before | Now |
-|---|---|---|
-| R3 Rural Lane | 4 segments | **66** |
-| R2 Rural Road | 126 segments | **70** |
-| Recorded as a driveway today | 4 | **61** |
+| | Originally | Last revision | Now |
+|---|---|---|---|
+| R3 Rural Lane | 4 segments | 66 | **76** |
+| R2 Rural Road | 126 segments | 70 | **60** |
+| Recorded as a driveway today | 4 | 61 | **72** |
 
-Measured against the dwellings-served test, the R3 group is coherent: of the 66 segments now
-classified R3, **46 serve one or two homes, 19 serve none on record, and one serves three or four.
-None serves five or more.**
+The inventory still holds 214 segments across 148 named roads, and no ownership changed.
+
+Measured against the dwellings-served test, the R3 group remains coherent: of the 76 segments now
+classified R3, **48 serve one or two homes, 24 serve none on record, and 4 serve three. None
+serves five or more.**
 
 ## Why this reduces obligations rather than increasing them
 
@@ -63,32 +61,63 @@ width and surface.
 Under Section 7.F, a driveway that grows to serve more than two dwellings must be improved to the
 Type assigned to it. At R2 that means an 18 ft traveled way in a 40 ft right-of-way; at R3 it means
 a 12 ft shared gravel surface in a 33 ft right-of-way. **Moving these lanes to R3 substantially
-reduces what a future owner would have to build.** Nothing about the reclassification requires any
-work on any existing way.
+reduces what a future owner would have to build.**
 
 ## What the Board is now asked to do
 
-**First: ratify the classification as it stands** — 66 segments at R3, and 61 segments recorded as
+**First: ratify the classification as it stands** — 76 segments at R3, and 72 segments recorded as
 functioning today as driveways.
 
-**Second: decide nineteen remaining segments.** Nineteen privately owned segments still classified
-R2 serve two homes or fewer on the current record. Under the test as applied to everything else,
-they would be R3. They were left as they are pending the Board's view.
+**Second: decide eleven remaining segments.** Eleven privately owned segments still classified R2
+serve two homes or fewer on the current record. Under the test as applied to everything else, they
+would be R3. They were left as they are pending the Board's view.
 
 They fall into three groups:
 
-- **Eight serve two homes** — Bradley Shore Road, Cottage Road, Deer Meadow Road, Dickenson Road,
-  Eagle Point Road, Estey Road, Happy Valley Road, and Jackies Way. Two homes is the driveway
-  threshold itself, so these sit exactly on the line.
-- **Four serve one home** — Barrol Point Road, Bay View Road, Osprey Point Road, and Sheepscott
-  River Way.
-- **Seven show no residential address on record**, though several show a structure of unrecorded
-  type. These are the least certain of the group and may simply need a look on the ground.
+- **Six serve two homes** — Cottage Road, Deer Meadow Road, Eagle Point Road, Estey Road,
+  Happy Valley Road, and Jackies Way. Two homes is the driveway threshold itself, so these sit
+  exactly on the line.
+- **Three serve one home** — Bay View Road, Osprey Point Road, and Sheepscott River Way.
+- **Two show no residential address on record** — a second Bay View Road segment, and Dodge Point
+  Road. These are the least certain of the group and may simply need a look on the ground.
 
-**Third: resolve one inconsistency this memo raised before, which is still open.** Eden Lane and
-Camp Road are both privately owned, both show no residential address, and both are short dead-end
-ways. **Camp Road is classified R3; Eden Lane is still R2.** Nothing in the record distinguishes
-them. Whatever the Board decides for the nineteen segments above should settle Eden Lane too.
+This list is down from nineteen at the last revision. Eight of the segments the Board was
+previously asked about — including Bradley Shore Road, Dickenson Road and Barrol Point Road — have
+since been recorded as driveways and are no longer open.
+
+**Third: an item that is now closed.** The last revision asked the Board to resolve an
+inconsistency: Eden Lane and Camp Road were both private, both showed no residential address, and
+both were short dead-end ways, yet Camp Road was R3 and Eden Lane was R2. **Both are now recorded
+as driveways at R3.** Nothing further is needed.
+
+## A new question the field research raised
+
+The research and the Town's E-911 address data disagree about three of the eleven ways, and the
+disagreement runs in the direction that matters.
+
+| Way | Field research reports | Address points on record |
+|---|---|---|
+| Lucky Lane | Shared driveway, 2 homes | **3 residential** |
+| Paradise Road | Shared driveway, 2 homes | **3 residential** |
+| Swallow Hill Road | Driveway, 1 home | **3 residential** |
+
+For all three the address data is unambiguous — three addressed residential structures, none of
+unrecorded type. Section 7.C.7 provides that an access way serving **more than two** single-family
+dwellings is no longer a Driveway. On the address record these three are over that threshold; on
+the field research they are not.
+
+Either source can be wrong. An address point may be assigned to an accessory dwelling, a seasonal
+camp, or a vacant lot; it may also be assigned to a home that is reached from a different way. Ways
+of this size are also exactly where the Town's records are thinnest.
+
+**The Board should decide these three on the ground rather than on either record.** They are
+currently recorded as driveways. If any of the three does serve three dwellings, it is not a
+Driveway under Section 7.C.7 and the record should be corrected — the Type would remain R3 either
+way, so nothing about the standard changes; what changes is whether the way is described as a
+driveway today.
+
+Nothing turns on this immediately. No obligation arises under Section 7.F unless and until a way is
+expanded or altered, and the Type is the same in both readings.
 
 ## Two items carried forward
 
