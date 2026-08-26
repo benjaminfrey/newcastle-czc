@@ -4,6 +4,11 @@
 Read this first, then `CONTRACT.md` (the authority on how the app must behave), then
 `DECISIONS-NEEDED.md` (the ledger of everything deliberately left undecided).
 
+**Last reviewed 2026-08-25.** No app code has changed since W8b. What changed is the *Code the app
+reads*: the CZC was frozen and tagged as **v1.0** for a special Town Meeting on **September 14,
+2026**. That has already broken one thing here and will require deliberate work if the vote passes —
+see **"The CZC moved under us"** below before doing anything else.
+
 ---
 
 ## Where we are
@@ -26,8 +31,13 @@ Plan-phase mapping: W1 ≈ plan Phases 0–1, W2 ≈ Phase 2, W3 ≈ Phase 3, W4
 W5 ≈ Phase 5, W6 ≈ Phase 6, W7 ≈ Phase 7, W8 ≈ Phase 8. Phase 9 (Shoreland) is deferred
 pending Ben supplying the ordinance.
 
-**Size:** ~52,400 lines of Python, 57 test files, **1065 tests**, 18 uniquely-numbered migrations,
-2 built rulesets. `DECISIONS-NEEDED.md` holds **31 entries**.
+**Size:** ~52,400 lines of Python, 57 test files, 18 uniquely-numbered migrations, 2 built
+rulesets. `DECISIONS-NEEDED.md` holds **32 entries**.
+
+**Suite as of 2026-08-25: 1053 passed, 12 errors** (was 1065 passed). The 12 are all
+`tests/test_use_matrix.py`, all one cause, and the cause is **not** in this app — see below. The
+already-built rulesets on disk still load, so `run.py --selftest` is **11/11 PASS** and the app
+runs; what fails is rebuilding a ruleset from `source/`.
 
 **W5, done 2026-08-21 (D-0025 is RESOLVED — approved; see DECISIONS-NEEDED.md for the verbatim
 decision and the provenance story. Nothing here has yet been exercised against a real key, because
@@ -194,6 +204,62 @@ dict yet (D-0029)**. A harness that only produced good numbers would never have 
 
 ---
 
+## The CZC moved under us — read before rebuilding a ruleset
+
+Nothing in this directory changed between 2026-08-24 (W8b) and 2026-08-25. The **Code** changed, and
+this app reads it. Three things happened on the CZC side that matter here.
+
+### 1. A use cell now carries two symbols, and 12 tests error because of it
+
+Restoring Article 2's district pages from the adopted PDF recovered a cell that the original scrape
+had flattened: D3 Neighborhood Business marks *Retail & Service, General* with **both ❶ and ❷** —
+CEO *and* Planning Board. `ruleset_build/build_use_matrix.py` refuses it:
+
+    district 'd3', use 'Retail & Service, General': unknown use-status code 'rc sp'
+
+**Do not "fix" this by taking the first code.** That would silently delete the Planning Board's
+review from the one cell in 819 that requires it. The builder is refusing because it cannot
+faithfully represent the cell, which is what it was written to do. What two symbols *mean* — both
+permits, either permit, or a typo in adopted text — is not stated in the Code's own legend, so it is
+a question for counsel or the Board. Logged as **D-0033**, and it blocks any ruleset rebuild until
+answered. The rulesets already on disk predate the change and still work.
+
+### 2. If v1.0 is adopted, `RENUM_ADOPTED_TO_DRAFT` becomes wrong
+
+`app/citation.py:26` holds the single definition of `RENUM_ADOPTED_TO_DRAFT = {1:1, 2:2, 3:4, 4:5,
+5:6, 6:7, 7:8, 8:9}` — the 2020 Code's eight articles mapped onto the draft's nine. **The moment
+v1.0 is adopted, the adopted Code *is* the nine-article numbering** and that map must become
+identity, or every citation the app renders for a real case will be off by one from Article 3 on.
+
+The CZC side has the identical hazard in `build/adoption-map.json`, and it is now guarded there:
+`build/baseline_selfcheck.py` asserts that the baseline compared against itself marks zero lines,
+and refuses otherwise. **There is no equivalent guard here.** Worth adding one before the first
+post-adoption case — the failure is silent and produces plausible-looking wrong citations.
+
+### 3. A second binding ruleset will be needed, and the first must not be deleted
+
+`rulesets/adopted/manifest.json` is `binding: true`, `article_scheme: "adopted"`,
+`adopted_date: "2020-11-03"`. If v1.0 passes, a **new** binding ruleset must be built from the
+adopted v1.0 edition with `adopted_date: "2026-09-14"` and the nine-article scheme.
+
+**Keep the 2020 one.** Cases decided before the vote were decided under the Code then in force, and
+`rulesets` + per-case pinning exist precisely so a case cites the law that applied to it. Retiring
+the old ruleset would rewrite the citations of already-decided cases. Mark it superseded; do not
+remove it.
+
+Also stale: `rulesets/draft-v0.22` was built from CZC v0.22 on 2026-08-21. The draft is now v1.0,
+and Article 2, Article 3 §3.F and the §5 Inventory have all moved since. It is dogfooding material
+(`binding: false`), so nothing is wrong — but do not read it as current.
+
+### Where the CZC side now stands, for reference
+
+Frozen and tagged `v1.0` at source tree `a52dbde`, for Town Meeting September 14, 2026, marked NOT
+YET ADOPTED. After the vote, `bash build/build-adopted.sh v1.0 "September 14, 2026"` renders the
+adopted edition from the tag. That is the artifact a new binding ruleset should be built from —
+not from `source/`, which will have moved on.
+
+---
+
 ## Verify the build is healthy
 
 Everything runs offline. No network, no LLM, no PII.
@@ -206,8 +272,11 @@ cd "build/permit-review" && .venv/bin/python -m pytest -q
 cd "build/permit-review" && .venv/bin/python run.py --selftest
 ```
 
-Expected right now: **1065 passed**, and `selftest: ALL OK` with **11 of 11 PASS** (no SKIPs —
-four checks were skipped until D-0001/D-0002 were resolved on 2026-08-21). Both hold with **no
+Expected right now (2026-08-25): **1053 passed, 12 errors** — all 12 in
+`tests/test_use_matrix.py`, all from D-0033, none from this app's own code; and `selftest: ALL OK`
+with **11 of 11 PASS** (no SKIPs — four checks were skipped until D-0001/D-0002 were resolved on
+2026-08-21). Before the CZC moved this read 1065 passed / 0 errors, and it will again once D-0033
+is answered. Both hold with **no
 `ANTHROPIC_API_KEY`/`ANTHROPIC_AUTH_TOKEN` in the environment and no network available** —
 verified 2026-08-22, including with `PERMIT_REVIEW_LLM_PROVIDER=anthropic` forced and still no key
 (selftest doesn't touch `llm/` yet, so it can't be affected either way).
@@ -254,11 +323,17 @@ is no native-text path to a first end-to-end subdivision.
 
 ## Open decisions
 
-`DECISIONS-NEEDED.md` holds **28 entries** (added D-0029, 2026-08-24, during W8 -- see the W8 row
-above); **D-0001, D-0002 and D-0025 are RESOLVED**, the rest
-are OPEN. **Nothing blocks building, and nothing now blocks running the `anthropic` provider
-either** — except that no API key is set in this environment. Everything else is non-blocking by design — that is the "collect, never resolve" rule
-(CONTRACT.md §1 S7) working as intended, not a backlog.
+`DECISIONS-NEEDED.md` holds **32 entries**; **D-0001, D-0002 and D-0025 are RESOLVED**, the rest
+are OPEN.
+
+**One now blocks: D-0033** (added 2026-08-25) — a use cell in the adopted Code carries two status
+symbols and the app's model has room for one. It blocks **rebuilding a ruleset from `source/`**, and
+nothing else: the rulesets on disk still load, `--selftest` is 11/11, and the app runs. It needs a
+legal reading, not a code change — see "The CZC moved under us" above.
+
+Everything else is non-blocking by design — that is the "collect, never resolve" rule
+(CONTRACT.md §1 S7) working as intended, not a backlog. Running the `anthropic` provider is
+unblocked (D-0025 resolved); only the absence of an API key in this environment stops it.
 
 Grouped for whoever picks this up:
 
@@ -330,15 +405,11 @@ references stay stable.
 
 ## Repo state — important
 
-**W1–W4 was committed** on 2026-08-21 (`a7702fb`, "permit-review: a local permit-review +
-Findings-of-Fact drafter (W1–W4)") -- CONTRACT.md, DECISIONS-NEEDED.md, and the rest of that
-snapshot are tracked in git, not a single untracked blob as an earlier version of this note said.
-**W5's additions (this session) are NOT committed** -- `llm/`, `ingest/vision.py`, `build_fewshot.py`,
-the new `tests/*.py`, and the CONTRACT.md §9 / DECISIONS-NEEDED.md / this file's edits all sit as
-uncommitted changes in the working tree, per the project's standing rule (only Ben commits, and only
-when he asks). `git status` from `build/permit-review/` shows exactly this: modified tracked files
-(CONTRACT.md, DECISIONS-NEEDED.md, BUILD-STATE.md) plus new untracked paths (`llm/`, `ingest/vision.py`,
-`build_fewshot.py`, the new test files).
+**All of W1–W8b is committed** — 199 tracked files as of 2026-08-25, across `a7702fb` (W1–W4),
+`2dd2333` (W5–W6), `9ef7121` (W7) and `0de1762` (W8/W8b). An earlier version of this note said the
+directory was a single untracked blob, and a later one said W5 was uncommitted; neither is true now.
+The working tree under `build/permit-review/` is clean apart from whatever the current session is
+editing.
 
 `data/` and `.venv/` are gitignored. `docs/` has never been touched (verified: `git diff docs/`
 is empty).

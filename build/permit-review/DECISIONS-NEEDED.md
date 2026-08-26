@@ -1331,3 +1331,54 @@ extraction wiring feeds real facts into the subdivision engine for any case yet
 There is no D-0019. The identifier was skipped when entries were added in parallel during the
 deadline-engine rounds. It is left unused rather than reassigned, so that any external reference
 to a D-number keeps pointing at the same entry.
+
+---
+
+## D-0033 — A use cell in the adopted Code carries TWO status symbols, and the app's model has room for one
+
+- **Status:** OPEN — needs a human. Blocks rebuilding either ruleset from source.
+- **Raised:** 2026-08-25, while restoring Article 2's district pages from the adopted Code PDF (see
+  the CZC-side commit `13b2a50`).
+- **Blocking:** yes, for `ruleset_build` only. The rulesets already on disk were built 2026-08-21
+  and still load, so `run.py --selftest` passes 11/11 and the app runs. What fails is any rebuild
+  from `source/article-02-data.json`, which is 12 of the test suite's errors.
+
+**The fact.** On page 16 of the adopted Code, D3 Neighborhood Business marks *Retail & Service,
+General* with **both** ❶ and ❷ — Residential Companion Permit Required (CEO) **and** Special Permit
+Required (Planning Board). It is the only cell in all 819 that carries two. It was lost in the
+original PDF scrape and has now been restored, so the Code once again shows what the Town adopted.
+
+**Why it is a decision and not a bug.** The Code's own USE TABLE LEGEND lists the four symbols and
+says only *"Uses without ●, ❶, ❷, or ✪ are not allowed in this District."* It does not say what two
+symbols together mean. There are at least three readings:
+
+  (a) **Both are required** — a CEO Residential Companion Permit *and* a Planning Board Special
+      Permit, in some order.
+  (b) **Either may apply**, depending on the form the use takes on a given lot.
+  (c) It is an error in the adopted Code — one symbol was meant.
+
+These are materially different: (a) sends an applicant to two authorities, (b) to one, and (c) means
+the Town has been reading a typo as law since 2020. **Do not guess.** This is the same class as
+D-0028 (the "Conditions of Law" certification typo): surface it, never silently normalise it.
+
+**What the app does today.** `CONTRACT.md` §4.3 maps each cell one-to-one onto permit type *and*
+permitting authority (§4.3's table, and `app/reviews.py:required_reviews`'s
+`permitting_authority: "CEO" | "Planning Board" | None`). A cell holding two statuses has no
+representation, and `ruleset_build/build_use_matrix.py` refuses:
+
+    district 'd3', use 'Retail & Service, General': unknown use-status code 'rc sp'
+    — not one of ['ex', 'rc', 'sp', 'u'] or '' (prohibited)
+
+**That refusal is correct and should not be softened.** The builder is doing exactly what it was
+written to do: rejecting a cell it cannot faithfully represent rather than dropping half of it. The
+tempting fix — take the first code and move on — would silently delete the Planning Board's review
+from the one cell in the Code that requires it.
+
+**What resolving it looks like, once the reading is settled.** Under (a), a cell becomes a *list* of
+statuses and `required_reviews` returns one row per required review — a contract change in §4.3,
+not a parser tweak, and the renderer already handles it (the Typst side prints space-separated codes
+as of the same CZC commit). Under (b), it needs a qualifier the Code does not currently supply, which
+is itself a question for counsel. Under (c), it is a correction to adopted text and therefore the
+Board's to make, not ours.
+
+**Ask counsel or the Board, not the data.** Nobody should answer this from the JSON.
