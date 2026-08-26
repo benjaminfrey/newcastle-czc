@@ -69,6 +69,16 @@ echo "Freezing $VERSION for Town Meeting, $MEETING_DATE (frozen $FREEZE_DATE)"
 echo "Previously adopted version: $BASELINE"
 echo
 
+# --- Has the map been rolled over since the last adoption? -------------------
+# Once an adoption version becomes the baseline, adoption-map.json must be
+# reset to identity (spec §3.1). Nothing performs that edit, and getting it
+# half right fails SILENTLY: a stale article_numbers rewrites the old side's
+# "Article 4" to "Article 5" and reports hundreds of changes nobody made.
+# The invariant is that the baseline compared against ITSELF marks zero lines.
+# Dormant while the baseline is v0.1-baseline; arms itself at the rollover.
+python3 "$REPO_ROOT/build/baseline_selfcheck.py" || exit 1
+echo
+
 # --- The substantive-change breakdown, printed BEFORE anything is built. -----
 # These are the changes the voters will adopt. They accumulated across 24 drafts
 # and have never been reviewed as a set. This is also the instrument the

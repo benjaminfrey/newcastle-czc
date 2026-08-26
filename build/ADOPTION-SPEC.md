@@ -193,7 +193,28 @@ against the PDF, giving cleaner redlines and clearer change tracking."*
 
 After `v1.0` is adopted, **`v1.0` becomes the previously adopted version** for the next cycle. The
 map in §3.1 is then reset to identity (no renames pending), and re-populated only if a future
-amendment renumbers articles again.
+amendment renumbers articles again. Concretely, five fields change: `baseline_version` to the new
+adoption, `article_numbers` and `files` to identity, and `new_at_this_adoption` and
+`not_text_comparable` emptied.
+
+**Nothing performs that edit — it is done by hand, once, possibly years later.** So it is guarded
+instead. `build/baseline_selfcheck.py` asserts the invariant that makes the map checkable at all:
+**the baseline compared against ITSELF must mark zero lines.** `build-adoption.sh` runs it as a
+precondition, before anything is built.
+
+The guard exists because the halves fail differently. A stale `files` map already failed loudly —
+`adoption_breakdown.py` refuses with "does not exist at v1.0". A stale `article_numbers` fails
+**silently**: measured 2026-08-25 against the real `v1.0` tree, resetting `baseline_version` and
+`files` but leaving the renumbering at 3→4…8→9 reports **308 substantive changed lines comparing
+v1.0 to itself, and exits 0** — the old side's "Article 4" rewritten to "Article 5" against a new
+side that says "Article 4". That is a warrant packet full of changes nobody made. A stale
+`not_text_comparable` and a leftover null in `files` fail the same quiet way: Article 2 would render
+unmarked at every future meeting, and Article 3 would be marked "NEW at this adoption" forever.
+
+The check is **dormant while the baseline is not an adoption version**. `v0.1-baseline` is
+deliberately not one (§6.1): it is the 2020 Code in its own formatting conventions, so normalising
+it legitimately changes it and a self-comparison there is meaningless. The guard therefore arms
+itself at the rollover — exactly when the mistake becomes possible.
 
 ---
 

@@ -163,7 +163,19 @@ local only). **Nothing here changes the ordinary draft flow** — with no adopti
   using a short adoption date so the stale line's left end stays uncovered, with meeting mode as the
   positive control. Geometry measured at 600 dpi; don't nudge `AMENDED_RECT` without re-measuring.
 
-**Tests:** `python3 -m pytest build/tests -q` — **102**, ~2.5 min (they build real PDFs).
+- **▶ AFTER THE VOTE — roll the baseline over.** Once `v1.0` is adopted it becomes the *previously
+  adopted* version, and `build/adoption-map.json` resets: `baseline_version` → the new adoption,
+  `article_numbers` + `files` → identity, `new_at_this_adoption` + `not_text_comparable` → empty.
+  **Nothing performs that edit.** `build/baseline_selfcheck.py` guards it — the invariant is that
+  **the baseline compared against ITSELF marks zero lines** — and `build-adoption.sh` runs it as a
+  precondition. It is **dormant** while the baseline is `v0.1-baseline` (not an adoption version)
+  and arms itself at the rollover.
+  ⚠ **A half-done rollover fails silently.** A stale `files` map refuses loudly, but a stale
+  `article_numbers` reports **308 phantom changed lines comparing v1.0 to itself and exits 0** — it
+  rewrites the old side's "Article 4" to "Article 5". That is why the guard exists; don't remove it
+  because it looks inert.
+
+**Tests:** `python3 -m pytest build/tests -q` — **111**, ~2.5 min (they build real PDFs).
 
 **Parity invariant (critical, don't break):** native-Typst units are spliced
 between pandoc passes; chrome (verso/recto binding margins, rotated Article tab,
