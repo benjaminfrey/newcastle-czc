@@ -43,8 +43,8 @@ named roads.** By Type:
 
 | Type | Segments | | Type | Segments |
 | :--- | ---: | :--- | :--- | ---: |
-| R2 Rural Road | 70 | | S1 Main Street | 14 |
-| R3 Rural Lane | 66 | | R5 Rural Highway | 8 |
+| R3 Rural Lane | 76 | | S1 Main Street | 14 |
+| R2 Rural Road | 60 | | R5 Rural Highway | 8 |
 | R1 Connector Road | 25 | | R4 Highway Commercial | 6 |
 | S3 Neighborhood Street | 18 | | S2 Village Street | 5 |
 | | | | S4 Lane | 2 |
@@ -56,7 +56,7 @@ and Woods Island Road — matched no ownership record and are shown with a dash 
 **Driveways stay driveways.** Section 7 governs driveways. A driveway remains a driveway, and no
 street or road standard reaches it, unless and until it is expanded or altered to serve more than
 two single-family homes or more than one two-family home. Classifying a way in the Inventory does
-not by itself require anyone to improve anything. Sixty-one segments are recorded as functioning
+not by itself require anyone to improve anything. Seventy-two segments are recorded as functioning
 today as driveways; that record is descriptive and is not what decides the question.
 
 **Street trees.** Section 3.G is new. On Streets (S1–S5) it requires planting, and it protects
@@ -196,7 +196,7 @@ records what exists; it does not require anyone to improve anything.
    Plan approval and can only be changed by revising the Master Plan.
 
 Against that, some standards are **lighter** than what a road would otherwise have had to meet.
-The most consequential is the R3 Rural Lane Type, which applies to 66 segments: a 12-foot gravel
+The most consequential is the R3 Rural Lane Type, which applies to 76 segments: a 12-foot gravel
 way in a 33-foot right-of-way, against the R2 Rural Road standard of an 18-foot two-lane way in a
 40-foot right-of-way. The safety standards — sight distance, maximum grade, drainage — are
 identical between the two. Where a small lane is classified R3 rather than R2, less would be
