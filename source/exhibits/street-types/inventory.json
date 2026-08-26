@@ -1042,7 +1042,7 @@
     "end",
     "end"
    ],
-   "type": "R2",
+   "type": "R3",
    "ownership": "Private Road",
    "row_ft": null,
    "traveled_ft": null,
@@ -1051,7 +1051,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
-   "present_use": null,
+   "present_use": "Driveway",
    "addresses": {
     "residential": 0,
     "unknown_type": 2,
@@ -1265,7 +1265,7 @@
     "end",
     "end"
    ],
-   "type": "R2",
+   "type": "R3",
    "ownership": "Private Road",
    "row_ft": null,
    "traveled_ft": null,
@@ -1274,7 +1274,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
-   "present_use": null,
+   "present_use": "Driveway",
    "addresses": {
     "residential": 0,
     "unknown_type": 1,
@@ -1382,7 +1382,7 @@
     "Academy Hill",
     "end"
    ],
-   "type": "R2",
+   "type": "R3",
    "ownership": "Private Road",
    "row_ft": null,
    "traveled_ft": null,
@@ -1392,7 +1392,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
-   "present_use": null,
+   "present_use": "Driveway",
    "addresses": {
     "residential": 0,
     "unknown_type": 1,
@@ -2116,7 +2116,7 @@
     "River Road",
     "end"
    ],
-   "type": "R2",
+   "type": "R3",
    "ownership": "Private Road",
    "row_ft": null,
    "traveled_ft": null,
@@ -2126,7 +2126,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
-   "present_use": null,
+   "present_use": "Driveway",
    "addresses": {
     "residential": 2,
     "unknown_type": 1,
@@ -2824,7 +2824,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
-   "present_use": null,
+   "present_use": "Driveway",
    "addresses": {
     "residential": 0,
     "unknown_type": 0,
@@ -4422,7 +4422,7 @@
     "North Newcastle Road",
     "end"
    ],
-   "type": "R2",
+   "type": "R3",
    "ownership": "Private Road",
    "row_ft": null,
    "traveled_ft": null,
@@ -4431,7 +4431,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
-   "present_use": null,
+   "present_use": "Driveway",
    "addresses": {
     "residential": 2,
     "unknown_type": 1,
@@ -5707,7 +5707,7 @@
     "Sheepscot Road",
     "end"
    ],
-   "type": "R2",
+   "type": "R3",
    "ownership": "Private Road",
    "row_ft": null,
    "traveled_ft": null,
@@ -5716,7 +5716,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
-   "present_use": null,
+   "present_use": "Driveway",
    "addresses": {
     "residential": 0,
     "unknown_type": 0,
@@ -5756,7 +5756,7 @@
     "Ridge Road",
     "end"
    ],
-   "type": "R2",
+   "type": "R3",
    "ownership": "Private Road",
    "row_ft": null,
    "traveled_ft": null,
@@ -5765,7 +5765,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
-   "present_use": null,
+   "present_use": "Driveway",
    "addresses": {
     "residential": 0,
     "unknown_type": 1,
@@ -12798,7 +12798,7 @@
     "North Newcastle Road",
     "end"
    ],
-   "type": "R2",
+   "type": "R3",
    "ownership": "Private Road",
    "row_ft": null,
    "traveled_ft": null,
@@ -12807,7 +12807,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
-   "present_use": null,
+   "present_use": "Driveway",
    "addresses": {
     "residential": 3,
     "unknown_type": 0,
@@ -16531,7 +16531,7 @@
     "North Newcastle Road",
     "end"
    ],
-   "type": "R2",
+   "type": "R3",
    "ownership": "Private Road",
    "row_ft": null,
    "traveled_ft": null,
@@ -16540,7 +16540,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
-   "present_use": null,
+   "present_use": "Driveway",
    "addresses": {
     "residential": 3,
     "unknown_type": 0,
@@ -25583,7 +25583,7 @@
     "River Road",
     "end"
    ],
-   "type": "R2",
+   "type": "R3",
    "ownership": "Private Road",
    "row_ft": null,
    "traveled_ft": null,
@@ -25593,7 +25593,7 @@
    ],
    "maindot": null,
    "nonconformity": null,
-   "present_use": null,
+   "present_use": "Driveway",
    "addresses": {
     "residential": 3,
     "unknown_type": 0,
