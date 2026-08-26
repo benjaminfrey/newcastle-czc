@@ -1689,6 +1689,24 @@ def selftest() -> int:
     except Exception as exc:  # noqa: BLE001
         report(NAME_11, "SKIP", f"could not run: {exc}")
 
+    # 12: the adopted->draft article map still describes the two rulesets.
+    #     Silent when wrong -- citations keep rendering, just off by one from
+    #     Article 3 on. Goes wrong at adoption, when the draft's numbering
+    #     BECOMES the adopted numbering and the map must reset to identity.
+    NAME_12 = "12. RENUM_ADOPTED_TO_DRAFT still matches both rulesets"
+    try:
+        from app import renum_check as _renum
+
+        _found = _renum.problems()
+        if _found:
+            report(NAME_12, "FAIL", _found[0] + (
+                f" (+{len(_found) - 1} more)" if len(_found) > 1 else ""))
+        else:
+            report(NAME_12, "PASS",
+                   f"{len(_renum.adopted_articles())} adopted articles checked by name")
+    except Exception as exc:  # noqa: BLE001
+        report(NAME_12, "SKIP", f"could not run: {exc}")
+
     print("selftest:", "ALL OK" if all_ok else "FAILURES ABOVE (see FAIL lines)")
     return 0 if all_ok else 1
 

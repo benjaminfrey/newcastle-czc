@@ -34,10 +34,10 @@ pending Ben supplying the ordinance.
 **Size:** ~52,400 lines of Python, 57 test files, 18 uniquely-numbered migrations, 2 built
 rulesets. `DECISIONS-NEEDED.md` holds **32 entries**.
 
-**Suite as of 2026-08-25: 1053 passed, 12 errors** (was 1065 passed). The 12 are all
-`tests/test_use_matrix.py`, all one cause, and the cause is **not** in this app — see below. The
-already-built rulesets on disk still load, so `run.py --selftest` is **11/11 PASS** and the app
-runs; what fails is rebuilding a ruleset from `source/`.
+**Suite as of 2026-08-25: 1064 passed, 12 errors.** The 12 are all `tests/test_use_matrix.py`,
+all one cause (D-0033), and the cause is **not** in this app — see below. The already-built rulesets
+on disk still load, so `run.py --selftest` is **12/12 PASS** and the app runs; what fails is
+rebuilding a ruleset from `source/`.
 
 **W5, done 2026-08-21 (D-0025 is RESOLVED — approved; see DECISIONS-NEEDED.md for the verbatim
 decision and the provenance story. Nothing here has yet been exercised against a real key, because
@@ -231,10 +231,20 @@ answered. The rulesets already on disk predate the change and still work.
 v1.0 is adopted, the adopted Code *is* the nine-article numbering** and that map must become
 identity, or every citation the app renders for a real case will be off by one from Article 3 on.
 
-The CZC side has the identical hazard in `build/adoption-map.json`, and it is now guarded there:
-`build/baseline_selfcheck.py` asserts that the baseline compared against itself marks zero lines,
-and refuses otherwise. **There is no equivalent guard here.** Worth adding one before the first
-post-adoption case — the failure is silent and produces plausible-looking wrong citations.
+**This is now guarded** — `app/renum_check.py`, added 2026-08-25, and wired in as **selftest
+check 12**. The invariant is that mapping an adopted article number lands on the draft article with
+the **same name**, checked against the two rulesets themselves rather than against a hardcoded
+expectation of what the map should say. It catches both directions: a map left shifted after
+adoption (adopted Article 3 is Thoroughfares, the map sends it to draft Article 4 = Site Standards),
+and a map reset to identity too early (adopted Article 3 is Site Standards, identity sends it to
+draft Article 3 = Thoroughfares). A merely plausible map passes neither.
+
+One wrinkle it had to learn: the draft keeps Definitions in `definitions.json`, not `articles.json`,
+so reading only the latter made it cry wolf about a draft "Article 9 which does not exist". It now
+merges the definitions artifact's declared `source.article`.
+
+The CZC side has the identical hazard in `build/adoption-map.json`, guarded there by
+`build/baseline_selfcheck.py` (the baseline compared against itself must mark zero lines).
 
 ### 3. A second binding ruleset will be needed, and the first must not be deleted
 
@@ -272,11 +282,10 @@ cd "build/permit-review" && .venv/bin/python -m pytest -q
 cd "build/permit-review" && .venv/bin/python run.py --selftest
 ```
 
-Expected right now (2026-08-25): **1053 passed, 12 errors** — all 12 in
+Expected right now (2026-08-25): **1064 passed, 12 errors** — all 12 in
 `tests/test_use_matrix.py`, all from D-0033, none from this app's own code; and `selftest: ALL OK`
-with **11 of 11 PASS** (no SKIPs — four checks were skipped until D-0001/D-0002 were resolved on
-2026-08-21). Before the CZC moved this read 1065 passed / 0 errors, and it will again once D-0033
-is answered. Both hold with **no
+with **12 of 12 PASS** (check 12 is the RENUM guard added 2026-08-25). Before the CZC moved this
+read 1065 passed / 0 errors; it will read 1076 / 0 once D-0033 is answered. Both hold with **no
 `ANTHROPIC_API_KEY`/`ANTHROPIC_AUTH_TOKEN` in the environment and no network available** —
 verified 2026-08-22, including with `PERMIT_REVIEW_LLM_PROVIDER=anthropic` forced and still no key
 (selftest doesn't touch `llm/` yet, so it can't be affected either way).
