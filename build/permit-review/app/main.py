@@ -885,10 +885,14 @@ def create_app(*, port: int | None = None) -> FastAPI:
     # ----------------------------------------------------------------- #
     @app.get("/", response_class=HTMLResponse)
     def worksheet_page(request: Request, district: str | None = None, use: str | None = None):
-        ruleset_key = "adopted"
         try:
+            # The Code in force: the one binding ruleset marked active. Never a
+            # literal key -- "adopted" is the 2020 Code, superseded 2026-09-14.
+            if rulesets_mod is None:
+                raise RulesetNotFound("app.rulesets unavailable")
+            ruleset_key = rulesets_mod.current_binding_key()
             idx = get_index(ruleset_key)
-        except RulesetNotFound:
+        except (RulesetNotFound, LookupError):
             return templates.TemplateResponse(
                 request,
                 "worksheet.html",
@@ -918,12 +922,12 @@ def create_app(*, port: int | None = None) -> FastAPI:
                 use_obj = idx["uses_by_key"][use]
                 cell = idx["cells_by_pair"].get((district, use))
                 if cell:
-                    review_rows = [citation.required_review_row(district_obj, use_obj, cell)]
+                    review_rows = citation.required_review_rows(district_obj, use_obj, cell)
             else:
                 for u in idx["uses"]:
                     cell = idx["cells_by_pair"].get((district, u["use_key"]))
                     if cell:
-                        review_rows.append(citation.required_review_row(district_obj, u, cell))
+                        review_rows.extend(citation.required_review_rows(district_obj, u, cell))
             for row in review_rows:
                 row["citation_text"] = citation.render(row["citation"], style="short")
 
@@ -1493,22 +1497,22 @@ def selftest() -> int:
 
     # 4: rulesets load + §4 counts
     try:
-        idx = get_index("adopted")
+        idx = get_index(rulesets_mod.current_binding_key())
         d_count, u_count, c_count = len(idx["districts"]), len(idx["uses"]), len(idx["cells_by_pair"])
         ok4 = d_count == 13 and u_count == 63 and c_count == 819
-        report("4. rulesets/adopted loads and matches §4 counts", "PASS" if ok4 else "FAIL",
+        report("4. the current binding ruleset loads and matches §4 counts", "PASS" if ok4 else "FAIL",
                f"districts={d_count} uses={u_count} cells={c_count}")
     except DistrictsBlocked:
-        report("4. rulesets/adopted loads and matches §4 counts", "SKIP",
+        report("4. the current binding ruleset loads and matches §4 counts", "SKIP",
                "rulesets/adopted/districts.json blocked -- see DECISIONS-NEEDED.md D-0001/D-0002")
     except RulesetNotFound:
-        report("4. rulesets/adopted loads and matches §4 counts", "SKIP", "rulesets/adopted/*.json not built yet")
+        report("4. the current binding ruleset loads and matches §4 counts", "SKIP", "rulesets/adopted/*.json not built yet")
     except Exception as exc:  # noqa: BLE001
-        report("4. rulesets/adopted loads and matches §4 counts", "FAIL", str(exc))
+        report("4. the current binding ruleset loads and matches §4 counts", "FAIL", str(exc))
 
     # 5: every dimensional value qualified or overridden
     try:
-        idx = get_index("adopted")
+        idx = get_index(rulesets_mod.current_binding_key())
         overrides = _read_json(OVERRIDES_PATH).get("entries", {}) if OVERRIDES_PATH.exists() else {}
         bad: list[str] = []
         for d in idx["districts"]:
@@ -1567,7 +1571,7 @@ def selftest() -> int:
         report("8. worksheet renders to a non-zero PDF", "SKIP", "pandoc and/or typst not on PATH")
     else:
         try:
-            idx = get_index("adopted")
+            idx = get_index(rulesets_mod.current_binding_key())
             district_key = next(iter(idx["districts_by_key"]))
             # CONTRACT.md §6.3/§8.6: data/exports/ is the ONLY PDF output
             # directory, and render/build-findings.sh enforces that with a hard
@@ -1578,7 +1582,7 @@ def selftest() -> int:
             selftest_dir = EXPORTS_DIR / ".selftest"
             selftest_dir.mkdir(parents=True, exist_ok=True)
             payload = {
-                "ruleset_key": "adopted", "district_key": district_key, "use_keys": [],
+                "ruleset_key": rulesets_mod.current_binding_key(), "district_key": district_key, "use_keys": [],
                 "case_label": "SELFTEST", "meeting_month": None, "lots": [], "notes": "", "scratch": True,
             }
             try:
@@ -1689,11 +1693,12 @@ def selftest() -> int:
     except Exception as exc:  # noqa: BLE001
         report(NAME_11, "SKIP", f"could not run: {exc}")
 
-    # 12: the adopted->draft article map still describes the two rulesets.
+    # 12: every adopted Code's article map still describes its ruleset.
     #     Silent when wrong -- citations keep rendering, just off by one from
-    #     Article 3 on. Goes wrong at adoption, when the draft's numbering
-    #     BECOMES the adopted numbering and the map must reset to identity.
-    NAME_12 = "12. RENUM_ADOPTED_TO_DRAFT still matches both rulesets"
+    #     Article 3 on. The 2020 Code keeps its shifted map for good; the Code
+    #     adopted 2026-09-14 (v1.0) maps by identity; a binding ruleset with no
+    #     map at all fails too.
+    NAME_12 = "12. every adopted Code's article map matches the draft by name"
     try:
         from app import renum_check as _renum
 
@@ -1703,7 +1708,7 @@ def selftest() -> int:
                 f" (+{len(_found) - 1} more)" if len(_found) > 1 else ""))
         else:
             report(NAME_12, "PASS",
-                   f"{len(_renum.adopted_articles())} adopted articles checked by name")
+                   f"{len(_renum.binding_rulesets())} adopted Code(s) checked by name")
     except Exception as exc:  # noqa: BLE001
         report(NAME_12, "SKIP", f"could not run: {exc}")
 

@@ -380,8 +380,17 @@ class ClocksNotFound(FileNotFoundError):
     `python -m ruleset_build.build_clocks` from build/permit-review/."""
 
 
+def load_clocks(ruleset_key: str | None = None) -> tuple[Clock, ...]:
+    """Clocks for `ruleset_key`; None means the current binding ruleset (the
+    Code in force), never a hardcoded key -- see app.rulesets.current_binding_key."""
+    if ruleset_key is None:
+        from app.rulesets import current_binding_key
+        ruleset_key = current_binding_key()
+    return _load_clocks(ruleset_key)
+
+
 @lru_cache(maxsize=None)
-def load_clocks(ruleset_key: str = "adopted") -> tuple[Clock, ...]:
+def _load_clocks(ruleset_key: str) -> tuple[Clock, ...]:
     path = RULESETS_DIR / ruleset_key / "clocks.json"
     if not path.exists():
         raise ClocksNotFound(
@@ -476,7 +485,10 @@ def clock_is_extendable(clock: Clock) -> bool:
     return _extension_eligible(clock.duty_kind, clock.satisfying_event)
 
 
-def extendable_clock_keys(ruleset_key: str = "adopted") -> frozenset[str]:
+load_clocks.cache_clear = _load_clocks.cache_clear  # type: ignore[attr-defined]
+
+
+def extendable_clock_keys(ruleset_key: str | None = None) -> frozenset[str]:
     """Every clock_key in `ruleset_key` eligible for a §6.e.1 extension --
     see clock_is_extendable()."""
     return frozenset(c.clock_key for c in load_clocks(ruleset_key) if clock_is_extendable(c))

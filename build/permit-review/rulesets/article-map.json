@@ -1,6 +1,6 @@
 {
   "schema": "newcastle.article-map/1.0.0",
-  "generated_at": "2026-08-21T12:07:06Z",
+  "generated_at": "2026-09-15T00:37:22Z",
   "source": {
     "renum_owner": "app/citation.py:RENUM_ADOPTED_TO_DRAFT (seeded from extract/verso.py:18)",
     "draft_names_from": "source/article-0N-*.md '# Article N Name' headings"
@@ -113,6 +113,53 @@
       "name": "Definitions",
       "adopted_counterpart": 8,
       "source_file": "source/article-09-definitions.md"
+    }
+  },
+  "adopted-v1.0": {
+    "1": {
+      "name": "General Standards",
+      "draft_counterpart": 1,
+      "source": "rulesets/adopted-v1.0/articles.json"
+    },
+    "2": {
+      "name": "District Standards",
+      "draft_counterpart": 2,
+      "source": "rulesets/adopted-v1.0/articles.json"
+    },
+    "3": {
+      "name": "Thoroughfares",
+      "draft_counterpart": 3,
+      "source": "rulesets/adopted-v1.0/articles.json"
+    },
+    "4": {
+      "name": "Site Standards",
+      "draft_counterpart": 4,
+      "source": "rulesets/adopted-v1.0/articles.json"
+    },
+    "5": {
+      "name": "Building Standards",
+      "draft_counterpart": 5,
+      "source": "rulesets/adopted-v1.0/articles.json"
+    },
+    "6": {
+      "name": "Design Standards",
+      "draft_counterpart": 6,
+      "source": "rulesets/adopted-v1.0/articles.json"
+    },
+    "7": {
+      "name": "Use Standards",
+      "draft_counterpart": 7,
+      "source": "rulesets/adopted-v1.0/articles.json"
+    },
+    "8": {
+      "name": "Administration",
+      "draft_counterpart": 8,
+      "source": "rulesets/adopted-v1.0/articles.json"
+    },
+    "9": {
+      "name": "Definitions",
+      "draft_counterpart": 9,
+      "source": "rulesets/adopted-v1.0/articles.json"
     }
   }
 }

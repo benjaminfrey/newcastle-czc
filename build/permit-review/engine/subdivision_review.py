@@ -59,7 +59,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from app.audit import append_event
-from app.citation import Citation, render as citation_render
+from app.citation import Citation, render as citation_render, scheme_for_ruleset
 
 from engine import applicability, review
 from engine.findings import create_node
@@ -123,7 +123,7 @@ def _citation_struct(citation: dict[str, Any], *, default_ruleset_key: str) -> C
         return None
     filtered = {k: v for k, v in citation.items() if k in _CITATION_FIELDS}
     filtered.setdefault("ruleset_key", default_ruleset_key)
-    filtered.setdefault("scheme", default_ruleset_key if default_ruleset_key in ("adopted", "draft") else "adopted")
+    filtered.setdefault("scheme", scheme_for_ruleset(default_ruleset_key))
     if "article" not in filtered:
         return None
     return Citation(**filtered)

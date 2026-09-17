@@ -346,7 +346,7 @@ def _standard_citation_text(conn: sqlite3.Connection, node: sqlite3.Row | dict, 
         return None
     filtered = {k: v for k, v in raw.items() if k in _CITATION_FIELDS}
     filtered.setdefault("ruleset_key", ruleset_key)
-    filtered.setdefault("scheme", ruleset_key if ruleset_key in ("adopted", "draft") else "adopted")
+    filtered.setdefault("scheme", citation_mod.scheme_for_ruleset(ruleset_key))
     if "article" not in filtered:
         return None
     try:
@@ -354,7 +354,7 @@ def _standard_citation_text(conn: sqlite3.Connection, node: sqlite3.Row | dict, 
     except TypeError:
         return None
     if c.standard_letter:
-        return citation_mod.render_citation(c, scheme=ruleset_key, style="long")
+        return citation_mod.render_citation(c, scheme=citation_mod.scheme_for_ruleset(ruleset_key), style="long")
     return citation_mod.render(c, style="long")
 
 

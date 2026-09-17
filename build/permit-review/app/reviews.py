@@ -108,14 +108,16 @@ def _district_stub(ruleset_key: str, district_key: str) -> dict[str, Any]:
 
 
 def required_reviews(
-    district_key: str, use: str, *, ruleset_key: str = "adopted"
+    district_key: str, use: str, *, ruleset_key: str | None = None
 ) -> list[dict[str, Any]]:
     """The Required Review(s) row(s) for one (district, use) pair.
 
     `use` may be a use_key ("residence") or a label ("Residence"),
-    case-insensitive on the label. Returns exactly one row (v1 has no
-    referral reviews, so each (district, use) resolves to exactly one
-    determination — allowed-with-permit, or prohibited):
+    case-insensitive on the label. Returns one row per required permit (v1 has
+    no referral reviews): exactly one for an ordinary or prohibited cell, and
+    one per permit for a cell that requires several (use-matrix 1.1.0,
+    DECISIONS-NEEDED.md D-0033 -- D3 Retail & Service, General requires both a
+    Residential Companion Permit and a Special Permit). Shape of each row:
 
         [{"review_type": "Zoning Use Permit",
           "permit": "Use Permit" | None,
@@ -131,12 +133,16 @@ def required_reviews(
     Raises UnknownDistrict / UnknownUse rather than guessing — never emits
     a made-up row for input that doesn't resolve (CONTRACT.md §1 S7).
     """
+    if ruleset_key is None:
+        # No default Code: the current binding ruleset, never a hardcoded key --
+        # a literal "adopted" default silently kept reviewing new applications
+        # against the 2020 Code after v1.0 was adopted.
+        from app.rulesets import current_binding_key
+        ruleset_key = current_binding_key()
     matrix = _load_use_matrix(ruleset_key)
     district = _district_stub(ruleset_key, district_key)
     use_entry = _resolve_use(matrix, use)
     cell = _find_cell(matrix, district_key, use_entry["use_key"])
-
-    row = citation.required_review_row(district, use_entry, cell)
 
     return [
         {
@@ -145,4 +151,5 @@ def required_reviews(
             "permitting_authority": row["authority"],
             "applicability_text": row["sentence"],
         }
+        for row in citation.required_review_rows(district, use_entry, cell)
     ]

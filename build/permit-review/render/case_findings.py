@@ -153,7 +153,7 @@ def _citation_display(raw_json: str | None, *, default_ruleset_key: str, style: 
         return None
     filtered = {k: v for k, v in raw.items() if k in _CITATION_FIELDS}
     filtered.setdefault("ruleset_key", default_ruleset_key)
-    filtered.setdefault("scheme", default_ruleset_key if default_ruleset_key in ("adopted", "draft") else "adopted")
+    filtered.setdefault("scheme", citation_mod.scheme_for_ruleset(default_ruleset_key))
     if "article" not in filtered:
         return None
     try:

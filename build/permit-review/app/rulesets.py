@@ -97,6 +97,36 @@ def _build_ruleset(ruleset_key: str) -> Ruleset:
     )
 
 
+def binding_manifests() -> list[tuple[str, dict[str, Any]]]:
+    """(ruleset_key, manifest) for every ruleset on disk whose manifest says
+    binding: true -- the current adopted Code AND any it superseded."""
+    out: list[tuple[str, dict[str, Any]]] = []
+    for path in sorted(RULESETS_DIR.glob("*/manifest.json")):
+        manifest = _read_json(path)
+        if manifest.get("binding"):
+            out.append((path.parent.name, manifest))
+    return out
+
+
+def current_binding_key() -> str:
+    """The ruleset a NEW review is held to: the one binding ruleset whose
+    manifest status is "active". Every other binding ruleset is a superseded
+    Code that decided cases still cite (manifest status "superseded").
+
+    Raises RulesetNotFound unless there is exactly one -- zero means nothing is
+    built, two means a supersession was left half-done, and either way guessing
+    which Code governs a real application is the one thing this must not do.
+    """
+    active = [key for key, m in binding_manifests() if m.get("status") == "active"]
+    if len(active) != 1:
+        raise RulesetNotFound(
+            f"expected exactly one binding ruleset with status 'active' under {RULESETS_DIR}, "
+            f"found {active or 'none'} -- a Code adoption must mark the Code it replaces "
+            f"'superseded' (ruleset_build/build_edition.py does this)"
+        )
+    return active[0]
+
+
 _CACHE: dict[str, Ruleset] = {}
 
 

@@ -4,10 +4,10 @@
 Read this first, then `CONTRACT.md` (the authority on how the app must behave), then
 `DECISIONS-NEEDED.md` (the ledger of everything deliberately left undecided).
 
-**Last reviewed 2026-08-25.** No app code has changed since W8b. What changed is the *Code the app
-reads*: the CZC was frozen and tagged as **v1.0** for a special Town Meeting on **September 14,
-2026**. That has already broken one thing here and will require deliberate work if the vote passes —
-see **"The CZC moved under us"** below before doing anything else.
+**Last reviewed 2026-09-14.** **Town Meeting adopted CZC v1.0 on September 14, 2026**, and the app
+was rolled over the same night: new work is now held to **`rulesets/adopted-v1.0`**, the 2020 Code
+is kept as **superseded**, and D-0033 is resolved. Read **"The v1.0 adoption rollover"** below
+before rebuilding any ruleset.
 
 ---
 
@@ -32,12 +32,13 @@ W5 ≈ Phase 5, W6 ≈ Phase 6, W7 ≈ Phase 7, W8 ≈ Phase 8. Phase 9 (Shorela
 pending Ben supplying the ordinance.
 
 **Size:** ~52,400 lines of Python, 57 test files, 18 uniquely-numbered migrations, 2 built
-rulesets. `DECISIONS-NEEDED.md` holds **32 entries**.
+rulesets. `DECISIONS-NEEDED.md` holds **32 entries**. *(As of 2026-09-14: 58 test files, 19 migrations,
+3 built rulesets — `adopted` (2020, superseded), `adopted-v1.0` (current), `draft-v0.22` — and
+33 entries.)*
 
-**Suite as of 2026-08-25: 1064 passed, 12 errors.** The 12 are all `tests/test_use_matrix.py`,
-all one cause (D-0033), and the cause is **not** in this app — see below. The already-built rulesets
-on disk still load, so `run.py --selftest` is **12/12 PASS** and the app runs; what fails is
-rebuilding a ruleset from `source/`.
+**Suite as of 2026-09-14: 1099 passed, 0 errors.** `run.py --selftest` **12/12 PASS**,
+`--verify-structure` ALL OK, `--verify-citations` **157/157**. (The 12 D-0033 errors of 2026-08-25
+are gone: D-0033 was resolved and implemented at the v1.0 rollover.)
 
 **W5, done 2026-08-21 (D-0025 is RESOLVED — approved; see DECISIONS-NEEDED.md for the verbatim
 decision and the provenance story. Nothing here has yet been exercised against a real key, because
@@ -204,69 +205,76 @@ dict yet (D-0029)**. A harness that only produced good numbers would never have 
 
 ---
 
-## The CZC moved under us — read before rebuilding a ruleset
+## The v1.0 adoption rollover — done 2026-09-14, read before rebuilding a ruleset
 
-Nothing in this directory changed between 2026-08-24 (W8b) and 2026-08-25. The **Code** changed, and
-this app reads it. Three things happened on the CZC side that matter here.
+Town Meeting adopted CZC v1.0 on **September 14, 2026**. Three things on the CZC side had put this
+app on notice (a two-symbol use cell, a numbering map that would go stale, a second binding Code on
+the way). All three were dealt with that night.
 
-### 1. A use cell now carries two symbols, and 12 tests error because of it
+### 1. D3's two-symbol use cell — RESOLVED: both permits are required (D-0033)
 
-Restoring Article 2's district pages from the adopted PDF recovered a cell that the original scrape
-had flattened: D3 Neighborhood Business marks *Retail & Service, General* with **both ❶ and ❷** —
-CEO *and* Planning Board. `ruleset_build/build_use_matrix.py` refuses it:
+D3 Neighborhood Business marks *Retail & Service, General* with **both ❶ and ❷**. Ben Frey, as
+Planning Board Chair, decided that means **both** the CEO's Residential Companion Permit and the
+Planning Board's Special Permit are required. `newcastle.use-matrix/1.1.0` now represents a cell with
+several statuses (a `reviews` list, null single-status fields so nothing prints half of it);
+`required_reviews()` returns one row per permit; `required_review_row()` refuses such a cell;
+formgen's cross-check reports `multiple_required_reviews`. CONTRACT.md §4.3.
 
-    district 'd3', use 'Retail & Service, General': unknown use-status code 'rc sp'
+### 2. One numbering per adopted Code, instead of resetting the map
 
-**Do not "fix" this by taking the first code.** That would silently delete the Planning Board's
-review from the one cell in 819 that requires it. The builder is refusing because it cannot
-faithfully represent the cell, which is what it was written to do. What two symbols *mean* — both
-permits, either permit, or a typo in adopted text — is not stated in the Code's own legend, so it is
-a question for counsel or the Board. Logged as **D-0033**, and it blocks any ruleset rebuild until
-answered. The rulesets already on disk predate the change and still work.
+The rollover note said *"set `RENUM_ADOPTED_TO_DRAFT` to identity"*. That was wrong as written:
+the 2020 map is a permanent fact about the 2020 Code, and article names are looked up per scheme, so
+resetting it would have renamed and renumbered every citation of every case decided under that Code.
+What was done instead (CONTRACT.md §5.3.1):
 
-### 2. If v1.0 is adopted, `RENUM_ADOPTED_TO_DRAFT` becomes wrong
+- `SCHEME_TO_DRAFT` in `app/citation.py` lists every scheme: `adopted` (2020, shifted map, kept
+  for good), **`adopted-v1.0` (identity — this is the "RENUM to identity")**, `draft`.
+  `to_scheme()` converts any two; `scheme_for_ruleset()` reads a ruleset's scheme from its manifest.
+- `app/renum_check.py` (selftest 12) now checks **every binding ruleset on disk** through its own
+  map by article name, and fails a binding ruleset whose scheme has no map.
+- `rulesets/article-map.json` has an `adopted-v1.0` side, named from that ruleset's own artifacts.
+- Migration **0019** loosens `rulesets.article_scheme`'s CHECK to `'draft'` or `GLOB 'adopted*'`,
+  in place (a table rebuild would have cascade-deleted criteria/rules/field_defs rows).
 
-`app/citation.py:26` holds the single definition of `RENUM_ADOPTED_TO_DRAFT = {1:1, 2:2, 3:4, 4:5,
-5:6, 6:7, 7:8, 8:9}` — the 2020 Code's eight articles mapped onto the draft's nine. **The moment
-v1.0 is adopted, the adopted Code *is* the nine-article numbering** and that map must become
-identity, or every citation the app renders for a real case will be off by one from Article 3 on.
+### 3. Two binding rulesets: v1.0 current, 2020 superseded
 
-**This is now guarded** — `app/renum_check.py`, added 2026-08-25, and wired in as **selftest
-check 12**. The invariant is that mapping an adopted article number lands on the draft article with
-the **same name**, checked against the two rulesets themselves rather than against a hardcoded
-expectation of what the map should say. It catches both directions: a map left shifted after
-adoption (adopted Article 3 is Thoroughfares, the map sends it to draft Article 4 = Site Standards),
-and a map reset to identity too early (adopted Article 3 is Site Standards, identity sends it to
-draft Article 3 = Thoroughfares). A merely plausible map passes neither.
+- **`rulesets/adopted-v1.0`** — built by the new **`ruleset_build/build_edition.py`** from the
+  `v1.0` **tag's** `source/` (never the working tree), after checking the tag's source tree against
+  `releases/v1.0/frozen-from.json` and that `build-adopted.sh` has rendered the edition. Manifest:
+  `binding: true`, `status: "active"`, `adopted_on: "2026-09-14"`, full provenance, and a
+  `changes_from_superseded` block. Artifacts: articles, definitions, uses, use-matrix, districts,
+  clocks, criteria-subdivision — everything the app loads.
+  - **Clocks** are CLOCKS_ADOPTED renumbered to Article 8 and re-validated against the adopted text.
+    One sentence was reworded with its numbers intact (`subdivision_hearing_decision`: "final plat
+    plan approval" → "final plat approval") and is quoted from v1.0. The builder refuses if a
+    sentence's numbers change or the set of "within N days" clauses changes.
+  - **Subdivision criteria** are quoted verbatim from v1.0 Article 8 §12.f.1: standard **b** now
+    cites Article 3; **s** reads "phosphorous" (logged **D-0034**, not corrected); f/i/n/p differ only
+    in quotation marks. Classifications unchanged.
+  - District dimensions are identical to 2020's; one use cell differs (D3, above).
+- **`rulesets/adopted`** (2020) — artifacts untouched; manifest now `status: "superseded"` with
+  `superseded_by`. Re-running `build_ruleset.py` preserves that.
+- **DB** (`data/permit-review.db`): `adopted-v1.0` `is_current = 1`; `adopted` `is_current = 0`,
+  `superseded_by` set; the supersession is on the audit chain.
 
-One wrinkle it had to learn: the draft keeps Definitions in `definitions.json`, not `articles.json`,
-so reading only the latter made it cry wolf about a draft "Article 9 which does not exist". It now
-merges the definitions artifact's declared `source.article`.
+**No default Code by key any more.** The worksheet, selftest, `required_reviews()`,
+`cross_check_review_type()` and `load_clocks()` default to `app.rulesets.current_binding_key()` (the
+one binding ruleset marked active — two or zero refuse); `create_case()` defaults to the DB's
+`is_current` row. The evals and the 157 citation checks still pin `adopted` explicitly, correctly:
+those nine decisions were made under the 2020 Code.
 
-The CZC side has the identical hazard in `build/adoption-map.json`, guarded there by
-`build/baseline_selfcheck.py` (the baseline compared against itself must mark zero lines).
+**Still stale:** `rulesets/draft-v0.22` (dogfooding, `binding: false`) predates v1.0; the 2020 use
+matrix still shows only ❶ for D3 (see D-0033's Resolution).
 
-### 3. A second binding ruleset will be needed, and the first must not be deleted
-
-`rulesets/adopted/manifest.json` is `binding: true`, `article_scheme: "adopted"`,
-`adopted_date: "2020-11-03"`. If v1.0 passes, a **new** binding ruleset must be built from the
-adopted v1.0 edition with `adopted_date: "2026-09-14"` and the nine-article scheme.
-
-**Keep the 2020 one.** Cases decided before the vote were decided under the Code then in force, and
-`rulesets` + per-case pinning exist precisely so a case cites the law that applied to it. Retiring
-the old ruleset would rewrite the citations of already-decided cases. Mark it superseded; do not
-remove it.
-
-Also stale: `rulesets/draft-v0.22` was built from CZC v0.22 on 2026-08-21. The draft is now v1.0,
-and Article 2, Article 3 §3.F and the §5 Inventory have all moved since. It is dogfooding material
-(`binding: false`), so nothing is wrong — but do not read it as current.
+**At the next adoption:** add its scheme to `SCHEME_TO_DRAFT`, run `build_edition.py --tag <tag>
+--adopted-on <date> --key adopted-<tag> --supersedes adopted-v1.0`, and let selftest 12 confirm.
 
 ### Where the CZC side now stands, for reference
 
-Frozen and tagged `v1.0` at source tree `a52dbde`, for Town Meeting September 14, 2026, marked NOT
-YET ADOPTED. After the vote, `bash build/build-adopted.sh v1.0 "September 14, 2026"` renders the
-adopted edition from the tag. That is the artifact a new binding ruleset should be built from —
-not from `source/`, which will have moved on.
+Frozen and tagged `v1.0` at source tree `a52dbde`, **adopted at Town Meeting September 14, 2026**.
+`bash build/build-adopted.sh v1.0 "September 14, 2026"` rendered the adopted edition from the tag
+that night (117 pp, all three gates passed), and `build/adoption-map.json` was rolled over to
+identity (`baseline_selfcheck.py`: 0 marked lines). `rulesets/adopted-v1.0` is built from that tag.
 
 ---
 
@@ -282,10 +290,9 @@ cd "build/permit-review" && .venv/bin/python -m pytest -q
 cd "build/permit-review" && .venv/bin/python run.py --selftest
 ```
 
-Expected right now (2026-08-25): **1064 passed, 12 errors** — all 12 in
-`tests/test_use_matrix.py`, all from D-0033, none from this app's own code; and `selftest: ALL OK`
-with **12 of 12 PASS** (check 12 is the RENUM guard added 2026-08-25). Before the CZC moved this
-read 1065 passed / 0 errors; it will read 1076 / 0 once D-0033 is answered. Both hold with **no
+Expected right now (2026-09-14): **1099 passed, 0 errors**, and `selftest: ALL OK` with
+**12 of 12 PASS** (check 4 loads the current binding ruleset, `adopted-v1.0`; check 12 checks both
+adopted Codes' article maps). Both hold with **no
 `ANTHROPIC_API_KEY`/`ANTHROPIC_AUTH_TOKEN` in the environment and no network available** —
 verified 2026-08-22, including with `PERMIT_REVIEW_LLM_PROVIDER=anthropic` forced and still no key
 (selftest doesn't touch `llm/` yet, so it can't be affected either way).
@@ -332,13 +339,12 @@ is no native-text path to a first end-to-end subdivision.
 
 ## Open decisions
 
-`DECISIONS-NEEDED.md` holds **32 entries**; **D-0001, D-0002 and D-0025 are RESOLVED**, the rest
-are OPEN.
+`DECISIONS-NEEDED.md` holds **33 entries**; **D-0001, D-0002, D-0025 and D-0033 are RESOLVED**,
+the rest are OPEN.
 
-**One now blocks: D-0033** (added 2026-08-25) — a use cell in the adopted Code carries two status
-symbols and the app's model has room for one. It blocks **rebuilding a ruleset from `source/`**, and
-nothing else: the rulesets on disk still load, `--selftest` is 11/11, and the app runs. It needs a
-legal reading, not a code change — see "The CZC moved under us" above.
+**D-0033 no longer blocks** — resolved 2026-09-14 (both permits required) and implemented at the v1.0
+rollover. **D-0034** (added 2026-09-14, non-blocking): adopted v1.0 subdivision standard s reads
+"phosphorous"; quoted as adopted, not corrected.
 
 Everything else is non-blocking by design — that is the "collect, never resolve" rule
 (CONTRACT.md §1 S7) working as intended, not a backlog. Running the `anthropic` provider is

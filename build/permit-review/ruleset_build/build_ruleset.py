@@ -266,6 +266,13 @@ def step_write_manifests(*, adopted_id: str, draft_id: str) -> tuple[dict, dict]
         source_paths={"docs/Newcastle Core Zoning Code.pdf": REPO_ROOT / "docs" / "Newcastle Core Zoning Code.pdf"},
     )
     adopted_path = APP_ROOT / "rulesets" / "adopted" / "manifest.json"
+    if adopted_path.exists():
+        prior = json.loads(adopted_path.read_text(encoding="utf-8"))
+        if prior.get("status") == "superseded":
+            # The 2020 Code was superseded by a later adoption (build_edition.py).
+            # Rebuilding its artifacts must not quietly make it current again.
+            adopted_manifest["status"] = "superseded"
+            adopted_manifest["superseded_by"] = prior.get("superseded_by")
     _atomic_write_json(adopted_path, adopted_manifest)
     print(f"  wrote {adopted_path.relative_to(APP_ROOT)}")
 
@@ -393,7 +400,9 @@ def step_register(adopted_manifest: dict, draft_manifest: dict, *, actor_user_id
             adopted_id = _register_ruleset(
                 conn, adopted_manifest,
                 manifest_path_rel="rulesets/adopted/manifest.json",
-                is_current=True,  # the one binding, current adopted Code
+                # current only while nothing has superseded it (build_edition.py
+                # marks it "superseded" when a later Code is adopted)
+                is_current=adopted_manifest.get("status", "active") == "active",
                 actor_user_id=actor_user_id,
             )
             draft_id = _register_ruleset(
@@ -406,7 +415,8 @@ def step_register(adopted_manifest: dict, draft_manifest: dict, *, actor_user_id
         except Exception:
             conn.execute("ROLLBACK;")
             raise
-        print(f"  adopted     -> rulesets.id={adopted_id}  binding=1  is_current=1")
+        print(f"  adopted     -> rulesets.id={adopted_id}  binding=1  "
+              f"is_current={int(adopted_manifest.get('status', 'active') == 'active')}")
         print(f"  draft-v0.22 -> rulesets.id={draft_id}  binding=0  is_current=0")
     finally:
         conn.close()

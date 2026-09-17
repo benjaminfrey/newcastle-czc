@@ -630,6 +630,20 @@ the Board sees it.
   print; it is never a missing row.
 - The builder **MUST** assert `len(cells) == 819` and that every district presents the same 63
   `use_key`s in the same order (verified true), failing hard otherwise.
+- **Multi-status cells (schema `newcastle.use-matrix/1.1.0`, 2026-09-14).** A cell may carry more
+  than one status. The only one in the Code: D3 Neighborhood Business, *Retail & Service, General*,
+  marked ❶ **and** ❷. DECISIONS-NEEDED.md D-0033 was resolved by the Planning Board Chair: **both
+  permits are required.** Such a cell has `code: "rc sp"`, `codes: ["rc", "sp"]`,
+  `reviews_rule: "all_required"`, a `reviews` list (one `{code, permit, permit_key, authority,
+  authority_key}` per required permit, in source order), and **null** top-level `permit` /
+  `permit_key` / `authority` / `authority_key` — so a reader that only knows the single-status
+  fields prints nothing rather than silently printing the first permit. `counts.by_code` counts
+  statuses (820 across 819 cells); `counts.multi_status_cells` counts such cells. Every
+  single-status cell keeps the exact 1.0.0 shape. Readers go through `app/citation.py`
+  `cell_reviews()` / `required_review_rows()` (one Required Review(s) row per permit, every row
+  carrying the one sentence that names them all); `required_review_row()` **raises**
+  `MultipleRequiredReviews` on such a cell. The builder refuses an unknown or repeated code inside a
+  multi-status value.
 - Nine categories after the §4.3.2 merge: `TRANSPORTATION & UTILITIES`, `RECREATION`,
   `RESIDENTIAL`, `AGRICULTURAL`, `INDUSTRIAL`, `COMMERCIAL GOODS`, `COMMERCIAL SERVICES`
   (+ the remaining source categories, carried through, not hard-coded).
@@ -739,6 +753,31 @@ RENUM_DRAFT_TO_ADOPTED = {v: k for k, v in RENUM_ADOPTED_TO_DRAFT.items()}   # d
 **Section numbers are preserved; only article numbers shift.** Draft Article 3 (Thoroughfares) is
 new — `to_scheme(3, frm="draft", to="adopted")` raises `NoCounterpart`, it does not return `3`.
 `app/citation.py` owns this constant; nothing else may redefine it.
+
+#### 5.3.1 One numbering scheme per adopted Code (the v1.0 rollover, 2026-09-14)
+
+Town Meeting adopted CZC v1.0 on **September 14, 2026**. The adopted Code became the nine-article
+numbering — but the map above was **not** reset, because it is a permanent fact about the 2020 Code
+and every case decided under that Code cites it. Instead:
+
+| Scheme | Code | Map onto the draft | Ruleset | Status |
+|---|---|---|---|---|
+| `adopted` | adopted November 3, 2020 (8 articles) | `RENUM_ADOPTED_TO_DRAFT` (3→4 … 8→9) | `rulesets/adopted` | superseded |
+| `adopted-v1.0` | CZC v1.0, adopted September 14, 2026 (9 articles) | `RENUM_V1_0_TO_DRAFT` (identity) | `rulesets/adopted-v1.0` | **active** |
+| `draft` | the working draft | identity | `rulesets/draft-v0.22` | draft |
+
+`SCHEME_TO_DRAFT` lists every scheme; `to_scheme()` converts any two through the draft numbering.
+A ruleset's scheme is its manifest's `article_scheme` (`scheme_for_ruleset()`), never inferred from
+its key. `rulesets/article-map.json` carries one side per scheme. **A future adoption** gets its own
+ruleset (`ruleset_build/build_edition.py`, built from the release tag), its own scheme in
+`SCHEME_TO_DRAFT` (identity if it keeps the draft's numbering), and marks the Code it replaces
+`superseded`. `app/renum_check.py` (selftest check 12) checks every binding ruleset through its own
+map by article name, and fails a binding ruleset whose scheme has no map.
+
+**No default Code by key.** New work is held to the one binding ruleset whose manifest status is
+`active` (`app.rulesets.current_binding_key()`); a new case with no explicit ruleset is pinned to
+the DB's `is_current = 1` row. A literal `"adopted"` default would have kept reviewing applications
+against the superseded 2020 Code.
 
 ### 5.4 Functions
 

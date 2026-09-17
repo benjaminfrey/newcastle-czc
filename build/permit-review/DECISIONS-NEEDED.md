@@ -10,7 +10,8 @@ The ledger of everything the Code does not answer. Governed by **CONTRACT.md §7
 Ids are `D-NNNN`, monotonic, never reused. `Status` ∈ `OPEN` · `RESOLVED` · `WITHDRAWN`.
 Entries are appended, newest last, and edited only to fill in **Resolution**.
 
-**Open blocking items: 2 · Open non-blocking items: 18**
+**Open blocking items: 1 · Open non-blocking items: 19**  
+*(2026-09-14: D-0033 resolved; D-0034 added.)*
 
 ---
 
@@ -1336,10 +1337,10 @@ to a D-number keeps pointing at the same entry.
 
 ## D-0033 — A use cell in the adopted Code carries TWO status symbols, and the app's model has room for one
 
-- **Status:** OPEN — needs a human. Blocks rebuilding either ruleset from source.
+- **Status:** RESOLVED 2026-09-14 — reading (a): **both permits are required.** See Resolution.
 - **Raised:** 2026-08-25, while restoring Article 2's district pages from the adopted Code PDF (see
   the CZC-side commit `13b2a50`).
-- **Blocking:** yes, for `ruleset_build` only. The rulesets already on disk were built 2026-08-21
+- **Blocking:** no (was: yes, for `ruleset_build` only). The rulesets already on disk were built 2026-08-21
   and still load, so `run.py --selftest` passes 11/11 and the app runs. What fails is any rebuild
   from `source/article-02-data.json`, which is 12 of the test suite's errors.
 
@@ -1382,3 +1383,51 @@ is itself a question for counsel. Under (c), it is a correction to adopted text 
 Board's to make, not ours.
 
 **Ask counsel or the Board, not the data.** Nobody should answer this from the JSON.
+
+**Resolution (2026-09-14).** Decided by **Ben Frey, Planning Board Chair**, directly in the working
+session the night Town Meeting adopted CZC v1.0 — not relayed through a build agent (the D-0025
+provenance lesson). Asked how the v1.0 ruleset should treat this one cell, with the three readings
+above offered as "flag it unresolved", "both permits required" and "pause", he chose:
+
+> **Both permits required** — treat the cell as requiring the CEO permit AND the Planning Board
+> Special Permit (reading a). The app lists both reviews.
+
+Implemented as reading (a), exactly as sketched under "What resolving it looks like":
+`newcastle.use-matrix/1.1.0` lets a cell carry several statuses (`codes`, a `reviews` list,
+`reviews_rule: "all_required"`, null single-status fields); `required_reviews()` returns one row per
+permit, each carrying one sentence that names both — *"A Retail & Service, General use in the
+D3-Neighborhood Business District requires both a Residential Companion Permit which can be issued
+by the CEO and a Special Permit which must be issued by the Planning Board."*;
+`required_review_row()` refuses such a cell rather than returning the first permit; the formgen
+cross-check reports `multiple_required_reviews` and picks neither. See CONTRACT.md §4.3.
+
+**Where it applies.** `rulesets/adopted-v1.0` (the Code adopted 2026-09-14) carries both permits.
+`rulesets/adopted` (the 2020 Code, now superseded) was built 2026-08-21 from the flattened scrape and
+still shows only ❶ for this cell; it was deliberately **not** rebuilt, because superseded artifacts
+are never edited. The 2020 Code's own page 16 shows both symbols, so a case decided under that Code
+involving this use should be checked against the page, not the 2020 ruleset.
+
+---
+
+## D-0034 — Adopted v1.0 text reads "phosphorous" in Subdivision standard s, where the 2020 Code read "phosphorus"
+
+- **Status:** OPEN
+- **Raised:** 2026-09-14, by `ruleset_build/build_edition.py` while carrying the 21 subdivision
+  standards forward from the 2020 Code to CZC v1.0
+- **Ruleset:** `adopted-v1.0` — Article 8 §12.f.1, standard s (*Lake Phosphorus Concentration*)
+- **Blocking:** no.
+
+**The fact.** Standard s in the Code adopted September 14, 2026 says the subdivision *"will not
+unreasonably increase the **phosphorous** concentration in a Great Pond"*. The same standard in the
+2020 Code, as extracted from the adopted PDF, says **phosphorus**. The standard's own title in v1.0
+still says *Phosphorus*. The v1.0 text already reads "phosphorous" in the project's baseline transcription of the 2020 Code (`v0.1-baseline`), so the spelling entered with that transcription, not with any Article 3 drafting.
+
+**What the app does.** Quotes the adopted text verbatim — `source_text` of standard s in
+`rulesets/adopted-v1.0/criteria-subdivision.json` reads "phosphorous", and a test pins that. The
+builder reports it among the standards whose wording differs from the superseded Code (with b, which
+changed on purpose to cite Article 3); f, i, n and p differ only in curly versus straight quotation
+marks, an artifact of extracting 2020 from a PDF and v1.0 from markdown, and are not listed here.
+
+**Why it is not corrected.** It is now adopted text. Correcting it is a scrivener's-error question
+for the Board or counsel, the same class as D-0028 ("Conditions of Law"). The meaning is not in
+doubt; the wording is the Town's, and the app does not edit the Town's words.

@@ -562,7 +562,7 @@ def cross_check_review_type(
     *,
     district_key: str | None,
     use_key: str | None,
-    ruleset_key: str = "adopted",
+    ruleset_key: str | None = None,
 ) -> dict[str, Any]:
     """Cross-check a derive_review_type() hint against the ACTUAL required
     review from app.reviews.required_reviews() (CONTRACT.md §4.4, the
@@ -582,6 +582,11 @@ def cross_check_review_type(
 
         {"status": "disagree", "module_derivation": ..., "use_matrix_derivation": ...,
          "needs_operator_resolution": True}
+
+        {"status": "multiple_required_reviews", ..., "needs_operator_resolution": True}
+            The use-matrix cell requires more than one permit (D-0033), so the
+            derivation lists every `authorities`/`permits` entry and names no
+            single authority. Checked before the module hint is consulted.
             They name different authorities (or the module hint asserted an
             authority the use-matrix contradicts). BOTH are returned in
             full — this function never picks a winner (CONTRACT.md §1 S7).
@@ -602,6 +607,22 @@ def cross_check_review_type(
     from app import reviews  # deferred: keeps this module importable with no app/ dependency
 
     rows = reviews.required_reviews(district_key, use_key, ruleset_key=ruleset_key)
+    if len(rows) > 1:
+        # More than one permit is required (use-matrix 1.1.0, D-0033). A single
+        # module-derived authority can neither agree nor disagree with a set of
+        # required reviews, so both derivations go to the operator in full.
+        return {
+            "status": "multiple_required_reviews",
+            "module_derivation": module_hint,
+            "use_matrix_derivation": {
+                "application_type": None,
+                "authority": None,
+                "authorities": [r["permitting_authority"] for r in rows],
+                "permits": [r["permit"] for r in rows],
+                "basis": rows[0]["applicability_text"],
+            },
+            "needs_operator_resolution": True,
+        }
     use_matrix_row = rows[0]
     use_matrix_derivation = {
         "application_type": None,  # reviews.py has no cases.application_type concept

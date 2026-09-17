@@ -5,7 +5,7 @@
   "kind": "adopted-czc",
   "title": "Newcastle Core Zoning Code (Adopted)",
   "label": "Newcastle Core Zoning Code (Adopted)",
-  "status": "active",
+  "status": "superseded",
   "binding": true,
   "article_scheme": "adopted",
   "adopted_date": "2020-11-03",
@@ -45,5 +45,10 @@
   },
   "source_sha256": {
     "docs/Newcastle Core Zoning Code.pdf": "9b217fb90ba30c7101babef3b4ecc53fb7e5d754ba6925ccbfe0b5a03149c716"
+  },
+  "superseded_by": {
+    "ruleset_key": "adopted-v1.0",
+    "id": "87bafd7eb2854c20acf5d5649be79e18",
+    "on": "2026-09-14"
   }
 }

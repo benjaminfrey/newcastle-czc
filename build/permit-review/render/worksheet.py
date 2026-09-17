@@ -117,15 +117,15 @@ def _required_review_nodes(idx: dict[str, Any], district: dict[str, Any], use_ke
         cell = idx["cells_by_pair"].get((district["district_key"], use_obj["use_key"]))
         if cell is None:
             continue
-        row = citation.required_review_row(district, use_obj, cell)
-        cite_text = citation.render(row["citation"], style="short")
-        rows.append([
-            use_obj["label"],
-            row["permit"] or "(none — prohibited)",
-            row["authority"] or "—",
-            row["sentence"],
-            cite_text,
-        ])
+        for row in citation.required_review_rows(district, use_obj, cell):
+            cite_text = citation.render(row["citation"], style="short")
+            rows.append([
+                use_obj["label"],
+                row["permit"] or "(none — prohibited)",
+                row["authority"] or "—",
+                row["sentence"],
+                cite_text,
+            ])
     if rows:
         nodes.append(table(["Use", "Permit", "Authority", "Applicability", "Citation"], rows))
     else:

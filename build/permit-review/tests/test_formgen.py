@@ -426,6 +426,18 @@ def test_cross_check_disagrees_and_records_both_derivations_never_picking_one():
     assert result["use_matrix_derivation"]["authority"] == "CEO"
 
 
+def test_cross_check_never_picks_one_of_two_required_permits():
+    """D3 Retail & Service, General requires two permits (D-0033). A module
+    hint naming one authority neither agrees nor disagrees with that; both
+    derivations go to the operator in full."""
+    hint = {"application_type": "use", "authority": "Planning Board", "needs_use_matrix_check": False, "basis": "test"}
+    result = formgen.cross_check_review_type(hint, district_key="d3", use_key="retail_service_general")
+    assert result["status"] == "multiple_required_reviews"
+    assert result["needs_operator_resolution"] is True
+    assert result["use_matrix_derivation"]["authority"] is None
+    assert result["use_matrix_derivation"]["authorities"] == ["CEO", "Planning Board"]
+
+
 def test_cross_check_insufficient_data_when_district_or_use_missing():
     hint = formgen.derive_review_type("gen2", ["cover", "use_form"])
     result = formgen.cross_check_review_type(hint, district_key=None, use_key=None)

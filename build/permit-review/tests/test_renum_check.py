@@ -5,7 +5,7 @@ with the SAME NAME. These tests pose a post-adoption world by injection rather
 than by building a ruleset, so they stay offline and fast.
 """
 from app import renum_check
-from app.citation import RENUM_ADOPTED_TO_DRAFT
+from app.citation import RENUM_ADOPTED_TO_DRAFT, RENUM_V1_0_TO_DRAFT, SCHEME_TO_DRAFT
 
 # The 2020 Code as the adopted ruleset holds it today: eight articles.
 ADOPTED_2020 = {
@@ -30,11 +30,44 @@ def test_the_shipped_map_matches_the_shipped_rulesets():
     assert renum_check.problems() == []
 
 
-def test_the_shipped_map_is_still_the_shifted_one():
-    """Pins the premise: while the adopted Code is the 2020 eight-article
-    version, the map is a shift, not identity. When this fails, the adoption
-    happened and the rest of the rollover is due."""
+def test_the_2020_map_stays_shifted_forever():
+    """The 2020 Code was superseded on September 14, 2026, but decided cases
+    cite it. Its map is a fact about that document and must never be reset --
+    resetting it would renumber those cases' citations."""
     assert RENUM_ADOPTED_TO_DRAFT == SHIFTED
+
+
+def test_the_v1_0_map_is_identity():
+    """CZC v1.0, adopted September 14, 2026, IS the nine-article numbering."""
+    assert RENUM_V1_0_TO_DRAFT == IDENTITY
+    assert SCHEME_TO_DRAFT["adopted-v1.0"] == IDENTITY
+
+
+def test_every_binding_ruleset_on_disk_is_checked_through_its_own_map():
+    keys = {k: m["article_scheme"] for k, m in renum_check.binding_rulesets()}
+    assert keys == {"adopted": "adopted", "adopted-v1.0": "adopted-v1.0"}
+    assert renum_check.ruleset_articles("adopted-v1.0")[3] == "Thoroughfares"
+    assert renum_check._norm(renum_check.ruleset_articles("adopted")[3]) == "site standards"
+
+
+def test_the_code_in_force_maps_by_identity():
+    from app.rulesets import current_binding_key
+    key = current_binding_key()
+    manifest = dict(renum_check.binding_rulesets())[key]
+    assert key == "adopted-v1.0"
+    assert SCHEME_TO_DRAFT[manifest["article_scheme"]] == IDENTITY
+
+
+def test_a_binding_ruleset_with_no_map_is_caught():
+    """A future adoption whose ruleset was built but whose scheme was never
+    added to SCHEME_TO_DRAFT: its citations cannot be numbered at all."""
+    found = renum_check.edition_problems("adopted-v9.0", {"article_scheme": "adopted-v9.0"}, NINE, NINE)
+    assert found and "no adopted-Code map" in found[0]
+
+
+def test_a_nine_article_code_read_through_the_2020_map_is_caught():
+    found = renum_check.edition_problems("adopted-v1.0", {"article_scheme": "adopted"}, NINE, NINE)
+    assert any("Thoroughfares" in p and "Site Standards" in p for p in found)
 
 
 def test_definitions_is_found_even_though_the_draft_splits_it_out():
@@ -100,7 +133,7 @@ def test_selftest_runs_the_check():
     from pathlib import Path
     src = (Path(__file__).resolve().parent.parent / "app" / "main.py").read_text()
     assert "renum_check" in src
-    assert "12. RENUM_ADOPTED_TO_DRAFT" in src
+    assert "12. every adopted Code's article map matches the draft by name" in src
 
 
 def test_run_returns_zero_on_the_shipped_state():

@@ -24,6 +24,9 @@ SRC = REPO_ROOT / "source" / "article-02-data.json"
 LEGEND_TYP = REPO_ROOT / "source" / "article-02.typ"
 
 KNOWN_STATUS_VALUES = {"u", "rc", "sp", "ex", ""}
+# The one cell in the Code that carries two symbols (DECISIONS-NEEDED.md D-0033,
+# RESOLVED 2026-09-14: both permits are required).
+MULTI_STATUS_CELL = ("d3", "retail_service_general")
 
 
 @pytest.fixture(scope="module")
@@ -100,12 +103,60 @@ def test_cell_count_is_819(matrix):
 
 
 def test_cell_count_by_code_matches_contract(matrix):
-    assert matrix["counts"]["by_code"] == {"u": 218, "rc": 53, "sp": 58, "ex": 40, "": 450}
+    # by_code counts statuses, so D3 Retail & Service, General adds to BOTH rc
+    # and sp: 820 statuses across 819 cells.
+    assert matrix["counts"]["by_code"] == {"u": 218, "rc": 53, "sp": 59, "ex": 40, "": 450}
+    assert matrix["counts"]["multi_status_cells"] == 1
 
 
 def test_every_cell_status_is_one_of_the_five_known_values(matrix):
-    codes = {cell["code"] for cell in matrix["cells"]}
-    assert codes == KNOWN_STATUS_VALUES
+    """Every single-status cell holds one of the five values; the one
+    multi-status cell holds two of them (D-0033)."""
+    single = {cell["code"] for cell in matrix["cells"] if "reviews" not in cell}
+    assert single == KNOWN_STATUS_VALUES
+    multi = [(c["district_key"], c["use_key"], c["code"]) for c in matrix["cells"] if "reviews" in c]
+    assert multi == [(*MULTI_STATUS_CELL, "rc sp")]
+
+
+def test_the_two_status_cell_requires_both_permits(matrix):
+    """D-0033, RESOLVED 2026-09-14 by Ben Frey: D3 Retail & Service, General
+    requires BOTH the CEO's Residential Companion Permit and the Planning
+    Board's Special Permit. The single-status fields are null on purpose, so a
+    reader that only knows those fields prints nothing rather than one permit."""
+    cell = next(c for c in matrix["cells"] if (c["district_key"], c["use_key"]) == MULTI_STATUS_CELL)
+    assert cell["codes"] == ["rc", "sp"]
+    assert cell["reviews_rule"] == "all_required"
+    assert [(r["permit"], r["authority"]) for r in cell["reviews"]] == [
+        ("Residential Companion Permit", "CEO"), ("Special Permit", "Planning Board")]
+    assert cell["permit"] is None and cell["authority"] is None
+    assert cell["allowed"] is True
+
+
+def test_required_review_row_refuses_a_two_permit_cell(matrix):
+    """Taking the first permit would silently drop the Planning Board's review."""
+    from app import citation
+    cell = next(c for c in matrix["cells"] if (c["district_key"], c["use_key"]) == MULTI_STATUS_CELL)
+    use = next(u for u in matrix["uses"] if u["use_key"] == MULTI_STATUS_CELL[1])
+    district = {"district_key": "d3", "code": "D3", "name": "NEIGHBORHOOD BUSINESS",
+                "citation": {"article": 2, "district": "D3", "district_name": "Neighborhood Business"},
+                "ruleset_key": "adopted"}
+    with pytest.raises(citation.MultipleRequiredReviews):
+        citation.required_review_row(district, use, cell)
+    rows = citation.required_review_rows(district, use, cell)
+    assert [r["authority"] for r in rows] == ["CEO", "Planning Board"]
+    assert len({r["sentence"] for r in rows}) == 1
+    assert "requires both a Residential Companion Permit" in rows[0]["sentence"]
+    assert "and a Special Permit which must be issued by the Planning Board." in rows[0]["sentence"]
+
+
+@pytest.mark.parametrize("bad", ["rc zz", "sp sp"])
+def test_a_malformed_multi_status_code_fails_loudly(tmp_path, bad):
+    districts = json.loads(SRC.read_text())
+    districts[0]["use_col1"][0]["entries"][0][1] = bad
+    path = tmp_path / "article-02-data.json"
+    path.write_text(json.dumps(districts), encoding="utf-8")
+    with pytest.raises(UseMatrixBuildError):
+        build_use_matrix(path, LEGEND_TYP, "adopted")
 
 
 def test_cells_are_dense_across_all_districts_and_uses(matrix):
@@ -180,7 +231,7 @@ def reviews_module(use_matrix_path, monkeypatch):
 
 
 def test_required_reviews_d1_residence_is_use_permit_ceo(reviews_module):
-    rows = reviews_module.required_reviews("d1", "Residence")
+    rows = reviews_module.required_reviews("d1", "Residence", ruleset_key="adopted")
     assert len(rows) == 1
     row = rows[0]
     assert row["permit"] == "Use Permit"
@@ -192,13 +243,13 @@ def test_required_reviews_d1_residence_is_use_permit_ceo(reviews_module):
 
 
 def test_required_reviews_matches_by_use_key_and_by_label(reviews_module):
-    by_key = reviews_module.required_reviews("d1", "residence")
-    by_label = reviews_module.required_reviews("d1", "Residence")
+    by_key = reviews_module.required_reviews("d1", "residence", ruleset_key="adopted")
+    by_label = reviews_module.required_reviews("d1", "Residence", ruleset_key="adopted")
     assert by_key == by_label
 
 
 def test_required_reviews_prohibited_use_has_no_authority(reviews_module):
-    rows = reviews_module.required_reviews("d1", "Paid Parking Lot")
+    rows = reviews_module.required_reviews("d1", "Paid Parking Lot", ruleset_key="adopted")
     assert len(rows) == 1
     row = rows[0]
     assert row["permit"] is None
@@ -208,12 +259,18 @@ def test_required_reviews_prohibited_use_has_no_authority(reviews_module):
 
 def test_required_reviews_unknown_district_raises(reviews_module):
     with pytest.raises(reviews_module.UnknownDistrict):
-        reviews_module.required_reviews("d99", "Residence")
+        reviews_module.required_reviews("d99", "Residence", ruleset_key="adopted")
+
+
+def test_required_reviews_returns_one_row_per_required_permit(reviews_module):
+    rows = reviews_module.required_reviews("d3", "retail_service_general", ruleset_key="adopted")
+    assert [(r["permit"], r["permitting_authority"]) for r in rows] == [
+        ("Residential Companion Permit", "CEO"), ("Special Permit", "Planning Board")]
 
 
 def test_required_reviews_unknown_use_raises(reviews_module):
     with pytest.raises(reviews_module.UnknownUse):
-        reviews_module.required_reviews("d1", "Not A Real Use")
+        reviews_module.required_reviews("d1", "Not A Real Use", ruleset_key="adopted")
 
 
 # --------------------------------------------------------------------------- #

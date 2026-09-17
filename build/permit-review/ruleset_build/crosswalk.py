@@ -249,7 +249,42 @@ def build_article_map() -> dict[str, Any]:
         "draft_to_adopted": {str(k): v for k, v in sorted(RENUM_DRAFT_TO_ADOPTED.items())},
         "adopted": adopted,
         "draft": draft,
+        **_edition_article_sides(),
     }
+
+
+def _edition_article_sides() -> dict[str, Any]:
+    """One side of article-map.json per adopted-EDITION scheme on disk: every
+    binding ruleset whose article_scheme is neither "adopted" (the 2020 Code,
+    derived above) nor "draft". CZC v1.0, adopted 2026-09-14, is the first.
+
+    Names come from that ruleset's OWN artifacts -- the Code as adopted -- never
+    from the working draft, which will move on after the adoption."""
+    from app.citation import SCHEME_TO_DRAFT
+    from app.renum_check import ruleset_articles
+
+    sides: dict[str, Any] = {}
+    for manifest_path in sorted((APP_ROOT / "rulesets").glob("*/manifest.json")):
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        scheme = manifest.get("article_scheme")
+        if not manifest.get("binding") or scheme in ("adopted", "draft"):
+            continue
+        if scheme not in SCHEME_TO_DRAFT:
+            raise CrosswalkBuildError(
+                f"binding ruleset {manifest_path.parent.name!r} declares article_scheme {scheme!r}, "
+                f"which has no map in app/citation.py SCHEME_TO_DRAFT"
+            )
+        key = manifest_path.parent.name
+        names = ruleset_articles(key)
+        sides[scheme] = {
+            str(n): {
+                "name": names[n],
+                "draft_counterpart": SCHEME_TO_DRAFT[scheme].get(n),
+                "source": f"rulesets/{key}/articles.json",
+            }
+            for n in sorted(names)
+        }
+    return sides
 
 
 # --------------------------------------------------------------------------- #

@@ -20,7 +20,16 @@ from pathlib import Path
 from ruleset_build.legend import parse_legend
 from ruleset_build.slugs import DISTRICT_KEYS, assert_district_table, display_name, slug
 
-SCHEMA = "newcastle.use-matrix/1.0.0"
+SCHEMA = "newcastle.use-matrix/1.1.0"
+# 1.1.0 (2026-09-14, DECISIONS-NEEDED.md D-0033 RESOLVED): a cell may carry
+# MORE THAN ONE status. D3 Neighborhood Business marks Retail & Service,
+# General with both \u2776 (rc) and \u2777 (sp); Ben Frey, Planning Board Chair,
+# decided that means BOTH permits are required. Such a cell has
+# code "rc sp", codes ["rc", "sp"], a `reviews` list with one entry per
+# required permit, and null top-level permit/authority fields -- so a consumer
+# that only reads the single-status fields finds nothing to print rather than
+# silently printing the first permit and dropping the Planning Board's review.
+# Every single-status cell is byte-for-byte the 1.0.0 shape.
 
 # The soft hyphen (U+00AD) that splits one D4 category across two entries
 # (CONTRACT.md §4.3.2). Detected on the category title, not hard-coded to
@@ -131,6 +140,44 @@ def _district_uses(district: dict) -> tuple[list[dict], list[dict]]:
     return categories, uses
 
 
+def _multi_status_cell(district_key: str, use: dict, code: str, parts: list[str],
+                       legend_by_code: dict[str, dict]) -> dict:
+    """A cell carrying more than one status (schema 1.1.0; D-0033). Every part
+    must be a real, allowed legend code, and none may repeat -- "rc rc" or
+    "u zz" is an extraction error, never two reviews."""
+    where = f"district {district_key!r}, use {use['label']!r}"
+    if len(set(parts)) != len(parts):
+        raise UseMatrixBuildError(f"{where}: use-status {code!r} repeats a code")
+    reviews = []
+    for part in parts:
+        row = legend_by_code.get(part)
+        if row is None or not part:
+            raise UseMatrixBuildError(
+                f"{where}: use-status {code!r} contains unknown code {part!r} — "
+                f"not one of {sorted(c for c in legend_by_code if c)}"
+            )
+        reviews.append({
+            "code": part,
+            "permit": row["permit"],
+            "permit_key": row["permit_key"],
+            "authority": row["authority"],
+            "authority_key": row["authority_key"],
+        })
+    return {
+        "district_key": district_key,
+        "use_key": use["use_key"],
+        "code": code,
+        "codes": list(parts),
+        "permit": None,
+        "permit_key": None,
+        "authority": None,
+        "authority_key": None,
+        "allowed": True,
+        "reviews": reviews,
+        "reviews_rule": "all_required",
+    }
+
+
 def build_use_matrix(src: Path, legend_typ: Path, ruleset_key: str) -> dict:
     """Implements CONTRACT.md §4.3. `src` = source/article-02-data.json,
     `legend_typ` = source/article-02.typ. Raises on any structural mismatch
@@ -170,9 +217,17 @@ def build_use_matrix(src: Path, legend_typ: Path, ruleset_key: str) -> dict:
     # cells[] — dense: 13 x 63 = 819, prohibited cells included as positive facts.
     cells: list[dict] = []
     by_code_counts: dict[str, int] = {"u": 0, "rc": 0, "sp": 0, "ex": 0, "": 0}
+    multi_status_cells = 0
     for district_key in DISTRICT_KEYS:
         for use in per_district_uses[district_key]:
             code = use["_code"]
+            parts = code.split()
+            if len(parts) > 1:
+                cells.append(_multi_status_cell(district_key, use, code, parts, legend_by_code))
+                for part in parts:
+                    by_code_counts[part] += 1
+                multi_status_cells += 1
+                continue
             legend_row = legend_by_code.get(code)
             if legend_row is None:
                 raise UseMatrixBuildError(
@@ -225,6 +280,9 @@ def build_use_matrix(src: Path, legend_typ: Path, ruleset_key: str) -> dict:
             "districts": len(DISTRICT_KEYS),
             "uses": len(output_uses),
             "cells": len(cells),
+            # by_code counts STATUSES, so a two-status cell adds to both codes
+            # and the by_code total exceeds `cells` by one per extra status.
             "by_code": by_code_counts,
+            "multi_status_cells": multi_status_cells,
         },
     }

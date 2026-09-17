@@ -183,7 +183,10 @@ CLOCK_OVERRIDE_KINDS: frozenset[str] = frozenset({"extension_agreed", "clock_wai
 #: each one means to engine/deadlines.py's satisfying-occurrence logic.
 SUPERSEDE_REASONS: frozenset[str] = frozenset({"reschedule", "correction"})
 
-DEFAULT_RULESET_KEY = "adopted"  # CONTRACT.md §1 S8 -- the binding ruleset, pinned by default.
+# No hardcoded default ruleset. A case with no explicit ruleset_key is pinned to
+# the DB's current ruleset (rulesets.is_current = 1) -- see _current_ruleset_key.
+# The literal "adopted" default this replaced would have kept pinning new cases
+# to the 2020 Code after Town Meeting adopted CZC v1.0 on September 14, 2026.
 
 
 def _occurred_on_error(raw: str) -> str | None:
@@ -289,6 +292,15 @@ def _case_row_to_dict(row: sqlite3.Row) -> dict[str, Any]:
     return d
 
 
+def _current_ruleset_key(conn: sqlite3.Connection) -> str:
+    """The ruleset a new case is held to: the one row with is_current = 1
+    (0001_init.sql's ux_rulesets_one_current guarantees at most one)."""
+    row = conn.execute("SELECT ruleset_key FROM rulesets WHERE is_current = 1;").fetchone()
+    if row is None:
+        raise UnknownRuleset("(no current ruleset registered -- run ruleset_build)")
+    return row["ruleset_key"]
+
+
 def _resolve_ruleset(conn: sqlite3.Connection, ruleset_key: str) -> sqlite3.Row:
     row = conn.execute(
         "SELECT id, ruleset_key, binding FROM rulesets WHERE ruleset_key = ?;", (ruleset_key,)
@@ -325,8 +337,8 @@ def create_case(
     override_reason: str | None = None,
     actor_user_id: str | None,
 ) -> dict[str, Any]:
-    """Create a case, pinned to `ruleset_key` (default DEFAULT_RULESET_KEY,
-    the adopted/binding Code), entering the state machine at 'intake'.
+    """Create a case, pinned to `ruleset_key` (default: the DB's current
+    ruleset -- the binding Code in force), entering the state machine at 'intake'.
 
     Raises ValidationError (bad application_type / missing override_reason),
     UnknownRuleset (ruleset_key not registered in the DB -- see
@@ -350,7 +362,7 @@ def create_case(
     if details:
         raise ValidationError(details)
 
-    ruleset_key_effective = ruleset_key or DEFAULT_RULESET_KEY
+    ruleset_key_effective = ruleset_key or _current_ruleset_key(conn)
     ruleset_row = _resolve_ruleset(conn, ruleset_key_effective)
 
     effective_reason = override_reason.strip() if binding_override else None
@@ -675,7 +687,7 @@ def record_dates(
             ruleset_row = conn.execute(
                 "SELECT ruleset_key FROM rulesets WHERE id = ?;", (case_row["ruleset_id"],)
             ).fetchone()
-            ruleset_key = ruleset_row["ruleset_key"] if ruleset_row is not None else DEFAULT_RULESET_KEY
+            ruleset_key = ruleset_row["ruleset_key"] if ruleset_row is not None else _current_ruleset_key(conn)
             try:
                 _clocks_cache = list(deadlines_mod.load_clocks(ruleset_key))
             except deadlines_mod.ClocksNotFound:

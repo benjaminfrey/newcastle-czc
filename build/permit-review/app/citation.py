@@ -15,6 +15,8 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, replace
+from functools import lru_cache
+from pathlib import Path
 from typing import Any, Literal
 
 from app.config import RULESETS_DIR
@@ -23,12 +25,34 @@ from app.config import RULESETS_DIR
 # §5.3 — article renumbering, seeded verbatim from extract/verso.py:18
 # --------------------------------------------------------------------------- #
 
+# The scheme called "adopted" is the Code adopted NOVEMBER 3, 2020 -- eight
+# articles. Since Town Meeting adopted v1.0 on September 14, 2026 that Code is
+# SUPERSEDED, but it keeps this scheme and this map for good: decided cases cite
+# it, and nothing about the 2020 Code will ever renumber. The map below is a
+# permanent fact about that document, not a setting to reset.
 RENUM_ADOPTED_TO_DRAFT: dict[int, int] = {1: 1, 2: 2, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9}
 RENUM_DRAFT_TO_ADOPTED: dict[int, int] = {v: k for k, v in RENUM_ADOPTED_TO_DRAFT.items()}
 # Draft Article 3 (Thoroughfares) is new — it has no adopted counterpart, so it is
 # deliberately absent from RENUM_DRAFT_TO_ADOPTED rather than mapped to anything.
 
-Scheme = Literal["adopted", "draft"]
+# The Code adopted at Town Meeting SEPTEMBER 14, 2026 (CZC v1.0) IS the
+# nine-article numbering, so its map onto the draft is identity. This is the
+# "RENUM to identity" of the adoption rollover, done as a new scheme rather than
+# by editing the 2020 map -- editing that map would renumber every citation of
+# every case decided under the 2020 Code. app/renum_check.py verifies each map by
+# article NAME against the rulesets themselves.
+RENUM_V1_0_TO_DRAFT: dict[int, int] = {n: n for n in range(1, 10)}
+
+# Every numbering scheme a ruleset may declare, as {article in that scheme:
+# article in the draft's numbering}. A future adoption that renumbers adds a
+# scheme here; one that does not can still add one, mapped to identity.
+SCHEME_TO_DRAFT: dict[str, dict[int, int]] = {
+    "adopted": RENUM_ADOPTED_TO_DRAFT,
+    "adopted-v1.0": RENUM_V1_0_TO_DRAFT,
+    "draft": {n: n for n in range(1, 10)},
+}
+
+Scheme = Literal["adopted", "adopted-v1.0", "draft"]
 Style = Literal["long", "short", "inline"]
 
 
@@ -184,18 +208,48 @@ def _render_inline(c: Citation) -> str:
 
 
 def to_scheme(article: int, *, frm: str, to: str) -> int:
-    """Section numbers are preserved; only article numbers shift (§5.3)."""
-    if frm not in ("adopted", "draft") or to not in ("adopted", "draft"):
-        raise ValueError(f"citation.to_scheme: scheme must be 'adopted' or 'draft', got frm={frm!r} to={to!r}")
+    """Section numbers are preserved; only article numbers shift (§5.3).
+    Converts through the draft's numbering, so any two schemes in
+    SCHEME_TO_DRAFT convert to each other."""
+    if frm not in SCHEME_TO_DRAFT or to not in SCHEME_TO_DRAFT:
+        raise ValueError(
+            f"citation.to_scheme: scheme must be one of {sorted(SCHEME_TO_DRAFT)}, got frm={frm!r} to={to!r}"
+        )
     if frm == to:
         return article
-    table = RENUM_ADOPTED_TO_DRAFT if (frm, to) == ("adopted", "draft") else RENUM_DRAFT_TO_ADOPTED
-    if article not in table:
+    via = SCHEME_TO_DRAFT[frm].get(article)
+    back = {d: a for a, d in SCHEME_TO_DRAFT[to].items()}
+    if via is None or via not in back:
+        new_art3 = via == 3 and to == "adopted"
         raise NoCounterpart(
             f"{frm} Article {article} has no {to} counterpart "
-            f"({'draft Article 3, Thoroughfares, is new' if frm == 'draft' and article == 3 else 'unmapped article number'})"
+            f"({'draft Article 3, Thoroughfares, is new' if new_art3 else 'unmapped article number'})"
         )
-    return table[article]
+    return back[via]
+
+
+@lru_cache(maxsize=None)
+def _manifest_scheme(manifest_path: str) -> str | None:
+    p = Path(manifest_path)
+    if not p.exists():
+        return None
+    return json.loads(p.read_text(encoding="utf-8")).get("article_scheme")
+
+
+def scheme_for_ruleset(ruleset_key: str) -> str:
+    """The article numbering `ruleset_key`'s citations are written in -- its
+    manifest's `article_scheme`. A key with no manifest on disk (a test
+    fixture's stub ruleset) keeps the pre-v1.0 rule: "draft" for the literal
+    key "draft", otherwise "adopted"."""
+    scheme = _manifest_scheme(str(RULESETS_DIR / ruleset_key / "manifest.json"))
+    if scheme is None:
+        return ruleset_key if ruleset_key in ("adopted", "draft") else "adopted"
+    if scheme not in SCHEME_TO_DRAFT:
+        raise ValueError(
+            f"ruleset {ruleset_key!r} declares article_scheme {scheme!r}, which has no "
+            f"map in app.citation.SCHEME_TO_DRAFT"
+        )
+    return scheme
 
 
 def in_scheme(c: Citation, scheme: str) -> Citation:
@@ -244,7 +298,10 @@ def article_name(scheme: str, article: int) -> str | None:
     m = _load_article_map()
     side = m.get(scheme)
     if not side:
-        raise ValueError(f"citation.article_name: unknown scheme {scheme!r} (expected 'adopted' or 'draft')")
+        raise ValueError(
+            f"citation.article_name: unknown scheme {scheme!r} "
+            f"(rulesets/article-map.json has {sorted(k for k in m if k in SCHEME_TO_DRAFT)})"
+        )
     entry = side.get(str(article))
     return entry.get("name") if entry else None
 
@@ -348,7 +405,7 @@ def from_dimension(ruleset_key: str, district: dict[str, Any], dim: dict[str, An
     dimcit = dim.get("citation") or {}
     return Citation(
         ruleset_key=ruleset_key,
-        scheme="adopted",
+        scheme=scheme_for_ruleset(ruleset_key),
         article=dimcit.get("article", seed["article"]),
         district_key=district.get("district_key"),
         district_code=dimcit.get("district") or seed["district_code"],
@@ -364,7 +421,7 @@ def from_use_cell(ruleset_key: str, district: dict[str, Any], use: dict[str, Any
     seed = _district_citation_seed(district)
     return Citation(
         ruleset_key=ruleset_key,
-        scheme="adopted",
+        scheme=scheme_for_ruleset(ruleset_key),
         article=seed["article"],
         district_key=district.get("district_key"),
         district_code=seed["district_code"],
@@ -401,11 +458,69 @@ def indefinite_article(phrase: str) -> str:
     return "an" if word[0] in "aeiou" else "a"
 
 
+class MultipleRequiredReviews(ValueError):
+    """required_review_row() was handed a cell that requires more than one
+    permit (use-matrix schema 1.1.0; DECISIONS-NEEDED.md D-0033). Use
+    required_review_rows(), which returns every one -- taking the first would
+    silently drop a required review."""
+
+
+def cell_reviews(cell: dict[str, Any]) -> list[dict[str, Any]]:
+    """Every permit a use-matrix cell requires, as {code, permit, permit_key,
+    authority, authority_key} dicts: [] for a prohibited cell, one for an
+    ordinary cell, and more than one for a multi-status cell (schema 1.1.0).
+    Reads 1.0.0 cells (no `reviews` key) from their top-level fields."""
+    if "reviews" in cell:
+        return list(cell["reviews"])
+    if not cell.get("allowed") or not cell.get("permit"):
+        return []
+    return [{k: cell.get(k) for k in ("code", "permit", "permit_key", "authority", "authority_key")}]
+
+
+def _issued_by(permit: str, authority: str) -> str:
+    verb = "can be issued" if authority == "CEO" else "must be issued"
+    return f"{indefinite_article(permit)} {permit} which {verb} by the {authority}"
+
+
+def required_review_rows(district: dict[str, Any], use: dict[str, Any], cell: dict[str, Any]) -> list[dict[str, Any]]:
+    """One Required Review(s) row per permit the cell requires -- a prohibited
+    cell still yields exactly one row (the prohibition is a positive fact that
+    must print). A multi-status cell yields one row per permit, and every one
+    of those rows carries the SAME sentence naming all of them, so no row read
+    on its own suggests that one permit is enough (D-0033: both are required).
+    """
+    reviews = cell_reviews(cell)
+    if len(reviews) <= 1:
+        return [required_review_row(district, use, cell)]
+    ruleset_key = district.get("ruleset_key", "adopted")
+    citation = from_use_cell(ruleset_key, district, use, cell)
+    seed = _district_citation_seed(district)
+    district_label = _district_part_long(
+        replace(citation, district_code=seed["district_code"], district_name=seed["district_name"])
+    )
+    use_label = use.get("label", "")
+    art = indefinite_article(use_label).capitalize()
+    parts = [_issued_by(r["permit"], r["authority"]) for r in reviews]
+    listed = ", and ".join(parts) if len(parts) > 2 else " and ".join(parts)
+    sentence = f"{art} {use_label} use in the {district_label} District requires both {listed}."
+    if len(parts) > 2:
+        sentence = f"{art} {use_label} use in the {district_label} District requires all of: {listed}."
+    return [
+        {"permit": r["permit"], "authority": r["authority"], "sentence": sentence, "citation": citation}
+        for r in reviews
+    ]
+
+
 def required_review_row(district: dict[str, Any], use: dict[str, Any], cell: dict[str, Any]) -> dict[str, Any]:
     """Implements CONTRACT.md §5.4/§5.5 — the "Required Review(s)" row: the §4.4
     legend applied to one (district, use) cell, in the exact Buehner-style
     sentence form. Always builds the sentence here, from structured fields —
     never stores or trusts a pre-written string (§5.1)."""
+    if len(cell_reviews(cell)) > 1:
+        raise MultipleRequiredReviews(
+            f"cell {cell.get('district_key')!r}/{cell.get('use_key')!r} requires "
+            f"{cell.get('code')!r}; call required_review_rows() for every review"
+        )
     ruleset_key = district.get("ruleset_key", "adopted")
     citation = from_use_cell(ruleset_key, district, use, cell)
     seed = _district_citation_seed(district)
