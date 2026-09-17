@@ -55,3 +55,8 @@ source/exhibits/street-types/*.bak-*
 source/exhibits/street-types/*.tmp-*
 build/permit-review/data/
 build/permit-review/.venv/
+
+# Generated slide decks. The Town Meeting deck is a binary build output (built
+# from design-canvas artboards, measured geometry and pptxgenjs), not part of
+# the Code record; the handout markdown + PDF in memos/ stay tracked.
+memos/*.pptx
