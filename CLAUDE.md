@@ -163,7 +163,14 @@ local only). **Nothing here changes the ordinary draft flow** — with no adopti
   using a short adoption date so the stale line's left end stays uncovered, with meeting mode as the
   positive control. Geometry measured at 600 dpi; don't nudge `AMENDED_RECT` without re-measuring.
 
-- **▶ AFTER THE VOTE — roll the baseline over.** Once `v1.0` is adopted it becomes the *previously
+- **✅ v1.0 ADOPTED at Town Meeting, September 14, 2026 — rollover done that night.** (1) `build-adopted.sh
+  v1.0 "September 14, 2026"` → `releases/v1.0-adopted/` (117 pp / 1 blank; provenance, identity and residue
+  gates passed; cover reads AMENDED THROUGH: SEPTEMBER 14, 2026). (2) `build/adoption-map.json` rolled over:
+  baseline `v1.0`, all identity; `baseline_selfcheck.py` → 0 marked lines. The old map lives on as
+  `build/tests/fixtures/adoption-map-v0.1-baseline.json`, pinned by the baseline-redline tests via the
+  `ADOPTION_MAP` env var (test seam only). (3) Permit-review app rolled over — see
+  `build/permit-review/BUILD-STATE.md` "The v1.0 adoption rollover".
+- **▶ AFTER THE VOTE — roll the baseline over.** *(Done 2026-09-14 — kept for the next adoption.)* Once `v1.0` is adopted it becomes the *previously
   adopted* version, and `build/adoption-map.json` resets: `baseline_version` → the new adoption,
   `article_numbers` + `files` → identity, `new_at_this_adoption` + `not_text_comparable` → empty.
   **Nothing performs that edit.** `build/baseline_selfcheck.py` guards it — the invariant is that
@@ -215,7 +222,15 @@ rebuild. No code changes.
 
 ---
 
-## Current state (as of 2026-08-25)
+## Current state (as of 2026-09-14)
+
+- **CZC v1.0 was ADOPTED at the Special Town Meeting, September 14, 2026.** Adopted edition built from the
+  tag (`releases/v1.0-adopted/`, md + gitignored pdf); baseline rolled over to v1.0. Future drafts are
+  redlined against v1.0. Permit-review app: new binding ruleset `rulesets/adopted-v1.0` built from the tag
+  by `ruleset_build/build_edition.py` (current); the 2020 ruleset kept as `superseded`; per-Code article
+  schemes (`adopted` = 2020, `adopted-v1.0` = identity) instead of resetting the 2020 map; D-0033 resolved
+  by Ben (**both permits required** for D3 Retail & Service, General); D-0034 logged (v1.0 standard s reads
+  "phosphorous"). App suite 1099 passed / 0 errors; selftest 12/12; citations 157/157. Build tests 111.
 
 - **Shipped `v0.24-draft`**; the **adoption-release machinery is merged to `main`** (20 commits,
   `7a22319`) — see “Adoption release” above. The next release is the one that gets **frozen at

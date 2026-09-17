@@ -53,19 +53,26 @@ def _rolled_over_map(tmp_path, **overrides) -> str:
 
 # --- dormant until it matters ------------------------------------------------
 
+PRE_ROLLOVER_MAP = Path(__file__).resolve().parent / "fixtures" / "adoption-map-v0.1-baseline.json"
+
+
 def test_skipped_while_the_baseline_is_not_an_adoption_version():
-    """The shipped map points at v0.1-baseline, the 2020 Code in its own
+    """The pre-rollover map pointed at v0.1-baseline, the 2020 Code in its own
     formatting conventions. Normalising that legitimately changes it, so a
-    self-comparison there is meaningless -- and this must stay inert today."""
-    assert bsc.run(None) == 0
+    self-comparison there is meaningless -- the check must stay inert on it."""
+    assert bsc.run(str(PRE_ROLLOVER_MAP)) == 0
 
 
-def test_the_shipped_map_is_not_an_adoption_baseline():
-    """Pins the premise of the test above; if the shipped baseline ever becomes
-    a whole number, the check goes live and this test should be revisited."""
+def test_the_shipped_map_is_rolled_over_to_the_v1_0_adoption():
+    """v1.0 was adopted September 14, 2026 and the shipped map was reset then.
+    The check is now LIVE on the shipped map and must pass: v1.0 compared
+    against itself marks zero lines. If a future adoption rolls the baseline
+    forward again, update the expected version here with it."""
     import version_state
     amap = adoption_map.load()
-    assert not version_state.is_adoption_version(amap.baseline_version)
+    assert version_state.is_adoption_version(amap.baseline_version)
+    assert amap.baseline_version == ADOPTION_TAG
+    assert bsc.run(None) == 0
 
 
 # --- the invariant holds on a correct rollover -------------------------------

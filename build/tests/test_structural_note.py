@@ -24,6 +24,21 @@ import structural_note  # noqa: E402
 import adoption_map  # noqa: E402
 
 
+import pytest as _pytest_rollover
+
+_PRE_ROLLOVER_MAP = Path(__file__).resolve().parent / "fixtures" / "adoption-map-v0.1-baseline.json"
+
+
+@_pytest_rollover.fixture(autouse=True)
+def _pin_pre_rollover_adoption_map(monkeypatch):
+    """These tests exercise the baseline-redline machinery -- renumbering,
+    renamed article files, not-text-comparable articles -- against the
+    v0.1-baseline map it was built for. The shipped map was rolled over to
+    identity at the v1.0 adoption (September 14, 2026) and no longer exercises
+    any of that, so the pre-rollover map is pinned here as a fixture."""
+    monkeypatch.setenv("ADOPTION_MAP", str(_PRE_ROLLOVER_MAP))
+
+
 def note_text(tmp_path, **kw):
     out = tmp_path / "note.pdf"
     structural_note.build_note(str(out), **kw)

@@ -14,11 +14,18 @@ precisely the silent failure this module exists to prevent.
 from __future__ import annotations
 
 import json
+import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
 
 DEFAULT_PATH = Path(__file__).resolve().parent / "adoption-map.json"
+
+# Test seam only. The shipped map was rolled over at the v1.0 adoption, so the
+# baseline-redline machinery (renumbering, renamed files, not-text-comparable
+# articles) is no longer exercised by it. Its tests pin the pre-rollover map
+# from build/tests/fixtures/ through this variable; nothing in a build sets it.
+ENV_OVERRIDE = "ADOPTION_MAP"
 
 
 @dataclass(frozen=True)
@@ -64,7 +71,7 @@ class AdoptionMap:
 
 
 def load(path: str | Path | None = None) -> AdoptionMap:
-    doc = json.loads(Path(path or DEFAULT_PATH).read_text())
+    doc = json.loads(Path(path or os.environ.get(ENV_OVERRIDE) or DEFAULT_PATH).read_text())
     return AdoptionMap(
         baseline_version=doc["baseline_version"],
         article_numbers={int(k): int(v) for k, v in doc["article_numbers"].items()},

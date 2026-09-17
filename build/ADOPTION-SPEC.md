@@ -197,6 +197,14 @@ amendment renumbers articles again. Concretely, five fields change: `baseline_ve
 adoption, `article_numbers` and `files` to identity, and `new_at_this_adoption` and
 `not_text_comparable` emptied.
 
+**Performed September 14, 2026**, the night Town Meeting adopted v1.0: `baseline_version` is now
+`v1.0`, every map is identity, and `baseline_selfcheck.py` reports **0 marked lines** comparing v1.0
+against itself. The pre-rollover map is kept as `build/tests/fixtures/adoption-map-v0.1-baseline.json`;
+the baseline-redline tests (renumbering, renamed files, not-text-comparable articles, the 151-line
+breakdown) pin it through the `ADOPTION_MAP` environment variable — a test seam in
+`build/adoption_map.py` that no build sets — so that machinery stays covered while the shipped map
+exercises none of it.
+
 **Nothing performs that edit — it is done by hand, once, possibly years later.** So it is guarded
 instead. `build/baseline_selfcheck.py` asserts the invariant that makes the map checkable at all:
 **the baseline compared against ITSELF must mark zero lines.** `build-adoption.sh` runs it as a

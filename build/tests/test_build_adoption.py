@@ -28,6 +28,21 @@ REPO = Path(__file__).resolve().parent.parent.parent
 EXPECTED_TOTAL = 151
 
 
+import pytest as _pytest_rollover
+
+_PRE_ROLLOVER_MAP = Path(__file__).resolve().parent / "fixtures" / "adoption-map-v0.1-baseline.json"
+
+
+@_pytest_rollover.fixture(autouse=True)
+def _pin_pre_rollover_adoption_map(monkeypatch):
+    """These tests exercise the baseline-redline machinery -- renumbering,
+    renamed article files, not-text-comparable articles -- against the
+    v0.1-baseline map it was built for. The shipped map was rolled over to
+    identity at the v1.0 adoption (September 14, 2026) and no longer exercises
+    any of that, so the pre-rollover map is pinned here as a fixture."""
+    monkeypatch.setenv("ADOPTION_MAP", str(_PRE_ROLLOVER_MAP))
+
+
 def test_refuses_a_decimal_version(tmp_path):
     r = subprocess.run(["bash", "build/build-adoption.sh", "v1.1-draft", "March 15, 2027"],
                        cwd=REPO, capture_output=True, text=True)
@@ -87,11 +102,13 @@ def test_article_02_is_disclosed_not_counted():
 def test_rejects_a_mistyped_dry_run_flag(tmp_path):
     """The entire safety story of this command is 'preview before you build'.
     An unrecognised third argument must refuse loudly, not silently fall
-    through to a real build that leaves releases/v1.0/ behind."""
-    release_dir = REPO / "releases" / "v1.0"
-    assert not release_dir.exists(), "a prior test/run left releases/v1.0 behind"
+    through to a real build that leaves a release directory behind. Uses a
+    version that will never exist -- releases/v1.0 is now a real, committed
+    adoption release, so it cannot double as a scratch target."""
+    release_dir = REPO / "releases" / "v9.0"
+    assert not release_dir.exists(), "a prior test/run left releases/v9.0 behind"
     try:
-        r = subprocess.run(["bash", "build/build-adoption.sh", "v1.0", "March 15, 2027",
+        r = subprocess.run(["bash", "build/build-adoption.sh", "v9.0", "March 15, 2027",
                             "--dryrun"], cwd=REPO, capture_output=True, text=True)
         assert r.returncode != 0
         assert "unrecognised argument" in (r.stdout + r.stderr).lower()
@@ -175,13 +192,13 @@ def test_refuses_to_freeze_a_dirty_source_tree(tmp_path):
     renders from the tag. If the tree is dirty at freeze time there is no
     commit that represents what the voters were shown, so the tie cannot be
     recorded and the freeze must refuse."""
-    release_dir = REPO / "releases" / "v1.0"
-    assert not release_dir.exists(), "a prior test/run left releases/v1.0 behind"
+    release_dir = REPO / "releases" / "v9.0"
+    assert not release_dir.exists(), "a prior test/run left releases/v9.0 behind"
     stray = REPO / "source" / "ZZZ-uncommitted-test-file.md"
     assert not stray.exists()
     stray.write_text("stray\n")
     try:
-        r = subprocess.run(["bash", "build/build-adoption.sh", "v1.0", "March 15, 2027"],
+        r = subprocess.run(["bash", "build/build-adoption.sh", "v9.0", "March 15, 2027"],
                            cwd=REPO, capture_output=True, text=True)
         assert r.returncode != 0
         out = (r.stdout + r.stderr).lower()
