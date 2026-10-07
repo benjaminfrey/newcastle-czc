@@ -1,4 +1,5 @@
-# Shared artifact naming for the integrated CZC, by adoption state.
+# Shared artifact naming for the integrated CZC and its per-Article standalones,
+# by adoption state.
 #
 # THE FILENAME IS CHROME TOO. A Town Meeting edition filed as
 # "Newcastle CZC (Integrated Draft v1.0).pdf" is the file a voter downloads
@@ -24,9 +25,9 @@ czc_integrated_name() {
 
 #   czc_standalone_name <draft|meeting|adopted> <article-num> <article-name> <version> [redline]
 #
-# The per-Article extract's name. Composed inline at build-standalone.sh:83
-# until 2026-10-07 with no mode component, which left three consumers
-# disagreeing: build-adoption.sh hard-coded one article's filename, and
+# The per-Article extract's name. Composed inline at build-standalone.sh:83,
+# which this replaces; that composition had no mode component, which left three
+# consumers disagreeing: build-adoption.sh hard-coded one article's filename, and
 # test_footer_modes.py globbed "Article N *.pdf" and took whichever matched
 # first -- which matches a standalone AND its redline.
 #

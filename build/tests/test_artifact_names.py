@@ -17,8 +17,11 @@ def name(*args):
 
 
 def test_draft_name_matches_the_shipped_v1_0_standalone():
-    """The one name already published. releases/v1.0 tracks the .md, so this is
-    checkable against a real artifact rather than against a remembered format."""
+    """Pins the draft form against a real published basename (releases/v1.0 tracks
+    the .md). That file carries the draft name only because the mode component did
+    not exist when it was written: build-adoption.sh built it in meeting mode but
+    hard-codes the draft-form filename. It is a valid pin of the draft form, not
+    evidence that the pipeline names meeting-mode output this way."""
     out, rc = name("draft", "3", "Thoroughfares", "v1.0")
     assert rc == 0
     assert out == "Article 3 Thoroughfares (Standalone v1.0)"
@@ -29,7 +32,8 @@ def test_draft_name_matches_the_shipped_v1_0_standalone():
 
 
 def test_redline_form_differs_from_the_plain_form():
-    plain, _ = name("draft", "3", "Thoroughfares", "v1.1-draft")
+    plain, plain_rc = name("draft", "3", "Thoroughfares", "v1.1-draft")
+    assert plain_rc == 0
     red, rc = name("draft", "3", "Thoroughfares", "v1.1-draft", "redline")
     assert rc == 0
     assert red != plain
