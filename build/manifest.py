@@ -8,10 +8,15 @@ Subcommands (article-number is 1..9, with or without a leading zero):
   prose <NN>    print the prose markdown filename for NN ("" if no entry)
   markers <NN>  print the split markers, space-separated ("" if none)
   units <NN>    print one line per unit: typ|splice|data|conditional_on|parity|pad_to
+  data <NN>     print the article's data_sources as JSON ("[]" if none)
+  articles      print every article number the manifest knows, one per line
+  owner <path>  print the owning article number for a path under source/
+                ("shared"/"ignored" for the top-level lists); exit 1 if unclaimed
 """
 import sys
 import os
 import json
+import re
 
 MANIFEST = os.path.join(os.path.dirname(os.path.abspath(__file__)), "article-manifest.json")
 
@@ -24,12 +29,74 @@ def load():
         return {}
 
 
+PROSE_RE = re.compile(r"^article-0(\d)-[^/]*\.md$")
+
+
+def _claims(path, decl):
+    """True if a data_sources path declaration claims `path`. A declaration
+    ending in "/" claims everything beneath it."""
+    return path.startswith(decl) if decl.endswith("/") else path == decl
+
+
+def claimants(doc, path):
+    """Every owner that claims `path` (relative to source/): an article number,
+    "shared" or "ignored". A well-formed map yields exactly one; the coverage
+    test asserts that, so an overlapping declaration cannot silently resolve to
+    whichever Article happens to sort first.
+
+    Prose is claimed by the article-0N-*.md convention rather than by a
+    manifest field: build-standalone.sh already falls back to that glob, and
+    declaring prose here would change `manifest.py prose`'s output for
+    Articles 4-9.
+    """
+    found = []
+    if path in doc.get("ignored", []):
+        found.append("ignored")
+    if path in doc.get("shared", []):
+        found.append("shared")
+    m = PROSE_RE.match(path)
+    if m:
+        found.append(str(int(m.group(1))))
+    for nn in sorted((k for k in doc if k.isdigit()), key=int):
+        entry = doc[nn]
+        if (any(u.get("typ") == path for u in entry.get("units", []))
+                or any(_claims(path, d.get("path", ""))
+                       for d in entry.get("data_sources", []))):
+            found.append(nn)
+    return found
+
+
+def owner_of(doc, path):
+    """Return the owner of `path`, or None if nothing claims it."""
+    found = claimants(doc, path)
+    return found[0] if found else None
+
+
 def main():
-    if len(sys.argv) < 3:
-        sys.exit("usage: manifest.py <has|prose|markers|units> <article-number>")
+    if len(sys.argv) < 2:
+        sys.exit("usage: manifest.py <has|prose|markers|units|data> <article-number>\n"
+                 "       manifest.py articles\n"
+                 "       manifest.py owner <path-under-source>")
     cmd = sys.argv[1]
+    doc = load()
+
+    if cmd == "articles":
+        for n in sorted((k for k in doc if k.isdigit()), key=int):
+            print(n)
+        return
+    if cmd == "owner":
+        if len(sys.argv) < 3:
+            sys.exit("usage: manifest.py owner <path-under-source>")
+        who = owner_of(doc, sys.argv[2])
+        if who is None:
+            sys.exit(1)
+        print(who)
+        return
+
+    if len(sys.argv) < 3:
+        sys.exit("usage: manifest.py <has|prose|markers|units|data> <article-number>")
     nn = str(int(sys.argv[2]))            # normalize "03" -> "3"
-    entry = load().get(nn)
+    entry = doc.get(nn)
 
     if cmd == "has":
         sys.exit(0 if (entry and entry.get("units")) else 1)
@@ -47,6 +114,9 @@ def main():
                 u.get("typ", ""), u.get("splice", ""), u.get("data", ""),
                 u.get("conditional_on", ""), u.get("parity", ""), u.get("pad_to", ""),
             ]))
+        return
+    if cmd == "data":
+        print(json.dumps(entry.get("data_sources", []) if entry else [], indent=2))
         return
     sys.exit(f"unknown command: {cmd}")
 
