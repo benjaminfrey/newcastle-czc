@@ -44,6 +44,8 @@ FIG_OLD = OLD + "\n```\nfigure version one\n```\n"
 FIG_NEW = NEW + "\n```\nfigure version two\n```\n"
 
 NOTE = "<!-- unmarked: regenerated figure -->"
+VISIBLE = "*[figure regenerated \u2014 shown unmarked]*"
+SIGIL = "\u2295"
 
 
 def run_files(tmp_path, old, new, *flags):
@@ -120,14 +122,32 @@ def test_a_regenerated_figure_is_declared_unmarked(tmp_path):
     assert "#old_figure()" not in text
 
 
+def pandoc_out(text, to):
+    if shutil.which("pandoc") is None:
+        pytest.skip("pandoc not installed")
+    r = subprocess.run(["pandoc", "-f", "gfm", "-t", to], input=text,
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    return r.stdout
+
+
 def test_the_figure_note_precedes_the_new_block_and_pandoc_keeps_it_a_block(tmp_path):
     text, _ = run_files(tmp_path, FIG_OLD, FIG_NEW, "--source", "--plain")
-    assert NOTE + "\n```\nfigure version two\n```" in text
-    if shutil.which("pandoc"):
-        r = subprocess.run(["pandoc", "-f", "gfm", "-t", "native"], input=text,
-                           capture_output=True, text=True)
-        assert r.returncode == 0, r.stderr
-        assert "CodeBlock" in r.stdout and "figure version two" in r.stdout
+    # the comment stays a WHOLE LINE of its own (is_unmarkable_structure reads it),
+    # the visible companion is a separate line, and the block follows
+    assert NOTE + "\n\n" + VISIBLE + "\n\n```\nfigure version two\n```" in text
+    assert "CodeBlock" in pandoc_out(text, "native")
+
+
+def test_the_figure_disclosure_reaches_rendered_output(tmp_path):
+    """The HTML comment renders as nothing, so on its own the disclosure would be
+    the inference-from-absence it exists to prevent. The reader must SEE it."""
+    for mode in ("--source", "--full"):
+        text, _ = run_files(tmp_path, FIG_OLD, FIG_NEW, mode, "--plain")
+        seen = pandoc_out(text, "plain")       # visible text only: comments are dropped
+        assert "figure regenerated" in seen and "shown unmarked" in seen, (mode, seen)
+        assert "figure version two" in seen
+        assert "<em>" in pandoc_out(text, "html") or "_[figure" in pandoc_out(text, "gfm")
 
 
 def test_an_unchanged_figure_is_not_declared_unmarked(tmp_path):
@@ -175,3 +195,87 @@ def test_the_plain_note_survives_a_redline_of_a_redline(tmp_path):
     text, err = run_files(tmp_path, plain, plain, "--source", "--plain")
     assert "0 line(s) removed, 0 line(s) added" in err, err
     assert "~~<!--" not in text
+
+
+# --- whole-line insertions are distinguishable from the Code's own bold --------
+
+TERMS_OLD = """---
+article-number: 9
+article-name: Definitions
+---
+
+## 1. DEFINITIONS
+
+**Absolute Height:** The vertical distance.
+"""
+TERMS_NEW = TERMS_OLD + """
+**Abandoned or Vacated:** A use that has stopped.
+
+- **Added Item:** listed.
+"""
+
+
+def paragraphs(html):
+    return [re.sub(r"\s+", " ", m).strip() for m in re.findall(r"<(?:p|li)>(.*?)</(?:p|li)>", html, re.S)]
+
+
+def test_an_added_defined_term_is_distinguishable_from_an_unchanged_one_when_rendered(tmp_path):
+    """The measurement that found the collision: the Code bolds every defined
+    term, so a bold-only addition rendered like the unchanged term beside it.
+    Compare what a reader SEES, not what the markdown contains."""
+    for mode in ("--source", "--full"):
+        text, _ = run_files(tmp_path, TERMS_OLD, TERMS_NEW, mode, "--plain")
+        html = pandoc_out(text, "html")
+        paras = paragraphs(html)
+        unchanged = next(p for p in paras if "Absolute Height" in p)
+        added = next(p for p in paras if "Abandoned or Vacated" in p)
+        shape = lambda p: re.sub(r"Absolute Height|Abandoned or Vacated", "TERM", p)
+        assert shape(added) != shape(unchanged), (mode, added, unchanged)
+        visible = lambda p: re.sub(r"<[^>]+>", "", p)
+        assert visible(added).startswith(SIGIL), (mode, added)
+        assert not visible(unchanged).startswith(SIGIL)
+
+
+def test_the_sigil_marks_whole_line_additions_of_every_kind(tmp_path):
+    text, _ = run_files(tmp_path, TERMS_OLD, TERMS_NEW, "--source", "--plain")
+    assert f"- {SIGIL} **" in text, "list item addition"
+    text, _ = run_files(tmp_path, OLD, NEW.replace("| Farm stand | P | P |",
+                                                   "| Farm stand | P | P |\n| Roadside stand | P | P |"),
+                        "--source", "--plain")
+    assert f"| {SIGIL} **Roadside stand** |" in text, text
+    text, _ = run_files(tmp_path, OLD, NEW + "\n## 2. NEW SECTION\n", "--full", "--plain")
+    assert f"## {SIGIL} **2. NEW SECTION**" in text, text
+
+
+def test_inline_word_changes_keep_plain_bold_with_no_sigil(tmp_path):
+    """Word-level changes inside an otherwise unchanged line stay **bold**: that
+    case was already unambiguous and D1 settled it."""
+    text, _ = run(tmp_path, "--source", "--plain")
+    changed = next(l for l in text.splitlines() if "farm stand is permitted" in l.lower())
+    assert "**D1 and D2.**" in changed and SIGIL not in changed, changed
+
+
+LEGEND_MARK = "Redline key:"
+
+
+def test_plain_output_carries_the_convention_legend_once(tmp_path):
+    for mode in ("--source", "--full", "--digest"):
+        text, _ = run_files(tmp_path, FIG_OLD, FIG_NEW, mode, "--plain")
+        assert text.count(LEGEND_MARK) == 1, (mode, text[:300])
+        legend = next(l for l in text.splitlines() if LEGEND_MARK in l)
+        assert "**bold**" in legend and "~~struck~~" in legend and SIGIL in legend
+        seen = pandoc_out(text, "plain")
+        assert LEGEND_MARK in seen
+
+
+def test_the_legend_follows_the_frontmatter_in_source_mode(tmp_path):
+    """--source output is a document the build reads: YAML front-matter must stay first."""
+    text, _ = run(tmp_path, "--source", "--plain")
+    assert text.startswith("---\narticle-number: 7\n")
+    assert text.index(LEGEND_MARK) > text.index("article-name: Use Standards\n---")
+
+
+def test_without_the_flag_there_is_no_legend_and_no_sigil(tmp_path):
+    for mode in ("--source", "--full", "--digest"):
+        text, _ = run_files(tmp_path, FIG_OLD, FIG_NEW, mode)
+        assert LEGEND_MARK not in text and SIGIL not in text and VISIBLE not in text

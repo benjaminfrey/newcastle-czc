@@ -238,6 +238,18 @@ def wrap_red(s: str) -> str:
 # not -- releases/**/*.pdf is gitignored). Additions **bold**, deletions ~~struck~~
 # (already markdown), and no Typst anywhere in the markup. Decision D1.
 UNMARKED_FIGURE_NOTE = '<!-- unmarked: regenerated figure -->'
+# The comment renders as nothing (pandoc, GitHub), so it travels with a visible
+# line: a regenerated figure must not read as "compared and unchanged". The
+# comment stays its own whole line -- is_unmarkable_structure keys on that.
+UNMARKED_FIGURE_VISIBLE = '*[figure regenerated \u2014 shown unmarked]*'
+# Leading marker for a line added in its ENTIRETY. The Code bolds every defined
+# term (548x in Article 9), so **bold** alone cannot tell an added term from an
+# unchanged one. U+2295 renders as visible text through pandoc -f gfm, is not
+# markdown structure (unlike a bare + or >), and appears nowhere in source/.
+SIGIL = '\u2295'
+LEGEND = ('Redline key: **bold** = text added; ~~struck~~ = text deleted; '
+          f'{SIGIL} at the start of a line = the whole line is new; '
+          '"figure regenerated \u2014 shown unmarked" = a figure shown in its current form, not compared.')
 PLAIN = False
 
 
@@ -258,6 +270,14 @@ def set_plain_mode() -> None:
     global wrap_red, PLAIN
     PLAIN = True
     wrap_red = wrap_bold
+
+
+def add_legend(result: str) -> str:
+    """Put the one-line convention legend at the head of plain output -- after the
+    YAML front-matter when there is one, since --source output is a document the
+    build reads and front-matter must stay first."""
+    fm, body = split_frontmatter(result)
+    return fm + LEGEND + '\n\n' + body.lstrip('\n')
 
 
 # ---------------------------------------------------------------------------
@@ -308,7 +328,9 @@ def strike_line(ln: str) -> str:
 
 def red_line(ln: str) -> str:
     prefix, content = split_prefix(ln)
-    return ln if content.strip() == '' else prefix + wrap_red(content)
+    if content.strip() == '':
+        return ln
+    return prefix + (SIGIL + ' ' if PLAIN else '') + wrap_red(content)
 
 
 # ---------------------------------------------------------------------------
@@ -345,7 +367,10 @@ def strike_pipe(ln: str) -> str:
 def red_pipe(ln: str) -> str:
     if is_pipe_sep(ln):
         return ln
-    return join_pipe([wrap_red(c.strip()) for c in pipe_cells(ln)])
+    cells = [wrap_red(c.strip()) for c in pipe_cells(ln)]
+    if PLAIN:
+        cells[0] = (SIGIL + ' ' + cells[0]).strip()
+    return join_pipe(cells)
 
 
 def pipe_word_diff(old: str, new: str) -> str:
@@ -375,7 +400,7 @@ def emit_deleted(ln: str, reg: dict) -> str:
 def emit_inserted(ln: str, reg: dict) -> str:
     if is_block_token(ln):
         if PLAIN:
-            return UNMARKED_FIGURE_NOTE + '\n\n' + reg[ln] + '\n'
+            return UNMARKED_FIGURE_NOTE + '\n\n' + UNMARKED_FIGURE_VISIBLE + '\n\n' + reg[ln] + '\n'
         note = wrap_red('[native-Typst block added or updated — current version rendered below]')
         return note + '\n\n' + reg[ln] + '\n'
     return red_pipe(ln) if is_pipe_row(ln) else red_line(ln)
@@ -622,7 +647,7 @@ def emit_deleted_src(ln: str, reg: dict) -> str:
 def emit_inserted_src(ln: str, reg: dict) -> str:
     if is_block_token(ln):
         if PLAIN:            # a text diff cannot mark a regenerated figure: say so in the text
-            return UNMARKED_FIGURE_NOTE + '\n' + reg[ln]
+            return UNMARKED_FIGURE_NOTE + '\n\n' + UNMARKED_FIGURE_VISIBLE + '\n\n' + reg[ln]
         return reg[ln]       # NEW fenced / raw-Typst block VERBATIM, no note
     if is_heading(ln):
         return ln            # NEW heading text VERBATIM, unmarked (clean TOC)
@@ -688,6 +713,8 @@ def main():
         n_hunks = None
     else:  # default: changes-only digest
         result, n_del, n_ins, n_hunks = digest(old_text, new_text)
+    if PLAIN:
+        result = add_legend(result)
     with open(out_f, 'w', encoding='utf-8') as f:
         f.write(result)
     extra = '' if n_hunks is None else f', {n_hunks} passage(s)'
