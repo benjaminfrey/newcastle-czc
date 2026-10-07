@@ -8,10 +8,10 @@
 # reason in Task 8 (build/adopted_residue.py checks filenames, not just page
 # text); the meeting mode was left one mode short and is fixed here.
 #
-# Sourced (not executed) by build-full-czc.sh, build-redline-full.sh,
-# build-adoption.sh, build-adopted.sh and build-standalone.sh so that the producer and every
-# consumer read one definition. Pure function, no globals, no dependence on
-# the caller's cwd.
+# Sourced (not executed) by adoption-footer.sh (which both builders source),
+# build-full-czc.sh, build-redline-full.sh, build-adoption.sh, build-adopted.sh
+# and build-standalone.sh, so that the producer and every consumer read one
+# definition. Pure functions, no globals, no dependence on the caller's cwd.
 #
 #   czc_integrated_name <draft|meeting|adopted> <version>
 czc_integrated_name() {
@@ -26,8 +26,8 @@ czc_integrated_name() {
 #   czc_standalone_name <draft|meeting|adopted> <article-num> <article-name> <version> [redline]
 #
 # The per-Article extract's name. It was composed inline in build-standalone.sh;
-# that composition had no mode component, which left three
-# consumers disagreeing: build-adoption.sh hard-coded one article's filename, and
+# that composition had no mode component, which left three consumers
+# disagreeing: build-adoption.sh hard-coded one article's filename, and
 # test_footer_modes.py globbed "Article N *.pdf" and took whichever matched
 # first -- which matches a standalone AND its redline.
 #

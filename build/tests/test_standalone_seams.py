@@ -62,13 +62,13 @@ def test_out_name_override_renames_the_artifact(tmp_path):
     assert (out / "Probe Name.md").exists()
 
 
-def test_a_failed_build_leaves_no_pdf_and_no_output_dir(tmp_path):
+def test_a_failed_build_leaves_no_output_dir(tmp_path):
     """mkdir -p ran before input resolution, so a build that could not start
     still left a shipped-looking directory behind."""
     out = tmp_path / "out"
     r = run_standalone("99", TEST_VERSION, OUT_DIR=str(out))
     assert r.returncode != 0
-    assert not out.exists() or not list(out.glob("*.pdf"))
+    assert not out.exists(), "a build that could not start created its output dir"
     # Without this the assertion above is vacuous while OUT_DIR is ignored.
     assert not (REPO / "releases" / TEST_VERSION).exists(), (
         "a build that could not start left a release directory behind")
@@ -91,3 +91,30 @@ def test_a_standalone_and_its_redline_coexist_without_ambiguity(tmp_path):
     specific = [p for p in out.glob("Article 7 *.pdf") if " — Redline" not in p.name]
     assert len(specific) == 1, f"the lookup is still ambiguous: {specific}"
     assert specific[0].name == f"{stem}.pdf"
+
+
+def test_after_prose_path_honours_both_seams(tmp_path):
+    """Articles 1 and 2 splice a native unit AFTER the prose, a different
+    codepath from Article 7's single pass and Article 3's at-marker splice.
+    Article 2 is also the most parity-sensitive unit. The claim pinned here is
+    that both seams redirect content and output on that path -- deliberately not
+    a page count, which would rot."""
+    src = tmp_path / "src"
+    subprocess.run(["cp", "-R", str(REPO / "source") + "/.", str(src) + "/"],
+                   check=True)
+    marker = "ZZQQ-ART2-PROBE-ZZQQ"
+    prose = src / "article-02-prefatory.md"
+    original = prose.read_text()
+    assert "## 1. DISTRICTS" in original
+    prose.write_text(original.replace("## 1. DISTRICTS",
+                                      f"{marker}\n\n## 1. DISTRICTS", 1))
+    out = tmp_path / "out"
+    r = run_standalone("2", TEST_VERSION, SRC_DIR=str(src), OUT_DIR=str(out))
+    assert r.returncode == 0, r.stderr
+    stem = f"Article 2 District Standards (Standalone {TEST_VERSION})"
+    assert (out / f"{stem}.pdf").exists(), sorted(p.name for p in out.iterdir())
+    assert (out / f"{stem}.md").exists()
+    assert marker in "\n".join(page_texts(out / f"{stem}.pdf")), (
+        "SRC_DIR was set but the after-prose path read the real source/")
+    assert marker in (out / f"{stem}.md").read_text()
+    assert not (REPO / "releases" / TEST_VERSION).exists()

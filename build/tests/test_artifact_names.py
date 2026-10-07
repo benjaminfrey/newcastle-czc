@@ -1,7 +1,8 @@
 """Artifact naming. THE FILENAME IS CHROME TOO -- build/adoption-name.sh's own
 header says so, and build/adopted_residue.py checks filenames rather than only
-page text. The standalone name was composed inline at build-standalone.sh:83
-with no mode component, so three consumers disagreed about it."""
+page text. The standalone name was composed inline in build-standalone.sh,
+before czc_standalone_name existed, with no mode component, so three
+consumers disagreed about it."""
 import subprocess
 from pathlib import Path
 
