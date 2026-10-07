@@ -1,5 +1,6 @@
 """The freeze produces a complete Town Meeting packet, and refuses a bad version."""
 import json
+import os
 import re
 import subprocess
 import sys
@@ -45,7 +46,7 @@ def test_requires_a_meeting_date():
 
 
 def test_prints_the_substantive_change_breakdown():
-    """The 243 lines going to the voters must be reviewable BEFORE the packet
+    """The few hundred lines going to the voters must be reviewable BEFORE the packet
     exists, not discovered at the meeting (ADOPTION-SPEC.md §7)."""
     r = subprocess.run(["bash", "build/build-adoption.sh", "v1.0", "March 15, 2027",
                         "--dry-run"], cwd=REPO, capture_output=True, text=True)
@@ -185,11 +186,15 @@ def test_breakdown_accepts_a_source_directory(tmp_path):
     # tree has an article-01 too). The fixture is missing every other mapped
     # article, so the refusal must name the fixture directory, not source/.
     assert r.returncode == 1 and str(src) in r.stderr, r.stderr
+    # A bad or incomplete path is not a map error: adoption-map.json gates the
+    # freeze and must not be named as the thing to fix. (The default-tree case,
+    # where the map IS the cause, keeps 'Fix the map' -- see the two tests above.)
+    assert "fix the map" not in r.stderr.lower(), r.stderr
+    assert "incomplete" in r.stderr, r.stderr
 
 
 def test_breakdown_honours_src_dir_env_and_flag_wins(tmp_path):
     """SRC_DIR is the same seam build-full-czc.sh uses. The flag beats it."""
-    import os
     env_src, flag_src = tmp_path / "from-env", tmp_path / "from-flag"
     env_src.mkdir()
     flag_src.mkdir()

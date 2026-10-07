@@ -91,8 +91,9 @@ def test_note_names_the_document_it_compares_against(tmp_path):
 # The note replaces the blank verso between the cover and the TOC. That keeps
 # the pre-TOC page count EVEN (invariant 1: the TOC is rendered standalone and
 # its binding margins bake in at its own parity) and the front matter EVEN
-# (invariant 2: every Article opens on a recto). A note that changed either
-# would silently break chrome across the whole document.
+# (invariant 2: the body's physical parity matches its logical numbering, so
+# body page 1 is a recto; Articles are NOT padded to open on a recto, v0.19). A
+# note that changed either would silently break chrome across the whole document.
 
 # Front matter: cover, front note (the blank in an ordinary build), 2-page TOC.
 FRONT_COUNT = 4

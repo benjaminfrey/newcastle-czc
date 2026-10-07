@@ -87,8 +87,16 @@ def run(map_path: str | None = None, src_dir: str | Path | None = None) -> int:
 
         cur_path = src / cur
         if not cur_path.exists():
-            print(f"{cur}: adoption-map.json maps this file, but {src_label}/{cur} "
-                  f"does not exist in the working tree. Fix the map.", file=sys.stderr)
+            if src == DEFAULT_SRC:
+                print(f"{cur}: adoption-map.json maps this file, but {src_label}/{cur} "
+                      f"does not exist in the working tree. Fix the map.", file=sys.stderr)
+            else:
+                # Not a map problem: the map is the freeze-gating file, and it
+                # must never be the instruction for a bad or incomplete path.
+                print(f"{cur}: the source tree {src} is incomplete -- {cur} "
+                      f"(mapped by adoption-map.json) does not exist there. Check "
+                      f"the --src-dir flag or the {SRC_ENV} environment variable; "
+                      f"the map is not at fault.", file=sys.stderr)
             return 1
 
         # nz.changed_line_count, NOT a local difflib call: this number is read
