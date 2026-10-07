@@ -234,6 +234,32 @@ def wrap_red(s: str) -> str:
     return _wrap(s, lambda core: raw_typst_inline(f'{RED}[{md_inline_to_typ(core)}]'))
 
 
+# --plain: the markdown redline that survives in the repository (the PDF does
+# not -- releases/**/*.pdf is gitignored). Additions **bold**, deletions ~~struck~~
+# (already markdown), and no Typst anywhere in the markup. Decision D1.
+UNMARKED_FIGURE_NOTE = '<!-- unmarked: regenerated figure -->'
+PLAIN = False
+
+
+def wrap_bold(s: str) -> str:
+    return _wrap(s, lambda core: f'**{core}**')
+
+
+def set_plain_mode() -> None:
+    """Switch the redline markup from Typst spans to plain markdown.
+
+    strike_line/red_line and strike_pipe/red_pipe resolve ``wrap_red`` as a
+    module global at call time, so rebinding it reaches every caller without
+    threading a flag through the dispatch. Deletions already use markdown
+    ``~~`` -- only additions carried Typst. The few places that build Typst
+    directly (the native-block note, the digest's breadcrumbs/rules/summary)
+    consult ``PLAIN`` themselves.
+    """
+    global wrap_red, PLAIN
+    PLAIN = True
+    wrap_red = wrap_bold
+
+
 # ---------------------------------------------------------------------------
 # Prose lines
 # ---------------------------------------------------------------------------
@@ -348,6 +374,8 @@ def emit_deleted(ln: str, reg: dict) -> str:
 
 def emit_inserted(ln: str, reg: dict) -> str:
     if is_block_token(ln):
+        if PLAIN:
+            return UNMARKED_FIGURE_NOTE + '\n\n' + reg[ln] + '\n'
         note = wrap_red('[native-Typst block added or updated — current version rendered below]')
         return note + '\n\n' + reg[ln] + '\n'
     return red_pipe(ln) if is_pipe_row(ln) else red_line(ln)
@@ -430,10 +458,14 @@ def breadcrumb_at(headings, j):
 
 def crumb_line(crumb) -> str:
     text = ' › '.join(crumb) if crumb else '(document start)'
+    if PLAIN:
+        return f'**{text}**'
     return raw_typst_para(f'#text(fill: rgb("{BLUE}"), weight: "bold", size: 11pt)[{typ_lit(text)}]')
 
 
 def rule_line() -> str:
+    if PLAIN:
+        return '---'
     return raw_typst_para(f'#line(length: 100%, stroke: 0.5pt + rgb("{HAIR}"))')
 
 
@@ -441,6 +473,8 @@ def context_line(ln: str, reg: dict) -> str:
     """Unchanged orientation line. Whole native-Typst blocks are collapsed to a
     one-line placeholder so a digest hunk doesn't dump an entire table."""
     if is_block_token(ln):
+        if PLAIN:
+            return '*[unchanged table/figure omitted]*'
         return raw_typst_para(f'#text(fill: rgb("{GRAY}"), style: "italic")[\\[unchanged table/figure omitted\\]]')
     return ln
 
@@ -503,10 +537,14 @@ def digest(old_text: str, new_text: str, context: int = 2):
                     out.extend(emit_deleted(ln, reg) for ln in ol)
                     out.extend(emit_inserted(ln, reg) for ln in nl)
         n_hunks += 1
+    no_change = 'No textual changes between the two versions. (Layout, native tables, and images are not compared.)'
+    passages = f'{n_hunks} changed passage(s) shown below, each under its Section location. Unchanged text is omitted.'
     if n_hunks == 0:
-        body = raw_typst_para(f'#text(fill: rgb("{GRAY}"), style: "italic")[No textual changes between the two versions. (Layout, native tables, and images are not compared.)]')
+        body = (f'*{no_change}*' if PLAIN else
+                raw_typst_para(f'#text(fill: rgb("{GRAY}"), style: "italic")[{no_change}]'))
     else:
-        summary = raw_typst_para(f'#text(style: "italic")[{n_hunks} changed passage(s) shown below, each under its Section location. Unchanged text is omitted.]')
+        summary = (f'*{passages}*' if PLAIN else
+                   raw_typst_para(f'#text(style: "italic")[{passages}]'))
         body = summary + '\n' + '\n'.join(out)
     return body, n_del, n_ins, n_hunks
 
@@ -583,6 +621,8 @@ def emit_deleted_src(ln: str, reg: dict) -> str:
 
 def emit_inserted_src(ln: str, reg: dict) -> str:
     if is_block_token(ln):
+        if PLAIN:            # a text diff cannot mark a regenerated figure: say so in the text
+            return UNMARKED_FIGURE_NOTE + '\n' + reg[ln]
         return reg[ln]       # NEW fenced / raw-Typst block VERBATIM, no note
     if is_heading(ln):
         return ln            # NEW heading text VERBATIM, unmarked (clean TOC)
@@ -632,8 +672,10 @@ def main():
     args = [a for a in sys.argv[1:] if not a.startswith('--')]
     flags = {a for a in sys.argv[1:] if a.startswith('--')}
     if len(args) != 3:
-        sys.exit('usage: redline-text.py <old.md> <new.md> <out.md> [--digest|--full|--source]')
+        sys.exit('usage: redline-text.py <old.md> <new.md> <out.md> [--digest|--full|--source] [--plain]')
     old_f, new_f, out_f = args
+    if '--plain' in flags:
+        set_plain_mode()
     with open(old_f, encoding='utf-8') as f:
         old_text = f.read()
     with open(new_f, encoding='utf-8') as f:
