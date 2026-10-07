@@ -146,6 +146,13 @@ def step_parse_draft(ruleset_key: str = "draft-v0.22") -> None:
 
 
 def step_extract_adopted() -> None:
+    # The 2020 Code was superseded by CZC v1.0 on 2026-09-14. Both writes below
+    # rebuild its content from the CURRENT working tree, which that Code never
+    # contained; nine decided cases and 157 verified citations rest on the record
+    # they would overwrite. Refuse here, before the extraction runs.
+    from ruleset_build.supersession import refuse_if_superseded
+
+    refuse_if_superseded("adopted", writing="articles.json and use-matrix.json")
     print("[2/6] extracting the ADOPTED Code from docs/Newcastle Core Zoning Code.pdf ...")
     rc = _extract_adopted.main([])
     if rc != 0:

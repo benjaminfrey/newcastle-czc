@@ -573,6 +573,11 @@ def _atomic_write_json(target: Path, obj: dict) -> None:
 def build(*, write: bool = True) -> dict:
     from datetime import datetime, timezone
 
+    if write:
+        from ruleset_build.supersession import refuse_if_superseded_path
+
+        refuse_if_superseded_path(OUT_PATH)
+
     standards = extract_standards()
     rules = build_rule_rows(standards)
     criteria_set = build_criteria_set()

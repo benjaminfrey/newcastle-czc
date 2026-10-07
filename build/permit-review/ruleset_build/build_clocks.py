@@ -1228,6 +1228,11 @@ def build_clocks(*, adopted_dir: str = "adopted", draft_dir: str = "draft-v0.22"
     (`_assert_track_coverage`), both run after per-clock validation so a
     citation/text mismatch is reported before either coverage gap.
     """
+    from ruleset_build.supersession import refuse_if_superseded
+
+    refuse_if_superseded(adopted_dir, writing="clocks.json")
+    refuse_if_superseded(draft_dir, writing="clocks.json")
+
     _validate(CLOCKS_ADOPTED)
     coverage = _assert_coverage(CLOCKS_ADOPTED)
     track_coverage = _assert_track_coverage(CLOCKS_ADOPTED)

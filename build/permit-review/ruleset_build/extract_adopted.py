@@ -1177,6 +1177,11 @@ def main(argv=None) -> int:
                      help="print the coverage/attribution report; does not write output")
     args = ap.parse_args(argv)
 
+    from ruleset_build.supersession import refuse_if_superseded_path
+
+    if not args.verify:
+        refuse_if_superseded_path(args.out)
+
     doc, stats = build_document(args.pdf)
     counts = doc["counts"]
 
