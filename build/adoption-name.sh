@@ -21,3 +21,30 @@ czc_integrated_name() {
     *) echo "czc_integrated_name: unknown adoption mode '$1'" >&2; return 1 ;;
   esac
 }
+
+#   czc_standalone_name <draft|meeting|adopted> <article-num> <article-name> <version> [redline]
+#
+# The per-Article extract's name. Composed inline at build-standalone.sh:83
+# until 2026-10-07 with no mode component, which left three consumers
+# disagreeing: build-adoption.sh hard-coded one article's filename, and
+# test_footer_modes.py globbed "Article N *.pdf" and took whichever matched
+# first -- which matches a standalone AND its redline.
+#
+# Any non-empty fifth argument selects the redline form. Standalones do not
+# ship with an adoption release (decision D5), but build-adoption.sh builds one
+# today, so all three modes are defined.
+czc_standalone_name() {
+  local mode="$1" anum="$2" aname="$3" version="$4" redline="${5:-}"
+  local stem
+  case "$mode" in
+    draft)   stem="Article $anum $aname (Standalone $version)" ;;
+    meeting) stem="Article $anum $aname (Standalone Town Meeting Edition $version)" ;;
+    adopted) stem="Article $anum $aname (Standalone Adopted $version)" ;;
+    *) echo "czc_standalone_name: unknown adoption mode '$mode'" >&2; return 1 ;;
+  esac
+  if [ -n "$redline" ]; then
+    printf '%s — Redline' "$stem"
+  else
+    printf '%s' "$stem"
+  fi
+}
