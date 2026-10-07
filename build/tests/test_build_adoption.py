@@ -154,6 +154,41 @@ def test_missing_current_file_fails_loudly(tmp_path):
     assert "fix the map" in r.stderr.lower()
 
 
+def test_breakdown_accepts_a_source_directory(tmp_path):
+    """The breakdown must be runnable against a fixture tree, or every test of
+    it is pinned to whatever is in source/ today."""
+    src = tmp_path / "source"
+    src.mkdir()
+    (src / "article-01-general.md").write_text(
+        '---\narticle-number: "1"\narticle-name: "General Standards"\n---\n\n'
+        '# Article 1 General Standards\n\n## 1. CORE ZONING CODE\n')
+    r = subprocess.run(
+        [sys.executable, "build/adoption_breakdown.py", "--src-dir", str(src)],
+        cwd=REPO, capture_output=True, text=True)
+    assert r.returncode in (0, 1), r.stderr
+    assert "article-01-general.md" in r.stdout, r.stdout
+    # The listing alone cannot tell a read seam from an ignored flag (the live
+    # tree has an article-01 too). The fixture is missing every other mapped
+    # article, so the refusal must name the fixture directory, not source/.
+    assert r.returncode == 1 and str(src) in r.stderr, r.stderr
+
+
+def test_breakdown_honours_src_dir_env_and_flag_wins(tmp_path):
+    """SRC_DIR is the same seam build-full-czc.sh uses. The flag beats it."""
+    import os
+    env_src, flag_src = tmp_path / "from-env", tmp_path / "from-flag"
+    env_src.mkdir()
+    flag_src.mkdir()
+    env = {**os.environ, "SRC_DIR": str(env_src)}
+    cmd = [sys.executable, "build/adoption_breakdown.py"]
+    r = subprocess.run(cmd, cwd=REPO, env=env, capture_output=True, text=True)
+    assert r.returncode == 1 and str(env_src) in r.stderr, r.stderr
+    r = subprocess.run(cmd + ["--src-dir", str(flag_src)], cwd=REPO, env=env,
+                       capture_output=True, text=True)
+    assert r.returncode == 1 and str(flag_src) in r.stderr, r.stderr
+    assert str(env_src) not in r.stderr, r.stderr
+
+
 # --- The freeze date and the meeting date are DIFFERENT facts ----------------
 # Cover line 2 says "for adoption at Town Meeting, <meeting-date>"; line 3 says
 # "Frozen <date>". build-adoption.sh passed the MEETING date for both, so the
