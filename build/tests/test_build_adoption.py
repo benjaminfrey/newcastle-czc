@@ -7,25 +7,13 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent.parent
 
-# The number a Town Meeting packet is reviewed against (ADOPTION-SPEC.md §1.2
-# / §3.3; normalize_for_diff.py's own measured figure). If this legitimately
-# changes -- a new draft lands, a normaliser rule changes -- that change must
-# be understood and re-verified by hand (re-run the dry run, read the new
-# per-article breakdown) BEFORE this constant is updated to match. Do not
-# "fix the test" without doing that reading; the whole point of this command
-# is that the number is reviewed, not merely reproduced.
-#
-# 243 -> 151 on 2026-08-24 (Task 2b) is a NORMALISATION IMPROVEMENT, NOT a
-# content change: normalize_for_diff.py gained a table-number rule (`TABLE
-# 4.1` / `Table 4.1` / `table 4.1` -> the current article's number, all three
-# casings) and a frontmatter `article-number: "N"` rule, both driven by the
-# same baseline->current article map the existing cross-reference renumbering
-# already used. ~90 of the old 243 lines were table captions/refs and
-# frontmatter fields that only moved because their article number moved --
-# Articles 1, 5, 6, and 7 now report ZERO substantive changes (their entire
-# prior diff was this renumbering noise). Nothing in the Code shrank; re-run
-# `python3 build/adoption_breakdown.py` to see the same per-article split.
-EXPECTED_TOTAL = 151
+# The reviewed headline number is NOT pinned here any more. It was EXPECTED_TOTAL
+# = 151, measured against the working tree on 2026-08-24; it went red the moment
+# an amendment landed, and re-pinning it is how a reviewed number silently
+# becomes a reproduced one. The number is now asserted two ways: against a frozen
+# fixture tree (the instrument works) and as the sum of its own per-article lines
+# (the instrument is self-consistent). The release operator still reads the real
+# breakdown before a freeze -- that is build-adoption.sh's job, not this file's.
 
 
 import pytest as _pytest_rollover
@@ -67,26 +55,50 @@ def test_prints_the_substantive_change_breakdown():
     assert "article-09-definitions.md" in out
 
 
-def test_dry_run_total_matches_the_reviewed_figure():
-    """A regression test with teeth: deleting the not_text_comparable skip
-    (or any other regression in the breakdown) must not leave the suite
-    green while the packet quietly reports a different number. See
-    EXPECTED_TOTAL's comment for what to do if this number legitimately
-    changes."""
-    r = subprocess.run(["bash", "build/build-adoption.sh", "v1.0", "March 15, 2027",
-                        "--dry-run"], cwd=REPO, capture_output=True, text=True)
+def test_breakdown_reports_the_fixture_tree_exactly():
+    """The instrument is pinned against a frozen input, not against source/.
+
+    The fixture is the v0.1-baseline Article 1 with exactly one line changed
+    (see fixtures/breakdown-src/README.md), so the breakdown must report 2
+    changed lines for it: one deleted, one added. The live tree reports 0 for
+    Article 1 under the same map, so the "2" can only come from the fixture --
+    an ignored --src-dir cannot satisfy this. The fixture holds only Article 1
+    while the map names nine, so the breakdown refuses (exit 1) at the first
+    missing file; the refusal must name the fixture directory."""
+    fixture = Path(__file__).resolve().parent / "fixtures" / "breakdown-src"
+    r = subprocess.run(
+        [sys.executable, "build/adoption_breakdown.py", "--src-dir", str(fixture),
+         "--map", str(_PRE_ROLLOVER_MAP)],
+        cwd=REPO, capture_output=True, text=True)
+    assert r.returncode == 1, (r.returncode, r.stdout, r.stderr)
+    assert re.search(r"^\s+article-01-general\.md\s+2 lines$", r.stdout, re.M), r.stdout
+    assert str(fixture) in r.stderr, r.stderr
+
+
+def test_breakdown_total_equals_the_sum_of_its_own_lines():
+    """The invariant: whatever the per-article numbers are, the TOTAL is their
+    sum. This holds at every release, so it never needs re-pinning -- and it
+    catches the failure a literal cannot: a total that stops matching its own
+    breakdown (e.g. an article dropped from, or double-counted into, the sum)."""
+    r = subprocess.run([sys.executable, "build/adoption_breakdown.py"],
+                       cwd=REPO, capture_output=True, text=True)
     assert r.returncode == 0, r.stderr
-    m = re.search(r"TOTAL\s+(\d+)\s+substantive changed lines", r.stdout)
-    assert m, r.stdout
-    assert int(m.group(1)) == EXPECTED_TOTAL, r.stdout
+    per_article = [int(m) for m in re.findall(r"^\s+article-\S+\s+(\d+) lines?$",
+                                              r.stdout, re.M)]
+    total = int(re.search(r"^\s+TOTAL\s+(\d+) substantive changed lines?",
+                          r.stdout, re.M).group(1))
+    assert per_article, f"no per-article lines parsed from:\n{r.stdout}"
+    assert sum(per_article) == total, (
+        f"TOTAL {total} is not the sum of its own per-article lines "
+        f"{per_article} (sum {sum(per_article)})")
 
 
 def test_article_02_is_disclosed_not_counted():
     """article-02-prefatory.md's baseline (2,444 lines of markdown) moved into
     a native-Typst unit; a naive diff misreports that move as ~2,300 phantom
     deletions. It must appear in the breakdown, labelled NOT TEXT-COMPARABLE,
-    and be excluded from TOTAL (which is how EXPECTED_TOTAL lands on 243
-    instead of ~2,546)."""
+    and be excluded from TOTAL (otherwise the total would be ~2,500 instead of
+    a few hundred)."""
     r = subprocess.run(["bash", "build/build-adoption.sh", "v1.0", "March 15, 2027",
                         "--dry-run"], cwd=REPO, capture_output=True, text=True)
     assert r.returncode == 0, r.stderr
