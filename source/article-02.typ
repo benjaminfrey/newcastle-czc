@@ -88,11 +88,6 @@
 #let HEAD_INNER = 145pt
 
 #set page(header: context {
-  // Physical page 1 is always the leading parity-blank inserted by the
-  // `pagebreak(to:"even")` at the start of the render (it lands D1 on a verso).
-  // Keep that page a TRUE blank — no header/footer/tab — so it reads as a clean
-  // section break, not a chrome-bearing empty page.
-  if here().page() == 1 { return [] }
   let pn = here().page() + page_offset
   let grp = group_state.get()
   // MEASURED: outer label 11pt bold #7C766F; inner label 10pt bold #7C766F
@@ -116,7 +111,6 @@
 
 // ---- Footer (parity-aware, continuous page numbers) -------------------------
 #set page(footer: context {
-  if here().page() == 1 { return [] }   // leading parity-blank: no footer
   set text(size: 10pt, weight: "bold", stretch: 75%, fill: body_dark)
   let pn = here().page() + page_offset
   let wordmark = text(fill: article_blue)[Newcastle Core Zoning Code]
@@ -140,7 +134,6 @@
       text(fill: white, weight: "bold", stretch: 75%, size: 14pt, tracking: 0.5pt)[ARTICLE 2])))
 
 #set page(background: context {
-  if here().page() == 1 { return [] }   // leading parity-blank: no article tab
   let pn = here().page() + page_offset
   if calc.even(pn) { place(top + left, dy: 139.5pt, article_tab_box) }
   else { place(top + right, dy: 139.5pt, article_tab_box) }
