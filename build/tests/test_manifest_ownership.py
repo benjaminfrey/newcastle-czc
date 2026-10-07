@@ -76,9 +76,12 @@ def test_data_is_json_and_declares_a_compare_mode():
     assert rc == 0
     entries = json.loads(out)
     assert entries, "Article 3 has data sources"
+    required = {"json-keyed": {"key"}, "generated-from": {"from"}, "binary-hash": set()}
     for e in entries:
         assert set(e) >= {"path", "compare"}
-        assert e["compare"] in ("json-keyed", "binary-hash", "generated-from")
+        assert e["compare"] in required
+        missing = required[e["compare"]] - set(e)
+        assert not missing, f"{e['path']} ({e['compare']}) lacks {sorted(missing)}"
     paths = [e["path"] for e in entries]
     assert "exhibits/street-types/inventory.json" in paths
     assert "exhibits/cross-sections/types.json" in paths
@@ -114,6 +117,24 @@ def test_owner_refuses_an_unclaimed_path():
     out, rc = run("owner", "no-such-file.json")
     assert rc == 1
     assert out.strip() == ""
+
+
+def test_the_shared_and_ignored_lists_are_terminal():
+    """A path named in `shared` or `ignored` has exactly that one claimant even
+    when it also falls under a data_sources "/" prefix. Without this the first
+    maintainer to list a file inside sprites/ gets two claimants and a failing
+    exactly-once test. `shared` is [] today, so nothing else exercises it."""
+    m = _manifest_module()
+    doc = m.load()
+    inside = "exhibits/cross-sections/sprites/trees/tree.svg"
+    assert m.claimants(doc, inside) == ["3"]          # the prefix rule claims it
+    assert m.claimants(dict(doc, shared=[inside]), inside) == ["shared"]
+    assert m.owner_of(dict(doc, shared=[inside]), inside) == "shared"
+    assert m.claimants(dict(doc, ignored=[inside]), inside) == ["ignored"]
+    # and the real ruling: the sprites license notice is not Article 3 content
+    notice = "exhibits/cross-sections/sprites/NOTICE.md"
+    assert m.claimants(doc, notice) == ["ignored"]
+    assert run("owner", notice)[0].strip() == "ignored"
 
 
 def test_every_tracked_source_file_is_claimed_exactly_once():

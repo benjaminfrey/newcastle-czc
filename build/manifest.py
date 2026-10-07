@@ -40,7 +40,8 @@ def _claims(path, decl):
 
 def claimants(doc, path):
     """Every owner that claims `path` (relative to source/): an article number,
-    "shared" or "ignored". A well-formed map yields exactly one; the coverage
+    "shared" or "ignored" (both terminal -- see below). A well-formed map yields
+    exactly one; the coverage
     test asserts that, so an overlapping declaration cannot silently resolve to
     whichever Article happens to sort first.
 
@@ -49,11 +50,14 @@ def claimants(doc, path):
     declaring prose here would change `manifest.py prose`'s output for
     Articles 4-9.
     """
-    found = []
+    # The two top-level lists are TERMINAL: a path named in one has exactly that
+    # claimant even if it also falls under a data_sources "/" prefix. That is
+    # how a file inside a claimed directory (e.g. sprites/NOTICE.md) is carved out.
     if path in doc.get("ignored", []):
-        found.append("ignored")
+        return ["ignored"]
     if path in doc.get("shared", []):
-        found.append("shared")
+        return ["shared"]
+    found = []
     m = PROSE_RE.match(path)
     if m:
         found.append(str(int(m.group(1))))
