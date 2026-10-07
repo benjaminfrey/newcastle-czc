@@ -39,7 +39,6 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-REDLINE_PY="$REPO_ROOT/build/redline-text.py"
 SRC="$REPO_ROOT/source"
 
 NEW_V="${1:-}"
@@ -62,11 +61,11 @@ fi
 echo "Formatted redline:  NEW = working tree (labeled $NEW_V)   vs   OLD = $OLD_V"
 
 # 1. Stage the NEW source (working tree). The native .typ/json/svg are copied
-#    verbatim, so every figure renders at its CURRENT state.
+#    verbatim, so every figure renders at its CURRENT state. (The copy itself
+#    is the first thing czc_redline_stage, below, does.)
 STAGE="$(mktemp -d)"
 OUTDIR="$(mktemp -d)"
 trap 'rm -rf "$STAGE" "$OUTDIR"' EXIT
-cp -R "$SRC/." "$STAGE/"
 
 # 2. Rewrite each article markdown in place: OLD = that file at <old-ver>, NEW
 #    = the staged working-tree file. --source preserves frontmatter + split
@@ -97,41 +96,18 @@ cp -R "$SRC/." "$STAGE/"
 #    of this loop normalised the new side too "for equal terms" -- that
 #    silently flattened indented sub-clauses into run-on prose. Fixed
 #    2026-08-24 after review; see normalize_for_diff.py.)
-OLDTMP="$OUTDIR/old.md"
+source "$REPO_ROOT/build/redline-stage.sh"
 BASELINE_FLAG=""
 if [ "${ADOPTION_BASELINE:-0}" = "1" ]; then BASELINE_FLAG="--baseline"; fi
-
-shopt -s nullglob
-n=0
-for nf in "$STAGE"/article-*.md; do
-  base="$(basename "$nf")"
-  # Every branch of the case below must (re)create OLDTMP. Removing it first
-  # means a branch that fails to do so is caught by the existence check right
-  # after the case, rather than silently reusing the previous article's old
-  # side (OLDTMP is one file, reused every iteration).
-  rm -f "$OLDTMP"
-  set +e
-  python3 "$REPO_ROOT/build/redline_resolve.py" "$base" "$OLD_V" "$OLDTMP" $BASELINE_FLAG
-  rc=$?
-  set -e
-  case "$rc" in
-    0) ;;
-    3) : > "$OLDTMP"   # new since OLD: empty OLD -> whole body marked added
-       echo "  ($base is new since $OLD_V — whole body marked as added)" ;;
-    4) cp "$nf" "$OLDTMP"   # not text-comparable: force old == new -> unmarked
-       echo "  ($base is not text-comparable against $OLD_V — rendered unmarked)" ;;
-    *) echo "redline: could not resolve the old side for $base (exit $rc)." >&2
-       exit 1 ;;
-  esac
-  if [ ! -e "$OLDTMP" ]; then
-    echo "redline: internal error — no old side was produced for $base (exit $rc)." >&2
-    exit 1
-  fi
-  python3 "$REDLINE_PY" "$OLDTMP" "$nf" "$nf" --source
-  n=$((n + 1))
-done
-rm -f "$OLDTMP"
-echo "Marked $n article markdown file(s) (vs $OLD_V)."
+# The fifth argument is the plain flag, and it is EMPTY HERE ON PURPOSE. --plain
+# writes a "Redline key:" legend at the head of every marked article and a sigil
+# on whole-line insertions, over the staged file -- and the staged file is what
+# build-full-czc.sh typesets below. Passing it would put nine legends and every
+# sigil into the PDF, silently (pandoc renders them cleanly, nothing in the
+# chrome or residue checks matches them). The .md deliverable is produced by
+# the release driver, from its own stage. czc_redline_stage labels a plain
+# stage and the builders refuse it, so this is guarded as well as commented.
+czc_redline_stage "$SRC" "$STAGE" "$OLD_V" "$BASELINE_FLAG" ""
 
 # 3. Build the integrated draft against the staged (marked) source. SRC_DIR
 #    redirects the build's content; OUT_DIR keeps its output out of releases/;

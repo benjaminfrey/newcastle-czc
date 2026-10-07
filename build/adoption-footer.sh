@@ -42,3 +42,16 @@ fi
 
 # Shared artifact naming, so the mode and the filename can never disagree.
 source "$REPO_ROOT/build/adoption-name.sh"
+
+# PLAIN-MARKED SOURCE MUST NEVER BE TYPESET. czc_redline_stage
+# (build/redline-stage.sh) labels any stage it marked with --plain, whose
+# legend line and whole-line sigils belong in a published .md and nowhere else.
+# Nothing downstream would catch them: pandoc renders them cleanly and they are
+# not chrome strings for the residue gate. Both builders source this file after
+# setting SOURCE_DIR, so the refusal lives here, once. The label's name is
+# CZC_PLAIN_MARK_FILE in redline-stage.sh; test_redline_stage.py ties the two.
+if [ -e "${SOURCE_DIR:-/nonexistent}/.redline-plain-marked" ]; then
+  echo "refusing to build: $SOURCE_DIR holds plain-marked redline source (redline-text.py --plain)." >&2
+  echo "Its legend line and whole-line sigils would be typeset into the document. Stage without --plain for a PDF." >&2
+  exit 1
+fi
