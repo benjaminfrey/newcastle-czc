@@ -18,16 +18,16 @@
 //   (article-02.typ) and the Article-3 Type plates (cross-section-plates.typ),
 //   so a map reads as a torn-out page of the same code.
 //
-// Render the three exhibits standalone (1.1 lands on a recto via even offset):
+// Render the three exhibits standalone (debug convenience; offset 2 shown):
 //   typst compile source/district-maps.typ /tmp/maps.pdf \
 //     --root . --font-path style/fonts --input page_offset=2
 //
-// Build integration passes the cumulative page-offset + footer date. PARITY
-// INVARIANT identical to article-02.typ / cross-section-plates.typ: chrome keys
-// off logical page = here().page() + page_offset; keep page_offset EVEN so each
-// exhibit's parity (verso/recto) matches its eventual position in the document.
-// At offset 2 the three pages land recto / verso / recto — the baseline's own
-// 1.1 / 1.2 / 1.4 sequence.
+// Build integration passes the running page-offset + footer date. Chrome keys off
+// logical page = here().page() + page_offset; margins are resolved by Typst from
+// this unit's own physical page index. This unit has no leading blank and no
+// pagebreak(to:...). PARITY QUESTION IS OPEN AND UNVERIFIED for this unit; see the
+// PARITY block in source/article-02.typ. (At offset 2 the three pages' chrome is
+// recto / verso / recto — the baseline's own 1.1 / 1.2 / 1.4 sequence.)
 // =============================================================================
 
 #let page_offset = int(sys.inputs.at("page_offset", default: "2"))

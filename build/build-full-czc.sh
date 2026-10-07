@@ -85,8 +85,9 @@ trap 'rm -rf "$TMPDIR_PDFS"' EXIT
 # place. The render loop's *.typ branch threads the same running page-offset +
 # footer date, so the maps' parity-aware chrome (ARTICLE 1 tab, GENERAL STANDARDS
 # running head, continuous footer) follows the true running page number. The
-# loop adds no pad after the maps (the only blank pages it inserts are the one
-# before article-02.typ, below, and the front-matter blanks).
+# loop adds no pad after the maps (the only blank page the render loop itself
+# inserts is the one before article-02.typ, below; the front-matter blanks are
+# added after the loop).
 MAPS_TYP="$SOURCE_DIR/district-maps.typ"
 if [ -f "$MAPS_TYP" ]; then
   SPLICED=()
@@ -133,8 +134,10 @@ if [ -f "$PLATES_TYP" ] && [ -n "$ART3_SRC" ]; then
     # + 03c (§5.D..§14). 03c is ALWAYS spliced back so the body is never dropped;
     # the Exhibit 3.1 Inventory table + Exhibit 3.2 Type Map are inserted in front
     # of it ONLY when the real inventory.json exists (so a draft never appears until
-    # promoted). Render order: [03a, plates, 03b, (inventory, map,) 03c]. The table
-    # is even-paged; the 1-page map self-pads to keep §5.D verso/recto parity.
+    # promoted). Render order: [03a, plates, 03b, (inventory, map,) 03c]. The table's
+    # page count is data-driven and neither exhibit pads: neither source file
+    # contains a pagebreak or a blank, and nothing here enforces an even count.
+    # UNVERIFIED: whether §5.D opens on a verso or a recto in the built document.
     MID=("$PLATES_TYP" "$SPLIT_03B")
     if [ -s "$CAND_03C" ]; then
       SPLIT_03C="$CAND_03C"
@@ -282,8 +285,9 @@ pdfunite "${PDF_LIST[@]}" "$BODY_PDF"
 #       in at compile time keyed to its own physical page parity). For that to
 #       match the final document, the number of pages BEFORE the TOC must be
 #       EVEN. Cover(1) + one blank(1) = 2  ->  TOC opens on a recto, correct.
-#   (2) Total front matter must be EVEN so the body's physical parity (every
-#       Article opens recto) is preserved. cover+blank+TOC(+pad) is forced even
+#   (2) Total front matter must be EVEN so the body's physical page parity
+#       matches its logical numbering (body page 1 is a recto; Articles are NOT
+#       padded to open on a recto, v0.19). cover+blank+TOC(+pad) is forced even
 #       by padding a trailing blank when the TOC page count T is odd.
 # Layout: [cover] [blank verso] [TOC ...] [blank if T odd] [body 1..N]
 COVER_PDF="$TMPDIR_PDFS/cover.pdf"

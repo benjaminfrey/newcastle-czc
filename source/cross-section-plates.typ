@@ -16,14 +16,16 @@
 // Shares ALL visual tokens + page geometry + parity-aware chrome with
 // source/article-02.typ so a plate reads as a torn-out page of the same code.
 //
-// Render the S1 slice standalone (lands on a verso page via even offset):
+// Render the S1 slice standalone (debug convenience; offset 30 shown):
 //   typst compile source/cross-section-plates.typ /tmp/plates/s1.pdf \
 //     --root . --font-path style/fonts --input only=S1 --input page_offset=30
 //
-// Build integration passes the cumulative page-offset + footer date and the
-// ordered subset to emit. PARITY INVARIANT identical to article-02.typ: chrome
-// keys off logical page = here().page() + page_offset; keep page_offset EVEN so
-// a plate's parity (verso/recto) matches its eventual position in the document.
+// Build integration passes the running page-offset + footer date and the
+// ordered subset to emit. Chrome keys off logical page = here().page() +
+// page_offset; margins are resolved by Typst from this unit's own physical page
+// index. This unit has no leading blank and no pagebreak(to:...). PARITY QUESTION
+// IS OPEN AND UNVERIFIED for this unit; see the PARITY block in
+// source/article-02.typ.
 // =============================================================================
 
 #let page_offset = int(sys.inputs.at("page_offset", default: "30"))

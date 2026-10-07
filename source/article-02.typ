@@ -363,8 +363,9 @@
 // =============================================================================
 // RENDER
 // =============================================================================
-// The FIRST district's standards page must land on a verso (even DISPLAYED page)
-// so its badge sits at the LEFT fore-edge (see PARITY INVARIANT above). D1 is this
+// The FIRST district's standards page is meant to land on a verso (even DISPLAYED
+// page), so its CHROME is verso chrome (see the PARITY block in the header — the
+// badge's actual x position is not settled there). D1 is this
 // unit's first page; the integrated build pads to an ODD running page-offset before
 // this unit, so D1 renders at an even displayed page (offset+1) with NO leading
 // blank. (A previous `#pagebreak(to:"even")` here, combined with the build's even
