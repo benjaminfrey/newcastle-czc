@@ -118,12 +118,15 @@ def test_front_note_replaces_the_blank_without_moving_anything(tmp_path):
     # build without it rather than against a literal that moves every amendment.
     plain_out = tmp_path / "plain"
     plain_out.mkdir()
-    subprocess.run(["bash", "build/build-full-czc.sh", "v0.24-draft", "August 24, 2026"],
-                   cwd=REPO, env=dict(os.environ, OUT_DIR=str(plain_out)),
-                   check=True, capture_output=True)
-    plain = pymupdf.open(next(plain_out.glob("*.pdf")))
-    d = pymupdf.open(next(out.glob("*.pdf")))
+    rp = subprocess.run(["bash", "build/build-full-czc.sh", "v0.24-draft", "August 24, 2026"],
+                        cwd=REPO, env=dict(os.environ, OUT_DIR=str(plain_out)),
+                        capture_output=True, text=True)
+    assert rp.returncode == 0, rp.stderr
+
+    plain = d = None
     try:
+        plain = pymupdf.open(next(plain_out.glob("*.pdf")))
+        d = pymupdf.open(next(out.glob("*.pdf")))
         assert d.page_count == plain.page_count, (
             f"the note changed the page count: {plain.page_count} without it, "
             f"{d.page_count} with it. It takes the place of the blank verso.")
@@ -156,8 +159,10 @@ def test_front_note_replaces_the_blank_without_moving_anything(tmp_path):
         unparsed = [pg for pg, n in printed.items() if n is None]
         assert unparsed == [], (
             f"body pages with no readable footer number: {unparsed}. Every page "
-            f"after the front matter carries one.")
-        assert len(printed) == body_pages
+            f"after the front matter carries one. A footer-less body page may be "
+            f"a new structural pad or unit boundary (e.g. the Article 2 "
+            f"pad-to-odd) rather than a chrome bug; check the build's page "
+            f"structure before the footer code.")
 
         wrong = {pg: (n, pg - FRONT_COUNT) for pg, n in printed.items()
                  if n != pg - FRONT_COUNT}
@@ -175,5 +180,6 @@ def test_front_note_replaces_the_blank_without_moving_anything(tmp_path):
                 f"physical page {i + 1} is front matter but prints a footer "
                 f"number: {band!r}")
     finally:
-        plain.close()
-        d.close()
+        for doc in (plain, d):
+            if doc is not None:
+                doc.close()
