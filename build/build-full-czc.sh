@@ -82,11 +82,11 @@ trap 'rm -rf "$TMPDIR_PDFS"' EXIT
 # markdown/pandoc cannot express, so — exactly like the Article-2 district
 # spreads (article-02.typ) and the Article-3 Type plates
 # (cross-section-plates.typ) — they render natively and are concatenated in
-# place. The render loop's *.typ branch threads the same cumulative even
-# page-offset + footer date, so the maps' parity-aware chrome (ARTICLE 1 tab,
-# GENERAL STANDARDS running head, continuous footer) is correct; the 3-page
-# (odd) block is padded with one trailing blank, keeping every downstream
-# Article's parity unchanged (an even shift of +4).
+# place. The render loop's *.typ branch threads the same running page-offset +
+# footer date, so the maps' parity-aware chrome (ARTICLE 1 tab, GENERAL STANDARDS
+# running head, continuous footer) follows the true running page number. The
+# loop adds no pad after the maps (the only blank pages it inserts are the one
+# before article-02.typ, below, and the front-matter blanks).
 MAPS_TYP="$SOURCE_DIR/district-maps.typ"
 if [ -f "$MAPS_TYP" ]; then
   SPLICED=()
@@ -108,9 +108,9 @@ fi
 # markdown at the <!-- TYPE-PAGES --> marker into 03a (opener + §1 + §2.a-c) and
 # 03b (§2.d Driveway + §3..§14, rendered with continuation=true so the big
 # "ARTICLE 3" opener is not repeated). The render order becomes [03a, plates,
-# 03b]. Threading the running EVEN page offset through all three keeps footers
-# continuous and every unit's parity-aware chrome (tab/header/badge) correct; the
-# 10-page (EVEN) plate block preserves offset parity for the segments around it.
+# 03b]. Threading the true running page offset through all three keeps footers
+# continuous and every unit's parity-aware chrome (tab/header/badge) following
+# the running page number; the render loop adds no pad around the plate block.
 PLATES_TYP="$SOURCE_DIR/cross-section-plates.typ"
 INV_TYP="$SOURCE_DIR/street-type-inventory.typ"          # Exhibit 3.1 (Inventory table)
 MAP_TYP="$SOURCE_DIR/street-type-map.typ"                # Exhibit 3.2 (Type Map)
@@ -178,10 +178,9 @@ OUT_NAME="$(czc_integrated_name "$ADOPTION_MODE" "$VERSION")"
 OUTPUT_PDF="$RELEASE_DIR/$OUT_NAME.pdf"
 COMBINED_MD="$RELEASE_DIR/$OUT_NAME.md"
 
-# A single blank US-Letter page, used to pad Articles that render to an odd page
-# count. Padding keeps each Article opening on a recto (odd) page and keeps the
-# cumulative page offset EVEN, so Typst's automatic inside/outside (binding)
-# margins stay aligned with the combined document's page parity.
+# A single blank US-Letter page, used (a) as the one parity pad inserted before
+# article-02.typ in the render loop below, and (b) for the front-matter blanks.
+# The body flows continuously: Articles are NOT padded to open on a recto.
 BLANK_PDF="$TMPDIR_PDFS/blank.pdf"
 python3 - "$BLANK_PDF" <<'PY'
 import sys, fitz
@@ -192,7 +191,7 @@ PY
 # continuously across the combined document (instead of restarting at 1 per
 # Article). The page COUNT of a render does not depend on the offset, so a
 # single sequential pass suffices: when we render Article N the offset already
-# equals the (even) page total of Articles 1..N-1.
+# equals the page total of everything before it (including the article-02 pad).
 INDEX=0
 OFFSET=0
 PDF_LIST=()
@@ -203,20 +202,23 @@ for ART in "${ARTICLES[@]}"; do
   # Continuous flow: no recto-opening pads. The one unit needing parity alignment is
   # article-02.typ — its 2-page district spreads must land D1 on a verso (even
   # DISPLAYED page). D1 is that unit's FIRST page, so pad to an ODD running offset
-  # before it (offset+1 = even displayed page for D1). This keeps the district badges
-  # on the LEFT fore-edge with NO leading blank inside the unit. (Previously this
-  # padded to even AND the unit forced pagebreak(to:"even") — two redundant blanks.)
+  # before it (offset+1 = even displayed page for D1). The unit itself inserts NO
+  # leading blank — it did until 2026-06, and chrome guards that outlived that
+  # change suppressed the footer on D1's first page until 2026-10-07. Keep this
+  # comment true: it is the model the next person reads.
+  # KNOWN, UNRESOLVED: this makes D1's CHROME verso, but Typst resolves the unit's
+  # inside/outside MARGINS from the unit's own physical page index, which the
+  # offset cannot move — see the header of article-02.typ. Open operator decision.
   case "$ART" in
     */article-02.typ)
       if [ $((OFFSET % 2)) -eq 0 ]; then PDF_LIST+=("$BLANK_PDF"); OFFSET=$((OFFSET + 1)); fi ;;
   esac
   case "$ART" in
     *.typ)
-      # Native-Typst Article 2 district spreads. Rendered directly by typst (not
-      # pandoc), threading the same cumulative even page-offset and footer date.
-      # Its internal `pagebreak(to:"even")` lands the first district (D1) on a
-      # verso (even) page; the surrounding even OFFSET keeps logical==physical
-      # parity so the badge sits at the LEFT fore-edge. See article-02.typ.
+      # Native-Typst units (Article 2 district spreads, Article 1 maps, Article 3
+      # plates/exhibits). Rendered directly by typst (not pandoc), threading the
+      # running page-offset and footer date. For article-02.typ the offset is the
+      # odd one set by the pad above; the unit inserts no blank of its own.
       echo "Rendering article $INDEX (page offset $OFFSET, native Typst): $(basename "$ART")"
       # The `data=` input is read only by the §5 exhibit renderers (street-type-
       # inventory.typ / street-type-map.typ) to point at the promoted inventory;
