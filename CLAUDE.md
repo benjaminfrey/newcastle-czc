@@ -20,8 +20,17 @@ in-house GIS capacity. All ordinance changes require a **Town Meeting** vote (Ma
 2. **NEVER `git add -A` or `git add .`** — always stage files **by name**.
 3. **Never touch `docs/*.pdf`** — those are the immutable baseline (original CZC,
    Comp Plan, RDEO). Read-only reference.
-4. Every release ships **BOTH** the integrated full CZC **AND** the standalone
-   Article 3, and **BOTH** `.pdf` **AND** `.md` for each.
+4. **Release deliverables.** Every release ships the **integrated full CZC**. In addition, every
+   Article containing **substantive changes** — changes to that Article's own standards,
+   definitions or data — ships as a **standalone document** and as a **standalone redline**, in
+   **BOTH** `.pdf` **AND** `.md`. Articles touched only by renumbering or cross-reference updates
+   are **named in the Summary of Changes** instead of shipped separately. The **integrated Code is
+   the document the Town adopts**; standalones are extracts and do not govern. Adoption releases
+   ship the frozen packet `build-adoption.sh` defines, plus a **Use Table Changes** artifact
+   whenever district tables moved.
+   *(Rewritten 2026-10-07. The former rule — integrated + standalone Article 3 — dated from when
+   Article 3 was the whole project; Article 3 was adopted at the September 14, 2026 Town Meeting.
+   `build-redline-standalone.sh` does not exist yet; building it is part of honouring this rule.)*
 5. Commit messages end with the trailer:
    `Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`
 6. On release: **isolate `git push origin main`** as its own command, then push the
