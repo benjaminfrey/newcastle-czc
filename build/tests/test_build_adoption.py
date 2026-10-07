@@ -265,3 +265,41 @@ def test_refuses_to_freeze_a_dirty_source_tree(tmp_path):
         if release_dir.exists():
             import shutil
             shutil.rmtree(release_dir)
+
+
+def test_freeze_expects_the_standalone_name_the_builder_actually_writes(tmp_path):
+    """build-adoption.sh composes STANDALONE_PDF by hand and later hands it to
+    pdf_recap.py. Nothing failed when build-standalone.sh's default name moved
+    (the adoption tests only run --dry-run), so a real freeze would have died
+    at the very end. This pins the agreement without running a freeze: take the
+    build-standalone.sh statement and the STANDALONE_PDF assignment VERBATIM out
+    of build-adoption.sh, execute the former for real in meeting mode, and
+    require the file the latter names to exist."""
+    lines = (REPO / "build" / "build-adoption.sh").read_text().splitlines()
+    idx = [i for i, l in enumerate(lines) if "build-standalone.sh" in l and
+           not l.lstrip().startswith("#")]
+    assert len(idx) == 1, f"expected one build-standalone.sh invocation, found {idx}"
+    start = idx[0]
+    while start > 0 and lines[start - 1].rstrip().endswith("\\"):
+        start -= 1
+    statement = "\n".join(lines[start:idx[0] + 1])
+    assignment = [l for l in lines if l.startswith("STANDALONE_PDF=")]
+    assert len(assignment) == 1, assignment
+
+    out = tmp_path / "packet"
+    script = "\n".join([
+        "set -euo pipefail",
+        f'REPO_ROOT="{REPO}"',
+        'VERSION=v94.0', 'MEETING_DATE="March 15, 2027"',
+        'FREEZE_DATE="August 24, 2026"',
+        f'OUT="{out}"',
+        statement,
+        assignment[0],
+        'test -f "$STANDALONE_PDF" || { echo "freeze expects: $STANDALONE_PDF" >&2; '
+        'ls "$OUT" >&2; exit 9; }',
+    ])
+    r = subprocess.run(["bash", "-c", script], cwd=REPO, capture_output=True, text=True,
+                       env=dict(os.environ, OUT_DIR=str(out)))
+    assert r.returncode == 0, (
+        "build-adoption.sh expects a standalone filename that build-standalone.sh "
+        f"does not write in meeting mode:\n{r.stderr[-600:]}")

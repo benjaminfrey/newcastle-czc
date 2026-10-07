@@ -145,7 +145,13 @@ ADOPTION_BASELINE=1 ADOPTION_MODE=meeting ADOPTION_EVENT_DATE="$MEETING_DATE" \
 REDLINE_PDF="$OUT/$MEETING_NAME — Redline.pdf"
 
 # 3. Standalone Article 3
+#    OUT_NAME_OVERRIDE pins the historical filename (the one STANDALONE_PDF below
+#    names). Decision D5 has this artifact leaving the adoption packet, so it is
+#    not worth renaming now; build-standalone.sh's mode-bearing default
+#    ("... Standalone Town Meeting Edition ...") is deliberately NOT adopted here.
+#    test_build_adoption.py pins that this statement and STANDALONE_PDF agree.
 ADOPTION_MODE=meeting ADOPTION_EVENT_DATE="$MEETING_DATE" \
+  OUT_NAME_OVERRIDE="Article 3 Thoroughfares (Standalone $VERSION)" \
   bash "$REPO_ROOT/build/build-standalone.sh" 3 "$VERSION" "$FREEZE_DATE"
 STANDALONE_PDF="$OUT/Article 3 Thoroughfares (Standalone $VERSION).pdf"
 
