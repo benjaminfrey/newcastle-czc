@@ -16,11 +16,17 @@
 # Examples:
 #   build-standalone.sh 7 v0.22-draft
 #   build-standalone.sh 3 v0.22-draft "June 21, 2026"
+#
+# Optional environment seams (each defaults to today's behaviour):
+#   SRC_DIR            input tree           (default: $REPO_ROOT/source)
+#   OUT_DIR            output directory     (default: $REPO_ROOT/releases/<version>)
+#   OUT_NAME_OVERRIDE  artifact stem, no extension
+#                                           (default: czc_standalone_name, adoption-name.sh)
 
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SOURCE_DIR="$REPO_ROOT/source"
+SOURCE_DIR="${SRC_DIR:-$REPO_ROOT/source}"
 MANIFEST_PY="$REPO_ROOT/build/manifest.py"
 
 NN_RAW="${1:-}"
@@ -45,8 +51,7 @@ fi
 NN=$(printf "%02d" "$((10#$NN_RAW))")    # zero-padded "07"
 NUM=$((10#$NN))                          # numeric 7
 
-RELEASE_DIR="$REPO_ROOT/releases/$VERSION"
-mkdir -p "$RELEASE_DIR"
+RELEASE_DIR="${OUT_DIR:-$REPO_ROOT/releases/$VERSION}"
 
 # --- resolve the prose source: manifest 'prose', else glob article-0NN-*.md ----
 PROSE=""
@@ -62,6 +67,10 @@ if [ -z "$PROSE" ] || [ ! -f "$PROSE" ]; then
   echo "No prose source for Article $NUM (manifest 'prose' or source/article-$NN-*.md)" >&2
   exit 1
 fi
+
+# Created only once the inputs resolve: a build that cannot start must not
+# leave a directory that looks like a shipped release.
+mkdir -p "$RELEASE_DIR"
 
 # --- article number/name from frontmatter (for the output filename) ------------
 read_meta() { python3 - "$1" "$2" <<'PY'
@@ -80,7 +89,8 @@ PY
 ANUM=$(read_meta "$PROSE" article-number); ANUM="${ANUM:-$NUM}"
 ANAME=$(read_meta "$PROSE" article-name);  ANAME="${ANAME:-Article $NUM}"
 
-OUT_NAME="Article $ANUM $ANAME (Standalone $VERSION)"
+source "$REPO_ROOT/build/adoption-name.sh"
+OUT_NAME="${OUT_NAME_OVERRIDE:-$(czc_standalone_name "$ADOPTION_MODE" "$ANUM" "$ANAME" "$VERSION")}"
 OUTPUT_PDF="$RELEASE_DIR/$OUT_NAME.pdf"
 
 TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
