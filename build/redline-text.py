@@ -543,14 +543,36 @@ def is_heading(ln: str) -> bool:
     return bool(HEADING_LINE_RE.match(ln))
 
 
+HTML_COMMENT_LINE_RE = re.compile(r'^\s*<!--.*?-->\s*$', re.S)
+
+
+def is_unmarkable_structure(ln: str) -> bool:
+    """A line that is WHOLLY an HTML comment.
+
+    These carry structure, not prose: build-standalone.sh and build-full-czc.sh
+    seat native-Typst units at them (source/article-03-*.md's TYPE-PAGES and
+    STREET-TYPE-EXHIBITS). prepare_source deliberately keeps HTML comments
+    intact, so without this a DELETED marker is struck rather than dropped,
+    reaching the marked file as ``~~<!-- TYPE-PAGES -->~~``. split-article-03.py
+    matches markers by substring, so it then splits at a marker the new source
+    does not have and exits 0 -- the plates are seated in a position the real
+    document lacks. Measured 2026-10-07.
+
+    Narrow by construction: a prose line that merely mentions the token is not
+    wholly a comment and is still marked.
+    """
+    return bool(HTML_COMMENT_LINE_RE.match(ln))
+
+
 def _markable(ln: str) -> bool:
     """A line that actually receives a mark (used only for the stderr tally)."""
-    return bool(ln.strip()) and not is_block_token(ln) and not is_heading(ln)
+    return (bool(ln.strip()) and not is_block_token(ln) and not is_heading(ln)
+            and not is_unmarkable_structure(ln))
 
 
 def emit_deleted_src(ln: str, reg: dict) -> str:
-    if is_block_token(ln) or is_heading(ln):
-        return ''            # native block / heading: gone from NEW, drop silently
+    if is_block_token(ln) or is_heading(ln) or is_unmarkable_structure(ln):
+        return ''            # native block / heading / structure comment: gone from NEW, drop silently
     return strike_pipe(ln) if is_pipe_row(ln) else strike_line(ln)
 
 
@@ -559,6 +581,8 @@ def emit_inserted_src(ln: str, reg: dict) -> str:
         return reg[ln]       # NEW fenced / raw-Typst block VERBATIM, no note
     if is_heading(ln):
         return ln            # NEW heading text VERBATIM, unmarked (clean TOC)
+    if is_unmarkable_structure(ln):
+        return ln            # NEW split marker VERBATIM: it is structure the splitter reads
     return red_pipe(ln) if is_pipe_row(ln) else red_line(ln)
 
 

@@ -157,15 +157,11 @@ if [ -f "$PLATES_TYP" ] && [ -n "$ART3_SRC" ]; then
     done
     ARTICLES=("${SPLICED[@]}")
   else
-    # No marker (older Article 3) — fall back to appending the plate block AFTER
-    # Article 3's prose, as a single pass (legacy behavior).
-    echo "split-article-03: no marker; appending plate block after Article 3" >&2
-    SPLICED=()
-    for f in "${ARTICLES[@]}"; do
-      SPLICED+=("$f")
-      case "$f" in */article-03-*.md) SPLICED+=("$PLATES_TYP") ;; esac
-    done
-    ARTICLES=("${SPLICED[@]}")
+    echo "build-full-czc: Article 3's split marker is missing or damaged — refusing to build." >&2
+    echo "  The marker seats the Type plates inside §2. Appending them after the prose" >&2
+    echo "  instead produces a document whose plates sit in a place the Code does not" >&2
+    echo "  have, and it exits 0 while doing it. build-standalone.sh already refuses." >&2
+    exit 1
   fi
 fi
 
