@@ -88,6 +88,8 @@ def test_breakdown_total_equals_the_sum_of_its_own_lines():
     total = int(re.search(r"^\s+TOTAL\s+(\d+) substantive changed lines?",
                           r.stdout, re.M).group(1))
     assert per_article, f"no per-article lines parsed from:\n{r.stdout}"
+    assert any(per_article), (
+        f"every article reports 0 \u2014 the map pin is gone, so this invariant is vacuous:\n{r.stdout}")
     assert sum(per_article) == total, (
         f"TOTAL {total} is not the sum of its own per-article lines "
         f"{per_article} (sum {sum(per_article)})")

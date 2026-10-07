@@ -25,6 +25,20 @@ read *this* directory. Both ends are frozen: the `v0.1-baseline` tag is
 immutable and this file is never edited, so the number is stable by
 construction, not by re-pinning.
 
+As of 2026-10-07 this file is also today's `source/article-01-general.md` with
+that one line changed, which anyone can check by hand:
+
+    diff source/article-01-general.md build/tests/fixtures/breakdown-src/article-01-general.md
+
+(one hunk, line 13). That coincidence will lapse as the live Code is amended;
+the frozen `v0.1-baseline` derivation above is what matters, not the diff.
+
+**Do not regenerate this file to fix a failing `2 lines` assertion.** Running
+it through a changed normaliser re-pins the test to whatever the instrument now
+says, which defeats the only reason the fixture exists. If the count moves,
+the normaliser changed behaviour on a known input: find out why, and fix the
+normaliser or consciously rule on the new number in the test.
+
 Keep it small. If a test needs a second article, add the smallest file that
 exercises the rule under test, and say here what it is for. If the normaliser's
 rules legitimately change the count, understand why before updating the test.
