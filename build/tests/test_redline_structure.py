@@ -126,3 +126,94 @@ def test_the_integrated_build_refuses_a_missing_marker(tmp_path):
         "the integrated build accepted a damaged split marker and appended the "
         "plates after the prose")
     assert "marker" in (r.stderr + r.stdout).lower()
+
+
+# Marker present on BOTH sides but at different positions, with prose now sitting
+# where the old marker was. difflib pairs the removed marker with the new prose
+# line as a 1:1 REPLACE, which is a different dispatch path from delete/insert.
+OLD_MOVED = f"""---
+article-number: 3
+article-name: Thoroughfares
+---
+
+## 1. PURPOSE
+
+{MARKER}
+
+## 2. TYPES
+
+The ten Types follow.
+"""
+NEW_MOVED = f"""---
+article-number: 3
+article-name: Thoroughfares
+---
+
+## 1. PURPOSE
+
+The Types are shown below.
+
+## 2. TYPES
+
+The ten Types follow.
+
+{MARKER}
+"""
+
+
+def test_the_fixture_really_is_a_one_to_one_replace():
+    """Guards the next test's premise: if difflib stopped classifying this as a
+    replace, test_a_moved_marker... would silently exercise the delete path."""
+    spec = __import__("importlib.util").util.spec_from_file_location("rt", REDLINE)
+    rt = __import__("importlib.util").util.module_from_spec(spec)
+    spec.loader.exec_module(rt)
+    a = rt.prepare_source(rt.split_frontmatter(OLD_MOVED)[1])[0]
+    b = rt.prepare_source(rt.split_frontmatter(NEW_MOVED)[1])[0]
+    import difflib
+    ops = difflib.SequenceMatcher(None, a, b, autojunk=False).get_opcodes()
+    assert any(t == "replace" and (i2 - i1, j2 - j1) == (1, 1)
+               and a[i1] == MARKER for t, i1, i2, j1, j2 in ops), ops
+
+
+def test_a_moved_marker_is_not_word_diffed_into_a_false_split_point(tmp_path):
+    """The replace path. The word-diffed pseudo-marker at the OLD position came
+    first in the file, and split-article-03.py takes the FIRST substring hit, so
+    it split there and exited 0 -- plates seated where the new source has no
+    marker. The real marker is later, and must be the one that splits."""
+    marked, _ = mark(tmp_path, OLD_MOVED, NEW_MOVED)
+    assert marked.count("TYPE-PAGES") == 1, (
+        f"expected only the real marker, got a second (word-diffed) one:\n{marked}")
+    rc, (a, b, c) = split(tmp_path, marked)
+    assert rc == 0
+    assert "The Types are shown below." in a.read_text()
+    assert "The ten Types follow." in a.read_text(), (
+        "split at the false marker: Section 2 text landed after the split point")
+
+
+def test_the_tally_agrees_with_the_output_for_a_moved_marker(tmp_path):
+    """_markable excludes structure from the tally, so the output must not mark
+    a marker either -- otherwise stderr says 0/0 while the file carries marks."""
+    marked, err = mark(tmp_path, OLD_MOVED, NEW_MOVED)
+    assert "~~<!--" not in marked and "\\<!--" not in marked
+    assert "0 line(s) removed, 1 line(s) added" in err, err
+
+
+def test_inline_comment_in_changed_prose_is_still_marked(tmp_path):
+    """Guards against simplifying the predicate to `'<!--' in ln`."""
+    old = BODY_WITH.replace("This Article governs thoroughfares.",
+                            "Real prose is informative. <!-- note -->")
+    new = BODY_WITH.replace("This Article governs thoroughfares.",
+                            "Real prose is binding. <!-- note -->")
+    marked, _ = mark(tmp_path, old, new)
+    assert "informative" in marked and "binding" in marked
+    assert "~~" in marked, "a changed prose line with a trailing comment was not marked"
+
+
+def test_an_edited_marker_is_emitted_bare_and_the_tally_agrees(tmp_path):
+    """An edited marker is a 1:1 replace too. It used to be word-diffed (a red
+    span inside the comment) while the tally, which excludes structure, said 0/0."""
+    edited = BODY_WITH.replace(MARKER, "<!-- TYPE-PAGES v2 -->")
+    marked, err = mark(tmp_path, BODY_WITH, edited)
+    assert "\n<!-- TYPE-PAGES v2 -->\n" in marked
+    assert "~~" not in marked and "#text" not in marked
+    assert "0 line(s) removed, 0 line(s) added" in err, err

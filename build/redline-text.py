@@ -558,8 +558,13 @@ def is_unmarkable_structure(ln: str) -> bool:
     does not have and exits 0 -- the plates are seated in a position the real
     document lacks. Measured 2026-10-07.
 
-    Narrow by construction: a prose line that merely mentions the token is not
-    wholly a comment and is still marked.
+    Narrow by construction: a prose line that merely mentions the token, or that
+    carries a trailing inline comment, is not wholly a comment and is still marked.
+
+    Known limits: the match is per line, so a MULTI-line comment is not
+    recognised; and the lazy ``.*?`` spans a middle, so ``<!-- a --> prose
+    <!-- b -->`` is (wrongly) treated as structure. Neither occurs in source/*.md,
+    where every structural comment is a single line.
     """
     return bool(HTML_COMMENT_LINE_RE.match(ln))
 
@@ -612,7 +617,9 @@ def redline_source(old_text: str, new_text: str):
             n_ins += sum(1 for ln in nl if _markable(ln))
             if (len(ol) == 1 and len(nl) == 1
                     and not is_block_token(ol[0]) and not is_block_token(nl[0])
-                    and not is_heading(ol[0]) and not is_heading(nl[0])):
+                    and not is_heading(ol[0]) and not is_heading(nl[0])
+                    and not is_unmarkable_structure(ol[0])
+                    and not is_unmarkable_structure(nl[0])):
                 out.append(mark_replace_1to1(ol[0], nl[0]))
             else:
                 out.extend(emit_deleted_src(ln, reg) for ln in ol)
