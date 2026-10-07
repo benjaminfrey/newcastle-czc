@@ -4,7 +4,7 @@ TOTAL. Split out of build-adoption.sh's inline heredoc so it is directly
 testable (subprocess against a real or synthetic adoption-map.json), rather
 than only reachable through the shell wrapper.
 
-This is the instrument the packet's headline number (243) is read from, so
+This is the instrument the packet's headline number is read from, so
 two failure modes are NOT allowed to pass silently:
 
   * a mapped baseline file that does not exist at the baseline tag -- would
@@ -27,7 +27,8 @@ would report a move as a mass deletion.
 
 Exit codes:
   0  breakdown printed
-  1  a mapped file could not be resolved on one side -- fix adoption-map.json
+  1  a mapped file could not be resolved on one side (a bad adoption-map.json
+     entry, or an incomplete --src-dir / SRC_DIR source tree)
 """
 from __future__ import annotations
 

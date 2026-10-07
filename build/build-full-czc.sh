@@ -87,8 +87,8 @@ trap 'rm -rf "$TMPDIR_PDFS"' EXIT
 # running head, continuous footer) follows the true running page number. The
 # loop adds no pad after the maps (the only pad the render loop can insert is the
 # conditional one before article-02.typ, below, which keeps the running offset
-# odd and fires only when the preceding page total is even -- it does not fire
-# in the current build; the front-matter blanks are added after the loop).
+# odd and fires only when the preceding page total is even; the front-matter
+# blanks are added after the loop).
 MAPS_TYP="$SOURCE_DIR/district-maps.typ"
 if [ -f "$MAPS_TYP" ]; then
   SPLICED=()
@@ -184,7 +184,7 @@ COMBINED_MD="$RELEASE_DIR/$OUT_NAME.md"
 
 # A single blank US-Letter page, used (a) as the conditional parity pad before
 # article-02.typ in the render loop below (inserted only if the running offset
-# arriving there is even; it is odd in the current build, so none is inserted),
+# arriving there is even),
 # and (b) for the front-matter blanks.
 # The body flows continuously: Articles are NOT padded to open on a recto.
 BLANK_PDF="$TMPDIR_PDFS/blank.pdf"
@@ -225,7 +225,7 @@ for ART in "${ARTICLES[@]}"; do
       # plates/exhibits). Rendered directly by typst (not pandoc), threading the
       # running page-offset and footer date. For article-02.typ the offset is odd
       # (the pad above guarantees it, and inserts a blank only when the preceding
-      # page total is even, which it is not in the current build); the unit
+      # page total is even); the unit
       # inserts no blank of its own.
       echo "Rendering article $INDEX (page offset $OFFSET, native Typst): $(basename "$ART")"
       # The `data=` input is read only by the §5 exhibit renderers (street-type-
