@@ -22,6 +22,9 @@
 #   OUT_DIR            output directory     (default: $REPO_ROOT/releases/<version>)
 #   OUT_NAME_OVERRIDE  artifact stem, no extension
 #                                           (default: czc_standalone_name, adoption-name.sh)
+#   STANDALONE_FRONT_NOTE  path to a PDF prepended as uncounted front matter
+#                                           (default: none). Must have an EVEN page
+#                                           count -- see "optional front note" below.
 
 set -euo pipefail
 
@@ -68,10 +71,6 @@ if [ -z "$PROSE" ] || [ ! -f "$PROSE" ]; then
   exit 1
 fi
 
-# Created only once the inputs resolve: a build that cannot start must not
-# leave a directory that looks like a shipped release.
-mkdir -p "$RELEASE_DIR"
-
 # --- article number/name from frontmatter (for the output filename) ------------
 read_meta() { python3 - "$1" "$2" <<'PY'
 import sys, re
@@ -106,6 +105,31 @@ python3 - "$BLANK_PDF" <<'PY'
 import sys, fitz
 d = fitz.open(); d.new_page(width=612, height=792); d.save(sys.argv[1]); d.close()
 PY
+
+# ---- optional front note (uncounted; K must be even) ------------------------
+# Prepended to PARTS but NOT added to OFF, so the Article opener still prints
+# "1" and the extract keeps the 1..N convention this script documents at the
+# top. Physical page = printed page + K. Chrome keys off the PRINTED number
+# (here().page() + page_offset, style/czc-template.typ) and picks verso/recto
+# with calc.even, while Typst resolves the binding margin from the PHYSICAL
+# page -- so the two agree only when K is even. An odd note silently reverses
+# the binding margins of the whole extract and still exits 0, which is why
+# this refuses rather than warns.
+FRONT_NOTE="${STANDALONE_FRONT_NOTE:-}"
+if [ -n "$FRONT_NOTE" ]; then
+  if [ ! -f "$FRONT_NOTE" ]; then
+    echo "standalone: front note not found: $FRONT_NOTE" >&2
+    exit 1
+  fi
+  NOTE_PAGES=$(pagecount "$FRONT_NOTE")
+  if [ $((NOTE_PAGES % 2)) -ne 0 ]; then
+    echo "standalone: the front note is $NOTE_PAGES page(s); it must be an even page count." >&2
+    echo "  The note is not counted in the page offset, so an odd note shifts every" >&2
+    echo "  physical page by an odd amount and inverts verso/recto chrome against the" >&2
+    echo "  binding margin for the whole extract. Pad the note to an even length." >&2
+    exit 1
+  fi
+fi
 
 # Render one prose segment via the generic primitive. article-number/name come
 # from the markdown frontmatter; we override footer-date to the adoption-mode
@@ -180,7 +204,15 @@ else
   render_seg "$PROSE" "$TMP/prose.pdf" 0; PARTS+=("$TMP/prose.pdf")
 fi
 
+# Created only now, once every input and guard has passed: a build that cannot
+# start (or is refused, e.g. an odd front note) must not leave a directory that
+# looks like a shipped release. Nothing above writes into RELEASE_DIR.
+mkdir -p "$RELEASE_DIR"
 echo "Assembling: $OUTPUT_PDF"
-pdfunite "${PARTS[@]}" "$OUTPUT_PDF"
+if [ -n "$FRONT_NOTE" ]; then
+  pdfunite "$FRONT_NOTE" "${PARTS[@]}" "$OUTPUT_PDF"
+else
+  pdfunite "${PARTS[@]}" "$OUTPUT_PDF"
+fi
 cp "$PROSE" "$RELEASE_DIR/$OUT_NAME.md"
 echo "Done: $OUTPUT_PDF ($(pagecount "$OUTPUT_PDF") pages)"

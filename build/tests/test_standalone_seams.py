@@ -2,6 +2,7 @@
 must either fork the builder or mark files inside source/, which is a
 destructive edit to the Code itself."""
 import os
+import re
 import subprocess
 from pathlib import Path
 
@@ -118,3 +119,80 @@ def test_after_prose_path_honours_both_seams(tmp_path):
         "SRC_DIR was set but the after-prose path read the real source/")
     assert marker in (out / f"{stem}.md").read_text()
     assert not (REPO / "releases" / TEST_VERSION).exists()
+
+
+def make_note(path, pages):
+    """A note of `pages` blank pages."""
+    d = pymupdf.open()
+    for _ in range(pages):
+        d.new_page(width=612, height=792)
+    d.save(str(path))
+    d.close()
+    return path
+
+
+def footer_numbers(pdf):
+    """(physical_page, printed_number) for every page whose footer carries one.
+    Read from a clipped band at the bottom, because the body text of some pages
+    contains bare numbers -- the same trap that nearly made the Article 2 chrome
+    test pass vacuously."""
+    d = pymupdf.open(pdf)
+    try:
+        pairs = []
+        for i, p in enumerate(d):
+            band = pymupdf.Rect(0, p.rect.height - 40, p.rect.width, p.rect.height)
+            # Whole words only: the footer also carries the version string
+            # ("v0.98-draft"), and a regex over the band text reads its "98".
+            nums = [w[4] for w in p.get_text("words", clip=band)
+                    if re.fullmatch(r"\d+", w[4])]
+            if nums:
+                pairs.append((i + 1, int(nums[0])))
+        return pairs
+    finally:
+        d.close()
+
+
+def test_an_even_front_note_preserves_verso_recto_parity(tmp_path):
+    """The note is NOT counted in the page offset, so the opener still prints 1
+    and physical = printed + K. Chrome keys off the PRINTED number
+    (here().page() + page_offset) while the binding margin follows the PHYSICAL
+    page, so the two agree only when K is even."""
+    note = make_note(tmp_path / "note.pdf", 2)
+    out = tmp_path / "out"
+    r = run_standalone("7", TEST_VERSION, OUT_DIR=str(out),
+                       STANDALONE_FRONT_NOTE=str(note))
+    assert r.returncode == 0, r.stderr
+    pdf = next(out.glob("*.pdf"))
+    pairs = footer_numbers(pdf)
+    assert pairs, "no footer numbers read -- the band or the build is wrong"
+    assert pairs[0][1] == 1, f"the opener must still print 1, got {pairs[0]}"
+    offsets = {phys - printed for phys, printed in pairs}
+    assert offsets == {2}, f"expected a constant offset of 2, got {offsets}"
+    wrong = [(phys, printed) for phys, printed in pairs
+             if phys % 2 != printed % 2]
+    assert wrong == [], (
+        f"printed and physical parity disagree on {wrong} -- verso/recto chrome "
+        f"is inverted against the binding margin")
+
+
+def test_an_odd_front_note_is_refused(tmp_path):
+    """NEGATIVE CONTROL. Without this the build exits 0 and silently reverses
+    the binding margins of the whole extract, and nothing notices."""
+    note = make_note(tmp_path / "note.pdf", 1)
+    out = tmp_path / "out"
+    r = run_standalone("7", TEST_VERSION, OUT_DIR=str(out),
+                       STANDALONE_FRONT_NOTE=str(note))
+    assert r.returncode != 0, "a one-page front note was accepted"
+    assert "1 page" in r.stderr, r.stderr
+    # A refusal must leave nothing behind -- not even an empty directory that
+    # looks like a shipped release.
+    assert not out.exists(), "a refused build created its output dir"
+    assert not (REPO / "releases" / TEST_VERSION).exists()
+
+
+def test_a_missing_front_note_is_refused(tmp_path):
+    out = tmp_path / "out"
+    r = run_standalone("7", TEST_VERSION, OUT_DIR=str(out),
+                       STANDALONE_FRONT_NOTE=str(tmp_path / "nope.pdf"))
+    assert r.returncode != 0
+    assert "not found" in r.stderr
