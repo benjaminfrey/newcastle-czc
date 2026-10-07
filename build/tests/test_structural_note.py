@@ -10,6 +10,7 @@ what keep that page in the packet.
 """
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -93,6 +94,15 @@ def test_note_names_the_document_it_compares_against(tmp_path):
 # (invariant 2: every Article opens on a recto). A note that changed either
 # would silently break chrome across the whole document.
 
+# Front matter: cover, front note (the blank in an ordinary build), 2-page TOC.
+FRONT_COUNT = 4
+# The footer sits at y ~ 761-773 of a 792 pt page; body text can reach ~735.
+FOOTER_BAND_PT = 40
+# Verso reads "N | Newcastle Core Zoning Code"; recto "Newcastle Core Zoning Code | N".
+FOOTER_NUMBER = re.compile(
+    r"Newcastle Core Zoning Code\s*\|\s*(\d+)|(\d+)\s*\|\s*Newcastle Core Zoning Code")
+
+
 def test_front_note_replaces_the_blank_without_moving_anything(tmp_path):
     out = tmp_path / "out"
     out.mkdir()
@@ -104,17 +114,66 @@ def test_front_note_replaces_the_blank_without_moving_anything(tmp_path):
                        cwd=REPO, env=e, capture_output=True, text=True)
     assert r.returncode == 0, r.stderr
 
+    # The claim is "the note does not add a page", so compare against the same
+    # build without it rather than against a literal that moves every amendment.
+    plain_out = tmp_path / "plain"
+    plain_out.mkdir()
+    subprocess.run(["bash", "build/build-full-czc.sh", "v0.24-draft", "August 24, 2026"],
+                   cwd=REPO, env=dict(os.environ, OUT_DIR=str(plain_out)),
+                   check=True, capture_output=True)
+    plain = pymupdf.open(next(plain_out.glob("*.pdf")))
     d = pymupdf.open(next(out.glob("*.pdf")))
-    assert d.page_count == 117, (
-        f"the note must not change the page count (got {d.page_count}); it "
-        f"takes the place of the blank verso, it does not add a page")
-    assert "HOW TO READ THIS REDLINE" in d[1].get_text(), (
-        "the note belongs on the verso facing the cover — before any marked text")
-    assert d[1].get_text().strip(), "page 2 is still blank: the note was not inserted"
+    try:
+        assert d.page_count == plain.page_count, (
+            f"the note changed the page count: {plain.page_count} without it, "
+            f"{d.page_count} with it. It takes the place of the blank verso.")
+        # Without this the comparison above could pass with the note doing
+        # nothing: the page it replaces must be the blank, and in the plain
+        # build it must be blank.
+        assert not plain[1].get_text().strip(), (
+            "the plain build's page 2 is not blank, so there is no blank for "
+            "the note to replace")
+        assert "HOW TO READ THIS REDLINE" in d[1].get_text(), (
+            "the note belongs on the verso facing the cover — before any marked text")
+        assert d[1].get_text().strip(), "page 2 is still blank: the note was not inserted"
 
-    # Parity: the printed footer number on the last page must be
-    # physical - FRONT_COUNT, and FRONT_COUNT must still be 4.
-    last = d[-1].get_text()
-    assert "113" in last, (
-        f"the footer's page number moved — front matter is no longer 4 pages "
-        f"(last page text: {last[-200:]!r})")
+        # Parity invariant: the printed footer number equals the physical page
+        # minus the 4-page front matter (cover, front note, two-page TOC), on
+        # EVERY body page — not just the last one, and not a literal that moves
+        # with the Code's length. The footer is read from a clipped band at the
+        # foot of the page: the wordmark and digits also occur in body text.
+        printed = {}
+        for i in range(FRONT_COUNT, d.page_count):
+            page = d[i]
+            band = page.get_text(clip=pymupdf.Rect(
+                0, page.rect.height - FOOTER_BAND_PT, page.rect.width, page.rect.height))
+            m = FOOTER_NUMBER.search(band)
+            printed[i + 1] = int(m.group(1) or m.group(2)) if m else None
+
+        # Non-degeneracy: the check below is vacuous if it parsed nothing.
+        body_pages = d.page_count - FRONT_COUNT
+        assert body_pages > 0, "no body pages beyond the front matter"
+        unparsed = [pg for pg, n in printed.items() if n is None]
+        assert unparsed == [], (
+            f"body pages with no readable footer number: {unparsed}. Every page "
+            f"after the front matter carries one.")
+        assert len(printed) == body_pages
+
+        wrong = {pg: (n, pg - FRONT_COUNT) for pg, n in printed.items()
+                 if n != pg - FRONT_COUNT}
+        assert wrong == {}, (
+            f"footer number != physical page - {FRONT_COUNT} on these pages "
+            f"(physical: (printed, expected)): {wrong}. Front matter is "
+            f"{FRONT_COUNT} pages and logical must equal physical.")
+
+        # The other side of the same fact: the front matter itself is numberless.
+        for i in range(FRONT_COUNT):
+            page = d[i]
+            band = page.get_text(clip=pymupdf.Rect(
+                0, page.rect.height - FOOTER_BAND_PT, page.rect.width, page.rect.height))
+            assert FOOTER_NUMBER.search(band) is None, (
+                f"physical page {i + 1} is front matter but prints a footer "
+                f"number: {band!r}")
+    finally:
+        plain.close()
+        d.close()
