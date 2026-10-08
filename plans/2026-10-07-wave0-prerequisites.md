@@ -6,7 +6,7 @@
 
 **Architecture:** Two independent changes with no shared code. The chrome fix removes three early returns in `source/article-02.typ` that were written for a leading parity blank the build no longer inserts, and adds the first test in the repository that asserts chrome on a unit's first page. The test de-pinning replaces three literals computed from the working tree with a fixture source tree and with invariants (front matter even, exactly one structural blank, every printed footer number equals its physical page minus the front-matter count).
 
-**Tech Stack:** Bash build scripts, Typst 0.12 (native units), pandoc, Python 3.14 with PyMuPDF (`pymupdf`), pytest.
+**Tech Stack:** Bash build scripts, Typst 0.14.2 (native units), pandoc, Python 3.14 with PyMuPDF (`pymupdf`), pytest.
 
 ## Global Constraints
 

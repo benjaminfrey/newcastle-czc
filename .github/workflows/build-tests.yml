@@ -1,0 +1,135 @@
+# Build-test CI for the Newcastle Core Zoning Code.
+#
+# TWO CONSTRAINTS HERE ARE NOT OBVIOUS AND BOTH WILL BREAK THE SUITE SILENTLY
+# IF CHANGED:
+#
+# 1. fetch-depth: 0 is REQUIRED, not tidiness. The redline path reads git
+#    history and tags: build/build-redline-full.sh does
+#    `git describe --tags --abbrev=0`, and build/redline_resolve.py resolves the
+#    OLD side of every diff with `git show <tag>:source/<file>`. The tests touch
+#    the real tags v1.0, v0.21-draft and v0.1-baseline. actions/checkout
+#    defaults to a shallow, tagless clone, under which those tests fail and look
+#    like genuine regressions.
+#
+# 2. THE RENDERER VERSION IS PINNED ON PURPOSE. This is a form-based code whose
+#    chrome keys off `here().page() + page_offset` and whose binding margins are
+#    resolved by Typst from each unit's own physical page index. A different
+#    Typst can change page geometry without changing a line of source, and the
+#    document is a legal instrument. TYPST_VERSION must match the renderer that
+#    produces the shipped PDFs (0.14.2 as of 2026-10-08). Related open question
+#    in build/ADOPTION-SPEC.md: whether frozen-from.json should pin the renderer
+#    as well as the source, since an adopted tag currently re-renders with
+#    whatever build/ and style/ are current and no gate notices.
+#
+# Fonts need no system install: style/fonts is tracked and every render passes
+# --font-path style/fonts.
+
+name: build tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TYPST_VERSION: '0.14.2'
+  PANDOC_VERSION: '3.9.0.2'
+  PYTHON_VERSION: '3.14'
+
+jobs:
+  fast:
+    # Seconds, and needs no document toolchain — so an ordinary mistake fails
+    # here long before the full suite finishes building PDFs.
+    name: syntax and ownership
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # see note 1 at the top of this file
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: install python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install pymupdf pytest
+
+      - name: shell syntax
+        run: |
+          for f in build/*.sh; do bash -n "$f"; done
+
+      - name: python syntax
+        run: python -m compileall -q build
+
+      - name: ownership map claims every tracked file under source/
+        # The coverage test walks `git ls-files source` and asserts each of the
+        # tracked files is claimed by exactly one Article or named in
+        # shared/ignored. It stages a probe with `git add -N`, so give git an
+        # identity even though nothing commits.
+        run: |
+          git config user.name "ci"
+          git config user.email "ci@example.invalid"
+          python -m pytest build/tests/test_manifest_ownership.py -q
+
+  suite:
+    name: full build suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # see note 1 at the top of this file
+
+      - name: install pandoc ${{ env.PANDOC_VERSION }}
+        run: |
+          curl -fsSL -o /tmp/pandoc.deb \
+            "https://github.com/jgm/pandoc/releases/download/${PANDOC_VERSION}/pandoc-${PANDOC_VERSION}-1-amd64.deb"
+          sudo dpkg -i /tmp/pandoc.deb
+
+      - name: install typst ${{ env.TYPST_VERSION }}
+        # Pinned deliberately — see note 2 at the top of this file.
+        run: |
+          curl -fsSL -o /tmp/typst.tar.xz \
+            "https://github.com/typst/typst/releases/download/v${TYPST_VERSION}/typst-x86_64-unknown-linux-musl.tar.xz"
+          tar -xJf /tmp/typst.tar.xz -C /tmp
+          sudo install -m 0755 /tmp/typst-x86_64-unknown-linux-musl/typst /usr/local/bin/typst
+
+      - name: install poppler-utils (pdfunite assembles every document)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq poppler-utils
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: install python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install pymupdf pytest
+
+      - name: record the toolchain
+        # Printed on every run because the renderer affects the document's
+        # geometry: when a future PDF differs without a source change, this is
+        # the first thing to compare.
+        run: |
+          pandoc --version | head -1
+          typst --version
+          python --version
+          python -c "import pymupdf; print('pymupdf', pymupdf.__doc__.strip().splitlines()[0])"
+
+      - name: git identity
+        # Some tests stage a probe; nothing commits.
+        run: |
+          git config user.name "ci"
+          git config user.email "ci@example.invalid"
+
+      - name: full build suite
+        # ~196 tests, several minutes: they build real PDFs rather than mocking
+        # the renderer, which is the point.
+        run: python -m pytest build/tests -q

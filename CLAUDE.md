@@ -191,7 +191,10 @@ local only). **Nothing here changes the ordinary draft flow** — with no adopti
   rewrites the old side's "Article 4" to "Article 5". That is why the guard exists; don't remove it
   because it looks inert.
 
-**Tests:** `python3 -m pytest build/tests -q` — **111**, ~2.5 min (they build real PDFs).
+**Tests:** `python3 -m pytest build/tests -q` — **196**, ~4 min (they build real PDFs).
+CI runs them on every PR and every push to `main` (`.github/workflows/build-tests.yml`);
+that workflow pins **Typst 0.14.2** and needs `fetch-depth: 0`, because the redline tests
+read real tags.
 
 **Parity invariant (critical, don't break):** native-Typst units are spliced
 between pandoc passes; chrome (verso/recto binding margins, rotated Article tab,
@@ -231,7 +234,36 @@ rebuild. No code changes.
 
 ---
 
-## Current state (as of 2026-09-14)
+## Current state (as of 2026-10-08)
+
+- **✅ MERGED to `main` — the release-deliverable machinery, Waves 0 and 1** (PR #1, merge
+  commit `9291b20`, 31 commits). Build suite **111 → 196**. Wave 0 fixed the Article 2
+  first-page chrome defect that is live in the adopted v1.0 edition (physical page 12 —
+  it cannot be back-applied, because `build-adopted.sh` renders from the tag) and
+  de-pinned three tests that tracked the live working tree. Wave 1 built the seams a
+  per-Article redline needs: `czc_standalone_name`; `SRC_DIR`/`OUT_DIR`/
+  `OUT_NAME_OVERRIDE` on `build-standalone.sh`; `STANDALONE_FRONT_NOTE` (uncounted, and
+  it refuses an odd page count); whole-line HTML comments treated as **structure** in
+  `redline-text.py --source`, with the integrated build now refusing a damaged split
+  marker; **`--plain`**, the markdown redline (additions `**bold**` + a `⊕` sigil on
+  whole-line insertions, deletions `~~struck~~`, a legend, and a visible
+  figure-regenerated note); the **ownership map** in `article-manifest.json` +
+  `manifest.py` (`data`/`articles`/`owner`, with a coverage test over every tracked file
+  under `source/`); and **`redline-stage.sh`**, now the single definition of
+  `redline_resolve.py`'s rc 0/3/4/refuse contract, with a guard that stops plain-marked
+  source reaching the PDF stage.
+  **Still to build (Waves 2-4):** `section_map.py` + the normaliser rule; `czc_diff.py`
+  (the substantive-change determination), `use_table_changes.py`, `czc_md.py`,
+  `structural_note.py` per-Article, **`build-redline-standalone.sh`**; then
+  `build-release.sh`, the fifth use-table status code, and the spec/CLAUDE.md updates.
+- **▶ OPEN — what a change to a `shared` file implies** for the substantive-change
+  determination is **not decided** (recorded as OPEN in `article-manifest.json`). The
+  candidate rule is that it flags every Article for a standalone + standalone redline,
+  but `shared` is empty and nothing relies on it. Ben rules before the first entry.
+- **▶ OPEN — should a dropped heading or figure carry a visible placeholder in the
+  redline?** In `--source` a removed table or figure vanishes without trace and an added
+  heading is emitted unmarked; the legend now says so plainly instead of over-promising.
+  A visible placeholder is a new format element — Ben's call, Wave 3.
 
 - **CZC v1.0 was ADOPTED at the Special Town Meeting, September 14, 2026.** Adopted edition built from the
   tag (`releases/v1.0-adopted/`, md + gitignored pdf); baseline rolled over to v1.0. Future drafts are
