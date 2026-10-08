@@ -391,25 +391,36 @@ def changed_line_count(old: str, new: str, *, amap, smap=None) -> int:
     return _marked(o, n)
 
 
-def report(old: str, new: str, *, amap) -> dict[str, int]:
-    """How many differences each rule suppressed. Printed by the build so the
-    normaliser's effect is visible rather than assumed.
+def report(old: str, new: str | None = None, *, amap, smap=None) -> dict[str, int]:
+    """How many differences each rule suppressed, counted from the OLD side.
 
-    NOTE: the brief's original `heading_case` formula compared match counts
-    before/after normalising `old` against itself -- since `_heading_case`
-    never changes how many headings match (only their letter's case), that
-    count was always zero. Replaced with a direct count of headings on the
-    old (baseline) side whose leading letter is uppercase: those are exactly
-    the headings this rule rewrites to lowercase, i.e. the ones whose case
-    difference against the current side's lowercase convention it suppresses.
+    Every rule normalize_old_side() applies is counted: heading case, Article
+    references, table numbers, frontmatter, and -- when a section map is given
+    -- section numbers. `rewrap` compares BOTH sides, so it appears only when
+    `new` is given; the resolver has only the old side, and normalize_old_side
+    does not rewrap anyway.
+
+    ADOPTION-SPEC.md:155 promises these counts. Until 2026-10-08 the table and
+    frontmatter rules were never counted. A suppressed mark is honest only if a
+    reader can be shown how many there were.
+
+    NOTE: the heading_case count is the number of baseline headings whose
+    leading letter is uppercase -- exactly the ones the rule rewrites. (A count
+    of matches before and after normalising `old` against itself was always
+    zero, since case never changes how many headings match.)
     """
-    counts = {"heading_case": 0, "renumber": 0, "rewrap": 0}
-    counts["heading_case"] = sum(
-        1 for m in _HEADING_LETTER.finditer(old) if m.group(2).isupper()
-    )
-    counts["renumber"] = sum(
-        1 for m in re.finditer(r"\bArticle (\d+)\b", old)
-        if amap.article_numbers.get(int(m.group(1)), int(m.group(1))) != int(m.group(1))
-    )
-    counts["rewrap"] = len(_WS_RUN.findall(old)) + len(_WS_RUN.findall(new))
+    def shifted(n: int) -> bool:
+        return amap.article_numbers.get(n, n) != n
+
+    counts = {
+        "heading_case": sum(1 for m in _HEADING_LETTER.finditer(old) if m.group(2).isupper()),
+        "renumber": sum(1 for m in re.finditer(r"\bArticle (\d+)\b", old)
+                        if shifted(int(m.group(1)))),
+        "tables": sum(1 for m in _TABLE_NUM.finditer(old) if shifted(int(m.group(2)))),
+        "frontmatter": sum(1 for m in _FRONTMATTER_ARTICLE_NUMBER.finditer(old)
+                           if shifted(int(m.group(2)))),
+        "sections": _section_renumber(old, smap)[1],
+    }
+    if new is not None:
+        counts["rewrap"] = len(_WS_RUN.findall(old)) + len(_WS_RUN.findall(new))
     return counts

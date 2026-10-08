@@ -663,3 +663,33 @@ def test_but_the_next_paragraph_is_unaffected():
 def test_a_self_reference_to_the_containing_article_does_not_block():
     out = nz.normalize_sections_only(FM + "Under Article 7, see Section 3.\n", smap={7: {3: 4}})
     assert out.endswith("see Section 4.\n")
+
+
+# --- The report counts every rule ----------------------------------------------
+# ADOPTION-SPEC.md:155 says the module reports what EACH rule suppressed. It
+# counted three of five. Each test below triggers exactly ONE rule and asserts
+# that rule's count and the others' zeros -- so a key that miscounts fails.
+
+def _only(r, key):
+    return {k: v for k, v in r.items() if v} == {key: r[key]}
+
+
+def test_report_counts_table_renumbering():
+    r = nz.report("See TABLE 6.1 Design Standards.\n", amap=AMAP)
+    assert r["tables"] == 1 and _only(r, "tables")
+
+
+def test_report_counts_frontmatter_renumbering():
+    r = nz.report('---\narticle-number: "6"\n---\n', amap=AMAP)
+    assert r["frontmatter"] == 1 and _only(r, "frontmatter")
+
+
+def test_report_counts_section_renumbering():
+    r = nz.report(FM + "See Section 3.\n", amap=AMAP, smap={7: {3: 4}})
+    assert r["sections"] == 1
+
+
+def test_report_omits_rewrap_without_a_new_side():
+    """rewrap compares BOTH sides; the resolver has only the old one."""
+    assert "rewrap" not in nz.report("x\n", amap=AMAP)
+    assert "rewrap" in nz.report("x\n", "x\n", amap=AMAP)
