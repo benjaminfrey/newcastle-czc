@@ -280,7 +280,7 @@ This pass re-measured everything the v0.3 render still got wrong and corrected i
 
 The full-CZC deliverable is assembled by rendering each Article to its own PDF (so per-Article metadata — number, name, tab, opener — is honored) and concatenating with `pdfunite`. Each standalone render naturally numbers from 1, so without intervention the combined document had multiple "page 1"s — unusable for a legal document cited by page.
 
-The build (`build/build-full-czc.sh`) threads a cumulative **page offset** into each render via `-V page-offset=N`; the template displays `here().page() + page_offset` in the footer (and uses the same adjusted value for header/footer/tab edge parity). To keep Typst's automatic `inside`/`outside` (binding) margins aligned to the **combined** document's parity, every offset must be **even** — so the build pads any odd-length Article with a trailing blank page. Side effect (intentional, conventional): each Article opens on a **recto** (odd) page.
+The build (`build/build-full-czc.sh`) threads a cumulative **page offset** into each render via `-V page-offset=N`; the template displays `here().page() + page_offset` in the footer (and uses the same adjusted value for header/footer/tab edge parity). To keep Typst's automatic `inside`/`outside` (binding) margins aligned to the **combined** document's parity, every offset must be **even** — so the build pads any odd-length Article with a trailing blank page. Side effect (intentional, conventional): each Article opens on a **recto** (odd) page. **[SUPERSEDED — see §21.]**
 
 > **Known deviation from baseline parity.** The baseline opens each Article on a **verso** page because it carries three front-matter pages (cover + 2-page TOC) that the integrated draft does not yet include. The draft therefore mirrors the baseline's tab/binding side on opener pages. Adding real front matter (cover + TOC) is the proper future fix and will restore verso openers; it is deferred as separate scope.
 
@@ -409,13 +409,13 @@ Each district is a **verso (standards) + recto (use-matrix)** pair:
 
 ### The two-renderer architecture
 
-- **`source/article-02.typ`** — structure-agnostic native renderer. It draws whatever ordered `left`/`right` panel arrays and optional `matrix` the data carries, so a baseline correction re-flows without editing layout code. Geometry matches the markdown articles' inside/outside binding margins (inside 90 pt / outside 44 pt / top 64 / bottom 56). A leading **`#pagebreak(to:"even")`** lands D1 on a verso; that leading page is a true parity blank with header, footer, and article-tab all suppressed by an `if here().page() == 1 { return [] }` guard in each of the three context functions.
+- **`source/article-02.typ`** — structure-agnostic native renderer. It draws whatever ordered `left`/`right` panel arrays and optional `matrix` the data carries, so a baseline correction re-flows without editing layout code. Geometry matches the markdown articles' inside/outside binding margins (inside 90 pt / outside 44 pt / top 64 / bottom 56). A leading **`#pagebreak(to:"even")`** lands D1 on a verso; that leading page is a true parity blank with header, footer, and article-tab all suppressed by an `if here().page() == 1 { return [] }` guard in each of the three context functions. **[SUPERSEDED — see §21.]**
 - **`source/article-02-prefatory.md`** — Article 2 §1–§5 prose stays in markdown/pandoc because (a) it relies on nested ordinal list numbering (1./a./i.) the native renderer would have to re-implement, and (b) the baseline's *prose* pages show only the "DISTRICT STANDARDS" header (no group label), which the pandoc template already produces.
 - **Status glyphs now render** via `glyph_font = ("Apple Symbols", "Arial Unicode MS")`: ● Use Permit, ❶ Special Permit, ❷ Expanded Use, ✪ Residential Companion — resolving the carried-forward "`❶ ❷ ✪` need a fallback font" defect. **Band fill + text color** are read per-district from the baseline, resolving the carried-forward "district-page banner styling" item.
 
 ### Build wiring (`build/build-full-czc.sh`)
 
-The article glob became `ls article-*.md article-02.typ | sort`. The hyphen in `article-02-prefatory.md` (0x2D) sorts before the dot in `article-02.typ` (0x2E), so the two interleave correctly — prose then spreads — with the render loop **dispatching by extension** (`*.typ` → `typst` directly; everything else → the pandoc `build-article.sh`). Both paths thread the same cumulative **even** `page_offset` and `footer_date`, preserving the §16 parity invariant (margins/tab off the physical page; chrome off logical = `here().page() + page_offset`). Cross-references in the extracted district text are renumbered for the integrated draft **in the extractor** (old 3→4 … 8→9), so no post-processing is needed.
+The article glob became `ls article-*.md article-02.typ | sort`. The hyphen in `article-02-prefatory.md` (0x2D) sorts before the dot in `article-02.typ` (0x2E), so the two interleave correctly — prose then spreads — with the render loop **dispatching by extension** (`*.typ` → `typst` directly; everything else → the pandoc `build-article.sh`). Both paths thread the same cumulative **even** `page_offset` and `footer_date`, preserving the §16 parity invariant (margins/tab off the physical page; chrome off logical = `here().page() + page_offset`). Cross-references in the extracted district text are renumbered for the integrated draft **in the extractor** (old 3→4 … 8→9), so no post-processing is needed. **[SUPERSEDED — see §21.]**
 
 > **Page-count note.** Integrated grew **91 → 97 pages**; standalone Article 3 holds at **9**. The +6 is the faithful 2-page-per-district treatment (13 spreads = 26 pages, vs. the compressed markdown blocks they replace) plus the one leading parity blank before D1. Blank pads now sit at physical pages **5, 32, 42, 64, 74, 90** (page 5 is the D1 lead-in blank); footers remain continuous **1 → 97** and parity-correct (number at the left fore-edge on verso, right on recto). Footer version string set to "Draft v0.5-draft" at build time.
 
@@ -436,7 +436,7 @@ Two parity invariants, both satisfied by construction:
 1. **TOC self-parity.** The TOC is compiled *standalone*, so its inside/outside binding margins and its running-head/footer edge bake in against its *own* physical page parity (Typst's automatic margins key off the physical `here().page()` and cannot be offset — the same constraint that governs the body, §16). For the standalone render to match the final document, the page count **before** the TOC must be **even**: cover (1) + one blank verso (1) = 2 → the TOC opens on a recto, margins on the correct edge.
 2. **Body parity preserved.** Total front matter is forced **even**, so the even shift leaves every Article on the parity it had standalone. cover + blank + TOC is even when the TOC is even; a trailing blank is appended iff the TOC page count is odd.
 
-**Recto-vs-verso deviation (made explicit).** The baseline opens every Article on a **verso** — it paginates its front matter 1–3 (odd) and pads each Article to an even length. Our body opens on a **recto** (§16). The even front matter (4 pp this release) *preserves* that recto-opening; it does **not** convert it to verso-opening, which would require either per-Article leading blanks (page bloat absent from the baseline) or abandoning Typst's automatic binding margins. Recto-opening is retained as a deliberate, documented deviation. (Consequently our TOC opens on a **recto** at physical p3, where the baseline's TOC opens on a **verso** at physical p2 — same grammar, mirrored edge.)
+**Recto-vs-verso deviation (made explicit).** The baseline opens every Article on a **verso** — it paginates its front matter 1–3 (odd) and pads each Article to an even length. Our body opens on a **recto** (§16). The even front matter (4 pp this release) *preserves* that recto-opening; it does **not** convert it to verso-opening, which would require either per-Article leading blanks (page bloat absent from the baseline) or abandoning Typst's automatic binding margins. Recto-opening is retained as a deliberate, documented deviation. (Consequently our TOC opens on a **recto** at physical p3, where the baseline's TOC opens on a **verso** at physical p2 — same grammar, mirrored edge.) **[SUPERSEDED — see §21.]**
 
 ### The cover (`build/build-cover.py`, PyMuPDF)
 
@@ -457,3 +457,48 @@ Reuses the adopted code's cover art rather than redrawing it. Baseline page 0 is
 > **Comparison note.** No `diff-pdf` overlay vs. v0.5: the footer version stamp differs on every page, so an overlay flags all 97 body pages (and ran 62 MB). Replaced with **`Front Matter Fidelity — Baseline vs v0.6-draft.pdf`** (3 spreads: cover + both TOC pages, baseline-left / draft-right).
 
 > **Deferred items carried forward.** **Resolved this release:** stale table numbers, road-grade basis, front matter. **Remaining:** 10 cross-section graphics (held by direction); re-verify §3.d Comp Plan policy/section numbers against the adopted plan before public release. *(Correction: the v0.5 "memo blank FROM line" item was stale — the memo was finalized in `59b6aec`; it stays an unadopted discussion draft by design, not as a defect.)*
+
+## 21. Erratum (2026-10-07) — the leading parity blank, and two open items
+
+This log stopped at v0.6. Four statements above describe a pagination model the build
+abandoned in **v0.19** and are now wrong; they are annotated in place rather than rewritten,
+because this file is a dated record of what was true at each release, not a current design
+document. Read this section before acting on §16, §19 or §20.
+
+### What changed
+
+- **`source/article-02.typ` no longer inserts a leading `#pagebreak(to:"even")`** (removed
+  2026-06; keeping it alongside the build's pad produced two redundant blank pages). D1's
+  standards page is therefore the unit's **own first page**, a content page.
+- **Offsets are no longer kept even, and Articles no longer open on a recto.** v0.19 removed the
+  per-Article recto padding and threads the **true running** `page_offset` (10 blanks → 1,
+  125 pp → 118; the integrated draft is **117 pp with a single structural blank**, the
+  front-matter verso). The build pads to an **odd** running offset before `article-02.typ` so
+  D1 lands on a verso — and that pad **inserts a blank only when the preceding page total is
+  even**, which in the current build it is not. There is no blank page before Article 2.
+- **The three `if here().page() == 1 { return [] }` guards described in §19 are gone**
+  (2026-10-07). Written for the leading blank, they outlived it and suppressed the running head,
+  footer page number and rotated article tab on a real content page. **That defect is live in
+  the adopted v1.0 edition**, on physical page 12. It cannot be back-applied: `build-adopted.sh`
+  renders from the tag, which is correct. `build/tests/test_unit_chrome.py` now asserts chrome on
+  every district page, and `build/tests/test_structural_note.py` asserts the parity invariant on
+  every body page — the guard the repository lacked when this shipped.
+
+### Open item — the binding margins are mirrored one page against the baseline
+
+Measured on `releases/v1.0-adopted` (117 pp): **odd** physical pages carry body x0=44 / x1=522
+(gutter at the **fore edge**), **even** physical pages x0=90 / x1=568 (gutter at the **binding**).
+The baseline 2020 Code is the exact opposite. Prose pages mirror the same way as the district
+spreads, so it is **document-wide and pre-dates the guard removal**.
+
+Mechanism: chrome keys off `here().page() + page_offset`, but Typst resolves each unit's
+`inside`/`outside` margins from that unit's **own physical page index**, which the offset cannot
+move. §16's "every offset must be even" was the old workaround for exactly this; with no leading
+blank, no single offset satisfies both chrome and margins. **Neither offset is settled** — the
+full measurement is in `source/article-02.typ:25-41`, and no test asserts a margin side, so
+nothing in the repository blesses the current geometry. **This is an open operator decision.**
+
+### Open item — the adopted edition's missing chrome
+
+Whether the Town wants an erratum note for physical page 12 of the adopted v1.0 edition, or
+simply lets the next amendment carry the fix, is a decision for the operator and the Board.
