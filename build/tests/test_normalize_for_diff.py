@@ -264,14 +264,10 @@ def test_changed_line_count_follows_the_render_path():
     """The old side is normalize_old_side()'d, the new side is verbatim --
     exactly what redline_resolve.py writes and what build-redline-full.sh
     stages. If this ever diverges, the count stops describing the packet."""
-    import difflib
     old = "### A. PURPOSE\nSee Article 7 and TABLE 6.1 Design Standards.\n"
     new = "### a. PURPOSE\nSee Article 8 and TABLE 7.1 Design Standards.\n"
-    expected = sum(
-        1 for line in difflib.unified_diff(
-            nz.normalize_old_side(old, amap=AMAP).splitlines(),
-            new.splitlines(), n=0)
-        if line[:1] in "+-" and line[:3] not in ("+++", "---"))
+    expected = nz._marked(nz.normalize_old_side(old, amap=AMAP).splitlines(),
+                          new.splitlines())
     assert nz.changed_line_count(old, new, amap=AMAP) == expected
     # And it is genuinely suppressed to zero: heading case + both renumberings.
     assert nz.changed_line_count(old, new, amap=AMAP) == 0
@@ -290,7 +286,6 @@ def test_breakdown_and_render_paths_agree_on_the_real_corpus():
     (changed_line_count) must report the same number PER ARTICLE. If a future
     normaliser rule breaks that, the operator's number and the packet's marks
     have parted company and one of them is lying."""
-    import difflib
     import subprocess
 
     REPO = BUILD.parent
@@ -303,12 +298,30 @@ def test_breakdown_and_render_paths_agree_on_the_real_corpus():
         assert old.returncode == 0, cur
         new = (REPO / "source" / cur).read_text()
 
-        comparison = sum(
-            1 for line in difflib.unified_diff(
-                nz.normalize(old.stdout, amap=AMAP, is_baseline_side=True).splitlines(),
-                nz.normalize(new, amap=AMAP, is_baseline_side=False).splitlines(), n=0)
-            if line[:1] in "+-" and line[:3] not in ("+++", "---"))
+        comparison = nz._marked(
+            nz.normalize(old.stdout, amap=AMAP, is_baseline_side=True).splitlines(),
+            nz.normalize(new, amap=AMAP, is_baseline_side=False).splitlines())
         render = nz.changed_line_count(old.stdout, new, amap=AMAP)
         assert comparison == render, (
             f"{cur}: the reviewed count ({comparison}) and the rendered count "
             f"({render}) disagree")
+
+
+# --- The counter counts every changed line ------------------------------------
+# changed_line_count dropped diff headers by PREFIX ("---"/"+++"), which also
+# dropped real changed lines beginning with -- or ++. Found 2026-10-08.
+
+def test_a_deleted_horizontal_rule_is_counted():
+    """`---` deleted appears in the diff as `----`, which the old prefix filter
+    discarded as if it were the file header."""
+    assert nz.changed_line_count("a\n---\nb\n", "a\nb\n", amap=AMAP) == 1
+
+
+def test_an_added_line_beginning_with_plus_plus_is_counted():
+    assert nz.changed_line_count("a\n", "a\n++x\n", amap=AMAP) == 1
+
+
+def test_identical_text_still_counts_zero():
+    """The fix must not count the headers when there is no diff at all -- an
+    empty diff has no header lines to skip."""
+    assert nz.changed_line_count("a\nb\n", "a\nb\n", amap=AMAP) == 0

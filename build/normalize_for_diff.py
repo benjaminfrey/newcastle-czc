@@ -198,6 +198,21 @@ def normalize_old_side(text: str, *, amap) -> str:
     return out
 
 
+def _marked(o: list[str], n: list[str]) -> int:
+    """How many lines differ between two line lists: the ONE counting rule.
+
+    A non-empty unified diff always begins with exactly two file-header lines
+    (`--- ` and `+++ `); every later line starting with `+` or `-` is a changed
+    line. The previous filter dropped headers by PREFIX instead, which also
+    dropped real changed lines beginning with -- or ++ -- a deleted `---`
+    horizontal rule appears as `----`. Found 2026-10-08.
+    """
+    import difflib
+
+    lines = list(difflib.unified_diff(o, n, n=0))
+    return sum(1 for line in lines[2:] if line[:1] in "+-")
+
+
 def changed_line_count(old: str, new: str, *, amap) -> int:
     """How many lines the redline will MARK for this article pair.
 
@@ -218,12 +233,9 @@ def changed_line_count(old: str, new: str, *, amap) -> int:
     build/tests/test_normalize_for_diff.py for the test that pins the
     agreement.
     """
-    import difflib
-
     o = normalize_old_side(old, amap=amap).splitlines()
     n = new.splitlines()
-    return sum(1 for line in difflib.unified_diff(o, n, n=0)
-               if line[:1] in "+-" and line[:3] not in ("+++", "---"))
+    return _marked(o, n)
 
 
 def report(old: str, new: str, *, amap) -> dict[str, int]:
