@@ -1,7 +1,9 @@
 # Shared adoption-mode resolution. Sourced by build-full-czc.sh and
-# build-standalone.sh (both `set -euo pipefail`, both define REPO_ROOT and
-# VERSION before sourcing this). Reads ADOPTION_MODE (default 'draft', so a
-# plain invocation is unchanged) and ADOPTION_EVENT_DATE from the environment,
+# build-standalone.sh (both `set -euo pipefail`, both define REPO_ROOT, VERSION
+# and SOURCE_DIR before sourcing this -- all three are PRECONDITIONS, and an
+# unset or empty SOURCE_DIR is a hard error below, never a silent skip).
+# Reads ADOPTION_MODE (default 'draft', so a plain invocation is unchanged) and
+# ADOPTION_EVENT_DATE from the environment,
 # sets FOOTER_TEXT, and enforces the version-state rule in BOTH directions.
 # See build/ADOPTION-SPEC.md §4 / §4.1 / §6.1.
 ADOPTION_MODE="${ADOPTION_MODE:-draft}"
@@ -50,7 +52,15 @@ source "$REPO_ROOT/build/adoption-name.sh"
 # not chrome strings for the residue gate. Both builders source this file after
 # setting SOURCE_DIR, so the refusal lives here, once. The label's name is
 # CZC_PLAIN_MARK_FILE in redline-stage.sh; test_redline_stage.py ties the two.
-if [ -e "${SOURCE_DIR:-/nonexistent}/.redline-plain-marked" ]; then
+#
+# The guard depends on SOURCE_DIR, so SOURCE_DIR is a precondition. A sourcer that
+# set it AFTER sourcing this file (or never) would otherwise get no protection and
+# no warning -- a guard that fails open -- so it is checked, not defaulted.
+if [ -z "${SOURCE_DIR:-}" ]; then
+  echo "adoption-footer.sh: SOURCE_DIR must be set BEFORE this file is sourced (the plain-marked-source guard reads it)." >&2
+  exit 1
+fi
+if [ -e "$SOURCE_DIR/.redline-plain-marked" ]; then
   echo "refusing to build: $SOURCE_DIR holds plain-marked redline source (redline-text.py --plain)." >&2
   echo "Its legend line and whole-line sigils would be typeset into the document. Stage without --plain for a PDF." >&2
   exit 1

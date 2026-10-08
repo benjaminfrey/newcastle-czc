@@ -125,7 +125,8 @@ def test_the_integrated_build_refuses_a_missing_marker(tmp_path):
     assert r.returncode != 0, (
         "the integrated build accepted a damaged split marker and appended the "
         "plates after the prose")
-    assert "marker" in (r.stderr + r.stdout).lower()
+    assert "marker is missing or damaged" in r.stderr, r.stderr   # rc 2 -> the specific claim
+    assert "exit 2" not in r.stderr
 
 
 # Marker present on BOTH sides but at different positions, with prose now sitting

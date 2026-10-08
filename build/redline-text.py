@@ -237,19 +237,27 @@ def wrap_red(s: str) -> str:
 # --plain: the markdown redline that survives in the repository (the PDF does
 # not -- releases/**/*.pdf is gitignored). Additions **bold**, deletions ~~struck~~
 # (already markdown), and no Typst anywhere in the markup. Decision D1.
-UNMARKED_FIGURE_NOTE = '<!-- unmarked: regenerated figure -->'
+UNMARKED_FIGURE_NOTE = '<!-- unmarked: new or regenerated figure -->'
 # The comment renders as nothing (pandoc, GitHub), so it travels with a visible
-# line: a regenerated figure must not read as "compared and unchanged". The
+# line: a new or regenerated figure must not read as "compared and unchanged". The
 # comment stays its own whole line -- is_unmarkable_structure keys on that.
-UNMARKED_FIGURE_VISIBLE = '*[figure regenerated \u2014 shown unmarked]*'
+UNMARKED_FIGURE_VISIBLE = '*[figure new or regenerated \u2014 shown unmarked]*'
 # Leading marker for a line added in its ENTIRETY. The Code bolds every defined
 # term (548x in Article 9), so **bold** alone cannot tell an added term from an
 # unchanged one. U+2295 renders as visible text through pandoc -f gfm, is not
 # markdown structure (unlike a bare + or >), and appears nowhere in source/.
 SIGIL = '\u2295'
 LEGEND = ('Redline key: **bold** = text added; ~~struck~~ = text deleted; '
-          f'{SIGIL} at the start of a line = the whole line is new; '
-          '"figure regenerated \u2014 shown unmarked" = a figure shown in its current form, not compared.')
+          f'{SIGIL} marks a line that is new in its entirety; '
+          '"figure new or regenerated \u2014 shown unmarked" = a figure shown in its current form, not compared.')
+# --source marks prose and table rows ONLY (emit_inserted_src returns a heading
+# verbatim; emit_deleted_src drops a heading or a block with no trace). The
+# legend for that mode must not promise more, in either direction. A removed
+# figure or native table is the case a resident cannot see for themselves.
+LEGEND_SOURCE_LIMITS = ('This key covers prose and table rows only. Headings, figures, and tables typeset '
+                        'as figures are shown in '
+                        'their current form, unmarked, and one that was removed leaves no trace here; '
+                        'see the Summary of Changes for structural changes.')
 PLAIN = False
 
 
@@ -272,12 +280,14 @@ def set_plain_mode() -> None:
     wrap_red = wrap_bold
 
 
-def add_legend(result: str) -> str:
+def add_legend(result: str, source: bool = False) -> str:
     """Put the one-line convention legend at the head of plain output -- after the
     YAML front-matter when there is one, since --source output is a document the
-    build reads and front-matter must stay first."""
+    build reads and front-matter must stay first. ``source`` appends the limits
+    of --source marking (see LEGEND_SOURCE_LIMITS)."""
     fm, body = split_frontmatter(result)
-    return fm + LEGEND + '\n\n' + body.lstrip('\n')
+    legend = LEGEND + (' ' + LEGEND_SOURCE_LIMITS if source else '')
+    return fm + legend + '\n\n' + body.lstrip('\n')
 
 
 # ---------------------------------------------------------------------------
@@ -646,7 +656,7 @@ def emit_deleted_src(ln: str, reg: dict) -> str:
 
 def emit_inserted_src(ln: str, reg: dict) -> str:
     if is_block_token(ln):
-        if PLAIN:            # a text diff cannot mark a regenerated figure: say so in the text
+        if PLAIN:            # a text diff cannot mark a new or regenerated figure: say so in the text
             return UNMARKED_FIGURE_NOTE + '\n\n' + UNMARKED_FIGURE_VISIBLE + '\n\n' + reg[ln]
         return reg[ln]       # NEW fenced / raw-Typst block VERBATIM, no note
     if is_heading(ln):
@@ -714,7 +724,7 @@ def main():
     else:  # default: changes-only digest
         result, n_del, n_ins, n_hunks = digest(old_text, new_text)
     if PLAIN:
-        result = add_legend(result)
+        result = add_legend(result, source='--source' in flags)
     with open(out_f, 'w', encoding='utf-8') as f:
         f.write(result)
     extra = '' if n_hunks is None else f', {n_hunks} passage(s)'

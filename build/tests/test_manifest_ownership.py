@@ -181,3 +181,18 @@ def test_a_new_unclaimed_file_fails_the_coverage_check(tmp_path):
         subprocess.run(["git", "rm", "--cached", "-q", "--force", str(probe)],
                        cwd=REPO, check=False)
         probe.unlink(missing_ok=True)
+
+
+def test_data_is_documented_as_non_prose_only_where_a_reader_will_see_it():
+    """`manifest.py data 7` is [] although Article 7's binding content is all
+    prose. A later wave iterating `data <N>` must be told, in both places a
+    reader looks: the CLI's own docstring and the map's _ownership_comment."""
+    assert run("data", "7")[0].strip() == "[]"          # the behaviour being documented
+    assert "NON-PROSE FILES ONLY" in _manifest_module().__doc__
+    comment = json.loads(MANIFEST_JSON.read_text())["_ownership_comment"]
+    assert "NON-PROSE FILES ONLY" in comment and "never means no binding content" in comment
+
+
+def test_the_meaning_of_shared_is_defined_in_the_map():
+    comment = json.loads(MANIFEST_JSON.read_text())["_ownership_comment"]
+    assert "MEANING OF shared" in comment and "EVERY Article" in comment

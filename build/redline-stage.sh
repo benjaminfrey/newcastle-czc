@@ -20,6 +20,18 @@
 # never normalised: it is the document being published. Only the OLD side may be
 # normalised for rendering (see build/normalize_for_diff.py's module docstring).
 #
+# MULTIPLE BASENAMES ARE NOT ATOMIC. On any failure the function returns
+# non-zero at once, so with more than one basename the files before the failing
+# one are ALREADY MARKED in the stage. The caller must discard the stage on a
+# non-zero return, never render or publish it.
+#
+# THE STAGE IS NEVER THE CODE. "Marks are written into a copy, so source/ is
+# never edited" is the invariant these seams exist for, and it is enforced, not
+# assumed: redline-text.py writes IN PLACE into <stage-dir>, so a stage that
+# resolved to the repository's source/ (or to <src-dir> itself) would mark the
+# Code. Both are refused, after resolving symlinks and ".." to absolute paths.
+# A stage nested inside source/ is refused too: it would dirty the Code's tree.
+#
 # <plain-flag> is "" or "--plain". PLAIN OUTPUT IS FOR A PUBLISHED .md ONLY: it
 # carries a "Redline key:" legend at the head of every marked file (even one
 # with zero changes) and a sigil on whole-line insertions, and --source writes
@@ -36,6 +48,22 @@ czc_redline_stage() {
   shift 5
   local repo_root; repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
   local redline_py="$repo_root/build/redline-text.py"
+
+  # Resolve before comparing (realpath works on a path that does not exist yet,
+  # so a not-yet-created stage resolves too). Refuse BEFORE mkdir/cp touch anything.
+  local abs_stage abs_src abs_code
+  abs_stage="$(python3 -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$stage")" || return 1
+  abs_src="$(python3 -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$src")" || return 1
+  abs_code="$(python3 -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$repo_root/source")" || return 1
+  if [ "$abs_stage" = "$abs_src" ]; then
+    echo "redline: refusing to stage into the source directory itself ($abs_stage) — marks are written in place." >&2
+    return 1
+  fi
+  case "$abs_stage/" in
+    "$abs_code"/*)
+      echo "redline: refusing to stage into the Code's source/ or a path inside it ($abs_stage) — marks are written in place." >&2
+      return 1 ;;
+  esac
 
   mkdir -p "$stage"
   cp -R "$src/." "$stage/"

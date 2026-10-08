@@ -128,7 +128,9 @@ if [ -f "$PLATES_TYP" ] && [ -n "$ART3_SRC" ]; then
   CAND_03A="$TMPDIR_PDFS/article-03a.md"
   CAND_03B="$TMPDIR_PDFS/article-03b.md"
   CAND_03C="$TMPDIR_PDFS/article-03c.md"
-  if python3 "$REPO_ROOT/build/split-article-03.py" "$ART3_SRC" "$CAND_03A" "$CAND_03B" "$CAND_03C"; then
+  SPLIT_RC=0
+  python3 "$REPO_ROOT/build/split-article-03.py" "$ART3_SRC" "$CAND_03A" "$CAND_03B" "$CAND_03C" || SPLIT_RC=$?
+  if [ "$SPLIT_RC" -eq 0 ]; then
     SPLIT_03A="$CAND_03A"
     SPLIT_03B="$CAND_03B"
     # The §5 marker (when present) splits the post-plate body into 03b (§2.d..§5.C)
@@ -157,7 +159,11 @@ if [ -f "$PLATES_TYP" ] && [ -n "$ART3_SRC" ]; then
     done
     ARTICLES=("${SPLICED[@]}")
   else
-    echo "build-full-czc: Article 3's split marker is missing or damaged — refusing to build." >&2
+    if [ "$SPLIT_RC" -eq 2 ]; then
+      echo "build-full-czc: Article 3's split marker is missing or damaged — refusing to build." >&2
+    else
+      echo "build-full-czc: splitting Article 3 failed (split-article-03.py exit $SPLIT_RC) — refusing to build." >&2
+    fi
     echo "  The marker seats the Type plates inside §2. Appending them after the prose" >&2
     echo "  instead produces a document whose plates sit in a place the Code does not" >&2
     echo "  have, and it exits 0 while doing it. build-standalone.sh already refuses." >&2

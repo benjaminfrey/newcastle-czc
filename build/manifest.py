@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
 """Tiny reader for build/article-manifest.json so build-standalone.sh (bash) need
-not parse JSON. The manifest lists native-Typst units only for Articles that have
-them (1, 2, 3); any article absent from it is a pure-prose single-pass build.
+not parse JSON. The manifest has an entry for every Article 1-9; an Article with
+an empty ``units`` list (4-9) is a pure-prose single-pass build.
 
 Subcommands (article-number is 1..9, with or without a leading zero):
   has <NN>      exit 0 if article NN has native units (use the splice path), else 1
   prose <NN>    print the prose markdown filename for NN ("" if no entry)
   markers <NN>  print the split markers, space-separated ("" if none)
   units <NN>    print one line per unit: typ|splice|data|conditional_on|parity|pad_to
-  data <NN>     print the article's data_sources as JSON ("[]" if none)
+  data <NN>     print the article's data_sources as JSON ("[]" if none).
+                NON-PROSE FILES ONLY: an Article's prose is NOT in data_sources
+                (it is the article-0N-*.md convention, see claimants()), so
+                "[]" -- as for Articles 4-9 -- does NOT mean "no binding
+                content". Article 7's binding content is entirely its prose.
+                To ask what governs an Article, use `owner <path>` per file.
   articles      print every article number the manifest knows, one per line
   owner <path>  print the owning article number for a path under source/
                 ("shared"/"ignored" for the top-level lists); exit 1 if unclaimed

@@ -43,8 +43,8 @@ A farm stand is permitted in D1 and D2.
 FIG_OLD = OLD + "\n```\nfigure version one\n```\n"
 FIG_NEW = NEW + "\n```\nfigure version two\n```\n"
 
-NOTE = "<!-- unmarked: regenerated figure -->"
-VISIBLE = "*[figure regenerated \u2014 shown unmarked]*"
+NOTE = "<!-- unmarked: new or regenerated figure -->"
+VISIBLE = "*[figure new or regenerated \u2014 shown unmarked]*"
 SIGIL = "\u2295"
 
 
@@ -145,7 +145,7 @@ def test_the_figure_disclosure_reaches_rendered_output(tmp_path):
     for mode in ("--source", "--full"):
         text, _ = run_files(tmp_path, FIG_OLD, FIG_NEW, mode, "--plain")
         seen = pandoc_out(text, "plain")       # visible text only: comments are dropped
-        assert "figure regenerated" in seen and "shown unmarked" in seen, (mode, seen)
+        assert "figure new or regenerated" in seen and "shown unmarked" in seen, (mode, seen)
         assert "figure version two" in seen
         assert "<em>" in pandoc_out(text, "html") or "_[figure" in pandoc_out(text, "gfm")
 
@@ -279,3 +279,39 @@ def test_without_the_flag_there_is_no_legend_and_no_sigil(tmp_path):
     for mode in ("--source", "--full", "--digest"):
         text, _ = run_files(tmp_path, FIG_OLD, FIG_NEW, mode)
         assert LEGEND_MARK not in text and SIGIL not in text and VISIBLE not in text
+
+
+# -- the --source legend must claim only what --source keeps -------------------
+#
+# --source marks prose and table rows. It drops a removed heading or block with
+# no trace and passes an added heading through unmarked. Each test below pins the
+# BEHAVIOUR the legend's exclusion clause describes, so the clause cannot go on
+# being printed after the code stops keeping it (or the reverse).
+
+SECTION_OLD = "# Article\n\n## 1. KEPT\n\nBody.\n\n## 2. REMOVED SECTION\n\n```\nold figure\n```\n"
+SECTION_NEW = "# Article\n\n## 1. KEPT\n\nBody.\n\n## 3. ADDED SECTION\n\nBody.\n"
+
+
+def test_the_source_legend_names_what_source_does_not_mark(tmp_path):
+    text, _ = run_files(tmp_path, SECTION_OLD, SECTION_NEW, "--source", "--plain")
+    legend = next(l for l in text.splitlines() if LEGEND_MARK in l)
+    assert "table rows only" in legend and "leaves no trace" in legend
+    assert "Summary of Changes" in legend
+    assert "marks a line that is new in its entirety" in legend
+    assert "at the start of a line" not in legend
+
+
+def test_the_other_modes_do_not_carry_the_source_only_exclusions(tmp_path):
+    for mode in ("--full", "--digest"):
+        text, _ = run_files(tmp_path, SECTION_OLD, SECTION_NEW, mode, "--plain")
+        legend = next(l for l in text.splitlines() if LEGEND_MARK in l)
+        assert "leaves no trace" not in legend, mode
+
+
+def test_what_the_source_legend_admits_is_what_the_code_does(tmp_path):
+    """The exclusion clause is TRUE: a removed heading and a removed block leave
+    nothing, and an added heading carries no mark and no sigil."""
+    text, _ = run_files(tmp_path, SECTION_OLD, SECTION_NEW, "--source", "--plain")
+    assert "REMOVED SECTION" not in text, "a removed heading left a trace; the legend would now under-claim"
+    assert "old figure" not in text, "a removed block left a trace; the legend would now under-claim"
+    assert "\n## 3. ADDED SECTION\n" in text, "an added heading is no longer verbatim (gained a mark or sigil)"

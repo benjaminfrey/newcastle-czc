@@ -83,12 +83,13 @@ trap 'rm -rf "$STAGE" "$OUTDIR"' EXIT
 #      - An article whose content moved out of markdown into a native-Typst
 #        unit since the baseline (Article 2's district standards) cannot be
 #        text-diffed without reporting a phantom mass deletion; it must render
-#        UNMARKED instead (exit 4 — see below).
+#        UNMARKED instead (exit 4 — czc_redline_stage, sourced below, maps it).
 #    Without ADOPTION_BASELINE=1 this resolves by filename exactly as before
 #    (exit 3 on a genuinely new file), so an ordinary draft-to-draft redline
 #    is untouched.
 #
-#    The NEW side ($nf) is NEVER normalised or otherwise rewritten here: it is
+#    The NEW side (the staged copy of each article) is NEVER normalised or
+#    otherwise rewritten here: it is
 #    the staged working-tree file that build-full-czc.sh typesets verbatim
 #    into the published PDF. redline-text.py's --source mode is line-based and
 #    emits the lines it is given, so anything done to a side that gets

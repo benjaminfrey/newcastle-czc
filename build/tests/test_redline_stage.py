@@ -33,12 +33,22 @@ def copy_source(tmp_path):
 
 
 def test_one_basename_marks_only_that_file(tmp_path):
+    """Every shipped source/article-*.md is identical to v1.0, so marking one
+    would normally leave it unchanged -- and this test could not tell 'marked
+    one' from 'marked all nine'. Each file is therefore given an ADDED line
+    first, so that marking it WOULD show: the requested file must change, and
+    the others must not."""
     src = copy_source(tmp_path)
+    for f in src.glob("article-*.md"):
+        f.write_text(f.read_text() + "\nA sentence added after v1.0 so marking would show.\n")
     dest = tmp_path / "stage"
     r = stage(src, dest, "v1.0", "article-07-use-standards.md")
     assert r.returncode == 0, r.stderr
+    assert "Marked 1 article markdown file(s)" in r.stdout, r.stdout
+    assert (dest / "article-07-use-standards.md").read_text() != \
+        (src / "article-07-use-standards.md").read_text(), "the requested file was not marked"
     for other in ("article-04-site-standards.md", "article-09-definitions.md"):
-        assert (dest / other).read_text() == (REPO / "source" / other).read_text(), (
+        assert (dest / other).read_text() == (src / other).read_text(), (
             f"{other} was marked, but only one basename was requested")
 
 
@@ -161,7 +171,7 @@ def test_the_integrated_builder_refuses_plain_marked_source(tmp_path):
                        env=dict(os.environ, SRC_DIR=str(plain), OUT_DIR=str(tmp_path / "out")))
     assert r.returncode != 0
     assert "plain-marked" in r.stderr, r.stderr
-    assert not (tmp_path / "out").exists() or not list((tmp_path / "out").glob("*.pdf"))
+    assert not (tmp_path / "out").exists()
 
 
 def test_the_standalone_builder_refuses_plain_marked_source_and_builds_without_the_label(tmp_path):
@@ -177,3 +187,126 @@ def test_the_standalone_builder_refuses_plain_marked_source_and_builds_without_t
     r = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True, env=env)
     assert "plain-marked" not in r.stderr, r.stderr
     assert r.returncode == 0, r.stderr[-500:]
+
+
+# -- the stage is never the Code (czc_redline_stage's own invariant) ------------
+#
+# redline-text.py --source writes IN PLACE into <stage-dir>. These run against a
+# FAKE repo (a copy of the library under tmp/repo/build, with its own source/)
+# so that a failure of the guard marks a scratch tree and never the real Code.
+# Only the guard emits "refusing to stage", so the message -- not the exit
+# status, which a later failure would also make non-zero -- is what proves it fired.
+
+def fake_repo(tmp_path):
+    repo = tmp_path / "repo"
+    (repo / "build").mkdir(parents=True)
+    (repo / "source").mkdir()
+    (repo / "source" / "article-07-use-standards.md").write_text("---\n---\nBody.\n")
+    (repo / "build" / "redline-stage.sh").write_text(STAGE_SH.read_text())
+    return repo
+
+
+def stage_in_fake(repo, src, dest, cwd=None):
+    script = (f'source "{repo}/build/redline-stage.sh"; '
+              f'czc_redline_stage "{src}" "{dest}" v1.0 "" "" article-07-use-standards.md')
+    return subprocess.run(["bash", "-c", script], cwd=cwd or repo, capture_output=True, text=True)
+
+
+def test_a_stage_that_is_the_codes_source_dir_is_refused(tmp_path):
+    repo = fake_repo(tmp_path)
+    other = tmp_path / "elsewhere"; other.mkdir()
+    (other / "article-07-use-standards.md").write_text("---\n---\nBody.\n")
+    before = (repo / "source" / "article-07-use-standards.md").read_text()
+    r = stage_in_fake(repo, other, repo / "source")
+    assert r.returncode != 0
+    assert "refusing to stage" in r.stderr, r.stderr
+    assert (repo / "source" / "article-07-use-standards.md").read_text() == before
+    assert not (repo / "source" / CZC_LABEL).exists()
+
+
+def test_a_dotdot_or_relative_or_symlinked_path_to_source_cannot_slip_past(tmp_path):
+    repo = fake_repo(tmp_path)
+    other = tmp_path / "elsewhere"; other.mkdir()
+    link = tmp_path / "link-to-source"; link.symlink_to(repo / "source")
+    spellings = {
+        "dotdot": f"{tmp_path}/elsewhere/../repo/source",
+        "trailing-slash": f"{repo}/source/",
+        "symlink": str(link),
+        "relative": "source",            # cwd is the fake repo
+    }
+    for name, spelling in spellings.items():
+        r = stage_in_fake(repo, other, spelling)
+        assert r.returncode != 0 and "refusing to stage" in r.stderr, (name, r.stderr)
+
+
+def test_a_stage_nested_inside_source_is_refused(tmp_path):
+    repo = fake_repo(tmp_path)
+    other = tmp_path / "elsewhere"; other.mkdir()
+    r = stage_in_fake(repo, other, repo / "source" / "scratch")
+    assert r.returncode != 0 and "refusing to stage" in r.stderr, r.stderr
+    assert not (repo / "source" / "scratch").exists(), "the refusal came after mkdir"
+
+
+def test_a_stage_that_is_its_own_src_is_refused(tmp_path):
+    repo = fake_repo(tmp_path)
+    work = tmp_path / "work"; work.mkdir()
+    (work / "article-07-use-standards.md").write_text("---\n---\nBody.\n")
+    for spelling in (str(work), f"{work}/", f"{tmp_path}/work/../work"):
+        r = stage_in_fake(repo, work, spelling)
+        assert r.returncode != 0 and "refusing to stage" in r.stderr, (spelling, r.stderr)
+
+
+def test_a_distinct_stage_outside_source_is_not_refused(tmp_path):
+    """POSITIVE CONTROL: the guard does not refuse everything. The fake repo has
+    no redline_resolve.py, so the run fails LATER, for a different reason --
+    what matters is that it got past the guard."""
+    repo = fake_repo(tmp_path)
+    work = tmp_path / "work"; work.mkdir()
+    (work / "article-07-use-standards.md").write_text("---\n---\nBody.\n")
+    r = stage_in_fake(repo, work, tmp_path / "stage")
+    assert "refusing to stage" not in r.stderr, r.stderr
+    assert (tmp_path / "stage" / "article-07-use-standards.md").exists()
+
+
+# -- adoption-footer.sh: SOURCE_DIR is a precondition, not a default -------------
+
+FOOTER_SH = REPO / "build" / "adoption-footer.sh"
+CZC_LABEL = ".redline-plain-marked"
+
+
+def source_footer(source_dir_line):
+    script = (f'set -euo pipefail; REPO_ROOT="{REPO}"; VERSION=v0.98-draft; {source_dir_line}\n'
+              f'source "{FOOTER_SH}"; echo "FOOTER=$FOOTER_TEXT"')
+    return subprocess.run(["bash", "-c", script], cwd=REPO, capture_output=True, text=True,
+                          env={k: v for k, v in os.environ.items()
+                               if k not in ("SOURCE_DIR", "ADOPTION_MODE", "ADOPTION_EVENT_DATE")})
+
+
+def test_footer_refuses_an_unset_or_empty_source_dir(tmp_path):
+    """The plain-marked guard reads SOURCE_DIR. Unset used to default to a
+    nonexistent path: no protection and no warning. It must be fatal."""
+    for line in ("", 'SOURCE_DIR=""'):
+        r = source_footer(line)
+        assert r.returncode != 0, (line, r.stdout)
+        assert "SOURCE_DIR must be set" in r.stderr, (line, r.stderr)
+        assert "FOOTER=" not in r.stdout
+
+
+def test_footer_refuses_a_sourcer_that_sets_source_dir_only_afterwards(tmp_path):
+    script = (f'set -euo pipefail; REPO_ROOT="{REPO}"; VERSION=v0.98-draft\n'
+              f'source "{FOOTER_SH}"; SOURCE_DIR="{tmp_path}"; echo "FOOTER=$FOOTER_TEXT"')
+    env = {k: v for k, v in os.environ.items() if k != "SOURCE_DIR"}
+    r = subprocess.run(["bash", "-c", script], cwd=REPO, capture_output=True, text=True, env=env)
+    assert r.returncode != 0 and "SOURCE_DIR must be set" in r.stderr, r.stderr
+
+
+def test_footer_still_works_with_a_set_source_dir_and_still_refuses_a_labelled_one(tmp_path):
+    """POSITIVE + EXISTING-GUARD CONTROLS: the new check does not break a caller
+    that sets SOURCE_DIR first (both builders do), and the plain-marked guard
+    behind it still fires."""
+    ok = source_footer(f'SOURCE_DIR="{tmp_path}"')
+    assert ok.returncode == 0, ok.stderr
+    assert "FOOTER=Draft v0.98-draft" in ok.stdout
+    (tmp_path / CZC_LABEL).write_text("x")
+    bad = source_footer(f'SOURCE_DIR="{tmp_path}"')
+    assert bad.returncode != 0 and "plain-marked" in bad.stderr, bad.stderr
