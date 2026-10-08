@@ -147,6 +147,7 @@ SRC_DIR="$STAGE" OUT_DIR="$OUTDIR" REDLINE_CAVEAT="$CAVEAT" \
 # The built artifact's name follows the adoption mode this redline was run in
 # (build/adoption-name.sh — one definition, read by producer and consumer).
 source "$REPO_ROOT/build/adoption-name.sh"
+source "$REPO_ROOT/build/pagecount.sh"
 RL_NAME="$(czc_integrated_name "${ADOPTION_MODE:-draft}" "$NEW_V")"
 BUILT="$OUTDIR/$RL_NAME.pdf"
 if [ ! -f "$BUILT" ]; then
@@ -158,9 +159,5 @@ fi
 DEST="${REDLINE_OUT:-$REPO_ROOT/releases/$NEW_V/$RL_NAME — Redline.pdf}"
 mkdir -p "$(dirname "$DEST")"
 cp "$BUILT" "$DEST"
-PAGES=$(python3 - "$DEST" <<'PY'
-import sys, fitz
-print(fitz.open(sys.argv[1]).page_count)
-PY
-)
+PAGES=$(czc_pagecount "$DEST")
 echo "Formatted redline saved ($PAGES pages): $DEST"

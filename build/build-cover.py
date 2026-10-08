@@ -33,7 +33,7 @@ adoption date in adopted mode. See build/ADOPTION-SPEC.md §4.
 """
 import os
 import sys
-import fitz  # PyMuPDF
+import pymupdf  # PyMuPDF; `import fitz` is deprecated and prints a notice to stdout
 
 ARTICLE_BLUE = (0x36 / 255, 0x7A / 255, 0xAC / 255)
 GRAY = (0x7C / 255, 0x76 / 255, 0x6F / 255)
@@ -43,7 +43,7 @@ NEAR_WHITE = (254 / 255, 254 / 255, 254 / 255)  # matches the scan background
 
 # Attestation block to mask (page points; measured from the 200-dpi crop).
 # Stays left of "NEWCASTLE, MAINE" (x>=317) and covers label+signature+date.
-ATTEST_RECT = fitz.Rect(48, 626, 306, 754)
+ATTEST_RECT = pymupdf.Rect(48, 626, 306, 754)
 
 # "AMENDED THROUGH: MARCH 24, 2025" -- the third of the three date lines under
 # "NEWCASTLE, MAINE". It is part of the scanned cover art, so restating it means
@@ -55,7 +55,7 @@ ATTEST_RECT = fitz.Rect(48, 626, 306, 754)
 #
 # Measured off the baseline scan at 600 dpi: ink runs x 388.8..563.9,
 # cap-top 722.9, baseline 731.9 (comma descends to 732.8).
-AMENDED_RECT = fitz.Rect(386, 721.0, 566, 733.8)
+AMENDED_RECT = pymupdf.Rect(386, 721.0, 566, 733.8)
 AMENDED_RIGHT = 563.9      # right edge all three date lines align to
 AMENDED_BASELINE = 731.9
 AMENDED_SIZE = 12.86       # 9.0 pt caps in Barlow Condensed (cap ratio 0.70)
@@ -76,7 +76,7 @@ def _draw_tracked(page, text, right_x, baseline_y, size, track, color):
     are noticeably letterspaced -- set solid, a replacement line reads as
     visibly tighter than the two lines above it. Draw glyph by glyph instead.
     """
-    font = fitz.Font(fontfile=BARLOW_COND)
+    font = pymupdf.Font(fontfile=BARLOW_COND)
     width = font.text_length(text, size) + track * (len(text) - 1)
     x = right_x - width
     for ch in text:
@@ -98,7 +98,7 @@ def build_cover(baseline_pdf, out_pdf, version, date_str, caveat=None,
     if mode in ("meeting", "adopted") and not event_date:
         raise ValueError(f"mode {mode!r} requires event_date")
 
-    src = fitz.open(baseline_pdf)
+    src = pymupdf.open(baseline_pdf)
     w, h = src[0].rect.width, src[0].rect.height
     # Baseline page 0 is /Rotate 90 over a landscape mediabox: rendering to a
     # pixmap HONORS the rotation (upright 612x792), whereas show_pdf_page would
@@ -106,7 +106,7 @@ def build_cover(baseline_pdf, out_pdf, version, date_str, caveat=None,
     # 300 dpi and place it as the page image — no fidelity lost, rotation correct.
     cover_pix = src[0].get_pixmap(dpi=300)
 
-    out = fitz.open()
+    out = pymupdf.open()
     page = out.new_page(width=w, height=h)
 
     # 1. Reuse the baseline cover art (upright) at full fidelity.
@@ -129,7 +129,7 @@ def build_cover(baseline_pdf, out_pdf, version, date_str, caveat=None,
     #    with white text = on-brand and unmistakable. Barlow (embedded) so the
     #    em-dash and middle-dot encode correctly. Wording and layout vary by
     #    mode (see BANNERS below); the adopted mode drops the bar entirely.
-    bar = fitz.Rect(96, 250, w - 96, 366)
+    bar = pymupdf.Rect(96, 250, w - 96, 366)
 
     BANNERS = {
         "draft": (
@@ -156,38 +156,38 @@ def build_cover(baseline_pdf, out_pdf, version, date_str, caveat=None,
     if headline is not None:
         page.draw_rect(bar, color=None, fill=ARTICLE_BLUE)
         page.insert_textbox(
-            fitz.Rect(bar.x0, bar.y0 + 14, bar.x1, bar.y0 + 52), headline,
+            pymupdf.Rect(bar.x0, bar.y0 + 14, bar.x1, bar.y0 + 52), headline,
             fontfile=BARLOW_BOLD, fontname="barlow-bold", fontsize=20, color=WHITE,
-            align=fitz.TEXT_ALIGN_CENTER,
+            align=pymupdf.TEXT_ALIGN_CENTER,
         )
         page.insert_textbox(
-            fitz.Rect(bar.x0 + 8, bar.y0 + 56, bar.x1 - 8, bar.y0 + 86), line2,
+            pymupdf.Rect(bar.x0 + 8, bar.y0 + 56, bar.x1 - 8, bar.y0 + 86), line2,
             fontfile=BARLOW_MED, fontname="barlow-med", fontsize=12, color=WHITE,
-            align=fitz.TEXT_ALIGN_CENTER,
+            align=pymupdf.TEXT_ALIGN_CENTER,
         )
     else:
         # Adopted: no blue bar. The version/date line sits in the white space, in
         # article blue on white, so the page reads as a code rather than a notice.
         page.insert_textbox(
-            fitz.Rect(bar.x0, bar.y0 + 30, bar.x1, bar.y0 + 62), line2,
+            pymupdf.Rect(bar.x0, bar.y0 + 30, bar.x1, bar.y0 + 62), line2,
             fontfile=BARLOW_MED, fontname="barlow-med", fontsize=13,
-            color=ARTICLE_BLUE, align=fitz.TEXT_ALIGN_CENTER,
+            color=ARTICLE_BLUE, align=pymupdf.TEXT_ALIGN_CENTER,
         )
 
     page.insert_textbox(
-        fitz.Rect(96, bar.y1 + 10, w - 96, bar.y1 + 48), line3,
+        pymupdf.Rect(96, bar.y1 + 10, w - 96, bar.y1 + 48), line3,
         fontfile=BARLOW_REG, fontname="barlow-reg", fontsize=9.5, color=GRAY,
-        align=fitz.TEXT_ALIGN_CENTER,
+        align=pymupdf.TEXT_ALIGN_CENTER,
     )
 
     # 4. Optional redline caveat — a marked-up integrated draft says so on the
     #    cover (additions red / deletions struck; figures shown at current state).
     if caveat:
         page.insert_textbox(
-            fitz.Rect(72, bar.y1 + 54, w - 72, bar.y1 + 116),
+            pymupdf.Rect(72, bar.y1 + 54, w - 72, bar.y1 + 116),
             caveat,
             fontfile=BARLOW_MED, fontname="barlow-med", fontsize=10, color=REDLINE_RED,
-            align=fitz.TEXT_ALIGN_CENTER,
+            align=pymupdf.TEXT_ALIGN_CENTER,
         )
 
     out.save(out_pdf, garbage=4, deflate=True)
