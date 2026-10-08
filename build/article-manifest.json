@@ -1,10 +1,24 @@
 {
-  "_comment": "Per-Article native-unit manifest for build/build-standalone.sh. Only Articles with native-Typst units need an entry; any article NOT listed (4-9) renders as pure markdown in a single pandoc pass. Per unit: typ (native file under source/), splice (after-prose | at-marker:<NAME>), data (--input data= value), conditional_on (path under source/ that must exist or the unit is skipped), parity (pad-to-odd-before = pad a blank so the unit's first page lands on a verso, e.g. Art-2 D1), pad_to (even-block = pad a trailing blank to keep an even block; only relevant mid-document, a no-op when the unit is last).",
+  "_comment": "Per-Article native-unit manifest for build/build-standalone.sh. Only Articles with native-Typst units need UNITS; any article with an empty units list (4-9) renders as pure markdown in a single pandoc pass. Per unit: typ (native file under source/), splice (after-prose | at-marker:<NAME>), data (--input data= value), conditional_on (path under source/ that must exist or the unit is skipped), parity (pad-to-odd-before = pad a blank so the unit's first page lands on a verso, e.g. Art-2 D1), pad_to (even-block = pad a trailing blank to keep an even block; only relevant mid-document, a no-op when the unit is last).",
+
+  "_ownership_comment": "data_sources declares which files carry an Article's binding content, for the substantive-change determination. Each entry is {path, compare}: json-keyed (keyed leaf diff; carries key, and substantive_fields when only SOME fields are substantive -- when substantive_fields is ABSENT every leaf is substantive), binary-hash (report 'changed (binary)' and require a recorded human call), or generated-from (carries from; counts only through that file, and a change with an unchanged source is an ANOMALY). The FORM of key is interpreted by the consumer, not defined here: it mixes a path mini-grammar ('[].code', 'segments[].id') with a '$'-prefixed sentinel, and each entry's _key_note says what it means -- defining the grammar is the consuming tool's job. A path ending in / claims every tracked file beneath it. PRECEDENCE AND EXACTLY-ONCE: every tracked file under source/ must have exactly one claimant (build/tests/test_manifest_ownership.py fails otherwise, naming the file). The top-level shared and ignored lists are TERMINAL -- a path listed in either is claimed by that list alone, even if it also falls under a / prefix, which is how a file inside a claimed directory is carved out. Two Articles claiming the same path is a test failure, not a tie-break. PROSE IS NOT DECLARED HERE: ownership of an Article's prose is the article-0N-*.md convention, which is also build-standalone.sh's fallback, and declaring it would change manifest.py prose's output for Articles 4-9. OPEN -- what a change to a file in shared implies for the substantive-change determination is NOT decided. The candidate rule is that it flags every Article for a standalone and a standalone redline (standing rule 4), but nothing implements or relies on it and shared is currently empty; the operator rules before the first entry is added. What IS settled: shared is a claimant of last resort, not an exemption -- a path goes there only when no single Article owns it. manifest.py data <NN> LISTS NON-PROSE FILES ONLY: prose is claimed by the article-0N-*.md convention and is never in data_sources, so data 7 returns [] although Article 7's binding content is entirely its prose -- an empty data_sources list never means no binding content.",
+
+  "shared": [],
+  "ignored": [
+    "legacy/article-02-districts.md",
+    "exhibits/street-types/inventory-sample.json",
+    "exhibits/cross-sections/sprites/NOTICE.md"
+  ],
+  "_ignored_note": "legacy/article-02-districts.md is the retired markdown form of the district tables (Article 2 is native Typst now). inventory-sample.json is the LIVE Typst default for both Article 3 exhibit units (street-type-inventory.typ:23 and street-type-map.typ:40 read sys.inputs.at('data', default: 'exhibits/street-types/inventory-sample.json')); it is ignorable ONLY because this manifest always supplies the real data: path, so it never reaches a build -- if a unit stopped being given data:, the sample would silently become what the Code prints. sprites/NOTICE.md is a license notice for the sprite artwork, not a standard; it is carved out of the sprites/ prefix below because the lists are terminal.",
 
   "1": {
     "prose": "article-01-general.md",
     "units": [
       { "typ": "district-maps.typ", "splice": "after-prose", "pad_to": "even-block" }
+    ],
+    "data_sources": [
+      { "path": "exhibits/district-maps/", "compare": "binary-hash",
+        "_note": "scanned/raster map exhibits: a pixel diff cannot say whether a boundary moved, so report 'changed (binary)' and require a recorded human call" }
     ]
   },
 
@@ -12,6 +26,14 @@
     "prose": "article-02-prefatory.md",
     "units": [
       { "typ": "article-02.typ", "splice": "after-prose", "parity": "pad-to-odd-before" }
+    ],
+    "data_sources": [
+      { "path": "article-02-data.json", "compare": "json-keyed",
+        "key": "[].code",
+        "_key_note": "the file is a bare LIST of 13 district objects, keyed by code",
+        "substantive_fields": ["code", "name", "left", "right", "matrix",
+                               "use_col1", "use_col2", "use_standards"],
+        "_excluded_note": "group, color and band_text are presentation: they change what the spread looks like, not what is permitted" }
     ]
   },
 
@@ -26,6 +48,55 @@
       { "typ": "street-type-map.typ", "splice": "at-marker:STREET-TYPE-EXHIBITS",
         "data": "exhibits/street-types/inventory.json",
         "conditional_on": "exhibits/street-types/inventory.json" }
+    ],
+    "data_sources": [
+      { "path": "exhibits/cross-sections/types.json", "compare": "json-keyed",
+        "key": "$top-level-keys-except-_meta",
+        "_key_note": "an object keyed by Type code (S1..R5) plus a _meta block; no substantive_fields, because every field of a Type entry is printed Code -- code, footnote, family, name, context, description, purpose, note, row, edges, segments, standards, applies_in, attributes (14 fields)" },
+      { "path": "exhibits/cross-sections/R1.svg", "compare": "generated-from",
+        "from": "exhibits/cross-sections/types.json",
+        "_note": "build-cross-sections.py has TWO inputs: types.json and the sprites/ directory. A sprite swap followed by a legitimate regeneration changes this SVG with types.json unchanged -- that is EXPECTED, not an anomaly; the sprites/ entry reports it independently. `from` names the standards source only." },
+      { "path": "exhibits/cross-sections/R2.svg", "compare": "generated-from",
+        "from": "exhibits/cross-sections/types.json",
+        "_note": "build-cross-sections.py has TWO inputs: types.json and the sprites/ directory. A sprite swap followed by a legitimate regeneration changes this SVG with types.json unchanged -- that is EXPECTED, not an anomaly; the sprites/ entry reports it independently. `from` names the standards source only." },
+      { "path": "exhibits/cross-sections/R3.svg", "compare": "generated-from",
+        "from": "exhibits/cross-sections/types.json",
+        "_note": "build-cross-sections.py has TWO inputs: types.json and the sprites/ directory. A sprite swap followed by a legitimate regeneration changes this SVG with types.json unchanged -- that is EXPECTED, not an anomaly; the sprites/ entry reports it independently. `from` names the standards source only." },
+      { "path": "exhibits/cross-sections/R4.svg", "compare": "generated-from",
+        "from": "exhibits/cross-sections/types.json",
+        "_note": "build-cross-sections.py has TWO inputs: types.json and the sprites/ directory. A sprite swap followed by a legitimate regeneration changes this SVG with types.json unchanged -- that is EXPECTED, not an anomaly; the sprites/ entry reports it independently. `from` names the standards source only." },
+      { "path": "exhibits/cross-sections/R5.svg", "compare": "generated-from",
+        "from": "exhibits/cross-sections/types.json",
+        "_note": "build-cross-sections.py has TWO inputs: types.json and the sprites/ directory. A sprite swap followed by a legitimate regeneration changes this SVG with types.json unchanged -- that is EXPECTED, not an anomaly; the sprites/ entry reports it independently. `from` names the standards source only." },
+      { "path": "exhibits/cross-sections/S1.svg", "compare": "generated-from",
+        "from": "exhibits/cross-sections/types.json",
+        "_note": "build-cross-sections.py has TWO inputs: types.json and the sprites/ directory. A sprite swap followed by a legitimate regeneration changes this SVG with types.json unchanged -- that is EXPECTED, not an anomaly; the sprites/ entry reports it independently. `from` names the standards source only." },
+      { "path": "exhibits/cross-sections/S2.svg", "compare": "generated-from",
+        "from": "exhibits/cross-sections/types.json",
+        "_note": "build-cross-sections.py has TWO inputs: types.json and the sprites/ directory. A sprite swap followed by a legitimate regeneration changes this SVG with types.json unchanged -- that is EXPECTED, not an anomaly; the sprites/ entry reports it independently. `from` names the standards source only." },
+      { "path": "exhibits/cross-sections/S3.svg", "compare": "generated-from",
+        "from": "exhibits/cross-sections/types.json",
+        "_note": "build-cross-sections.py has TWO inputs: types.json and the sprites/ directory. A sprite swap followed by a legitimate regeneration changes this SVG with types.json unchanged -- that is EXPECTED, not an anomaly; the sprites/ entry reports it independently. `from` names the standards source only." },
+      { "path": "exhibits/cross-sections/S4.svg", "compare": "generated-from",
+        "from": "exhibits/cross-sections/types.json",
+        "_note": "build-cross-sections.py has TWO inputs: types.json and the sprites/ directory. A sprite swap followed by a legitimate regeneration changes this SVG with types.json unchanged -- that is EXPECTED, not an anomaly; the sprites/ entry reports it independently. `from` names the standards source only." },
+      { "path": "exhibits/cross-sections/S5.svg", "compare": "generated-from",
+        "from": "exhibits/cross-sections/types.json",
+        "_note": "build-cross-sections.py has TWO inputs: types.json and the sprites/ directory. A sprite swap followed by a legitimate regeneration changes this SVG with types.json unchanged -- that is EXPECTED, not an anomaly; the sprites/ entry reports it independently. `from` names the standards source only." },
+      { "path": "exhibits/cross-sections/sprites/", "compare": "binary-hash",
+        "_note": "vector artwork the cross-section plates are drawn from; no field structure to key on, so report 'changed (binary)' and require a recorded human call. Also a SECOND INPUT to the ten <CODE>.svg files below (build-cross-sections.py reads the sprite directory as well as types.json)" },
+      { "path": "exhibits/street-types/inventory.json", "compare": "json-keyed",
+        "key": "segments[].id",
+        "substantive_fields": ["type", "name", "termini", "ownership",
+                               "row_ft", "traveled_ft"],
+        "_excluded_note": "D7: districts, maindot, nonconformity, present_use, addresses and geometry are DERIVED. Address counts changed on all 214 segments between v0.22 and v0.24; without this partition every GIS refresh reads as an amendment to Article 3" }
     ]
-  }
+  },
+
+  "4": { "units": [], "data_sources": [] },
+  "5": { "units": [], "data_sources": [] },
+  "6": { "units": [], "data_sources": [] },
+  "7": { "units": [], "data_sources": [] },
+  "8": { "units": [], "data_sources": [] },
+  "9": { "units": [], "data_sources": [] }
 }

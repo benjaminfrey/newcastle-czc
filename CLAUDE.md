@@ -272,6 +272,33 @@ rebuild. No code changes.
 - **NEW pipeline capability:** an override entry may carry **`"exclude": true`** to drop a source
   record that is not a real thoroughfare (orphan E-911 fragment) — implemented in `05_export.py`,
   so the decision survives re-runs like every other override.
+- **▶ OPEN — binding margins are mirrored one page (document-wide, PRE-EXISTING, in the adopted
+  edition).** Measured on `releases/v1.0-adopted` (117 pp): **odd** physical pages carry body
+  x0=44/x1=522 (gutter at the **fore edge**), **even** physical pages x0=90/x1=568 (gutter at the
+  **binding**) — the baseline 2020 Code is the exact opposite. Prose pages mirror the same way as
+  the Article 2 spreads, so it is not an Article 2 defect. Mechanism: chrome keys off
+  `here().page() + page_offset`, but Typst resolves each unit's `inside`/`outside` margins from
+  that unit's **own physical page index**, which the offset cannot move; with no leading blank, no
+  single offset satisfies both. The full measurement lives in `source/article-02.typ:25-41` (+ a
+  pointer from four sibling units and `style/style-analysis.md` §21); **no test asserts a margin
+  side**, so nothing blesses the current geometry. Fixing it is a code change to the margin model
+  plus a re-cut. **DEFERRED TO WAVE 1 by Ben, 2026-10-07** — the hard deadline is the
+  **next freeze**: `build-adopted.sh`'s identity gate requires the adopted body to be byte-equal
+  to the Town Meeting edition, so whatever geometry is in the frozen packet is what the Town
+  adopts and it cannot be fixed afterward. Expected to be pagination-neutral (inside 90 + outside
+  44 = the same 478 pt text block either way, so nothing should reflow) — confirm with a build.
+- **▶ OPEN — the adopted v1.0 edition is missing chrome on physical page 12.** The first district
+  page carries no running head, no footer page number and no rotated Article tab: three
+  `if here().page() == 1 { return [] }` guards in `source/article-02.typ` outlived the leading
+  parity blank they were written for. **Fixed in the working tree** (branch `release-deliverables`)
+  and now guarded by `build/tests/test_unit_chrome.py` (chrome on every district page) +
+  `build/tests/test_structural_note.py` (parity on every body page). It **cannot** be back-applied
+  — `build-adopted.sh` renders from the tag, which is correct. **DEFERRED TO WAVE 1 by Ben,
+  2026-10-07.** No machine deadline: the next amendment supersedes the v1.0 edition and carries the
+  fix at zero cost. Only an external trigger forces it earlier (printed copies of the adopted
+  edition distributed, a page-number citation hitting the unnumbered page, or the clerk noticing on
+  the attested copy). What is missing is a page number, a running head and the Article tab —
+  typography, not text; no standard, definition or sentence is affected.
 - **▶ OPEN — R2 vs R3 scope (Board decision).** R3 is currently only the 4 private lanes off
   Route 1. A town-wide test was **deferred to the Planning Board**; memo written + committed:
   `memos/Thoroughfares — Rural Road (R2) vs Rural Lane (R3) — Board Decision Memo.{md,pdf}`

@@ -25,12 +25,14 @@
 //   to page with north up. NOT wired into the production build until real data
 //   exists (so sample data never lands in a deliverable).
 //
-// Render the sample standalone (lands on a recto via even offset):
+// Render the sample standalone (debug convenience; offset 2 shown):
 //   typst compile source/street-type-map.typ /tmp/type-map.pdf \
 //     --root . --font-path style/fonts --input page_offset=2
 //
-// PARITY INVARIANT identical to the other native units: chrome keys off logical
-// page = here().page() + page_offset; keep page_offset EVEN.
+// PARITY: chrome keys off logical page = here().page() + page_offset; margins come
+// from this unit's own physical page index. No leading blank, no pagebreak(to:...).
+// PARITY QUESTION IS OPEN AND UNVERIFIED for this unit; see the PARITY block in
+// source/article-02.typ.
 // =============================================================================
 
 #let page_offset = int(sys.inputs.at("page_offset", default: "2"))

@@ -12,7 +12,10 @@
 //     --root . --font-path style/fonts \
 //     --input data=/data/street-types/work/inventory.json --input page_offset=2
 //
-// PARITY: chrome keys off here().page() + page_offset; keep page_offset EVEN.
+// PARITY: chrome keys off here().page() + page_offset; margins come from this
+// unit's own physical page index. No leading blank, no pagebreak(to:...). PARITY
+// QUESTION IS OPEN AND UNVERIFIED for this unit; see the PARITY block in
+// source/article-02.typ.
 // =============================================================================
 
 #let page_offset = int(sys.inputs.at("page_offset", default: "2"))

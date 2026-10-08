@@ -1,5 +1,6 @@
 """The freeze produces a complete Town Meeting packet, and refuses a bad version."""
 import json
+import os
 import re
 import subprocess
 import sys
@@ -7,25 +8,13 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent.parent
 
-# The number a Town Meeting packet is reviewed against (ADOPTION-SPEC.md §1.2
-# / §3.3; normalize_for_diff.py's own measured figure). If this legitimately
-# changes -- a new draft lands, a normaliser rule changes -- that change must
-# be understood and re-verified by hand (re-run the dry run, read the new
-# per-article breakdown) BEFORE this constant is updated to match. Do not
-# "fix the test" without doing that reading; the whole point of this command
-# is that the number is reviewed, not merely reproduced.
-#
-# 243 -> 151 on 2026-08-24 (Task 2b) is a NORMALISATION IMPROVEMENT, NOT a
-# content change: normalize_for_diff.py gained a table-number rule (`TABLE
-# 4.1` / `Table 4.1` / `table 4.1` -> the current article's number, all three
-# casings) and a frontmatter `article-number: "N"` rule, both driven by the
-# same baseline->current article map the existing cross-reference renumbering
-# already used. ~90 of the old 243 lines were table captions/refs and
-# frontmatter fields that only moved because their article number moved --
-# Articles 1, 5, 6, and 7 now report ZERO substantive changes (their entire
-# prior diff was this renumbering noise). Nothing in the Code shrank; re-run
-# `python3 build/adoption_breakdown.py` to see the same per-article split.
-EXPECTED_TOTAL = 151
+# The reviewed headline number is NOT pinned here any more. It was EXPECTED_TOTAL
+# = 151, measured against the working tree on 2026-08-24; it went red the moment
+# an amendment landed, and re-pinning it is how a reviewed number silently
+# becomes a reproduced one. The number is now asserted two ways: against a frozen
+# fixture tree (the instrument works) and as the sum of its own per-article lines
+# (the instrument is self-consistent). The release operator still reads the real
+# breakdown before a freeze -- that is build-adoption.sh's job, not this file's.
 
 
 import pytest as _pytest_rollover
@@ -57,7 +46,7 @@ def test_requires_a_meeting_date():
 
 
 def test_prints_the_substantive_change_breakdown():
-    """The 243 lines going to the voters must be reviewable BEFORE the packet
+    """The few hundred lines going to the voters must be reviewable BEFORE the packet
     exists, not discovered at the meeting (ADOPTION-SPEC.md §7)."""
     r = subprocess.run(["bash", "build/build-adoption.sh", "v1.0", "March 15, 2027",
                         "--dry-run"], cwd=REPO, capture_output=True, text=True)
@@ -67,26 +56,52 @@ def test_prints_the_substantive_change_breakdown():
     assert "article-09-definitions.md" in out
 
 
-def test_dry_run_total_matches_the_reviewed_figure():
-    """A regression test with teeth: deleting the not_text_comparable skip
-    (or any other regression in the breakdown) must not leave the suite
-    green while the packet quietly reports a different number. See
-    EXPECTED_TOTAL's comment for what to do if this number legitimately
-    changes."""
-    r = subprocess.run(["bash", "build/build-adoption.sh", "v1.0", "March 15, 2027",
-                        "--dry-run"], cwd=REPO, capture_output=True, text=True)
+def test_breakdown_reports_the_fixture_tree_exactly():
+    """The instrument is pinned against a frozen input, not against source/.
+
+    The fixture is the v0.1-baseline Article 1 with exactly one line changed
+    (see fixtures/breakdown-src/README.md), so the breakdown must report 2
+    changed lines for it: one deleted, one added. The live tree reports 0 for
+    Article 1 under the same map, so the "2" can only come from the fixture --
+    an ignored --src-dir cannot satisfy this. The fixture holds only Article 1
+    while the map names nine, so the breakdown refuses (exit 1) at the first
+    missing file; the refusal must name the fixture directory."""
+    fixture = Path(__file__).resolve().parent / "fixtures" / "breakdown-src"
+    r = subprocess.run(
+        [sys.executable, "build/adoption_breakdown.py", "--src-dir", str(fixture),
+         "--map", str(_PRE_ROLLOVER_MAP)],
+        cwd=REPO, capture_output=True, text=True)
+    assert r.returncode == 1, (r.returncode, r.stdout, r.stderr)
+    assert re.search(r"^\s+article-01-general\.md\s+2 lines$", r.stdout, re.M), r.stdout
+    assert str(fixture) in r.stderr, r.stderr
+
+
+def test_breakdown_total_equals_the_sum_of_its_own_lines():
+    """The invariant: whatever the per-article numbers are, the TOTAL is their
+    sum. This holds at every release, so it never needs re-pinning -- and it
+    catches the failure a literal cannot: a total that stops matching its own
+    breakdown (e.g. an article dropped from, or double-counted into, the sum)."""
+    r = subprocess.run([sys.executable, "build/adoption_breakdown.py"],
+                       cwd=REPO, capture_output=True, text=True)
     assert r.returncode == 0, r.stderr
-    m = re.search(r"TOTAL\s+(\d+)\s+substantive changed lines", r.stdout)
-    assert m, r.stdout
-    assert int(m.group(1)) == EXPECTED_TOTAL, r.stdout
+    per_article = [int(m) for m in re.findall(r"^\s+article-\S+\s+(\d+) lines?$",
+                                              r.stdout, re.M)]
+    total = int(re.search(r"^\s+TOTAL\s+(\d+) substantive changed lines?",
+                          r.stdout, re.M).group(1))
+    assert per_article, f"no per-article lines parsed from:\n{r.stdout}"
+    assert any(per_article), (
+        f"every article reports 0 \u2014 the map pin is gone, so this invariant is vacuous:\n{r.stdout}")
+    assert sum(per_article) == total, (
+        f"TOTAL {total} is not the sum of its own per-article lines "
+        f"{per_article} (sum {sum(per_article)})")
 
 
 def test_article_02_is_disclosed_not_counted():
     """article-02-prefatory.md's baseline (2,444 lines of markdown) moved into
     a native-Typst unit; a naive diff misreports that move as ~2,300 phantom
     deletions. It must appear in the breakdown, labelled NOT TEXT-COMPARABLE,
-    and be excluded from TOTAL (which is how EXPECTED_TOTAL lands on 243
-    instead of ~2,546)."""
+    and be excluded from TOTAL (otherwise the total would be ~2,500 instead of
+    a few hundred)."""
     r = subprocess.run(["bash", "build/build-adoption.sh", "v1.0", "March 15, 2027",
                         "--dry-run"], cwd=REPO, capture_output=True, text=True)
     assert r.returncode == 0, r.stderr
@@ -154,6 +169,45 @@ def test_missing_current_file_fails_loudly(tmp_path):
     assert "fix the map" in r.stderr.lower()
 
 
+def test_breakdown_accepts_a_source_directory(tmp_path):
+    """The breakdown must be runnable against a fixture tree, or every test of
+    it is pinned to whatever is in source/ today."""
+    src = tmp_path / "source"
+    src.mkdir()
+    (src / "article-01-general.md").write_text(
+        '---\narticle-number: "1"\narticle-name: "General Standards"\n---\n\n'
+        '# Article 1 General Standards\n\n## 1. CORE ZONING CODE\n')
+    r = subprocess.run(
+        [sys.executable, "build/adoption_breakdown.py", "--src-dir", str(src)],
+        cwd=REPO, capture_output=True, text=True)
+    assert r.returncode in (0, 1), r.stderr
+    assert "article-01-general.md" in r.stdout, r.stdout
+    # The listing alone cannot tell a read seam from an ignored flag (the live
+    # tree has an article-01 too). The fixture is missing every other mapped
+    # article, so the refusal must name the fixture directory, not source/.
+    assert r.returncode == 1 and str(src) in r.stderr, r.stderr
+    # A bad or incomplete path is not a map error: adoption-map.json gates the
+    # freeze and must not be named as the thing to fix. (The default-tree case,
+    # where the map IS the cause, keeps 'Fix the map' -- see the two tests above.)
+    assert "fix the map" not in r.stderr.lower(), r.stderr
+    assert "incomplete" in r.stderr, r.stderr
+
+
+def test_breakdown_honours_src_dir_env_and_flag_wins(tmp_path):
+    """SRC_DIR is the same seam build-full-czc.sh uses. The flag beats it."""
+    env_src, flag_src = tmp_path / "from-env", tmp_path / "from-flag"
+    env_src.mkdir()
+    flag_src.mkdir()
+    env = {**os.environ, "SRC_DIR": str(env_src)}
+    cmd = [sys.executable, "build/adoption_breakdown.py"]
+    r = subprocess.run(cmd, cwd=REPO, env=env, capture_output=True, text=True)
+    assert r.returncode == 1 and str(env_src) in r.stderr, r.stderr
+    r = subprocess.run(cmd + ["--src-dir", str(flag_src)], cwd=REPO, env=env,
+                       capture_output=True, text=True)
+    assert r.returncode == 1 and str(flag_src) in r.stderr, r.stderr
+    assert str(env_src) not in r.stderr, r.stderr
+
+
 # --- The freeze date and the meeting date are DIFFERENT facts ----------------
 # Cover line 2 says "for adoption at Town Meeting, <meeting-date>"; line 3 says
 # "Frozen <date>". build-adoption.sh passed the MEETING date for both, so the
@@ -211,3 +265,41 @@ def test_refuses_to_freeze_a_dirty_source_tree(tmp_path):
         if release_dir.exists():
             import shutil
             shutil.rmtree(release_dir)
+
+
+def test_freeze_expects_the_standalone_name_the_builder_actually_writes(tmp_path):
+    """build-adoption.sh composes STANDALONE_PDF by hand and later hands it to
+    pdf_recap.py. Nothing failed when build-standalone.sh's default name moved
+    (the adoption tests only run --dry-run), so a real freeze would have died
+    at the very end. This pins the agreement without running a freeze: take the
+    build-standalone.sh statement and the STANDALONE_PDF assignment VERBATIM out
+    of build-adoption.sh, execute the former for real in meeting mode, and
+    require the file the latter names to exist."""
+    lines = (REPO / "build" / "build-adoption.sh").read_text().splitlines()
+    idx = [i for i, l in enumerate(lines) if "build-standalone.sh" in l and
+           not l.lstrip().startswith("#")]
+    assert len(idx) == 1, f"expected one build-standalone.sh invocation, found {idx}"
+    start = idx[0]
+    while start > 0 and lines[start - 1].rstrip().endswith("\\"):
+        start -= 1
+    statement = "\n".join(lines[start:idx[0] + 1])
+    assignment = [l for l in lines if l.startswith("STANDALONE_PDF=")]
+    assert len(assignment) == 1, assignment
+
+    out = tmp_path / "packet"
+    script = "\n".join([
+        "set -euo pipefail",
+        f'REPO_ROOT="{REPO}"',
+        'VERSION=v94.0', 'MEETING_DATE="March 15, 2027"',
+        'FREEZE_DATE="August 24, 2026"',
+        f'OUT="{out}"',
+        statement,
+        assignment[0],
+        'test -f "$STANDALONE_PDF" || { echo "freeze expects: $STANDALONE_PDF" >&2; '
+        'ls "$OUT" >&2; exit 9; }',
+    ])
+    r = subprocess.run(["bash", "-c", script], cwd=REPO, capture_output=True, text=True,
+                       env=dict(os.environ, OUT_DIR=str(out)))
+    assert r.returncode == 0, (
+        "build-adoption.sh expects a standalone filename that build-standalone.sh "
+        f"does not write in meeting mode:\n{r.stderr[-600:]}")

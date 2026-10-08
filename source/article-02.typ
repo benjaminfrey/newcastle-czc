@@ -14,27 +14,35 @@
 // All visual values are MEASURED from docs/Newcastle Core Zoning Code.pdf
 //   (pp. 12-13 = D1 spread). See style/style-analysis.md.
 //
-// Render standalone (D1 slice as baseline pp. 12-13; blank lead = p. 11):
+// Bare-`typst compile` invocation (a DEBUG CONVENIENCE ONLY; it reproduces neither
+// the integrated nor the standalone geometry — see PARITY below):
 //   typst compile source/article-02.typ /tmp/a2/a2.pdf \
 //     --font-path style/fonts --input page_offset=10
 //
 // Build integration passes the real cumulative page-offset + footer date:
 //   --input page_offset=<N> --input footer_date="Draft v0.4.x-draft"
 //
-// PARITY INVARIANT (critical): Typst keys its inside/outside MARGINS off the
-//   PHYSICAL page index (physical page 1 = recto, left margin = inside = 90pt).
+// PARITY (KNOWN, UNRESOLVED; measured 2026-10-07, not a rule):
 //   The chrome here (badge/banner/header/footer/tab) keys off the LOGICAL page
-//   number = here().page() + page_offset. For the two to agree, page_offset
-//   MUST BE EVEN. The render loop then lands the FIRST district on a physical-
-//   even (verso) page via `pagebreak(to:"even")`, so a district's standards
-//   page is a left/verso page (badge at the LEFT fore-edge) exactly as in the
-//   baseline. An odd offset shifts the band into the inside margin (the badge
-//   ends up at x=90pt instead of x=44pt) — do not use one.
+//   number = here().page() + page_offset, so its verso/recto side follows the
+//   offset. The inside/outside MARGINS, however, are resolved by Typst from this
+//   unit's OWN physical page index (unit page 1 = recto margins: inside = left =
+//   90pt), which page_offset cannot move. This unit inserts NO leading blank; D1's
+//   standards page is unit page 1 (see the RENDER note at the end of this file).
+//   So the two cannot both match the baseline:
+//     page_offset=10: D1 gets recto chrome (badge x0=522) on recto margins; the
+//                     spread is inverted (standards page on the right).
+//     page_offset=11: D1 gets verso chrome (tab left) on recto margins, so the
+//                     badge sits at x0=90, not the baseline's ~45; the use-matrix
+//                     page gets recto chrome on verso margins (body at x=44).
+//   Both real builds pass an ODD offset (build-full-czc.sh, build-standalone.sh),
+//   i.e. the second case. Which behaviour the bound Code should have is an open
+//   operator decision; do not treat either offset as settled here.
 // =============================================================================
 
 // ---- Inputs (with standalone defaults) --------------------------------------
-// Default offset 10 (EVEN): with the leading `pagebreak(to:"even")` the blank
-// pad becomes p. 11 and D1's standards page lands on verso p. 12 (recto p. 13).
+// The default offset only affects the debug invocation above; both builds pass
+// page_offset explicitly, so nothing depends on it.
 #let page_offset = int(sys.inputs.at("page_offset", default: "10"))
 #let footer_date = sys.inputs.at("footer_date", default: "Draft")
 
@@ -88,11 +96,6 @@
 #let HEAD_INNER = 145pt
 
 #set page(header: context {
-  // Physical page 1 is always the leading parity-blank inserted by the
-  // `pagebreak(to:"even")` at the start of the render (it lands D1 on a verso).
-  // Keep that page a TRUE blank — no header/footer/tab — so it reads as a clean
-  // section break, not a chrome-bearing empty page.
-  if here().page() == 1 { return [] }
   let pn = here().page() + page_offset
   let grp = group_state.get()
   // MEASURED: outer label 11pt bold #7C766F; inner label 10pt bold #7C766F
@@ -116,7 +119,6 @@
 
 // ---- Footer (parity-aware, continuous page numbers) -------------------------
 #set page(footer: context {
-  if here().page() == 1 { return [] }   // leading parity-blank: no footer
   set text(size: 10pt, weight: "bold", stretch: 75%, fill: body_dark)
   let pn = here().page() + page_offset
   let wordmark = text(fill: article_blue)[Newcastle Core Zoning Code]
@@ -140,7 +142,6 @@
       text(fill: white, weight: "bold", stretch: 75%, size: 14pt, tracking: 0.5pt)[ARTICLE 2])))
 
 #set page(background: context {
-  if here().page() == 1 { return [] }   // leading parity-blank: no article tab
   let pn = here().page() + page_offset
   if calc.even(pn) { place(top + left, dy: 139.5pt, article_tab_box) }
   else { place(top + right, dy: 139.5pt, article_tab_box) }
@@ -362,8 +363,9 @@
 // =============================================================================
 // RENDER
 // =============================================================================
-// The FIRST district's standards page must land on a verso (even DISPLAYED page)
-// so its badge sits at the LEFT fore-edge (see PARITY INVARIANT above). D1 is this
+// The FIRST district's standards page is meant to land on a verso (even DISPLAYED
+// page), so its CHROME is verso chrome (see the PARITY block in the header — the
+// badge's actual x position is not settled there). D1 is this
 // unit's first page; the integrated build pads to an ODD running page-offset before
 // this unit, so D1 renders at an even displayed page (offset+1) with NO leading
 // blank. (A previous `#pagebreak(to:"even")` here, combined with the build's even
