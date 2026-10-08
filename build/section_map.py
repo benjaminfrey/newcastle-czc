@@ -177,14 +177,17 @@ def load(path) -> dict[int, dict[int, int]]:
     return {int(a): {int(o): int(n) for o, n in m.items()} for a, m in doc["articles"].items()}
 
 
-def check(path, old_ref: str, new_dir=None) -> list[str]:
-    """Is this map for THIS comparison? Problems as operator-readable lines."""
+def check(path, old_ref: str, new_dir) -> list[str]:
+    """Is this map for THIS comparison? Problems as operator-readable lines.
+
+    Always verifies the tree as well as the ref: a stale map applied to a
+    different tree could hide a reference retargeted at different content."""
     doc = json.loads(Path(path).read_text())
     problems: list[str] = []
     if doc.get("for_old_ref") != old_ref:
         problems.append(f"the map was derived for {doc.get('for_old_ref')!r}, "
                         f"not {old_ref!r}")
-    if new_dir is not None and doc.get("for_new_tree") != tree_hash(Path(new_dir)):
+    if doc.get("for_new_tree") != tree_hash(Path(new_dir)):
         problems.append(f"the map was derived against a different tree than {new_dir}")
     return problems
 
@@ -195,7 +198,12 @@ def selfcheck(path, old_ref: str, new_dir=DEFAULT_NEW_DIR) -> list[str]:
     (a) Every entry pairs an old heading and a new heading whose normalised
         titles are identical. An off-by-one shift pairs old §3 with new §5 --
         two different sections -- which is what this catches.
-    (b) Deriving the old ref against ITSELF maps nothing.
+    (b) The map equals a fresh derivation of old_ref against the same tree,
+        entry for entry -- so an entry the derivation would not make (one that
+        passes (a) because the titles happen to match, e.g. §2 -> §2) and an
+        entry it would make but the map lacks both fail. The former (b),
+        "deriving the old ref against itself maps nothing", could never fail:
+        identical inputs always give an empty mapping, and it never read the map.
 
     Not "apply the map to the old side and compare it against itself": a real
     renumbering rewrites references the unmodified copy still carries, so that
@@ -228,11 +236,19 @@ def selfcheck(path, old_ref: str, new_dir=DEFAULT_NEW_DIR) -> list[str]:
             if ot is None or nt is None or ot != nt:
                 problems.append(f"Article {art}: §{o} -> §{n} pairs {ot!r} with {nt!r}")
 
-    for art, (old_text, _) in sorted(index.items()):
-        mapping, *_ = derive_article(old_text, old_text)
-        if mapping:
-            problems.append(f"Article {art}: deriving {old_ref} against itself "
-                            f"mapped {len(mapping)} section(s)")
+    try:
+        fresh = derive(old_ref, new_dir)["articles"]
+    except (BelowFloor, NoComparison) as exc:
+        problems.append(f"re-deriving {old_ref} against {new_dir} refused: {exc}")
+    else:
+        have = {k: {o: int(n) for o, n in m.items()} for k, m in doc["articles"].items()}
+        for key in sorted(set(fresh) | set(have), key=int):
+            want_a, have_a = fresh.get(key, {}), have.get(key, {})
+            for o in sorted(set(want_a) | set(have_a), key=int):
+                if want_a.get(o) != have_a.get(o):
+                    problems.append(
+                        f"Article {key}: the map has §{o} -> {have_a.get(o)}, but deriving "
+                        f"{old_ref} against {new_dir} gives {want_a.get(o)}")
     return problems
 
 
@@ -246,7 +262,7 @@ def main(argv=None) -> int:
     c = sub.add_parser("check", help="is this map for this comparison?")
     c.add_argument("path")
     c.add_argument("--old-ref", required=True)
-    c.add_argument("--new-dir", default=None)
+    c.add_argument("--new-dir", default=str(DEFAULT_NEW_DIR))
     s = sub.add_parser("selfcheck", help="is this map right? (the release gate)")
     s.add_argument("path")
     s.add_argument("--old-ref", required=True)
@@ -271,7 +287,7 @@ def main(argv=None) -> int:
               f"{len(doc['articles'])} Article(s) vs {a.old_ref}")
         return 0
     if a.cmd == "check":
-        found = check(a.path, a.old_ref, Path(a.new_dir) if a.new_dir else None)
+        found = check(a.path, a.old_ref, Path(a.new_dir))
     else:
         found = selfcheck(a.path, a.old_ref, Path(a.new_dir))
     for p in found:

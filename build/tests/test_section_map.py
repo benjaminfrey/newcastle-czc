@@ -167,10 +167,12 @@ def test_check_accepts_the_comparison_a_map_was_derived_for(tmp_path):
 
 def test_check_refuses_a_map_for_a_different_old_ref(tmp_path):
     """Nothing today validates the old ref against a map; this closes it."""
-    out = _derived(tmp_path, _tree_with(tmp_path, ART7, lambda t: fx.insert_section(t, 3, "X")))
-    r = _run_cli("check", str(out), "--old-ref", "v0.24-draft")
+    tree = _tree_with(tmp_path, ART7, lambda t: fx.insert_section(t, 3, "X"))
+    out = _derived(tmp_path, tree)
+    r = _run_cli("check", str(out), "--old-ref", "v0.24-draft", "--new-dir", str(tree))
     assert r.returncode == 1
     assert "v1.0" in r.stderr and "v0.24-draft" in r.stderr
+    assert "different tree" not in r.stderr      # fails on the ref alone
 
 
 def test_check_refuses_a_map_applied_to_a_different_tree(tmp_path):
@@ -244,3 +246,28 @@ def test_section_map_does_not_reach_into_the_adoption_map():
                 and id(n) not in docstrings]
     assert not [s for s in literals if "adoption-map" in s or "adoption_map" in s
                 or "baseline_selfcheck" in s]
+
+
+def test_selfcheck_refuses_an_entry_the_derivation_would_not_make(tmp_path):
+    """The case the title-pairing check (a) alone cannot catch: old §2 and new §2
+    have the same title, so (a) passes `2 -> 2`. Only the re-derivation (b) sees
+    that the derivation would not make that entry -- remove (b) and this fails."""
+    tree = _tree_with(tmp_path, ART7, lambda t: fx.insert_section(t, 3, "AGRICULTURE"))
+    out = _derived(tmp_path, tree)
+    doc = json.loads(out.read_text())
+    doc["articles"]["7"]["2"] = 2
+    out.write_text(json.dumps(doc))
+    r = _run_cli("selfcheck", str(out), "--old-ref", "v1.0", "--new-dir", str(tree))
+    assert r.returncode == 1
+    assert "§2" in r.stderr
+
+
+def test_selfcheck_refuses_a_map_missing_an_entry(tmp_path):
+    tree = _tree_with(tmp_path, ART7, lambda t: fx.insert_section(t, 3, "AGRICULTURE"))
+    out = _derived(tmp_path, tree)
+    doc = json.loads(out.read_text())
+    del doc["articles"]["7"]["20"]
+    out.write_text(json.dumps(doc))
+    r = _run_cli("selfcheck", str(out), "--old-ref", "v1.0", "--new-dir", str(tree))
+    assert r.returncode == 1
+    assert "§20" in r.stderr
