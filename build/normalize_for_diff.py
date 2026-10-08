@@ -132,7 +132,7 @@ _FRONTMATTER_ARTICLE_NUMBER = re.compile(r'^(article-number:\s*")(\d+)(")', re.M
 # comes from build/section_map.py, which DERIVES it by aligning heading titles
 # -- only an identical, unambiguous, in-order title at a new number is mapped.
 #
-# Narrowness, in four guards, for a BARE or plural reference (`Section N`, `§N`,
+# Narrowness, in six guards, for a BARE or plural reference (`Section N`, `§N`,
 # `Sections A, B, and C`):
 #   1. The number is rewritten only if it is a KEY in the containing Article's
 #      map. The containing Article is read from the text's own frontmatter.
@@ -141,6 +141,9 @@ _FRONTMATTER_ARTICLE_NUMBER = re.compile(r'^(article-number:\s*")(\d+)(")', re.M
 #   3. It is never rewritten when a qualifier (`<word> <number>`) precedes it.
 #   4. It is never rewritten when `of <anything>` follows it, except `of this
 #      Article`.
+#   5. It is never rewritten when a name and a comma directly precede it.
+#   6. It is never rewritten when its paragraph names any container other than
+#      the containing Article (`_FOREIGN_CONTAINER`, below).
 # Guard 2 is needed because the map alone is not enough: Article 7 has 66
 # sections, so `Subchapter C, §53.11` -- a federal-regulations citation in
 # Article 7 -- would collide with a renumbered §53. The token set is the
@@ -170,6 +173,39 @@ _QUALIFIED_BEFORE = re.compile(r"\b[A-Za-z][A-Za-z.]*\s+\d+[A-Za-z0-9.\-]*\s*,?\
 # "Section 3 of Article 4", "Sections 3 and 4 of Article 8", and statutes
 # cited number-first, "Section 10 of Chapter 40A of the Maine General Laws".
 _OF_ELSEWHERE = re.compile(r"[A-Za-z0-9.\-]*\s+of\s+(?!this\s+Article\b)")
+# Phrase-by-phrase guards cannot converge on every way of pointing into another
+# Article or document, so there is one more, deliberately broad: a bare or plural
+# reference is left raw whenever its PARAGRAPH names any container other than the
+# containing Article -- another Article, an Ordinance, an Act, a statute. A
+# paragraph that mentions one anywhere has its bare references left raw, at the
+# cost of some recoverable noise. Leaving a reference raw only adds visible
+# noise; it can never hide an amendment. `Article N` for the containing Article
+# itself does not count.
+_FOREIGN_CONTAINER = re.compile(
+    r"\bArticle\s+(?P<num>\d+|[IVXLCDM]+)\b"
+    r"|\bArticles\b"
+    r"|\b(?:Ordinance|Act|Laws?|Regulations?|Rules|Statutes?|Chapter|Subchapter|Title)\b"
+    r"|MRSA|M\.R\.S|U\.S\.C|C\.F\.R|CFR|Public Law|Stat\.")
+_PARAGRAPH_BREAK = re.compile(r"\n[ \t]*\n")
+# "<Word>, Section 3" -- a name and a comma directly before it qualifies it too.
+_NAMED_BEFORE = re.compile(r"[A-Za-z)*]\s*,\s*$")
+
+
+def _names_a_foreign_container(paragraph: str, containing: int) -> bool:
+    for m in _FOREIGN_CONTAINER.finditer(paragraph):
+        if m.group("num") is None or m.group("num") != str(containing):
+            return True
+    return False
+
+
+def _paragraph_at(text: str, pos: int) -> str:
+    start = 0
+    for b in _PARAGRAPH_BREAK.finditer(text, 0, pos):
+        start = b.end()
+    nxt = _PARAGRAPH_BREAK.search(text, pos)
+    return text[start:nxt.start() if nxt else len(text)]
+
+
 _STATUTE_CONTEXT = re.compile(
     r"MRSA|M\.R\.S|Title|U\.S\.C|Public Law|Stat\.|Chapter|Subchapter|C\.F\.R|CFR|Regulations")
 STATUTE_LOOKBEHIND = 40
@@ -228,7 +264,9 @@ def _section_renumber(text: str, smap) -> tuple[str, int]:
             return r.group("explicit") + str(lookup(int(r.group("art")), int(r.group("n1"))))
         if (containing is None or statute_before(r.start())
                 or _QUALIFIED_BEFORE.search(out[max(0, r.start() - STATUTE_LOOKBEHIND):r.start()])
-                or _OF_ELSEWHERE.match(out, r.end())):
+                or _OF_ELSEWHERE.match(out, r.end())
+                or _NAMED_BEFORE.search(out[max(0, r.start() - STATUTE_LOOKBEHIND):r.start()])
+                or _names_a_foreign_container(_paragraph_at(out, r.start()), containing)):
             return r.group(0)
         if r.group("plural"):
             return r.group("plural") + _LIST_NUMBER.sub(

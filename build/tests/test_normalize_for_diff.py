@@ -610,3 +610,56 @@ def test_a_number_first_statute_is_left_raw():
     fm9 = '---\narticle-number: "9"\n---\n'
     text = fm9 + "in accordance with Section 10 of Chapter 40A of the Maine General Laws.\n"
     assert nz.normalize_sections_only(text, smap={9: {10: 11}}) == text
+
+
+# --- A paragraph that names another container (fix round 2) ---------------------
+# Phrase-by-phrase guards cannot converge on every way of pointing into another
+# Article or document. So a bare or plural reference is left raw whenever its
+# PARAGRAPH names any container other than the containing Article. Leaving a
+# reference raw only adds visible noise; it can never hide an amendment.
+
+import pytest as _pytest_foreign
+
+_FOREIGN_SMAP = {7: {3: 4, 4: 5, 20: 21}}
+_FOREIGN_PHRASINGS = [
+    ("Section 20 (Land Conveyance) of Article 8", "Section 21 (Land Conveyance) of Article 8"),
+    ("Section 3(a) of Article 8", "Section 4(a) of Article 8"),
+    ("Section 3, Article 8", "Section 4, Article 8"),
+    ("Section 3 in Article 8", "Section 4 in Article 8"),
+    ("Article 8 (Administration), Section 3", "Article 8 (Administration), Section 4"),
+    ("Article 8 — Section 3", "Article 8 — Section 4"),
+    ("**Article 8**, Section 3", "**Article 8**, Section 4"),
+    ("Article VIII, Section 3", "Article VIII, Section 4"),
+    ("Shoreland Zoning Ordinance, Section 3", "Shoreland Zoning Ordinance, Section 4"),
+    ("Sections 3 and 4 (Permits) of Article 8", "Sections 4 and 5 (Permits) of Article 8"),
+]
+
+
+@_pytest_foreign.mark.parametrize("old_phrase,new_phrase", _FOREIGN_PHRASINGS)
+def test_no_foreign_reference_phrasing_hides_a_retarget(old_phrase, new_phrase):
+    old = FM + "See " + old_phrase + ".\n"
+    new = FM + "See " + new_phrase + ".\n"
+    assert nz.changed_line_count(old, new, amap=IDENTITY, smap=_FOREIGN_SMAP) == 2
+
+
+def test_a_named_document_with_no_trigger_word_is_left_raw_after_a_comma():
+    old = FM + "See the Floodplain Standards, Section 3.\n"
+    new = FM + "See the Floodplain Standards, Section 4.\n"
+    assert nz.changed_line_count(old, new, amap=IDENTITY, smap=_FOREIGN_SMAP) == 2
+
+
+def test_a_foreign_container_elsewhere_in_the_paragraph_leaves_bare_references_raw():
+    text = FM + "Permits are issued under Article 8. Appeals follow Section 3.\n"
+    assert nz.normalize_sections_only(text, smap={7: {3: 4}}) == text
+
+
+def test_but_the_next_paragraph_is_unaffected():
+    """The positive control for the paragraph scope."""
+    out = nz.normalize_sections_only(
+        FM + "Permits are issued under Article 8.\n\nSee Section 3.\n", smap={7: {3: 4}})
+    assert out.endswith("See Section 4.\n")
+
+
+def test_a_self_reference_to_the_containing_article_does_not_block():
+    out = nz.normalize_sections_only(FM + "Under Article 7, see Section 3.\n", smap={7: {3: 4}})
+    assert out.endswith("see Section 4.\n")
