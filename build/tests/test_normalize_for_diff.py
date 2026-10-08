@@ -9,6 +9,8 @@ confidently wrong, and nobody reading it can tell.
 import sys
 from pathlib import Path
 
+import pytest
+
 BUILD = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BUILD))
 
@@ -18,12 +20,10 @@ import normalize_for_diff as nz  # noqa: E402
 AMAP = adoption_map.load(Path(__file__).resolve().parent / "fixtures" / "adoption-map-v0.1-baseline.json")
 
 
-import pytest as _pytest_rollover
-
 _PRE_ROLLOVER_MAP = Path(__file__).resolve().parent / "fixtures" / "adoption-map-v0.1-baseline.json"
 
 
-@_pytest_rollover.fixture(autouse=True)
+@pytest.fixture(autouse=True)
 def _pin_pre_rollover_adoption_map(monkeypatch):
     """These tests exercise the baseline-redline machinery -- renumbering,
     renamed article files, not-text-comparable articles -- against the
@@ -386,6 +386,51 @@ def test_a_list_with_and_and_through_is_mapped():
     assert old7("Sections 3.F.2 through 3.F.4\n") == FM + "Sections 4.F.2 through 4.F.4\n"
 
 
+# --- Ranges: renumbered only when the span is unchanged -------------------------
+# With a section inserted at §4, `Sections 3 through 5` now spans a DIFFERENT set
+# of sections than `Sections 3 through 6` does. Mapping each endpoint on its own
+# turns the old range into `3 through 6` and hides that.
+
+_INSERT_AT_4 = {7: {4: 5, 5: 6, 6: 7}}
+
+
+def test_an_insertion_inside_a_range_still_counts():
+    old = FM + "See Sections 3 through 5.\n"
+    new = FM + "See Sections 3 through 6.\n"
+    assert nz.changed_line_count(old, new, amap=IDENTITY, smap=_INSERT_AT_4) == 2
+
+
+def test_a_bare_range_with_an_insertion_inside_still_counts():
+    old = FM + "See Section 3 through Section 5.\n"
+    new = FM + "See Section 3 through Section 6.\n"
+    assert nz.changed_line_count(old, new, amap=IDENTITY, smap=_INSERT_AT_4) == 2
+
+
+@pytest.mark.parametrize("old_phrase,new_phrase", [
+    ("Sections 3 to 5", "Sections 3 to 6"),
+    ("Sections 3\u20135", "Sections 3\u20136"),
+])
+def test_a_range_written_with_to_or_a_dash_still_counts(old_phrase, new_phrase):
+    old = FM + "See " + old_phrase + ".\n"
+    new = FM + "See " + new_phrase + ".\n"
+    assert nz.changed_line_count(old, new, amap=IDENTITY, smap=_INSERT_AT_4) == 2
+
+
+def test_a_range_shifted_whole_is_still_suppressed():
+    """The positive control: every endpoint moves by the same amount, so the
+    span is unchanged and the renumbering is cosmetic."""
+    old = FM + "See Sections 3 through 5.\n"
+    new = FM + "See Sections 4 through 6.\n"
+    assert nz.changed_line_count(old, new, amap=IDENTITY, smap={7: {3: 4, 4: 5, 5: 6}}) == 0
+
+
+def test_subject_to_section_is_not_a_range():
+    """The positive control for the narrowed `to`: it is a range word only after
+    a number, never in `subject to Section 3`."""
+    out = nz.normalize_sections_only(FM + "This is subject to Section 3.\n", smap={7: {3: 4}})
+    assert out.endswith("subject to Section 4.\n")
+
+
 def test_a_bare_section_sign_is_suppressed():
     assert old7("under §3.\n") == FM + "under §4.\n"
 
@@ -618,8 +663,6 @@ def test_a_number_first_statute_is_left_raw():
 # PARAGRAPH names any container other than the containing Article. Leaving a
 # reference raw only adds visible noise; it can never hide an amendment.
 
-import pytest as _pytest_foreign
-
 _FOREIGN_SMAP = {7: {3: 4, 4: 5, 20: 21}}
 _FOREIGN_PHRASINGS = [
     ("Section 20 (Land Conveyance) of Article 8", "Section 21 (Land Conveyance) of Article 8"),
@@ -635,7 +678,7 @@ _FOREIGN_PHRASINGS = [
 ]
 
 
-@_pytest_foreign.mark.parametrize("old_phrase,new_phrase", _FOREIGN_PHRASINGS)
+@pytest.mark.parametrize("old_phrase,new_phrase", _FOREIGN_PHRASINGS)
 def test_no_foreign_reference_phrasing_hides_a_retarget(old_phrase, new_phrase):
     old = FM + "See " + old_phrase + ".\n"
     new = FM + "See " + new_phrase + ".\n"

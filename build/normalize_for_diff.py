@@ -156,10 +156,26 @@ _FRONTMATTER_ARTICLE_NUMBER = re.compile(r'^(article-number:\s*")(\d+)(")', re.M
 _SECTION_REF = re.compile(
     r"(?P<explicit>\bArticle (?P<art>\d+) (?:Section |§))(?P<n1>\d+)"
     r"|(?P<plural>\bSections )(?P<list>\d+[A-Za-z0-9.]*"
-    r"(?:(?:,\s*(?:and\s+)?|\s+and\s+|\s+through\s+)\d+[A-Za-z0-9.]*)*)"
+    r"(?:(?:,\s*(?:and\s+)?|\s+and\s+|\s+(?:through|thru|to)\s+|\s*[\u2013\u2014]\s*)"
+    r"\d+[A-Za-z0-9.]*)*)"
     r"|(?P<bare>\bSection |§)(?P<n2>\d+)"
 )
 _LIST_NUMBER = re.compile(r"(?<![A-Za-z0-9.])(\d+)")
+# A RANGE is renumbered only when its span is unchanged. `Sections 3 through 5`
+# names every section from 3 to 5; if a section is inserted at 4, the same words
+# now cover a different set of sections, and mapping each endpoint on its own
+# (3 stays 3, 5 becomes 6) would turn the old range into `3 through 6` and hide
+# that. So a plural list is rewritten only if every range inside it keeps its
+# span under the map, and a bare endpoint of a range is never rewritten on its
+# own: both stay raw, and the change shows. Ranges written with to, thru or an
+# en or em dash are ranges too. Leaving text raw only adds visible noise.
+_RANGE_WORD = r"(?:through|thru|to|\u2013|\u2014)"
+_LIST_RANGE = re.compile(r"(?<![A-Za-z0-9.])(\d+)[A-Za-z0-9.]*\s*" + _RANGE_WORD + r"\s*(\d+)")
+# "to" counts as a range word only after a number ("Section 3 to Section 5"),
+# never in "subject to Section 3" / "pursuant to Section 3".
+_RANGE_BEFORE = re.compile(r"(?:\b(?:through|thru)|\d[A-Za-z0-9.]*\s+to|[\u2013\u2014])\s*$")
+_RANGE_AFTER = re.compile(
+    r"(?:[A-Za-z0-9.]*\s*" + _RANGE_WORD + r"\s*(?:Sections?\s+|\u00a7)?\d|-\d)")
 _H2_NUMBER = re.compile(r"^(## )(\d+)(\. )", re.MULTILINE)
 # A bare or plural reference is rewritten only when NOTHING qualifies it.
 # Skipping a reference is always the safe direction -- the old text stays raw,
@@ -269,8 +285,16 @@ def _section_renumber(text: str, smap) -> tuple[str, int]:
                 or _names_a_foreign_container(_paragraph_at(out, r.start()), containing)):
             return r.group(0)
         if r.group("plural"):
+            amap = smap.get(containing, {})
+            if _RANGE_AFTER.match(out, r.end()) or any(
+                    amap.get(int(b), int(b)) - amap.get(int(a), int(a)) != int(b) - int(a)
+                    for a, b in _LIST_RANGE.findall(r.group("list"))):
+                return r.group(0)
             return r.group("plural") + _LIST_NUMBER.sub(
                 lambda k: str(lookup(containing, int(k.group(1)))), r.group("list"))
+        if (_RANGE_BEFORE.search(out[max(0, r.start() - STATUTE_LOOKBEHIND):r.start()])
+                or _RANGE_AFTER.match(out, r.end())):
+            return r.group(0)
         return r.group("bare") + str(lookup(containing, int(r.group("n2"))))
 
     return _SECTION_REF.sub(repl, out), changed
