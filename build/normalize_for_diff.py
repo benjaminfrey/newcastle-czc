@@ -15,6 +15,14 @@ whose leading number is an article number, same as a heading) and frontmatter
 `article-number: "N"`. Rules 4 and 5 below close that gap; the total is now
 151. Articles 1, 5, 6, and 7 report ZERO substantive changes.
 
+Rule 6 (added 2026-10-08) covers section renumbering. A section inserted into
+an Article shifts every later `## N.` heading and every reference to it. The
+map comes from build/section_map.py, which DERIVES it by aligning heading
+titles, and it is applied to the OLD side only. A bare reference is narrow in
+two layers: its number must be a key in the containing Article's map, and no
+statute token may sit just before it. An explicit `Article N Section M`
+resolves against Article N. With no map, nothing changes.
+
 Without this, the document meant to show voters what changed buries 151 real
 changes under over a thousand invisible ones.
 
@@ -119,6 +127,38 @@ _TABLE_NUM = re.compile(
 # with the article, same map as Rule 4 and the cross-reference renumbering.
 _FRONTMATTER_ARTICLE_NUMBER = re.compile(r'^(article-number:\s*")(\d+)(")', re.MULTILINE)
 
+# Rule 6. Section renumbering. When a section is inserted into an Article,
+# every later `## N.` heading and every reference to it shifts by one. The map
+# comes from build/section_map.py, which DERIVES it by aligning heading titles
+# -- only an identical, unambiguous, in-order title at a new number is mapped.
+#
+# Narrowness, in two layers, for a BARE reference (`Section N`, `§N`,
+# `Sections A, B, and C`):
+#   1. The number is rewritten only if it is a KEY in the containing Article's
+#      map. The containing Article is read from the text's own frontmatter.
+#   2. It is never rewritten when a statute token occurs within 40 characters
+#      before it. The map alone is not enough: Article 7 has 66 sections, so
+#      `Subchapter C, §53.11` -- a federal-regulations citation in Article 7 --
+#      would collide with a renumbered §53. The token set is the MEASURED one
+#      (2026-10-08): it includes `Public Law` and `Stat.`, because Article 9
+#      cites `Public Law 75-412, 50 Stat. 888, Section 8`, which a guard limited
+#      to MRSA/M.R.S/Title/U.S.C would have renumbered.
+# An EXPLICIT `Article N Section M` / `Article N §M` resolves against Article N's
+# map and is not statute-guarded: the `Article N` prefix is decisive, and the
+# corpus has lines carrying both kinds (`23 MRSA §3026-A and Article 8 §27`).
+_SECTION_REF = re.compile(
+    r"(?P<explicit>\bArticle (?P<art>\d+) (?:Section |§))(?P<n1>\d+)"
+    r"|(?P<plural>\bSections )(?P<list>\d+[A-Za-z0-9.]*"
+    r"(?:(?:,\s*(?:and\s+)?|\s+and\s+|\s+through\s+)\d+[A-Za-z0-9.]*)*)"
+    r"|(?P<bare>\bSection |§)(?P<n2>\d+)"
+)
+_LIST_NUMBER = re.compile(r"(?<![A-Za-z0-9.])(\d+)")
+_H2_NUMBER = re.compile(r"^(## )(\d+)(\. )", re.MULTILINE)
+_OF_ARTICLE = re.compile(r"[A-Za-z0-9.]*\s+of\s+Article\s+\d")   # `Section N[.X.n] of Article M`
+_STATUTE_CONTEXT = re.compile(
+    r"MRSA|M\.R\.S|Title|U\.S\.C|Public Law|Stat\.|Chapter|Subchapter|C\.F\.R|CFR|Regulations")
+STATUTE_LOOKBEHIND = 40
+
 
 def _heading_case(text: str) -> str:
     return _HEADING_LETTER.sub(lambda m: m.group(1) + m.group(2).lower() + m.group(3), text)
@@ -147,7 +187,58 @@ def _renumber_frontmatter(text: str, amap) -> str:
     return _FRONTMATTER_ARTICLE_NUMBER.sub(repl, text)
 
 
-def normalize(text: str, *, amap, is_baseline_side: bool) -> str:
+def _section_renumber(text: str, smap) -> tuple[str, int]:
+    """Rule 6, returning the text and how many numbers it actually changed."""
+    if not smap:
+        return text, 0
+    fm = _FRONTMATTER_ARTICLE_NUMBER.search(text)
+    containing = int(fm.group(2)) if fm else None
+    changed = 0
+
+    def lookup(article, n: int) -> int:
+        nonlocal changed
+        new = smap.get(article, {}).get(n, n) if article is not None else n
+        if new != n:
+            changed += 1
+        return new
+
+    out = _H2_NUMBER.sub(
+        lambda h: f"{h.group(1)}{lookup(containing, int(h.group(2)))}{h.group(3)}", text)
+
+    def statute_before(pos: int) -> bool:
+        return bool(_STATUTE_CONTEXT.search(out[max(0, pos - STATUTE_LOOKBEHIND):pos]))
+
+    def repl(r: re.Match) -> str:
+        if r.group("explicit"):
+            return r.group("explicit") + str(lookup(int(r.group("art")), int(r.group("n1"))))
+        if containing is None or statute_before(r.start()):
+            return r.group(0)
+        if r.group("plural"):
+            return r.group("plural") + _LIST_NUMBER.sub(
+                lambda k: str(lookup(containing, int(k.group(1)))), r.group("list"))
+        if _OF_ARTICLE.match(out, r.end()):
+            return r.group(0)          # `Section N of Article M`: a reference INTO another Article
+        return r.group("bare") + str(lookup(containing, int(r.group("n2"))))
+
+    return _SECTION_REF.sub(repl, out), changed
+
+
+def _renumber_sections(text: str, smap) -> str:
+    return _section_renumber(text, smap)[0]
+
+
+def normalize_sections_only(text: str, *, smap) -> str:
+    """Render-SAFE: Rule 6 alone, for a draft-to-draft redline.
+
+    A draft-to-draft redline normalises nothing else (redline_resolve.py keeps
+    that path raw), but a section inserted between two drafts shifts headings
+    and references just as one inserted at an adoption does. Rule 6 rewrites
+    only digits in fixed positions, so it never touches line structure.
+    """
+    return _renumber_sections(text, smap)
+
+
+def normalize(text: str, *, amap, is_baseline_side: bool, smap=None) -> str:
     """Normalise one side of the diff.
 
     COMPARISON-ONLY. NOT render-safe. This includes `_rewrap`, which collapses
@@ -165,16 +256,20 @@ def normalize(text: str, *, amap, is_baseline_side: bool) -> str:
     baseline -> current, so all three are applied to the OLD side only.
     Applying them to both would double-shift every reference and corrupt the
     comparison silently.
+
+    Rule 6 (section renumbering) applies the same way when an `smap` is given,
+    and runs first because that map is keyed on baseline article numbers.
     """
     out = _heading_case(text)
     if is_baseline_side:
+        out = _renumber_sections(out, smap)   # FIRST: keyed on baseline article numbers
         out = amap.renumber(out)
         out = _renumber_tables(out, amap)
         out = _renumber_frontmatter(out, amap)
     return _rewrap(out)
 
 
-def normalize_old_side(text: str, *, amap) -> str:
+def normalize_old_side(text: str, *, amap, smap=None) -> str:
     """Render-SAFE normalisation for the OLD side of a redline.
 
     Heading case, cross-reference renumbering, table-number renumbering, and
@@ -191,8 +286,13 @@ def normalize_old_side(text: str, *, amap) -> str:
     comparable pairs the marked-line count is the same with or without rewrap.
     Normalisation is legitimate for COMPARISON; feeding normalised text to the
     RENDERER is not.
+
+    Rule 6 (section renumbering) applies when an `smap` is given, and runs
+    first because that map is keyed on baseline article numbers.
     """
-    out = amap.renumber(_heading_case(text))
+    out = _heading_case(text)
+    out = _renumber_sections(out, smap)       # FIRST: keyed on baseline article numbers
+    out = amap.renumber(out)
     out = _renumber_tables(out, amap)
     out = _renumber_frontmatter(out, amap)
     return out
@@ -213,7 +313,7 @@ def _marked(o: list[str], n: list[str]) -> int:
     return sum(1 for line in lines[2:] if line[:1] in "+-")
 
 
-def changed_line_count(old: str, new: str, *, amap) -> int:
+def changed_line_count(old: str, new: str, *, amap, smap=None) -> int:
     """How many lines the redline will MARK for this article pair.
 
     ONE definition, shared by the operator-facing breakdown
@@ -233,7 +333,7 @@ def changed_line_count(old: str, new: str, *, amap) -> int:
     build/tests/test_normalize_for_diff.py for the test that pins the
     agreement.
     """
-    o = normalize_old_side(old, amap=amap).splitlines()
+    o = normalize_old_side(old, amap=amap, smap=smap).splitlines()
     n = new.splitlines()
     return _marked(o, n)
 
