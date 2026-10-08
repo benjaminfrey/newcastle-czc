@@ -1,20 +1,33 @@
 """Trees in which something DID move, for the section-map tests.
 
-Every source/article-*.md is byte-identical to v1.0 (measured 2026-10-08), so a
-test that derives v1.0 against the real tree can only ever see "nothing moved",
-and passes whether or not the code works. These helpers build trees where a
-section was inserted, deleted or retitled, so the assertions can fail.
+Every source/article-*.md was byte-identical to v1.0 when measured (2026-10-08),
+so a test that derives v1.0 against the real tree can only ever see "nothing
+moved", and passes whether or not the code works. These helpers build trees where
+a section was inserted, deleted or retitled, so the assertions can fail.
+
+Trees are built from the v1.0 TAG, not the live source/: the live tree will
+diverge from v1.0 the first time a real amendment is drafted, and every
+hard-coded count in the tests describes v1.0.
 """
 import re
-import shutil
+import subprocess
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 _H2 = re.compile(r"^## (\d+)\. ", re.MULTILINE)
 
 
-def copy_source(dest: Path) -> Path:
-    shutil.copytree(REPO / "source", dest)
+def copy_source(dest: Path, ref: str = "v1.0") -> Path:
+    """Materialise the article files as of `ref` into `dest`."""
+    dest.mkdir(parents=True)
+    names = subprocess.run(["git", "-C", str(REPO), "ls-tree", "--name-only", ref, "source/"],
+                           capture_output=True, text=True, check=True).stdout.split()
+    for name in names:
+        base = Path(name).name
+        if base.startswith("article-0") and base.endswith(".md"):
+            text = subprocess.run(["git", "-C", str(REPO), "show", f"{ref}:{name}"],
+                                  capture_output=True, text=True, check=True).stdout
+            (dest / base).write_text(text)
     return dest
 
 

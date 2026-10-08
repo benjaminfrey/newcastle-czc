@@ -36,6 +36,7 @@ import difflib
 import hashlib
 import json
 import re
+import subprocess
 import sys
 from collections import Counter
 from pathlib import Path
@@ -59,6 +60,10 @@ SIMILARITY_FLOOR = 0.5
 
 class BelowFloor(Exception):
     """An Article's headings align too weakly to derive a map from."""
+
+
+class NoComparison(Exception):
+    """The comparison could not be made at all (bad ref, or nothing to compare)."""
 
 
 def _git_show(ref: str, path: str) -> str | None:
@@ -130,13 +135,19 @@ def tree_hash(new_dir: Path) -> str:
 
 def derive(old_ref: str, new_dir: Path = DEFAULT_NEW_DIR) -> dict:
     new_dir = Path(new_dir)
+    if subprocess.run(["git", "-C", str(REPO), "rev-parse", "--verify", "--quiet",
+                       f"{old_ref}^{{commit}}"], capture_output=True).returncode != 0:
+        raise NoComparison(f"{old_ref!r} is not a commit in this repository")
     doc: dict = {"for_old_ref": old_ref, "for_new_tree": tree_hash(new_dir),
-                 "articles": {}, "matched": {}, "unmapped_old": {}, "unmapped_new": {}}
+                 "articles": {}, "matched": {}, "unmapped_old": {}, "unmapped_new": {},
+                 "skipped": []}
     weak: list[str] = []
     for new_path in sorted(new_dir.glob("article-0*.md")):
         old_text = _git_show(old_ref, f"source/{new_path.name}")
         if old_text is None:
-            continue                      # new at this version: nothing renumbered from it
+            # New at this version: nothing renumbered from it -- but visible.
+            doc["skipped"].append(new_path.name)
+            continue
         art = article_number(old_text)    # keyed on the OLD number, which references use
         if art is None:
             continue
@@ -153,6 +164,9 @@ def derive(old_ref: str, new_dir: Path = DEFAULT_NEW_DIR) -> dict:
             continue
         if mapping:
             doc["articles"][key] = {str(o): n for o, n in sorted(mapping.items())}
+    if not doc["matched"]:
+        raise NoComparison(f"no article file in {new_dir} exists at {old_ref}; "
+                           f"nothing was compared")
     if weak:
         raise BelowFloor("; ".join(weak))
     return doc
@@ -180,6 +194,10 @@ def main(argv=None) -> int:
                   f"{SIMILARITY_FLOOR:.0%} similarity floor the alignment cannot be "
                   f"trusted as a pure renumbering; no map was written.", file=sys.stderr)
             return 2
+        except NoComparison as exc:
+            print(f"section_map: refusing to derive -- {exc}; no map was written.",
+                  file=sys.stderr)
+            return 1
         Path(a.out).write_text(json.dumps(doc, indent=2) + "\n")
         n = sum(len(m) for m in doc["articles"].values())
         print(f"section_map: {n} renumbered section(s) across "

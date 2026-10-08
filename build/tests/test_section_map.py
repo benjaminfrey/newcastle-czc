@@ -30,11 +30,12 @@ def _tree_with(tmp_path, article, transform):
 
 
 def test_against_v1_0_it_examines_every_heading_and_maps_nothing(tmp_path):
-    """The real tree equals v1.0, so 'maps nothing' alone proves nothing.
-    The positive control is `matched`: the derivation must have found every
+    """The tree is v1.0 materialised from the tag, so 'maps nothing' alone proves
+    nothing. The positive control is `matched`: the derivation must have found every
     heading again -- 66 in Article 7, 14 in Article 3, 29 in Article 8."""
-    doc = section_map.derive("v1.0", REPO / "source")
+    doc = section_map.derive("v1.0", fx.copy_source(tmp_path / "src"))
     assert doc["articles"] == {}
+    assert doc.get("skipped", []) == []
     assert doc["matched"]["7"] == 66
     assert doc["matched"]["3"] == 14
     assert doc["matched"]["8"] == 29
@@ -113,3 +114,28 @@ def test_the_map_records_its_provenance(tmp_path):
     assert doc["for_old_ref"] == "v1.0"
     assert doc["for_new_tree"] == section_map.tree_hash(tree)
     assert section_map.load(out) == {7: {o: o + 1 for o in range(3, 67)}}
+
+
+def _cli(args):
+    return subprocess.run([sys.executable, str(BUILD / "section_map.py"), "derive", *args],
+                          capture_output=True, text=True, cwd=REPO)
+
+
+def test_a_bad_old_ref_is_refused_and_writes_nothing(tmp_path):
+    out = tmp_path / "map.json"
+    r = _cli(["no-such-ref-xyz", "--new-dir", str(fx.copy_source(tmp_path / "src")),
+              "--out", str(out)])
+    assert r.returncode == 1, r.stderr
+    assert "refusing to derive" in r.stderr
+    assert "no-such-ref-xyz" in r.stderr
+    assert not out.exists()
+
+
+def test_a_tree_with_no_matching_articles_is_refused(tmp_path):
+    empty = tmp_path / "empty"
+    empty.mkdir()
+    out = tmp_path / "map.json"
+    r = _cli(["v1.0", "--new-dir", str(empty), "--out", str(out)])
+    assert r.returncode == 1, r.stderr
+    assert "nothing was compared" in r.stderr
+    assert not out.exists()
