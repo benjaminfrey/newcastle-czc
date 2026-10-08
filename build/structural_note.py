@@ -38,7 +38,7 @@ import os
 import sys
 from pathlib import Path
 
-import fitz  # PyMuPDF
+import pymupdf  # PyMuPDF; `import fitz` is deprecated and prints a notice to stdout
 
 BUILD = Path(__file__).resolve().parent
 sys.path.insert(0, str(BUILD))
@@ -124,30 +124,30 @@ def build_note(out_pdf: str, *, map_path: str | None = None,
         old_label = ("the Core Zoning Code adopted November 3, 2020 and amended "
                      "through March 24, 2025")
 
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page(width=PAGE_W, height=PAGE_H)
 
-    bar = fitz.Rect(MARGIN, 96, PAGE_W - MARGIN, 150)
+    bar = pymupdf.Rect(MARGIN, 96, PAGE_W - MARGIN, 150)
     page.draw_rect(bar, color=None, fill=ARTICLE_BLUE)
     page.insert_textbox(
-        fitz.Rect(bar.x0 + 12, bar.y0 + 12, bar.x1 - 12, bar.y1 - 6),
+        pymupdf.Rect(bar.x0 + 12, bar.y0 + 12, bar.x1 - 12, bar.y1 - 6),
         "HOW TO READ THIS REDLINE",
         fontfile=BARLOW_BOLD, fontname="barlow-bold", fontsize=17, color=WHITE,
-        align=fitz.TEXT_ALIGN_CENTER,
+        align=pymupdf.TEXT_ALIGN_CENTER,
     )
 
     y = bar.y1 + 12
     page.insert_textbox(
-        fitz.Rect(MARGIN, y, PAGE_W - MARGIN, y + 30),
+        pymupdf.Rect(MARGIN, y, PAGE_W - MARGIN, y + 30),
         "Three real changes cannot be marked in a redline. They are stated here, "
         "once, before any marked text.",
         fontfile=BARLOW_MED, fontname="barlow-med", fontsize=10.5,
-        color=REDLINE_RED, align=fitz.TEXT_ALIGN_CENTER,
+        color=REDLINE_RED, align=pymupdf.TEXT_ALIGN_CENTER,
     )
     y += 40
 
     for heading, body in note_blocks(amap, old_label):
-        rect = fitz.Rect(MARGIN, y, PAGE_W - MARGIN, y + 20)
+        rect = pymupdf.Rect(MARGIN, y, PAGE_W - MARGIN, y + 20)
         page.insert_textbox(rect, heading, fontfile=BARLOW_BOLD,
                             fontname="barlow-bold", fontsize=11.5,
                             color=ARTICLE_BLUE)
@@ -156,7 +156,7 @@ def build_note(out_pdf: str, *, map_path: str | None = None,
         # so a fixed per-block height would silently clip a longer one.
         box_w = PAGE_W - 2 * MARGIN
         height = 400.0
-        rect = fitz.Rect(MARGIN, y, MARGIN + box_w, y + height)
+        rect = pymupdf.Rect(MARGIN, y, MARGIN + box_w, y + height)
         used = page.insert_textbox(rect, body, fontfile=BARLOW_REG,
                                    fontname="barlow-reg", fontsize=10,
                                    lineheight=1.35, color=INK)

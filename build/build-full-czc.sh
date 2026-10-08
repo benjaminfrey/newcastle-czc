@@ -39,6 +39,7 @@ DATE_STR="${2:-$(date +"%B %-d, %Y")}"
 # whole number cannot wear draft chrome, and adoption chrome cannot be stamped
 # on a decimal), and provides czc_integrated_name().
 source "$REPO_ROOT/build/adoption-footer.sh"
+source "$REPO_ROOT/build/pagecount.sh"
 
 BASELINE_PDF="$REPO_ROOT/docs/Newcastle Core Zoning Code.pdf"
 DATA_JSON="$SOURCE_DIR/article-02-data.json"
@@ -191,8 +192,8 @@ COMBINED_MD="$RELEASE_DIR/$OUT_NAME.md"
 # The body flows continuously: Articles are NOT padded to open on a recto.
 BLANK_PDF="$TMPDIR_PDFS/blank.pdf"
 python3 - "$BLANK_PDF" <<'PY'
-import sys, fitz
-d = fitz.open(); d.new_page(width=612, height=792); d.save(sys.argv[1]); d.close()
+import sys, pymupdf
+d = pymupdf.open(); d.new_page(width=612, height=792); d.save(sys.argv[1]); d.close()
 PY
 
 # Render Articles in order, threading a running page offset so footers number
@@ -267,11 +268,7 @@ for ART in "${ARTICLES[@]}"; do
       ;;
   esac
   PDF_LIST+=("$PART")
-  PAGES=$(python3 - "$PART" <<'PY'
-import sys, fitz
-print(fitz.open(sys.argv[1]).page_count)
-PY
-)
+  PAGES=$(czc_pagecount "$PART")
   OFFSET=$((OFFSET + PAGES))
 done
 
@@ -313,11 +310,7 @@ typst compile "$REPO_ROOT/build/toc.typ" "$TOC_PDF" \
   --input "data=$TOC_JSON" \
   --font-path "$REPO_ROOT/style/fonts"
 
-TOC_PAGES=$(python3 - "$TOC_PDF" <<'PY'
-import sys, fitz
-print(fitz.open(sys.argv[1]).page_count)
-PY
-)
+TOC_PAGES=$(czc_pagecount "$TOC_PDF")
 
 # cover, blank verso, TOC, then a trailing blank iff the TOC page count is odd.
 #
@@ -335,11 +328,7 @@ if [ -n "${FRONT_NOTE_PDF:-}" ]; then
     echo "FRONT_NOTE_PDF is set but does not exist: $FRONT_NOTE_PDF" >&2
     exit 1
   fi
-  NOTE_PAGES=$(python3 - "$FRONT_NOTE_PDF" <<'PY'
-import sys, fitz
-print(fitz.open(sys.argv[1]).page_count)
-PY
-)
+  NOTE_PAGES=$(czc_pagecount "$FRONT_NOTE_PDF")
   PRE_TOC_PARTS+=("$FRONT_NOTE_PDF")
   PRE_TOC_COUNT=$(( 1 + NOTE_PAGES ))
   echo "Front matter: inserting a $NOTE_PAGES-page structural note after the cover"

@@ -4,7 +4,7 @@
 
 A page counts as blank only if it has NEITHER extractable text NOR any
 embedded image -- matching exactly how this build's own pad pages are made
-(build-full-czc.sh / build-standalone.sh: `fitz.new_page()`, nothing drawn).
+(build-full-czc.sh / build-standalone.sh: `pymupdf.new_page()`, nothing drawn).
 Text-only emptiness would misclassify a map or plate page (vector art, no
 running head) as blank; this narrower test does not.
 
@@ -15,11 +15,11 @@ from __future__ import annotations
 
 import sys
 
-import fitz  # PyMuPDF -- already a build dependency (build-full-czc.sh uses it)
+import pymupdf  # PyMuPDF -- already a build dependency (build-full-czc.sh uses it)
 
 
 def counts(path: str) -> tuple[int, int]:
-    doc = fitz.open(path)
+    doc = pymupdf.open(path)
     blanks = 0
     for page in doc:
         if not page.get_text().strip() and not page.get_images(full=True):

@@ -46,6 +46,7 @@ DATE_STR="${3:-}"        # reserved (standalone has no cover); kept for signatur
 # circulate on its own, so the standalone must refuse the same bypass the
 # integrated build does.
 source "$REPO_ROOT/build/adoption-footer.sh"
+source "$REPO_ROOT/build/pagecount.sh"
 
 if [ -z "$NN_RAW" ]; then
   echo "usage: build-standalone.sh <article-NN> <version> [date-str]" >&2
@@ -94,16 +95,12 @@ OUTPUT_PDF="$RELEASE_DIR/$OUT_NAME.pdf"
 
 TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
 
-pagecount() { python3 - "$1" <<'PY'
-import sys, fitz
-print(fitz.open(sys.argv[1]).page_count)
-PY
-}
+pagecount() { czc_pagecount "$1"; }
 
 BLANK_PDF="$TMP/blank.pdf"
 python3 - "$BLANK_PDF" <<'PY'
-import sys, fitz
-d = fitz.open(); d.new_page(width=612, height=792); d.save(sys.argv[1]); d.close()
+import sys, pymupdf
+d = pymupdf.open(); d.new_page(width=612, height=792); d.save(sys.argv[1]); d.close()
 PY
 
 # ---- optional front note (uncounted; K must be even) ------------------------
