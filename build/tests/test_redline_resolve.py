@@ -216,3 +216,55 @@ def test_report_names_every_rule_on_the_baseline_path(tmp_path):
     line = next(l for l in r.stderr.splitlines() if "suppressed" in l)
     for key in ("heading_case=", "renumber=", "tables=", "frontmatter=", "sections="):
         assert key in line, key
+
+
+def test_a_hand_edited_map_is_refused_and_nothing_written(tmp_path):
+    """check() reads only the ref and tree strings, so a map with an added entry
+    still passes it. The resolver must re-derive (selfcheck) before applying."""
+    smap_path, tree = _map_for_an_insertion(tmp_path)
+    doc = json.loads(smap_path.read_text())
+    doc["articles"]["7"]["2"] = 2
+    smap_path.write_text(json.dumps(doc))
+    out = tmp_path / "old.md"
+    r = run("article-07-use-standards.md", "v1.0", str(out), "--section-map", str(smap_path),
+            "--new-dir", str(tree))
+    assert r.returncode == 1
+    assert "section map refused" in r.stderr
+    assert not out.exists()
+
+
+def test_a_missing_map_file_is_refused_not_a_traceback(tmp_path):
+    _, tree = _map_for_an_insertion(tmp_path)
+    out = tmp_path / "old.md"
+    r = run("article-07-use-standards.md", "v1.0", str(out), "--section-map",
+            str(tmp_path / "no-such-map.json"), "--new-dir", str(tree))
+    assert r.returncode == 1
+    assert "section map refused" in r.stderr
+    assert "Traceback" not in r.stderr
+    assert not out.exists()
+
+
+def test_a_malformed_map_file_is_refused_not_a_traceback(tmp_path):
+    _, tree = _map_for_an_insertion(tmp_path)
+    bad = tmp_path / "bad.json"
+    bad.write_text("{not json")
+    out = tmp_path / "old.md"
+    r = run("article-07-use-standards.md", "v1.0", str(out), "--section-map", str(bad),
+            "--new-dir", str(tree))
+    assert r.returncode == 1
+    assert "section map refused" in r.stderr
+    assert "Traceback" not in r.stderr
+    assert not out.exists()
+
+
+def test_the_baseline_path_applies_the_section_map(tmp_path, monkeypatch):
+    """The shipped identity case is not reachable on --baseline under the
+    pinned v0.1 fixture, so this one test runs against the shipped map (identity,
+    baseline v1.0) with the insertion map and its tree."""
+    smap_path, tree = _map_for_an_insertion(tmp_path)
+    monkeypatch.setenv("ADOPTION_MAP", str(REPO / "build" / "adoption-map.json"))
+    out = tmp_path / "old.md"
+    r = run("article-07-use-standards.md", "v1.0", str(out), "--baseline",
+            "--section-map", str(smap_path), "--new-dir", str(tree))
+    assert r.returncode == 0, r.stderr
+    assert "## 4. ADULT ESTABLISHMENT" in out.read_text()

@@ -50,7 +50,7 @@ def main() -> int:
     ap.add_argument("old_ver")
     ap.add_argument("out_path")
     ap.add_argument("--baseline", action="store_true",
-                    help="resolve through adoption-map.json and normalise both sides")
+                    help="resolve through adoption-map.json and normalise the OLD side only")
     ap.add_argument("--section-map", default=None,
                     help="a map from build/section_map.py derive: renumbered sections "
                          "are suppressed on the old side (both paths)")
@@ -66,12 +66,18 @@ def main() -> int:
             print(f"{a.basename}: --section-map requires --new-dir: a map is only "
                   f"valid for the tree it was derived against", file=sys.stderr)
             return 1
-        problems = section_map.check(a.section_map, a.old_ver, a.new_dir)
+        # selfcheck, not check: check() only reads the ref and tree strings, so a
+        # hand-edited map for the right tree would be applied. selfcheck re-derives.
+        try:
+            problems = section_map.selfcheck(a.section_map, a.old_ver, a.new_dir)
+            if not problems:
+                smap = section_map.load(a.section_map)
+        except (OSError, ValueError, KeyError, AttributeError, TypeError) as exc:
+            problems = [f"cannot read the map: {exc}"]
         if problems:
             for p in problems:
                 print(f"{a.basename}: section map refused -- {p}", file=sys.stderr)
             return 1
-        smap = section_map.load(a.section_map)
 
     if not a.baseline:
         # Historical behaviour, untouched: same filename at the old tag. With a
