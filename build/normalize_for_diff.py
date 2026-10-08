@@ -132,17 +132,21 @@ _FRONTMATTER_ARTICLE_NUMBER = re.compile(r'^(article-number:\s*")(\d+)(")', re.M
 # comes from build/section_map.py, which DERIVES it by aligning heading titles
 # -- only an identical, unambiguous, in-order title at a new number is mapped.
 #
-# Narrowness, in two layers, for a BARE reference (`Section N`, `§N`,
+# Narrowness, in four guards, for a BARE or plural reference (`Section N`, `§N`,
 # `Sections A, B, and C`):
 #   1. The number is rewritten only if it is a KEY in the containing Article's
 #      map. The containing Article is read from the text's own frontmatter.
 #   2. It is never rewritten when a statute token occurs within 40 characters
-#      before it. The map alone is not enough: Article 7 has 66 sections, so
-#      `Subchapter C, §53.11` -- a federal-regulations citation in Article 7 --
-#      would collide with a renumbered §53. The token set is the MEASURED one
-#      (2026-10-08): it includes `Public Law` and `Stat.`, because Article 9
-#      cites `Public Law 75-412, 50 Stat. 888, Section 8`, which a guard limited
-#      to MRSA/M.R.S/Title/U.S.C would have renumbered.
+#      before it.
+#   3. It is never rewritten when a qualifier (`<word> <number>`) precedes it.
+#   4. It is never rewritten when `of <anything>` follows it, except `of this
+#      Article`.
+# Guard 2 is needed because the map alone is not enough: Article 7 has 66
+# sections, so `Subchapter C, §53.11` -- a federal-regulations citation in
+# Article 7 -- would collide with a renumbered §53. The token set is the
+# MEASURED one (2026-10-08): it includes `Public Law` and `Stat.`, because
+# Article 9 cites `Public Law 75-412, 50 Stat. 888, Section 8`, which a guard
+# limited to MRSA/M.R.S/Title/U.S.C would have renumbered.
 # An EXPLICIT `Article N Section M` / `Article N §M` resolves against Article N's
 # map and is not statute-guarded: the `Article N` prefix is decisive, and the
 # corpus has lines carrying both kinds (`23 MRSA §3026-A and Article 8 §27`).
@@ -154,7 +158,18 @@ _SECTION_REF = re.compile(
 )
 _LIST_NUMBER = re.compile(r"(?<![A-Za-z0-9.])(\d+)")
 _H2_NUMBER = re.compile(r"^(## )(\d+)(\. )", re.MULTILINE)
-_OF_ARTICLE = re.compile(r"[A-Za-z0-9.]*\s+of\s+Article\s+\d")   # `Section N[.X.n] of Article M`
+# A bare or plural reference is rewritten only when NOTHING qualifies it.
+# Skipping a reference is always the safe direction -- the old text stays raw,
+# so at worst a renumbering shows as a change -- while rewriting a qualified one
+# can hide a real amendment.
+# A reference qualified by ANY "<word> <number>" directly before it --
+# "Article 8, Section 3", "Article 8\nSection 3", the adopted text's own typo
+# "Atricle 4 Section 17" -- belongs to something else and is left raw.
+_QUALIFIED_BEFORE = re.compile(r"\b[A-Za-z][A-Za-z.]*\s+\d+[A-Za-z0-9.\-]*\s*,?\s*$")
+# ...and so does one followed by "of <anything>" other than "of this Article":
+# "Section 3 of Article 4", "Sections 3 and 4 of Article 8", and statutes
+# cited number-first, "Section 10 of Chapter 40A of the Maine General Laws".
+_OF_ELSEWHERE = re.compile(r"[A-Za-z0-9.\-]*\s+of\s+(?!this\s+Article\b)")
 _STATUTE_CONTEXT = re.compile(
     r"MRSA|M\.R\.S|Title|U\.S\.C|Public Law|Stat\.|Chapter|Subchapter|C\.F\.R|CFR|Regulations")
 STATUTE_LOOKBEHIND = 40
@@ -211,13 +226,13 @@ def _section_renumber(text: str, smap) -> tuple[str, int]:
     def repl(r: re.Match) -> str:
         if r.group("explicit"):
             return r.group("explicit") + str(lookup(int(r.group("art")), int(r.group("n1"))))
-        if containing is None or statute_before(r.start()):
+        if (containing is None or statute_before(r.start())
+                or _QUALIFIED_BEFORE.search(out[max(0, r.start() - STATUTE_LOOKBEHIND):r.start()])
+                or _OF_ELSEWHERE.match(out, r.end())):
             return r.group(0)
         if r.group("plural"):
             return r.group("plural") + _LIST_NUMBER.sub(
                 lambda k: str(lookup(containing, int(k.group(1)))), r.group("list"))
-        if _OF_ARTICLE.match(out, r.end()):
-            return r.group(0)          # `Section N of Article M`: a reference INTO another Article
         return r.group("bare") + str(lookup(containing, int(r.group("n2"))))
 
     return _SECTION_REF.sub(repl, out), changed

@@ -373,7 +373,8 @@ def test_only_the_leading_number_of_a_dotted_reference_moves():
 def test_but_a_changed_sub_section_letter_still_differs():
     """Only the section number is normalised; a real change to the letter that
     follows it is untouched and survives the comparison."""
-    assert old7("See Section 3.C.4.\n") != FM + "See Section 4.D.4.\n"
+    assert nz.changed_line_count(FM + "See Section 3.C.4.\n", FM + "See Section 4.D.4.\n",
+                                 amap=IDENTITY, smap=SMAP) == 2
 
 
 def test_each_element_of_a_list_is_mapped_independently():
@@ -424,6 +425,9 @@ def test_without_frontmatter_bare_references_are_not_guessed():
     """No frontmatter, no containing Article: bare forms stay as they are.
     Explicit `Article N Section M` still resolves."""
     assert nz.normalize_old_side("See Section 3.\n", amap=IDENTITY, smap=SMAP) == "See Section 3.\n"
+    # ...and an explicit reference still resolves without frontmatter.
+    assert nz.normalize_sections_only("See Article 7 Section 3.\n",
+                                      smap={7: {3: 4}}) == "See Article 7 Section 4.\n"
 
 
 def test_the_section_rule_runs_before_article_renumbering():
@@ -432,6 +436,13 @@ def test_the_section_rule_runs_before_article_renumbering():
     sub-map and miss. The ONE Rule 6 test that uses the fixture AMAP, on purpose."""
     out = nz.normalize_old_side(FM + "See Article 7 Section 3.\n", amap=AMAP, smap={7: {3: 4}})
     assert out.endswith("See Article 8 Section 4.\n")
+
+
+def test_normalize_runs_the_section_rule_before_article_renumbering():
+    """The same ordering pin, on the comparison path."""
+    out = nz.normalize(FM + "See Article 7 Section 3.\n", amap=AMAP, is_baseline_side=True,
+                       smap={7: {3: 4}})
+    assert "Article 8 Section 4" in out
 
 
 def test_the_new_side_is_never_section_renumbered():
@@ -460,7 +471,7 @@ STATUTORY = [
                                       "Title 38, Section 435", "MRSA Title 30 Section 2691",
                                       "Title 30-A Section 4452"]),
     ("article-09-definitions.md", ["50 Stat. 888, Section 8", "23 MRSA §3021",
-                                   "23 MRSA §3022"]),
+                                   "23 MRSA §3022", "Section 10 of Chapter 40A"]),
 ]
 
 
@@ -558,3 +569,44 @@ def test_the_two_paths_still_agree_with_a_map():
         nz.normalize(new, amap=IDENTITY, is_baseline_side=False, smap=smap).splitlines())
     assert comparison == 1     # the inserted heading; and the paths must agree on it
     assert comparison == nz.changed_line_count(old, new, amap=IDENTITY, smap=smap)
+
+
+# --- Qualified references are left raw (fix round 1) ---------------------------
+# A bare or plural reference is rewritten only when NOTHING qualifies it. Each
+# "still counts" test is a negative control: a real retargeting of a reference
+# that belongs to ANOTHER Article must survive the comparison.
+
+def _count(old, new, smap):
+    return nz.changed_line_count(FM + old, FM + new, amap=IDENTITY, smap=smap)
+
+
+def test_a_retargeted_plural_reference_into_another_article_still_counts():
+    assert _count("See Sections 3 and 4 of Article 8.\n", "See Sections 4 and 5 of Article 8.\n",
+                  {7: {3: 4, 4: 5}}) == 2
+
+
+def test_a_comma_separated_article_reference_still_counts():
+    assert _count("See Article 8, Section 3.\n", "See Article 8, Section 4.\n", {7: {3: 4}}) == 2
+
+
+def test_an_explicit_plural_article_reference_still_counts():
+    assert _count("See Article 8 Sections 3 and 4.\n", "See Article 8 Sections 4 and 5.\n",
+                  {7: {3: 4, 4: 5}}) == 2
+
+
+def test_an_article_reference_wrapped_across_lines_still_counts():
+    assert _count("See Article 8\nSection 3.\n", "See Article 8\nSection 4.\n", {7: {3: 4}}) == 2
+
+
+def test_the_adopted_typo_atricle_is_left_raw():
+    """The v1.0 text carries `Atricle 4 Section 17 Building Groups`. Unchanged,
+    it must not produce a phantom mark; retargeted, it must still count."""
+    line = "Atricle 4 Section 17 Building Groups\n"
+    assert _count(line, line, {7: {17: 18}}) == 0
+    assert _count(line, "Atricle 4 Section 18 Building Groups\n", {7: {17: 18}}) == 2
+
+
+def test_a_number_first_statute_is_left_raw():
+    fm9 = '---\narticle-number: "9"\n---\n'
+    text = fm9 + "in accordance with Section 10 of Chapter 40A of the Maine General Laws.\n"
+    assert nz.normalize_sections_only(text, smap={9: {10: 11}}) == text
