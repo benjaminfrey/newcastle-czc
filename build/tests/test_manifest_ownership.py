@@ -193,6 +193,11 @@ def test_data_is_documented_as_non_prose_only_where_a_reader_will_see_it():
     assert "NON-PROSE FILES ONLY" in comment and "never means no binding content" in comment
 
 
-def test_the_meaning_of_shared_is_defined_in_the_map():
+def test_what_shared_implies_is_recorded_as_an_open_question():
+    """Deliberately NOT a pin on any answer. The operator has ruled that the
+    meaning of a change to a shared file is decided when the first shared file
+    appears (it depends on what the file is). A test asserting the answer would
+    make that ruling fail a test, and the cheap fix would be to edit the
+    assertion. This only keeps the question from being silently dropped."""
     comment = json.loads(MANIFEST_JSON.read_text())["_ownership_comment"]
-    assert "MEANING OF shared" in comment and "EVERY Article" in comment
+    assert "OPEN" in comment and "NOT decided" in comment

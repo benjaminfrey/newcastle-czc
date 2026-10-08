@@ -254,10 +254,11 @@ LEGEND = ('Redline key: **bold** = text added; ~~struck~~ = text deleted; '
 # verbatim; emit_deleted_src drops a heading or a block with no trace). The
 # legend for that mode must not promise more, in either direction. A removed
 # figure or native table is the case a resident cannot see for themselves.
-LEGEND_SOURCE_LIMITS = ('This key covers prose and table rows only. Headings, figures, and tables typeset '
-                        'as figures are shown in '
-                        'their current form, unmarked, and one that was removed leaves no trace here; '
-                        'see the Summary of Changes for structural changes.')
+LEGEND_SOURCE_LIMITS = ('Only prose and the rows of simple tables are marked. Headings, figures and '
+                        'complex tables (those laid out as figures rather than as plain rows) are shown '
+                        'in their current form, unmarked; one that was removed leaves no trace here, and '
+                        'a new or changed figure carries a note saying so. '
+                        'See the Summary of Changes for structural changes.')
 PLAIN = False
 
 

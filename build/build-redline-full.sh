@@ -61,8 +61,8 @@ fi
 echo "Formatted redline:  NEW = working tree (labeled $NEW_V)   vs   OLD = $OLD_V"
 
 # 1. Stage the NEW source (working tree). The native .typ/json/svg are copied
-#    verbatim, so every figure renders at its CURRENT state. (The copy itself
-#    is the first thing czc_redline_stage, below, does.)
+#    verbatim, so every figure renders at its CURRENT state. (czc_redline_stage,
+#    below, first refuses an unsafe stage path, then copies.)
 STAGE="$(mktemp -d)"
 OUTDIR="$(mktemp -d)"
 trap 'rm -rf "$STAGE" "$OUTDIR"' EXIT

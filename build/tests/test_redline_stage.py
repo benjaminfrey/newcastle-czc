@@ -138,7 +138,7 @@ def test_rc4_not_text_comparable_renders_unmarked(tmp_path):
 
 # -- the --plain hazard ---------------------------------------------------------
 
-SENTINEL = ".redline-plain-marked"
+SENTINEL = ".redline-plain-marked"      # CZC_PLAIN_MARK_FILE in redline-stage.sh
 
 
 def test_plain_staging_is_labelled_and_ordinary_staging_is_not(tmp_path):
@@ -206,9 +206,9 @@ def fake_repo(tmp_path):
     return repo
 
 
-def stage_in_fake(repo, src, dest, cwd=None):
+def stage_in_fake(repo, src, dest, cwd=None, plain=""):
     script = (f'source "{repo}/build/redline-stage.sh"; '
-              f'czc_redline_stage "{src}" "{dest}" v1.0 "" "" article-07-use-standards.md')
+              f'czc_redline_stage "{src}" "{dest}" v1.0 "" "{plain}" article-07-use-standards.md')
     return subprocess.run(["bash", "-c", script], cwd=cwd or repo, capture_output=True, text=True)
 
 
@@ -217,11 +217,13 @@ def test_a_stage_that_is_the_codes_source_dir_is_refused(tmp_path):
     other = tmp_path / "elsewhere"; other.mkdir()
     (other / "article-07-use-standards.md").write_text("---\n---\nBody.\n")
     before = (repo / "source" / "article-07-use-standards.md").read_text()
-    r = stage_in_fake(repo, other, repo / "source")
+    # --plain makes the absence-of-label assertion below able to fail: if the guard
+    # let the run through, the label would be written into the fake source/.
+    r = stage_in_fake(repo, other, repo / "source", plain="--plain")
     assert r.returncode != 0
     assert "refusing to stage" in r.stderr, r.stderr
     assert (repo / "source" / "article-07-use-standards.md").read_text() == before
-    assert not (repo / "source" / CZC_LABEL).exists()
+    assert not (repo / "source" / SENTINEL).exists()
 
 
 def test_a_dotdot_or_relative_or_symlinked_path_to_source_cannot_slip_past(tmp_path):
@@ -271,7 +273,6 @@ def test_a_distinct_stage_outside_source_is_not_refused(tmp_path):
 # -- adoption-footer.sh: SOURCE_DIR is a precondition, not a default -------------
 
 FOOTER_SH = REPO / "build" / "adoption-footer.sh"
-CZC_LABEL = ".redline-plain-marked"
 
 
 def source_footer(source_dir_line):
@@ -307,6 +308,6 @@ def test_footer_still_works_with_a_set_source_dir_and_still_refuses_a_labelled_o
     ok = source_footer(f'SOURCE_DIR="{tmp_path}"')
     assert ok.returncode == 0, ok.stderr
     assert "FOOTER=Draft v0.98-draft" in ok.stdout
-    (tmp_path / CZC_LABEL).write_text("x")
+    (tmp_path / SENTINEL).write_text("x")
     bad = source_footer(f'SOURCE_DIR="{tmp_path}"')
     assert bad.returncode != 0 and "plain-marked" in bad.stderr, bad.stderr

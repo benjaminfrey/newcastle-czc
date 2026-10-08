@@ -295,7 +295,8 @@ SECTION_NEW = "# Article\n\n## 1. KEPT\n\nBody.\n\n## 3. ADDED SECTION\n\nBody.\
 def test_the_source_legend_names_what_source_does_not_mark(tmp_path):
     text, _ = run_files(tmp_path, SECTION_OLD, SECTION_NEW, "--source", "--plain")
     legend = next(l for l in text.splitlines() if LEGEND_MARK in l)
-    assert "table rows only" in legend and "leaves no trace" in legend
+    assert "Only prose and the rows of simple tables are marked" in legend and "leaves no trace" in legend
+    assert "covers prose and table rows only" not in legend      # the old sentence read as a promise about tables
     assert "Summary of Changes" in legend
     assert "marks a line that is new in its entirety" in legend
     assert "at the start of a line" not in legend
