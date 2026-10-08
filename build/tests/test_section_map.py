@@ -139,3 +139,108 @@ def test_a_tree_with_no_matching_articles_is_refused(tmp_path):
     assert r.returncode == 1, r.stderr
     assert "nothing was compared" in r.stderr
     assert not out.exists()
+
+
+# --- check: is this map for this comparison? ----------------------------------
+
+def _derived(tmp_path, tree):
+    out = tmp_path / "map.json"
+    r = subprocess.run([sys.executable, str(BUILD / "section_map.py"), "derive", "v1.0",
+                        "--new-dir", str(tree), "--out", str(out)],
+                       capture_output=True, text=True, cwd=REPO)
+    assert r.returncode == 0, r.stderr
+    return out
+
+
+def _run_cli(*args):
+    return subprocess.run([sys.executable, str(BUILD / "section_map.py"), *args],
+                          capture_output=True, text=True, cwd=REPO)
+
+
+def test_check_accepts_the_comparison_a_map_was_derived_for(tmp_path):
+    """The positive control for the two refusals below."""
+    tree = _tree_with(tmp_path, ART7, lambda t: fx.insert_section(t, 3, "AGRICULTURE"))
+    out = _derived(tmp_path, tree)
+    r = _run_cli("check", str(out), "--old-ref", "v1.0", "--new-dir", str(tree))
+    assert r.returncode == 0, r.stderr
+
+
+def test_check_refuses_a_map_for_a_different_old_ref(tmp_path):
+    """Nothing today validates the old ref against a map; this closes it."""
+    out = _derived(tmp_path, _tree_with(tmp_path, ART7, lambda t: fx.insert_section(t, 3, "X")))
+    r = _run_cli("check", str(out), "--old-ref", "v0.24-draft")
+    assert r.returncode == 1
+    assert "v1.0" in r.stderr and "v0.24-draft" in r.stderr
+
+
+def test_check_refuses_a_map_applied_to_a_different_tree(tmp_path):
+    tree = _tree_with(tmp_path, ART7, lambda t: fx.insert_section(t, 3, "AGRICULTURE"))
+    out = _derived(tmp_path, tree)
+    (tree / ART7).write_text((tree / ART7).read_text() + "\nLater edit.\n")
+    r = _run_cli("check", str(out), "--old-ref", "v1.0", "--new-dir", str(tree))
+    assert r.returncode == 1
+    assert "different tree" in r.stderr
+
+
+# --- selfcheck: is this map right? ---------------------------------------------
+
+def test_selfcheck_passes_a_correct_non_empty_map(tmp_path):
+    """The positive control, and deliberately NOT the empty map against the real
+    tree: that passes whether or not the gate works. This map has 64 entries,
+    every one of which the gate must examine and accept."""
+    tree = _tree_with(tmp_path, ART7, lambda t: fx.insert_section(t, 3, "AGRICULTURE"))
+    out = _derived(tmp_path, tree)
+    assert len(json.loads(out.read_text())["articles"]["7"]) == 64
+    r = _run_cli("selfcheck", str(out), "--old-ref", "v1.0", "--new-dir", str(tree))
+    assert r.returncode == 0, r.stderr
+
+
+def test_selfcheck_refuses_an_off_by_one_map(tmp_path):
+    """The control the gate exists for: shift every target by one and every
+    entry now pairs two different sections. It must be able to fail, or it
+    is decoration."""
+    tree = _tree_with(tmp_path, ART7, lambda t: fx.insert_section(t, 3, "AGRICULTURE"))
+    out = _derived(tmp_path, tree)
+    doc = json.loads(out.read_text())
+    doc["articles"]["7"] = {o: n + 1 for o, n in doc["articles"]["7"].items()}
+    out.write_text(json.dumps(doc))
+    r = _run_cli("selfcheck", str(out), "--old-ref", "v1.0", "--new-dir", str(tree))
+    assert r.returncode == 1
+    assert "Article 7" in r.stderr
+
+
+def test_selfcheck_refuses_a_single_wrong_entry(tmp_path):
+    tree = _tree_with(tmp_path, ART7, lambda t: fx.insert_section(t, 3, "AGRICULTURE"))
+    out = _derived(tmp_path, tree)
+    doc = json.loads(out.read_text())
+    doc["articles"]["7"]["10"] = 40          # old §10 is not new §40
+    out.write_text(json.dumps(doc))
+    r = _run_cli("selfcheck", str(out), "--old-ref", "v1.0", "--new-dir", str(tree))
+    assert r.returncode == 1
+    assert "§10 -> §40" in r.stderr
+
+
+def test_section_map_does_not_reach_into_the_adoption_map():
+    """The invariant behind deriving the map. It reads the Code only through
+    git_show; a later edit importing the adoption map or its self-check would
+    make the next amendment's map collide with the rollover guard.
+
+    Checked on the parsed module, not its text: the docstrings deliberately
+    NAME those files to say they are not touched, so a text search fails on
+    the documentation of their absence."""
+    import ast
+    tree = ast.parse((BUILD / "section_map.py").read_text())
+    imported = {a.name.split(".")[0] for n in ast.walk(tree)
+                if isinstance(n, ast.Import) for a in n.names}
+    imported |= {n.module.split(".")[0] for n in ast.walk(tree)
+                 if isinstance(n, ast.ImportFrom) and n.module}
+    assert not imported & {"adoption_map", "baseline_selfcheck"}, imported
+    docstrings = {id(n.body[0].value) for n in ast.walk(tree)
+                  if isinstance(n, (ast.Module, ast.FunctionDef, ast.ClassDef))
+                  and n.body and isinstance(n.body[0], ast.Expr)
+                  and isinstance(n.body[0].value, ast.Constant)}
+    literals = [n.value for n in ast.walk(tree)
+                if isinstance(n, ast.Constant) and isinstance(n.value, str)
+                and id(n) not in docstrings]
+    assert not [s for s in literals if "adoption-map" in s or "adoption_map" in s
+                or "baseline_selfcheck" in s]

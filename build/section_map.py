@@ -177,6 +177,65 @@ def load(path) -> dict[int, dict[int, int]]:
     return {int(a): {int(o): int(n) for o, n in m.items()} for a, m in doc["articles"].items()}
 
 
+def check(path, old_ref: str, new_dir=None) -> list[str]:
+    """Is this map for THIS comparison? Problems as operator-readable lines."""
+    doc = json.loads(Path(path).read_text())
+    problems: list[str] = []
+    if doc.get("for_old_ref") != old_ref:
+        problems.append(f"the map was derived for {doc.get('for_old_ref')!r}, "
+                        f"not {old_ref!r}")
+    if new_dir is not None and doc.get("for_new_tree") != tree_hash(Path(new_dir)):
+        problems.append(f"the map was derived against a different tree than {new_dir}")
+    return problems
+
+
+def selfcheck(path, old_ref: str, new_dir=DEFAULT_NEW_DIR) -> list[str]:
+    """Is this map RIGHT? The gate the release driver runs before using a map.
+
+    (a) Every entry pairs an old heading and a new heading whose normalised
+        titles are identical. An off-by-one shift pairs old §3 with new §5 --
+        two different sections -- which is what this catches.
+    (b) Deriving the old ref against ITSELF maps nothing.
+
+    Not "apply the map to the old side and compare it against itself": a real
+    renumbering rewrites references the unmodified copy still carries, so that
+    test fails every correct map (see plans/2026-10-08-wave2-section-map.md,
+    ruling 1).
+    """
+    new_dir = Path(new_dir)
+    doc = json.loads(Path(path).read_text())
+    problems = check(path, old_ref, new_dir)
+
+    index: dict[int, tuple[str, str]] = {}
+    for new_path in sorted(new_dir.glob("article-0*.md")):
+        old_text = _git_show(old_ref, f"source/{new_path.name}")
+        if old_text is None:
+            continue
+        art = article_number(old_text)
+        if art is not None:
+            index[art] = (old_text, new_path.read_text())
+
+    for key, entries in sorted(doc["articles"].items()):
+        art = int(key)
+        if art not in index:
+            problems.append(f"Article {art}: in the map but not found at {old_ref}")
+            continue
+        old_titles = dict(headings(index[art][0]))
+        new_titles = dict(headings(index[art][1]))
+        for o, n in entries.items():
+            o, n = int(o), int(n)
+            ot, nt = old_titles.get(o), new_titles.get(n)
+            if ot is None or nt is None or ot != nt:
+                problems.append(f"Article {art}: §{o} -> §{n} pairs {ot!r} with {nt!r}")
+
+    for art, (old_text, _) in sorted(index.items()):
+        mapping, *_ = derive_article(old_text, old_text)
+        if mapping:
+            problems.append(f"Article {art}: deriving {old_ref} against itself "
+                            f"mapped {len(mapping)} section(s)")
+    return problems
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -184,6 +243,14 @@ def main(argv=None) -> int:
     d.add_argument("old_ref")
     d.add_argument("--new-dir", default=str(DEFAULT_NEW_DIR))
     d.add_argument("--out", required=True)
+    c = sub.add_parser("check", help="is this map for this comparison?")
+    c.add_argument("path")
+    c.add_argument("--old-ref", required=True)
+    c.add_argument("--new-dir", default=None)
+    s = sub.add_parser("selfcheck", help="is this map right? (the release gate)")
+    s.add_argument("path")
+    s.add_argument("--old-ref", required=True)
+    s.add_argument("--new-dir", default=str(DEFAULT_NEW_DIR))
     a = ap.parse_args(argv)
 
     if a.cmd == "derive":
@@ -203,7 +270,13 @@ def main(argv=None) -> int:
         print(f"section_map: {n} renumbered section(s) across "
               f"{len(doc['articles'])} Article(s) vs {a.old_ref}")
         return 0
-    return 2
+    if a.cmd == "check":
+        found = check(a.path, a.old_ref, Path(a.new_dir) if a.new_dir else None)
+    else:
+        found = selfcheck(a.path, a.old_ref, Path(a.new_dir))
+    for p in found:
+        print(f"  - {p}", file=sys.stderr)
+    return 1 if found else 0
 
 
 if __name__ == "__main__":
