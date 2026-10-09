@@ -321,6 +321,11 @@ def test_an_added_line_beginning_with_plus_plus_is_counted():
     assert nz.changed_line_count("a\n", "a\n++x\n", amap=AMAP) == 1
 
 
+def test_a_one_sided_change_is_counted():
+    assert nz.changed_line_count("", "--x\n", amap=IDENTITY) == 1
+    assert nz.changed_line_count("--x\n", "", amap=IDENTITY) == 1
+
+
 def test_identical_text_still_counts_zero():
     """The fix must not count the headers when there is no diff at all -- an
     empty diff has no header lines to skip."""
@@ -710,8 +715,10 @@ def test_a_self_reference_to_the_containing_article_does_not_block():
 
 # --- The report counts every rule ----------------------------------------------
 # ADOPTION-SPEC.md:155 says the module reports what EACH rule suppressed. It
-# counted three of five. Each test below triggers exactly ONE rule and asserts
-# that rule's count and the others' zeros -- so a key that miscounts fails.
+# counted three of five. Each test below triggers one rule and asserts that
+# rule's count and the others' zeros -- so a key that miscounts fails. (The
+# sections test also trips the frontmatter line, because AMAP shifts Article 7;
+# it asserts that explicitly.)
 
 def _only(r, key):
     return {k: v for k, v in r.items() if v} == {key: r[key]}
@@ -729,7 +736,9 @@ def test_report_counts_frontmatter_renumbering():
 
 def test_report_counts_section_renumbering():
     r = nz.report(FM + "See Section 3.\n", amap=AMAP, smap={7: {3: 4}})
-    assert r["sections"] == 1
+    # AMAP shifts Article 7, so the frontmatter line counts too; nothing else may.
+    assert r["sections"] == 1 and r["frontmatter"] == 1
+    assert {k: v for k, v in r.items() if v} == {"sections": 1, "frontmatter": 1}
 
 
 def test_report_omits_rewrap_without_a_new_side():

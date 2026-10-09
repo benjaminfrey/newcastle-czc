@@ -87,7 +87,7 @@ def main() -> int:
             return 3
         if smap:
             if a.report:
-                print(f"{a.basename}: suppressed sections={nz._section_renumber(text, smap)[1]}",
+                print(f"{a.basename}: suppressed sections={nz.section_renumber(text, smap)[1]}",
                       file=sys.stderr)
             text = nz.normalize_sections_only(text, smap=smap)
         Path(a.out_path).write_text(text)

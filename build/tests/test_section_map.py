@@ -22,6 +22,11 @@ REPO = BUILD.parent
 ART7 = "article-07-use-standards.md"
 
 
+def _run_cli(*args):
+    return subprocess.run([sys.executable, str(BUILD / "section_map.py"), *args],
+                          capture_output=True, text=True, cwd=REPO)
+
+
 def _tree_with(tmp_path, article, transform):
     tree = fx.copy_source(tmp_path / "src")
     p = tree / article
@@ -95,9 +100,7 @@ def test_below_the_similarity_floor_derive_refuses_and_writes_nothing(tmp_path):
         return fx._H2.sub(lambda m: f"## {m.group(1)}. RENAMED ", t)
     tree = _tree_with(tmp_path, ART7, change)
     out = tmp_path / "map.json"
-    r = subprocess.run([sys.executable, str(BUILD / "section_map.py"), "derive", "v1.0",
-                        "--new-dir", str(tree), "--out", str(out)],
-                       capture_output=True, text=True, cwd=REPO)
+    r = _run_cli("derive", "v1.0", "--new-dir", str(tree), "--out", str(out))
     assert r.returncode == 2, r.stderr
     assert "Article 7" in r.stderr
     assert not out.exists()
@@ -106,9 +109,7 @@ def test_below_the_similarity_floor_derive_refuses_and_writes_nothing(tmp_path):
 def test_the_map_records_its_provenance(tmp_path):
     tree = _tree_with(tmp_path, ART7, lambda t: fx.insert_section(t, 3, "AGRICULTURE"))
     out = tmp_path / "map.json"
-    r = subprocess.run([sys.executable, str(BUILD / "section_map.py"), "derive", "v1.0",
-                        "--new-dir", str(tree), "--out", str(out)],
-                       capture_output=True, text=True, cwd=REPO)
+    r = _run_cli("derive", "v1.0", "--new-dir", str(tree), "--out", str(out))
     assert r.returncode == 0, r.stderr
     doc = json.loads(out.read_text())
     assert doc["for_old_ref"] == "v1.0"
@@ -116,15 +117,10 @@ def test_the_map_records_its_provenance(tmp_path):
     assert section_map.load(out) == {7: {o: o + 1 for o in range(3, 67)}}
 
 
-def _cli(args):
-    return subprocess.run([sys.executable, str(BUILD / "section_map.py"), "derive", *args],
-                          capture_output=True, text=True, cwd=REPO)
-
-
 def test_a_bad_old_ref_is_refused_and_writes_nothing(tmp_path):
     out = tmp_path / "map.json"
-    r = _cli(["no-such-ref-xyz", "--new-dir", str(fx.copy_source(tmp_path / "src")),
-              "--out", str(out)])
+    r = _run_cli("derive", "no-such-ref-xyz", "--new-dir", str(fx.copy_source(tmp_path / "src")),
+                 "--out", str(out))
     assert r.returncode == 1, r.stderr
     assert "refusing to derive" in r.stderr
     assert "no-such-ref-xyz" in r.stderr
@@ -135,7 +131,7 @@ def test_a_tree_with_no_matching_articles_is_refused(tmp_path):
     empty = tmp_path / "empty"
     empty.mkdir()
     out = tmp_path / "map.json"
-    r = _cli(["v1.0", "--new-dir", str(empty), "--out", str(out)])
+    r = _run_cli("derive", "v1.0", "--new-dir", str(empty), "--out", str(out))
     assert r.returncode == 1, r.stderr
     assert "nothing was compared" in r.stderr
     assert not out.exists()
@@ -145,16 +141,9 @@ def test_a_tree_with_no_matching_articles_is_refused(tmp_path):
 
 def _derived(tmp_path, tree):
     out = tmp_path / "map.json"
-    r = subprocess.run([sys.executable, str(BUILD / "section_map.py"), "derive", "v1.0",
-                        "--new-dir", str(tree), "--out", str(out)],
-                       capture_output=True, text=True, cwd=REPO)
+    r = _run_cli("derive", "v1.0", "--new-dir", str(tree), "--out", str(out))
     assert r.returncode == 0, r.stderr
     return out
-
-
-def _run_cli(*args):
-    return subprocess.run([sys.executable, str(BUILD / "section_map.py"), *args],
-                          capture_output=True, text=True, cwd=REPO)
 
 
 def test_check_accepts_the_comparison_a_map_was_derived_for(tmp_path):
@@ -224,7 +213,7 @@ def test_selfcheck_refuses_a_single_wrong_entry(tmp_path):
 
 def test_section_map_does_not_reach_into_the_adoption_map():
     """The invariant behind deriving the map. It reads the Code only through
-    git_show; a later edit importing the adoption map or its self-check would
+    its own `git show` helper; a later edit importing the adoption map or its self-check would
     make the next amendment's map collide with the rollover guard.
 
     Checked on the parsed module, not its text: the docstrings deliberately

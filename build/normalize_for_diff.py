@@ -18,9 +18,9 @@ whose leading number is an article number, same as a heading) and frontmatter
 Rule 6 (added 2026-10-08) covers section renumbering. A section inserted into
 an Article shifts every later `## N.` heading and every reference to it. The
 map comes from build/section_map.py, which DERIVES it by aligning heading
-titles, and it is applied to the OLD side only. A bare reference is narrow in
-two layers: its number must be a key in the containing Article's map, and no
-statute token may sit just before it. An explicit `Article N Section M`
+titles, and it is applied to the OLD side only. A bare or plural reference is
+rewritten only when nothing qualifies it; the seven guards are listed once, at
+the rule itself (`_SECTION_REF`, below). An explicit `Article N Section M`
 resolves against Article N. With no map, nothing changes.
 
 Without this, the document meant to show voters what changed buries 151 real
@@ -38,7 +38,7 @@ from a redline is invisible to the reader. So:
     A noisier redline is recoverable; a redline missing an amendment is not.
 
 RENDER SAFETY -- added after a Task 3 review finding (2026-08-24). `normalize()`
-(all five rules, including `_rewrap`) is COMPARISON-ONLY: it decides what
+(all six rules, including `_rewrap`) is COMPARISON-ONLY: it decides what
 counts as a difference, and its output must never be fed to a renderer.
 `redline-text.py --source` is line-based and emits the lines it is handed, so
 if normalised text reaches it, normalisation stops being invisible cosmetics
@@ -46,7 +46,7 @@ and becomes a silent rewrite of the document -- `_rewrap` collapses indented
 sub-clause continuations into run-on prose. Measured on the real baseline
 build: article-08-administration.md's 211 indented sub-clause lines fell to 4,
 and body pages dropped 113 -> 110. `normalize_old_side()` below is the
-render-safe alternative (heading case + all three renumbering rules, no
+render-safe alternative (heading case + the four renumbering rules, no
 rewrap) for the side that a baseline redline actually renders; it costs
 nothing -- the marked-line count across all seven pairs is 151 either way,
 with or without rewrap.
@@ -132,18 +132,18 @@ _FRONTMATTER_ARTICLE_NUMBER = re.compile(r'^(article-number:\s*")(\d+)(")', re.M
 # comes from build/section_map.py, which DERIVES it by aligning heading titles
 # -- only an identical, unambiguous, in-order title at a new number is mapped.
 #
-# Narrowness, in six guards, for a BARE or plural reference (`Section N`, `§N`,
-# `Sections A, B, and C`):
+# Narrowness, in seven guards, for a BARE or plural reference (`Section N`, `§N`,
+# `Sections A, B, and C`). The one place they are listed:
 #   1. The number is rewritten only if it is a KEY in the containing Article's
 #      map. The containing Article is read from the text's own frontmatter.
-#   2. It is never rewritten when a statute token occurs within 40 characters
-#      before it.
-#   3. It is never rewritten when a qualifier (`<word> <number>`) precedes it.
-#   4. It is never rewritten when `of <anything>` follows it, except `of this
-#      Article`.
-#   5. It is never rewritten when a name and a comma directly precede it.
-#   6. It is never rewritten when its paragraph names any container other than
-#      the containing Article (`_FOREIGN_CONTAINER`, below).
+#   2. Not when a statute token occurs within 40 characters before it.
+#   3. Not when a `<word> <number>` qualifier directly precedes it.
+#   4. Not when a name and a comma directly precede it (`<name>,`).
+#   5. Not when `of <anything>` follows it, except `of this Article`.
+#   6. Not when its paragraph names any container other than the containing
+#      Article (`_FOREIGN_CONTAINER`, below).
+#   7. Not when it is an endpoint of a range whose span the map would change
+#      (`_LIST_RANGE`, below): the whole list, or the lone endpoint, stays raw.
 # Guard 2 is needed because the map alone is not enough: Article 7 has 66
 # sections, so `Subchapter C, §53.11` -- a federal-regulations citation in
 # Article 7 -- would collide with a renumbered §53. The token set is the
@@ -254,7 +254,7 @@ def _renumber_frontmatter(text: str, amap) -> str:
     return _FRONTMATTER_ARTICLE_NUMBER.sub(repl, text)
 
 
-def _section_renumber(text: str, smap) -> tuple[str, int]:
+def section_renumber(text: str, smap) -> tuple[str, int]:
     """Rule 6, returning the text and how many numbers it actually changed."""
     if not smap:
         return text, 0
@@ -300,10 +300,6 @@ def _section_renumber(text: str, smap) -> tuple[str, int]:
     return _SECTION_REF.sub(repl, out), changed
 
 
-def _renumber_sections(text: str, smap) -> str:
-    return _section_renumber(text, smap)[0]
-
-
 def normalize_sections_only(text: str, *, smap) -> str:
     """Render-SAFE: Rule 6 alone, for a draft-to-draft redline.
 
@@ -312,7 +308,7 @@ def normalize_sections_only(text: str, *, smap) -> str:
     and references just as one inserted at an adoption does. Rule 6 rewrites
     only digits in fixed positions, so it never touches line structure.
     """
-    return _renumber_sections(text, smap)
+    return section_renumber(text, smap)[0]
 
 
 def normalize(text: str, *, amap, is_baseline_side: bool, smap=None) -> str:
@@ -328,9 +324,9 @@ def normalize(text: str, *, amap, is_baseline_side: bool, smap=None) -> str:
     to decide what differs -- will damage the document. Use
     `normalize_old_side` for the side that gets rendered.
 
-    `is_baseline_side` matters: cross-reference renumbering, table-number
-    renumbering, and frontmatter `article-number` renumbering all map
-    baseline -> current, so all three are applied to the OLD side only.
+    `is_baseline_side` matters: section, cross-reference, table-number and
+    frontmatter `article-number` renumbering all map baseline -> current, so
+    all four are applied to the OLD side only.
     Applying them to both would double-shift every reference and corrupt the
     comparison silently.
 
@@ -339,7 +335,7 @@ def normalize(text: str, *, amap, is_baseline_side: bool, smap=None) -> str:
     """
     out = _heading_case(text)
     if is_baseline_side:
-        out = _renumber_sections(out, smap)   # FIRST: keyed on baseline article numbers
+        out = section_renumber(out, smap)[0]   # FIRST: keyed on baseline article numbers
         out = amap.renumber(out)
         out = _renumber_tables(out, amap)
         out = _renumber_frontmatter(out, amap)
@@ -349,11 +345,12 @@ def normalize(text: str, *, amap, is_baseline_side: bool, smap=None) -> str:
 def normalize_old_side(text: str, *, amap, smap=None) -> str:
     """Render-SAFE normalisation for the OLD side of a redline.
 
-    Heading case, cross-reference renumbering, table-number renumbering, and
-    frontmatter `article-number` renumbering only -- NO re-wrapping. All four
-    rewrite only digits/letters in narrow, fixed positions (a heading's
-    leading letter, an `Article N` reference, a `TABLE N.x` caption, the
-    frontmatter field), so none of them touches line structure.
+    Heading case, section renumbering (Rule 6, with a map), cross-reference
+    renumbering, table-number renumbering, and frontmatter `article-number`
+    renumbering only -- NO re-wrapping. All five rewrite only digits/letters in
+    narrow, fixed positions (a heading's leading letter, a section number, an
+    `Article N` reference, a `TABLE N.x` caption, the frontmatter field), so
+    none of them touches line structure.
 
     WHY NO REWRAP. redline_source() is line-based and EMITS the lines it is
     given, so anything done here reaches the rendered PDF. _rewrap() collapses
@@ -368,7 +365,7 @@ def normalize_old_side(text: str, *, amap, smap=None) -> str:
     first because that map is keyed on baseline article numbers.
     """
     out = _heading_case(text)
-    out = _renumber_sections(out, smap)       # FIRST: keyed on baseline article numbers
+    out = section_renumber(out, smap)[0]       # FIRST: keyed on baseline article numbers
     out = amap.renumber(out)
     out = _renumber_tables(out, amap)
     out = _renumber_frontmatter(out, amap)
@@ -443,7 +440,7 @@ def report(old: str, new: str | None = None, *, amap, smap=None) -> dict[str, in
         "tables": sum(1 for m in _TABLE_NUM.finditer(old) if shifted(int(m.group(2)))),
         "frontmatter": sum(1 for m in _FRONTMATTER_ARTICLE_NUMBER.finditer(old)
                            if shifted(int(m.group(2)))),
-        "sections": _section_renumber(old, smap)[1],
+        "sections": section_renumber(old, smap)[1],
     }
     if new is not None:
         counts["rewrap"] = len(_WS_RUN.findall(old)) + len(_WS_RUN.findall(new))

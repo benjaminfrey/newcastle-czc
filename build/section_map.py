@@ -67,10 +67,9 @@ class NoComparison(Exception):
 
 
 def _git_show(ref: str, path: str) -> str | None:
-    # Imported here rather than at module top: redline_resolve imports THIS
-    # module to apply a map, so a top-level import would be circular.
-    from redline_resolve import git_show
-    return git_show(ref, path)
+    r = subprocess.run(["git", "-C", str(REPO), "show", f"{ref}:{path}"],
+                       capture_output=True, text=True)
+    return r.stdout if r.returncode == 0 else None
 
 
 def normalise_title(title: str) -> str:
