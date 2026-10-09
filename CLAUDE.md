@@ -191,7 +191,7 @@ local only). **Nothing here changes the ordinary draft flow** — with no adopti
   rewrites the old side's "Article 4" to "Article 5". That is why the guard exists; don't remove it
   because it looks inert.
 
-**Tests:** `python3 -m pytest build/tests -q` — **196**, ~4 min (they build real PDFs).
+**Tests:** `python3 -m pytest build/tests -q` — **288**, ~4.5 min (they build real PDFs).
 CI runs them on every PR and every push to `main` (`.github/workflows/build-tests.yml`);
 that workflow pins **Typst 0.14.2** and needs `fetch-depth: 0`, because the redline tests
 read real tags.
@@ -252,10 +252,37 @@ rebuild. No code changes.
   under `source/`); and **`redline-stage.sh`**, now the single definition of
   `redline_resolve.py`'s rc 0/3/4/refuse contract, with a guard that stops plain-marked
   source reaching the PDF stage.
-  **Still to build (Waves 2-4):** `section_map.py` + the normaliser rule; `czc_diff.py`
-  (the substantive-change determination), `use_table_changes.py`, `czc_md.py`,
-  `structural_note.py` per-Article, **`build-redline-standalone.sh`**; then
-  `build-release.sh`, the fifth use-table status code, and the spec/CLAUDE.md updates.
+  **Still to build (Waves 3-4):** `czc_diff.py` (the substantive-change determination),
+  `use_table_changes.py`, `czc_md.py`, `structural_note.py` per-Article,
+  **`build-redline-standalone.sh`**; then `build-release.sh`, the fifth use-table status
+  code, and the spec/CLAUDE.md updates.
+- **✅ Wave 2 built — section renumbering** (branch `wave2-section-map`, PR open; plan
+  `plans/2026-10-08-wave2-section-map.md`, which records ten rulings and their amendments).
+  Build suite **199 → 288**. When a section is inserted into an Article, later headings and
+  cross-references shift; **`build/section_map.py`** *derives* a map of the pure renumberings
+  (title-identical headings, in order) between an old ref and a tree — never authored, never
+  committed, never in `adoption-map.json`. It refuses below a 50% similarity floor, on a bad
+  ref, or when nothing was compared; `check` verifies the map's ref **and tree**; `selfcheck`
+  (the gate) requires every entry to pair title-identical headings **and** the map to equal a
+  fresh derivation. **Rule 6** in `normalize_for_diff.py` rewrites those numbers on the OLD
+  side only, and leaves raw anything it cannot prove internal: statute tokens, any
+  `<word> <number>` or `<name>,` before, any `of …` after (except "of this Article"), any
+  paragraph naming another Article/Ordinance/statute, and any range whose span changed.
+  Measured: a section inserted into Article 7 drops that Article's count **132 → 4** (the
+  inserted lines). `redline_resolve.py` gains opt-in `--section-map` (requires `--new-dir`;
+  runs `selfcheck`, refuses with nothing written) and `--report` (every rule counted).
+  Also fixed: `changed_line_count` dropped changed lines beginning `--`/`++`.
+  `adoption-map.json`, `adoption_map.py`, `baseline_selfcheck.py` untouched.
+  ⚠ **Owed by P13/P18:** thread `--section-map`/`--new-dir` through `redline-stage.sh` and
+  the release driver; the redline's HOW-TO-READ note must say section renumbering was
+  suppressed and list the map. **Latent, accepted:** some foreign-reference forms not in
+  v1.0 could still be rewritten ("International Building Code Section 3", "Article Eight",
+  "Section 3 - Section 5"); full list in the Wave 2 SDD ledger.
+- **▶ For counsel / the next draft (found during Wave 2):** the adopted Article 9
+  **Variance** definition cites "Section 10 of Chapter 40A of the **Maine General Laws**" —
+  that is the **Massachusetts** Zoning Act; Maine's variance statute is 30-A M.R.S. §4353
+  (pairs with the Variance tracking memo). Adopted Article 7 has the typo **"Atricle 4
+  Section 17 Building Groups"**.
 - **▶ OPEN — what a change to a `shared` file implies** for the substantive-change
   determination is **not decided** (recorded as OPEN in `article-manifest.json`). The
   candidate rule is that it flags every Article for a standalone + standalone redline,

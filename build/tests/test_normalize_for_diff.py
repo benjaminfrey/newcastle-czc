@@ -9,6 +9,8 @@ confidently wrong, and nobody reading it can tell.
 import sys
 from pathlib import Path
 
+import pytest
+
 BUILD = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BUILD))
 
@@ -18,12 +20,10 @@ import normalize_for_diff as nz  # noqa: E402
 AMAP = adoption_map.load(Path(__file__).resolve().parent / "fixtures" / "adoption-map-v0.1-baseline.json")
 
 
-import pytest as _pytest_rollover
-
 _PRE_ROLLOVER_MAP = Path(__file__).resolve().parent / "fixtures" / "adoption-map-v0.1-baseline.json"
 
 
-@_pytest_rollover.fixture(autouse=True)
+@pytest.fixture(autouse=True)
 def _pin_pre_rollover_adoption_map(monkeypatch):
     """These tests exercise the baseline-redline machinery -- renumbering,
     renamed article files, not-text-comparable articles -- against the
@@ -264,14 +264,10 @@ def test_changed_line_count_follows_the_render_path():
     """The old side is normalize_old_side()'d, the new side is verbatim --
     exactly what redline_resolve.py writes and what build-redline-full.sh
     stages. If this ever diverges, the count stops describing the packet."""
-    import difflib
     old = "### A. PURPOSE\nSee Article 7 and TABLE 6.1 Design Standards.\n"
     new = "### a. PURPOSE\nSee Article 8 and TABLE 7.1 Design Standards.\n"
-    expected = sum(
-        1 for line in difflib.unified_diff(
-            nz.normalize_old_side(old, amap=AMAP).splitlines(),
-            new.splitlines(), n=0)
-        if line[:1] in "+-" and line[:3] not in ("+++", "---"))
+    expected = nz._marked(nz.normalize_old_side(old, amap=AMAP).splitlines(),
+                          new.splitlines())
     assert nz.changed_line_count(old, new, amap=AMAP) == expected
     # And it is genuinely suppressed to zero: heading case + both renumberings.
     assert nz.changed_line_count(old, new, amap=AMAP) == 0
@@ -290,7 +286,6 @@ def test_breakdown_and_render_paths_agree_on_the_real_corpus():
     (changed_line_count) must report the same number PER ARTICLE. If a future
     normaliser rule breaks that, the operator's number and the packet's marks
     have parted company and one of them is lying."""
-    import difflib
     import subprocess
 
     REPO = BUILD.parent
@@ -303,12 +298,450 @@ def test_breakdown_and_render_paths_agree_on_the_real_corpus():
         assert old.returncode == 0, cur
         new = (REPO / "source" / cur).read_text()
 
-        comparison = sum(
-            1 for line in difflib.unified_diff(
-                nz.normalize(old.stdout, amap=AMAP, is_baseline_side=True).splitlines(),
-                nz.normalize(new, amap=AMAP, is_baseline_side=False).splitlines(), n=0)
-            if line[:1] in "+-" and line[:3] not in ("+++", "---"))
+        comparison = nz._marked(
+            nz.normalize(old.stdout, amap=AMAP, is_baseline_side=True).splitlines(),
+            nz.normalize(new, amap=AMAP, is_baseline_side=False).splitlines())
         render = nz.changed_line_count(old.stdout, new, amap=AMAP)
         assert comparison == render, (
             f"{cur}: the reviewed count ({comparison}) and the rendered count "
             f"({render}) disagree")
+
+
+# --- The counter counts every changed line ------------------------------------
+# changed_line_count dropped diff headers by PREFIX ("---"/"+++"), which also
+# dropped real changed lines beginning with -- or ++. Found 2026-10-08.
+
+def test_a_deleted_horizontal_rule_is_counted():
+    """`---` deleted appears in the diff as `----`, which the old prefix filter
+    discarded as if it were the file header."""
+    assert nz.changed_line_count("a\n---\nb\n", "a\nb\n", amap=AMAP) == 1
+
+
+def test_an_added_line_beginning_with_plus_plus_is_counted():
+    assert nz.changed_line_count("a\n", "a\n++x\n", amap=AMAP) == 1
+
+
+def test_a_one_sided_change_is_counted():
+    assert nz.changed_line_count("", "--x\n", amap=IDENTITY) == 1
+    assert nz.changed_line_count("--x\n", "", amap=IDENTITY) == 1
+
+
+def test_identical_text_still_counts_zero():
+    """The fix must not count the headers when there is no diff at all -- an
+    empty diff has no header lines to skip."""
+    assert nz.changed_line_count("a\nb\n", "a\nb\n", amap=AMAP) == 0
+
+
+# --- Rule 6: section renumbering ---------------------------------------------
+# A section inserted into an Article shifts every later heading and every
+# reference to it. Suppressed on the OLD side only, from a DERIVED map
+# (build/section_map.py), keyed on the baseline article number read from the
+# text's own frontmatter. Every grammar is tested in both directions.
+
+FM = '---\narticle-number: "7"\n---\n'
+SMAP = {7: {3: 4, 4: 5, 6: 7, 7: 8, 14: 15}}
+
+# Rule 6 is tested against an IDENTITY article map. The module-level AMAP is the
+# pinned v0.1 fixture, which renumbers Article 7 -> 8: under it every test below
+# would have its own frontmatter rewritten (and every count would carry one
+# extra changed line), failing for a reason that has nothing to do with Rule 6.
+# Only the ordering test uses AMAP, deliberately.
+IDENTITY = adoption_map.AdoptionMap(baseline_version="v1.0",
+                                    article_numbers={n: n for n in range(1, 10)},
+                                    files={}, not_text_comparable={})
+
+
+def old7(body):
+    return nz.normalize_old_side(FM + body, amap=IDENTITY, smap=SMAP)
+
+
+def test_a_renumbered_heading_is_suppressed():
+    assert old7("## 3. ADULT ESTABLISHMENT\n") == FM + "## 4. ADULT ESTABLISHMENT\n"
+
+
+def test_but_a_heading_the_map_does_not_cover_is_untouched():
+    assert old7("## 2. EXPANDED USE STANDARDS\n") == FM + "## 2. EXPANDED USE STANDARDS\n"
+
+
+def test_a_bare_section_reference_is_suppressed():
+    assert old7("See Section 3.\n") == FM + "See Section 4.\n"
+
+
+def test_but_a_bare_reference_to_an_unmapped_section_still_differs():
+    assert old7("See Section 5.\n") == FM + "See Section 5.\n"
+
+
+def test_only_the_leading_number_of_a_dotted_reference_moves():
+    assert old7("See Section 3.C.4.\n") == FM + "See Section 4.C.4.\n"
+
+
+def test_but_a_changed_sub_section_letter_still_differs():
+    """Only the section number is normalised; a real change to the letter that
+    follows it is untouched and survives the comparison."""
+    assert nz.changed_line_count(FM + "See Section 3.C.4.\n", FM + "See Section 4.D.4.\n",
+                                 amap=IDENTITY, smap=SMAP) == 2
+
+
+def test_each_element_of_a_list_is_mapped_independently():
+    assert old7("Sections 6, 7.F, and 14\n") == FM + "Sections 7, 8.F, and 15\n"
+
+
+def test_a_list_with_and_and_through_is_mapped():
+    assert old7("Sections 3 and 6\n") == FM + "Sections 4 and 7\n"
+    assert old7("Sections 3.F.2 through 3.F.4\n") == FM + "Sections 4.F.2 through 4.F.4\n"
+
+
+# --- Ranges: renumbered only when the span is unchanged -------------------------
+# With a section inserted at §4, `Sections 3 through 5` now spans a DIFFERENT set
+# of sections than `Sections 3 through 6` does. Mapping each endpoint on its own
+# turns the old range into `3 through 6` and hides that.
+
+_INSERT_AT_4 = {7: {4: 5, 5: 6, 6: 7}}
+
+
+def test_an_insertion_inside_a_range_still_counts():
+    old = FM + "See Sections 3 through 5.\n"
+    new = FM + "See Sections 3 through 6.\n"
+    assert nz.changed_line_count(old, new, amap=IDENTITY, smap=_INSERT_AT_4) == 2
+
+
+def test_a_bare_range_with_an_insertion_inside_still_counts():
+    old = FM + "See Section 3 through Section 5.\n"
+    new = FM + "See Section 3 through Section 6.\n"
+    assert nz.changed_line_count(old, new, amap=IDENTITY, smap=_INSERT_AT_4) == 2
+
+
+@pytest.mark.parametrize("old_phrase,new_phrase", [
+    ("Sections 3 to 5", "Sections 3 to 6"),
+    ("Sections 3\u20135", "Sections 3\u20136"),
+])
+def test_a_range_written_with_to_or_a_dash_still_counts(old_phrase, new_phrase):
+    old = FM + "See " + old_phrase + ".\n"
+    new = FM + "See " + new_phrase + ".\n"
+    assert nz.changed_line_count(old, new, amap=IDENTITY, smap=_INSERT_AT_4) == 2
+
+
+def test_a_range_shifted_whole_is_still_suppressed():
+    """The positive control: every endpoint moves by the same amount, so the
+    span is unchanged and the renumbering is cosmetic."""
+    old = FM + "See Sections 3 through 5.\n"
+    new = FM + "See Sections 4 through 6.\n"
+    assert nz.changed_line_count(old, new, amap=IDENTITY, smap={7: {3: 4, 4: 5, 5: 6}}) == 0
+
+
+def test_subject_to_section_is_not_a_range():
+    """The positive control for the narrowed `to`: it is a range word only after
+    a number, never in `subject to Section 3`."""
+    out = nz.normalize_sections_only(FM + "This is subject to Section 3.\n", smap={7: {3: 4}})
+    assert out.endswith("subject to Section 4.\n")
+
+
+def test_a_bare_section_sign_is_suppressed():
+    assert old7("under §3.\n") == FM + "under §4.\n"
+
+
+def test_an_explicit_article_reference_resolves_against_THAT_article():
+    """`Article 3 Section 2` inside Article 7 means Article 3's section 2,
+    not Article 7's."""
+    smap = {3: {2: 3}, 7: {2: 9}}
+    out = nz.normalize_old_side(FM + "See Article 3 Section 2.\n", amap=IDENTITY, smap=smap)
+    assert "Section 3." in out and "Section 9" not in out
+
+
+def test_an_explicit_article_section_sign_resolves_against_that_article():
+    smap = {8: {12: 13}}
+    assert nz.normalize_old_side(FM + "under Article 8 §12.F.\n", amap=IDENTITY,
+                                 smap=smap).endswith("under Article 8 §13.F.\n")
+
+
+def test_a_bare_reference_resolves_against_its_OWN_article_not_another():
+    """A bare `Section N` is unambiguous only within its Article. Article 3's
+    text is not shifted by Article 7's map."""
+    fm3 = '---\narticle-number: "3"\n---\n'
+    assert nz.normalize_old_side(fm3 + "See Section 3.\n", amap=IDENTITY,
+                                 smap={7: {3: 4}}) == fm3 + "See Section 3.\n"
+
+
+def test_section_of_another_article_is_left_alone():
+    assert old7("See Section 3 of Article 4.\n") == FM + "See Section 3 of Article 4.\n"
+    assert old7("See Section 3.C.4 of Article 4.\n") == FM + "See Section 3.C.4 of Article 4.\n"
+
+
+def test_section_of_this_article_resolves_against_the_containing_one():
+    assert old7("See Section 3 of this Article.\n") == FM + "See Section 4 of this Article.\n"
+
+
+def test_without_frontmatter_bare_references_are_not_guessed():
+    """No frontmatter, no containing Article: bare forms stay as they are.
+    Explicit `Article N Section M` still resolves."""
+    assert nz.normalize_old_side("See Section 3.\n", amap=IDENTITY, smap=SMAP) == "See Section 3.\n"
+    # ...and an explicit reference still resolves without frontmatter.
+    assert nz.normalize_sections_only("See Article 7 Section 3.\n",
+                                      smap={7: {3: 4}}) == "See Article 7 Section 4.\n"
+
+
+def test_the_section_rule_runs_before_article_renumbering():
+    """Keyed on BASELINE numbers. The fixture map shifts Article 7 -> 8; if
+    article renumbering ran first, the section lookup would use Article 8's
+    sub-map and miss. The ONE Rule 6 test that uses the fixture AMAP, on purpose."""
+    out = nz.normalize_old_side(FM + "See Article 7 Section 3.\n", amap=AMAP, smap={7: {3: 4}})
+    assert out.endswith("See Article 8 Section 4.\n")
+
+
+def test_normalize_runs_the_section_rule_before_article_renumbering():
+    """The same ordering pin, on the comparison path."""
+    out = nz.normalize(FM + "See Article 7 Section 3.\n", amap=AMAP, is_baseline_side=True,
+                       smap={7: {3: 4}})
+    assert "Article 8 Section 4" in out
+
+
+def test_the_new_side_is_never_section_renumbered():
+    out = nz.normalize(FM + "See Section 3.\n", amap=IDENTITY, is_baseline_side=False, smap=SMAP)
+    assert "Section 3." in out
+
+
+def test_without_a_map_nothing_changes():
+    text = FM + "## 3. ADULT\nSee Section 3 and Sections 6, 7.F, and 14.\n"
+    assert nz.normalize_old_side(text, amap=AMAP) == nz.normalize_old_side(text, amap=AMAP, smap=None)
+    assert nz.normalize_sections_only(text, smap=None) == text
+
+
+# --- Statutory citations are never rewritten -----------------------------------
+
+STATUTORY = [
+    ("article-01-general.md", ["30-A MRSA Section 4358", "30-A MRSA Section 4404",
+                               "38 MRSA Sections 435449"]),
+    ("article-03-streets-roads-driveways.md", ["30-A MRSA §4404", "23 MRSA §3022",
+                                              "23 MRSA §3021", "23 MRSA §3026-A",
+                                              "23 MRSA §704"]),
+    ("article-07-use-standards.md", ["Subchapter C, §53.11"]),
+    ("article-08-administration.md", ["Chapter187, Section 4401", "Title 23, Section 704",
+                                      "Title 38, Section 480-B", "38 M.R.S.A. Section 420-D",
+                                      "MRSA Title 38 Section 480-B", "Title 12, Section 8869",
+                                      "Title 38, Section 435", "MRSA Title 30 Section 2691",
+                                      "Title 30-A Section 4452"]),
+    ("article-09-definitions.md", ["50 Stat. 888, Section 8", "23 MRSA §3021",
+                                   "23 MRSA §3022", "Section 10 of Chapter 40A"]),
+]
+
+
+def _real(name):
+    import subprocess
+    r = subprocess.run(["git", "-C", str(BUILD.parent), "show", f"v1.0:source/{name}"],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, name
+    return r.stdout
+
+
+def _shift_everything():
+    """A map that would rewrite EVERY section number in every Article."""
+    return {a: {k: k + 1 for k in range(1, 10000)} for a in range(1, 10)}
+
+
+def test_no_statutory_citation_is_ever_rewritten():
+    """Every statutory citation in the Code survives a map that would rewrite
+    every number it can reach. Measured set, 2026-10-08 -- including the two
+    federal citations in Article 9 that a guard limited to MRSA/M.R.S/Title/
+    U.S.C would have renumbered, and `§53.11` in Article 7, which collides with
+    a real section number."""
+    smap = _shift_everything()
+    for name, citations in STATUTORY:
+        text = _real(name)
+        out = nz.normalize_sections_only(text, smap=smap)
+        for cite in citations:
+            assert cite in text, f"{name}: fixture citation not in the source: {cite!r}"
+            assert cite in out, f"{name}: statutory citation rewritten: {cite!r}"
+
+
+def test_and_the_same_map_DID_rewrite_internal_references():
+    """The positive control. If the rule did nothing at all, every statutory
+    citation would survive trivially. Article 3 carries internal references the
+    same map must move."""
+    text = _real("article-03-streets-roads-driveways.md")
+    out = nz.normalize_sections_only(text, smap=_shift_everything())
+    assert "Article 8 §20" in text and "Article 8 §21" in out
+    assert "(Sections 6, 7.F, and 14)" in text and "(Sections 7, 8.F, and 15)" in out
+
+
+def test_a_mixed_line_rewrites_its_internal_reference_and_not_its_statute():
+    """`23 MRSA §3026-A and Article 8 §27` -- the explicit Article prefix is
+    decisive, so the statute guard does not suppress the internal reference."""
+    fm3 = '---\narticle-number: "3"\n---\n'
+    out = nz.normalize_sections_only(fm3 + "under 23 MRSA §3026-A and Article 8 §27.\n",
+                                     smap={3: {3026: 3027}, 8: {27: 28}})
+    assert "23 MRSA §3026-A" in out
+    assert "Article 8 §28" in out
+
+
+# --- The negative controls that matter most ------------------------------------
+
+def test_a_real_amendment_beside_a_renumbered_heading_still_counts():
+    """THE control for this rule. A renumbered heading is suppressed; a real
+    change on the very next line -- shall to may -- must still be counted."""
+    old = FM + "## 3. ADULT ESTABLISHMENT\nThe applicant shall comply.\n"
+    new = FM + "## 4. ADULT ESTABLISHMENT\nThe applicant may comply.\n"
+    assert nz.changed_line_count(old, new, amap=IDENTITY, smap={7: {3: 4}}) == 2
+
+
+def test_a_retargeted_reference_still_counts():
+    """Decision D8. §3 FARMING is inserted, so ADULT moves 3 -> 4. A reference
+    that still says `Section 3` now points at FARMING -- different content. The
+    map turns the old side's reference into `Section 4`, so it differs."""
+    old = FM + "## 3. ADULT\n## 4. AMUSE\nSee Section 3.\n"
+    new = FM + "## 3. FARMING\n## 4. ADULT\n## 5. AMUSE\nSee Section 3.\n"
+    count = nz.changed_line_count(old, new, amap=IDENTITY, smap={7: {3: 4, 4: 5}})
+    assert count == 3          # the inserted heading, and the reference line both ways
+
+
+def test_the_count_drops_to_the_real_figure_for_an_insertion():
+    """Only the inserted section is a real change. Without the map, every
+    shifted heading and reference counts too."""
+    old = FM + ("## 1. GENERAL\nSee Section 2 and Section 3.\n"
+                "## 2. ADULT\nText A. See Section 3.\n"
+                "## 3. AMUSE\nText B.\n")
+    new = FM + ("## 1. GENERAL\nSee Section 3 and Section 4.\n"
+                "## 2. FARMING\nNew text.\n"
+                "## 3. ADULT\nText A. See Section 4.\n"
+                "## 4. AMUSE\nText B.\n")
+    smap = {7: {2: 3, 3: 4}}
+    assert nz.changed_line_count(old, new, amap=IDENTITY, smap=smap) == 2  # `## 2. FARMING`, `New text.`
+    assert nz.changed_line_count(old, new, amap=IDENTITY) > 2               # the control
+
+
+def test_the_two_paths_still_agree_with_a_map():
+    """normalize() and changed_line_count() must apply the rule identically, or
+    the operator's number and the packet's marks part company."""
+    old = FM + "## 2. ADULT\nSee Section 2.\n## 3. AMUSE\n"
+    new = FM + "## 2. FARMING\n## 3. ADULT\nSee Section 3.\n## 4. AMUSE\n"
+    smap = {7: {2: 3, 3: 4}}
+    comparison = nz._marked(
+        nz.normalize(old, amap=IDENTITY, is_baseline_side=True, smap=smap).splitlines(),
+        nz.normalize(new, amap=IDENTITY, is_baseline_side=False, smap=smap).splitlines())
+    assert comparison == 1     # the inserted heading; and the paths must agree on it
+    assert comparison == nz.changed_line_count(old, new, amap=IDENTITY, smap=smap)
+
+
+# --- Qualified references are left raw (fix round 1) ---------------------------
+# A bare or plural reference is rewritten only when NOTHING qualifies it. Each
+# "still counts" test is a negative control: a real retargeting of a reference
+# that belongs to ANOTHER Article must survive the comparison.
+
+def _count(old, new, smap):
+    return nz.changed_line_count(FM + old, FM + new, amap=IDENTITY, smap=smap)
+
+
+def test_a_retargeted_plural_reference_into_another_article_still_counts():
+    assert _count("See Sections 3 and 4 of Article 8.\n", "See Sections 4 and 5 of Article 8.\n",
+                  {7: {3: 4, 4: 5}}) == 2
+
+
+def test_a_comma_separated_article_reference_still_counts():
+    assert _count("See Article 8, Section 3.\n", "See Article 8, Section 4.\n", {7: {3: 4}}) == 2
+
+
+def test_an_explicit_plural_article_reference_still_counts():
+    assert _count("See Article 8 Sections 3 and 4.\n", "See Article 8 Sections 4 and 5.\n",
+                  {7: {3: 4, 4: 5}}) == 2
+
+
+def test_an_article_reference_wrapped_across_lines_still_counts():
+    assert _count("See Article 8\nSection 3.\n", "See Article 8\nSection 4.\n", {7: {3: 4}}) == 2
+
+
+def test_the_adopted_typo_atricle_is_left_raw():
+    """The v1.0 text carries `Atricle 4 Section 17 Building Groups`. Unchanged,
+    it must not produce a phantom mark; retargeted, it must still count."""
+    line = "Atricle 4 Section 17 Building Groups\n"
+    assert _count(line, line, {7: {17: 18}}) == 0
+    assert _count(line, "Atricle 4 Section 18 Building Groups\n", {7: {17: 18}}) == 2
+
+
+def test_a_number_first_statute_is_left_raw():
+    fm9 = '---\narticle-number: "9"\n---\n'
+    text = fm9 + "in accordance with Section 10 of Chapter 40A of the Maine General Laws.\n"
+    assert nz.normalize_sections_only(text, smap={9: {10: 11}}) == text
+
+
+# --- A paragraph that names another container (fix round 2) ---------------------
+# Phrase-by-phrase guards cannot converge on every way of pointing into another
+# Article or document. So a bare or plural reference is left raw whenever its
+# PARAGRAPH names any container other than the containing Article. Leaving a
+# reference raw only adds visible noise; it can never hide an amendment.
+
+_FOREIGN_SMAP = {7: {3: 4, 4: 5, 20: 21}}
+_FOREIGN_PHRASINGS = [
+    ("Section 20 (Land Conveyance) of Article 8", "Section 21 (Land Conveyance) of Article 8"),
+    ("Section 3(a) of Article 8", "Section 4(a) of Article 8"),
+    ("Section 3, Article 8", "Section 4, Article 8"),
+    ("Section 3 in Article 8", "Section 4 in Article 8"),
+    ("Article 8 (Administration), Section 3", "Article 8 (Administration), Section 4"),
+    ("Article 8 — Section 3", "Article 8 — Section 4"),
+    ("**Article 8**, Section 3", "**Article 8**, Section 4"),
+    ("Article VIII, Section 3", "Article VIII, Section 4"),
+    ("Shoreland Zoning Ordinance, Section 3", "Shoreland Zoning Ordinance, Section 4"),
+    ("Sections 3 and 4 (Permits) of Article 8", "Sections 4 and 5 (Permits) of Article 8"),
+]
+
+
+@pytest.mark.parametrize("old_phrase,new_phrase", _FOREIGN_PHRASINGS)
+def test_no_foreign_reference_phrasing_hides_a_retarget(old_phrase, new_phrase):
+    old = FM + "See " + old_phrase + ".\n"
+    new = FM + "See " + new_phrase + ".\n"
+    assert nz.changed_line_count(old, new, amap=IDENTITY, smap=_FOREIGN_SMAP) == 2
+
+
+def test_a_named_document_with_no_trigger_word_is_left_raw_after_a_comma():
+    old = FM + "See the Floodplain Standards, Section 3.\n"
+    new = FM + "See the Floodplain Standards, Section 4.\n"
+    assert nz.changed_line_count(old, new, amap=IDENTITY, smap=_FOREIGN_SMAP) == 2
+
+
+def test_a_foreign_container_elsewhere_in_the_paragraph_leaves_bare_references_raw():
+    text = FM + "Permits are issued under Article 8. Appeals follow Section 3.\n"
+    assert nz.normalize_sections_only(text, smap={7: {3: 4}}) == text
+
+
+def test_but_the_next_paragraph_is_unaffected():
+    """The positive control for the paragraph scope."""
+    out = nz.normalize_sections_only(
+        FM + "Permits are issued under Article 8.\n\nSee Section 3.\n", smap={7: {3: 4}})
+    assert out.endswith("See Section 4.\n")
+
+
+def test_a_self_reference_to_the_containing_article_does_not_block():
+    out = nz.normalize_sections_only(FM + "Under Article 7, see Section 3.\n", smap={7: {3: 4}})
+    assert out.endswith("see Section 4.\n")
+
+
+# --- The report counts every rule ----------------------------------------------
+# ADOPTION-SPEC.md:155 says the module reports what EACH rule suppressed. It
+# counted three of five. Each test below triggers one rule and asserts that
+# rule's count and the others' zeros -- so a key that miscounts fails. (The
+# sections test also trips the frontmatter line, because AMAP shifts Article 7;
+# it asserts that explicitly.)
+
+def _only(r, key):
+    return {k: v for k, v in r.items() if v} == {key: r[key]}
+
+
+def test_report_counts_table_renumbering():
+    r = nz.report("See TABLE 6.1 Design Standards.\n", amap=AMAP)
+    assert r["tables"] == 1 and _only(r, "tables")
+
+
+def test_report_counts_frontmatter_renumbering():
+    r = nz.report('---\narticle-number: "6"\n---\n', amap=AMAP)
+    assert r["frontmatter"] == 1 and _only(r, "frontmatter")
+
+
+def test_report_counts_section_renumbering():
+    r = nz.report(FM + "See Section 3.\n", amap=AMAP, smap={7: {3: 4}})
+    # AMAP shifts Article 7, so the frontmatter line counts too; nothing else may.
+    assert r["sections"] == 1 and r["frontmatter"] == 1
+    assert {k: v for k, v in r.items() if v} == {"sections": 1, "frontmatter": 1}
+
+
+def test_report_omits_rewrap_without_a_new_side():
+    """rewrap compares BOTH sides; the resolver has only the old one."""
+    assert "rewrap" not in nz.report("x\n", amap=AMAP)
+    assert "rewrap" in nz.report("x\n", "x\n", amap=AMAP)
