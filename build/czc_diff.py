@@ -87,6 +87,9 @@ def keyed_records(data, key: str) -> dict[str, object]:
     if not m:
         raise Refusal(f"unknown key form {key!r}")
     container, fields = m.group(1), m.group(2).split("+")
+    # name[].f: only the records under `name` are compared. The container's
+    # other keys (inventory.json's _meta: banner, CRS, town boundary) are not
+    # the Code's standards and are deliberately not read.
     if container:
         records = data.get(container) if isinstance(data, dict) else None
     else:
@@ -122,6 +125,16 @@ def _list_keys(items: list) -> tuple[list[str], str]:
     return [f"[{n}]" for n in range(len(items))], "index"
 
 
+def _merge(into: dict, more: dict) -> None:
+    """Merge child leaves, refusing a shared path: a silent overwrite would let
+    a change to the hidden leaf read as zero."""
+    for path, v in more.items():
+        if path in into:
+            raise Refusal(f"two leaves share the path {leaf_label(path)!r} -- "
+                          f"a change to one could be hidden by the other")
+        into[path] = v
+
+
 def flatten(value, prefix: tuple = ()) -> dict[tuple, object]:
     """Every leaf of `value`, keyed by a path that survives an insertion where
     it can: a dict by its keys; a list of titled dicts by title (a repeated
@@ -133,7 +146,7 @@ def flatten(value, prefix: tuple = ()) -> dict[tuple, object]:
             return {prefix: {}}
         out: dict[tuple, object] = {}
         for k, v in value.items():
-            out.update(flatten(v, prefix + (str(k),)))
+            _merge(out, flatten(v, prefix + (str(k),)))
         return out
     if isinstance(value, list):
         if not value:
@@ -145,7 +158,7 @@ def flatten(value, prefix: tuple = ()) -> dict[tuple, object]:
                 item = {f: v for f, v in item.items() if f != "title"}
             elif how == "label":
                 item = item[1] if len(item) == 2 else item[1:]
-            out.update(flatten(item, prefix + (k,)))
+            _merge(out, flatten(item, prefix + (k,)))
         return out
     return {prefix: value}
 
@@ -167,7 +180,7 @@ def diff_maps(old: dict, new: dict) -> Delta:
     for k, v in new.items():
         if k not in old:
             d.added[k] = v
-        elif old[k] != v:
+        elif type(old[k]) is not type(v) or old[k] != v:
             d.changed[k] = (old[k], v)
     for k, v in old.items():
         if k not in new:
@@ -180,18 +193,41 @@ def json_leaves(raw: bytes | None, decl: dict) -> dict[tuple, object]:
     record key. Restricted to the declaration's substantive_fields when it
     names them (decision D7: derived fields are not substance). An absent file
     has no leaves, so adding or deleting one counts every leaf."""
+    path = decl.get("path")
+    if "key" not in decl:
+        raise Refusal(f"{path}: json-keyed declaration has no key")
+    fields = decl.get("substantive_fields")
+    if fields is not None and not (isinstance(fields, list)
+                                   and all(isinstance(f, str) for f in fields)):
+        raise Refusal(f"{path}: substantive_fields must be a list of field names")
     if raw is None:
         return {}
+
+    def no_dups(pairs):
+        seen = set()
+        for k, _ in pairs:
+            if k in seen:
+                raise Refusal(f"{path}: duplicate key {k!r} in a JSON object -- "
+                              f"one value would silently replace the other")
+            seen.add(k)
+        return dict(pairs)
+
     try:
-        data = json.loads(raw)
+        data = json.loads(raw, object_pairs_hook=no_dups)
     except ValueError as exc:
-        raise Refusal(f"{decl.get('path')}: not valid JSON ({exc})") from exc
-    fields = decl.get("substantive_fields")
+        raise Refusal(f"{path}: not valid JSON ({exc})") from exc
+    records = keyed_records(data, decl["key"])
+    if fields is not None:
+        for name in fields:
+            if not any(isinstance(r, dict) and name in r for r in records.values()):
+                raise Refusal(f"{path}: substantive_fields names {name!r}, which no "
+                              f"record has -- a misspelt field would make every "
+                              f"change to it read as zero")
     out: dict[tuple, object] = {}
-    for rk, rec in keyed_records(data, decl["key"]).items():
+    for rk, rec in records.items():
         if fields is not None and isinstance(rec, dict):
             rec = {f: rec[f] for f in fields if f in rec}
-        out.update(flatten(rec, (rk,)))
+        _merge(out, flatten(rec, (rk,)))
     return out
 
 

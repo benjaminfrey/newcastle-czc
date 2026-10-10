@@ -147,3 +147,50 @@ def test_an_absent_file_counts_every_leaf():
 def test_invalid_json_is_refused():
     with pytest.raises(czc_diff.Refusal, match="not valid JSON"):
         czc_diff.json_leaves(b"{", _decl("2", A2))
+
+
+# --- Refusals: every way a real change could read as zero -----------------------
+
+def test_a_path_collision_is_refused():
+    with pytest.raises(czc_diff.Refusal, match="share the path"):
+        czc_diff.flatten([{"title": "X", "b": 1}, {"title": "X", "b": 2},
+                          {"title": "X [2]", "b": 3}])
+
+
+def test_a_misspelt_substantive_field_is_refused():
+    decl = dict(_decl("3", INV), substantive_fields=["typ"])
+    with pytest.raises(czc_diff.Refusal, match="no record has"):
+        czc_diff.json_leaves(_show("v1.0", INV), decl)
+
+
+def test_substantive_fields_as_a_string_is_refused():
+    decl = dict(_decl("3", INV), substantive_fields="type")
+    with pytest.raises(czc_diff.Refusal, match="must be a list"):
+        czc_diff.json_leaves(_show("v1.0", INV), decl)
+
+
+def test_a_change_of_type_is_a_change():
+    assert czc_diff.diff_maps({("a",): 1}, {("a",): True}).count() == 1
+    assert czc_diff.diff_maps({("a",): 1}, {("a",): 1.0}).count() == 1
+    assert czc_diff.diff_maps({("a",): ""}, {("a",): None}).count() == 1
+    assert czc_diff.diff_maps({("a",): 1}, {("a",): 1}).count() == 0
+
+
+def test_a_duplicate_json_key_is_refused():
+    decl = {"path": "x.json", "key": "$top-level-keys-except-_meta"}
+    with pytest.raises(czc_diff.Refusal, match="duplicate key"):
+        czc_diff.json_leaves(b'{"S1": {"a": 1}, "S1": {"a": 2}}', decl)
+
+
+def test_a_declaration_without_a_key_is_refused():
+    with pytest.raises(czc_diff.Refusal, match="has no key"):
+        czc_diff.json_leaves(b"{}", {"path": "x.json"})
+
+
+def test_keyed_records_refusal_paths():
+    with pytest.raises(czc_diff.Refusal, match="needs a JSON object"):
+        czc_diff.keyed_records([], "$top-level-keys-except-_meta")
+    with pytest.raises(czc_diff.Refusal, match="needs a list of records"):
+        czc_diff.keyed_records({"a": 1}, "[].x")
+    with pytest.raises(czc_diff.Refusal, match="has no x"):
+        czc_diff.keyed_records([{"y": 1}], "[].x")
