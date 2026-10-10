@@ -454,3 +454,60 @@ def test_a_needs_call_item_names_the_label_and_never_a_file(tmp_path, tree):
         assert ".typ" not in t and ".json" not in t
     assert "the ten Thoroughfare Type pages" in _flat(t3)
     assert "))" not in t2 and ") (" not in t2
+
+
+_STAGE_SH = Path(__file__).resolve().parent.parent / "redline-stage.sh"
+
+
+def _page_and_text_heading_counts(tmp_path, old, new, n, *extra):
+    """(items listed on the page, notes in the text) for one Article, in the
+    ordinary draft-to-draft path."""
+    nn = f"{n:02d}"
+    tree = _fx.copy_full_source(tmp_path / f"src-{old}-{new}", new)
+    prose = next(tree.glob(f"article-{nn}-*.md")).name
+    md = tmp_path / "n.md"
+    _note(tmp_path, "--scope", f"article:{n}", "--old", old, "--new-dir", str(tree),
+          "--md", str(md), *extra)
+    page = len(re.findall(r"^- Heading (?:added|removed|changed)", md.read_text(), re.M))
+    stage = tmp_path / "stage"
+    r = _sp.run(["bash", "-c", f'source "{_STAGE_SH}"; czc_redline_stage "{tree}" "{stage}" '
+                               f'"{old}" "" "--plain" "{prose}"'],
+                capture_output=True, text=True, cwd=Path(__file__).resolve().parents[2])
+    assert r.returncode == 0, r.stderr
+    text = len(re.findall(r"^\*\[(?:Heading (?:added|removed|changed)|Article title changed)",
+                          (stage / prose).read_text(), re.M))
+    return page, text
+
+
+@pytest.mark.parametrize("old,new,nonzero", [("v0.2-draft", "v0.2.1-draft", False),
+                                              ("v0.14-draft", "v0.15-draft", True)])
+def test_the_page_reads_the_same_old_side_as_the_text(tmp_path, old, new, nonzero):
+    """I6: the page normalised the old side's heading letters; the draft-path stage
+    marks the raw old text. Before the fix v0.2->v0.2.1 listed dozens of heading
+    changes the text never noted."""
+    page, text = _page_and_text_heading_counts(tmp_path, old, new, 3)
+    assert page == text, f"the page lists {page} heading changes, the text notes {text}"
+    if nonzero:
+        assert page > 0, "the control: this pair really changes headings"
+
+
+def test_the_page_takes_the_stages_section_map_and_baseline_flag(tmp_path, tree):
+    """For P13: the page must read the old side the stage reads, so it accepts the
+    stage's --section-map, and --baseline for the baseline stage."""
+    import json
+    import section_map
+    name = "article-07-use-standards.md"
+    p = tree / name
+    p.write_text(_fx.insert_section(p.read_text(), 3, "AGRICULTURE"))
+    mp = tmp_path / "smap.json"
+    mp.write_text(json.dumps(section_map.derive("v1.0", tree)))
+    counts = {}
+    for label, extra in (("map", ["--section-map", str(mp)]), ("nomap", []),
+                         ("baseline", ["--baseline", "--section-map", str(mp)])):
+        md = tmp_path / f"{label}.md"
+        _note(tmp_path, "--scope", "article:7", "--old", "v1.0", "--new-dir", str(tree),
+              "--md", str(md), *extra, name=f"{label}.pdf")
+        counts[label] = len(re.findall(r"^- Heading", md.read_text(), re.M))
+    assert counts["map"] == 1, counts           # only the inserted section
+    assert counts["nomap"] > 50, counts         # the control: without the map every shift counts
+    assert counts["baseline"] == 1, counts

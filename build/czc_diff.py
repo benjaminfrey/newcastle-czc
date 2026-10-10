@@ -380,18 +380,27 @@ def _contextual_labels(heads: list[str]) -> list[str]:
     return labels
 
 
-def structural_changes(old: str | None, new: str, *, smap=None) -> dict[str, list]:
+def structural_changes(old: str | None, new: str, *, smap=None,
+                       baseline: bool = True) -> dict[str, list]:
     """WHICH headings and raw-Typst tables/figures were added, removed or
-    changed -- the names behind markdown_counts' heading and table counts. The
-    old side is normalised exactly as in markdown_counts. Headings are labelled
+    changed -- the names behind markdown_counts' heading and table counts.
+    `baseline` says which old side the redline's in-text notes read:
+    True (the default) normalises it exactly as markdown_counts does -- the
+    BASELINE path's old side (heading letters lowercased, an identity article
+    map, Rule 6 with a map). False is the draft-to-draft path, whose stage marks
+    the RAW old text (Rule 6 only, when a section map is given); reading a
+    normalised side there lists headings the text never notes. Headings are labelled
     with their section (_contextual_labels). Tables and figures are classified
     by structure_text.classify_blocks, the one rule the redline's in-text notes
     share: identical content anywhere is unchanged, the rest pair by caption."""
     if old is None:
         o_heads, o_blocks = [], []
     else:
-        _, o_heads, o_blocks = split_markdown(
-            nz.normalize_old_side(old, amap=_identity_amap(), smap=smap))
+        if baseline:
+            old_side = nz.normalize_old_side(old, amap=_identity_amap(), smap=smap)
+        else:
+            old_side = nz.normalize_sections_only(old, smap=smap) if smap else old
+        _, o_heads, o_blocks = split_markdown(old_side)
     _, n_heads, n_blocks = split_markdown(new)
     out: dict[str, list] = {k: [] for k in ("headings_added", "headings_removed",
                                             "headings_changed", "tables_added",

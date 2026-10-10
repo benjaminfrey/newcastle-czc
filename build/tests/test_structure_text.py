@@ -164,3 +164,33 @@ def test_real_history_labels_each_added_subsection_with_its_section():
     assert sc["headings_added"] == [
         "Section 3.G \u2014 STREET TREES",
         "Section 7.F \u2014 ACCESS WAY SERVING MORE THAN THE DRIVEWAY THRESHOLD"]
+
+
+# --- baseline=False: the draft path's old side ------------------------------------
+
+def test_baseline_false_reads_the_old_side_raw():
+    """The draft-to-draft stage marks the RAW old text; only the baseline path
+    lowercases heading letters. structural_changes must be able to read either,
+    or the disclosure page lists headings the text never notes."""
+    old = "## 1. GENERAL\n\n### A. PURPOSE\n\nText.\n"
+    new = "## 1. GENERAL\n\n### a. PURPOSE\n\nText.\n"
+    assert all(v == [] for v in czc_diff.structural_changes(old, new).values())      # default: today's
+    raw = czc_diff.structural_changes(old, new, baseline=False)
+    assert len(raw["headings_changed"]) == 1
+
+
+def test_baseline_false_still_applies_a_section_map(tmp_path):
+    sys.path.insert(0, str(BUILD.parent / "build" / "tests"))
+    import section_fixtures as fx
+    import section_map
+    tree = fx.copy_source(tmp_path / "src")
+    p = tree / ART7
+    p.write_text(fx.insert_section(p.read_text(), 3, "AGRICULTURE", "Farming is permitted."))
+    smap = {int(a): {int(o): n for o, n in m.items()}
+            for a, m in section_map.derive("v1.0", tree)["articles"].items()}
+    old, new = _text("v1.0", ART7), p.read_text()
+    sc = czc_diff.structural_changes(old, new, baseline=False, smap=smap)
+    assert len(sc["headings_added"]) == 1 and sc["headings_changed"] == [] \
+        and sc["headings_removed"] == []
+    # the control: without the map the shifted headings all count
+    assert len(czc_diff.structural_changes(old, new, baseline=False)["headings_changed"]) > 50

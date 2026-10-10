@@ -224,12 +224,16 @@ def note_blocks(amap, old_label: str, source_dir: Path | None = None,
 
 
 def article_blocks(n: int, *, old_ref: str, new_dir: Path,
-                   old_label: str | None = None,
-                   medium: str = "pdf") -> tuple[str, list[tuple[str, str]]]:
+                   old_label: str | None = None, medium: str = "pdf",
+                   baseline: bool = False, smap=None) -> tuple[str, list[tuple[str, str]]]:
     """(subtitle, blocks) for Article n. Every sentence that names an Article, a
     kind of change, a heading or a table is generated from the change
     determination and the ownership map (ruling 8: kinds, never line counts).
-    `medium` is "pdf" or "md" (see note_blocks)."""
+    `medium` is "pdf" or "md" (see note_blocks). `baseline` and `smap` say which old
+    side the Article's in-text notes read (the stage's own flags), so the page lists
+    exactly the headings the text notes: baseline False is the draft-to-draft stage
+    (raw old text), True the baseline stage; `smap` is a section map as
+    section_map.load returns it."""
     import czc_diff
 
     _check_medium(medium)
@@ -243,9 +247,10 @@ def article_blocks(n: int, *, old_ref: str, new_dir: Path,
     new_text = (Path(new_dir) / prose).read_text(encoding="utf-8")
     name = _frontmatter_value(new_text, "article-name") or f"Article {n}"
     old = czc_diff.Side(ref=old_ref)
-    c = czc_diff.determine(old, czc_diff.Side(root=Path(new_dir)))[n]
+    c = czc_diff.determine(old, czc_diff.Side(root=Path(new_dir)), smap=smap)[n]
     raw = old.read(prose)
-    sc = czc_diff.structural_changes(raw.decode("utf-8") if raw is not None else None, new_text)
+    sc = czc_diff.structural_changes(raw.decode("utf-8") if raw is not None else None, new_text,
+                                     smap=smap, baseline=baseline)
 
     blocks = [(
         "What this document compares",
@@ -512,13 +517,15 @@ def build_note(out_pdf: str, *, map_path: str | None = None,
 
 def build_article_note(out_pdf: str, n: int, *, old_ref: str, new_dir: str,
                        old_label: str | None = None, md_path: str | None = None,
-                       pad_to_even: bool = False) -> None:
-    sub, blocks = article_blocks(n, old_ref=old_ref, new_dir=Path(new_dir), old_label=old_label)
+                       pad_to_even: bool = False, baseline: bool = False,
+                       smap=None) -> None:
+    kw = dict(old_ref=old_ref, new_dir=Path(new_dir), old_label=old_label,
+              baseline=baseline, smap=smap)
+    sub, blocks = article_blocks(n, **kw)
     pages = render(out_pdf, sub, blocks, intro=ARTICLE_INTRO, max_pages=4,
                    pad_to_even=pad_to_even, scope_name=f"the Article {n} note")
     if md_path:
-        _, md_blocks = article_blocks(n, old_ref=old_ref, new_dir=Path(new_dir),
-                                      old_label=old_label, medium="md")
+        _, md_blocks = article_blocks(n, medium="md", **kw)
         Path(md_path).write_text(to_markdown(sub, md_blocks, ARTICLE_INTRO), encoding="utf-8")
     print(f"structural note -> {out_pdf} ({pages} page(s))")
 
@@ -531,6 +538,12 @@ def main() -> int:
     ap.add_argument("--scope", default="code", help="code | article:N")
     ap.add_argument("--old", default=None, help="git ref of the previous Code (article scope)")
     ap.add_argument("--new-dir", default=str(BUILD.parent / "source"))
+    ap.add_argument("--baseline", action="store_true",
+                    help="article scope: read the old side as the BASELINE stage does "
+                         "(default: as the draft-to-draft stage does -- the raw old text)")
+    ap.add_argument("--section-map", default=None,
+                    help="article scope: a derived section map (section_map.py), applied to "
+                         "the old side exactly as the stage applies it")
     ap.add_argument("--md", default=None)
     ap.add_argument("--pad-to-even", action="store_true")
     a = ap.parse_args()
@@ -542,9 +555,12 @@ def main() -> int:
         if not a.old:
             ap.error("--scope article:N needs --old REF, the git ref to compare against")
         import czc_diff
+        import section_map
+        smap = section_map.load(a.section_map) if a.section_map else None
         try:
             build_article_note(a.out_pdf, int(m.group(1)), old_ref=a.old, new_dir=a.new_dir,
-                               old_label=a.old_label, md_path=a.md, pad_to_even=a.pad_to_even)
+                               old_label=a.old_label, md_path=a.md, pad_to_even=a.pad_to_even,
+                               baseline=a.baseline, smap=smap)
         except czc_diff.Refusal as e:
             print(f"structural note: {e}", file=sys.stderr)
             return 1

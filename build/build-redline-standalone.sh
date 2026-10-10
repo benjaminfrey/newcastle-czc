@@ -79,8 +79,10 @@ czc_redline_stage "$SRC" "$TMP/plain" "$OLD_V" "$BASELINE_FLAG" "--plain" "$PRO"
   || { echo "redline-standalone: staging the markdown side failed." >&2; exit 1; }
 
 # --- 2. the "How to read this redline" page (PDF + markdown), even length -------
+# $BASELINE_FLAG (--baseline or empty) is passed on so the page reads the SAME old
+# side the stage above marked; unquoted on purpose, so empty expands to nothing.
 python3 "$REPO_ROOT/build/structural_note.py" "$TMP/note.pdf" \
-  --scope "article:$NUM" --old "$OLD_V" --new-dir "$SRC" \
+  --scope "article:$NUM" --old "$OLD_V" --new-dir "$SRC" $BASELINE_FLAG \
   --md "$TMP/note.md" --pad-to-even \
   || { echo "redline-standalone: could not write the disclosure page." >&2; exit 1; }
 
