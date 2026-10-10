@@ -194,3 +194,109 @@ def test_keyed_records_refusal_paths():
         czc_diff.keyed_records({"a": 1}, "[].x")
     with pytest.raises(czc_diff.Refusal, match="has no x"):
         czc_diff.keyed_records([{"y": 1}], "[].x")
+
+
+# --- The markdown counts --------------------------------------------------------
+
+import adoption_map  # noqa: E402
+import normalize_for_diff as nz  # noqa: E402
+import section_map  # noqa: E402
+
+ART3 = "article-03-streets-roads-driveways.md"
+ART7 = "article-07-use-standards.md"
+IDENTITY = adoption_map.AdoptionMap(baseline_version="v1.0",
+                                    article_numbers={n: n for n in range(1, 10)},
+                                    files={}, not_text_comparable={})
+FM8 = '---\narticle-number: "8"\n---\n'
+
+
+def _text(ref: str, rel: str) -> str:
+    return _show(ref, rel).decode()
+
+
+def _zero(counts: dict) -> bool:
+    return counts == {"prose": 0, "heading": 0, "table": 0, "suppressed": 0}
+
+
+def test_a_blank_line_is_not_a_change():
+    """changed_line_count sees a blank line as a change; the determination must
+    not. The positive control is the old counter seeing it."""
+    old = _text("v1.0", ART7)
+    new = old.replace("\n\n", "\n\n\n", 1)
+    assert nz.changed_line_count(old, new, amap=IDENTITY) == 1
+    assert _zero(czc_diff.markdown_counts(old, new))
+
+
+def test_a_changed_prose_line_counts_twice():
+    old = _text("v1.0", ART7)
+    new = old.replace("ADULT ESTABLISHMENT\n\n", "ADULT ESTABLISHMENT\n\nAmended.\n\n", 1)
+    assert new != old
+    assert czc_diff.markdown_counts(old, new)["prose"] == 1          # one line added
+    new2 = new.replace("Amended.", "Amended again.")
+    assert czc_diff.markdown_counts(new, new2)["prose"] == 2         # one line out, one in
+
+
+def test_an_edit_inside_a_raw_typst_table_counts_as_table_not_prose():
+    """The redline renders a raw-Typst table unmarked, so this count is the only
+    place the edit shows. It must still be SUBSTANTIVE (Task 3)."""
+    old = _text("v1.0", ART3)
+    new = old.replace("TABLE 3.2 SIGHT DISTANCE", "TABLE 3.2 SIGHT DISTANCES", 1)
+    assert new != old
+    assert czc_diff.markdown_counts(old, new) == {"prose": 0, "heading": 0, "table": 2,
+                                                  "suppressed": 0}
+
+
+def test_a_retitled_heading_counts_as_heading():
+    old = _text("v1.0", ART7)
+    new = old.replace("## 5. AMUSEMENT, OUTDOOR", "## 5. AMUSEMENT, OUTSIDE", 1)
+    assert new != old
+    assert czc_diff.markdown_counts(old, new) == {"prose": 0, "heading": 2, "table": 0,
+                                                  "suppressed": 0}
+
+
+def test_comments_and_frontmatter_are_not_changes():
+    old = _text("v1.0", ART3)
+    new = old.replace("<!-- The former TABLE 3.1a", "<!-- The retired TABLE 3.1a", 1)
+    new = new.replace('article-number: "3"', 'article-number: "3"\nnote: "x"', 1)
+    assert new != old
+    assert _zero(czc_diff.markdown_counts(old, new))
+
+
+def test_a_renumbered_reference_into_another_article_is_renumber_only():
+    """Article 8 refers to Article 7 Section 4; a section is inserted into
+    Article 7, so the reference becomes Section 5. Not a change in Article 8's
+    substance -- with the map."""
+    old, new = FM8 + "See Article 7 Section 4.\n", FM8 + "See Article 7 Section 5.\n"
+    with_map = czc_diff.markdown_counts(old, new, smap={7: {4: 5}})
+    assert with_map == {"prose": 0, "heading": 0, "table": 0, "suppressed": 1}
+    assert czc_diff.markdown_counts(old, new)["prose"] == 2          # the control
+
+
+def test_a_retargeted_reference_is_always_substantive():
+    """Decision D8. Old §4 became §5; a reference that now says §6 points at
+    different content."""
+    old, new = FM8 + "See Article 7 Section 4.\n", FM8 + "See Article 7 Section 6.\n"
+    assert czc_diff.markdown_counts(old, new, smap={7: {4: 5}})["prose"] == 2
+
+
+def test_a_new_article_counts_every_line():
+    new = _text("v1.0", ART7)
+    counts = czc_diff.markdown_counts(None, new)
+    prose, headings, blocks = czc_diff.split_markdown(new)
+    assert counts["prose"] == len(prose) > 100
+    assert counts["heading"] == len(headings) == 188     # 66 sections and their lettered sub-sections
+
+
+def test_a_section_inserted_into_article_7_is_one_heading_and_one_line(tmp_path):
+    """With the derived map, inserting a section is exactly the inserted heading
+    and its sentence; the 64 renumbered headings are suppressed. Without the
+    map, every shifted heading counts -- the control."""
+    tree = fx.copy_source(tmp_path / "src")
+    p = tree / ART7
+    p.write_text(fx.insert_section(p.read_text(), 3, "AGRICULTURE", "Farming is permitted."))
+    smap = {int(a): {int(o): n for o, n in m.items()}
+            for a, m in section_map.derive("v1.0", tree)["articles"].items()}
+    old, new = _text("v1.0", ART7), p.read_text()
+    assert czc_diff.markdown_counts(old, new, smap=smap) == {
+        "prose": 1, "heading": 1, "table": 0, "suppressed": 64}
+    assert czc_diff.markdown_counts(old, new)["heading"] > 100

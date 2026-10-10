@@ -387,6 +387,11 @@ def _marked(o: list[str], n: list[str]) -> int:
     return sum(1 for line in lines[2:] if line[:1] in "+-")
 
 
+# The public name of the one counting rule, for callers outside this module
+# (czc_diff.py), so that no second counter is ever written.
+marked_lines = _marked
+
+
 def changed_line_count(old: str, new: str, *, amap, smap=None) -> int:
     """How many lines the redline will MARK for this article pair.
 

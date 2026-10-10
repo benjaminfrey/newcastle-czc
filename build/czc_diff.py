@@ -59,7 +59,9 @@ REPO = BUILD.parent
 SOURCE = REPO / "source"
 sys.path.insert(0, str(BUILD))
 
+import adoption_map  # noqa: E402
 import manifest  # noqa: E402
+import normalize_for_diff as nz  # noqa: E402
 
 
 class Refusal(Exception):
@@ -234,3 +236,70 @@ def json_leaves(raw: bytes | None, decl: dict) -> dict[tuple, object]:
 def leaf_label(path: tuple) -> str:
     """A leaf path as one readable string."""
     return " › ".join(path)
+
+
+# --- The markdown counts ------------------------------------------------------
+
+_FRONTMATTER = re.compile(r"\A---[ \t]*\n.*?\n---[ \t]*\n?", re.S)
+_COMMENT = re.compile(r"<!--.*?-->", re.S)
+_FENCE = re.compile(r"^[ \t]*(`{3,}|~{3,})")
+_HEADING = re.compile(r"^\s*#{1,6}[ \t]")
+
+
+def split_markdown(text: str) -> tuple[list[str], list[str], list[str]]:
+    """(prose lines, heading lines, raw blocks). Frontmatter, HTML comments,
+    blank lines and trailing whitespace are removed; each fenced block is kept
+    whole as one item, so an edit inside it is one changed block."""
+    text = _FRONTMATTER.sub("", text, count=1)
+    text = _COMMENT.sub("", text)
+    lines = text.split("\n")
+    prose: list[str] = []
+    headings: list[str] = []
+    blocks: list[str] = []
+    i = 0
+    while i < len(lines):
+        m = _FENCE.match(lines[i])
+        if m:
+            close = re.compile(r"^[ \t]*" + re.escape(m.group(1)[0])
+                               + "{" + str(len(m.group(1))) + r",}[ \t]*$")
+            block = [lines[i]]
+            i += 1
+            while i < len(lines):
+                block.append(lines[i])
+                i += 1
+                if close.match(block[-1]):
+                    break
+            blocks.append("\n".join(block))
+            continue
+        line = lines[i].rstrip()
+        i += 1
+        if line.strip():
+            (headings if _HEADING.match(line) else prose).append(line)
+    return prose, headings, blocks
+
+
+def _identity_amap():
+    """The determination compares drafts and never renumbers Articles, so the
+    old side's article map is identity. Built here, not read from
+    adoption-map.json, which this module must not depend on."""
+    return adoption_map.AdoptionMap(baseline_version="czc_diff",
+                                    article_numbers={n: n for n in range(1, 10)},
+                                    files={}, not_text_comparable={})
+
+
+def markdown_counts(old: str | None, new: str, *, smap=None) -> dict[str, int]:
+    """prose / heading / table counts for one Article's markdown, and the
+    section renumbers Rule 6 suppressed. The OLD side is normalised exactly as
+    the redline's old side is (heading case, and with a section map, Rule 6);
+    the new side is read as written. `old` None means the Article is new."""
+    if old is None:
+        o_prose, o_heads, o_blocks, suppressed = [], [], [], 0
+    else:
+        suppressed = nz.section_renumber(old, smap)[1] if smap else 0
+        o_prose, o_heads, o_blocks = split_markdown(
+            nz.normalize_old_side(old, amap=_identity_amap(), smap=smap))
+    n_prose, n_heads, n_blocks = split_markdown(new)
+    return {"prose": nz.marked_lines(o_prose, n_prose),
+            "heading": nz.marked_lines(o_heads, n_heads),
+            "table": nz.marked_lines(o_blocks, n_blocks),
+            "suppressed": suppressed}
