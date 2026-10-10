@@ -126,6 +126,22 @@ ARTICLE_INTRO = ("This page says what changed in this Article, and what a redlin
                  "cannot show. It is stated once, before any marked text.")
 
 
+def _unit_labels() -> list[str]:
+    """Every native unit's plain-words label across Articles 1-9, in Article
+    order, each tagged with its Article. These pages come from data or scans and
+    NEVER get an in-text note, so the page that promises notes must also name them."""
+    doc = manifest.load()
+    return [f"{u['label']} (Article {k})"
+            for k in sorted((k for k in doc if k.isdigit()), key=int)
+            for u in doc[k].get("units", []) if u.get("label")]
+
+
+def _old_label(old_ref: str) -> str:
+    if old_ref == adoption_map.load().baseline_version:
+        return f"the previously adopted Code ({old_ref})"
+    return f"the Code as of {old_ref}"
+
+
 def note_blocks(amap, old_label: str, source_dir: Path | None = None) -> list[tuple[str, str]]:
     """(heading, body) blocks. The wording is deliberately plain: a citizen
     reads this page, not a drafter. Every block that names an Article or a
@@ -165,12 +181,14 @@ def note_blocks(amap, old_label: str, source_dir: Path | None = None) -> list[tu
             "there is described in the Summary of Changes.",
         ))
 
+    units = _unit_labels()
     blocks.append((
-        "Figures, tables and maps show their current state",
-        "Every figure, table, map and exhibit renders as it now stands and is not "
-        "marked, because a text comparison cannot mark a regenerated figure. Where "
-        "one was added, removed or changed, the text says so in a note. Those "
-        "changes are described in the Summary of Changes.",
+        "Pages shown as they now stand, without marks",
+        "These are reproduced from data or as exhibits rather than written as text, so a "
+        "text comparison cannot mark them; each shows its current state: " + "; ".join(units)
+        + ". What changed in them is described in the Summary of Changes. Tables and figures written within an Article's "
+        "text are different: where one was added, removed or changed, a note in italics and "
+        "square brackets says so at that spot.",
     ))
     return blocks
 
@@ -197,7 +215,7 @@ def article_blocks(n: int, *, old_ref: str, new_dir: Path,
 
     blocks = [(
         "What this document compares",
-        f"This is Article {n}, {name}, as proposed, compared against {old_label or old_ref}. "
+        f"This is Article {n}, {name}, as proposed, compared against {old_label or _old_label(old_ref)}. "
         f"Text added is shown in red; text deleted is struck through. Where a heading, table "
         f"or figure was added, removed or changed, a note in italics and square brackets says "
         f"so at that spot.")]
@@ -223,25 +241,38 @@ def article_blocks(n: int, *, old_ref: str, new_dir: Path,
              + [f"Table or figure added: “{t}”" for t in sc["tables_added"]]
              + [f"Table or figure removed: “{t}”" for t in sc["tables_removed"]]
              + [f"Table or figure changed: “{t}”" for t in sc["tables_changed"]])
-    blocks.append(("Headings, tables and figures",
-                   "\n".join(f"• {i}" for i in items) if items
-                   else "None of this Article's headings, tables or figures was added, removed "
-                        "or changed."))
 
-    labels = [u["label"] for u in entry.get("units", []) if u.get("label")]
+    units = entry.get("units", [])
+    labels = [u["label"] for u in units if u.get("label")]
     if labels:
-        body = ("These are generated from data, so a text comparison cannot mark them; they "
-                "appear as they now stand: " + "; ".join(labels) + ".")
-        if n == 2:
+        body = ("These are reproduced from data or as exhibits rather than written as text, so a "
+                "text comparison cannot mark them; they appear as they now stand: "
+                + "; ".join(labels) + ".")
+        # The Use Table Changes document is the record of district-page changes; point
+        # to it only when Article 2's data (or its legend file) actually changed.
+        if n == 2 and (c.data > 0 or any(note.startswith("article-02.typ:")
+                                         for note in c.needs_call)):
             body += (" Every change to the district pages is listed item by item in the Use "
                      "Table Changes document.")
         blocks.append(("Shown in their current form, without marks", body))
     if c.needs_call:
+        def resident(note: str) -> str:
+            path, _, rest = note.partition(": ")
+            lab = next((u.get("label") for u in units if u.get("typ") == path and u.get("label")),
+                       None) or "an exhibit file"
+            return f"• {lab} ({path}): {rest}"
         blocks.append(("Needs a person's judgement",
-                       "\n".join(f"• {note}" for note in c.needs_call)))
+                       "\n".join(resident(note) for note in c.needs_call)))
+    # The list goes LAST: it is the one block that may be long, and it flows item by
+    # item (render), so it must never push a disclosure above it off the page.
+    blocks.append(("Headings, tables and figures",
+                   "\n".join(f"• {i}" for i in items) if items
+                   else "None of this Article's headings, tables or figures was added, removed "
+                        "or changed."))
     return f"Article {n} — {name}", blocks
 
 
+MORE_LINE = "…and {n} more. The full list is in the markdown version of this redline."
 TOP_FIRST = 96
 TOP_NEXT = 72
 BOTTOM = PAGE_H - 72
@@ -300,35 +331,91 @@ def render(out_pdf: str, title_sub: str | None, blocks, *, intro: str,
                              "Shorten its wording.")
         return tall - left
 
+    def too_long(heading):
+        return SystemExit(
+            f"structural note: the block {heading!r} does not fit on an empty page. "
+            f"Shorten its wording.")
+
+    def overflowed(heading):
+        return SystemExit(
+            f"structural note: {scope_name} overflowed its {max_pages} page(s) at the block "
+            f"{heading!r}. The page count is parity-critical; shorten the wording rather than "
+            f"widening the box or shrinking the type.")
+
+    def put(rect_y, text, height_hint=None):
+        used = page.insert_textbox(
+            pymupdf.Rect(MARGIN, rect_y, MARGIN + box_w, BOTTOM), text,
+            fontfile=BARLOW_REG, fontname="barlow-reg", fontsize=10, lineheight=1.35, color=INK)
+        if used < 0:
+            raise SystemExit(f"structural note: text was measured to fit but did not place "
+                             f"({-used:.0f}pt over): {text[:40]!r}")
+        return BOTTOM - used
+
+    def put_heading(h, at):
+        page.insert_textbox(
+            pymupdf.Rect(MARGIN, at, PAGE_W - MARGIN, at + 20), h,
+            fontfile=BARLOW_BOLD, fontname="barlow-bold", fontsize=11.5, color=ARTICLE_BLUE)
+
     page, y = new_page(True)
     fresh = True                      # nothing but the title is on this page yet
     for heading, body in blocks:
-        h = body_height(body)
-        while y + 17 + h > BOTTOM:
-            if fresh:
-                raise SystemExit(
-                    f"structural note: the block {heading!r} does not fit on an empty "
-                    f"page. Shorten its wording.")
-            if len(doc) >= max_pages:
-                raise SystemExit(
-                    f"structural note: {scope_name} overflowed its {max_pages} page(s) at "
-                    f"the block {heading!r}. The page count is parity-critical; shorten "
-                    f"the wording rather than widening the box or shrinking the type.")
-            page, y = new_page(False)
-            fresh = True
-        page.insert_textbox(
-            pymupdf.Rect(MARGIN, y, PAGE_W - MARGIN, y + 20), heading,
-            fontfile=BARLOW_BOLD, fontname="barlow-bold", fontsize=11.5, color=ARTICLE_BLUE)
-        used = page.insert_textbox(
-            pymupdf.Rect(MARGIN, y + 17, MARGIN + box_w, BOTTOM), body,
-            fontfile=BARLOW_REG, fontname="barlow-reg", fontsize=10,
-            lineheight=1.35, color=INK)
-        if used < 0:
-            raise SystemExit(f"structural note: the block {heading!r} was measured to fit "
-                             f"but did not place ({-used:.0f}pt over).")
-        y = BOTTOM - used + 14
-        fresh = False
-    scratch.close()
+        lines = body.split("\n")
+        if not lines[0].startswith("• "):
+            # A prose block: all or nothing, on a page of its own if need be.
+            h = body_height(body)
+            while y + 17 + h > BOTTOM:
+                if fresh:
+                    raise too_long(heading)
+                if len(doc) >= max_pages:
+                    raise overflowed(heading)
+                page, y = new_page(False)
+                fresh = True
+            put_heading(heading, y)
+            y = put(y + 17, body) + 14
+            fresh = False
+            continue
+
+        # A bulleted list flows ITEM BY ITEM, so a long list can never make the
+        # page refuse. An item is a "• " line plus any indented continuation lines.
+        items: list[str] = []
+        for line in lines:
+            if line.startswith("• ") or not items:
+                items.append(line)
+            else:
+                items[-1] += "\n" + line
+        more_h = body_height(MORE_LINE.format(n=999))
+        head_here = False             # has this list's heading been written on this page?
+        i = 0
+        while i < len(items):
+            h = body_height(items[i])
+            last_page = len(doc) >= max_pages
+            reserve = more_h + 3 if (last_page and i < len(items) - 1) else 0
+            head_h = 0 if head_here else 17
+            if y + head_h + h + reserve <= BOTTOM:
+                if not head_here:
+                    put_heading(heading if i == 0 else f"{heading} (continued)", y)
+                    y += 17
+                    head_here = True
+                y = put(y, items[i]) + 3
+                fresh = False
+                i += 1
+                continue
+            if not last_page:
+                if fresh:
+                    raise too_long(heading)
+                page, y = new_page(False)
+                fresh, head_here = True, False
+                continue
+            # The last page the scope allows is full: say how many are left.
+            if not head_here:
+                if y + 17 + more_h > BOTTOM:
+                    raise overflowed(heading)
+                put_heading(heading if i == 0 else f"{heading} (continued)", y)
+                y += 17
+            put(y, MORE_LINE.format(n=len(items) - i))
+            y = BOTTOM                # nothing more fits on this page
+            i = len(items)
+        y += 11                       # 14 between blocks, less the item gap already added
 
     if pad_to_even and len(doc) % 2:
         doc.new_page(width=PAGE_W, height=PAGE_H)

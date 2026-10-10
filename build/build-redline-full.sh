@@ -134,7 +134,7 @@ if [ "${ADOPTION_BASELINE:-0}" = "1" ]; then
   BASELINE_V="$(cd "$REPO_ROOT" && python3 -c "import sys; sys.path.insert(0,'build'); import adoption_map; print(adoption_map.load().baseline_version)")"
   python3 "$REPO_ROOT/build/structural_note.py" "$FRONT_NOTE" --old-label \
     "the previously adopted Code ($BASELINE_V)"
-  CAVEAT="REDLINE vs the adopted Code  ·  additions in red, deletions struck  ·  Article 2 and all figures are reproduced UNMARKED and article renumbering is not marked — READ THE FACING PAGE"
+  CAVEAT="REDLINE vs the adopted Code  ·  additions in red, deletions struck  ·  Some changes cannot be marked in a redline — READ THE FACING PAGE"
 else
   CAVEAT="REDLINE vs $OLD_V  ·  additions in red, deletions struck  ·  figures & tables shown at current state (see the Summary of Changes)"
 fi

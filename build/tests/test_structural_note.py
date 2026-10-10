@@ -189,7 +189,6 @@ def test_front_note_replaces_the_blank_without_moving_anything(tmp_path):
 # --- Wave 3b: truthful for the whole Code; scoped to one Article ----------------
 
 import pytest  # noqa: E402
-import shutil as _shutil  # noqa: E402,F401
 import subprocess as _sp  # noqa: E402
 import sys as _sys  # noqa: E402
 
@@ -267,8 +266,21 @@ def test_the_article_2_note_names_the_district_pages_and_the_use_table_document(
     text, pages = _note(tmp_path, "--scope", "article:2", "--old", "v1.0",
                         "--new-dir", str(tree), "--pad-to-even")
     assert "the thirteen district pages" in text
-    assert "Use Table Changes" in text
     assert pages % 2 == 0
+    # Unchanged tree: the pointer to the Use Table Changes document would send a
+    # resident looking for changes that do not exist.
+    assert "Use Table Changes" not in text
+    # Flip one use-table cell: now the pointer must appear.
+    import json
+    dp = tree / "article-02-data.json"
+    data = json.loads(dp.read_text())
+    cell = data[0]["use_col1"][0]["entries"][0]
+    cell[1] = "sp" if cell[1] != "sp" else "ex"
+    dp.write_text(json.dumps(data, indent=1))
+    text2, _ = _note(tmp_path, "--scope", "article:2", "--old", "v1.0",
+                     "--new-dir", str(tree), name="n2.pdf")
+    assert "Use Table Changes" in text2
+    assert "the data its pages are printed from" in text2
 
 
 def test_a_table_only_change_is_named_on_the_page(tmp_path, tree):
@@ -285,3 +297,90 @@ def test_an_article_scope_needs_an_old_ref(tmp_path):
     r = _sp.run([_sys.executable, str(_NOTE), str(tmp_path / "n.pdf"), "--scope", "article:7"],
                 capture_output=True, text=True)
     assert r.returncode != 0 and "--old" in r.stderr
+
+
+# --- Fix round 1 ----------------------------------------------------------------
+
+def _flat(s):
+    return " ".join(s.split())
+
+
+@pytest.mark.parametrize("map_path", [_SHIPPED_MAP, _PRE_ROLLOVER])
+def test_the_code_note_names_every_unmarked_page_and_stays_one_page(tmp_path, map_path):
+    """The note promises in-text notes for changed tables and figures; the data
+    pages (district pages, Type plates, Exhibits 3.1/3.2, District Maps) NEVER get
+    one, so the page must name them -- under the identity map too, where nothing
+    else says the district pages are unmarked."""
+    text, pages = _note(tmp_path, "--map", str(map_path))
+    flat = _flat(text)
+    assert pages == 1
+    assert "Pages shown as they now stand, without marks" in flat
+    for label in ("the District Maps (Article 1)", "the thirteen district pages",
+                  "the ten Thoroughfare Type pages", "Exhibit 3.1, the Thoroughfare Inventory",
+                  "Exhibit 3.2, the Thoroughfare Type Map"):
+        assert label in flat, label
+
+
+def test_the_code_note_refuses_rather_than_spilling_to_a_second_page():
+    import adoption_map as am
+    blocks = structural_note.note_blocks(am.load(str(_PRE_ROLLOVER)), "the old Code")
+    blocks.append(("A far too long block", "word " * 400))
+    out = Path(os.devnull)
+    with pytest.raises(SystemExit) as e:
+        structural_note.render(str(out), None, blocks, intro=structural_note.CODE_INTRO,
+                               max_pages=1, pad_to_even=False, scope_name="the whole-Code note")
+    assert "overflowed" in str(e.value) and "A far too long block" in str(e.value)
+
+
+def test_a_needs_call_article_says_so_in_resident_words(tmp_path, tree):
+    p = tree / "cross-section-plates.typ"
+    p.write_text(p.read_text() + "\n// a layout-only edit\n")
+    text, _ = _note(tmp_path, "--scope", "article:3", "--old", "v1.0", "--new-dir", str(tree))
+    flat = _flat(text)
+    assert "needs a person's judgement" in flat
+    assert "the ten Thoroughfare Type pages (cross-section-plates.typ)" in flat
+
+
+def test_a_long_heading_list_flows_and_never_refuses(tmp_path, tree):
+    import czc_diff
+    name = "article-07-use-standards.md"
+    p = tree / name
+    old_text = p.read_text()
+    p.write_text(_fx.insert_section(old_text, 3, "AGRICULTURE"))     # no section map: many changes
+    sc = czc_diff.structural_changes(old_text, p.read_text())
+    total = (len(sc["headings_added"]) + len(sc["headings_removed"])
+             + len(sc["headings_changed"]) + len(sc["tables_added"])
+             + len(sc["tables_removed"]) + len(sc["tables_changed"]))
+    assert total > 60, "the fixture must produce a long list"
+    md = tmp_path / "n.md"
+    text, pages = _note(tmp_path, "--scope", "article:7", "--old", "v1.0",
+                        "--new-dir", str(tree), "--md", str(md))
+    assert pages <= 4
+    shown = text.count("•")
+    m = re.search(r"…and (\d+) more\. The full list is in the markdown version", _flat(text))
+    if m:
+        assert shown + int(m.group(1)) == total
+    else:
+        assert shown == total
+    assert len(re.findall(r"^- ", md.read_text(), re.M)) == total      # the md has them all
+
+
+def test_a_list_too_long_for_four_pages_ends_with_an_exact_count(tmp_path):
+    """The path the Article 7 fixture does not reach (it fits in 4 pages): when
+    items remain after the last permitted page, the page says how many."""
+    items = [f"• Heading added: “Section {i} — SOMETHING”" for i in range(1, 401)]
+    blocks = [("What changed in this Article", "A short block."),
+              ("Headings, tables and figures", "\n".join(items))]
+    out = tmp_path / "long.pdf"
+    pages = structural_note.render(str(out), "Article 7 — Use Standards", blocks,
+                                   intro=structural_note.ARTICLE_INTRO, max_pages=4,
+                                   pad_to_even=False, scope_name="the Article 7 note")
+    assert pages == 4
+    d = pymupdf.open(out)
+    try:
+        text = "\n".join(p.get_text() for p in d)
+    finally:
+        d.close()
+    m = re.search(r"…and (\d+) more\. The full list is in the markdown version", _flat(text))
+    assert m, "the last page must say that items remain"
+    assert text.count("•") + int(m.group(1)) == 400
