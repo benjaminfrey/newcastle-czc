@@ -396,3 +396,120 @@ def test_the_document_renders_through_the_memo_builder(tmp_path):
     assert r.returncode == 0, r.stderr
     text = "".join(page.get_text() for page in pymupdf.open(pdf))
     assert "Retail & Service, General" in text
+
+
+# --- final fix wave: nothing hidden inside an empty list or a whole district -------
+
+def _generate(tree, tmp_path, ref="v1.0"):
+    out = tmp_path / "u.md"
+    r = _run(ref, str(out), "--new-dir", str(tree))
+    assert r.returncode == 0, r.stderr
+    return out.read_text()
+
+
+def test_an_emptied_category_reads_as_now_having_no_entries(tree, tmp_path):
+    """U1. The leaf `entries = []` is a placeholder for 'empty', not the
+    category being added."""
+    def change(d):
+        next(c for c in _record(d, "D3", "NEIGHBORHOOD BUSINESS")["use_col2"]
+             if c["title"] == "COMMERCIAL GOODS")["entries"] = []
+    _edit(tree, change)
+    md = _generate(tree, tmp_path)
+    s3 = _section(md, 3)
+    assert "COMMERCIAL GOODS: now has no entries" in s3
+    assert "COMMERCIAL GOODS added" not in s3 and "added: (empty)" not in md
+    assert "Retail & Service, General" in s3                           # its former items, as removals
+
+
+def test_a_use_added_to_an_empty_category_does_not_remove_the_category(tree, tmp_path):
+    def change(d):
+        next(c for c in _record(d, "D4", "VILLAGE RESIDENTIAL")["use_col1"]
+             if c["title"].endswith("\xad"))["entries"].append(["Test Depot", "u"])
+    _edit(tree, change)
+    s3 = _section(_generate(tree, tmp_path), 3)
+    assert "TRANSPORTATION & UTILITIES: had no entries before" in s3
+    assert "TRANSPORTATION & UTILITIES removed" not in s3 and "removed: (empty)" not in s3
+    assert "Test Depot" in s3
+
+
+def test_an_emptied_standards_list_reads_as_now_having_no_entries(tree, tmp_path):
+    def change(d):
+        _record(d, "D3", "NEIGHBORHOOD BUSINESS")["use_standards"]["items"] = []
+    _edit(tree, change)
+    s5 = _section(_generate(tree, tmp_path), 5)
+    assert "now has no entries" in s5 and "added: (empty)" not in s5 and "(empty)" not in s5
+
+
+def test_a_renamed_district_hides_nothing(tree, tmp_path):
+    """U2. Rename SD MARINE and flip one of its use cells in the same release:
+    the flipped cell's new status appears under the added district."""
+    flipped = {}
+
+    def change(d):
+        rec = _record(d, "SD", "MARINE")
+        rec["name"] = "HARBOR"
+        cat, e = next((c, e) for c in rec["use_col1"] + rec["use_col2"] for e in c["entries"]
+                      if e[1] == "")
+        e[1] = "ex"
+        flipped.update(label=e[0], cat=cat["title"])
+    _edit(tree, change)
+    s3 = _section(_generate(tree, tmp_path), 3)
+    assert "may be one district renamed (code SD)" in s3
+    added = s3[s3.index("District added: **SD HARBOR**"):s3.index("District removed: **SD MARINE**")]
+    assert f"use **{flipped['label']}** ({flipped['cat'].rstrip(chr(173))}): Expanded Use Permit (Planning Board)" in added
+    removed = s3[s3.index("District removed: **SD MARINE**"):]
+    assert f"use **{flipped['label']}**" in removed and "Not allowed" in removed
+    assert "No Permitted Buildings matrix" in added
+
+
+def test_a_whole_district_lists_every_item_and_matches_the_total(tree, tmp_path):
+    def change(d):
+        _record(d, "SD", "MARINE")["name"] = "HARBOR"
+    _edit(tree, change)
+    out, js = tmp_path / "u.md", tmp_path / "u.json"
+    assert _run("v1.0", str(out), "--new-dir", str(tree), "--json", str(js)).returncode == 0
+    s3 = _section(out.read_text(), 3).splitlines()
+    shown = 0
+    for kind in ("added", "removed"):
+        i = next(i for i, ln in enumerate(s3) if f"District {kind}:" in ln)
+        n = int(re.search(r"— (\d+) items", s3[i]).group(1))
+        listed = []
+        for ln in s3[i + 1:]:
+            if not ln.startswith("  - "):
+                break
+            listed.append(ln)
+        assert len(listed) == n > 63                                     # its 63 use cells and more
+        shown += n
+    assert json.loads(js.read_text())["total"] == shown                  # nothing counted but not shown
+
+
+def test_two_unrelated_districts_are_not_called_a_rename(tree, tmp_path):
+    def change(d):
+        _record(d, "D1", "RURAL")["code"] = "DX"
+        _record(d, "SD", "MARINE")["name"] = "HARBOR"
+    _edit(tree, change)
+    md = _generate(tree, tmp_path)
+    assert "may be one district renamed" not in md                       # two removed, two added
+
+
+def test_a_matrix_removed_is_one_event_with_its_rows_and_columns(tree, tmp_path):
+    """M2. A matrix going to null reads as one heading and its contents, never
+    the internal `title removed` line."""
+    _edit(tree, lambda d: _record(d, "D3", "NEIGHBORHOOD BUSINESS").__setitem__("matrix", None))
+    s4 = _section(_generate(tree, tmp_path), 4)
+    assert "- Permitted Buildings matrix removed:" in s4.splitlines()
+    assert "title removed" not in s4 and "PERMITTED BUILDINGS" not in s4
+    assert "  - Column 2: “Mixed-Use”" in s4.splitlines()
+    assert "  - Building Width › Residential: “50 ft”" in s4.splitlines()
+    assert "headed" not in s4                                            # no per-cell churn
+
+
+def test_a_matrix_added_is_one_event_with_its_rows_and_columns(tree, tmp_path):
+    def change(d):
+        _record(d, "SD", "CONSERVATION")["matrix"] = \
+            json.loads(json.dumps(_record(d, "D3", "NEIGHBORHOOD BUSINESS")["matrix"]))
+    _edit(tree, change)
+    s4 = _section(_generate(tree, tmp_path), 4)
+    assert "- Permitted Buildings matrix added:" in s4.splitlines()
+    assert "title added" not in s4 and "headed" not in s4
+    assert "  - Building Width › Residential: “50 ft”" in s4.splitlines()

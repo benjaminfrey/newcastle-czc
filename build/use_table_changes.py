@@ -202,7 +202,8 @@ STANDARD_FIELDS = {"left": "District description and dimensions",
 def build(old: czc_diff.Side, new: czc_diff.Side, *, doc: dict | None = None) -> dict:
     """Everything the document reports, before it is written down."""
     doc = manifest.load() if doc is None else doc
-    decl = next((d for d in doc["2"].get("data_sources", []) if d.get("path") == DATA), None)
+    sources = doc["2"].get("data_sources", [])
+    decl = next((d for d in sources if d.get("path") == DATA), None)
     if decl is None or decl.get("compare") != "json-keyed":
         raise czc_diff.Refusal(f"{DATA} is not declared json-keyed under Article 2 "
                                f"in build/article-manifest.json")
@@ -274,6 +275,24 @@ def _where(parts, record: dict | None = None) -> str:
     return " › ".join(shown).replace("\xad", "")
 
 
+def _empty_line(kind: str, where: str) -> str | None:
+    """An empty list or dict is a placeholder for "this is empty", not an item.
+    It is described by meaning, never as its parent being added or removed:
+    removed -> it had no entries before (it gained some, which appear as their
+    own added lines); added -> it now has none (its former items appear as their
+    own removed lines). None when the value is not an empty container."""
+    where = where or "this list"
+    if kind == "removed":
+        return f"{where}: had no entries before"
+    if kind == "added":
+        return f"{where}: now has no entries"
+    return None
+
+
+def _is_empty(v) -> bool:
+    return isinstance(v, (list, dict)) and not v
+
+
 def _matrix_column(old_rec: dict | None, new_rec: dict | None, index_key: str) -> str:
     """The column a matrix value sits under -- named from BOTH sides, so a column
     inserted or renamed between versions cannot put a value under the wrong
@@ -299,6 +318,63 @@ def summary(report: dict) -> dict:
         per[_district(path[0])] = per.get(_district(path[0]), 0) + 1
     return {"changed": len(d.changed), "added": len(d.added), "removed": len(d.removed),
             "total": d.count(), "legend": report["legend"], "districts": per}
+
+
+def _matrix_item(kind, path, val, key, ro, rn, *, bare=False) -> str:
+    """One matrix leaf as a line of text (no bullet). `bare` is a whole matrix
+    (or whole district) appearing or disappearing: the leaf is described by what
+    it holds, from the one side that has it, without an added/removed word."""
+    rec_old, rec_new = ro.get(key), rn.get(key)
+    if bare:
+        rec_old = rec_new = (rn if kind == "added" else ro).get(key)
+    if len(path) >= 4 and path[2] == "cols" and _POSITION.fullmatch(path[3]):
+        where = f"Column {int(_POSITION.fullmatch(path[3]).group(1)) + 1}" + \
+            (" heading" if kind == "changed" else "")
+    elif len(path) == 5 and path[2] == "rows":
+        where = f"{path[3]} › {_matrix_column(rec_old, rec_new, path[4])}"
+    else:
+        where = _where(path[2:]) or "the matrix"
+    if kind != "changed" and _is_empty(val):
+        return _empty_line(kind, where)
+    if kind == "changed":
+        return f"{where}: {_value(val[0])} → {_value(val[1])}"
+    return f"{where}: {_value(val)}" if bare else f"{where} {kind}: {_value(val)}"
+
+
+def _standard_item(kind, path, val, rec, *, bare=False) -> str:
+    """One leaf of a district's standards panels, as a line of text."""
+    if path[-1] == "kind" and len(path) >= 4:
+        title = path[2]
+        if kind == "added":
+            return f"{title}: laid out as a {_KIND_WORDS.get(val, val)}" if bare \
+                else f"{_KIND_NEW.get(val, 'New panel')}: {title}"
+        if kind == "removed":
+            return f"{title}: was laid out as a {_KIND_WORDS.get(val, val)}" if bare \
+                else f"Removed: {title}"
+        return (f"{title} now laid out as a {_KIND_WORDS.get(val[1], val[1])} "
+                f"(was a {_KIND_WORDS.get(val[0], val[0])})")
+    where = _where(path[1:], rec)
+    if kind != "changed" and _is_empty(val):
+        return _empty_line(kind, where)
+    if kind == "changed":
+        return f"{where}: {_value(val[0])} → {_value(val[1])}"
+    return f"{where}: {_value(val)}" if bare else f"{where} {kind}: {_value(val)}"
+
+
+def _whole_district_item(kind, path, val, rec, leg, key, ro, rn) -> str:
+    """One item of a district that was wholly added or removed, in words."""
+    if len(path) == 5 and path[1] in USE_COLS and path[3] == "entries":
+        return (f"use **{path[4]}** ({_category(rec, path[1], path[2])}): "
+                f"{status_words(val, leg)}")
+    if path[1] == "matrix":
+        if len(path) == 2:
+            return "No Permitted Buildings matrix" if val is None else \
+                f"Permitted Buildings matrix: {_value(val)}"
+        return _matrix_item(kind, path, val, key, ro, rn, bare=True)
+    if path[1] in USE_COLS:
+        where = _where(path[1:], rec)
+        return _empty_line(kind, where) if _is_empty(val) else f"{where}: {_value(val)}"
+    return _standard_item(kind, path, val, rec, bare=True)
 
 
 def render(report: dict) -> str | None:
@@ -357,8 +433,22 @@ def render(report: dict) -> str | None:
         out.append("")
 
     out += ["## 3. Uses and districts added or removed", ""]
-    lines = [f"- District added: **{_district(k)}**." for k in whole_added]
-    lines += [f"- District removed: **{_district(k)}**." for k in whole_removed]
+    lines: list[str] = []
+    for kind, keys, leaves, rec_map, leg in (("added", whole_added, d.added, rn, ln),
+                                             ("removed", whole_removed, d.removed, ro, lo)):
+        for k in keys:
+            mine = [(p, v) for p, v in leaves.items() if p[0] == k]
+            lines.append(f"- District {kind}: **{_district(k)}** — {len(mine)} "
+                         f"item{'s' if len(mine) != 1 else ''}{':' if mine else '.'}")
+            lines += [f"  - {_whole_district_item(kind, p, v, rec_map.get(k), leg, k, ro, rn)}"
+                      for p, v in mine]
+    lead = []
+    if len(whole_added) == 1 and len(whole_removed) == 1:
+        a, r = rn[whole_added[0]], ro[whole_removed[0]]
+        if isinstance(a, dict) and isinstance(r, dict) and a.get("code") is not None \
+                and a.get("code") == r.get("code"):
+            lead = [f"These may be one district renamed (code {a['code']}): "
+                    f"compare the two lists below.", ""]
     for kind, path, val in uses:
         if kind == "changed" and len(path) == 5 and path[3] == "entries":
             continue
@@ -373,8 +463,11 @@ def render(report: dict) -> str | None:
             if kind == "changed":
                 lines.append(f"- {_district(path[0])}: {where} changed: "
                              f"{_value(val[0])} → {_value(val[1])}.")
+            elif _is_empty(val):
+                lines.append(f"- {_district(path[0])}: {_empty_line(kind, where)}.")
             else:
                 lines.append(f"- {_district(path[0])}: {where} {kind}: {_value(val)}.")
+    out += lead
     out += lines if lines else ["No use was added or removed, and no district was added or removed."]
     out.append("")
 
@@ -383,22 +476,21 @@ def render(report: dict) -> str | None:
         out.append("No change to any Permitted Buildings matrix.")
     for key, items in by_district(matrices).items():
         out += ["", f"### {_district(key)}", ""]
+        # A matrix that wholly appears or disappears (null <-> a table) is ONE
+        # event with its rows and columns beneath it, never a per-cell churn.
+        whole_kind = None
         for kind, path, val in items:
-            if path[1:] == ("matrix",):
-                out.append("- Permitted Buildings matrix "
-                           f"{'added' if kind == 'removed' else 'removed' if kind == 'added' else 'changed'}")
-                continue
-            if len(path) >= 4 and path[2] == "cols" and _POSITION.fullmatch(path[3]):
-                where = f"Column {int(_POSITION.fullmatch(path[3]).group(1)) + 1}" + \
-                    (" heading" if kind == "changed" else "")
-            elif len(path) == 5 and path[2] == "rows":
-                where = f"{path[3]} › {_matrix_column(ro.get(key), rn.get(key), path[4])}"
-            else:
-                where = _where(path[2:]) or "the matrix"
-            if kind == "changed":
-                out.append(f"- {where}: {_value(val[0])} → {_value(val[1])}")
-            else:
-                out.append(f"- {where} {kind}: {_value(val)}")
+            if path[1:] == ("matrix",) and val is None and kind in ("added", "removed"):
+                whole_kind = "removed" if kind == "added" else "added"
+        if whole_kind:
+            out.append(f"- Permitted Buildings matrix {whole_kind}:")
+            for kind, path, val in items:
+                if path[1:] == ("matrix",) or path[2:] == ("title",):
+                    continue
+                out.append("  - " + _matrix_item(kind, path, val, key, ro, rn, bare=True))
+            continue
+        for kind, path, val in items:
+            out.append("- " + _matrix_item(kind, path, val, key, ro, rn))
     no_matrix = [_district(k) for k, r in rn.items() if isinstance(r, dict) and r.get("matrix") is None]
     out += ["", f"No Permitted Buildings matrix: {', '.join(no_matrix)}." if no_matrix else
             "Every district has a Permitted Buildings matrix.", ""]
@@ -410,21 +502,7 @@ def render(report: dict) -> str | None:
         out += [f"### {_district(key)}", ""]
         for kind, path, val in items:
             rec = rn.get(key) if kind != "removed" else ro.get(key)
-            if path[-1] == "kind" and len(path) >= 4:
-                title = path[2]
-                if kind == "added":
-                    out.append(f"- {_KIND_NEW.get(val, 'New panel')}: {title}")
-                elif kind == "removed":
-                    out.append(f"- Removed: {title}")
-                else:
-                    out.append(f"- {title} now laid out as a {_KIND_WORDS.get(val[1], val[1])} "
-                               f"(was a {_KIND_WORDS.get(val[0], val[0])})")
-                continue
-            where = _where(path[1:], rec)
-            if kind == "changed":
-                out.append(f"- {where}: {_value(val[0])} → {_value(val[1])}")
-            else:
-                out.append(f"- {where} {kind}: {_value(val)}")
+            out.append("- " + _standard_item(kind, path, val, rec))
         out.append("")
 
     s = summary(report)
