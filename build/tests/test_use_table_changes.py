@@ -40,21 +40,30 @@ def test_the_legend_is_read():
     assert leg["note"] == "Note: Uses without u, rc, sp, or ex are not allowed in this District"
 
 
-def test_this_reader_agrees_with_the_permit_review_apps():
-    """Two readers of one legend block (ruling 12). This test is the only thing
-    that keeps them together: never skip or xfail it."""
+def _agree(text: str) -> dict:
+    """Both readers on one text: agreement only, no counts."""
     sys.path.insert(0, str(REPO / "build" / "permit-review"))
     from ruleset_build.legend import parse_legend as app_parse_legend
-    text = _typ()
     ours, app = utc.parse_legend(text), app_parse_legend(text)
     app_rows = {r["code"]: r for r in app if r["code"]}
-    assert set(ours["rows"]) == set(app_rows) == {"u", "rc", "sp", "ex"}
+    assert set(ours["rows"]) == set(app_rows) and ours["rows"]
     for code, (label, authority) in ours["rows"].items():
         assert label == app_rows[code]["permit"] + " Required"
         assert authority == app_rows[code]["authority"]
         assert ours["glyphs"][code] == app_rows[code]["glyph"]
     app_note = next(r["note"] for r in app if not r["code"])
     assert ours["note"].removeprefix("Note: ").rstrip(".") == app_note.rstrip(".")
+    return ours
+
+
+def test_this_reader_agrees_with_the_permit_review_apps():
+    """Two readers of one legend block (ruling 12). This test is the only thing
+    that keeps them together: never skip or xfail it. It reads the v1.0 tag AND
+    the working tree's article-02.typ, so the readers cannot drift apart
+    between tags (the next amendment edits the live legend). It pins no counts
+    on the working tree."""
+    assert set(_agree(_typ())["rows"]) == {"u", "rc", "sp", "ex"}      # the tag: pinned
+    _agree((REPO / "source" / TYP).read_text())                          # the working tree: agreement only
 
 
 def test_an_unchanged_legend_has_no_delta_and_a_changed_one_does():
@@ -243,7 +252,7 @@ def test_v0_24_to_v1_0_reports_the_one_cell_and_the_standards(tmp_path):
     standards = _section(md, 5)
     for district in ("D2 NEIGHBORHOOD RESIDENTIAL", "SD MARINE", "SD FABRICATION"):
         assert district in standards
-    assert "No change to the legend" in _section(md, 1)
+    assert "No change to the legend's text." in _section(md, 1)
     total = json.loads((tmp_path / "u.json").read_text())["total"]
     det = czc_diff.determine(czc_diff.Side(ref="v0.24-draft"), czc_diff.Side(ref="v1.0"))
     assert total == det[2].data > 1
@@ -513,3 +522,30 @@ def test_a_matrix_added_is_one_event_with_its_rows_and_columns(tree, tmp_path):
     assert "- Permitted Buildings matrix added:" in s4.splitlines()
     assert "title added" not in s4 and "headed" not in s4
     assert "  - Building Width › Residential: “50 ft”" in s4.splitlines()
+
+
+# --- U3: a refusal or an empty run leaves no stale output -------------------------
+
+def test_a_refusal_removes_earlier_outputs(tmp_path):
+    out, js = tmp_path / "u.md", tmp_path / "u.json"
+    out.write_text("stale")
+    js.write_text("stale")
+    r = _run("no-such-ref-xyz", str(out), "--new-ref", "v1.0", "--json", str(js))
+    assert r.returncode == 1 and not out.exists() and not js.exists()
+
+
+def test_an_empty_run_removes_earlier_outputs(tmp_path):
+    out, js = tmp_path / "u.md", tmp_path / "u.json"
+    out.write_text("stale")
+    js.write_text("stale")
+    r = _run("v1.0", str(out), "--new-ref", "v1.0", "--json", str(js))
+    assert r.returncode == 2 and not out.exists() and not js.exists()
+
+
+# --- a malformed manifest is a refusal ---------------------------------------------
+
+def test_a_manifest_without_article_2_is_a_refusal_not_a_keyerror():
+    old, new = czc_diff.Side(ref="v1.0"), czc_diff.Side(ref="v1.0")
+    for doc in ({}, {"2": {}}, {"2": {"data_sources": "nope"}}, {"2": {"data_sources": []}}):
+        with pytest.raises(czc_diff.Refusal):
+            utc.build(old, new, doc=doc)

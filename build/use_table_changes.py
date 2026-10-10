@@ -202,8 +202,12 @@ STANDARD_FIELDS = {"left": "District description and dimensions",
 def build(old: czc_diff.Side, new: czc_diff.Side, *, doc: dict | None = None) -> dict:
     """Everything the document reports, before it is written down."""
     doc = manifest.load() if doc is None else doc
-    sources = doc["2"].get("data_sources", [])
-    decl = next((d for d in sources if d.get("path") == DATA), None)
+    art2 = doc.get("2")
+    sources = art2.get("data_sources") if isinstance(art2, dict) else None
+    if not isinstance(sources, list):
+        raise czc_diff.Refusal("build/article-manifest.json has no Article 2 entry with a "
+                               "data_sources list, so Article 2's district data cannot be read")
+    decl = next((d for d in sources if isinstance(d, dict) and d.get("path") == DATA), None)
     if decl is None or decl.get("compare") != "json-keyed":
         raise czc_diff.Refusal(f"{DATA} is not declared json-keyed under Article 2 "
                                f"in build/article-manifest.json")
@@ -415,7 +419,7 @@ def render(report: dict) -> str | None:
 
     out += ["## 1. Use table legend", ""]
     out += [f"- {s}" for s in legend] if legend else \
-        ["No change to the legend: every status code means what it meant before."]
+        ["No change to the legend's text."]
     out.append("")
     if legend_block_changed(lo, ln):
         out += ["Before:", "", "```", display_block(lo), "```", "",
@@ -523,6 +527,9 @@ def main(argv=None) -> int:
     side.add_argument("--new-dir", help="the new version as a source directory (default: source/)")
     ap.add_argument("--json", help="also write the counts as JSON to this path")
     a = ap.parse_args(argv)
+    for stale in (a.out, a.json):          # a refusal or an empty run must not leave an
+        if stale and Path(stale).is_file():  # earlier run's document behind
+            Path(stale).unlink()
     try:
         old = czc_diff.Side(ref=a.old_ref)
         new = (czc_diff.Side(ref=a.new_ref) if a.new_ref
