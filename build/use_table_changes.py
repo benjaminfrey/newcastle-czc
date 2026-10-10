@@ -165,6 +165,17 @@ def legend_block_changed(old: dict, new: dict) -> bool:
     return not itemised and old["block"] != new["block"]
 
 
+def display_block(legend: dict) -> str:
+    """The legend's raw text as a reader may see it: without the glyph map
+    (the symbols are not in style/fonts, ruling 11) and with each status()
+    call shown as its bare code."""
+    block = legend["block"]
+    m = _GLYPHS.match(block)
+    if m:
+        block = block[m.end():].strip()
+    return _STATUS_CALL.sub(lambda c: c.group(1), block)
+
+
 def status_words(code: str, legend: dict) -> str:
     """A status code in words. A blank status is "Not allowed": 450 of the 819
     cells carry it, and a blank in a report reads as "nothing here"."""
@@ -234,15 +245,51 @@ def _category(record: dict | None, col: str, title: str) -> str:
         i = titles.index(title)
         if i > 0 and isinstance(titles[i - 1], str) and titles[i - 1].endswith("\xad"):
             return titles[i - 1].rstrip("\xad") + title
+        if title.endswith("\xad") and i + 1 < len(titles) and isinstance(titles[i + 1], str):
+            return title.rstrip("\xad") + titles[i + 1]
     return title.rstrip("\xad")
 
 
-def _matrix_column(record: dict | None, index_key: str) -> str:
-    cols = ((record or {}).get("matrix") or {}).get("cols") or []
-    m = re.fullmatch(r"\[(\d+)\]", index_key)
-    if m and int(m.group(1)) < len(cols):
-        return cols[int(m.group(1))]
-    return index_key
+_STRUCTURAL = {"body", "items", "entries", "text"}
+_POSITION = re.compile(r"\[(\d+)\]")
+_KIND_WORDS = {"lv": "table", "list": "list", "para": "paragraph"}
+_KIND_NEW = {"lv": "New table", "list": "New list", "para": "New paragraph"}
+
+
+def _where(parts, record: dict | None = None) -> str:
+    """A leaf's place in the data, in a reader's words: the data file's own
+    structural keys are dropped, a position reads "item n", and a use category
+    is named whole."""
+    parts = list(parts)
+    if parts and parts[0] in USE_COLS:
+        parts = [_category(record, parts[0], parts[1])] + parts[2:] if len(parts) > 1 else []
+    elif parts and parts[0] in STANDARD_FIELDS:
+        parts[0] = STANDARD_FIELDS[parts[0]]
+    shown = []
+    for p in parts:
+        if p in _STRUCTURAL:
+            continue
+        m = _POSITION.fullmatch(p)
+        shown.append(f"item {int(m.group(1)) + 1}" if m else "sub-item" if p == "sub" else p)
+    return " › ".join(shown).replace("\xad", "")
+
+
+def _matrix_column(old_rec: dict | None, new_rec: dict | None, index_key: str) -> str:
+    """The column a matrix value sits under -- named from BOTH sides, so a column
+    inserted or renamed between versions cannot put a value under the wrong
+    heading."""
+    m = _POSITION.fullmatch(index_key)
+    if not m:
+        return index_key
+    i = int(m.group(1))
+
+    def col(rec):
+        cols = ((rec or {}).get("matrix") or {}).get("cols") or []
+        return cols[i] if i < len(cols) else None
+    o, n = col(old_rec), col(new_rec)
+    if o == n and o is not None:
+        return o
+    return f"column {i + 1} (headed “{o or '—'}” before, “{n or '—'}” now)"
 
 
 def summary(report: dict) -> dict:
@@ -295,8 +342,8 @@ def render(report: dict) -> str | None:
         ["No change to the legend: every status code means what it meant before."]
     out.append("")
     if legend_block_changed(lo, ln):
-        out += ["Before:", "", "```", lo["block"], "```", "",
-                "After:", "", "```", ln["block"], "```", ""]
+        out += ["Before:", "", "```", display_block(lo), "```", "",
+                "After:", "", "```", display_block(ln), "```", ""]
 
     out += ["## 2. Changed uses", ""]
     changed_uses = [u for u in uses if u[0] == "changed" and len(u[1]) == 5 and u[1][3] == "entries"]
@@ -321,8 +368,13 @@ def render(report: dict) -> str | None:
             lines.append(f"- {_district(path[0])}: use **{path[4]}** ({cat}) {kind} — "
                          f"{status_words(val, leg)}.")
         else:
-            lines.append(f"- {_district(path[0])}: {' › '.join(path[1:])} {kind}"
-                         f"{'' if kind == 'removed' else ': ' + _value(val[1] if kind == 'changed' else val)}.")
+            rec = rn.get(path[0]) if kind != "removed" else ro.get(path[0])
+            where = _where(path[1:], rec)
+            if kind == "changed":
+                lines.append(f"- {_district(path[0])}: {where} changed: "
+                             f"{_value(val[0])} → {_value(val[1])}.")
+            else:
+                lines.append(f"- {_district(path[0])}: {where} {kind}: {_value(val)}.")
     out += lines if lines else ["No use was added or removed, and no district was added or removed."]
     out.append("")
 
@@ -332,11 +384,17 @@ def render(report: dict) -> str | None:
     for key, items in by_district(matrices).items():
         out += ["", f"### {_district(key)}", ""]
         for kind, path, val in items:
-            rec = rn.get(key) if kind != "removed" else ro.get(key)
-            if len(path) == 5 and path[2] == "rows":
-                where = f"{path[3]} › {_matrix_column(rec, path[4])}"
+            if path[1:] == ("matrix",):
+                out.append("- Permitted Buildings matrix "
+                           f"{'added' if kind == 'removed' else 'removed' if kind == 'added' else 'changed'}")
+                continue
+            if len(path) >= 4 and path[2] == "cols" and _POSITION.fullmatch(path[3]):
+                where = f"Column {int(_POSITION.fullmatch(path[3]).group(1)) + 1}" + \
+                    (" heading" if kind == "changed" else "")
+            elif len(path) == 5 and path[2] == "rows":
+                where = f"{path[3]} › {_matrix_column(ro.get(key), rn.get(key), path[4])}"
             else:
-                where = " › ".join(path[2:]) or "the matrix"
+                where = _where(path[2:]) or "the matrix"
             if kind == "changed":
                 out.append(f"- {where}: {_value(val[0])} → {_value(val[1])}")
             else:
@@ -351,7 +409,18 @@ def render(report: dict) -> str | None:
     for key, items in by_district(standards).items():
         out += [f"### {_district(key)}", ""]
         for kind, path, val in items:
-            where = " › ".join([STANDARD_FIELDS.get(path[1], path[1]), *path[2:]])
+            rec = rn.get(key) if kind != "removed" else ro.get(key)
+            if path[-1] == "kind" and len(path) >= 4:
+                title = path[2]
+                if kind == "added":
+                    out.append(f"- {_KIND_NEW.get(val, 'New panel')}: {title}")
+                elif kind == "removed":
+                    out.append(f"- Removed: {title}")
+                else:
+                    out.append(f"- {title} now laid out as a {_KIND_WORDS.get(val[1], val[1])} "
+                               f"(was a {_KIND_WORDS.get(val[0], val[0])})")
+                continue
+            where = _where(path[1:], rec)
             if kind == "changed":
                 out.append(f"- {where}: {_value(val[0])} → {_value(val[1])}")
             else:
@@ -364,7 +433,7 @@ def render(report: dict) -> str | None:
             f"({s['changed']} changed, {s['added']} added, {s['removed']} removed). "
             f"This is the figure the change determination reports for Article 2's district data.",
             ""]
-    return "\n".join(out)
+    return "\n".join(out).replace("\xad", "")
 
 
 def main(argv=None) -> int:

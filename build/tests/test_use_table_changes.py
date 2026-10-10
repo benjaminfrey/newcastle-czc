@@ -294,6 +294,8 @@ def test_an_unitemisable_legend_change_shows_both_texts(tree, tmp_path):
     assert legend.count("```") == 4
     assert "[ CEO ]" in legend.split("After:")[1]
     assert "[ CEO ]" not in legend.split("After:")[0]
+    assert not any(g in out.read_text() for g in "●❶❷✪")           # ruling 11: no glyph, anywhere
+    assert '#let glyphs' not in legend and 'status("' not in legend
 
 
 def test_a_blank_status_is_written_not_allowed(tree, tmp_path):
@@ -320,6 +322,29 @@ def test_the_soft_hyphen_category_prints_whole(tree, tmp_path):
     assert _run("v1.0", str(out), "--new-dir", str(tree)).returncode == 0
     uses = _section(out.read_text(), 2)
     assert "(TRANSPORTATION & UTILITIES)" in uses and "(ITIES)" not in uses
+    assert "\xad" not in out.read_text()
+
+
+def test_a_use_added_under_the_empty_half_prints_whole(tree, tmp_path):
+    def change(d):
+        cat = next(c for c in _record(d, "D4", "VILLAGE RESIDENTIAL")["use_col1"]
+                   if c["title"].endswith("\xad"))
+        cat["entries"].append(["Test Depot", "u"])
+    _edit(tree, change)
+    out = tmp_path / "u.md"
+    assert _run("v1.0", str(out), "--new-dir", str(tree)).returncode == 0
+    md = out.read_text()
+    assert "(TRANSPORTATION & UTILITIES)" in _section(md, 3) and "UTIL)" not in md
+    assert "\xad" not in md
+
+
+def test_section_5_reads_plainly(tmp_path):
+    out = tmp_path / "u.md"
+    assert _run("v0.24-draft", str(out), "--new-ref", "v1.0").returncode == 0
+    standards = _section(out.read_text(), 5)
+    assert "New table: ROOF PITCH" in standards and "Gable added: “5/12 min”" in standards
+    for leak in ("› body", "kind", "[0]", "entries"):
+        assert leak not in standards
 
 
 def test_an_added_use_is_an_event_distinct_from_a_change(tree, tmp_path):
@@ -337,12 +362,27 @@ def test_a_matrix_change_names_its_row_and_column(tree, tmp_path):
     def change(d):
         m = _record(d, "D3", "NEIGHBORHOOD BUSINESS")["matrix"]
         row = next(r for r in m["rows"] if r[0] == "Building Width")
+        assert row[1] == "50 ft"                                      # the v1.0 value
         row[1] = "60 ft"
     _edit(tree, change)
     out = tmp_path / "u.md"
     assert _run("v1.0", str(out), "--new-dir", str(tree)).returncode == 0
+    assert "- Building Width › Residential: “50 ft” → “60 ft”" in _section(out.read_text(), 4).splitlines()
+
+
+def test_an_inserted_matrix_column_is_not_misattributed(tree, tmp_path):
+    def change(d):
+        m = _record(d, "D3", "NEIGHBORHOOD BUSINESS")["matrix"]
+        m["cols"].insert(1, "Civic")
+        for row in m["rows"]:
+            row.insert(2, "x")
+    _edit(tree, change)
+    out = tmp_path / "u.md"
+    assert _run("v1.0", str(out), "--new-dir", str(tree)).returncode == 0
     matrix = _section(out.read_text(), 4)
-    assert "Building Width" in matrix and "Residential" in matrix and "60 ft" in matrix
+    assert "Building Width › Residential:" not in matrix
+    assert "Column 2 heading" in matrix
+    assert "headed “Mixed-Use” before, “Civic” now" in matrix
 
 
 def test_the_document_renders_through_the_memo_builder(tmp_path):
