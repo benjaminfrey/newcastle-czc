@@ -133,6 +133,16 @@ def test_untitled_blocks_are_never_paired():
     assert st.classify_blocks(old, new) == {"added": [0], "removed": [0], "changed": []}
 
 
+def test_classify_headings_directly():
+    old = ["## 1. KEPT", "## 2. PARKING STANDARDS", "## 3. GONE ENTIRELY", "## 4. A", "## 5. B"]
+    new = ["## 1. KEPT", "## 2. PARKING STANDARD", "## 2A. SOMETHING UNRELATED", "## 4. A", "## 5. B"]
+    # 2 is a retitle, 2A an unrelated insert, 3 a removal; 4-5 are an unchanged run
+    assert st.classify_headings(old, new) == {"added": [2], "removed": [2], "changed": [(1, 1)]}
+    moved_old = ["## 1. X", "## 2. Y", "## 3. Z"]
+    moved_new = ["## 3. Z", "## 1. X", "## 2. Y"]                  # an unchanged run that moved
+    assert st.classify_headings(moved_old, moved_new) == {"added": [0], "removed": [2], "changed": []}
+
+
 def test_frontmatter_lines_read_as_title_and_number():
     assert st.heading_label('article-name: "Use Standards"') == "Article title: Use Standards"
     assert st.heading_label('article-number: "7"') == "Article number: 7"

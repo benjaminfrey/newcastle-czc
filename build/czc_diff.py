@@ -65,7 +65,6 @@ manifest predates data_sources).
 from __future__ import annotations
 
 import argparse
-import difflib
 import json
 import re
 import subprocess
@@ -398,15 +397,10 @@ def structural_changes(old: str | None, new: str, *, smap=None) -> dict[str, lis
                                             "headings_changed", "tables_added",
                                             "tables_removed", "tables_changed")}
     o_labels, n_labels = _contextual_labels(o_heads), _contextual_labels(n_heads)
-    sm = difflib.SequenceMatcher(None, o_heads, n_heads, autojunk=False)
-    for tag, i1, i2, j1, j2 in sm.get_opcodes():
-        if tag == "equal":
-            continue
-        if tag == "replace" and (i2 - i1) == (j2 - j1):
-            out["headings_changed"] += list(zip(o_labels[i1:i2], n_labels[j1:j2]))
-        else:
-            out["headings_removed"] += o_labels[i1:i2]
-            out["headings_added"] += n_labels[j1:j2]
+    hc = structure_text.classify_headings(o_heads, n_heads)
+    out["headings_changed"] = [(o_labels[i], n_labels[j]) for i, j in hc["changed"]]
+    out["headings_removed"] = [o_labels[i] for i in hc["removed"]]
+    out["headings_added"] = [n_labels[j] for j in hc["added"]]
     o_caps = [structure_text.block_caption(b) for b in o_blocks]
     n_caps = [structure_text.block_caption(b) for b in n_blocks]
     cls = structure_text.classify_blocks(o_blocks, n_blocks)

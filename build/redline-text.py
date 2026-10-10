@@ -255,6 +255,7 @@ UNMARKED_FIGURE_VISIBLE = '*[figure new or regenerated — shown unmarked]*'
 NOTE_HEADING_REMOVED = '*[Heading removed: “{}”]*'
 NOTE_HEADING_ADDED = '*[Heading added]*'
 NOTE_HEADING_CHANGED = '*[Heading changed — it read: “{}”]*'
+NOTE_TITLE_CHANGED = '*[Article title changed \u2014 it read: \u201c{}\u201d]*'
 NOTE_BLOCK_REMOVED = '*[Table or figure removed: “{}”]*'
 NOTE_BLOCK_ADDED = '*[New table or figure, shown in full: “{}”]*'
 NOTE_BLOCK_CHANGED = ('*[Table or figure changed — shown in its current form, '
@@ -264,7 +265,9 @@ _STRUCT = {'n': 0}
 
 def _note(template: str, label: str = '') -> str:
     _STRUCT['n'] += 1
-    return template.format(label.replace('*', r'\*'))
+    for ch in '\\*_[]`@#':
+        label = label.replace(ch, '\\' + ch)
+    return template.format(label)
 
 
 # Leading marker for a line added in its ENTIRETY. The Code bolds every defined
@@ -674,10 +677,11 @@ def _markable(ln: str) -> bool:
             and not is_unmarkable_structure(ln))
 
 
-_NO_CTX = {'removed': set(), 'added': set(), 'changed': set()}
+_NO_CTX = {'removed': set(), 'added': set(), 'changed': set(),
+           'h_removed': set(), 'h_added': set(), 'h_changed': {}}
 
 
-def emit_deleted_src(ln: str, reg: dict, ctx: dict | None = None) -> str:
+def emit_deleted_src(ln: str, reg: dict, ctx: dict | None = None, pos: int = -1) -> str:
     ctx = ctx or _NO_CTX
     if is_block_token(ln):
         # A changed block's note sits at its new version; a moved one needs none.
@@ -685,13 +689,16 @@ def emit_deleted_src(ln: str, reg: dict, ctx: dict | None = None) -> str:
             return ''
         return _note(NOTE_BLOCK_REMOVED, structure_text.block_caption(reg[ln]))
     if is_heading(ln):
+        # A changed heading's note sits at its new version; an unchanged one needs none.
+        if pos not in ctx['h_removed']:
+            return ''
         return _note(NOTE_HEADING_REMOVED, structure_text.heading_label(ln))
     if is_unmarkable_structure(ln):
         return ''            # build structure (a split marker), not Code text: silent (ruling 5)
     return strike_pipe(ln) if is_pipe_row(ln) else strike_line(ln)
 
 
-def emit_inserted_src(ln: str, reg: dict, ctx: dict | None = None) -> str:
+def emit_inserted_src(ln: str, reg: dict, ctx: dict | None = None, pos: int = -1) -> str:
     ctx = ctx or _NO_CTX
     if is_block_token(ln):
         if ln in ctx['changed']:
@@ -704,29 +711,49 @@ def emit_inserted_src(ln: str, reg: dict, ctx: dict | None = None) -> str:
         lead = (UNMARKED_FIGURE_NOTE + '\n\n') if PLAIN else ''
         return lead + note + '\n\n' + reg[ln]
     if is_heading(ln):
-        return ln + '\n\n' + _note(NOTE_HEADING_ADDED)   # the heading stays a heading (TOC, structure)
+        # the heading stays a heading (TOC, structure); the note is its own paragraph after it
+        if pos in ctx['h_added']:
+            return ln + '\n\n' + _note(NOTE_HEADING_ADDED)
+        if pos in ctx['h_changed']:
+            return ln + '\n\n' + _note(NOTE_HEADING_CHANGED, ctx['h_changed'][pos])
+        return ln
     if is_unmarkable_structure(ln):
         return ln            # NEW split marker VERBATIM: it is structure the splitter reads
     return red_pipe(ln) if is_pipe_row(ln) else red_line(ln)
+
+
+_TITLE_RE = re.compile(r'^article-name:[ \t]*(.*?)[ \t]*$', re.M)
+
+
+def _article_title(fm: str):
+    m = _TITLE_RE.search(fm)
+    return m.group(1).strip('"\'') if m else None
 
 
 def redline_source(old_text: str, new_text: str):
     """Mark prose in one article ``.md`` (OLD vs NEW) while preserving NEW
     front-matter and structure. Returns ``(marked_markdown, n_del, n_ins)``."""
     new_fm, new_body = split_frontmatter(new_text)
-    _, old_body = split_frontmatter(old_text)
+    old_fm, old_body = split_frontmatter(old_text)
     a, reg_a = prepare_source(old_body)
     b, reg_b = prepare_source(new_body)
     reg = {**reg_a, **reg_b}
     _STRUCT['n'] = 0
     # One classifier (structure_text.classify_blocks) decides added / removed /
     # changed for raw blocks -- the same one the disclosure page uses.
+    a_heads = [k for k, t in enumerate(a) if is_heading(t)]
+    b_heads = [k for k, t in enumerate(b) if is_heading(t)]
+    hcls = structure_text.classify_headings([a[k] for k in a_heads], [b[k] for k in b_heads])
     old_toks = [t for t in a if is_block_token(t)]
     new_toks = [t for t in b if is_block_token(t)]
     cls = structure_text.classify_blocks([reg_a[t] for t in old_toks], [reg_b[t] for t in new_toks])
     ctx = {'removed': {old_toks[i] for i in cls['removed']},
            'added': {new_toks[j] for j in cls['added']},
-           'changed': {new_toks[j] for _, j in cls['changed']}}
+           'changed': {new_toks[j] for _, j in cls['changed']},
+           'h_removed': {a_heads[i] for i in hcls['removed']},
+           'h_added': {b_heads[j] for j in hcls['added']},
+           'h_changed': {b_heads[j]: structure_text.heading_label(a[a_heads[i]])
+                         for i, j in hcls['changed']}}
     sm = difflib.SequenceMatcher(None, a, b, autojunk=False)
     out = []
     n_del = n_ins = 0
@@ -735,19 +762,14 @@ def redline_source(old_text: str, new_text: str):
             out.extend(emit_equal(ln, reg) for ln in a[i1:i2])
         elif tag == 'delete':
             n_del += sum(1 for ln in a[i1:i2] if _markable(ln))
-            out.extend(emit_deleted_src(ln, reg, ctx) for ln in a[i1:i2])
+            out.extend(emit_deleted_src(ln, reg, ctx, i1 + k) for k, ln in enumerate(a[i1:i2]))
         elif tag == 'insert':
             n_ins += sum(1 for ln in b[j1:j2] if _markable(ln))
-            out.extend(emit_inserted_src(ln, reg, ctx) for ln in b[j1:j2])
+            out.extend(emit_inserted_src(ln, reg, ctx, j1 + k) for k, ln in enumerate(b[j1:j2]))
         else:  # replace
             ol, nl = a[i1:i2], b[j1:j2]
             n_del += sum(1 for ln in ol if _markable(ln))
             n_ins += sum(1 for ln in nl if _markable(ln))
-            if (len(ol) == 1 and len(nl) == 1
-                    and is_heading(ol[0]) and is_heading(nl[0])):
-                out.append(nl[0] + '\n\n' + _note(NOTE_HEADING_CHANGED,
-                                                 structure_text.heading_label(ol[0])))
-                continue
             if (len(ol) == 1 and len(nl) == 1
                     and not is_block_token(ol[0]) and not is_block_token(nl[0])
                     and not is_heading(ol[0]) and not is_heading(nl[0])
@@ -755,9 +777,14 @@ def redline_source(old_text: str, new_text: str):
                     and not is_unmarkable_structure(nl[0])):
                 out.append(mark_replace_1to1(ol[0], nl[0]))
             else:
-                out.extend(emit_deleted_src(ln, reg, ctx) for ln in ol)
-                out.extend(emit_inserted_src(ln, reg, ctx) for ln in nl)
+                out.extend(emit_deleted_src(ln, reg, ctx, i1 + k) for k, ln in enumerate(ol))
+                out.extend(emit_inserted_src(ln, reg, ctx, j1 + k) for k, ln in enumerate(nl))
     body_marked = '\n'.join(out)
+    old_title, new_title = _article_title(old_fm), _article_title(new_fm)
+    if old_title is not None and new_title is not None and old_title != new_title:
+        # the title is frontmatter, so no heading note can carry it: say it first
+        body_marked = (_note(NOTE_TITLE_CHANGED, structure_text._clean(old_title))
+                       + '\n\n' + body_marked)
     return ((new_fm + body_marked) if new_fm else body_marked), n_del, n_ins
 
 

@@ -113,3 +113,51 @@ def test_the_legend_no_longer_says_a_removal_leaves_no_trace(tmp_path):
     out, _ = mark(tmp_path, old, old, "--plain")
     assert "leaves no trace" not in out
     assert "a note in italics and square brackets" in out
+
+
+# --- fix round 1: one heading classifier for the page and the text ---------------
+
+@BOTH
+def test_a_retitle_beside_an_insert_agrees_on_page_and_text(tmp_path, flags):
+    sys.path.insert(0, str(BUILD))
+    import czc_diff
+    old = _text("v1.0", ART7)
+    first = next(ln for ln in old.splitlines() if ln.startswith("## 2. "))
+    new = old.replace(first, "## 2. REVISED " + first[len("## 2. "):]
+                      + "\n\n## 2A. NEW THING\n\nAn inserted sentence.", 1)
+    out, _ = mark(tmp_path, old, new, *flags)
+    assert out.count("*[Heading changed") == 1 and out.count("*[Heading added]*") == 1
+    assert f"it read: \u201c{first[3:]}\u201d]*" in out
+    sc = czc_diff.structural_changes(old, new)
+    assert len(sc["headings_changed"]) == 1 and len(sc["headings_added"]) == 1
+    assert sc["headings_removed"] == []
+    assert first[len("## 2. "):] in sc["headings_changed"][0][0]      # the same heading the text names
+    assert "REVISED" in sc["headings_changed"][0][1]
+    assert "NEW THING" in sc["headings_added"][0]
+
+
+@BOTH
+def test_a_changed_article_title_is_noted_first(tmp_path, flags):
+    old = _text("v1.0", ART7)
+    assert "\narticle-name: " in old
+    name = next(ln for ln in old.splitlines() if ln.startswith("article-name:"))
+    new = old.replace(name, "article-name: Use Standards Revised", 1)
+    out, err = mark(tmp_path, old, new, *flags)
+    assert "*[Article title changed \u2014 it read: \u201c" in out
+    assert out.count("*[Article title changed") == 1
+    assert "1 structural change(s) noted" in err
+
+
+def test_a_label_with_markdown_characters_survives_pandoc(tmp_path):
+    import shutil
+    if shutil.which("pandoc") is None:
+        pytest.skip("pandoc not installed")
+    old = _text("v1.0", ART7)
+    new = old.replace("## 5. AMUSEMENT, OUTDOOR\n", "", 1)
+    old = old.replace("## 5. AMUSEMENT, OUTDOOR", "## 9. FEES @ COST [TBD] *X* `y` _z_ #1", 1)
+    out, _ = mark(tmp_path, old, new)
+    note = next(ln for ln in out.splitlines() if ln.startswith("*[Heading removed"))
+    assert "\\*X\\*" in note and "\\[TBD\\]" in note
+    r = subprocess.run(["pandoc", "-f", "markdown", "-t", "typst"], input=note,
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr

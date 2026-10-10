@@ -289,9 +289,9 @@ def test_without_the_flag_there_is_no_legend_and_no_sigil(tmp_path):
 
 # -- the --source legend must claim only what --source keeps -------------------
 #
-# --source marks prose and table rows. It drops a removed heading or block with
-# no trace and passes an added heading through unmarked. Each test below pins the
-# BEHAVIOUR the legend's exclusion clause describes, so the clause cannot go on
+# --source marks prose and table rows word by word. A heading or block that was
+# added, removed or changed leaves an italic bracketed note at that spot instead
+# (Wave 3b). Each test below pins the BEHAVIOUR the legend's limits clause describes, so the clause cannot go on
 # being printed after the code stops keeping it (or the reverse).
 
 SECTION_OLD = "# Article\n\n## 1. KEPT\n\nBody.\n\n## 2. REMOVED SECTION\n\n```\nold figure\n```\n"
@@ -319,8 +319,8 @@ def test_the_other_modes_do_not_carry_the_source_only_exclusions(tmp_path):
 
 
 def test_what_the_source_legend_admits_is_what_the_code_does(tmp_path):
-    """The exclusion clause is TRUE: a removed heading and a removed block leave
-    nothing, and an added heading carries no mark and no sigil."""
+    """The limits clause is TRUE: a removed heading and a removed block leave a
+    note (not their text), and a heading carries no mark and no sigil."""
     text, _ = run_files(tmp_path, SECTION_OLD, SECTION_NEW, "--source", "--plain")
     # Wave 3b: a structural change now leaves a note (Ben, 2026-10-10)
     # the old heading text appears only inside a note; the removed block's rows are gone
