@@ -45,20 +45,29 @@ if [ -z "$NN_RAW" ] || [ -z "$NEW_V" ] || [ -z "$OLD_V" ]; then
   echo "usage: build-redline-standalone.sh <article-NN> <new-ver> <old-ver> [date-str]" >&2
   exit 1
 fi
+# The Article argument is a number 1-9 (a leading zero is fine): anything else is a
+# usage error, never an "unbound variable" from the arithmetic below.
+if ! [[ "$NN_RAW" =~ ^[0-9]+$ ]] || [ "$((10#$NN_RAW))" -lt 1 ] || [ "$((10#$NN_RAW))" -gt 9 ]; then
+  echo "redline-standalone: the Article must be a number from 1 to 9, not '$NN_RAW'." >&2
+  echo "usage: build-redline-standalone.sh <article-NN> <new-ver> <old-ver> [date-str]" >&2
+  exit 1
+fi
 NUM=$((10#$NN_RAW))
 NN=$(printf "%02d" "$NUM")
+
+# A mistyped old ref would stage the whole Article as new and fail only later, at
+# the disclosure page. Verify it first: nothing has been written yet.
+if ! git -C "$REPO_ROOT" rev-parse --verify --quiet "$OLD_V^{commit}" >/dev/null; then
+  echo "redline-standalone: '$OLD_V' is not a commit in this repository." >&2
+  exit 1
+fi
 
 BASELINE_FLAG=""
 if [ "${ADOPTION_BASELINE:-0}" = "1" ]; then BASELINE_FLAG="--baseline"; fi
 
 # --- the prose basename, resolved exactly as build-standalone.sh does ----------
-PRO=$(python3 "$REPO_ROOT/build/manifest.py" prose "$NUM" 2>/dev/null || true)
-if [ -z "$PRO" ]; then
-  for f in "$SRC"/article-"$NN"-*.md; do
-    [ -f "$f" ] && PRO="$(basename "$f")" && break
-  done
-fi
-if [ -z "$PRO" ] || [ ! -f "$SRC/$PRO" ]; then
+source "$REPO_ROOT/build/article-meta.sh"
+if ! PRO=$(czc_article_prose "$SRC" "$NUM"); then
   echo "redline-standalone: no prose source for Article $NUM in $SRC" >&2
   exit 1
 fi
@@ -97,27 +106,17 @@ m = re.match(r"^---\n.*?\n---\n", text, re.S)
 front = m.group(0) if m else ""
 rest = text[len(front):].lstrip("\n")
 legend, sep, body = rest.partition("\n\n")
+if not legend.startswith("Redline key:"):
+    sys.exit("redline-standalone: the marked markdown does not open with its 'Redline key:' "
+             "legend, so the disclosure page cannot be placed after it.")
 parts = [front.rstrip("\n"), "", legend, "", note_md, "", body.lstrip("\n")] if front else \
         [legend, "", note_md, "", body.lstrip("\n")]
 open(out, "w", encoding="utf-8").write("\n".join(parts).rstrip("\n") + "\n")
 PY
 
 # --- 4. the name, from the Article's own frontmatter ---------------------------
-read_meta() { python3 - "$1" "$2" <<'PY'
-import sys, re
-txt = open(sys.argv[1], encoding="utf-8").read()
-m = re.match(r"^---\n(.*?)\n---", txt, re.S)
-key, val = sys.argv[2], ""
-if m:
-    for ln in m.group(1).split("\n"):
-        if ln.startswith(key + ":"):
-            val = ln.split(":", 1)[1].strip().strip('"')
-            break
-print(val)
-PY
-}
-ANUM=$(read_meta "$SRC/$PRO" article-number); ANUM="${ANUM:-$NUM}"
-ANAME=$(read_meta "$SRC/$PRO" article-name);  ANAME="${ANAME:-Article $NUM}"
+ANUM=$(czc_read_meta "$SRC/$PRO" article-number); ANUM="${ANUM:-$NUM}"
+ANAME=$(czc_read_meta "$SRC/$PRO" article-name);  ANAME="${ANAME:-Article $NUM}"
 NAME="$(czc_standalone_name "${ADOPTION_MODE:-draft}" "$ANUM" "$ANAME" "$NEW_V" redline)"
 
 # --- 5. build through the standalone builder -----------------------------------

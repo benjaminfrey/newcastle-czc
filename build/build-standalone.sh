@@ -59,36 +59,17 @@ NUM=$((10#$NN))                          # numeric 7
 RELEASE_DIR="${OUT_DIR:-$REPO_ROOT/releases/$VERSION}"
 
 # --- resolve the prose source: manifest 'prose', else glob article-0NN-*.md ----
-PROSE=""
-PRO=$(python3 "$MANIFEST_PY" prose "$NUM" 2>/dev/null || true)
-if [ -n "$PRO" ]; then
-  PROSE="$SOURCE_DIR/$PRO"
-else
-  for f in "$SOURCE_DIR"/article-"$NN"-*.md; do
-    [ -f "$f" ] && PROSE="$f" && break
-  done
-fi
-if [ -z "$PROSE" ] || [ ! -f "$PROSE" ]; then
+# (build/article-meta.sh: one definition, shared with build-redline-standalone.sh)
+source "$REPO_ROOT/build/article-meta.sh"
+if ! PRO=$(czc_article_prose "$SOURCE_DIR" "$NUM"); then
   echo "No prose source for Article $NUM (manifest 'prose' or source/article-$NN-*.md)" >&2
   exit 1
 fi
+PROSE="$SOURCE_DIR/$PRO"
 
 # --- article number/name from frontmatter (for the output filename) ------------
-read_meta() { python3 - "$1" "$2" <<'PY'
-import sys, re
-txt = open(sys.argv[1], encoding="utf-8").read()
-m = re.match(r"^---\n(.*?)\n---", txt, re.S)
-key, val = sys.argv[2], ""
-if m:
-    for ln in m.group(1).split("\n"):
-        if ln.startswith(key + ":"):
-            val = ln.split(":", 1)[1].strip().strip('"')
-            break
-print(val)
-PY
-}
-ANUM=$(read_meta "$PROSE" article-number); ANUM="${ANUM:-$NUM}"
-ANAME=$(read_meta "$PROSE" article-name);  ANAME="${ANAME:-Article $NUM}"
+ANUM=$(czc_read_meta "$PROSE" article-number); ANUM="${ANUM:-$NUM}"
+ANAME=$(czc_read_meta "$PROSE" article-name);  ANAME="${ANAME:-Article $NUM}"
 
 source "$REPO_ROOT/build/adoption-name.sh"
 OUT_NAME="${OUT_NAME_OVERRIDE:-$(czc_standalone_name "$ADOPTION_MODE" "$ANUM" "$ANAME" "$VERSION")}"

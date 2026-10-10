@@ -194,3 +194,22 @@ def test_baseline_false_still_applies_a_section_map(tmp_path):
         and sc["headings_removed"] == []
     # the control: without the map the shifted headings all count
     assert len(czc_diff.structural_changes(old, new, baseline=False)["headings_changed"]) > 50
+
+
+def test_the_source_legend_defines_no_phrase_its_output_never_contains(tmp_path):
+    """M2: --source writes structural notes, not the visible 'figure new or
+    regenerated' line, so its legend must not define that phrase; --full still
+    writes the line and keeps defining it."""
+    old, new = tmp_path / "old.md", tmp_path / "new.md"
+    old.write_text("## 1. GENERAL\n\nA sentence.\n")
+    new.write_text("## 1. GENERAL\n\nA sentence, changed.\n")
+    legends = {}
+    for mode in ("--source", "--full"):
+        out = tmp_path / f"out{mode}.md"
+        subprocess.run([sys.executable, str(BUILD / "redline-text.py"), str(old), str(new),
+                        str(out), mode, "--plain"], check=True, capture_output=True)
+        legends[mode] = out.read_text().splitlines()[0]
+    assert legends["--source"].startswith("Redline key:")
+    assert "figure new or regenerated" not in legends["--source"]
+    assert "where one was added, removed or changed, a note in italics" in legends["--source"]
+    assert "figure new or regenerated" in legends["--full"]

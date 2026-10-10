@@ -275,9 +275,14 @@ def _note(template: str, label: str = '') -> str:
 # unchanged one. U+2295 renders as visible text through pandoc -f gfm, is not
 # markdown structure (unlike a bare + or >), and appears nowhere in source/.
 SIGIL = '\u2295'
-LEGEND = ('Redline key: **bold** = text added; ~~struck~~ = text deleted; '
-          f'{SIGIL} marks a line that is new in its entirety; '
-          '"figure new or regenerated \u2014 shown unmarked" = a figure shown in its current form, not compared.')
+LEGEND_KEY = ('Redline key: **bold** = text added; ~~struck~~ = text deleted; '
+              f'{SIGIL} marks a line that is new in its entirety')
+# Only the --full path still writes the visible "figure new or regenerated" line
+# (UNMARKED_FIGURE_VISIBLE); --source writes the structural notes instead, so its
+# legend must not define a phrase its output never contains.
+LEGEND_FIGURE_CLAUSE = ('; "figure new or regenerated \u2014 shown unmarked" = a figure shown in its '
+                        'current form, not compared.')
+LEGEND = LEGEND_KEY + LEGEND_FIGURE_CLAUSE
 # --source marks prose and table rows ONLY (headings and raw-Typst blocks are shown
 # in their current form). A heading or block that was added, removed or changed
 # leaves a note at that spot (Wave 3b): a removal no longer leaves no trace. The
@@ -315,7 +320,7 @@ def add_legend(result: str, source: bool = False) -> str:
     build reads and front-matter must stay first. ``source`` appends the limits
     of --source marking (see LEGEND_SOURCE_LIMITS)."""
     fm, body = split_frontmatter(result)
-    legend = LEGEND + (' ' + LEGEND_SOURCE_LIMITS if source else '')
+    legend = (LEGEND_KEY + '.' + ' ' + LEGEND_SOURCE_LIMITS) if source else LEGEND
     return fm + legend + '\n\n' + body.lstrip('\n')
 
 

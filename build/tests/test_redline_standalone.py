@@ -90,7 +90,8 @@ def test_article_7_redline_is_marked_and_keeps_parity(tmp_path, tree):
     assert "Heading changed" in body
     m = md.read_text()
     assert "{=typst}" not in m and "rgb(" not in m
-    assert "## How to read this redline" in m and "**" in m
+    assert "## How to read this redline" in m
+    assert "\u2295 **A new sentence.**" in m, "the added sentence must be bold, behind the sigil"
     assert "*[Heading changed — it read: “5. AMUSEMENT, OUTDOOR”]*" in m
 
 
@@ -115,7 +116,8 @@ def test_article_2_keeps_d1_on_a_verso(tmp_path, tree):
     pdf, _ = redline(tmp_path, tree, "02")
     d = pymupdf.open(pdf)
     try:
-        first = next(i for i, pg in enumerate(d) if "LOT DIMENSIONS" in pg.get_text())
+        first = next(i for i, pg in enumerate(d)
+                     if "LOT DIMENSIONS" in pg.get_text() and "D1" in pg.get_text())
     finally:
         d.close()
     assert (first + 1) % 2 == 0, f"D1 is on physical page {first + 1}, a recto"
@@ -176,3 +178,46 @@ def test_the_output_names_are_the_standalone_redline_names(tmp_path, tree):
     pdf, md = redline(tmp_path, tree, "07")
     assert pdf.name.endswith(" — Redline.pdf") and md.name.endswith(" — Redline.md")
     assert "Article 7" in pdf.name
+
+
+def _run(tmp_path, tree, *args, out="out"):
+    e = dict(os.environ, SRC_DIR=str(tree), REDLINE_OUT=str(tmp_path / out))
+    return subprocess.run(["bash", str(SCRIPT), *args], capture_output=True, text=True,
+                          cwd=REPO, env=e)
+
+
+def _releases_state():
+    return subprocess.run(["git", "status", "--porcelain", "--", "releases/"], cwd=REPO,
+                          capture_output=True, text=True).stdout
+
+
+def test_a_refused_run_leaves_no_output(tmp_path, tree):
+    """Every refusal precedes placement: a mistyped old ref exits 1 with a clean
+    message and nothing -- no output directory, nothing under releases/."""
+    before = _releases_state()
+    r = _run(tmp_path, tree, "07", VER, "v9.99-nope")
+    assert r.returncode == 1, (r.returncode, r.stderr)
+    assert "v9.99-nope" in r.stderr and "not a commit" in r.stderr
+    assert "Marked" not in r.stdout, "the old ref must be verified BEFORE anything is staged"
+    assert not (tmp_path / "out").exists()
+    assert _releases_state() == before
+    assert not (REPO / "releases" / VER).exists()
+
+
+@pytest.mark.parametrize("bad", ["seven", "0", "10", "7x"])
+def test_a_bad_article_argument_is_a_clean_usage_error(tmp_path, tree, bad):
+    r = _run(tmp_path, tree, bad, VER, "v1.0")
+    assert r.returncode == 1, (r.returncode, r.stderr)
+    assert "usage" in r.stderr.lower() and "unbound" not in r.stderr
+    assert not (tmp_path / "out").exists()
+
+
+def test_a_baseline_run_hands_the_page_the_baseline_flag(tmp_path, tree):
+    """I6: the page reads the old side the stage reads. Under ADOPTION_BASELINE=1
+    that is the baseline path; the run must succeed and page and text must agree."""
+    p = tree / ART7
+    p.write_text(p.read_text().replace("## 5. AMUSEMENT, OUTDOOR", "## 5. AMUSEMENT, OUTSIDE", 1))
+    pdf, md = redline(tmp_path, tree, "07", ADOPTION_BASELINE="1")
+    m = md.read_text()
+    assert "*[Heading changed — it read: “5. AMUSEMENT, OUTDOOR”]*" in m
+    assert "- Heading changed from “Section 5 — AMUSEMENT, OUTDOOR”" in m
