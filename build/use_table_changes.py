@@ -43,10 +43,9 @@ sys.path.insert(0, str(BUILD))
 
 import czc_diff  # noqa: E402
 
-_GLYPHS = re.compile(r"#let\s+glyphs\s*=\s*\(([^)]*)\)")
+_GLYPHS = re.compile(r'#let\s+glyphs\s*=\s*\(((?:[^)"]|"[^"]*")*)\)')
 _GLYPH_ENTRY = re.compile(r'(\w+)\s*:\s*"([^"]*)"')
 _ROW = re.compile(r'status\(\s*"(\w+)"\s*\)\s*,\s*\[([^\]]+)\]\s*,\s*\[([^\]]+)\]\s*,')
-_NOTE = re.compile(r"Note:\s*Uses without[^\]]*not allowed in this District")
 _STATUS_CALL = re.compile(r'#?status\(\s*"(\w+)"\s*\)')
 
 
@@ -54,30 +53,83 @@ class LegendError(czc_diff.Refusal):
     """The USE TABLE LEGEND block could not be found or read."""
 
 
+def _collapse(s: str) -> str:
+    """Whitespace-collapse, so a rewrap of the source is not a change."""
+    return " ".join(s.split())
+
+
+def _bracket_end(text: str, open_at: int) -> int:
+    """Index of the ']' matching the '[' at open_at (backslash-escaped brackets
+    do not count). Refuses an unbalanced block."""
+    depth, i = 0, open_at
+    while i < len(text):
+        c = text[i]
+        if c == "\\":
+            i += 2
+            continue
+        if c == "[":
+            depth += 1
+        elif c == "]":
+            depth -= 1
+            if depth == 0:
+                return i
+        i += 1
+    raise LegendError("article-02.typ: the legend's Note has no closing bracket")
+
+
+def _note_span(typ_text: str, head: int) -> tuple[int, int, int]:
+    """(open, start-of-'Note:', close) of the legend Note's content bracket."""
+    at = typ_text.find("Note:", head)
+    if at < 0:
+        raise LegendError("article-02.typ: the legend's 'Note:' sentence was not found")
+    opn = typ_text.rfind("[", head, at)
+    if opn < 0 or typ_text[opn + 1:at].strip():
+        raise LegendError("article-02.typ: the legend's Note does not open its own bracket")
+    return opn, at, _bracket_end(typ_text, opn)
+
+
 def parse_legend(typ_text: str) -> dict:
-    """{"glyphs": {code: glyph}, "rows": {code: (label, authority)}, "note": str}.
+    """{"glyphs": {code: glyph}, "rows": {code: (label, authority)},
+    "note": str, "block": str}.
 
     Rows are read only between the USE TABLE LEGEND heading and the legend's
-    Note, so a status() call anywhere else in the file is never mistaken for one.
+    Note, so a status() call anywhere else in the file is never mistaken for
+    one. It fails closed: a duplicate code, or a glyph map and a row list that
+    name different codes, is refused -- either a parse failure or a real
+    inconsistency in the Code, and both need a person. "block" is the raw
+    legend text (glyph map through the Note), whitespace-collapsed: the
+    backstop for any change the itemised comparison cannot see.
     """
     glyphs = _GLYPHS.search(typ_text)
     head = typ_text.find("USE TABLE LEGEND")
     if glyphs is None or head < 0:
         raise LegendError("article-02.typ: the USE TABLE LEGEND block or the glyph map was not found")
-    note = _NOTE.search(typ_text, head)
-    if note is None:
-        raise LegendError("article-02.typ: the legend's 'Note: Uses without ...' sentence was not found")
-    rows = {m.group(1): (m.group(2).strip(), m.group(3).strip())
-            for m in _ROW.finditer(typ_text, head, note.start())}
+    opn, note_at, close = _note_span(typ_text, head)
+    rows: dict[str, tuple[str, str]] = {}
+    for m in _ROW.finditer(typ_text, head, opn):
+        if m.group(1) in rows:
+            raise LegendError(f"article-02.typ: legend status code `{m.group(1)}` appears twice")
+        rows[m.group(1)] = (_collapse(m.group(2)), _collapse(m.group(3)))
     if not rows:
         raise LegendError("article-02.typ: no legend rows were found under USE TABLE LEGEND")
-    return {"glyphs": dict(_GLYPH_ENTRY.findall(glyphs.group(1))),
-            "rows": rows,
-            "note": _STATUS_CALL.sub(lambda m: m.group(1), note.group(0))}
+    glyph_map = dict(_GLYPH_ENTRY.findall(glyphs.group(1)))
+    if set(glyph_map) != set(rows):
+        only_g = sorted(set(glyph_map) - set(rows))
+        only_r = sorted(set(rows) - set(glyph_map))
+        raise LegendError("article-02.typ: the glyph map and the legend rows name different codes "
+                          f"(glyph map only: {only_g}; legend rows only: {only_r})")
+    note = _STATUS_CALL.sub(lambda m: m.group(1), typ_text[note_at:close])
+    return {"glyphs": glyph_map, "rows": rows, "note": _collapse(note),
+            "block": _collapse(glyphs.group(0) + " " + typ_text[head:close + 1])}
 
 
 def legend_delta(old: dict, new: dict) -> list[str]:
-    """What changed in the legend, as plain sentences. Empty means nothing."""
+    """What changed in the legend, as plain sentences. Empty means nothing.
+
+    If the itemised comparison finds nothing but the raw legend text differs,
+    one sentence says so; legend_block_changed() lets the renderer print both
+    blocks.
+    """
     out = []
     for code in sorted(set(old["rows"]) | set(new["rows"])):
         o, n = old["rows"].get(code), new["rows"].get(code)
@@ -96,7 +148,18 @@ def legend_delta(old: dict, new: dict) -> list[str]:
             out.append(f"The symbol for `{code}` changed: {og or 'none'} → {ng or 'none'}.")
     if old["note"] != new["note"]:
         out.append(f"The legend's note now reads \"{new['note']}\" (it read \"{old['note']}\").")
+    if not out and old["block"] != new["block"]:
+        out.append("The legend's text changed in a way this document cannot itemise; "
+                   "its before and after text are shown below.")
     return out
+
+
+def legend_block_changed(old: dict, new: dict) -> bool:
+    """True when the legend's raw text differs but nothing could be itemised:
+    the renderer then prints both blocks."""
+    itemised = [s for s in legend_delta(old, new)
+                if not s.startswith("The legend's text changed in a way")]
+    return not itemised and old["block"] != new["block"]
 
 
 def status_words(code: str, legend: dict) -> str:
