@@ -355,7 +355,7 @@ def markdown_counts(old: str | None, new: str, *, smap=None) -> dict[str, int]:
             "suppressed": suppressed}
 
 
-_SECTION = re.compile(r"^\s*##[ \t]+(\d+)\.[ \t]+(.*?)\s*(?:\{[^}]*\})?\s*$")
+_SECTION = re.compile(r"^\s*##[ \t]+(\d+[A-Za-z]?)\.[ \t]+(.*?)\s*(?:\{[^}]*\})?\s*$")
 _SUBSECTION = re.compile(r"^\s*###[ \t]+([A-Za-z])\.[ \t]+(.*?)\s*(?:\{[^}]*\})?\s*$")
 
 

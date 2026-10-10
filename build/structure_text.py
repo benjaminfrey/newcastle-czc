@@ -102,29 +102,57 @@ def classify_blocks(old_blocks: list[str], new_blocks: list[str]) -> dict:
     return out
 
 
+_H2 = re.compile(r"^\s*##[ \t]")
+_HN = re.compile(r"^\s*#{3,6}[ \t]")
+_LEADING_NUMBER = re.compile(r"^\d+[A-Za-z]?\.\s*")
+
+
+def heading_keys(lines: list[str]) -> list[str]:
+    """A key per heading line, for ALIGNING two versions of an Article. A section
+    heading ("## 3. TITLE") keys as its full stripped text. A deeper heading keys
+    as "{its section's title without the number} / {its own text}", so two
+    sections that reuse sub-heading names ("a. DEFINITION") do not collide, and a
+    renumbered section keeps its sub-headings' keys. Frontmatter lines and
+    headings above the first section key as themselves."""
+    keys, parent = [], None
+    for line in lines:
+        if _H2.match(line):
+            parent = _LEADING_NUMBER.sub("", heading_label(line))
+            keys.append(line.strip())
+        elif _HN.match(line) and parent is not None:
+            keys.append(f"{parent} / {heading_label(line)}")
+        else:
+            keys.append(line.strip())
+    return keys
+
+
 def classify_headings(old: list[str], new: list[str]) -> dict:
     """Which heading LINES were added, removed or changed between two versions
     of one Article -- decided once, for the page and the in-text notes alike.
-    Equal runs are unchanged. Inside every other run, old and new headings are
-    paired greedily in order when their labels are similar enough to be the
+    Aligned on heading_keys (section-qualified). Equal runs are unchanged. Inside every other run, old and new headings are
+    paired greedily in order (an identical line first) when their labels are similar enough to be the
     same heading retitled (difflib ratio >= 0.5) -> CHANGED; the rest are
     REMOVED / ADDED.
     Returns {"added": [new idx], "removed": [old idx], "changed": [(old idx, new idx)]}."""
     import difflib
     out = {"added": [], "removed": [], "changed": []}
-    sm = difflib.SequenceMatcher(None, old, new, autojunk=False)
+    sm = difflib.SequenceMatcher(None, heading_keys(old), heading_keys(new), autojunk=False)
     for tag, i1, i2, j1, j2 in sm.get_opcodes():
         if tag == "equal":
             continue
         js = list(range(j1, j2))
         paired = set()
         for i in range(i1, i2):
-            match = next((j for j in js if difflib.SequenceMatcher(
+            # A line identical on both sides is unchanged even when its key moved
+            # (the sub-headings of a retitled section); else pair a retitle by similarity.
+            same = next((j for j in js if old[i].strip() == new[j].strip()), None)
+            match = same if same is not None else next((j for j in js if difflib.SequenceMatcher(
                 None, heading_label(old[i]), heading_label(new[j])).ratio() >= 0.5), None)
             if match is None:
                 out["removed"].append(i)
             else:
-                out["changed"].append((i, match))
+                if same is None:
+                    out["changed"].append((i, match))
                 paired.add(match)
                 js = [j for j in js if j > match]       # keep pairs in order
         out["added"] += [j for j in range(j1, j2) if j not in paired]

@@ -730,6 +730,25 @@ def _article_title(fm: str):
     return m.group(1).strip('"\'') if m else None
 
 
+def emit_equal_src(old_ln: str, new_ln: str, reg: dict, ctx: dict, i: int, j: int) -> str:
+    """An unchanged line -- except that the text must reflect the heading
+    classification fully, whatever the body diff did: a heading classified added
+    or changed gets its note after it; one classified removed leaves its note."""
+    if not is_heading(new_ln) and not is_heading(old_ln):
+        return emit_equal(new_ln, reg)
+    out = []
+    if is_heading(old_ln) and i in ctx['h_removed']:
+        out.append(_note(NOTE_HEADING_REMOVED, structure_text.heading_label(old_ln)))
+    if is_heading(new_ln):
+        if j in ctx['h_added']:
+            out.append(new_ln + '\n\n' + _note(NOTE_HEADING_ADDED))
+        elif j in ctx['h_changed']:
+            out.append(new_ln + '\n\n' + _note(NOTE_HEADING_CHANGED, ctx['h_changed'][j]))
+        else:
+            out.append(new_ln)
+    return '\n\n'.join(out)
+
+
 def redline_source(old_text: str, new_text: str):
     """Mark prose in one article ``.md`` (OLD vs NEW) while preserving NEW
     front-matter and structure. Returns ``(marked_markdown, n_del, n_ins)``."""
@@ -759,7 +778,8 @@ def redline_source(old_text: str, new_text: str):
     n_del = n_ins = 0
     for tag, i1, i2, j1, j2 in sm.get_opcodes():
         if tag == 'equal':
-            out.extend(emit_equal(ln, reg) for ln in a[i1:i2])
+            out.extend(emit_equal_src(ln, b[j1 + k], reg, ctx, i1 + k, j1 + k)
+                       for k, ln in enumerate(a[i1:i2]))
         elif tag == 'delete':
             n_del += sum(1 for ln in a[i1:i2] if _markable(ln))
             out.extend(emit_deleted_src(ln, reg, ctx, i1 + k) for k, ln in enumerate(a[i1:i2]))

@@ -143,6 +143,17 @@ def test_classify_headings_directly():
     assert st.classify_headings(moved_old, moved_new) == {"added": [0], "removed": [2], "changed": []}
 
 
+def test_heading_keys():
+    lines = ["# Article 7 Use Standards", "## 3A. NEW USE", "### a. DEFINITION", "### b. STANDARDS",
+             "## 5. AMUSEMENT, OUTDOOR", "### a. DEFINITION", "article-name: X"]
+    assert st.heading_keys(lines) == [
+        "# Article 7 Use Standards", "## 3A. NEW USE", "NEW USE / a. DEFINITION",
+        "NEW USE / b. STANDARDS", "## 5. AMUSEMENT, OUTDOOR",
+        "AMUSEMENT, OUTDOOR / a. DEFINITION", "article-name: X"]
+    renumbered = ["## 6. AMUSEMENT, OUTDOOR", "### a. DEFINITION"]
+    assert st.heading_keys(renumbered)[1] == st.heading_keys(lines)[5]      # survives renumbering
+
+
 def test_frontmatter_lines_read_as_title_and_number():
     assert st.heading_label('article-name: "Use Standards"') == "Article title: Use Standards"
     assert st.heading_label('article-number: "7"') == "Article number: 7"

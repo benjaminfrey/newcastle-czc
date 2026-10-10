@@ -161,3 +161,39 @@ def test_a_label_with_markdown_characters_survives_pandoc(tmp_path):
     r = subprocess.run(["pandoc", "-f", "markdown", "-t", "typst"], input=note,
                        capture_output=True, text=True)
     assert r.returncode == 0, r.stderr
+
+
+@BOTH
+def test_a_new_section_reusing_subheading_names_is_fully_noted(tmp_path, flags):
+    """Regression: the new sub-headings share names with section 4's, and used to
+    print with no note."""
+    sys.path.insert(0, str(BUILD))
+    import czc_diff
+    old = _text("v1.0", ART7)
+    new = old.replace("## 4. ", "## 3A. NEW USE\n\n### a. DEFINITION\n\nA new definition.\n\n"
+                      "### b. STANDARDS\n\nNew standards.\n\n## 4. ", 1)
+    out, _ = mark(tmp_path, old, new, *flags)
+    sc = czc_diff.structural_changes(old, new)
+    assert len(sc["headings_added"]) == 3
+    assert all("3A" in label for label in sc["headings_added"])      # the page's labels for the new section
+    assert any("NEW USE" in label for label in sc["headings_added"])
+    assert out.count("*[Heading added]*") == len(sc["headings_added"]) == 3
+    assert out.count("*[Heading changed") == len(sc["headings_changed"]) == 0
+    assert out.count("*[Heading removed") == len(sc["headings_removed"]) == 0
+
+
+@BOTH
+def test_renumbering_does_not_note_unchanged_subheadings(tmp_path, flags):
+    sys.path.insert(0, str(BUILD))
+    import czc_diff
+    import re
+    from section_fixtures import insert_section
+    old = _text("v1.0", ART7)
+    new = insert_section(old, 3, "AGRICULTURE")
+    out, _ = mark(tmp_path, old, new, *flags)
+    changed = re.findall(r"\*\[Heading changed[^\n]*", out)
+    assert not any(re.search(r"it read: \u201c[a-z]\. ", n) for n in changed), changed
+    sc = czc_diff.structural_changes(old, new)
+    assert out.count("*[Heading changed") == len(sc["headings_changed"])
+    assert out.count("*[Heading added]*") == len(sc["headings_added"])
+    assert out.count("*[Heading removed") == len(sc["headings_removed"])
