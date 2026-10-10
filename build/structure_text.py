@@ -90,6 +90,10 @@ def classify_blocks(old_blocks: list[str], new_blocks: list[str]) -> dict:
     out = {"added": [], "removed": [], "changed": []}
     for cap in set(by_cap_old) | set(by_cap_new):
         olds, news = by_cap_old.get(cap, []), by_cap_new.get(cap, [])
+        if cap == UNTITLED:      # no caption to pair on: never pair two untitled blocks
+            out["removed"] += olds
+            out["added"] += news
+            continue
         out["changed"] += list(zip(olds, news))
         out["removed"] += olds[len(news):]
         out["added"] += news[len(olds):]

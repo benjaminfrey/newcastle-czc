@@ -125,6 +125,14 @@ def test_classify_blocks_directly():
     assert st.classify_blocks(old, new) == {"added": [0], "removed": [3], "changed": [(2, 3)]}
 
 
+def test_untitled_blocks_are_never_paired():
+    """Two untitled blocks share no caption to pair on: an unmatched untitled old
+    block is removed and an unmatched untitled new block is added."""
+    old, new = ["```\nrows A\n```"], ["```\nrows C\n```"]
+    assert st.block_caption(old[0]) == st.UNTITLED
+    assert st.classify_blocks(old, new) == {"added": [0], "removed": [0], "changed": []}
+
+
 def test_frontmatter_lines_read_as_title_and_number():
     assert st.heading_label('article-name: "Use Standards"') == "Article title: Use Standards"
     assert st.heading_label('article-number: "7"') == "Article number: 7"
