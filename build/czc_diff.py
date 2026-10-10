@@ -65,6 +65,7 @@ manifest predates data_sources).
 from __future__ import annotations
 
 import argparse
+import difflib
 import json
 import re
 import subprocess
@@ -81,6 +82,7 @@ sys.path.insert(0, str(BUILD))
 import adoption_map  # noqa: E402
 import manifest  # noqa: E402
 import normalize_for_diff as nz  # noqa: E402
+import structure_text  # noqa: E402
 
 
 class Refusal(Exception):
@@ -352,6 +354,47 @@ def markdown_counts(old: str | None, new: str, *, smap=None) -> dict[str, int]:
             "heading": nz.marked_lines(o_heads, n_heads),
             "table": nz.marked_lines(o_blocks, n_blocks),
             "suppressed": suppressed}
+
+
+def structural_changes(old: str | None, new: str, *, smap=None) -> dict[str, list]:
+    """WHICH headings and raw-Typst tables/figures were added, removed or
+    changed -- the names behind markdown_counts' heading and table counts. The
+    old side is normalised exactly as in markdown_counts. A table or figure is
+    matched by its caption across the whole Article: the same caption with
+    different content is "changed". The redline's in-text notes use the same
+    caption rule, so the page and the text agree."""
+    if old is None:
+        o_heads, o_blocks = [], []
+    else:
+        _, o_heads, o_blocks = split_markdown(
+            nz.normalize_old_side(old, amap=_identity_amap(), smap=smap))
+    _, n_heads, n_blocks = split_markdown(new)
+    out: dict[str, list] = {k: [] for k in ("headings_added", "headings_removed",
+                                            "headings_changed", "tables_added",
+                                            "tables_removed", "tables_changed")}
+    sm = difflib.SequenceMatcher(None, o_heads, n_heads, autojunk=False)
+    for tag, i1, i2, j1, j2 in sm.get_opcodes():
+        if tag == "equal":
+            continue
+        old_part, new_part = o_heads[i1:i2], n_heads[j1:j2]
+        if tag == "replace" and len(old_part) == len(new_part):
+            out["headings_changed"] += [(structure_text.heading_label(a),
+                                         structure_text.heading_label(b))
+                                        for a, b in zip(old_part, new_part)]
+        else:
+            out["headings_removed"] += [structure_text.heading_label(h) for h in old_part]
+            out["headings_added"] += [structure_text.heading_label(h) for h in new_part]
+    o_caps = [structure_text.block_caption(b) for b in o_blocks]
+    n_caps = [structure_text.block_caption(b) for b in n_blocks]
+    sm = difflib.SequenceMatcher(None, o_caps, n_caps, autojunk=False)
+    for tag, i1, i2, j1, j2 in sm.get_opcodes():
+        if tag == "equal":
+            out["tables_changed"] += [n_caps[j] for i, j in zip(range(i1, i2), range(j1, j2))
+                                      if o_blocks[i] != n_blocks[j]]
+        else:
+            out["tables_removed"] += o_caps[i1:i2]
+            out["tables_added"] += n_caps[j1:j2]
+    return out
 
 
 # --- The two sides --------------------------------------------------------------
