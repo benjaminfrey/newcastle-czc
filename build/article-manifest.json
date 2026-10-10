@@ -29,8 +29,8 @@
     ],
     "data_sources": [
       { "path": "article-02-data.json", "compare": "json-keyed",
-        "key": "[].code",
-        "_key_note": "the file is a bare LIST of 13 district objects, keyed by code",
+        "key": "[].code+name",
+        "_key_note": "the file is a bare LIST of 13 district objects, keyed by code AND name: code alone is not unique -- seven districts are 'SD', and a code-only key would merge them",
         "substantive_fields": ["code", "name", "left", "right", "matrix",
                                "use_col1", "use_col2", "use_standards"],
         "_excluded_note": "group, color and band_text are presentation: they change what the spread looks like, not what is permitted" }
