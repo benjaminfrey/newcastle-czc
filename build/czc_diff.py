@@ -47,8 +47,10 @@ manifest predates data_sources).
 """
 from __future__ import annotations
 
+import argparse
 import json
 import re
+import subprocess
 import sys
 from collections import Counter
 from dataclasses import dataclass, field
@@ -333,3 +335,219 @@ def markdown_counts(old: str | None, new: str, *, smap=None) -> dict[str, int]:
             "heading": nz.marked_lines(o_heads, n_heads),
             "table": nz.marked_lines(o_blocks, n_blocks),
             "suppressed": suppressed}
+
+
+# --- The two sides --------------------------------------------------------------
+
+def _git(*args: str) -> str:
+    return subprocess.run(["git", "-C", str(REPO), *args], capture_output=True,
+                          text=True, check=True).stdout
+
+
+class Side:
+    """One version of source/: a git ref, or a directory."""
+
+    def __init__(self, *, ref: str | None = None, root: Path | None = None):
+        if (ref is None) == (root is None):
+            raise ValueError("a Side is a ref or a directory, not both or neither")
+        if ref is not None:
+            ok = subprocess.run(["git", "-C", str(REPO), "rev-parse", "--verify", "--quiet",
+                                 f"{ref}^{{commit}}"], capture_output=True)
+            if ok.returncode != 0:
+                raise Refusal(f"{ref!r} is not a commit in this repository")
+        self.ref = ref
+        self.root = Path(root) if root is not None else None
+        self.label = ref if ref is not None else str(self.root)
+        self._cache: dict[str, bytes | None] = {}
+
+    def files(self) -> list[str]:
+        """Every file of the Code on this side, relative to source/."""
+        if self.ref is not None:
+            out = _git("ls-tree", "-r", "--name-only", self.ref, "source/")
+            return sorted(p[len("source/"):] for p in out.splitlines() if p)
+        if self.root.resolve() == SOURCE.resolve():
+            # The live tree: what git tracks plus what it would track. Ignored
+            # files (.DS_Store, inventory.json.bak-*) are not part of the Code.
+            listed = set(_git("ls-files", "source/").splitlines())
+            listed |= set(_git("ls-files", "--others", "--exclude-standard", "source/").splitlines())
+            return sorted(p[len("source/"):] for p in listed if p and (REPO / p).is_file())
+        return sorted(p.relative_to(self.root).as_posix() for p in self.root.rglob("*")
+                      if p.is_file()
+                      and not any(part.startswith(".") for part in p.relative_to(self.root).parts))
+
+    def read(self, rel: str) -> bytes | None:
+        """The file's bytes on this side, or None if it does not exist here."""
+        if rel not in self._cache:
+            if self.ref is not None:
+                r = subprocess.run(["git", "-C", str(REPO), "show", f"{self.ref}:source/{rel}"],
+                                   capture_output=True)
+                self._cache[rel] = r.stdout if r.returncode == 0 else None
+            else:
+                p = self.root / rel
+                self._cache[rel] = p.read_bytes() if p.is_file() else None
+        return self._cache[rel]
+
+
+# --- The determination ----------------------------------------------------------
+
+@dataclass
+class ArticleCounts:
+    article: int
+    prose: int = 0
+    heading: int = 0
+    table: int = 0
+    data: int = 0
+    suppressed: int = 0
+    new: bool = False
+    needs_call: list[str] = field(default_factory=list)
+    data_detail: dict[str, Delta] = field(default_factory=dict)
+
+    @property
+    def verdict(self) -> str:
+        if self.prose or self.heading or self.table or self.data:
+            return "SUBSTANTIVE"
+        if self.needs_call:
+            return "NEEDS-CALL"
+        if self.suppressed:
+            return "RENUMBER-ONLY"
+        return "UNCHANGED"
+
+    def as_json(self) -> dict:
+        return {
+            "prose": self.prose, "heading": self.heading, "table": self.table,
+            "data": self.data, "suppressed": self.suppressed, "new": self.new,
+            "verdict": self.verdict, "needs_call": self.needs_call,
+            "data_detail": {
+                path: {"changed": [{"path": leaf_label(k), "old": o, "new": n}
+                                   for k, (o, n) in d.changed.items()],
+                       "added": [{"path": leaf_label(k), "new": v} for k, v in d.added.items()],
+                       "removed": [{"path": leaf_label(k), "old": v} for k, v in d.removed.items()]}
+                for path, d in self.data_detail.items()},
+        }
+
+
+def _declaration(doc: dict, article: str, rel: str) -> dict | None:
+    for d in doc.get(article, {}).get("data_sources", []):
+        p = d.get("path", "")
+        if (rel.startswith(p) if p.endswith("/") else rel == p):
+            return d
+    return None
+
+
+def determine(old: Side, new: Side, *, doc: dict | None = None, smap=None) -> dict[int, ArticleCounts]:
+    """Per-Article counts and a proposed verdict. Every changed file is
+    classified through the ownership map BEFORE anything is counted, so a
+    refusal is never preceded by a partial answer."""
+    doc = manifest.load() if doc is None else doc
+    result = {int(k): ArticleCounts(int(k)) for k in doc if k.isdigit()}
+    changed = [p for p in sorted(set(old.files()) | set(new.files()))
+               if old.read(p) != new.read(p)]
+
+    owner: dict[str, str] = {}
+    for p in changed:
+        who = manifest.claimants(doc, p)
+        if not who:
+            raise Refusal(f"{p}: changed, and no Article claims it in build/article-manifest.json. "
+                          f"Declare it in an Article's data_sources, or list it under ignored.")
+        if len(who) > 1:
+            raise Refusal(f"{p}: claimed by {', '.join(who)} -- the ownership map must name "
+                          f"exactly one")
+        if who[0] == "shared":
+            raise Refusal(f"{p}: changed, and it is listed as shared. What a change to a shared "
+                          f"file means for the determination is not decided, so a person must say "
+                          f"which Articles it affects (ruled by Ben Frey, 2026-10-09).")
+        if who[0] != "ignored":
+            owner[p] = who[0]
+
+    for p, art in owner.items():
+        c = result[int(art)]
+        if manifest.PROSE_RE.match(p):
+            o, n = old.read(p), new.read(p)
+            counts = markdown_counts(o.decode("utf-8") if o is not None else None,
+                                     n.decode("utf-8") if n is not None else "", smap=smap)
+            c.prose += counts["prose"]
+            c.heading += counts["heading"]
+            c.table += counts["table"]
+            c.suppressed += counts["suppressed"]
+            c.new = c.new or o is None
+            continue
+        if any(u.get("typ") == p for u in doc[art].get("units", [])):
+            c.needs_call.append(f"{p}: a layout unit changed. A person decides whether it changes "
+                                f"what the Code says (the use-table legend lives in one) or only "
+                                f"how it is laid out.")
+            continue
+        d = _declaration(doc, art, p)
+        compare = d.get("compare") if d else None
+        if compare == "json-keyed":
+            delta = diff_maps(json_leaves(old.read(p), d), json_leaves(new.read(p), d))
+            if delta.count():
+                c.data += delta.count()
+                c.data_detail[p] = delta
+        elif compare == "binary-hash":
+            c.needs_call.append(f"{p}: changed (binary). A person decides whether it changes the Code.")
+        elif compare == "generated-from":
+            if d["from"] not in owner:
+                c.needs_call.append(f"{p}: changed although its source {d['from']} did not -- an "
+                                    f"anomaly, or a change to its other input (see the manifest note)")
+        else:
+            raise Refusal(f"{p}: unknown compare form {compare!r} in build/article-manifest.json")
+    return result
+
+
+# --- The CLI ----------------------------------------------------------------------
+
+def main(argv=None) -> int:
+    ap = argparse.ArgumentParser(
+        description="Which Articles changed in substance between two versions of the Code.")
+    ap.add_argument("--old", required=True, help="the old version: a git ref")
+    side = ap.add_mutually_exclusive_group()
+    side.add_argument("--new-ref", help="the new version as a git ref")
+    side.add_argument("--new-dir", help="the new version as a source directory (default: source/)")
+    ap.add_argument("--section-map", help="a map from section_map.py derive; needs a directory new side")
+    ap.add_argument("--article", type=int,
+                    help="report one Article (every changed file is still classified)")
+    ap.add_argument("--json", help="also write the determination as JSON to this path")
+    a = ap.parse_args(argv)
+    try:
+        old = Side(ref=a.old)
+        if a.new_ref:
+            if a.section_map:
+                raise Refusal("--section-map needs a directory new side (--new-dir): "
+                              "a section map is checked against a tree")
+            new = Side(ref=a.new_ref)
+        else:
+            new = Side(root=Path(a.new_dir) if a.new_dir else SOURCE)
+        smap = None
+        if a.section_map:
+            import section_map
+            problems = section_map.selfcheck(a.section_map, a.old, new.root)
+            if problems:
+                raise Refusal("the section map failed its self-check: " + "; ".join(problems))
+            smap = section_map.load(a.section_map)
+        result = determine(old, new, smap=smap)
+    except Refusal as exc:
+        print(f"czc_diff: refusing -- {exc}", file=sys.stderr)
+        return 1
+
+    shown = [c for n, c in sorted(result.items()) if a.article in (None, n)]
+    print(f"Substantive-change determination: {old.label} -> {new.label}")
+    print(f"  {'Article':>7} {'prose':>6} {'heading':>8} {'table':>6} {'data':>6} "
+          f"{'suppressed':>11}  verdict")
+    for c in shown:
+        print(f"  {c.article:>7} {c.prose:>6} {c.heading:>8} {c.table:>6} {c.data:>6} "
+              f"{c.suppressed:>11}  {c.verdict}{' (new)' if c.new else ''}")
+    calls = [(c.article, note) for c in shown for note in c.needs_call]
+    if calls:
+        print("\nNeeds a person's call:")
+        for art, note in calls:
+            print(f"  Article {art}: {note}")
+    if a.json:
+        Path(a.json).write_text(json.dumps(
+            {"old": old.label, "new": new.label,
+             "articles": {str(c.article): c.as_json() for c in shown}},
+            indent=2, ensure_ascii=False) + "\n")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -334,3 +334,244 @@ def test_a_section_inserted_into_article_7_is_one_heading_and_one_line(tmp_path)
     assert czc_diff.markdown_counts(old, new, smap=smap) == {
         "prose": 1, "heading": 1, "table": 0, "suppressed": 64}
     assert czc_diff.markdown_counts(old, new)["heading"] > 100
+
+
+# --- The determination -----------------------------------------------------------
+
+CLI = [sys.executable, str(BUILD / "czc_diff.py")]
+
+
+@pytest.fixture(scope="module")
+def base_tree(tmp_path_factory):
+    """ALL of source/ at v1.0, materialised once and copied per test."""
+    return fx.copy_full_source(tmp_path_factory.mktemp("v1") / "source")
+
+
+@pytest.fixture(scope="module")
+def v1():
+    return czc_diff.Side(ref="v1.0")
+
+
+@pytest.fixture
+def tree(tmp_path, base_tree):
+    return Path(shutil.copytree(base_tree, tmp_path / "source"))
+
+
+def _edit_json(tree, rel, fn, indent=2):
+    p = tree / rel
+    data = json.loads(p.read_text())
+    fn(data)
+    p.write_text(json.dumps(data, indent=indent, ensure_ascii=False) + "\n")
+
+
+def _flip_d3(data):
+    rec = next(r for r in data if (r["code"], r["name"]) == ("D3", "NEIGHBORHOOD BUSINESS"))
+    cat = next(c for c in rec["use_col2"] if c["title"] == "COMMERCIAL GOODS")
+    entry = next(e for e in cat["entries"] if e[0] == "Retail & Service, General")
+    assert entry[1] == "rc sp"
+    entry[1] = "rc"
+
+
+def _others_unchanged(result, *except_):
+    return all(c.verdict == "UNCHANGED" for n, c in result.items() if n not in except_)
+
+
+def test_two_real_tags():
+    """v0.24-draft -> v1.0, against v1.0 -> v1.0 in the same test: the second
+    alone would pass with no code at all."""
+    r = czc_diff.determine(czc_diff.Side(ref="v0.24-draft"), czc_diff.Side(ref="v1.0"))
+    a2, a3 = r[2], r[3]
+    assert a2.verdict == "SUBSTANTIVE" and a2.prose == 0 and a2.data > 1
+    assert a2.data_detail[A2].changed[D3_CELL] == ("rc", "rc sp")
+    assert any(n.startswith("article-02.typ:") for n in a2.needs_call)
+    assert (a3.prose, a3.heading, a3.table, a3.data) == (2, 0, 0, 10)
+    assert a3.verdict == "SUBSTANTIVE"
+    assert {n.split(":")[0] for n in a3.needs_call} == {"street-type-inventory.typ",
+                                                         "street-type-map.typ"}
+    assert _others_unchanged(r, 2, 3)
+    same = czc_diff.determine(czc_diff.Side(ref="v1.0"), czc_diff.Side(ref="v1.0"))
+    assert _others_unchanged(same) and not any(c.needs_call for c in same.values())
+
+
+def test_flipping_one_use_status_reports_exactly_that_cell(tree, v1):
+    """The negative control the spec names: one status flipped, one cell reported."""
+    _edit_json(tree, A2, _flip_d3)
+    r = czc_diff.determine(v1, czc_diff.Side(root=tree))
+    assert r[2].data == 1
+    assert r[2].data_detail[A2].changed == {D3_CELL: ("rc sp", "rc")}
+    assert r[2].verdict == "SUBSTANTIVE" and _others_unchanged(r, 2)
+
+
+def test_reformatting_a_data_file_is_not_a_change(tree, v1):
+    _edit_json(tree, A2, lambda d: None, indent=4)
+    assert (tree / A2).read_bytes() != _show("v1.0", A2)          # the bytes really differ
+    assert _others_unchanged(czc_diff.determine(v1, czc_diff.Side(root=tree)))
+
+
+def test_a_derived_inventory_field_is_not_substance(tree, v1):
+    def change(d):
+        seg = next(s for s in d["segments"] if s["id"] == "camp-road-1")
+        seg["present_use"] = "Something else"
+    _edit_json(tree, INV, change)
+    assert _others_unchanged(czc_diff.determine(v1, czc_diff.Side(root=tree)))
+
+
+def test_every_field_of_a_type_is_substance(tree, v1):
+    """types.json declares no substantive_fields, so every leaf counts."""
+    _edit_json(tree, "exhibits/cross-sections/types.json",
+               lambda d: d["S1"].__setitem__("name", "MAIN STREET, AMENDED"))
+    r = czc_diff.determine(v1, czc_diff.Side(root=tree))
+    assert r[3].data == 1 and r[3].verdict == "SUBSTANTIVE" and not r[3].needs_call
+
+
+def test_a_regenerated_figure_alone_needs_a_call(tree, v1):
+    """S1.svg is generated from types.json. Changed while types.json did not is
+    an anomaly -- or a change to its other input -- and a person decides."""
+    (tree / "exhibits/cross-sections/S1.svg").write_text(
+        (tree / "exhibits/cross-sections/S1.svg").read_text() + "<!-- x -->\n")
+    r = czc_diff.determine(v1, czc_diff.Side(root=tree))
+    assert r[3].verdict == "NEEDS-CALL"
+    assert any("S1.svg" in n and "did not" in n for n in r[3].needs_call)
+
+
+def test_a_figure_regenerated_with_its_source_is_counted_through_the_source(tree, v1):
+    _edit_json(tree, "exhibits/cross-sections/types.json",
+               lambda d: d["S1"].__setitem__("name", "MAIN STREET, AMENDED"))
+    (tree / "exhibits/cross-sections/S1.svg").write_text(
+        (tree / "exhibits/cross-sections/S1.svg").read_text() + "<!-- x -->\n")
+    r = czc_diff.determine(v1, czc_diff.Side(root=tree))
+    assert r[3].data == 1 and not r[3].needs_call
+
+
+def test_a_binary_exhibit_needs_a_call(tree, v1):
+    sprite = next(p for p in sorted((tree / "exhibits/cross-sections/sprites").rglob("*"))
+                  if p.is_file() and p.name != "NOTICE.md")
+    sprite.write_bytes(sprite.read_bytes() + b"\0")
+    r = czc_diff.determine(v1, czc_diff.Side(root=tree))
+    assert r[3].verdict == "NEEDS-CALL"
+    assert any("changed (binary)" in n for n in r[3].needs_call)
+
+
+def test_a_layout_unit_change_needs_a_call(tree, v1):
+    """Ruling 5: the use-table legend lives in article-02.typ, so a changed
+    layout unit is never silently zero."""
+    (tree / "article-02.typ").write_text((tree / "article-02.typ").read_text() + "\n// x\n")
+    r = czc_diff.determine(v1, czc_diff.Side(root=tree))
+    assert r[2].verdict == "NEEDS-CALL" and _others_unchanged(r, 2)
+
+
+def test_an_edited_raw_table_is_substantive_though_the_redline_shows_no_mark(tree, v1):
+    p = tree / ART3
+    p.write_text(p.read_text().replace("TABLE 3.2 SIGHT DISTANCE", "TABLE 3.2 SIGHT DISTANCES", 1))
+    r = czc_diff.determine(v1, czc_diff.Side(root=tree))
+    assert (r[3].prose, r[3].table) == (0, 2) and r[3].verdict == "SUBSTANTIVE"
+
+
+def test_an_ignored_file_is_not_a_change(tree, v1):
+    p = tree / "exhibits/street-types/inventory-sample.json"
+    p.write_text(p.read_text() + "\n")
+    assert _others_unchanged(czc_diff.determine(v1, czc_diff.Side(root=tree)))
+
+
+# --- Refusals: never guess -----------------------------------------------------
+
+def test_an_unclaimed_changed_file_is_refused(tree, v1):
+    (tree / "exhibits/new-thing.json").write_text("{}\n")
+    with pytest.raises(czc_diff.Refusal, match="exhibits/new-thing.json"):
+        czc_diff.determine(v1, czc_diff.Side(root=tree))
+
+
+def test_a_changed_shared_file_is_refused(tree, v1):
+    """Ruled by Ben Frey, 2026-10-09."""
+    doc = copy.deepcopy(manifest.load())
+    doc["shared"] = [A2]
+    _edit_json(tree, A2, _flip_d3)
+    with pytest.raises(czc_diff.Refusal, match="shared"):
+        czc_diff.determine(v1, czc_diff.Side(root=tree), doc=doc)
+
+
+def test_unwiring_article_2s_data_is_refused_not_reported_as_zero(tree, v1):
+    """The spec's second control. 'Article 2 reports zero' is the failure that
+    already shipped; without the data_sources wiring the file is unclaimed and
+    the determination refuses instead."""
+    doc = copy.deepcopy(manifest.load())
+    doc["2"]["data_sources"] = []
+    _edit_json(tree, A2, _flip_d3)
+    with pytest.raises(czc_diff.Refusal, match="no Article claims"):
+        czc_diff.determine(v1, czc_diff.Side(root=tree), doc=doc)
+
+
+def test_the_old_code_only_key_is_refused(tree, v1):
+    doc = copy.deepcopy(manifest.load())
+    doc["2"]["data_sources"][0]["key"] = "[].code"
+    _edit_json(tree, A2, _flip_d3)
+    with pytest.raises(czc_diff.Refusal, match="not unique"):
+        czc_diff.determine(v1, czc_diff.Side(root=tree), doc=doc)
+
+
+def test_broken_json_is_refused(tree, v1):
+    (tree / INV).write_text("{")
+    with pytest.raises(czc_diff.Refusal, match="not valid JSON"):
+        czc_diff.determine(v1, czc_diff.Side(root=tree))
+
+
+def test_a_bad_ref_is_refused():
+    with pytest.raises(czc_diff.Refusal, match="not a commit"):
+        czc_diff.Side(ref="no-such-ref-xyz")
+
+
+# --- The CLI --------------------------------------------------------------------
+
+def _cli(*args):
+    return subprocess.run([*CLI, *args], capture_output=True, text=True, cwd=REPO)
+
+
+def test_the_cli_reports_and_writes_json(tmp_path):
+    out = tmp_path / "d.json"
+    r = _cli("--old", "v0.24-draft", "--new-ref", "v1.0", "--json", str(out))
+    assert r.returncode == 0, r.stderr
+    doc = json.loads(out.read_text())
+    assert doc["articles"]["2"]["verdict"] == "SUBSTANTIVE"
+    assert {"path": czc_diff.leaf_label(D3_CELL), "old": "rc", "new": "rc sp"} in \
+        doc["articles"]["2"]["data_detail"][A2]["changed"]
+    assert sorted(doc["articles"], key=int) == [str(n) for n in range(1, 10)]
+
+
+def test_the_cli_refuses_with_exit_1_and_writes_nothing(tmp_path):
+    out = tmp_path / "d.json"
+    r = _cli("--old", "no-such-ref-xyz", "--new-ref", "v1.0", "--json", str(out))
+    assert r.returncode == 1 and "refusing" in r.stderr and not out.exists()
+
+
+def test_a_section_map_with_a_ref_new_side_is_refused(tmp_path):
+    m = tmp_path / "m.json"
+    m.write_text("{}")
+    r = _cli("--old", "v1.0", "--new-ref", "v1.0", "--section-map", str(m))
+    assert r.returncode == 1 and "--new-dir" in r.stderr
+
+
+def test_a_section_inserted_into_article_7_end_to_end(tree, tmp_path):
+    p = tree / ART7
+    p.write_text(fx.insert_section(p.read_text(), 3, "AGRICULTURE", "Farming is permitted."))
+    m = tmp_path / "map.json"
+    d = subprocess.run([sys.executable, str(BUILD / "section_map.py"), "derive", "v1.0",
+                        "--new-dir", str(tree), "--out", str(m)],
+                       capture_output=True, text=True, cwd=REPO)
+    assert d.returncode == 0, d.stderr
+    out = tmp_path / "d.json"
+    r = _cli("--old", "v1.0", "--new-dir", str(tree), "--section-map", str(m), "--json", str(out))
+    assert r.returncode == 0, r.stderr
+    a = json.loads(out.read_text())["articles"]
+    assert (a["7"]["prose"], a["7"]["heading"], a["7"]["suppressed"]) == (1, 1, 64)
+    assert a["7"]["verdict"] == "SUBSTANTIVE"
+    assert all(a[str(n)]["verdict"] == "UNCHANGED" for n in range(1, 10) if n != 7)
+
+
+def test_the_live_tree_runs_and_ignores_git_ignored_junk():
+    """The live source/ holds .DS_Store files and inventory.json.bak-* backups,
+    which git ignores. They are not part of the Code and must not be refused as
+    unclaimed. No count is pinned: the live tree moves."""
+    r = _cli("--old", "v1.0")
+    assert r.returncode == 0, r.stderr
+    rows = [ln.split() for ln in r.stdout.splitlines()]
+    assert [row[0] for row in rows if row and row[0].isdigit()] == [str(n) for n in range(1, 10)]
