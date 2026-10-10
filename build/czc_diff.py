@@ -340,7 +340,8 @@ def markdown_counts(old: str | None, new: str, *, smap=None) -> dict[str, int]:
 # --- The two sides --------------------------------------------------------------
 
 def _git(*args: str) -> str:
-    return subprocess.run(["git", "-C", str(REPO), *args], capture_output=True,
+    return subprocess.run(["git", "-c", "core.quotePath=false", "-C", str(REPO), *args],
+                          capture_output=True,
                           text=True, check=True).stdout
 
 
@@ -460,6 +461,12 @@ def determine(old: Side, new: Side, *, doc: dict | None = None, smap=None) -> di
             owner[p] = who[0]
 
     for p, art in owner.items():
+        if int(art) not in result:
+            raise Refusal(f"{p}: changed, and Article {art} is not in build/article-manifest.json")
+
+    real_source_change: set[str] = set()      # json-keyed paths with a nonzero delta
+    generated: list[tuple[str, str, dict]] = []
+    for p, art in owner.items():
         c = result[int(art)]
         if manifest.PROSE_RE.match(p):
             o, n = old.read(p), new.read(p)
@@ -483,14 +490,20 @@ def determine(old: Side, new: Side, *, doc: dict | None = None, smap=None) -> di
             if delta.count():
                 c.data += delta.count()
                 c.data_detail[p] = delta
+                real_source_change.add(p)
         elif compare == "binary-hash":
             c.needs_call.append(f"{p}: changed (binary). A person decides whether it changes the Code.")
         elif compare == "generated-from":
-            if d["from"] not in owner:
-                c.needs_call.append(f"{p}: changed although its source {d['from']} did not -- an "
-                                    f"anomaly, or a change to its other input (see the manifest note)")
+            generated.append((p, art, d))
         else:
             raise Refusal(f"{p}: unknown compare form {compare!r} in build/article-manifest.json")
+    # A generated file is explained only by a source with a REAL (nonzero) data
+    # delta: a re-indented or _meta-only source changes bytes and scores zero.
+    for p, art, d in generated:
+        if d["from"] not in real_source_change:
+            result[int(art)].needs_call.append(
+                f"{p}: changed although its source {d['from']} did not -- an "
+                f"anomaly, or a change to its other input (see the manifest note)")
     return result
 
 
@@ -508,6 +521,8 @@ def main(argv=None) -> int:
                     help="report one Article (every changed file is still classified)")
     ap.add_argument("--json", help="also write the determination as JSON to this path")
     a = ap.parse_args(argv)
+    if a.json and Path(a.json).is_file():
+        Path(a.json).unlink()        # a refusal must not leave an earlier run's file behind
     try:
         old = Side(ref=a.old)
         if a.new_ref:
@@ -525,6 +540,8 @@ def main(argv=None) -> int:
                 raise Refusal("the section map failed its self-check: " + "; ".join(problems))
             smap = section_map.load(a.section_map)
         result = determine(old, new, smap=smap)
+        if a.article is not None and a.article not in result:
+            raise Refusal(f"Article {a.article} is not in build/article-manifest.json")
     except Refusal as exc:
         print(f"czc_diff: refusing -- {exc}", file=sys.stderr)
         return 1

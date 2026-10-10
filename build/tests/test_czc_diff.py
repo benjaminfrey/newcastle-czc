@@ -575,3 +575,67 @@ def test_the_live_tree_runs_and_ignores_git_ignored_junk():
     assert r.returncode == 0, r.stderr
     rows = [ln.split() for ln in r.stdout.splitlines()]
     assert [row[0] for row in rows if row and row[0].isdigit()] == [str(n) for n in range(1, 10)]
+
+# --- Fix round 1 ---------------------------------------------------------------
+
+S1_SVG = "exhibits/cross-sections/S1.svg"
+TYPES = "exhibits/cross-sections/types.json"
+
+
+def _touch_svg(tree):
+    (tree / S1_SVG).write_text((tree / S1_SVG).read_text() + "<!-- x -->\n")
+
+
+def test_a_figure_beside_a_reindented_source_still_needs_a_call(tree, v1):
+    """Re-indenting types.json changes its bytes and scores zero; it must not
+    'explain' an edited figure."""
+    _edit_json(tree, TYPES, lambda d: None, indent=4)
+    _touch_svg(tree)
+    r = czc_diff.determine(v1, czc_diff.Side(root=tree))
+    assert r[3].verdict == "NEEDS-CALL" and r[3].data == 0
+    assert any("S1.svg" in n and "did not" in n for n in r[3].needs_call)
+
+
+def test_a_figure_beside_a_meta_only_source_change_still_needs_a_call(tree, v1):
+    _edit_json(tree, TYPES, lambda d: d["_meta"].__setitem__("note", "reworded"))
+    _touch_svg(tree)
+    r = czc_diff.determine(v1, czc_diff.Side(root=tree))
+    assert r[3].verdict == "NEEDS-CALL" and r[3].data == 0
+    assert any("S1.svg" in n and "did not" in n for n in r[3].needs_call)
+
+
+def test_prose_for_an_article_not_in_the_manifest_is_refused(tree, v1):
+    (tree / "article-00-x.md").write_text("Some text.\n")
+    with pytest.raises(czc_diff.Refusal, match="Article 0"):
+        czc_diff.determine(v1, czc_diff.Side(root=tree))
+
+
+def test_a_non_ascii_file_name_is_seen_and_refused(tree, v1):
+    (tree / "exhibits/café.json").write_text("{}\n")
+    with pytest.raises(czc_diff.Refusal, match="exhibits/café.json"):
+        czc_diff.determine(v1, czc_diff.Side(root=tree))
+
+
+def test_an_article_outside_the_manifest_is_refused_by_the_cli():
+    r = _cli("--old", "v1.0", "--new-ref", "v1.0", "--article", "12")
+    assert r.returncode == 1 and "Article 12 is not in build/article-manifest.json" in r.stderr
+
+
+def test_a_refusal_leaves_no_stale_json(tmp_path):
+    out = tmp_path / "d.json"
+    out.write_text('{"old": "stale"}')
+    r = _cli("--old", "no-such-ref-xyz", "--new-ref", "v1.0", "--json", str(out))
+    assert r.returncode == 1 and not out.exists()
+
+
+def test_a_deleted_prose_file_counts_every_old_line(tree, v1):
+    (tree / ART7).unlink()
+    prose, _, _ = czc_diff.split_markdown(_text("v1.0", ART7))
+    r = czc_diff.determine(v1, czc_diff.Side(root=tree))
+    assert r[7].verdict == "SUBSTANTIVE" and r[7].prose == len(prose)
+
+
+def test_article_flag_does_not_narrow_a_refusal(tree):
+    (tree / "exhibits/new-thing.json").write_text("{}\n")
+    r = _cli("--old", "v1.0", "--new-dir", str(tree), "--article", "7")
+    assert r.returncode == 1 and "exhibits/new-thing.json" in r.stderr
