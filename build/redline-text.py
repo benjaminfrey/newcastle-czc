@@ -296,7 +296,9 @@ PLAIN = False
 
 
 def wrap_bold(s: str) -> str:
-    return _wrap(s, lambda core: f'**{core}**')
+    # A core that already holds **bold** (an added line opening "**Planting.** ...")
+    # would come out as "****Planting.**..."; __ nests around ** in pandoc and GFM.
+    return _wrap(s, lambda core: f'__{core}__' if '**' in core else f'**{core}**')
 
 
 def set_plain_mode() -> None:

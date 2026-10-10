@@ -329,7 +329,10 @@ def _resident_call(note: str, units: list[dict]) -> str:
     lab = next((u["label"] for u in units
                 if u.get("label") and path in (u.get("typ"), u.get("data"))), None) \
         or "an exhibit file"
-    rest = rest.replace("a layout unit changed.", "its layout changed.")
+    plural = bool(re.match(r"the (two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|"
+                           r"thirteen|\d+) ", lab)) or lab.split("(")[0].split()[-1].endswith("s")
+    rest = rest.replace("a layout unit changed.",
+                        "their layout changed." if plural else "its layout changed.")
     if rest.startswith("changed although its source"):
         rest = ("changed although the data it is printed from did not. A person decides whether "
                 "anything the Code says changed.")

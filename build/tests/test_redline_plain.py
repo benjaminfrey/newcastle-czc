@@ -244,7 +244,9 @@ def test_an_added_defined_term_is_distinguishable_from_an_unchanged_one_when_ren
 
 def test_the_sigil_marks_whole_line_additions_of_every_kind(tmp_path):
     text, _ = run_files(tmp_path, TERMS_OLD, TERMS_NEW, "--source", "--plain")
-    assert f"- {SIGIL} **" in text, "list item addition"
+    # The added item opens in bold (a defined term), so it is wrapped in __, never in a
+    # second ** (which read "****Added Item:**").
+    assert f"- {SIGIL} __**Added Item:**" in text and "****" not in text, "list item addition"
     text, _ = run_files(tmp_path, OLD, NEW.replace("| Farm stand | P | P |",
                                                    "| Farm stand | P | P |\n| Roadside stand | P | P |"),
                         "--source", "--plain")
@@ -328,3 +330,15 @@ def test_what_the_source_legend_admits_is_what_the_code_does(tmp_path):
     assert "*[Table or figure removed: " in text, "a removed block left no note"
     assert "old figure" not in text, "the removed block's own text must not reappear"
     assert "\n## 3. ADDED SECTION\n\n*[Heading changed" in text, "the retitled heading lost its text or its note"
+
+
+def test_an_added_line_that_starts_bold_has_no_quadruple_asterisks(tmp_path):
+    """v0.21-draft -> v0.22-draft added lines such as '**Planting.** Street trees ...';
+    wrapping them in ** produced '****Planting.**'."""
+    def show(ref):
+        return subprocess.run(["git", "-C", str(REPO), "show",
+                               f"{ref}:source/article-03-streets-roads-driveways.md"],
+                              capture_output=True, text=True, check=True).stdout
+    out, _ = run_files(tmp_path, show("v0.21-draft"), show("v0.22-draft"), "--source", "--plain")
+    assert "****" not in out
+    assert "Planting." in out
