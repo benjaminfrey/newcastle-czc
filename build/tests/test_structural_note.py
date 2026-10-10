@@ -338,7 +338,7 @@ def test_a_needs_call_article_says_so_in_resident_words(tmp_path, tree):
     text, _ = _note(tmp_path, "--scope", "article:3", "--old", "v1.0", "--new-dir", str(tree))
     flat = _flat(text)
     assert "needs a person's judgement" in flat
-    assert "the ten Thoroughfare Type pages (cross-section-plates.typ)" in flat
+    assert "the ten Thoroughfare Type pages" in flat and ".typ" not in flat
 
 
 def test_a_long_heading_list_flows_and_never_refuses(tmp_path, tree):
@@ -384,3 +384,73 @@ def test_a_list_too_long_for_four_pages_ends_with_an_exact_count(tmp_path):
     m = re.search(r"…and (\d+) more\. The full list is in the markdown version", _flat(text))
     assert m, "the last page must say that items remain"
     assert text.count("•") + int(m.group(1)) == 400
+
+
+# --- Final-review fix wave -------------------------------------------------------
+
+def _tag_tree(tmp_path, ref, name="tagsrc"):
+    return _fx.copy_full_source(tmp_path / name, ref)
+
+
+@pytest.mark.parametrize("n,old,new", [(3, "v0.23-draft", "v0.24-draft"),
+                                        (2, "v0.24-draft", "v1.0")])
+def test_a_data_only_change_is_never_called_unchanged(tmp_path, n, old, new):
+    """I1: Article 3 v0.23->v0.24 rewrote Exhibit 3.1's inventory; Article 2
+    v0.24->v1.0 changed the use tables. Neither changed a heading, table or figure
+    WRITTEN IN THE TEXT, and the page must not say nothing of the Article changed."""
+    tree = _tag_tree(tmp_path, new)
+    text, _ = _note(tmp_path, "--scope", f"article:{n}", "--old", old, "--new-dir", str(tree))
+    flat = _flat(text)
+    assert ("None of the headings, tables or figures written in this Article's text was "
+            "added, removed or changed.") in flat
+    assert "None of this Article's headings, tables or figures" not in flat
+    assert "Its data-driven pages changed: see “Shown in their current form” above." in flat
+
+
+def test_an_unchanged_article_does_not_claim_data_pages_changed(tmp_path, tree):
+    text, _ = _note(tmp_path, "--scope", "article:3", "--old", "v1.0", "--new-dir", str(tree))
+    assert "Its data-driven pages changed" not in _flat(text)
+
+
+def test_neither_scope_promises_a_note_for_every_table_or_figure(tmp_path, tree):
+    """I2: native pages never get an in-text note, so the promise is for a heading,
+    or a table or figure written within the text."""
+    code, _ = _note(tmp_path, "--map", str(_SHIPPED_MAP))
+    art, _ = _note(tmp_path, "--scope", "article:7", "--old", "v1.0", "--new-dir", str(tree),
+                   name="a.pdf")
+    for scope, text in (("code", code), ("article", art)):
+        flat = _flat(text)
+        assert "a heading, or a table or figure written within the text," in flat, scope
+        assert "Where a heading, table" not in flat, scope
+
+
+def test_the_markdown_describes_the_markdown(tmp_path, tree):
+    """I3 + I4: the .md is read with bold additions and has none of the
+    data-driven pages; the PDF keeps its own wording."""
+    md, md_code = tmp_path / "a.md", tmp_path / "c.md"
+    pdf_text, _ = _note(tmp_path, "--scope", "article:3", "--old", "v1.0", "--new-dir", str(tree),
+                        "--md", str(md))
+    _note(tmp_path, "--map", str(_SHIPPED_MAP), "--md", str(md_code), name="c.pdf")
+    for path in (md, md_code):
+        flat = _flat(path.read_text())
+        assert "bold" in flat and "shown in red" not in flat, path
+        assert "this markdown version does not include them" in flat, path
+    assert "In the PDF they appear as they now stand, without marks:" in _flat(md.read_text())
+    flat_pdf = _flat(pdf_text)
+    assert "shown in red" in flat_pdf and "markdown version does not include" not in flat_pdf
+    assert "they appear as they now stand" in flat_pdf
+
+
+def test_a_needs_call_item_names_the_label_and_never_a_file(tmp_path, tree):
+    """M1."""
+    p = tree / "cross-section-plates.typ"
+    p.write_text(p.read_text() + "\n// a layout-only edit\n")
+    q = tree / "article-02.typ"
+    q.write_text(q.read_text() + "\n// a layout-only edit\n")
+    t3, _ = _note(tmp_path, "--scope", "article:3", "--old", "v1.0", "--new-dir", str(tree))
+    t2, _ = _note(tmp_path, "--scope", "article:2", "--old", "v1.0", "--new-dir", str(tree),
+                  name="n2.pdf")
+    for t in (t3, t2):
+        assert ".typ" not in t and ".json" not in t
+    assert "the ten Thoroughfare Type pages" in _flat(t3)
+    assert "))" not in t2 and ") (" not in t2

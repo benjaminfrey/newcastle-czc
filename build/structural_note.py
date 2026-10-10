@@ -1,43 +1,52 @@
 #!/usr/bin/env python3
-"""The baseline redline's STRUCTURAL-CHANGES note (ADOPTION-SPEC.md §4.3).
+"""The "How to read this redline" page: what a redline cannot show, said once.
 
-WHY THIS PAGE EXISTS. A redline is a text diff, so three real changes cannot
-be marked in it, and each of them is invisible in exactly the way that misleads
-a reader rather than merely inconveniencing them:
+A redline is a text diff, so some changes cannot be marked in it, and each is
+invisible in exactly the way that misleads a reader rather than merely
+inconveniencing them: a table regenerated from data, a page composed from data,
+an Article moved out of markdown, a renumbering suppressed as noise. A reader who
+is told nothing reads zero marks as "nothing changed". This page tells them, once,
+before any marked text.
 
-  1. Article 2's district standards moved out of markdown into a native-Typst
-     unit between the baseline and now (spec §1.2b). A text diff would report
-     the move as ~2,319 DELETED lines -- in a warrant packet, "the Town deleted
-     all of its district standards" -- so the article is reproduced UNMARKED
-     instead. A reader who is not told will read zero marks as "Article 2 was
-     untouched."
-  2. Every article after 2 shifts up by one, and cross-references and table
-     numbers were renumbered throughout. The normaliser suppresses ~126 of
-     those marks deliberately, so that 151 real changes are not buried under
-     them. That suppression is honest ONLY if the reader is told the fact once,
-     plainly -- otherwise a citizen reads the packet as "nothing was
-     renumbered."
-  3. Figures, tables and maps render at current state, unmarked, because a text
-     diff cannot mark a regenerated figure. This limitation was already
-     disclosed on the cover; it belongs here with the others.
+TWO SCOPES.
 
-Before this module, `build-redline-full.sh` hardcoded ONE cover caveat for both
-the draft-to-draft and the baseline runs, mentioning only (3). Points (1) and
-(2) -- the two invented for this feature -- were disclosed nowhere.
+  code (default)   The whole-Code page, placed on the verso facing the cover of
+                   the integrated baseline redline (build-redline-full.sh). ONE
+                   page, always: the front matter's page count is parity-critical,
+                   so a block that does not fit REFUSES (SystemExit) rather than
+                   spilling. Every sentence that names an Article, a count or a
+                   "new" status is GENERATED from adoption-map.json, so under the
+                   identity map shipped after the v1.0 adoption it claims no
+                   Article is new, unmarked or renumbered -- and the article map
+                   it prints (when something moved) is the one the renumbering
+                   suppression actually used. It also names every native page
+                   (district pages, Type plates, Exhibits 3.1/3.2, District Maps)
+                   that never gets an in-text note, from the manifest's labels.
 
-The page is rendered as the verso facing the cover, i.e. before any marked
-text, and is generated FROM `adoption-map.json` so the article map it prints
-cannot drift from the map the renumbering suppression actually used.
+  article:N        The page in front of ONE Article's standalone redline
+                   (build-redline-standalone.sh), compared against --old REF.
+                   Written from the change determination (czc_diff) and the
+                   ownership map: it names the KINDS of change -- wording,
+                   headings, tables or figures, the data its pages are printed
+                   from -- never line counts (czc_diff counts a modified line
+                   twice), then lists each heading, table or figure that was
+                   added, removed or changed by name. Up to four pages: the long
+                   list flows item by item and, if the fourth page fills, ends
+                   with an exact "...and N more" pointing to the markdown. It
+                   reads the SAME old side as the Article's in-text notes: the raw
+                   old text on the ordinary draft path, and (--baseline) the
+                   baseline-normalised side the baseline stage marks.
 
-Every sentence that names an Article, a count or a "new" status is GENERATED
-from adoption-map.json (or, for a single Article, from the change determination
-and the ownership map), so under the identity map shipped after the v1.0
-adoption the page claims none of the three. The page names KINDS of change --
-wording, headings, tables or figures, data -- never line counts (czc_diff counts
-a modified line twice).
+TWO MEDIA. The PDF (flowed with PyMuPDF onto pages, padded to an EVEN page count
+with --pad-to-even so a standalone's footers keep their physical parity) and the
+markdown (--md), which is the redline that survives in the repository. They are
+built from the same blocks but not the same words: the markdown is read with bold
+additions and contains none of the data-driven pages, so it says so rather than
+describing the PDF.
 
 Usage:  structural_note.py OUT_PDF [--map PATH] [--old-label LABEL]
             [--scope code|article:N] [--old REF] [--new-dir DIR]
+            [--baseline] [--section-map PATH]
             [--md OUT_MD] [--pad-to-even]
 """
 from __future__ import annotations
@@ -142,17 +151,32 @@ def _old_label(old_ref: str) -> str:
     return f"the Code as of {old_ref}"
 
 
-def note_blocks(amap, old_label: str, source_dir: Path | None = None) -> list[tuple[str, str]]:
+MEDIA = ("pdf", "md")
+NOTE_PROMISE = ("Where a heading, or a table or figure written within the text, was added, "
+                "removed or changed, a note in italics and square brackets says so at that spot.")
+UNITS_NOT_IN_MD = ("These pages of the printed Code are generated from data or reproduced as "
+                   "exhibits; this markdown version does not include them. ")
+
+
+def _check_medium(medium: str) -> None:
+    if medium not in MEDIA:
+        raise ValueError(f"medium must be one of {MEDIA}, not {medium!r}")
+
+
+def note_blocks(amap, old_label: str, source_dir: Path | None = None,
+                medium: str = "pdf") -> list[tuple[str, str]]:
     """(heading, body) blocks. The wording is deliberately plain: a citizen
     reads this page, not a drafter. Every block that names an Article or a
-    "new" status exists only if the adoption map says it is true."""
+    "new" status exists only if the adoption map says it is true. `medium` is
+    "pdf" or "md": the markdown is read with bold additions and contains none of
+    the data-driven pages, so its sentences about both differ."""
+    _check_medium(medium)
     source_dir = Path(source_dir) if source_dir else BUILD.parent / "source"
+    added = "red" if medium == "pdf" else "bold"
     blocks = [(
         "What this document compares",
         f"This redline compares the proposed Code against {old_label}. "
-        f"Additions are shown in red; deletions are struck through. Where a heading, "
-        f"table or figure was added, removed or changed, a note in italics and square "
-        f"brackets says so at that spot.",
+        f"Additions are shown in {added}; deletions are struck through. {NOTE_PROMISE}",
     )]
 
     new_articles = sorted((_article_of(b), b) for b, old in amap.files.items()
@@ -182,10 +206,16 @@ def note_blocks(amap, old_label: str, source_dir: Path | None = None) -> list[tu
         ))
 
     units = _unit_labels()
+    if medium == "pdf":
+        heading = "Pages shown as they now stand, without marks"
+        lead = ("These are reproduced from data or as exhibits rather than written as text, so a "
+                "text comparison cannot mark them; each shows its current state: ")
+    else:
+        heading = "Pages shown as they now stand, without marks (PDF edition only)"
+        lead = UNITS_NOT_IN_MD + "In the PDF each shows its current state, without marks: "
     blocks.append((
-        "Pages shown as they now stand, without marks",
-        "These are reproduced from data or as exhibits rather than written as text, so a "
-        "text comparison cannot mark them; each shows its current state: " + "; ".join(units)
+        heading,
+        lead + "; ".join(units)
         + ". What changed in them is described in the Summary of Changes. Tables and figures written within an Article's "
         "text are different: where one was added, removed or changed, a note in italics and "
         "square brackets says so at that spot.",
@@ -194,11 +224,15 @@ def note_blocks(amap, old_label: str, source_dir: Path | None = None) -> list[tu
 
 
 def article_blocks(n: int, *, old_ref: str, new_dir: Path,
-                   old_label: str | None = None) -> tuple[str, list[tuple[str, str]]]:
+                   old_label: str | None = None,
+                   medium: str = "pdf") -> tuple[str, list[tuple[str, str]]]:
     """(subtitle, blocks) for Article n. Every sentence that names an Article, a
     kind of change, a heading or a table is generated from the change
-    determination and the ownership map (ruling 8: kinds, never line counts)."""
+    determination and the ownership map (ruling 8: kinds, never line counts).
+    `medium` is "pdf" or "md" (see note_blocks)."""
     import czc_diff
+
+    _check_medium(medium)
 
     doc = manifest.load()
     entry = doc.get(str(n), {})
@@ -216,9 +250,8 @@ def article_blocks(n: int, *, old_ref: str, new_dir: Path,
     blocks = [(
         "What this document compares",
         f"This is Article {n}, {name}, as proposed, compared against {old_label or _old_label(old_ref)}. "
-        f"Text added is shown in red; text deleted is struck through. Where a heading, table "
-        f"or figure was added, removed or changed, a note in italics and square brackets says "
-        f"so at that spot.")]
+        f"Text added is shown in {'red' if medium == 'pdf' else 'bold'}; text deleted is struck "
+        f"through. {NOTE_PROMISE}")]
 
     kinds = [k for k, v in (("its wording", c.prose), ("its headings", c.heading),
                             ("its tables or figures", c.table),
@@ -244,32 +277,58 @@ def article_blocks(n: int, *, old_ref: str, new_dir: Path,
 
     units = entry.get("units", [])
     labels = [u["label"] for u in units if u.get("label")]
+    units_heading = "Shown in their current form, without marks"
     if labels:
-        body = ("These are reproduced from data or as exhibits rather than written as text, so a "
-                "text comparison cannot mark them; they appear as they now stand: "
-                + "; ".join(labels) + ".")
+        if medium == "pdf":
+            body = ("These are reproduced from data or as exhibits rather than written as text, so a "
+                    "text comparison cannot mark them; they appear as they now stand: "
+                    + "; ".join(labels) + ".")
+        else:
+            units_heading += " (PDF edition only)"
+            body = (UNITS_NOT_IN_MD + "In the PDF they appear as they now stand, without marks: "
+                    + "; ".join(labels) + ".")
         # The Use Table Changes document is the record of district-page changes; point
         # to it only when Article 2's data (or its legend file) actually changed.
         if n == 2 and (c.data > 0 or any(note.startswith("article-02.typ:")
                                          for note in c.needs_call)):
             body += (" Every change to the district pages is listed item by item in the Use "
                      "Table Changes document.")
-        blocks.append(("Shown in their current form, without marks", body))
+        blocks.append((units_heading, body))
     if c.needs_call:
-        def resident(note: str) -> str:
-            path, _, rest = note.partition(": ")
-            lab = next((u.get("label") for u in units if u.get("typ") == path and u.get("label")),
-                       None) or "an exhibit file"
-            return f"• {lab} ({path}): {rest}"
         blocks.append(("Needs a person's judgement",
-                       "\n".join(resident(note) for note in c.needs_call)))
+                       "\n".join(_resident_call(note, units) for note in c.needs_call)))
     # The list goes LAST: it is the one block that may be long, and it flows item by
     # item (render), so it must never push a disclosure above it off the page.
-    blocks.append(("Headings, tables and figures",
-                   "\n".join(f"• {i}" for i in items) if items
-                   else "None of this Article's headings, tables or figures was added, removed "
-                        "or changed."))
+    if items:
+        listing = "\n".join(f"• {i}" for i in items)
+    else:
+        # Written in the text only: a data-driven page (the plates, an exhibit, the
+        # district pages) can change while no heading, table or figure in the text does.
+        listing = ("None of the headings, tables or figures written in this Article's text was "
+                   "added, removed or changed.")
+        if c.data > 0 and labels:
+            listing += " Its data-driven pages changed: see “Shown in their current form” above."
+        elif c.data > 0:
+            listing += " Its data-driven pages changed."
+        if c.needs_call:
+            listing += (" Some of its pages need a person's judgement: see “Needs a person's "
+                        "judgement” above.")
+    blocks.append(("Headings, tables and figures", listing))
     return f"Article {n} — {name}", blocks
+
+
+def _resident_call(note: str, units: list[dict]) -> str:
+    """One needs-a-person's-judgement item in resident words: the page's plain-words
+    label and the reason, never a file name. (czc_diff writes "<path>: <reason>".)"""
+    path, _, rest = note.partition(": ")
+    lab = next((u["label"] for u in units
+                if u.get("label") and path in (u.get("typ"), u.get("data"))), None) \
+        or "an exhibit file"
+    rest = rest.replace("a layout unit changed.", "its layout changed.")
+    if rest.startswith("changed although its source"):
+        rest = ("changed although the data it is printed from did not. A person decides whether "
+                "anything the Code says changed.")
+    return f"• {lab}: {rest}"
 
 
 MORE_LINE = "…and {n} more. The full list is in the markdown version of this redline."
@@ -446,7 +505,8 @@ def build_note(out_pdf: str, *, map_path: str | None = None,
     pages = render(out_pdf, None, blocks, intro=CODE_INTRO, max_pages=1,
                    pad_to_even=pad_to_even, scope_name="the whole-Code note")
     if md_path:
-        Path(md_path).write_text(to_markdown(None, blocks, CODE_INTRO), encoding="utf-8")
+        md_blocks = note_blocks(amap, old_label, medium="md")
+        Path(md_path).write_text(to_markdown(None, md_blocks, CODE_INTRO), encoding="utf-8")
     print(f"structural note -> {out_pdf} ({pages} page(s))")
 
 
@@ -457,7 +517,9 @@ def build_article_note(out_pdf: str, n: int, *, old_ref: str, new_dir: str,
     pages = render(out_pdf, sub, blocks, intro=ARTICLE_INTRO, max_pages=4,
                    pad_to_even=pad_to_even, scope_name=f"the Article {n} note")
     if md_path:
-        Path(md_path).write_text(to_markdown(sub, blocks, ARTICLE_INTRO), encoding="utf-8")
+        _, md_blocks = article_blocks(n, old_ref=old_ref, new_dir=Path(new_dir),
+                                      old_label=old_label, medium="md")
+        Path(md_path).write_text(to_markdown(sub, md_blocks, ARTICLE_INTRO), encoding="utf-8")
     print(f"structural note -> {out_pdf} ({pages} page(s))")
 
 
