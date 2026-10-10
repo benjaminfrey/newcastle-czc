@@ -4,7 +4,9 @@ Article 2's thirteen district pages are rendered from data; the redline shows
 them unmarked. This document is the only place their changes are listed item
 by item. Counts come from real tags or from trees materialised from v1.0.
 """
+import json
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -182,3 +184,175 @@ def test_an_unitemisable_change_falls_back_to_the_block():
     delta = utc.legend_delta(old, new)
     assert len(delta) == 1 and "cannot itemise" in delta[0]
     assert utc.legend_block_changed(old, new)
+
+
+# --- The document ------------------------------------------------------------------
+
+import czc_diff  # noqa: E402
+import section_fixtures as fx  # noqa: E402
+
+CLI = [sys.executable, str(BUILD / "use_table_changes.py")]
+A2 = "article-02-data.json"
+
+
+@pytest.fixture(scope="module")
+def base_tree(tmp_path_factory):
+    return fx.copy_full_source(tmp_path_factory.mktemp("v1") / "source")
+
+
+@pytest.fixture
+def tree(tmp_path, base_tree):
+    return Path(shutil.copytree(base_tree, tmp_path / "source"))
+
+
+def _edit(tree, fn):
+    p = tree / A2
+    data = json.loads(p.read_text())
+    fn(data)
+    p.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+
+
+def _record(data, code, name):
+    return next(r for r in data if (r["code"], r["name"]) == (code, name))
+
+
+def _section(md: str, n: int) -> str:
+    """The text of section `## n.` up to the next `## `."""
+    start = md.index(f"## {n}. ")
+    nxt = md.find("\n## ", start + 1)
+    return md[start:nxt if nxt != -1 else len(md)]
+
+
+def _run(*args):
+    return subprocess.run([*CLI, *args], capture_output=True, text=True, cwd=REPO)
+
+
+def test_v0_24_to_v1_0_reports_the_one_cell_and_the_standards(tmp_path):
+    """The calibrated positive control (ruling 10). The D3 cell is the only
+    changed use; the eleven districts' standards changes are reported in their
+    own section; the total equals the determination's Article 2 data count."""
+    out = tmp_path / "u.md"
+    r = _run("v0.24-draft", str(out), "--new-ref", "v1.0", "--json", str(tmp_path / "u.json"))
+    assert r.returncode == 0, r.stderr
+    md = out.read_text()
+    uses = _section(md, 2)
+    assert [ln for ln in uses.splitlines() if ln.startswith("- ")] == [
+        "- **Retail & Service, General** (COMMERCIAL GOODS): Residential Companion Permit (CEO) "
+        "→ Residential Companion Permit (CEO) + Special Permit (Planning Board)"]
+    assert "No use was added or removed" in _section(md, 3)
+    standards = _section(md, 5)
+    for district in ("D2 NEIGHBORHOOD RESIDENTIAL", "SD MARINE", "SD FABRICATION"):
+        assert district in standards
+    assert "No change to the legend" in _section(md, 1)
+    total = json.loads((tmp_path / "u.json").read_text())["total"]
+    det = czc_diff.determine(czc_diff.Side(ref="v0.24-draft"), czc_diff.Side(ref="v1.0"))
+    assert total == det[2].data > 1
+
+
+def test_nothing_to_report_exits_2_and_writes_nothing(tmp_path):
+    out = tmp_path / "u.md"
+    r = _run("v1.0", str(out), "--new-ref", "v1.0")
+    assert r.returncode == 2 and not out.exists()
+
+
+def test_the_three_districts_without_a_matrix_are_named(tmp_path):
+    out = tmp_path / "u.md"
+    assert _run("v0.24-draft", str(out), "--new-ref", "v1.0").returncode == 0
+    assert ("No Permitted Buildings matrix: SD CONSERVATION, SD CAMPUS, SD MARINE"
+            in _section(out.read_text(), 4))
+
+
+def test_a_legend_wording_change_alone_is_reported(tree, tmp_path):
+    """The spec's negative control: all 819 cells untouched, only the legend's
+    words changed. A cell-diff-only document reports nothing."""
+    p = tree / TYP
+    p.write_text(p.read_text().replace("[Special Permit Required]",
+                                       "[Special Exception Required]", 1))
+    out = tmp_path / "u.md"
+    r = _run("v1.0", str(out), "--new-dir", str(tree), "--json", str(tmp_path / "u.json"))
+    assert r.returncode == 0, r.stderr
+    assert "Special Exception Required" in _section(out.read_text(), 1)
+    assert json.loads((tmp_path / "u.json").read_text())["total"] == 0
+    det = czc_diff.determine(czc_diff.Side(ref="v1.0"), czc_diff.Side(root=tree))
+    assert det[2].verdict == "NEEDS-CALL"                            # and the determination flags it
+
+
+def test_an_unitemisable_legend_change_shows_both_texts(tree, tmp_path):
+    """A legend change no sentence can itemise still prints the before and after
+    legend text, each in its own block."""
+    p = tree / TYP
+    text = p.read_text()
+    assert ROW_U in text
+    p.write_text(text.replace(ROW_U, ROW_U.replace("[CEO]", "[ CEO ]"), 1))
+    assert utc.legend_block_changed(utc.parse_legend(text), utc.parse_legend(p.read_text()))
+    out = tmp_path / "u.md"
+    r = _run("v1.0", str(out), "--new-dir", str(tree))
+    assert r.returncode == 0, r.stderr
+    legend = _section(out.read_text(), 1)
+    assert "cannot itemise" in legend
+    assert "Before:" in legend and "After:" in legend
+    assert legend.count("```") == 4
+    assert "[ CEO ]" in legend.split("After:")[1]
+    assert "[ CEO ]" not in legend.split("After:")[0]
+
+
+def test_a_blank_status_is_written_not_allowed(tree, tmp_path):
+    def change(d):
+        rec = _record(d, "D1", "RURAL")
+        entry = next(e for c in rec["use_col1"] + rec["use_col2"] for e in c["entries"]
+                     if e[1] == "")
+        entry[1] = "u"
+    _edit(tree, change)
+    out = tmp_path / "u.md"
+    assert _run("v1.0", str(out), "--new-dir", str(tree)).returncode == 0
+    assert "Not allowed → Use Permit (CEO)" in _section(out.read_text(), 2)
+
+
+def test_the_soft_hyphen_category_prints_whole(tree, tmp_path):
+    """D4's TRANSPORTATION & UTILITIES is split in the data at a soft hyphen;
+    its cells sit under a category titled 'ITIES'. Print the word whole."""
+    def change(d):
+        cat = next(c for c in _record(d, "D4", "VILLAGE RESIDENTIAL")["use_col1"]
+                   if c["title"] == "ITIES")
+        cat["entries"][0][1] = "ex" if cat["entries"][0][1] != "ex" else "u"
+    _edit(tree, change)
+    out = tmp_path / "u.md"
+    assert _run("v1.0", str(out), "--new-dir", str(tree)).returncode == 0
+    uses = _section(out.read_text(), 2)
+    assert "(TRANSPORTATION & UTILITIES)" in uses and "(ITIES)" not in uses
+
+
+def test_an_added_use_is_an_event_distinct_from_a_change(tree, tmp_path):
+    def change(d):
+        cat = next(c for c in _record(d, "D1", "RURAL")["use_col1"] if c["title"] == "RECREATION")
+        cat["entries"].append(["Farm Stand", "u"])
+    _edit(tree, change)
+    out = tmp_path / "u.md"
+    assert _run("v1.0", str(out), "--new-dir", str(tree)).returncode == 0
+    md = out.read_text()
+    assert "Farm Stand" in _section(md, 3) and "Farm Stand" not in _section(md, 2)
+
+
+def test_a_matrix_change_names_its_row_and_column(tree, tmp_path):
+    def change(d):
+        m = _record(d, "D3", "NEIGHBORHOOD BUSINESS")["matrix"]
+        row = next(r for r in m["rows"] if r[0] == "Building Width")
+        row[1] = "60 ft"
+    _edit(tree, change)
+    out = tmp_path / "u.md"
+    assert _run("v1.0", str(out), "--new-dir", str(tree)).returncode == 0
+    matrix = _section(out.read_text(), 4)
+    assert "Building Width" in matrix and "Residential" in matrix and "60 ft" in matrix
+
+
+def test_the_document_renders_through_the_memo_builder(tmp_path):
+    """The document is a memo, not an Article: build-memo.sh renders it."""
+    import pymupdf
+    md, pdf = tmp_path / "u.md", tmp_path / "u.pdf"
+    assert _run("v0.24-draft", str(md), "--new-ref", "v1.0").returncode == 0
+    r = subprocess.run(["bash", str(BUILD / "build-memo.sh"), str(md), str(pdf),
+                        "Use Table Changes", "Newcastle Core Zoning Code"],
+                       capture_output=True, text=True, cwd=REPO)
+    assert r.returncode == 0, r.stderr
+    text = "".join(page.get_text() for page in pymupdf.open(pdf))
+    assert "Retail & Service, General" in text
