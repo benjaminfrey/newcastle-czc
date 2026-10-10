@@ -75,7 +75,7 @@ echo "  old:    $OLD_MD"
 echo "  new:    $NEW_MD"
 echo "  output: $OUTPUT"
 
-TMP_MD="$(mktemp -t redline).md"
+TMP_MD="$(mktemp "${TMPDIR:-/tmp}/redline.XXXXXX").md"
 trap 'rm -f "$TMP_MD"' EXIT
 
 # Full-document redline: the entire integrated draft with deletions struck and

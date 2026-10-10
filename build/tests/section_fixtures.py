@@ -57,3 +57,20 @@ def delete_section(text: str, n: int) -> str:
 
 def retitle(text: str, n: int, new_title: str) -> str:
     return re.sub(rf"^## {n}\. .*$", f"## {n}. {new_title}", text, count=1, flags=re.MULTILINE)
+
+
+def copy_full_source(dest: Path, ref: str = "v1.0") -> Path:
+    """Materialise ALL of source/ as of `ref` -- data, layout units, exhibits --
+    for the change-determination tests. copy_source above carries the article
+    markdown only. `dest` must not exist; its parent must."""
+    import io
+    import tarfile
+
+    raw = subprocess.run(["git", "-C", str(REPO), "archive", "--format=tar", ref, "source"],
+                         capture_output=True, check=True).stdout
+    staging = dest.parent / (dest.name + ".staging")
+    with tarfile.open(fileobj=io.BytesIO(raw)) as tf:
+        tf.extractall(staging, filter="data")
+    (staging / "source").rename(dest)
+    staging.rmdir()
+    return dest
