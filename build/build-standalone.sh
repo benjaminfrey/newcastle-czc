@@ -25,6 +25,7 @@
 #   STANDALONE_FRONT_NOTE  path to a PDF prepended as uncounted front matter
 #                                           (default: none). Must have an EVEN page
 #                                           count -- see "optional front note" below.
+#   OUT_MD_SOURCE      file copied as the .md deliverable (default: the prose source)
 
 set -euo pipefail
 
@@ -128,6 +129,13 @@ if [ -n "$FRONT_NOTE" ]; then
   fi
 fi
 
+# The .md deliverable's source. Defaults to the prose itself; a redline supplies
+# its own, because the staged prose is Typst-marked, not markdown.
+if [ -n "${OUT_MD_SOURCE:-}" ] && [ ! -f "$OUT_MD_SOURCE" ]; then
+  echo "standalone: OUT_MD_SOURCE not found: $OUT_MD_SOURCE" >&2
+  exit 1
+fi
+
 # Render one prose segment via the generic primitive. article-number/name come
 # from the markdown frontmatter; we override footer-date to the adoption-mode
 # footer text (see adoption-footer.sh) and thread the running page offset.
@@ -211,5 +219,5 @@ if [ -n "$FRONT_NOTE" ]; then
 else
   pdfunite "${PARTS[@]}" "$OUTPUT_PDF"
 fi
-cp "$PROSE" "$RELEASE_DIR/$OUT_NAME.md"
+cp "${OUT_MD_SOURCE:-$PROSE}" "$RELEASE_DIR/$OUT_NAME.md"
 echo "Done: $OUTPUT_PDF ($(pagecount "$OUTPUT_PDF") pages)"
