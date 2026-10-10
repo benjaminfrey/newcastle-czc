@@ -129,8 +129,11 @@ czc_redline_stage "$SRC" "$STAGE" "$OLD_V" "$BASELINE_FLAG" ""
 FRONT_NOTE=""
 if [ "${ADOPTION_BASELINE:-0}" = "1" ]; then
   FRONT_NOTE="$OUTDIR/structural-note.pdf"
+  # The old-side label is read from the adoption map (the same default the note
+  # itself uses), never typed here: a literal date goes stale at every adoption.
+  BASELINE_V="$(cd "$REPO_ROOT" && python3 -c "import sys; sys.path.insert(0,'build'); import adoption_map; print(adoption_map.load().baseline_version)")"
   python3 "$REPO_ROOT/build/structural_note.py" "$FRONT_NOTE" --old-label \
-    "the Core Zoning Code adopted November 3, 2020 and amended through March 24, 2025"
+    "the previously adopted Code ($BASELINE_V)"
   CAVEAT="REDLINE vs the adopted Code  ·  additions in red, deletions struck  ·  Article 2 and all figures are reproduced UNMARKED and article renumbering is not marked — READ THE FACING PAGE"
 else
   CAVEAT="REDLINE vs $OLD_V  ·  additions in red, deletions struck  ·  figures & tables shown at current state (see the Summary of Changes)"

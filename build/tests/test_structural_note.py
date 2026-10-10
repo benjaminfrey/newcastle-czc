@@ -184,3 +184,104 @@ def test_front_note_replaces_the_blank_without_moving_anything(tmp_path):
         for doc in (plain, d):
             if doc is not None:
                 doc.close()
+
+
+# --- Wave 3b: truthful for the whole Code; scoped to one Article ----------------
+
+import pytest  # noqa: E402
+import shutil as _shutil  # noqa: E402,F401
+import subprocess as _sp  # noqa: E402
+import sys as _sys  # noqa: E402
+
+_sys.path.insert(0, str(Path(__file__).resolve().parent))
+import section_fixtures as _fx  # noqa: E402
+
+_NOTE = Path(__file__).resolve().parent.parent / "structural_note.py"
+_SHIPPED_MAP = Path(__file__).resolve().parent.parent / "adoption-map.json"
+_PRE_ROLLOVER = Path(__file__).resolve().parent / "fixtures" / "adoption-map-v0.1-baseline.json"
+
+
+def _note(tmp_path, *args, name="n.pdf"):
+    out = tmp_path / name
+    r = _sp.run([_sys.executable, str(_NOTE), str(out), *args], capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    d = pymupdf.open(out)
+    try:
+        return "\n".join(p.get_text() for p in d), len(d)
+    finally:
+        d.close()
+
+
+def test_the_identity_map_note_claims_nothing_false(tmp_path):
+    """The NEGATIVE CONTROL the spec names: under the shipped identity map
+    (baseline v1.0, nothing new, nothing non-comparable, nothing renumbered)
+    the note must not say any Article is new, unmarked or renumbered. Before
+    this wave it said all three, unconditionally."""
+    text, _ = _note(tmp_path, "--map", str(_SHIPPED_MAP))
+    assert "is new" not in text
+    assert "UNMARKED" not in text
+    assert "were renumbered" not in text
+    assert "Three real changes" not in text
+    assert "March 24, 2025" not in text
+    assert "HOW TO READ THIS REDLINE" in text                     # the control: it rendered
+
+
+def test_the_pre_rollover_map_still_discloses_all_three(tmp_path):
+    text, pages = _note(tmp_path, "--map", str(_PRE_ROLLOVER))
+    assert "Article 3" in text and "is new" in text
+    assert "UNMARKED" in text
+    assert "3 becomes 4" in text
+    assert pages == 1
+
+
+def test_pad_to_even(tmp_path):
+    _, pages = _note(tmp_path, "--map", str(_PRE_ROLLOVER), "--pad-to-even")
+    assert pages == 2
+
+
+@pytest.fixture
+def tree(tmp_path):
+    return _fx.copy_full_source(tmp_path / "source")
+
+
+def test_an_article_note_names_what_changed(tmp_path, tree):
+    p = tree / "article-07-use-standards.md"
+    p.write_text(p.read_text().replace("## 5. AMUSEMENT, OUTDOOR", "## 5. AMUSEMENT, OUTSIDE", 1))
+    md = tmp_path / "n.md"
+    text, pages = _note(tmp_path, "--scope", "article:7", "--old", "v1.0",
+                        "--new-dir", str(tree), "--md", str(md), "--pad-to-even")
+    assert pages % 2 == 0
+    assert "Article 7" in text and "Use Standards" in text
+    assert "its headings" in text
+    assert "“Section 5 — AMUSEMENT, OUTDOOR”" in text and "“Section 5 — AMUSEMENT, OUTSIDE”" in text
+    assert md.read_text().startswith("## How to read this redline")
+    assert "Section 5 — AMUSEMENT, OUTSIDE" in md.read_text()
+
+
+def test_an_unchanged_article_says_so(tmp_path, tree):
+    text, _ = _note(tmp_path, "--scope", "article:7", "--old", "v1.0", "--new-dir", str(tree))
+    assert "No change was found in this Article." in text
+
+
+def test_the_article_2_note_names_the_district_pages_and_the_use_table_document(tmp_path, tree):
+    text, pages = _note(tmp_path, "--scope", "article:2", "--old", "v1.0",
+                        "--new-dir", str(tree), "--pad-to-even")
+    assert "the thirteen district pages" in text
+    assert "Use Table Changes" in text
+    assert pages % 2 == 0
+
+
+def test_a_table_only_change_is_named_on_the_page(tmp_path, tree):
+    p = tree / "article-03-streets-roads-driveways.md"
+    t = p.read_text()
+    start = t.index("```{=typst}", t.index("b. To a point 4 ft above ground"))
+    p.write_text(t[:start] + t[start:].replace("\n#", "\n// edited\n#", 1))
+    text, _ = _note(tmp_path, "--scope", "article:3", "--old", "v1.0", "--new-dir", str(tree))
+    assert "its tables or figures" in text
+    assert "TABLE 3.2 SIGHT DISTANCE" in text
+
+
+def test_an_article_scope_needs_an_old_ref(tmp_path):
+    r = _sp.run([_sys.executable, str(_NOTE), str(tmp_path / "n.pdf"), "--scope", "article:7"],
+                capture_output=True, text=True)
+    assert r.returncode != 0 and "--old" in r.stderr
