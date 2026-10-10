@@ -191,7 +191,7 @@ local only). **Nothing here changes the ordinary draft flow** — with no adopti
   rewrites the old side's "Article 4" to "Article 5". That is why the guard exists; don't remove it
   because it looks inert.
 
-**Tests:** `python3 -m pytest build/tests -q` — **288**, ~4.5 min (they build real PDFs).
+**Tests:** `python3 -m pytest build/tests -q` — **389**, ~2.5–4.5 min (they build real PDFs).
 CI runs them on every PR and every push to `main` (`.github/workflows/build-tests.yml`);
 that workflow pins **Typst 0.14.2** and needs `fetch-depth: 0`, because the redline tests
 read real tags.
@@ -234,7 +234,7 @@ rebuild. No code changes.
 
 ---
 
-## Current state (as of 2026-10-08)
+## Current state (as of 2026-10-10)
 
 - **✅ MERGED to `main` — the release-deliverable machinery, Waves 0 and 1** (PR #1, merge
   commit `9291b20`, 31 commits). Build suite **111 → 196**. Wave 0 fixed the Article 2
@@ -252,11 +252,40 @@ rebuild. No code changes.
   under `source/`); and **`redline-stage.sh`**, now the single definition of
   `redline_resolve.py`'s rc 0/3/4/refuse contract, with a guard that stops plain-marked
   source reaching the PDF stage.
-  **Still to build (Waves 3-4):** `czc_diff.py` (the substantive-change determination),
-  `use_table_changes.py`, `czc_md.py`, `structural_note.py` per-Article,
-  **`build-redline-standalone.sh`**; then `build-release.sh`, the fifth use-table status
-  code, and the spec/CLAUDE.md updates.
-- **✅ Wave 2 built — section renumbering** (branch `wave2-section-map`, PR open; plan
+  **Still to build:** Wave 3b — `structural_note.py` per-Article (P8), `czc_md.py` with the
+  Article 2 data appendix (P12), **`build-redline-standalone.sh`** (P14); then Wave 4 —
+  `build-release.sh` (P13), the fifth use-table status code (P15), and the spec/CLAUDE.md
+  updates (P18).
+- **✅ Wave 3a built — the change determination + Use Table Changes** (branch
+  `wave3a-change-determination`, PR open; plan `plans/2026-10-09-wave3a-change-determination.md`,
+  twelve rulings + amendments; Ben split Wave 3 into 3a/3b on 2026-10-09). Build suite
+  **288 → 389**.
+  **`build/czc_diff.py --old REF [--new-ref REF | --new-dir DIR] [--section-map P] [--json P]`**
+  decides, per Article, whether it changed in substance — prose AND data. Four disjoint counts:
+  `prose`, `heading` (incl. frontmatter `article-name`/`article-number` — the printed title;
+  `footer-date` is chrome), `table` (raw-Typst blocks, which the redline shows unmarked) and
+  `data` (json-keyed sources flattened to leaves keyed by record + title/label, D7 field filter).
+  Verdicts: **SUBSTANTIVE · NEEDS-CALL · RENUMBER-ONLY · UNCHANGED**. **NEEDS-CALL** (a ruling
+  beyond the spec) = a changed layout unit (`.typ`), binary exhibit, or a generated figure whose
+  source had no real data change — a machine cannot tell a legend edit from a layout edit.
+  It **refuses** (exit 1, names the file) on an unclaimed / doubly claimed / **shared** changed
+  file (**Ben, 2026-10-09: a shared-file change stops the determination until a person says
+  which Articles it affects**), a non-unique key, duplicate JSON keys, a misspelt substantive
+  field, a leaf path collision, broken JSON, a bad ref. Article 2's manifest key is now
+  **`[].code+name`** (code alone collides: seven districts are `SD`). Measured: v0.24-draft →
+  v1.0 = Article 2 data **87** (incl. the D3 Retail & Service, General `rc`→`rc sp` cell the
+  text-only breakdown missed), Article 3 prose 2 / data 10 (R2→R3), three layout units NEEDS-CALL;
+  v1.0 vs itself all UNCHANGED. `adoption_breakdown.py` left intact (spec: re-express later).
+  **`build/use_table_changes.py <old-ref> <out.md> [--new-ref|--new-dir] [--json]`** writes the
+  Use Table Changes memo (render with `build-memo.sh`): legend first (fail-closed reader of
+  `article-02.typ`, pinned to the permit-review app's reader by an agreement test), changed uses
+  in words ("Not allowed" for blank), added/removed uses and districts (a wholly added/removed
+  district lists every item), Permitted Buildings by row/column (named from both versions),
+  district standards in plain words, and a total that **equals czc_diff's Article 2 data count**.
+  Exit 2 = nothing to report, nothing written; outputs are cleared first so no stale file survives.
+  ⚠ **Next release: Articles 1, 2, 3 will read NEEDS-CALL** — the Wave 0/1 chrome fix changed
+  their layout units; the person's "layout only" call is recorded by P13 (not built yet).
+- **✅ Wave 2 MERGED — section renumbering** (PR #3, merge `91a81c9`; plan
   `plans/2026-10-08-wave2-section-map.md`, which records ten rulings and their amendments).
   Build suite **199 → 288**. When a section is inserted into an Article, later headings and
   cross-references shift; **`build/section_map.py`** *derives* a map of the pure renumberings
@@ -283,10 +312,9 @@ rebuild. No code changes.
   that is the **Massachusetts** Zoning Act; Maine's variance statute is 30-A M.R.S. §4353
   (pairs with the Variance tracking memo). Adopted Article 7 has the typo **"Atricle 4
   Section 17 Building Groups"**.
-- **▶ OPEN — what a change to a `shared` file implies** for the substantive-change
-  determination is **not decided** (recorded as OPEN in `article-manifest.json`). The
-  candidate rule is that it flags every Article for a standalone + standalone redline,
-  but `shared` is empty and nothing relies on it. Ben rules before the first entry.
+- **▶ PARTLY DECIDED — what a change to a `shared` file implies.** Interim ruling (Ben,
+  2026-10-09): `czc_diff` **refuses**, naming the file, until a person decides which Articles it
+  affects. The permanent rule (candidate: flag every Article) is still open; `shared` is empty.
 - **▶ OPEN — should a dropped heading or figure carry a visible placeholder in the
   redline?** In `--source` a removed table or figure vanishes without trace and an added
   heading is emitted unmarked; the legend now says so plainly instead of over-promising.
