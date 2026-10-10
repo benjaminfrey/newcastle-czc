@@ -260,6 +260,40 @@ def test_comments_and_frontmatter_are_not_changes():
     new = new.replace('article-number: "3"', 'article-number: "3"\nnote: "x"', 1)
     assert new != old
     assert _zero(czc_diff.markdown_counts(old, new))
+    # Positive control: the same wording edit made OUTSIDE a comment counts.
+    first = next(ln for ln in czc_diff.split_markdown(old)[0])
+    outside = old.replace(first, first + " amended", 1)
+    assert czc_diff.markdown_counts(old, outside)["prose"] == 2
+
+
+def test_renaming_an_article_is_a_heading_change():
+    old = _text("v1.0", ART3)
+    new = old.replace('article-name: "Thoroughfares"', 'article-name: "Streets and Roads"', 1)
+    assert new != old
+    counts = czc_diff.markdown_counts(old, new)
+    assert counts["heading"] == 2 and counts["prose"] == 0
+
+
+def test_the_footer_date_is_not_a_change():
+    old = _text("v1.0", ART3)
+    new = old.replace('footer-date: "Draft v0.2-draft"',
+                      'footer-date: "Adopted: September 14, 2026"', 1)
+    assert new != old
+    assert _zero(czc_diff.markdown_counts(old, new))
+
+
+def test_unclosed_frontmatter_swallows_nothing():
+    prose, _, _ = czc_diff.split_markdown(
+        '---\narticle-number: "7"\n\nReal prose.\n\n---\n\nMore prose.\n')
+    assert "Real prose." in prose and "More prose." in prose
+
+
+def test_a_deleted_article_counts_every_line_removed():
+    old = _text("v1.0", ART7)
+    prose, headings, _ = czc_diff.split_markdown(old)
+    counts = czc_diff.markdown_counts(old, "")
+    assert counts["prose"] == len(prose) > 100
+    assert counts["heading"] == len(headings)
 
 
 def test_a_renumbered_reference_into_another_article_is_renumber_only():
@@ -284,7 +318,7 @@ def test_a_new_article_counts_every_line():
     counts = czc_diff.markdown_counts(None, new)
     prose, headings, blocks = czc_diff.split_markdown(new)
     assert counts["prose"] == len(prose) > 100
-    assert counts["heading"] == len(headings) == 188     # 66 sections and their lettered sub-sections
+    assert counts["heading"] == len(headings) == 190     # 66 sections and their lettered sub-sections, + article-name and article-number
 
 
 def test_a_section_inserted_into_article_7_is_one_heading_and_one_line(tmp_path):

@@ -240,21 +240,48 @@ def leaf_label(path: tuple) -> str:
 
 # --- The markdown counts ------------------------------------------------------
 
-_FRONTMATTER = re.compile(r"\A---[ \t]*\n.*?\n---[ \t]*\n?", re.S)
 _COMMENT = re.compile(r"<!--.*?-->", re.S)
 _FENCE = re.compile(r"^[ \t]*(`{3,}|~{3,})")
 _HEADING = re.compile(r"^\s*#{1,6}[ \t]")
+_FM_KEY = re.compile(r"^[A-Za-z][\w-]*\s*:")
+_FM_CONT = re.compile(r"^\s+\S")
+_FM_ITEM = re.compile(r"^\s*-\s")
+_FM_TITLE = re.compile(r"^(article-name|article-number)\s*:")
+
+
+def _split_frontmatter(text: str) -> tuple[list[str], str]:
+    """(frontmatter lines, body). Frontmatter exists only if the first line is
+    `---` and every following line up to a closing `---` or `...` is a
+    `key: value`, an indented continuation or a list item. Anything else before
+    the closer (a blank line included), or no closer, means there is NO
+    frontmatter and nothing is stripped -- so a stray `---` horizontal rule can
+    never swallow prose."""
+    lines = text.split("\n")
+    if not lines or lines[0].rstrip() != "---":
+        return [], text
+    for i in range(1, len(lines)):
+        s = lines[i].rstrip()
+        if s in ("---", "..."):
+            return lines[1:i], "\n".join(lines[i + 1:])
+        if not (_FM_KEY.match(s) or _FM_CONT.match(s) or _FM_ITEM.match(s)):
+            return [], text
+    return [], text
 
 
 def split_markdown(text: str) -> tuple[list[str], list[str], list[str]]:
     """(prose lines, heading lines, raw blocks). Frontmatter, HTML comments,
     blank lines and trailing whitespace are removed; each fenced block is kept
-    whole as one item, so an edit inside it is one changed block."""
-    text = _FRONTMATTER.sub("", text, count=1)
+    whole as one item, so an edit inside it is one changed block. The template
+    prints an Article's title, tab and running head from the frontmatter keys
+    `article-name` and `article-number`, so those two lines (stripped) lead the
+    heading list; `footer-date` and every other key are page dressing and count
+    nowhere."""
+    fm, text = _split_frontmatter(text)
+    fm_titles = [ln.strip() for ln in fm if _FM_TITLE.match(ln)]
     text = _COMMENT.sub("", text)
     lines = text.split("\n")
     prose: list[str] = []
-    headings: list[str] = []
+    headings: list[str] = list(fm_titles)
     blocks: list[str] = []
     i = 0
     while i < len(lines):
@@ -289,9 +316,12 @@ def _identity_amap():
 
 def markdown_counts(old: str | None, new: str, *, smap=None) -> dict[str, int]:
     """prose / heading / table counts for one Article's markdown, and the
-    section renumbers Rule 6 suppressed. The OLD side is normalised exactly as
-    the redline's old side is (heading case, and with a section map, Rule 6);
-    the new side is read as written. `old` None means the Article is new."""
+    section renumbers Rule 6 suppressed. The OLD side is normalised as
+    the BASELINE redline's old side is (heading case, an identity article map,
+    and Rule 6 when a section map is given); a draft-to-draft redline applies
+    Rule 6 only, and the difference is heading-letter case, which the redline
+    never marks anyway. The new side is read as written. `old` None means the
+    Article is new."""
     if old is None:
         o_prose, o_heads, o_blocks, suppressed = [], [], [], 0
     else:
