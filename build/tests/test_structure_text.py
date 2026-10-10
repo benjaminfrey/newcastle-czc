@@ -60,7 +60,8 @@ def test_a_retitled_heading_is_a_change_not_an_add_and_a_remove():
     old = _text("v1.0", ART7)
     new = old.replace("## 5. AMUSEMENT, OUTDOOR", "## 5. AMUSEMENT, OUTSIDE", 1)
     sc = czc_diff.structural_changes(old, new)
-    assert sc["headings_changed"] == [("5. AMUSEMENT, OUTDOOR", "5. AMUSEMENT, OUTSIDE")]
+    assert sc["headings_changed"] == [("Section 5 \u2014 AMUSEMENT, OUTDOOR",
+                                       "Section 5 \u2014 AMUSEMENT, OUTSIDE")]
     assert sc["headings_added"] == sc["headings_removed"] == []
 
 
@@ -83,3 +84,54 @@ def test_a_new_article_lists_every_heading_as_added():
     new = _text("v1.0", ART7)
     sc = czc_diff.structural_changes(None, new)
     assert len(sc["headings_added"]) == len(czc_diff.split_markdown(new)[1])
+
+
+def test_a_reordered_table_is_no_change():
+    old = _text("v1.0", ART3)
+    blocks = _blocks(old)
+    sight = next(b for b in blocks if "TABLE 3.2" in b)
+    eng = next(b for b in blocks if "TABLE 3.5" in b)
+    new = old.replace(sight, "@@SIGHT@@", 1).replace(eng, sight, 1).replace("@@SIGHT@@", eng, 1)
+    assert new != old
+    assert all(v == [] for v in czc_diff.structural_changes(old, new).values())
+
+
+def test_deleting_one_of_two_identical_captions_removes_that_one():
+    a = "```{=typst}\n#block[ first ]\n```"
+    b = "```{=typst}\n#block[ second ]\n```"
+    old = f"# Article 9 X\n\n{a}\n\n{b}\n"
+    new = f"# Article 9 X\n\n{b}\n"
+    sc = czc_diff.structural_changes(old, new)
+    assert sc["tables_removed"] == [st.UNTITLED]
+    assert sc["tables_changed"] == [] and sc["tables_added"] == []
+
+
+def test_a_renumbered_caption_is_removed_and_added():
+    old = _text("v1.0", ART3)
+    sight = next(b for b in _blocks(old) if "TABLE 3.2" in b)
+    new = old.replace(sight, sight.replace("TABLE 3.2 SIGHT DISTANCE", "TABLE 3.6 SIGHT DISTANCE"), 1)
+    sc = czc_diff.structural_changes(old, new)
+    assert sc["tables_removed"] == ["TABLE 3.2 SIGHT DISTANCE"]
+    assert sc["tables_added"] == ["TABLE 3.6 SIGHT DISTANCE"]
+    assert sc["tables_changed"] == []
+
+
+def test_classify_blocks_directly():
+    same_a, same_b = "```\nTABLE 1.1 A\n```", "```\nTABLE 1.2 B\n```"
+    old_c, new_c = "```\nTABLE 1.3 C\nold row\n```", "```\nTABLE 1.3 C\nnew row\n```"
+    gone, fresh = "```\nTABLE 1.4 GONE\n```", "```\nTABLE 1.5 FRESH\n```"
+    old = [same_a, same_b, old_c, gone]
+    new = [fresh, same_b, same_a, new_c]                 # a and b swapped places
+    assert st.classify_blocks(old, new) == {"added": [0], "removed": [3], "changed": [(2, 3)]}
+
+
+def test_frontmatter_lines_read_as_title_and_number():
+    assert st.heading_label('article-name: "Use Standards"') == "Article title: Use Standards"
+    assert st.heading_label('article-number: "7"') == "Article number: 7"
+
+
+def test_real_history_labels_each_added_subsection_with_its_section():
+    sc = czc_diff.structural_changes(_text("v0.21-draft", ART3), _text("v0.22-draft", ART3))
+    assert sc["headings_added"] == [
+        "Section 3.G \u2014 STREET TREES",
+        "Section 7.F \u2014 ACCESS WAY SERVING MORE THAN THE DRIVEWAY THRESHOLD"]

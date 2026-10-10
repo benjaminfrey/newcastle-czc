@@ -356,13 +356,38 @@ def markdown_counts(old: str | None, new: str, *, smap=None) -> dict[str, int]:
             "suppressed": suppressed}
 
 
+_SECTION = re.compile(r"^\s*##[ \t]+(\d+)\.[ \t]+(.*?)\s*(?:\{[^}]*\})?\s*$")
+_SUBSECTION = re.compile(r"^\s*###[ \t]+([A-Za-z])\.[ \t]+(.*?)\s*(?:\{[^}]*\})?\s*$")
+
+
+def _contextual_labels(heads: list[str]) -> list[str]:
+    """One label per heading line, for the disclosure page. A sub-section
+    ("### g. STREET TREES") alone does not say where it is, so it is labelled
+    with the section above it ("Section 3.G -- STREET TREES"). The in-text notes
+    use heading_label instead: they sit at the spot itself."""
+    labels, section = [], None
+    for h in heads:
+        m = _SECTION.match(h)
+        if m:
+            section = m.group(1)
+            labels.append(structure_text._clean(f"Section {section} \u2014 {m.group(2)}"))
+            continue
+        m = _SUBSECTION.match(h)
+        if m and section is not None:
+            labels.append(structure_text._clean(
+                f"Section {section}.{m.group(1).upper()} \u2014 {m.group(2)}"))
+            continue
+        labels.append(structure_text.heading_label(h))
+    return labels
+
+
 def structural_changes(old: str | None, new: str, *, smap=None) -> dict[str, list]:
     """WHICH headings and raw-Typst tables/figures were added, removed or
     changed -- the names behind markdown_counts' heading and table counts. The
-    old side is normalised exactly as in markdown_counts. A table or figure is
-    matched by its caption across the whole Article: the same caption with
-    different content is "changed". The redline's in-text notes use the same
-    caption rule, so the page and the text agree."""
+    old side is normalised exactly as in markdown_counts. Headings are labelled
+    with their section (_contextual_labels). Tables and figures are classified
+    by structure_text.classify_blocks, the one rule the redline's in-text notes
+    share: identical content anywhere is unchanged, the rest pair by caption."""
     if old is None:
         o_heads, o_blocks = [], []
     else:
@@ -372,28 +397,22 @@ def structural_changes(old: str | None, new: str, *, smap=None) -> dict[str, lis
     out: dict[str, list] = {k: [] for k in ("headings_added", "headings_removed",
                                             "headings_changed", "tables_added",
                                             "tables_removed", "tables_changed")}
+    o_labels, n_labels = _contextual_labels(o_heads), _contextual_labels(n_heads)
     sm = difflib.SequenceMatcher(None, o_heads, n_heads, autojunk=False)
     for tag, i1, i2, j1, j2 in sm.get_opcodes():
         if tag == "equal":
             continue
-        old_part, new_part = o_heads[i1:i2], n_heads[j1:j2]
-        if tag == "replace" and len(old_part) == len(new_part):
-            out["headings_changed"] += [(structure_text.heading_label(a),
-                                         structure_text.heading_label(b))
-                                        for a, b in zip(old_part, new_part)]
+        if tag == "replace" and (i2 - i1) == (j2 - j1):
+            out["headings_changed"] += list(zip(o_labels[i1:i2], n_labels[j1:j2]))
         else:
-            out["headings_removed"] += [structure_text.heading_label(h) for h in old_part]
-            out["headings_added"] += [structure_text.heading_label(h) for h in new_part]
+            out["headings_removed"] += o_labels[i1:i2]
+            out["headings_added"] += n_labels[j1:j2]
     o_caps = [structure_text.block_caption(b) for b in o_blocks]
     n_caps = [structure_text.block_caption(b) for b in n_blocks]
-    sm = difflib.SequenceMatcher(None, o_caps, n_caps, autojunk=False)
-    for tag, i1, i2, j1, j2 in sm.get_opcodes():
-        if tag == "equal":
-            out["tables_changed"] += [n_caps[j] for i, j in zip(range(i1, i2), range(j1, j2))
-                                      if o_blocks[i] != n_blocks[j]]
-        else:
-            out["tables_removed"] += o_caps[i1:i2]
-            out["tables_added"] += n_caps[j1:j2]
+    cls = structure_text.classify_blocks(o_blocks, n_blocks)
+    out["tables_changed"] = [n_caps[j] for _, j in sorted(cls["changed"], key=lambda p: p[1])]
+    out["tables_removed"] = [o_caps[i] for i in cls["removed"]]
+    out["tables_added"] = [n_caps[j] for j in cls["added"]]
     return out
 
 
