@@ -20,7 +20,10 @@ WHAT IT REPORTS, per Article -- four independent counts and a proposed verdict:
            record, so a re-extracted or re-indented file is not a change
 plus `suppressed` (section renumbers Rule 6 suppressed, given a section map)
 and `needs_call` (files a machine cannot judge: layout units, binary exhibits,
-and a generated file that changed while its source did not).
+and a generated figure that changed although its source had no real data
+change). A generated file is explained ONLY by a source with a nonzero data
+change: a re-indented or _meta-only source changes its bytes, scores zero, and
+so leaves the figure unexplained and in need of a person's call.
 
 Every count uses the one counting rule (normalize_for_diff.marked_lines): a
 modified line counts twice, once out and once in.
@@ -34,12 +37,26 @@ A retargeted cross-reference is never renumber-only (decision D8): Rule 6
 rewrites a reference only to the number of a title-identical section, so a
 retarget still differs and counts as prose.
 
-IT REFUSES (exit 1) rather than guess when: a changed file is claimed by no
-Article, or by two; a changed file is listed as shared (ruled by Ben Frey,
-2026-10-09 -- what a shared change implies is undecided, so a person must say
-which Articles it affects); a key is not unique; a JSON file does not parse; a
-compare or key form is unknown; a ref does not exist; a section map fails its
-self-check.
+IT REFUSES (exit 1) rather than guess when:
+  - a changed file is claimed by no Article, or by two Articles;
+  - a changed file is listed as shared (ruled by Ben Frey, 2026-10-09 -- what a
+    shared change implies is undecided, so a person must say which Articles it
+    affects);
+  - a changed file belongs to an Article number that is not in the manifest;
+  - a record key is not unique, names a field a record lacks, or is of an
+    unknown form (an unknown `compare` form refuses the same way);
+  - a JSON file is broken, or holds a duplicate key in one object;
+  - a declaration's substantive_fields is not a list of names, or names a field
+    no record has (a misspelt field would make every change to it read as zero);
+  - two leaves of one record share a path (one would hide the other);
+  - a declaration has no key, or a generated-from entry has no source;
+  - a ref does not exist;
+  - --section-map is given with --new-ref (a map is checked against a tree), or
+    the section map fails its self-check;
+  - --article names an Article outside the manifest (every changed file is
+    still classified first, so --article never narrows a refusal).
+A refusal writes nothing, and removes any earlier --json file so a stale
+answer cannot be mistaken for this run's.
 
 The ownership map is read from the WORKING TREE for both sides: it is this
 instrument's configuration, not part of the Code's history (v1.0's own
@@ -345,6 +362,13 @@ def _git(*args: str) -> str:
                           text=True, check=True).stdout
 
 
+def _git_names(*args: str) -> list[str]:
+    """Path names from a git listing run with `-z`: NUL-separated and never
+    C-quoted, so a name holding a quote, a backslash or a control character is
+    listed as it is. (core.quotePath=false covers only bytes above 0x80.)"""
+    return [n for n in _git(*args).split("\0") if n]
+
+
 class Side:
     """One version of source/: a git ref, or a directory."""
 
@@ -364,13 +388,13 @@ class Side:
     def files(self) -> list[str]:
         """Every file of the Code on this side, relative to source/."""
         if self.ref is not None:
-            out = _git("ls-tree", "-r", "--name-only", self.ref, "source/")
-            return sorted(p[len("source/"):] for p in out.splitlines() if p)
+            return sorted(p[len("source/"):] for p in
+                          _git_names("ls-tree", "-r", "-z", "--name-only", self.ref, "source/"))
         if self.root.resolve() == SOURCE.resolve():
             # The live tree: what git tracks plus what it would track. Ignored
             # files (.DS_Store, inventory.json.bak-*) are not part of the Code.
-            listed = set(_git("ls-files", "source/").splitlines())
-            listed |= set(_git("ls-files", "--others", "--exclude-standard", "source/").splitlines())
+            listed = set(_git_names("ls-files", "-z", "source/"))
+            listed |= set(_git_names("ls-files", "-z", "--others", "--exclude-standard", "source/"))
             return sorted(p[len("source/"):] for p in listed if p and (REPO / p).is_file())
         return sorted(p.relative_to(self.root).as_posix() for p in self.root.rglob("*")
                       if p.is_file()
@@ -479,9 +503,11 @@ def determine(old: Side, new: Side, *, doc: dict | None = None, smap=None) -> di
             c.new = c.new or o is None
             continue
         if any(u.get("typ") == p for u in doc[art].get("units", [])):
-            c.needs_call.append(f"{p}: a layout unit changed. A person decides whether it changes "
-                                f"what the Code says (the use-table legend lives in one) or only "
-                                f"how it is laid out.")
+            note = (f"{p}: a layout unit changed. A person decides whether it changes "
+                    f"what the Code says or only how it is laid out.")
+            if p == "article-02.typ":
+                note += " (The use-table legend lives in this file.)"
+            c.needs_call.append(note)
             continue
         d = _declaration(doc, art, p)
         compare = d.get("compare") if d else None
@@ -500,10 +526,15 @@ def determine(old: Side, new: Side, *, doc: dict | None = None, smap=None) -> di
     # A generated file is explained only by a source with a REAL (nonzero) data
     # delta: a re-indented or _meta-only source changes bytes and scores zero.
     for p, art, d in generated:
-        if d["from"] not in real_source_change:
+        src = d.get("from")
+        if not isinstance(src, str):
+            raise Refusal(f"{p}: declared generated-from in build/article-manifest.json "
+                          f"but names no `from` source")
+        if src not in real_source_change:
             result[int(art)].needs_call.append(
-                f"{p}: changed although its source {d['from']} did not -- an "
-                f"anomaly, or a change to its other input (see the manifest note)")
+                f"{p}: changed although its source {src} did not change in data "
+                f"(a re-indented or _meta-only source scores zero) -- an anomaly, "
+                f"or a change to its other input (see the manifest note)")
     return result
 
 

@@ -458,6 +458,25 @@ def test_a_layout_unit_change_needs_a_call(tree, v1):
     (tree / "article-02.typ").write_text((tree / "article-02.typ").read_text() + "\n// x\n")
     r = czc_diff.determine(v1, czc_diff.Side(root=tree))
     assert r[2].verdict == "NEEDS-CALL" and _others_unchanged(r, 2)
+    assert any("legend" in n for n in r[2].needs_call)           # article-02.typ only
+
+
+def test_the_layout_unit_note_is_generic_outside_article_2(tree, v1):
+    """The legend aside belongs to article-02.typ alone."""
+    unit = "cross-section-plates.typ"
+    (tree / unit).write_text((tree / unit).read_text() + "\n// x\n")
+    r = czc_diff.determine(v1, czc_diff.Side(root=tree))
+    notes = [n for n in r[3].needs_call if unit in n]
+    assert notes and "layout unit changed" in notes[0] and "legend" not in notes[0]
+
+
+def test_a_generated_entry_without_a_source_is_a_refusal_not_a_keyerror(tree, v1):
+    import copy
+    doc = copy.deepcopy(manifest.load())
+    next(d for d in doc["3"]["data_sources"] if d["path"] == S1_SVG).pop("from")
+    _touch_svg(tree)
+    with pytest.raises(czc_diff.Refusal, match="S1.svg"):
+        czc_diff.determine(v1, czc_diff.Side(root=tree), doc=doc)
 
 
 def test_an_edited_raw_table_is_substantive_though_the_redline_shows_no_mark(tree, v1):
@@ -639,3 +658,26 @@ def test_article_flag_does_not_narrow_a_refusal(tree):
     (tree / "exhibits/new-thing.json").write_text("{}\n")
     r = _cli("--old", "v1.0", "--new-dir", str(tree), "--article", "7")
     assert r.returncode == 1 and "exhibits/new-thing.json" in r.stderr
+
+
+def test_a_ref_side_lists_a_file_whose_name_git_would_quote(tmp_path, monkeypatch):
+    """M1. Without `-z`, git C-quotes a name holding `"` or a backslash, so a
+    ref side lists it as '"source/caf\\303\\251 \\"x\\".json"' (or similar), the
+    read finds nothing, and the file is skipped silently -- the false zero. Run
+    against a TEMP repository, never this one."""
+    repo = tmp_path / "repo"
+    (repo / "source").mkdir(parents=True)
+    name = 'café "x".json'
+    (repo / "source" / name).write_text("{}\n")
+    git = ["git", "-C", str(repo)]
+    subprocess.run([*git, "init", "-q"], check=True)
+    subprocess.run([*git, "add", "--", f"source/{name}"], check=True)
+    subprocess.run([*git, "-c", "user.name=t", "-c", "user.email=t@example.com",
+                    "commit", "-q", "-m", "x"], check=True)
+    monkeypatch.setattr(czc_diff, "REPO", repo)
+    monkeypatch.setattr(czc_diff, "SOURCE", repo / "source")
+    side = czc_diff.Side(ref="HEAD")
+    assert name in side.files()
+    assert side.read(name) == b"{}\n"
+    live = czc_diff.Side(root=repo / "source")           # the live-tree listing, too
+    assert name in live.files()
