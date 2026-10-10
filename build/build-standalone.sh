@@ -25,6 +25,7 @@
 #   STANDALONE_FRONT_NOTE  path to a PDF prepended as uncounted front matter
 #                                           (default: none). Must have an EVEN page
 #                                           count -- see "optional front note" below.
+#   OUT_MD_SOURCE      file copied as the .md deliverable (default: the prose source)
 
 set -euo pipefail
 
@@ -58,36 +59,17 @@ NUM=$((10#$NN))                          # numeric 7
 RELEASE_DIR="${OUT_DIR:-$REPO_ROOT/releases/$VERSION}"
 
 # --- resolve the prose source: manifest 'prose', else glob article-0NN-*.md ----
-PROSE=""
-PRO=$(python3 "$MANIFEST_PY" prose "$NUM" 2>/dev/null || true)
-if [ -n "$PRO" ]; then
-  PROSE="$SOURCE_DIR/$PRO"
-else
-  for f in "$SOURCE_DIR"/article-"$NN"-*.md; do
-    [ -f "$f" ] && PROSE="$f" && break
-  done
-fi
-if [ -z "$PROSE" ] || [ ! -f "$PROSE" ]; then
+# (build/article-meta.sh: one definition, shared with build-redline-standalone.sh)
+source "$REPO_ROOT/build/article-meta.sh"
+if ! PRO=$(czc_article_prose "$SOURCE_DIR" "$NUM"); then
   echo "No prose source for Article $NUM (manifest 'prose' or source/article-$NN-*.md)" >&2
   exit 1
 fi
+PROSE="$SOURCE_DIR/$PRO"
 
 # --- article number/name from frontmatter (for the output filename) ------------
-read_meta() { python3 - "$1" "$2" <<'PY'
-import sys, re
-txt = open(sys.argv[1], encoding="utf-8").read()
-m = re.match(r"^---\n(.*?)\n---", txt, re.S)
-key, val = sys.argv[2], ""
-if m:
-    for ln in m.group(1).split("\n"):
-        if ln.startswith(key + ":"):
-            val = ln.split(":", 1)[1].strip().strip('"')
-            break
-print(val)
-PY
-}
-ANUM=$(read_meta "$PROSE" article-number); ANUM="${ANUM:-$NUM}"
-ANAME=$(read_meta "$PROSE" article-name);  ANAME="${ANAME:-Article $NUM}"
+ANUM=$(czc_read_meta "$PROSE" article-number); ANUM="${ANUM:-$NUM}"
+ANAME=$(czc_read_meta "$PROSE" article-name);  ANAME="${ANAME:-Article $NUM}"
 
 source "$REPO_ROOT/build/adoption-name.sh"
 OUT_NAME="${OUT_NAME_OVERRIDE:-$(czc_standalone_name "$ADOPTION_MODE" "$ANUM" "$ANAME" "$VERSION")}"
@@ -126,6 +108,13 @@ if [ -n "$FRONT_NOTE" ]; then
     echo "  binding margin for the whole extract. Pad the note to an even length." >&2
     exit 1
   fi
+fi
+
+# The .md deliverable's source. Defaults to the prose itself; a redline supplies
+# its own, because the staged prose is Typst-marked, not markdown.
+if [ -n "${OUT_MD_SOURCE:-}" ] && [ ! -f "$OUT_MD_SOURCE" ]; then
+  echo "standalone: OUT_MD_SOURCE not found: $OUT_MD_SOURCE" >&2
+  exit 1
 fi
 
 # Render one prose segment via the generic primitive. article-number/name come
@@ -211,5 +200,5 @@ if [ -n "$FRONT_NOTE" ]; then
 else
   pdfunite "${PARTS[@]}" "$OUTPUT_PDF"
 fi
-cp "$PROSE" "$RELEASE_DIR/$OUT_NAME.md"
+cp "${OUT_MD_SOURCE:-$PROSE}" "$RELEASE_DIR/$OUT_NAME.md"
 echo "Done: $OUTPUT_PDF ($(pagecount "$OUTPUT_PDF") pages)"

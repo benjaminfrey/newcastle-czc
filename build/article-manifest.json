@@ -14,7 +14,7 @@
   "1": {
     "prose": "article-01-general.md",
     "units": [
-      { "typ": "district-maps.typ", "splice": "after-prose", "pad_to": "even-block" }
+      { "typ": "district-maps.typ", "label": "the District Maps", "splice": "after-prose", "pad_to": "even-block" }
     ],
     "data_sources": [
       { "path": "exhibits/district-maps/", "compare": "binary-hash",
@@ -25,7 +25,7 @@
   "2": {
     "prose": "article-02-prefatory.md",
     "units": [
-      { "typ": "article-02.typ", "splice": "after-prose", "parity": "pad-to-odd-before" }
+      { "typ": "article-02.typ", "label": "the thirteen district pages (district standards and use tables)", "splice": "after-prose", "parity": "pad-to-odd-before" }
     ],
     "data_sources": [
       { "path": "article-02-data.json", "compare": "json-keyed",
@@ -41,11 +41,11 @@
     "prose": "article-03-streets-roads-driveways.md",
     "split_markers": ["TYPE-PAGES", "STREET-TYPE-EXHIBITS"],
     "units": [
-      { "typ": "cross-section-plates.typ", "splice": "at-marker:TYPE-PAGES" },
-      { "typ": "street-type-inventory.typ", "splice": "at-marker:STREET-TYPE-EXHIBITS",
+      { "typ": "cross-section-plates.typ", "label": "the ten Thoroughfare Type pages", "splice": "at-marker:TYPE-PAGES" },
+      { "typ": "street-type-inventory.typ", "label": "Exhibit 3.1, the Thoroughfare Inventory", "splice": "at-marker:STREET-TYPE-EXHIBITS",
         "data": "exhibits/street-types/inventory.json",
         "conditional_on": "exhibits/street-types/inventory.json" },
-      { "typ": "street-type-map.typ", "splice": "at-marker:STREET-TYPE-EXHIBITS",
+      { "typ": "street-type-map.typ", "label": "Exhibit 3.2, the Thoroughfare Type Map", "splice": "at-marker:STREET-TYPE-EXHIBITS",
         "data": "exhibits/street-types/inventory.json",
         "conditional_on": "exhibits/street-types/inventory.json" }
     ],

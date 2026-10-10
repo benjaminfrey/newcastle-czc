@@ -135,7 +135,9 @@ def test_the_figure_note_precedes_the_new_block_and_pandoc_keeps_it_a_block(tmp_
     text, _ = run_files(tmp_path, FIG_OLD, FIG_NEW, "--source", "--plain")
     # the comment stays a WHOLE LINE of its own (is_unmarkable_structure reads it),
     # the visible companion is a separate line, and the block follows
-    assert NOTE + "\n\n" + VISIBLE + "\n\n```\nfigure version two\n```" in text
+    # Wave 3b: a structural change now leaves a note (Ben, 2026-10-10)
+    assert (NOTE + "\n\n*[New table or figure, shown in full: \u201can untitled table or figure\u201d]*"
+            "\n\n```\nfigure version two\n```") in text
     assert "CodeBlock" in pandoc_out(text, "native")
 
 
@@ -145,7 +147,11 @@ def test_the_figure_disclosure_reaches_rendered_output(tmp_path):
     for mode in ("--source", "--full"):
         text, _ = run_files(tmp_path, FIG_OLD, FIG_NEW, mode, "--plain")
         seen = pandoc_out(text, "plain")       # visible text only: comments are dropped
-        assert "figure new or regenerated" in seen and "shown unmarked" in seen, (mode, seen)
+        # Wave 3b: --source now says it with the structural note (Ben, 2026-10-10); --full is unchanged
+        if mode == "--source":
+            assert "New table or figure, shown in full" in seen, (mode, seen)
+        else:
+            assert "figure new or regenerated" in seen and "shown unmarked" in seen, (mode, seen)
         assert "figure version two" in seen
         assert "<em>" in pandoc_out(text, "html") or "_[figure" in pandoc_out(text, "gfm")
 
@@ -283,9 +289,9 @@ def test_without_the_flag_there_is_no_legend_and_no_sigil(tmp_path):
 
 # -- the --source legend must claim only what --source keeps -------------------
 #
-# --source marks prose and table rows. It drops a removed heading or block with
-# no trace and passes an added heading through unmarked. Each test below pins the
-# BEHAVIOUR the legend's exclusion clause describes, so the clause cannot go on
+# --source marks prose and table rows word by word. A heading or block that was
+# added, removed or changed leaves an italic bracketed note at that spot instead
+# (Wave 3b). Each test below pins the BEHAVIOUR the legend's limits clause describes, so the clause cannot go on
 # being printed after the code stops keeping it (or the reverse).
 
 SECTION_OLD = "# Article\n\n## 1. KEPT\n\nBody.\n\n## 2. REMOVED SECTION\n\n```\nold figure\n```\n"
@@ -295,7 +301,9 @@ SECTION_NEW = "# Article\n\n## 1. KEPT\n\nBody.\n\n## 3. ADDED SECTION\n\nBody.\
 def test_the_source_legend_names_what_source_does_not_mark(tmp_path):
     text, _ = run_files(tmp_path, SECTION_OLD, SECTION_NEW, "--source", "--plain")
     legend = next(l for l in text.splitlines() if LEGEND_MARK in l)
-    assert "Only prose and the rows of simple tables are marked" in legend and "leaves no trace" in legend
+    # Wave 3b: a structural change now leaves a note (Ben, 2026-10-10)
+    assert "Only prose and the rows of simple tables are marked word by word" in legend
+    assert "a note in italics and square brackets" in legend and "leaves no trace" not in legend
     assert "covers prose and table rows only" not in legend      # the old sentence read as a promise about tables
     assert "Summary of Changes" in legend
     assert "marks a line that is new in its entirety" in legend
@@ -303,16 +311,20 @@ def test_the_source_legend_names_what_source_does_not_mark(tmp_path):
 
 
 def test_the_other_modes_do_not_carry_the_source_only_exclusions(tmp_path):
-    for mode in ("--full", "--digest"):
+    # Wave 3b: a structural change now leaves a note (Ben, 2026-10-10)
+    for mode in ("--source", "--full", "--digest"):
         text, _ = run_files(tmp_path, SECTION_OLD, SECTION_NEW, mode, "--plain")
         legend = next(l for l in text.splitlines() if LEGEND_MARK in l)
         assert "leaves no trace" not in legend, mode
 
 
 def test_what_the_source_legend_admits_is_what_the_code_does(tmp_path):
-    """The exclusion clause is TRUE: a removed heading and a removed block leave
-    nothing, and an added heading carries no mark and no sigil."""
+    """The limits clause is TRUE: a removed heading and a removed block leave a
+    note (not their text), and a heading carries no mark and no sigil."""
     text, _ = run_files(tmp_path, SECTION_OLD, SECTION_NEW, "--source", "--plain")
-    assert "REMOVED SECTION" not in text, "a removed heading left a trace; the legend would now under-claim"
-    assert "old figure" not in text, "a removed block left a trace; the legend would now under-claim"
-    assert "\n## 3. ADDED SECTION\n" in text, "an added heading is no longer verbatim (gained a mark or sigil)"
+    # Wave 3b: a structural change now leaves a note (Ben, 2026-10-10)
+    # the old heading text appears only inside a note; the removed block's rows are gone
+    assert text.count("REMOVED SECTION") == 1 and "it read: \u201c2. REMOVED SECTION\u201d]*" in text
+    assert "*[Table or figure removed: " in text, "a removed block left no note"
+    assert "old figure" not in text, "the removed block's own text must not reappear"
+    assert "\n## 3. ADDED SECTION\n\n*[Heading changed" in text, "the retitled heading lost its text or its note"

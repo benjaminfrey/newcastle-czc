@@ -191,7 +191,7 @@ local only). **Nothing here changes the ordinary draft flow** — with no adopti
   rewrites the old side's "Article 4" to "Article 5". That is why the guard exists; don't remove it
   because it looks inert.
 
-**Tests:** `python3 -m pytest build/tests -q` — **389**, ~2.5–4.5 min (they build real PDFs).
+**Tests:** `python3 -m pytest build/tests -q` — **470**, ~6 min (they build real PDFs and redlines).
 CI runs them on every PR and every push to `main` (`.github/workflows/build-tests.yml`);
 that workflow pins **Typst 0.14.2** and needs `fetch-depth: 0`, because the redline tests
 read real tags.
@@ -252,12 +252,40 @@ rebuild. No code changes.
   under `source/`); and **`redline-stage.sh`**, now the single definition of
   `redline_resolve.py`'s rc 0/3/4/refuse contract, with a guard that stops plain-marked
   source reaching the PDF stage.
-  **Still to build:** Wave 3b — `structural_note.py` per-Article (P8), `czc_md.py` with the
-  Article 2 data appendix (P12), **`build-redline-standalone.sh`** (P14); then Wave 4 —
+  **Still to build:** Wave 3c — `czc_md.py`: honest standalone markdown with the Article 2 data
+  appendix (P12), Article 3's raw-Typst tables made readable in the `.md`, the Article 3
+  `footer-date: "Draft v0.2-draft"` fix (its own commit, Ben approved 2026-10-10), plus two
+  page-wording slips and the plain-mode `⊕ ****bold**` artifact carried from 3b; then Wave 4 —
   `build-release.sh` (P13), the fifth use-table status code (P15), and the spec/CLAUDE.md
   updates (P18).
-- **✅ Wave 3a built — the change determination + Use Table Changes** (branch
-  `wave3a-change-determination`, PR open; plan `plans/2026-10-09-wave3a-change-determination.md`,
+- **✅ Wave 3b built — the per-Article redline** (branch `wave3b-standalone-redline`, PR open;
+  plan `plans/2026-10-10-wave3b-standalone-redline.md`, ten rulings + amendments). Build suite
+  **389 → 470**. **Ben ruled 2026-10-10: dropped headings/tables/figures are made visible BOTH on
+  the page AND in the text.** (1) `redline-text.py --source` (PDF and `--plain`) now writes an
+  italic bracketed note at the spot of every structural change — `*[Heading removed: “…”]*`,
+  `*[Heading added]*`, `*[Heading changed — it read: “…”]*`, `*[Table or figure removed/changed/
+  new …: “TABLE 3.2 …”]*`, `*[Article title changed …]*`; notes are body paragraphs (never red,
+  struck or a heading; never a split-marker token); the legend and tally say so. Previously a
+  removed table or heading left one blank line. (2) `build/structure_text.py` names headings and
+  tables and holds the ONE classifier for each (`classify_blocks`: exact-content matches first,
+  then by caption, untitled never paired; `classify_headings`: section-qualified keys, retitles by
+  similarity) — used by both the text and `czc_diff.structural_changes`, so page and text agree by
+  construction (measured on every real tag pair v0.3→v1.0). (3) `structural_note.py` is
+  **truthful** for the whole Code (no "Article 3 is new" / "NO marks" / March 2025 under the v1.0
+  map; names every data-generated page as unmarked, from new manifest unit `label`s) and has
+  `--scope article:N --old REF [--baseline] [--section-map] --md --pad-to-even`: kinds of change
+  (never line counts), each heading/table by name, flows across pages ("…and N more" past 4, full
+  list in the `.md`), markdown wording for the `.md`. (4) **`build/build-redline-standalone.sh
+  <NN> <new-ver> <old-ver>`** → `<…> — Redline.pdf` + `.md` (page in front as even, uncounted front
+  matter; parity, D1 verso and plate seating tested; `REDLINE_OUT=<dir>` dry run; refuses a bad
+  ref/Article cleanly, writing nothing). `build-standalone.sh` gains `OUT_MD_SOURCE`; shared
+  `build/article-meta.sh`. ⚠ **Owed by P13:** thread the section map through staging AND pass it to
+  the page (`--section-map`), else renumbering shows as many "Heading changed" notes.
+- **▶ OPEN — before the next freeze:** every draft cover (`build-cover.py`) still says "includes
+  proposed Article 3" and "amended through March 24, 2025" (decision D6, cover facts generated from
+  the baseline — P13).
+- **✅ Wave 3a MERGED — the change determination + Use Table Changes** (PR #4, merge
+  `1f931b1`; CI also fixed `build-memo.sh`'s macOS-only `mktemp`; plan `plans/2026-10-09-wave3a-change-determination.md`,
   twelve rulings + amendments; Ben split Wave 3 into 3a/3b on 2026-10-09). Build suite
   **288 → 389**.
   **`build/czc_diff.py --old REF [--new-ref REF | --new-dir DIR] [--section-map P] [--json P]`**

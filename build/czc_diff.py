@@ -81,6 +81,7 @@ sys.path.insert(0, str(BUILD))
 import adoption_map  # noqa: E402
 import manifest  # noqa: E402
 import normalize_for_diff as nz  # noqa: E402
+import structure_text  # noqa: E402
 
 
 class Refusal(Exception):
@@ -352,6 +353,70 @@ def markdown_counts(old: str | None, new: str, *, smap=None) -> dict[str, int]:
             "heading": nz.marked_lines(o_heads, n_heads),
             "table": nz.marked_lines(o_blocks, n_blocks),
             "suppressed": suppressed}
+
+
+_SECTION = re.compile(r"^\s*##[ \t]+(\d+[A-Za-z]?)\.[ \t]+(.*?)\s*(?:\{[^}]*\})?\s*$")
+_SUBSECTION = re.compile(r"^\s*###[ \t]+([A-Za-z])\.[ \t]+(.*?)\s*(?:\{[^}]*\})?\s*$")
+
+
+def _contextual_labels(heads: list[str]) -> list[str]:
+    """One label per heading line, for the disclosure page. A sub-section
+    ("### g. STREET TREES") alone does not say where it is, so it is labelled
+    with the section above it ("Section 3.G -- STREET TREES"). The in-text notes
+    use heading_label instead: they sit at the spot itself."""
+    labels, section = [], None
+    for h in heads:
+        m = _SECTION.match(h)
+        if m:
+            section = m.group(1)
+            labels.append(structure_text._clean(f"Section {section} \u2014 {m.group(2)}"))
+            continue
+        m = _SUBSECTION.match(h)
+        if m and section is not None:
+            labels.append(structure_text._clean(
+                f"Section {section}.{m.group(1).upper()} \u2014 {m.group(2)}"))
+            continue
+        labels.append(structure_text.heading_label(h))
+    return labels
+
+
+def structural_changes(old: str | None, new: str, *, smap=None,
+                       baseline: bool = True) -> dict[str, list]:
+    """WHICH headings and raw-Typst tables/figures were added, removed or
+    changed -- the names behind markdown_counts' heading and table counts.
+    `baseline` says which old side the redline's in-text notes read:
+    True (the default) normalises it exactly as markdown_counts does -- the
+    BASELINE path's old side (heading letters lowercased, an identity article
+    map, Rule 6 with a map). False is the draft-to-draft path, whose stage marks
+    the RAW old text (Rule 6 only, when a section map is given); reading a
+    normalised side there lists headings the text never notes. Headings are labelled
+    with their section (_contextual_labels). Tables and figures are classified
+    by structure_text.classify_blocks, the one rule the redline's in-text notes
+    share: identical content anywhere is unchanged, the rest pair by caption."""
+    if old is None:
+        o_heads, o_blocks = [], []
+    else:
+        if baseline:
+            old_side = nz.normalize_old_side(old, amap=_identity_amap(), smap=smap)
+        else:
+            old_side = nz.normalize_sections_only(old, smap=smap) if smap else old
+        _, o_heads, o_blocks = split_markdown(old_side)
+    _, n_heads, n_blocks = split_markdown(new)
+    out: dict[str, list] = {k: [] for k in ("headings_added", "headings_removed",
+                                            "headings_changed", "tables_added",
+                                            "tables_removed", "tables_changed")}
+    o_labels, n_labels = _contextual_labels(o_heads), _contextual_labels(n_heads)
+    hc = structure_text.classify_headings(o_heads, n_heads)
+    out["headings_changed"] = [(o_labels[i], n_labels[j]) for i, j in hc["changed"]]
+    out["headings_removed"] = [o_labels[i] for i in hc["removed"]]
+    out["headings_added"] = [n_labels[j] for j in hc["added"]]
+    o_caps = [structure_text.block_caption(b) for b in o_blocks]
+    n_caps = [structure_text.block_caption(b) for b in n_blocks]
+    cls = structure_text.classify_blocks(o_blocks, n_blocks)
+    out["tables_changed"] = [n_caps[j] for _, j in sorted(cls["changed"], key=lambda p: p[1])]
+    out["tables_removed"] = [o_caps[i] for i in cls["removed"]]
+    out["tables_added"] = [n_caps[j] for j in cls["added"]]
+    return out
 
 
 # --- The two sides --------------------------------------------------------------
