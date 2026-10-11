@@ -13,7 +13,7 @@ staged release against its plan (Ruling 10). It refuses; it does not report.
     a missing page breaks);
   - nothing is present that the plan does not name. Allowed extra: an existing
     `Summary of Changes <version>.pdf`. Hidden files (names starting with ".")
-    are ignored; the driver's staging dir holds none.
+    are NOT exempt: a stray .DS_Store or leaf scratch file is a problem.
   - the offset must be EVEN: an odd one puts every recto on a verso.
   - planned names must be bare filenames (no "/", "\\", ".", ".."), not symlinks,
     and resolve to a direct child of DIR; a name listed twice is a plan defect.
@@ -158,7 +158,7 @@ def check(plan, dir):
                         f"rectos would fall on versos")
     if dir.is_dir():
         for f in sorted(dir.iterdir()):
-            if f.name.startswith(".") or f.name in allowed:
+            if f.name in allowed:
                 continue
             problems.append(f"{f.name}: file is not in the release plan")
     return sorted(problems)

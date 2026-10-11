@@ -109,9 +109,10 @@ def test_existing_summary_pdf_is_allowed(rel):
     assert release_gate.check(plan("a.pdf", "a.md"), rel) == []
 
 
-def test_hidden_files_ignored(rel):
+def test_hidden_files_are_refused(rel):
     (rel / ".DS_Store").write_text("x")
-    assert release_gate.check(plan("a.pdf", "a.md"), rel) == []
+    probs = release_gate.check(plan("a.pdf", "a.md"), rel)
+    assert len(probs) == 1 and ".DS_Store" in probs[0] and "not in the release plan" in probs[0]
 
 
 def test_unopenable_pdf_is_a_problem_not_a_traceback(rel):

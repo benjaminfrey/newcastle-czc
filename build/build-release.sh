@@ -17,7 +17,8 @@
 #
 # Sequence (the first failure stops the run; nothing is placed until the gate passes):
 #   1. refusals: --old-ver present and a commit; draft version; draft mode; source dir
-#   2. an existing release dir may hold only `Summary of Changes <v>.md` (+ .pdf) --
+#   2. an existing release dir may hold only `Summary of Changes <v>.md` (+ .pdf), and
+#      no hidden files (.DS_Store included) --
 #      the hand-written Summary is carried into staging byte for byte
 #   3. staging dir beside the release dir (.staging-<v>.XXXXXX); an EXIT trap removes it
 #      and the temp section-map dir on every path except the successful move
@@ -106,7 +107,7 @@ if [ -e "$RELEASE_DIR" ]; then
       "$SUMMARY_PDF_NAME") HAVE_PDF=1 ;;
       *) OTHER=1 ;;
     esac
-  done < <(find "$RELEASE_DIR" -mindepth 1 -maxdepth 1 ! -name '.*' -exec basename {} \;)
+  done < <(find "$RELEASE_DIR" -mindepth 1 -maxdepth 1 -exec basename {} \;)
   if [ "$HAVE_PDF" = 1 ] && [ "$KEEP_SUMMARY" = 0 ]; then
     refuse "release directory '$RELEASE_DIR' holds '$SUMMARY_PDF_NAME' without its .md; refusing to touch it."
   fi
@@ -255,18 +256,26 @@ python3 "$BUILD/release_gate.py" "$PLAN" "$STAGING" >&2 \
   || refuse "the release gate refused; nothing was released."
 
 # --- 8. place ---------------------------------------------------------------------------
-if [ "$KEEP_SUMMARY" = 1 ] || [ -d "$RELEASE_DIR" ]; then
+# mktemp/mkstemp made staging 0700 and its files 0600; a release is read by others.
+chmod 755 "$STAGING" || refuse "could not set permissions on staging."
+find "$STAGING" -mindepth 1 -maxdepth 1 -type f -exec chmod 644 {} + \
+  || refuse "could not set permissions on staged files."
+if [ -d "$RELEASE_DIR" ]; then
   # Existing (Summary-only or empty) release dir: move in everything but the Summary
-  # files already there, so their bytes are never rewritten.
+  # files already there, so their bytes are never rewritten. The gate guarantees
+  # staging holds only planned files.
+  find "$STAGING" -mindepth 1 -maxdepth 1 -exec basename {} \; > "$MAPDIR/placing" \
+    || refuse "could not list the staged files."
   while IFS= read -r f; do
     [ -n "$f" ] || continue
     if [ "$KEEP_SUMMARY" = 1 ]; then
       case "$f" in "$SUMMARY_MD_NAME"|"$SUMMARY_PDF_NAME") continue ;; esac
     fi
-    mv "$STAGING/$f" "$RELEASE_DIR/$f"
-  done < <(find "$STAGING" -mindepth 1 -maxdepth 1 ! -name '.*' -exec basename {} \;)
+    mv "$STAGING/$f" "$RELEASE_DIR/$f" || refuse "could not place '$f' in '$RELEASE_DIR'."
+  done < "$MAPDIR/placing"
+  chmod 755 "$RELEASE_DIR" || refuse "could not set permissions on '$RELEASE_DIR'."
 else
-  mv "$STAGING" "$RELEASE_DIR"
+  mv "$STAGING" "$RELEASE_DIR" || refuse "could not move the release into '$RELEASE_DIR'."
   STAGING=""
 fi
 

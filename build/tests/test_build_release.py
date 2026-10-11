@@ -340,3 +340,32 @@ def test_an_inherited_section_map_never_reaches_the_leaves(a, tmp_path):
     assert r.returncode == 0, r.stderr[-2000:]
     got = seen.read_text().strip()
     assert got != "/nonexistent/bogus-map.json"
+
+
+def test_a_leaf_that_leaves_a_hidden_file_is_refused(a, tmp_path):
+    _, a_rel, _, _ = a
+    tree = fx.copy_full_source(tmp_path / "src")
+    env = copy_stubs(tmp_path, a_rel)
+    full = open(env["CZC_LEAF_FULL"]).read()
+    env["CZC_LEAF_FULL"] = str(write_stub(tmp_path / "dirty.sh", full.split("\n", 2)[2] + 'touch "$OUT_DIR/.leaf-scratch"\n'))
+    rel = tmp_path / "rel"
+    r = drive(["--out-dir", str(rel)], tree, env_extra=env)
+    assert r.returncode == 1 and "release_gate: .leaf-scratch: file is not in the release plan" in r.stderr
+    assert not rel.exists()
+    assert not [p for p in tmp_path.iterdir() if p.name.startswith(".staging-")]
+
+
+def test_an_existing_release_dir_with_a_hidden_file_is_refused_untouched(tmp_path):
+    tree = fx.copy_full_source(tmp_path / "src")
+    rel = tmp_path / "rel"
+    rel.mkdir()
+    (rel / ".DS_Store").write_text("x")
+    r = drive(["--out-dir", str(rel)], tree)
+    assert r.returncode == 1 and r.stderr.startswith("build-release: ")
+    assert [p.name for p in rel.iterdir()] == [".DS_Store"]
+
+
+def test_placed_release_is_world_readable(a):
+    _, rel, _, _ = a
+    assert (rel.stat().st_mode & 0o777) == 0o755
+    assert {(p.stat().st_mode & 0o777) for p in rel.iterdir()} == {0o644}
