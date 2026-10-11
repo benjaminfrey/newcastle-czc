@@ -233,3 +233,38 @@ def test_accepts_a_freeze_record_that_matches_the_tag():
         # but it must get PAST the provenance gate.
         assert "Freeze provenance verified" in r.stdout, (r.stdout, r.stderr)
         assert not adopted_dir.exists()
+
+
+def _residue_mod():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("residue", REPO / "build" / "adopted_residue.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_the_residue_only_mode_ignores_the_damage_check():
+    """A markdown file for the adopted edition is checked for chrome; the Code's
+    own 'drafts the official map' check stays on the PDF text."""
+    r = subprocess.run([sys.executable, str(REPO / "build" / "adopted_residue.py"), "--residue-only"],
+                       input="# Article 7\nText.\n", capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    r = subprocess.run([sys.executable, str(REPO / "build" / "adopted_residue.py"), "--residue-only"],
+                       input="See the Integrated Draft PDF.\n", capture_output=True, text=True)
+    assert r.returncode == 1
+
+
+def test_the_shipped_adopted_md_would_fail_and_a_new_build_does_not(tmp_path):
+    """The positive control: the v1.0 adopted markdown carries 'Integrated Draft'
+    pointers and Article 3's old footer, so the md scan would have caught it.
+    A fresh integrated draft markdown from today's build carries neither."""
+    mod = _residue_mod()
+    shipped = (REPO / "releases" / "v1.0-adopted" / "Newcastle CZC (Adopted v1.0).md").read_text()
+    assert mod.find_residue(shipped) != []
+    out = tmp_path / "out"
+    r = subprocess.run(["bash", "build/build-full-czc.sh", "v0.98-draft", "January 1, 2027"],
+                       cwd=REPO, env=dict(os.environ, OUT_DIR=str(out)), capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    md = next(out.glob("*.md")).read_text()
+    assert "Integrated Draft PDF" not in md
+    assert [c for c in mod.find_residue(md) if c != "INTEGRATED DRAFT"] == []
