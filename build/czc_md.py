@@ -25,6 +25,7 @@ CLI:  czc_md.py <article-NN> <out.md> [--src-dir DIR] [--mode draft|meeting|adop
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
@@ -35,12 +36,13 @@ sys.path.insert(0, str(HERE))
 import manifest  # noqa: E402
 import structure_text  # noqa: E402
 import typst_tables  # noqa: E402
+import use_table_changes  # noqa: E402
 import version_state  # noqa: E402
 
 SOURCE = HERE.parent / "source"
 MODES = ("draft", "meeting", "adopted")
 COMPLETENESS = ("complete", "prose-only", "prose-plus-appendix")
-# nn -> callable(src_dir: Path) -> str.  Article 2's is registered by the build.
+# nn -> callable(src_dir: Path) -> str.  Article 2's is registered below.
 APPENDICES: dict = {}
 
 _FENCE = re.compile(r"^[ \t]*(`{3,}|~{3,})(.*)$")
@@ -197,6 +199,96 @@ def _walk_body(body: str, entry: dict, units: list) -> tuple[str, set]:
         out.append(line)
         i += 1
     return "\n".join(out), placed
+
+
+# --- Article 2's appendix: the thirteen district pages ---------------------------
+
+def _esc_text(s: str) -> str:
+    """A leading '#' would read as a heading."""
+    s = str(s)
+    return "\\" + s if s.startswith("#") else s
+
+
+def _cell(s) -> str:
+    return str(s).replace("|", "\\|")
+
+
+def _list_lines(items: list) -> list[str]:
+    out: list[str] = []
+    for it in items:
+        if isinstance(it, dict):
+            out.append(f"- {_esc_text(it.get('text', ''))}")
+            out.extend(f"  - {_esc_text(sub)}" for sub in it.get("sub") or [])
+        else:
+            out.append(f"- {_esc_text(it)}")
+    return out
+
+
+def _panel(panel: dict) -> str:
+    lines = [f"**{panel['title']}**", ""]
+    kind, body = panel["kind"], panel["body"]
+    if kind == "lv":
+        lines += ["| Item | Standard |", "| :--- | :--- |"]
+        lines += [f"| {_cell(a)} | {_cell(b)} |" for a, b in body]
+    elif kind == "list":
+        lines += _list_lines(body)
+    elif kind == "para":
+        lines.append(_esc_text(body))
+    else:
+        raise MdError(f"a district panel of unknown kind {kind!r}")
+    return "\n".join(lines)
+
+
+def _matrix(m: dict | None) -> str:
+    if not m:
+        return "*No Permitted Buildings matrix.*"
+    cols = m["cols"]
+    lines = [f"**{m['title']}**", "", "|  | " + " | ".join(_cell(c) for c in cols) + " |",
+             "| " + " | ".join([":---"] * (len(cols) + 1)) + " |"]
+    for row in m["rows"]:
+        lines.append("| " + " | ".join(_cell(c) for c in row) + " |")
+    return "\n".join(lines)
+
+
+def article2_appendix(src_dir: Path) -> str:
+    """All thirteen districts as markdown, from the data and the legend the PDF's
+    district pages are printed from (one legend reader: use_table_changes)."""
+    src_dir = Path(src_dir)
+    try:
+        legend = use_table_changes.parse_legend((src_dir / "article-02.typ").read_text(encoding="utf-8"))
+        data = json.loads((src_dir / "article-02-data.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError, use_table_changes.LegendError) as e:
+        raise MdError(f"the Article 2 appendix cannot be built: {e}") from None
+    blocks = [
+        "## Appendix — District Standards",
+        "*Generated from the district data the PDF edition's district pages are printed from. "
+        "Use statuses are given in words; the PDF shows them as symbols.*",
+    ]
+    bullets = [f"- {label.removesuffix(' Required')} — issued by {authority}"
+               for label, authority in legend["rows"].values()]
+    bullets.append("- A use with no status is not allowed in that District.")
+    blocks.append("**Use table legend**\n\n" + "\n".join(bullets))
+    for rec in data:
+        blocks.append(f"### {rec['code']} {rec['name']}")
+        for panel in list(rec.get("left") or []) + list(rec.get("right") or []):
+            blocks.append(_panel(panel))
+        blocks.append(_matrix(rec.get("matrix")))
+        for col in ("use_col1", "use_col2"):
+            for cat in rec.get(col) or []:
+                if not cat["entries"]:
+                    continue
+                lines = [f"**{use_table_changes._category(rec, col, cat['title'])}**", "",
+                         "| Use | Status |", "| :--- | :--- |"]
+                lines += [f"| {_cell(u)} | {_cell(use_table_changes.status_words(s, legend))} |"
+                          for u, s in cat["entries"]]
+                blocks.append("\n".join(lines))
+        us = rec.get("use_standards")
+        if us:
+            blocks.append(f"**{us['title']}**\n\n" + "\n".join(_list_lines(us["items"])))
+    return "\n\n".join(blocks) + "\n"
+
+
+APPENDICES[2] = article2_appendix
 
 
 def render(nn: int, *, src_dir: Path = SOURCE, mode: str = "draft",

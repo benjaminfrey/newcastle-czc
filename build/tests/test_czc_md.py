@@ -170,7 +170,132 @@ def test_cli_writes_on_success_and_nothing_on_refusal(base_tree, tmp_path):
     assert out.read_text().startswith('---\narticle-number: "3"')
     bad = tmp_path / "a2.md"
     r = subprocess.run([sys.executable, str(BUILD / "czc_md.py"), "2", str(bad),
-                        "--src-dir", str(base_tree), "--version", VER],
+                        "--src-dir", str(base_tree), "--mode", "adopted", "--version", VER],
                        capture_output=True, text=True)
     assert r.returncode == 1 and "czc_md: refusing" in r.stderr
     assert not bad.exists()
+
+
+# --- Article 2's appendix ------------------------------------------------------
+
+import json  # noqa: E402
+import re  # noqa: E402
+
+USE_ROW = re.compile(r"^\| (.+) \| (.+) \|$")
+
+
+def _use_rows(text):
+    """(use, status) rows of every use table in the appendix."""
+    rows, inside = [], False
+    for ln in text.split("\n"):
+        if ln == "| Use | Status |":
+            inside = True
+            continue
+        if inside and ln.startswith("| :---"):
+            continue
+        if inside and USE_ROW.match(ln):
+            rows.append(USE_ROW.match(ln).groups())
+            continue
+        inside = False
+    return rows
+
+
+def test_the_appendix_carries_all_thirteen_districts_and_819_uses(base_tree):
+    out = md(base_tree, 2)
+    data = json.loads((base_tree / "article-02-data.json").read_text())
+    for rec in data:
+        assert f"### {rec['code']} {rec['name']}" in out
+    rows = _use_rows(out)
+    assert len(rows) == 819
+
+
+def test_every_status_is_in_words_and_matches_the_data(base_tree):
+    import use_table_changes as utc
+    out = md(base_tree, 2)
+    legend = utc.parse_legend((base_tree / "article-02.typ").read_text())
+    data = json.loads((base_tree / "article-02-data.json").read_text())
+    expected = [(u, utc.status_words(s, legend)) for rec in data
+                for col in ("use_col1", "use_col2") for c in rec[col] for u, s in c["entries"]]
+    assert _use_rows(out) == expected
+    assert ("Retail & Service, General",
+            "Residential Companion Permit (CEO) + Special Permit (Planning Board)") in _use_rows(out)
+    assert any(s == "Not allowed" for _, s in _use_rows(out))
+
+
+def test_d4s_split_category_prints_whole(base_tree):
+    out = md(base_tree, 2)
+    d4 = out[out.index("### D4 VILLAGE RESIDENTIAL"):out.index("### D5 VILLAGE BUSINESS")]
+    assert "**TRANSPORTATION & UTILITIES**" in d4
+    assert "ITIES**" not in d4.replace("UTILITIES**", "")
+    assert "\xad" not in out
+
+
+def test_the_three_districts_without_a_matrix_say_so(base_tree):
+    out = md(base_tree, 2)
+    for name in ("SD CONSERVATION", "SD CAMPUS", "SD MARINE"):
+        sect = out[out.index(f"### {name}"):]
+        sect = sect[:sect.find("\n### ", 1)] if "\n### " in sect[1:] else sect
+        assert "No Permitted Buildings matrix." in sect
+
+
+def test_the_appendix_has_the_legend_and_the_standards(base_tree):
+    out = md(base_tree, 2)
+    assert "Use Permit — issued by CEO" in out
+    assert "**DESCRIPTION**" in out and "**PERMITTED BUILDINGS**" in out
+    data = json.loads((base_tree / "article-02-data.json").read_text())
+    for rec in data:
+        title = rec["use_standards"]["title"]
+        assert out.count(f"**{title}**") == 1, title
+
+
+def test_the_appendix_parses_as_markdown(base_tree):
+    if not shutil.which("pandoc"):
+        pytest.skip("pandoc not installed")
+    r = subprocess.run(["pandoc", "-f", "markdown", "-t", "html"], input=md(base_tree, 2),
+                       capture_output=True, text=True)
+    assert r.returncode == 0 and r.stdout.count("<table") > 13 * 7
+
+
+# --- the standalone build calls czc_md (moved from Task 3) -----------------------
+
+def test_the_standalone_build_writes_the_honest_md(tmp_path, base_tree):
+    out = tmp_path / "out"
+    r = subprocess.run(["bash", "build/build-standalone.sh", "03", VER], cwd=REPO,
+                       env=dict(os.environ, SRC_DIR=str(base_tree), OUT_DIR=str(out)),
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    m = next(out.glob("*.md")).read_text()
+    assert "{=typst}" not in m and "this extract does not govern" in m
+
+
+def test_a_refused_md_leaves_no_release_dir(tmp_path, base_tree):
+    tree = Path(shutil.copytree(base_tree, tmp_path / "source"))
+    (tree / "article-03-streets-roads-driveways.md").unlink()
+    out = tmp_path / "out"
+    r = subprocess.run(["bash", "build/build-standalone.sh", "03", VER], cwd=REPO,
+                       env=dict(os.environ, SRC_DIR=str(tree), OUT_DIR=str(out)),
+                       capture_output=True, text=True)
+    assert r.returncode != 0 and not out.exists()
+
+
+def test_the_article_2_standalone_md_carries_the_appendix(tmp_path, base_tree):
+    out = tmp_path / "out"
+    r = subprocess.run(["bash", "build/build-standalone.sh", "02", VER], cwd=REPO,
+                       env=dict(os.environ, SRC_DIR=str(base_tree), OUT_DIR=str(out)),
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    m = next(out.glob("*.md")).read_text()
+    assert "## Appendix — District Standards" in m and "### D1 RURAL" in m.upper()
+
+
+def test_a_refusal_from_czc_md_itself_leaves_no_release_dir(tmp_path, base_tree):
+    """The brief's refused-md test removes the prose, which an earlier guard
+    catches; this one gets all the way to czc_md and is refused THERE."""
+    tree = Path(shutil.copytree(base_tree, tmp_path / "source"))
+    p = tree / "article-03-streets-roads-driveways.md"
+    p.write_text(p.read_text().replace("STREET-TYPE-EXHIBITS", "SOMETHING-ELSE"))
+    out = tmp_path / "out"
+    r = subprocess.run(["bash", "build/build-standalone.sh", "03", VER], cwd=REPO,
+                       env=dict(os.environ, SRC_DIR=str(tree), OUT_DIR=str(out)),
+                       capture_output=True, text=True)
+    assert r.returncode != 0 and "czc_md: refusing" in r.stderr and not out.exists()
