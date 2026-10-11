@@ -178,7 +178,10 @@ sys.stdout.write(''.join(p.get_text() for p in d))
 #     "Draft v..." footer inside it went unseen. Chrome only (--residue-only):
 #     the "drafts the official map" damage check stays on the PDF text above.
 #     Runs on the scratch file, before anything reaches the release directory.
-python3 "$REPO_ROOT/build/adopted_residue.py" --residue-only < "$ADOPTED_MD"
+if ! python3 "$REPO_ROOT/build/adopted_residue.py" --residue-only < "$ADOPTED_MD"; then
+  echo "adopted: draft chrome found in the adopted MARKDOWN ($(basename "$ADOPTED_MD"))" >&2
+  exit 1
+fi
 
 # 5. Both gates passed. ONLY NOW place the result where it will be found and
 #    filed — see the SCRATCH_OUT comment above for why this happens last.

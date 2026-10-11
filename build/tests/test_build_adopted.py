@@ -266,5 +266,49 @@ def test_the_shipped_adopted_md_would_fail_and_a_new_build_does_not(tmp_path):
                        cwd=REPO, env=dict(os.environ, OUT_DIR=str(out)), capture_output=True, text=True)
     assert r.returncode == 0, r.stderr
     md = next(out.glob("*.md")).read_text()
-    assert "Integrated Draft PDF" not in md
+    assert "integrated draft pdf" not in md.lower()
     assert [c for c in mod.find_residue(md) if c != "INTEGRATED DRAFT"] == []
+
+
+def _probe_commit_with_article3_footer(tmp_path, footer):
+    """A commit whose tree is HEAD's except Article 3's footer-date line.
+    Built with a throwaway index, so HEAD, the real index and the working
+    tree are never touched."""
+    rel = "source/article-03-streets-roads-driveways.md"
+    text = (REPO / rel).read_text()
+    import re
+    edited, n = re.subn(r'(?m)^footer-date:.*$', f'footer-date: "{footer}"', text, count=1)
+    assert n == 1
+    env = dict(os.environ, GIT_INDEX_FILE=str(tmp_path / "probe-index"))
+    def git(*args, **kw):
+        return subprocess.run(["git", *args], cwd=REPO, env=env, capture_output=True,
+                              text=True, check=True, **kw).stdout.strip()
+    git("read-tree", "HEAD")
+    blob = subprocess.run(["git", "hash-object", "-w", "--stdin"], cwd=REPO, input=edited,
+                          capture_output=True, text=True, check=True).stdout.strip()
+    git("update-index", "--cacheinfo", f"100644,{blob},{rel}")
+    tree = git("write-tree")
+    return git("commit-tree", tree, "-p", "HEAD", "-m", "probe")
+
+
+def test_the_adopted_markdown_scan_refuses_draft_chrome_the_other_gates_cannot_see(tmp_path):
+    """Negative control for build-adopted.sh step 4b. The tagged source differs
+    from the frozen meeting edition only in Article 3's footer-date, which the
+    identity gate strips (frontmatter is chrome); the PDF does not print that
+    footer text as 'Draft v...'. Only the markdown scan can refuse."""
+    version = "v918.0"
+    commit = _probe_commit_with_article3_footer(tmp_path, "Draft v9")
+    with _temp_tag(version) as (meeting_dir, adopted_dir):
+        subprocess.run(["git", "tag", "-f", version, commit], cwd=REPO, check=True,
+                       capture_output=True)
+        env = {**os.environ, "ADOPTION_MODE": "meeting", "ADOPTION_EVENT_DATE": "March 1, 2099"}
+        r = subprocess.run(["bash", "build/build-full-czc.sh", version, "March 1, 2099"],
+                           cwd=REPO, env=env, capture_output=True, text=True)
+        assert r.returncode == 0, r.stderr
+        write_provenance(meeting_dir, version)
+        r2 = subprocess.run(["bash", "build/build-adopted.sh", version, "March 1, 2099"],
+                            cwd=REPO, capture_output=True, text=True)
+        assert r2.returncode != 0, (r2.stdout, r2.stderr)
+        assert "Draft v" in r2.stderr, r2.stderr
+        assert "MARKDOWN" in r2.stderr, r2.stderr
+        assert not adopted_dir.exists()
