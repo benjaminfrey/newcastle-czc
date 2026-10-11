@@ -45,6 +45,7 @@ LEAF_REDLINE_FULL="${CZC_LEAF_REDLINE_FULL:-$BUILD/build-redline-full.sh}"
 LEAF_STANDALONE="${CZC_LEAF_STANDALONE:-$BUILD/build-standalone.sh}"
 LEAF_REDLINE_STANDALONE="${CZC_LEAF_REDLINE_STANDALONE:-$BUILD/build-redline-standalone.sh}"
 
+unset SECTION_MAP   # only ever set by this driver, from a map it derived
 refuse() { echo "build-release: $*" >&2; exit 1; }
 say() { echo "build-release: $*" >&2; }
 
@@ -97,15 +98,18 @@ SUMMARY_PDF_NAME="Summary of Changes $VERSION.pdf"
 KEEP_SUMMARY=0
 if [ -e "$RELEASE_DIR" ]; then
   [ -d "$RELEASE_DIR" ] || refuse "'$RELEASE_DIR' exists and is not a directory."
-  OTHER=0
+  OTHER=0 HAVE_PDF=0
   while IFS= read -r f; do
     [ -n "$f" ] || continue
     case "$f" in
       "$SUMMARY_MD_NAME") KEEP_SUMMARY=1 ;;
-      "$SUMMARY_PDF_NAME") ;;
+      "$SUMMARY_PDF_NAME") HAVE_PDF=1 ;;
       *) OTHER=1 ;;
     esac
   done < <(find "$RELEASE_DIR" -mindepth 1 -maxdepth 1 ! -name '.*' -exec basename {} \;)
+  if [ "$HAVE_PDF" = 1 ] && [ "$KEEP_SUMMARY" = 0 ]; then
+    refuse "release directory '$RELEASE_DIR' holds '$SUMMARY_PDF_NAME' without its .md; refusing to touch it."
+  fi
   if [ "$OTHER" = 1 ]; then
     refuse "release directory '$RELEASE_DIR' already holds files other than the Summary of Changes; refusing to touch it."
   fi
@@ -174,44 +178,55 @@ for a in plan["artifacts"]:
 PY
 }
 
+PLIST="$MAPDIR/plan-list"
+plan_list() { plan_files "$1" > "$PLIST" || refuse "could not read the release plan ($1)"; }
+
 export SRC_DIR="$NEW_DIR"
 
 # --- 6. build into staging ----------------------------------------------------------
 say "building the integrated Code"
-OUT_DIR="$STAGING" bash "$LEAF_FULL" "$VERSION" "$DATE_STR" >&2
+OUT_DIR="$STAGING" bash "$LEAF_FULL" "$VERSION" "$DATE_STR" >&2 \
+    || refuse "the integrated build failed (exit $?)"
 
 RL_PDF="" RL_MD=""
+plan_list integrated-redline
 while IFS='|' read -r _ f; do
   [ -n "$f" ] || continue
   case "$f" in *.pdf) RL_PDF="$f" ;; *.md) RL_MD="$f" ;; esac
-done < <(plan_files integrated-redline)
+done < "$PLIST"
 if [ -n "$RL_PDF" ]; then
   say "building the integrated redline"
   REDLINE_OUT="$STAGING/$RL_PDF" REDLINE_MD_OUT="${RL_MD:+$STAGING/$RL_MD}" \
-    bash "$LEAF_REDLINE_FULL" "$VERSION" "$OLD_VER" "$DATE_STR" >&2
+    bash "$LEAF_REDLINE_FULL" "$VERSION" "$OLD_VER" "$DATE_STR" >&2 \
+    || refuse "the integrated redline build failed (exit $?)"
 fi
 
+plan_list standalone
 while IFS='|' read -r art f; do
   [ -n "$art" ] || continue
   case "$f" in *.pdf) ;; *) continue ;; esac   # one call per Article builds pdf+md
   NN=$(printf "%02d" "$((10#$art))")
   say "building the Article $art standalone"
-  OUT_DIR="$STAGING" bash "$LEAF_STANDALONE" "$NN" "$VERSION" "$DATE_STR" >&2
-done < <(plan_files standalone)
+  OUT_DIR="$STAGING" bash "$LEAF_STANDALONE" "$NN" "$VERSION" "$DATE_STR" >&2 \
+    || refuse "the Article $art standalone build failed (exit $?)"
+done < "$PLIST"
 
+plan_list standalone-redline
 while IFS='|' read -r art f; do
   [ -n "$art" ] || continue
   case "$f" in *.pdf) ;; *) continue ;; esac
   NN=$(printf "%02d" "$((10#$art))")
   say "building the Article $art standalone redline"
-  REDLINE_OUT="$STAGING" bash "$LEAF_REDLINE_STANDALONE" "$NN" "$VERSION" "$OLD_VER" "$DATE_STR" >&2
-done < <(plan_files standalone-redline)
+  REDLINE_OUT="$STAGING" bash "$LEAF_REDLINE_STANDALONE" "$NN" "$VERSION" "$OLD_VER" "$DATE_STR" >&2 \
+    || refuse "the Article $art standalone redline build failed (exit $?)"
+done < "$PLIST"
 
 UT_MD="" UT_PDF=""
+plan_list use-table-changes
 while IFS='|' read -r _ f; do
   [ -n "$f" ] || continue
   case "$f" in *.pdf) UT_PDF="$f" ;; *.md) UT_MD="$f" ;; esac
-done < <(plan_files use-table-changes)
+done < "$PLIST"
 if [ -n "$UT_MD" ]; then
   say "building the Use Table Changes memo"
   set +e
@@ -221,7 +236,8 @@ if [ -n "$UT_MD" ]; then
   [ "$RC" = 0 ] || refuse "use_table_changes.py exited $RC but the plan lists a Use Table Changes memo."
   if [ -n "$UT_PDF" ]; then
     bash "$BUILD/build-memo.sh" "$STAGING/$UT_MD" "$STAGING/$UT_PDF" \
-      "Use Table Changes — $VERSION" "Newcastle Core Zoning Code · $DATE_STR" >&2
+      "Use Table Changes — $VERSION" "Newcastle Core Zoning Code · $DATE_STR" >&2 \
+    || refuse "the Use Table Changes memo build failed (exit $?)"
   fi
 fi
 
@@ -244,7 +260,9 @@ if [ "$KEEP_SUMMARY" = 1 ] || [ -d "$RELEASE_DIR" ]; then
   # files already there, so their bytes are never rewritten.
   while IFS= read -r f; do
     [ -n "$f" ] || continue
-    case "$f" in "$SUMMARY_MD_NAME"|"$SUMMARY_PDF_NAME") continue ;; esac
+    if [ "$KEEP_SUMMARY" = 1 ]; then
+      case "$f" in "$SUMMARY_MD_NAME"|"$SUMMARY_PDF_NAME") continue ;; esac
+    fi
     mv "$STAGING/$f" "$RELEASE_DIR/$f"
   done < <(find "$STAGING" -mindepth 1 -maxdepth 1 ! -name '.*' -exec basename {} \;)
 else

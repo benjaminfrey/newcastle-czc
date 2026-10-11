@@ -289,3 +289,54 @@ def test_meeting_mode_is_refused(tmp_path):
               env_extra={"ADOPTION_MODE": "meeting", "ADOPTION_EVENT_DATE": "March 1, 2027"})
     assert r.returncode == 1 and "ADOPTION_MODE=meeting" in r.stderr
     assert not (tmp_path / "rel").exists()
+
+
+def test_an_existing_empty_release_dir_gets_the_generated_summary(a, tmp_path):
+    _, a_rel, _, _ = a
+    tree = fx.copy_full_source(tmp_path / "src")
+    rel = tmp_path / "rel"
+    rel.mkdir()
+    r = drive(["--out-dir", str(rel)], tree, env_extra=copy_stubs(tmp_path, a_rel))
+    assert r.returncode == 0, r.stderr[-2000:]
+    assert listing(rel) == listing(a_rel)
+    assert "No Article changed" in (rel / f"Summary of Changes {VER}.md").read_text()
+
+
+def test_a_release_dir_holding_only_the_summary_pdf_is_refused_untouched(tmp_path):
+    tree = fx.copy_full_source(tmp_path / "src")
+    rel = tmp_path / "rel"
+    rel.mkdir()
+    (rel / f"Summary of Changes {VER}.pdf").write_bytes(b"%PDF-1.4 stray\n")
+    r = drive(["--out-dir", str(rel)], tree)
+    assert r.returncode == 1 and r.stderr.startswith("build-release: ")
+    assert listing(rel) == [f"Summary of Changes {VER}.pdf"]
+
+
+def test_a_failing_leaf_is_a_build_release_refusal(a, tmp_path):
+    _, a_rel, _, _ = a
+    tree = fx.copy_full_source(tmp_path / "src")
+    env = copy_stubs(tmp_path, a_rel)
+    env["CZC_LEAF_REDLINE_FULL"] = str(write_stub(tmp_path / "boom.sh", "exit 3\n"))
+    rel = tmp_path / "rel"
+    r = drive(["--out-dir", str(rel)], tree, env_extra=env)
+    assert r.returncode == 1 and "build-release: the integrated redline build failed (exit 3)" in r.stderr
+    assert not rel.exists()
+    assert not [p for p in tmp_path.iterdir() if p.name.startswith(".staging-")]
+
+
+def test_an_inherited_section_map_never_reaches_the_leaves(a, tmp_path):
+    _, a_rel, _, _ = a
+    tree = fx.copy_full_source(tmp_path / "src")
+    env = copy_stubs(tmp_path, a_rel)
+    seen = tmp_path / "seen.txt"
+    env["CZC_LEAF_REDLINE_FULL"] = str(write_stub(
+        tmp_path / "spy.sh",
+        f'echo "${{SECTION_MAP-unset}}" > "{seen}"\n'
+        + next(l for l in open(env["CZC_LEAF_REDLINE_FULL"]).read().splitlines()[2:3]) + "\n"
+        + open(env["CZC_LEAF_REDLINE_FULL"]).read().splitlines()[3] + "\n"))
+    env["SECTION_MAP"] = "/nonexistent/bogus-map.json"
+    rel = tmp_path / "rel"
+    r = drive(["--out-dir", str(rel)], tree, env_extra=env)
+    assert r.returncode == 0, r.stderr[-2000:]
+    got = seen.read_text().strip()
+    assert got != "/nonexistent/bogus-map.json"
