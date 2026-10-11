@@ -35,6 +35,7 @@ sys.path.insert(0, str(HERE))
 import manifest  # noqa: E402
 import structure_text  # noqa: E402
 import typst_tables  # noqa: E402
+import version_state  # noqa: E402
 
 SOURCE = HERE.parent / "source"
 MODES = ("draft", "meeting", "adopted")
@@ -49,6 +50,29 @@ class MdError(Exception):
     """A refusal: the markdown would not be honest, so nothing is written."""
 
 
+def _check_version(mode: str, version: str) -> None:
+    """The version must say what the mode says: a whole vN.0 is an adoption
+    version, a decimal is a draft -- the rule build/adoption-footer.sh enforces
+    for the PDF."""
+    if not version:
+        raise MdError("a version is required (the provenance line names it)")
+    try:
+        version_state.parse(version)
+    except ValueError as e:
+        raise MdError(str(e)) from None
+    adoption = version_state.is_adoption_version(version)
+    if mode == "draft" and adoption:
+        raise MdError(f"mode draft cannot carry the adoption version {version}")
+    if mode != "draft" and not adoption:
+        raise MdError(f"mode {mode} needs an adoption version (vN.0), not {version}")
+
+
+def _join_labels(labels: list) -> str:
+    if len(labels) <= 2:
+        return " and ".join(labels)
+    return "; ".join(labels[:-1]) + "; and " + labels[-1]
+
+
 def _article_entry(doc: dict, nn: int) -> dict:
     entry = doc.get(str(nn))
     if not isinstance(entry, dict) or "units" not in entry:
@@ -56,7 +80,7 @@ def _article_entry(doc: dict, nn: int) -> dict:
     return entry
 
 
-def _check_completeness(nn: int, entry: dict, units: list) -> str:
+def _check_completeness(nn: int, entry: dict) -> str:
     kind = entry.get("md_completeness")
     if kind not in COMPLETENESS:
         raise MdError(f"Article {nn} declares md_completeness {kind!r}; "
@@ -155,6 +179,9 @@ def _walk_body(body: str, entry: dict, units: list) -> tuple[str, set]:
             j = i
             while j < len(lines) and "-->" not in lines[j]:
                 j += 1
+            if j >= len(lines):
+                raise MdError(f"unclosed HTML comment starting at line {i + 1} of the body; "
+                              f"it would hide the rest of the markdown")
             comment = "\n".join(lines[i:j + 1])
             # a whole-line comment only: nothing may follow the closing "-->"
             if j < len(lines) and lines[j].strip().endswith("-->"):
@@ -176,10 +203,11 @@ def render(nn: int, *, src_dir: Path = SOURCE, mode: str = "draft",
            version: str = "", doc: dict | None = None) -> str:
     if mode not in MODES:
         raise MdError(f"unknown mode {mode!r}; it must be one of {', '.join(MODES)}")
+    _check_version(mode, version)
     src_dir = Path(src_dir)
     doc = manifest.load() if doc is None else doc
     entry = _article_entry(doc, nn)
-    kind = _check_completeness(nn, entry, entry["units"])
+    kind = _check_completeness(nn, entry)
     prose = _prose_path(nn, entry, src_dir)
     fm_lines, body = _split_frontmatter(prose.read_text(encoding="utf-8"))
     kept = [ln for ln in fm_lines
@@ -202,7 +230,7 @@ def render(nn: int, *, src_dir: Path = SOURCE, mode: str = "draft",
     elif after:
         tail = "\n\n" + "\n\n".join(_unit_pointer(u["label"]) for u in after)
 
-    ver = f" ({version})" if version else ""
+    ver = f" ({version})"
     phrase = {"draft": f"a working draft{ver}",
               "meeting": f"the Town Meeting edition{ver}",
               "adopted": f"adopted{ver}"}[mode]
@@ -210,12 +238,12 @@ def render(nn: int, *, src_dir: Path = SOURCE, mode: str = "draft",
             f"{phrase}. The integrated Code is the document the Town adopts; this extract "
             f"does not govern.*"]
     if kind != "complete":
-        labels = "; ".join(u["label"] for u in units)
-        where = ("the district pages are reproduced below as a generated appendix"
+        labels = _join_labels([u["label"] for u in units])
+        where = ("The district pages are reproduced below as a generated appendix."
                  if kind == "prose-plus-appendix"
-                 else "they are named below where they appear")
+                 else "They are named below where they appear.")
         if labels:
-            head.append(f"*The PDF edition also contains {labels}; {where}. "
+            head.append(f"*The PDF edition also contains {labels}. {where} "
                         f"The PDF edition is authoritative for them.*")
 
     return ("---\n" + "\n".join(kept) + "\n---\n\n" + "\n\n".join(head) + "\n\n"
