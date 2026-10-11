@@ -128,3 +128,50 @@ def test_cli_lists_every_problem(rel, tmp_path):
     lines = r.stderr.strip().splitlines()
     assert len(lines) == 3 and all(l.startswith("release_gate: ") for l in lines)
     assert r.stdout == ""
+
+
+def test_odd_constant_offset_is_refused(rel):
+    make_pdf(rel / "a.pdf", [None, 1, 2])  # numbered from physical page 2: offset -1
+    probs = release_gate.check(plan("a.pdf", "a.md"), rel)
+    assert len(probs) == 1 and "a.pdf" in probs[0] and "-1" in probs[0]
+
+
+@pytest.mark.parametrize("name", ["../outside.md", "sub/a.md", "sub\\a.md", ".", ".."])
+def test_planned_name_must_be_a_bare_filename(rel, tmp_path, name):
+    (tmp_path / "outside.md").write_text("x")
+    probs = release_gate.check(plan("a.pdf", name), rel)
+    assert any(name in p for p in probs)
+
+
+def test_planned_symlink_is_refused(rel, tmp_path):
+    other = make_pdf(tmp_path / "other.pdf", [1, 2])
+    (rel / "x.pdf").symlink_to(other)
+    probs = release_gate.check(plan("a.pdf", "x.pdf"), rel)
+    assert any("x.pdf" in p and "symlink" in p for p in probs)
+
+
+@pytest.mark.parametrize("bad", [
+    {"artifacts": []},
+    {"version": VER, "artifacts": "nope"},
+    {"version": VER, "artifacts": [{"kind": "k"}]},
+    {"version": VER, "artifacts": [{"files": "a.pdf"}]},
+    {"version": VER, "artifacts": [5]},
+    [],
+])
+def test_malformed_plan_is_a_problem(rel, bad):
+    probs = release_gate.check(bad, rel)
+    assert probs and all(isinstance(p, str) for p in probs)
+
+
+def test_unreadable_plan_json_is_a_cli_refusal(rel, tmp_path):
+    pj = tmp_path / "plan.json"
+    pj.write_text("{not json")
+    r = subprocess.run([sys.executable, str(BUILD / "release_gate.py"), str(pj), str(rel)],
+                       capture_output=True, text=True)
+    assert r.returncode == 1 and r.stderr.startswith("release_gate: ")
+    assert "Traceback" not in r.stderr
+
+
+def test_duplicate_planned_file_is_a_problem(rel):
+    probs = release_gate.check(plan("a.pdf", "a.md", "a.md"), rel)
+    assert len(probs) == 1 and "a.md" in probs[0] and "twice" in probs[0]
