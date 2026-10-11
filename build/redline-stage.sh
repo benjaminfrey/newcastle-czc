@@ -32,6 +32,11 @@
 # Code. Both are refused, after resolving symlinks and ".." to absolute paths.
 # A stage nested inside source/ is refused too: it would dirty the Code's tree.
 #
+# CZC_SECTION_MAP (optional env): path to a derived section map (build/section_map.py
+# derive). When set, it is handed to the old-side resolver with --new-dir <src-dir>,
+# so pure renumberings after an inserted section are not reported as changes. A map
+# that is not a readable file refuses; the resolver refuses a map for another tree.
+#
 # <plain-flag> is "" or "--plain". PLAIN OUTPUT IS FOR A PUBLISHED .md ONLY: it
 # carries a "Redline key:" legend at the head of every marked file (even one
 # with zero changes) and a sigil on whole-line insertions, and --source writes
@@ -72,6 +77,15 @@ czc_redline_stage() {
       > "$stage/$CZC_PLAIN_MARK_FILE"
   fi
 
+  local -a smap_args=()
+  if [ -n "${CZC_SECTION_MAP:-}" ]; then
+    if [ ! -f "$CZC_SECTION_MAP" ] || [ ! -r "$CZC_SECTION_MAP" ]; then
+      echo "redline-stage: section map not found: $CZC_SECTION_MAP" >&2
+      return 1
+    fi
+    smap_args=(--section-map "$CZC_SECTION_MAP" --new-dir "$src")
+  fi
+
   local -a bases=()
   if [ $# -gt 0 ]; then
     bases=("$@")
@@ -98,7 +112,7 @@ czc_redline_stage() {
     # `|| rc=$?` captures the exit status without toggling `set -e` in the
     # caller's shell (this file is sourced).
     rc=0
-    python3 "$repo_root/build/redline_resolve.py" "$base" "$old_ver" "$oldtmp" $baseline_flag || rc=$?
+    python3 "$repo_root/build/redline_resolve.py" "$base" "$old_ver" "$oldtmp" $baseline_flag ${smap_args[@]+"${smap_args[@]}"} || rc=$?
     case "$rc" in
       0) ;;
       3) : > "$oldtmp"

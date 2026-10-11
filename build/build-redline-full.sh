@@ -11,7 +11,7 @@
 # hand-written Summary of Changes. This replaces the plain single-column text
 # redline (build/build-redline.sh, now legacy/text-only).
 #
-# How it works: copy the working-tree source/ into a staging tree (so the native
+# How it works: copy the NEW tree (SRC_DIR, default source/) into a staging tree (so the native
 # .typ units render the current figures), rewrite each article-*.md in place with
 # redline-text.py --source (vs the OLD version's file from git), then run the
 # normal integrated build (build-full-czc.sh) against the stage. The build's
@@ -21,7 +21,7 @@
 # Usage:
 #   build-redline-full.sh <new-ver> [old-ver] [date-str]
 #     <new-ver>   labels the output + cover banner; the NEW content compared is
-#                 the current working tree (source/ as it stands).
+#                 the tree in SRC_DIR (default: source/ as it stands).
 #     [old-ver]   git ref to compare against (default: the tag preceding
 #                 <new-ver>'s commit).
 #     [date-str]  cover date (default: today; pass explicitly for reproducible
@@ -33,13 +33,18 @@
 #   "Newcastle CZC (Town Meeting Edition <ver>)" for an adoption packet.
 #   With ADOPTION_BASELINE=1 the cover caveat also changes and a
 #   structural-changes page is inserted facing the cover (ADOPTION-SPEC.md §4.3).
+#   SRC_DIR=<dir> compares that tree as the NEW side instead of source/.
+#   SECTION_MAP=<file> passes a derived section map (build/section_map.py derive)
+#   to the staging, so renumbering after an inserted section is not marked.
 #   Override the destination with REDLINE_OUT=/path/out.pdf — e.g. a /tmp
 #   dry-run that must not overwrite a shipped release deliverable.
+#   REDLINE_MD_OUT=/path/out.md also writes the markdown edition (one legend, every
+#   Article under its heading); placed only after the PDF is.
 
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SRC="$REPO_ROOT/source"
+SRC="${SRC_DIR:-$REPO_ROOT/source}"
 
 NEW_V="${1:-}"
 OLD_V="${2:-}"
@@ -108,7 +113,27 @@ if [ "${ADOPTION_BASELINE:-0}" = "1" ]; then BASELINE_FLAG="--baseline"; fi
 # chrome or residue checks matches them). The .md deliverable is produced by
 # the release driver, from its own stage. czc_redline_stage labels a plain
 # stage and the builders refuse it, so this is guarded as well as commented.
-czc_redline_stage "$SRC" "$STAGE" "$OLD_V" "$BASELINE_FLAG" ""
+CZC_SECTION_MAP="${SECTION_MAP:-}" czc_redline_stage "$SRC" "$STAGE" "$OLD_V" "$BASELINE_FLAG" ""
+
+# 2b. The markdown edition (REDLINE_MD_OUT). The PDF is gitignored, so the markdown
+#     is the only redline that survives in git (decision D1). It needs its OWN
+#     plain-marked stage -- the Typst-marked stage above feeds the PDF and must
+#     never carry the plain legend -- with the same old ref, baseline flag and
+#     section map. Assembled into a temp file NOW, before the (long) PDF build, so
+#     a refusal stops the run with no PDF placed; copied to REDLINE_MD_OUT only
+#     after the PDF is placed.
+source "$REPO_ROOT/build/adoption-name.sh"
+RL_NAME="$(czc_integrated_name "${ADOPTION_MODE:-draft}" "$NEW_V")"
+MD_TMP=""
+if [ -n "${REDLINE_MD_OUT:-}" ]; then
+  PLAIN_STAGE="$(mktemp -d)"
+  trap 'rm -rf "$STAGE" "$OUTDIR" "$PLAIN_STAGE"' EXIT
+  CZC_SECTION_MAP="${SECTION_MAP:-}" czc_redline_stage "$SRC" "$PLAIN_STAGE" "$OLD_V" "$BASELINE_FLAG" "--plain" \
+    || { echo "redline: staging the markdown side failed." >&2; exit 1; }
+  MD_TMP="$OUTDIR/redline-edition.md"
+  python3 "$REPO_ROOT/build/redline_md.py" "$PLAIN_STAGE" "$MD_TMP" --title "$RL_NAME — Redline" \
+    || { echo "redline: could not assemble the markdown edition." >&2; exit 1; }
+fi
 
 # 3. Build the integrated draft against the staged (marked) source. SRC_DIR
 #    redirects the build's content; OUT_DIR keeps its output out of releases/;
@@ -164,3 +189,9 @@ mkdir -p "$(dirname "$DEST")"
 cp "$BUILT" "$DEST"
 PAGES=$(czc_pagecount "$DEST")
 echo "Formatted redline saved ($PAGES pages): $DEST"
+if [ -n "$MD_TMP" ]; then
+  mkdir -p "$(dirname "$REDLINE_MD_OUT")"
+  cp "$MD_TMP" "$REDLINE_MD_OUT"
+  echo "Markdown redline saved: $REDLINE_MD_OUT"
+fi
+

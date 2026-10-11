@@ -78,6 +78,23 @@ Type (the §5 Inventory). Map/table legends show only Types actually present.
 
 ## Build & release flow
 
+- **A whole draft release (Wave 4a — preferred):** `bash build/build-release.sh vX.Y-draft
+  "Month D, YYYY" --old-ver=<previous tag> [--calls calls.json] [--plan-only] [--out-dir DIR]`
+  → `releases/vX.Y-draft/`: integrated `.pdf`+`.md`, integrated redline `.pdf`+`.md`, each
+  SUBSTANTIVE Article's standalone + standalone redline (both formats), `Use Table Changes
+  <ver>.{md,pdf}` when district data moved, a generated `Summary of Changes <ver>.md` skeleton
+  (never overwrites a hand-written one), and the records `release-plan.json` + `ships.json`.
+  `--old-ver` is required. Run `--plan-only` first to see what will ship. **Any NEEDS-CALL Article
+  (a changed layout unit) needs a written call** — `{"calls": [{"article": N, "decision":
+  "layout-only"|"substantive", "reason": "...", "by": "..."}]}`; the release stops, listing every
+  Article missing one. Reasons are printed in the Summary: write them for residents, no file
+  names. A call can make a release ship more, never less. Everything builds into a sibling
+  `.staging-<ver>.*` dir; `release_gate.py` refuses missing/empty/unplanned (incl. hidden) files
+  and Code PDFs whose printed−physical page offset is inconsistent or odd; only then is it moved
+  into place (dir 755, files 644). Draft mode only — adoption still runs `build-adoption.sh`
+  until Wave 4b. ⚠ Against v1.0 the current tree reads **Articles 1, 2, 3 NEEDS-CALL** (the Wave
+  0/1 chrome fix changed their layout units) — the first release needs layout-only calls for all
+  three. The leaf commands below still work on their own.
 - **Integrated CZC:** `bash build/build-full-czc.sh vX.Y-draft "Month D, YYYY"`
   → `releases/vX.Y-draft/Newcastle CZC (Integrated Draft vX.Y-draft).{pdf,md}`
 - **Standalone (any Article):** `bash build/build-standalone.sh <article-NN> vX.Y-draft`
@@ -194,7 +211,7 @@ local only). **Nothing here changes the ordinary draft flow** — with no adopti
   rewrites the old side's "Article 4" to "Article 5". That is why the guard exists; don't remove it
   because it looks inert.
 
-**Tests:** `python3 -m pytest build/tests -q` — **522**, ~7 min (they build real PDFs and redlines).
+**Tests:** `python3 -m pytest build/tests -q` — **640**, ~12 min (they build real PDFs, redlines and releases).
 CI runs them on every PR and every push to `main` (`.github/workflows/build-tests.yml`);
 that workflow pins **Typst 0.14.2** and needs `fetch-depth: 0`, because the redline tests
 read real tags.
@@ -255,13 +272,31 @@ rebuild. No code changes.
   under `source/`); and **`redline-stage.sh`**, now the single definition of
   `redline_resolve.py`'s rc 0/3/4/refuse contract, with a guard that stops plain-marked
   source reaching the PDF stage.
-  **Still to build:** Wave 4 — `build-release.sh` (P13), the fifth use-table status code (P15),
-  and the spec/CLAUDE.md updates (P18). Wave 4 also owes: the **integrated `.md`** through
-  `czc_md`'s walker (it still carries Tables 3.2–3.5 as raw Typst, an invisible HTML comment where
-  the district pages are, and pre-v0.15 names in its comments — so it is now *less* readable than
-  the extracts that say it governs); the section map through staging and into the page; the draft
-  cover facts (D6).
-- **✅ Wave 3c built — honest standalone markdown** (branch `wave3c-standalone-markdown`, PR open;
+  **Still to build (Ben split Wave 4 on 2026-10-11):** **Wave 4b** — the **integrated `.md`**
+  through `czc_md`'s walker (it still carries Tables 3.2–3.5 as raw Typst, an invisible HTML
+  comment where the district pages are, and pre-v0.15 names in its comments — so it is *less*
+  readable than the extracts that say it governs); generated draft-cover facts (D6);
+  `build-adoption.sh` calling the driver in meeting mode (keeping its own gates); `pdf_recap`
+  counts as assertions; `ADOPTION-SPEC.md` + CLAUDE.md revisions (P18). **Wave 4c** — the fifth
+  use-table status code (P15), **only after Ben or the Board supplies its four binding values**
+  (the code, the legend symbol, the legend row's wording, the rewritten Note); log a
+  DECISIONS-NEEDED entry per the D-0033 precedent.
+- **✅ Wave 4a built — the release driver** (branch `wave4-release-driver`, PR open; plan
+  `plans/2026-10-11-wave4a-release-driver.md`, twelve rulings). Build suite **522 → 640**.
+  `build-release.sh` (see Build & release flow) composes: `release_plan.py` (czc_diff verdicts +
+  written calls → `release-plan.json`; `ships.json` = czc_diff's JSON with `new` set to the version,
+  never a local path; Use Table Changes decided by running `use_table_changes.py`; duplicate JSON
+  keys in the calls file refused), `summary_skeleton.py` (every non-UNCHANGED Article by status in
+  plain words; what the redline cannot show, from the plan's counts and the manifest's page labels;
+  none of the v0.1-era sentences), `release_gate.py` (the refusing gate; memo PDFs — kind
+  `use-table-changes` — only need to open with text, chosen by artifact kind, never file name), and
+  `redline_md.py` (the integrated redline's **markdown edition**, which never existed before; uses
+  `czc_md.body_markdown`). The **section map now reaches the redline**: `czc_redline_stage` reads
+  `CZC_SECTION_MAP`; `build-redline-full.sh` (now also honours `SRC_DIR`) and
+  `build-redline-standalone.sh` read `SECTION_MAP` (measured: one inserted section in Article 7 —
+  130 "Heading changed" notes without the map, 0 with it). Leaf builders are reachable through test
+  seams `CZC_LEAF_*` (test use only). First run of the Haiku tier for mechanical checks.
+- **✅ Wave 3c MERGED — honest standalone markdown** (PR #6, merge `809ebee`;
   plan `plans/2026-10-11-wave3c-standalone-markdown.md`, ten rulings + one amendment). Build suite
   **470 → 522**. (1) **Article 3's source `footer-date`** now reads "Adopted: September 14, 2026"
   (its own commit, `07e82db`; it had read "Draft v0.2-draft" and sat in the adopted v1.0 `.md`).

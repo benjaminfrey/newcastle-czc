@@ -291,6 +291,43 @@ def article2_appendix(src_dir: Path) -> str:
 APPENDICES[2] = article2_appendix
 
 
+def _walk_checked(nn: int, prose_name: str, body: str, entry: dict, units: list) -> tuple[str, set]:
+    text, placed = _walk_body(body, entry, units)
+    text = text.strip("\n")
+    unplaced = [u["label"] for u in units
+                if u.get("splice", "").startswith("at-marker:") and id(u) not in placed]
+    if unplaced:
+        raise MdError(f"Article {nn}: the split marker for {', '.join(unplaced)} is not in "
+                      f"{prose_name}; the markdown cannot say where they sit")
+    return text, placed
+
+
+def _tail(nn: int, kind: str, units: list, src_dir: Path, appendix: bool = True) -> str:
+    after = [u for u in units if u.get("splice") == "after-prose"]
+    if appendix and kind == "prose-plus-appendix":
+        return "\n\n" + str(APPENDICES[nn](src_dir)).strip("\n")
+    if after:
+        return "\n\n" + "\n\n".join(_unit_pointer(u["label"]) for u in after)
+    return ""
+
+
+def body_markdown(nn: int, text: str, *, src_dir: Path = SOURCE,
+                  doc: dict | None = None) -> str:
+    """One Article's body as markdown: frontmatter removed, raw-Typst tables
+    converted, comments dropped, split markers turned into pointer notes, then a
+    pointer note for each after-prose unit (never an appendix). Raises MdError
+    exactly where render would. Public so the redline's markdown reuses the walker
+    rather than copying it."""
+    src_dir = Path(src_dir)
+    doc = manifest.load() if doc is None else doc
+    entry = _article_entry(doc, nn)
+    kind = _check_completeness(nn, entry)
+    _fm, body = _split_frontmatter(text)
+    units = _active_units(entry, src_dir)
+    out, _placed = _walk_checked(nn, f"Article {nn}", body, entry, units)
+    return out + _tail(nn, kind, units, src_dir, appendix=False) + "\n"
+
+
 def render(nn: int, *, src_dir: Path = SOURCE, mode: str = "draft",
            version: str = "", doc: dict | None = None) -> str:
     if mode not in MODES:
@@ -301,26 +338,12 @@ def render(nn: int, *, src_dir: Path = SOURCE, mode: str = "draft",
     entry = _article_entry(doc, nn)
     kind = _check_completeness(nn, entry)
     prose = _prose_path(nn, entry, src_dir)
-    fm_lines, body = _split_frontmatter(prose.read_text(encoding="utf-8"))
+    fm_lines, _body = _split_frontmatter(prose.read_text(encoding="utf-8"))
     kept = [ln for ln in fm_lines
             if ln.strip().startswith(("article-number:", "article-name:"))]
     units = _active_units(entry, src_dir)
-
-    text, placed = _walk_body(body, entry, units)
-    text = text.strip("\n")
-
-    unplaced = [u["label"] for u in units
-                if u.get("splice", "").startswith("at-marker:") and id(u) not in placed]
-    if unplaced:
-        raise MdError(f"Article {nn}: the split marker for {', '.join(unplaced)} is not in "
-                      f"{prose.name}; the markdown cannot say where they sit")
-
-    after = [u for u in units if u.get("splice") == "after-prose"]
-    tail = ""
-    if kind == "prose-plus-appendix":
-        tail = "\n\n" + str(APPENDICES[nn](src_dir)).strip("\n")
-    elif after:
-        tail = "\n\n" + "\n\n".join(_unit_pointer(u["label"]) for u in after)
+    text, placed = _walk_checked(nn, prose.name, _body, entry, units)
+    tail = _tail(nn, kind, units, src_dir)
 
     ver = f" ({version})"
     phrase = {"draft": f"a working draft{ver}",
