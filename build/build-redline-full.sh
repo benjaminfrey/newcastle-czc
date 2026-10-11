@@ -38,6 +38,8 @@
 #   to the staging, so renumbering after an inserted section is not marked.
 #   Override the destination with REDLINE_OUT=/path/out.pdf — e.g. a /tmp
 #   dry-run that must not overwrite a shipped release deliverable.
+#   REDLINE_MD_OUT=/path/out.md also writes the markdown edition (one legend, every
+#   Article under its heading); placed only after the PDF is.
 
 set -euo pipefail
 
@@ -113,6 +115,20 @@ if [ "${ADOPTION_BASELINE:-0}" = "1" ]; then BASELINE_FLAG="--baseline"; fi
 # stage and the builders refuse it, so this is guarded as well as commented.
 CZC_SECTION_MAP="${SECTION_MAP:-}" czc_redline_stage "$SRC" "$STAGE" "$OLD_V" "$BASELINE_FLAG" ""
 
+# 2b. The markdown edition (REDLINE_MD_OUT). The PDF is gitignored, so the markdown
+#     is the only redline that survives in git (decision D1). It needs its OWN
+#     plain-marked stage -- the Typst-marked stage above feeds the PDF and must
+#     never carry the plain legend -- with the same old ref, baseline flag and
+#     section map. Assembled into a temp file now, placed only after the PDF is.
+MD_TMP=""
+if [ -n "${REDLINE_MD_OUT:-}" ]; then
+  PLAIN_STAGE="$(mktemp -d)"
+  trap 'rm -rf "$STAGE" "$OUTDIR" "$PLAIN_STAGE"' EXIT
+  CZC_SECTION_MAP="${SECTION_MAP:-}" czc_redline_stage "$SRC" "$PLAIN_STAGE" "$OLD_V" "$BASELINE_FLAG" "--plain" \
+    || { echo "redline: staging the markdown side failed." >&2; exit 1; }
+  MD_TMP="$OUTDIR/redline-edition.md"
+fi
+
 # 3. Build the integrated draft against the staged (marked) source. SRC_DIR
 #    redirects the build's content; OUT_DIR keeps its output out of releases/;
 #    REDLINE_CAVEAT stamps the cover. Neither source/ nor releases/ is touched.
@@ -167,3 +183,11 @@ mkdir -p "$(dirname "$DEST")"
 cp "$BUILT" "$DEST"
 PAGES=$(czc_pagecount "$DEST")
 echo "Formatted redline saved ($PAGES pages): $DEST"
+if [ -n "$MD_TMP" ]; then
+  python3 "$REPO_ROOT/build/redline_md.py" "$PLAIN_STAGE" "$MD_TMP" --title "$RL_NAME — Redline" \
+    || { echo "redline: could not assemble the markdown edition." >&2; exit 1; }
+  mkdir -p "$(dirname "$REDLINE_MD_OUT")"
+  cp "$MD_TMP" "$REDLINE_MD_OUT"
+  echo "Markdown redline saved: $REDLINE_MD_OUT"
+fi
+
