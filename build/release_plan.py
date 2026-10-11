@@ -73,10 +73,19 @@ def _article_name(new_dir: Path, num: int) -> str:
     return val
 
 
+def _no_duplicate_keys(pairs):
+    keys = [k for k, _ in pairs]
+    dup = sorted({k for k in keys if keys.count(k) > 1})
+    if dup:
+        raise Refusal(f"duplicate key {', '.join(repr(k) for k in dup)} in the calls file")
+    return dict(pairs)
+
+
 def load_calls(path):
     """Parse and shape-check a calls file -> list of dicts. Raises Refusal."""
     try:
-        doc = json.loads(Path(path).read_text(encoding="utf-8"))
+        doc = json.loads(Path(path).read_text(encoding="utf-8"),
+                         object_pairs_hook=_no_duplicate_keys)
     except (OSError, ValueError) as e:
         raise Refusal(f"calls file {path} unreadable: {e}")
     if not isinstance(doc, dict) or set(doc) != {"calls"} or not isinstance(doc["calls"], list):
@@ -124,6 +133,7 @@ def build(old, new_dir, version, date, section_map=None, calls_path=None):
             msg = (r.stderr.strip() or r.stdout.strip() or "czc_diff failed")
             raise Refusal(f"the change determination was refused: {msg}")
         ships = json.loads(ships_path.read_text(encoding="utf-8"))
+        ships["new"] = version      # czc_diff records the --new-dir path; keep no local path
 
         for n in range(1, 10):          # improper calls are named before missing ones
             rec = ships.get("articles", {}).get(str(n)) or {}
@@ -137,6 +147,16 @@ def build(old, new_dir, version, date, section_map=None, calls_path=None):
                 raise Refusal(f"Article {n}: a substantive call is redundant; "
                               "its verdict is already SUBSTANTIVE")
 
+        missing = []
+        for n in range(1, 10):
+            rec = ships.get("articles", {}).get(str(n))
+            if rec is not None and rec.get("verdict") == "NEEDS-CALL" and n not in by_art:
+                lines = "\n".join(f"    {s}" for s in rec.get("needs_call", []))
+                missing.append(f"Article {n} is NEEDS-CALL and has no call:\n{lines}")
+        if missing:
+            raise Refusal("a person must decide, in writing (--calls), whether each of these is "
+                          "layout-only or substantive.\n" + "\n".join(missing))
+
         arts = {}
         for n in range(1, 10):
             rec = ships.get("articles", {}).get(str(n))
@@ -144,10 +164,6 @@ def build(old, new_dir, version, date, section_map=None, calls_path=None):
                 raise Refusal(f"Article {n}: czc_diff gave no usable verdict")
             v = rec["verdict"]
             call = by_art.get(n)
-            if v == "NEEDS-CALL" and call is None:
-                lines = "\n".join(f"    {s}" for s in rec.get("needs_call", []))
-                raise Refusal(f"Article {n} is NEEDS-CALL and has no call. A person must decide, "
-                              f"in writing (--calls), whether it is layout-only or substantive:\n{lines}")
             status = v
             if call is not None:
                 status = "LAYOUT-ONLY" if call["decision"] == "layout-only" else "SUBSTANTIVE"

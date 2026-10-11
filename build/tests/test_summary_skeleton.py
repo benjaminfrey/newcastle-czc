@@ -104,10 +104,10 @@ def test_section_renumbering_and_use_table():
     p["section_map"] = {"renumbered": 12}
     p["artifacts"] = [{"kind": "use-table-changes", "article": None, "files": ["x.md"]}]
     t = ss.render(p)
-    assert "12 section renumberings suppressed as mechanical" in t
+    assert "12 sections were renumbered; the redline does not mark the new numbers as changes." in t
     assert "Use Table Changes" in t
     p["section_map"] = {"renumbered": 1}
-    assert "1 section renumbering suppressed as mechanical" in ss.render(p)
+    assert "1 section was renumbered; the redline does not mark the new numbers as changes." in ss.render(p)
     p["section_map"] = {"renumbered": 0}
     assert "suppressed as mechanical" not in ss.render(p)
 

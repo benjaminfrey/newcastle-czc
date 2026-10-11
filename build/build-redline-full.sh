@@ -11,7 +11,7 @@
 # hand-written Summary of Changes. This replaces the plain single-column text
 # redline (build/build-redline.sh, now legacy/text-only).
 #
-# How it works: copy the working-tree source/ into a staging tree (so the native
+# How it works: copy the NEW tree (SRC_DIR, default source/) into a staging tree (so the native
 # .typ units render the current figures), rewrite each article-*.md in place with
 # redline-text.py --source (vs the OLD version's file from git), then run the
 # normal integrated build (build-full-czc.sh) against the stage. The build's
@@ -21,7 +21,7 @@
 # Usage:
 #   build-redline-full.sh <new-ver> [old-ver] [date-str]
 #     <new-ver>   labels the output + cover banner; the NEW content compared is
-#                 the current working tree (source/ as it stands).
+#                 the tree in SRC_DIR (default: source/ as it stands).
 #     [old-ver]   git ref to compare against (default: the tag preceding
 #                 <new-ver>'s commit).
 #     [date-str]  cover date (default: today; pass explicitly for reproducible

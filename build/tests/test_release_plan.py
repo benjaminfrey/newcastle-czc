@@ -215,3 +215,43 @@ def test_the_date_is_required(tmp_path, tree):
                         "--new-dir", str(tree), "--version", VER, "--out", str(tmp_path / "p"),
                         "--ships", str(tmp_path / "s")], cwd=REPO, capture_output=True, text=True)
     assert r.returncode != 0 and not (tmp_path / "p").exists()
+
+
+def _strings(o):
+    if isinstance(o, str):
+        yield o
+    elif isinstance(o, dict):
+        for k, v in o.items():
+            yield from _strings(v)
+    elif isinstance(o, list):
+        for v in o:
+            yield from _strings(v)
+
+
+def test_the_release_record_holds_no_local_path(tmp_path, tree):
+    plan, ships = ok(tmp_path, tree)
+    assert ships["new"] == VER
+    for doc in (plan, ships):
+        assert [s for s in _strings(doc) if s.startswith("/")] == []
+
+
+def test_every_needs_call_article_is_named_in_one_refusal(tmp_path, tree):
+    touch_layout(tree)
+    with open(tree / "street-type-map.typ", "a") as f:
+        f.write("\n// probe\n")
+    err = refused(tmp_path, tree)
+    assert "Article 2" in err and "Article 3" in err
+
+
+def test_a_duplicate_key_in_a_call_is_refused(tmp_path, tree):
+    touch_layout(tree)
+    cf = tmp_path / "calls.json"
+    cf.write_text('{"calls": [{"article": 2, "decision": "layout-only", '
+                  '"decision": "substantive", "reason": "r", "by": "b"}]}')
+    out, ships = tmp_path / "o" / "release-plan.json", tmp_path / "o" / "ships.json"
+    r = subprocess.run([sys.executable, str(BUILD / "release_plan.py"), "--old", "v1.0",
+                        "--new-dir", str(tree), "--version", VER, "--date", DATE,
+                        "--out", str(out), "--ships", str(ships), "--calls", str(cf)],
+                       cwd=REPO, capture_output=True, text=True)
+    assert r.returncode == 1 and "duplicate key" in r.stderr
+    assert not out.exists() and not ships.exists()

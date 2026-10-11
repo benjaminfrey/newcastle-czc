@@ -135,8 +135,10 @@ def render(plan):
                           "The redline shows them as they now read, unmarked.")
     renumbered = (plan.get("section_map") or {}).get("renumbered", 0)
     if renumbered > 0:
-        s = "" if renumbered == 1 else "s"
-        cannot.append(f"{renumbered} section renumbering{s} suppressed as mechanical.")
+        if renumbered == 1:
+            cannot.append("1 section was renumbered; the redline does not mark the new numbers as changes.")
+        else:
+            cannot.append(f"{renumbered} sections were renumbered; the redline does not mark the new numbers as changes.")
     if any(x.get("kind") == "use-table-changes" for x in plan.get("artifacts", [])):
         cannot.append("Changes to the use tables are listed in the separate Use Table Changes "
                       "document, not marked in the redline.")

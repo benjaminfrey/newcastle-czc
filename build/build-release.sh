@@ -271,7 +271,7 @@ if [ -d "$RELEASE_DIR" ]; then
     if [ "$KEEP_SUMMARY" = 1 ]; then
       case "$f" in "$SUMMARY_MD_NAME"|"$SUMMARY_PDF_NAME") continue ;; esac
     fi
-    mv "$STAGING/$f" "$RELEASE_DIR/$f" || refuse "could not place '$f' in '$RELEASE_DIR'."
+    mv "$STAGING/$f" "$RELEASE_DIR/$f" || refuse "placement failed after some files were moved; '$RELEASE_DIR' may be partly filled -- remove it and re-run (could not place '$f')."
   done < "$MAPDIR/placing"
   chmod 755 "$RELEASE_DIR" || refuse "could not set permissions on '$RELEASE_DIR'."
 else
