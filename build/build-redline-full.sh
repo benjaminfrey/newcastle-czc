@@ -119,7 +119,11 @@ CZC_SECTION_MAP="${SECTION_MAP:-}" czc_redline_stage "$SRC" "$STAGE" "$OLD_V" "$
 #     is the only redline that survives in git (decision D1). It needs its OWN
 #     plain-marked stage -- the Typst-marked stage above feeds the PDF and must
 #     never carry the plain legend -- with the same old ref, baseline flag and
-#     section map. Assembled into a temp file now, placed only after the PDF is.
+#     section map. Assembled into a temp file NOW, before the (long) PDF build, so
+#     a refusal stops the run with no PDF placed; copied to REDLINE_MD_OUT only
+#     after the PDF is placed.
+source "$REPO_ROOT/build/adoption-name.sh"
+RL_NAME="$(czc_integrated_name "${ADOPTION_MODE:-draft}" "$NEW_V")"
 MD_TMP=""
 if [ -n "${REDLINE_MD_OUT:-}" ]; then
   PLAIN_STAGE="$(mktemp -d)"
@@ -127,6 +131,8 @@ if [ -n "${REDLINE_MD_OUT:-}" ]; then
   CZC_SECTION_MAP="${SECTION_MAP:-}" czc_redline_stage "$SRC" "$PLAIN_STAGE" "$OLD_V" "$BASELINE_FLAG" "--plain" \
     || { echo "redline: staging the markdown side failed." >&2; exit 1; }
   MD_TMP="$OUTDIR/redline-edition.md"
+  python3 "$REPO_ROOT/build/redline_md.py" "$PLAIN_STAGE" "$MD_TMP" --title "$RL_NAME — Redline" \
+    || { echo "redline: could not assemble the markdown edition." >&2; exit 1; }
 fi
 
 # 3. Build the integrated draft against the staged (marked) source. SRC_DIR
@@ -184,8 +190,6 @@ cp "$BUILT" "$DEST"
 PAGES=$(czc_pagecount "$DEST")
 echo "Formatted redline saved ($PAGES pages): $DEST"
 if [ -n "$MD_TMP" ]; then
-  python3 "$REPO_ROOT/build/redline_md.py" "$PLAIN_STAGE" "$MD_TMP" --title "$RL_NAME — Redline" \
-    || { echo "redline: could not assemble the markdown edition." >&2; exit 1; }
   mkdir -p "$(dirname "$REDLINE_MD_OUT")"
   cp "$MD_TMP" "$REDLINE_MD_OUT"
   echo "Markdown redline saved: $REDLINE_MD_OUT"

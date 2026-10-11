@@ -70,8 +70,13 @@ def assemble(stage: Path, title: str) -> str:
             body_md = czc_md.body_markdown(int(num), body.lstrip("\n"), src_dir=stage)
         except czc_md.MdError as e:
             raise RedlineMdError(f"{f.name}: {e}") from e
-        heading = f"# Article {num}: {name}" if name else f"# Article {num}"
-        parts.append(heading + "\n\n" + body_md.strip("\n"))
+        body_md = body_md.strip("\n")
+        first = next((ln for ln in body_md.split("\n") if ln.strip()), "")
+        if re.match(rf"# Article {num}\b", first):
+            parts.append(body_md)
+        else:
+            heading = f"# Article {num}: {name}" if name else f"# Article {num}"
+            parts.append(heading + "\n\n" + body_md)
     return f"# {title}\n\n{legend}\n\n" + "\n\n".join(parts) + "\n"
 
 
