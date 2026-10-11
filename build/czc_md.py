@@ -324,7 +324,7 @@ def render(nn: int, *, src_dir: Path = SOURCE, mode: str = "draft",
 
     ver = f" ({version})"
     phrase = {"draft": f"a working draft{ver}",
-              "meeting": f"the Town Meeting edition{ver}",
+              "meeting": f"the Town Meeting edition{ver}, not yet adopted",
               "adopted": f"adopted{ver}"}[mode]
     head = [f"*This is a standalone extract of one Article of the Newcastle Core Zoning Code — "
             f"{phrase}. The integrated Code is the document the Town adopts; this extract "

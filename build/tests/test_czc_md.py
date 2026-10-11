@@ -45,6 +45,14 @@ def test_no_draft_chrome_in_any_mode(base_tree, mode):
     assert "this extract does not govern" in out
 
 
+def test_only_the_meeting_edition_says_it_is_not_yet_adopted(base_tree):
+    # Nothing may sound like adoption before the vote; the frozen packet says NOT YET ADOPTED.
+    meeting = md(base_tree, 7, "meeting", "v1.0")
+    assert "the Town Meeting edition (v1.0), not yet adopted" in meeting
+    assert "not yet adopted" not in md(base_tree, 7, "draft", VER)
+    assert "not yet adopted" not in md(base_tree, 7, "adopted", "v1.0")
+
+
 def test_an_unknown_mode_is_refused(base_tree):
     with pytest.raises(czc_md.MdError, match="mode"):
         md(base_tree, 7, "final")

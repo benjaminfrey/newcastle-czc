@@ -112,8 +112,9 @@ if [ -n "$FRONT_NOTE" ]; then
   fi
 fi
 
-# The .md deliverable's source. Defaults to the prose itself; a redline supplies
-# its own, because the staged prose is Typst-marked, not markdown.
+# The .md deliverable's source. Defaults to the honest markdown that build/czc_md.py
+# generates (below); a redline supplies its own via OUT_MD_SOURCE, because the staged
+# prose is Typst-marked, not markdown, and czc_md is then not called.
 if [ -n "${OUT_MD_SOURCE:-}" ] && [ ! -f "$OUT_MD_SOURCE" ]; then
   echo "standalone: OUT_MD_SOURCE not found: $OUT_MD_SOURCE" >&2
   exit 1
