@@ -355,72 +355,14 @@ pdfunite "${FRONT_PARTS[@]}" "$BODY_PDF" "$OUTPUT_PDF"
 echo "Adding clickable TOC links"
 python3 "$REPO_ROOT/build/toc_links.py" "$OUTPUT_PDF" "$FRONT_COUNT"
 
-# Also emit the concatenated markdown source for reference (frontmatter intact;
-# read by humans, not re-rendered through pandoc as one input). Only the
-# markdown units are concatenated; the native-Typst district spreads have no
-# markdown form, so a pointer note is injected at Article 2's position. The
-# authoritative district content is article-02-data.json (rendered to the PDF).
+# Also emit the integrated markdown -- the document the Town adopts, in text.
+# build/integrated_md.py keeps each Article's frontmatter verbatim and runs every
+# body through czc_md's walker (tables as markdown tables, pointer notes where
+# native pages sit, no build comments), with Article 2's generated district
+# appendix in place. It carries NO mode-dependent text, so the meeting and adopted
+# editions' markdown is byte-identical. A refusal writes nothing and fails the build.
 echo "Writing combined markdown: $COMBINED_MD"
-: > "$COMBINED_MD"
-for ART in "${MD_LIST[@]}"; do
-  case "$ART" in
-    *article-03-*.md)
-      # Article 3 now seats the ten Type pages INSIDE §2. Swap the TYPE-PAGES
-      # build marker for a human-readable pointer note IN PLACE (between §2.c and
-      # §2.d), so the combined markdown reads as the plates appear in the PDF.
-      python3 - "$ART" >> "$COMBINED_MD" <<'PY'
-import io, sys
-with io.open(sys.argv[1], encoding="utf-8") as f:
-    lines = f.read().split("\n")
-note = (
-    "<!-- The ten Street/Road Type pages (S1..S5, R1..R5) appear here in the\n"
-    "     rendered PDF, inside Section 2 between the General subsection and the\n"
-    "     Driveway subsection. Each is a full page rendered from\n"
-    "     source/cross-section-plates.typ (compositing\n"
-    "     source/exhibits/cross-sections/<CODE>.svg) and carries that Type's\n"
-    "     description, design standards, target Districts, and character — the\n"
-    "     one-stop Type page modeled on the Article 2 District pages. -->"
-)
-exhibits_note = (
-    "<!-- Exhibit 3.1 (Inventory of Existing Streets & Roads — the binding Type\n"
-    "     table) and Exhibit 3.2 (Street & Road Type Map) appear here in the\n"
-    "     rendered PDF, inside Section 5 between the Inventory subsection and the\n"
-    "     Classification Rubric. Both render natively from\n"
-    "     source/exhibits/street-types/inventory.json (Exhibit 3.1 via\n"
-    "     source/street-type-inventory.typ; 3.2 via source/street-type-map.typ). -->"
-)
-def swap(ln):
-    if "TYPE-PAGES" in ln: return note
-    if "STREET-TYPE-EXHIBITS" in ln: return exhibits_note
-    return ln
-sys.stdout.write("\n".join(swap(ln) for ln in lines))
-PY
-      ;;
-    *)
-      cat "$ART" >> "$COMBINED_MD"
-      case "$ART" in
-        *article-01-general.md)
-          {
-            printf '\n\n'
-            printf '<!-- The three District Map exhibits (EXHIBIT 1.1 District Map, 1.2\n'
-            printf '     District Map Inset - Newcastle Town Center, 1.4 District Map Inset -\n'
-            printf '     Sheepscot Village) appear here in the rendered PDF as full pages. They\n'
-            printf '     are GIS raster composites (vector zoning districts over an aerial\n'
-            printf '     basemap) rendered natively from source/district-maps.typ (reseating\n'
-            printf '     source/exhibits/district-maps/*.png). See the PDF edition of this Code. -->\n\n'
-          } >> "$COMBINED_MD"
-          ;;
-        *article-02-prefatory.md)
-          {
-            printf '\n\n'
-            printf '<!-- The 13 District Standards spreads (D1-D6 + 7 Special Districts) are\n'
-            printf '     rendered natively from article-02-data.json via source/article-02.typ.\n'
-            printf '     See the PDF edition of this Code for the per-district 2-page spreads. -->\n\n'
-          } >> "$COMBINED_MD"
-          ;;
-      esac
-      ;;
-  esac
-done
+rm -f "$COMBINED_MD"
+python3 "$REPO_ROOT/build/integrated_md.py" "$SOURCE_DIR" "$COMBINED_MD" || exit 1
 
 echo "Done: $OUTPUT_PDF"
