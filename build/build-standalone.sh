@@ -25,7 +25,9 @@
 #   STANDALONE_FRONT_NOTE  path to a PDF prepended as uncounted front matter
 #                                           (default: none). Must have an EVEN page
 #                                           count -- see "optional front note" below.
-#   OUT_MD_SOURCE      file copied as the .md deliverable (default: the prose source)
+#   OUT_MD_SOURCE      file copied as the .md deliverable (default: the honest markdown
+#                                           that build/czc_md.py generates -- tables as
+#                                           tables, Article 2's district pages appended)
 
 set -euo pipefail
 
@@ -110,11 +112,24 @@ if [ -n "$FRONT_NOTE" ]; then
   fi
 fi
 
-# The .md deliverable's source. Defaults to the prose itself; a redline supplies
-# its own, because the staged prose is Typst-marked, not markdown.
+# The .md deliverable's source. Defaults to the honest markdown that build/czc_md.py
+# generates (below); a redline supplies its own via OUT_MD_SOURCE, because the staged
+# prose is Typst-marked, not markdown, and czc_md is then not called.
 if [ -n "${OUT_MD_SOURCE:-}" ] && [ ! -f "$OUT_MD_SOURCE" ]; then
   echo "standalone: OUT_MD_SOURCE not found: $OUT_MD_SOURCE" >&2
   exit 1
+fi
+# Otherwise the .md is the honest markdown, generated BEFORE anything is rendered
+# or the release directory exists: a refused .md must leave no directory that looks
+# like a shipped release. (ADOPTION_MODE is set by adoption-footer.sh, above.)
+MD_OUT="${OUT_MD_SOURCE:-}"
+if [ -z "$MD_OUT" ]; then
+  MD_OUT="$TMP/out.md"
+  if ! python3 "$REPO_ROOT/build/czc_md.py" "$NUM" "$MD_OUT" \
+         --src-dir "$SOURCE_DIR" --mode "$ADOPTION_MODE" --version "$VERSION"; then
+    echo "standalone: the markdown deliverable was refused (see above); nothing built." >&2
+    exit 1
+  fi
 fi
 
 # Render one prose segment via the generic primitive. article-number/name come
@@ -200,5 +215,5 @@ if [ -n "$FRONT_NOTE" ]; then
 else
   pdfunite "${PARTS[@]}" "$OUTPUT_PDF"
 fi
-cp "${OUT_MD_SOURCE:-$PROSE}" "$RELEASE_DIR/$OUT_NAME.md"
+cp "$MD_OUT" "$RELEASE_DIR/$OUT_NAME.md"
 echo "Done: $OUTPUT_PDF ($(pagecount "$OUTPUT_PDF") pages)"

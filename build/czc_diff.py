@@ -571,7 +571,7 @@ def determine(old: Side, new: Side, *, doc: dict | None = None, smap=None) -> di
             note = (f"{p}: a layout unit changed. A person decides whether it changes "
                     f"what the Code says or only how it is laid out.")
             if p == "article-02.typ":
-                note += " (The use-table legend lives in this file.)"
+                note += " (The use-table legend is part of these pages.)"
             c.needs_call.append(note)
             continue
         d = _declaration(doc, art, p)

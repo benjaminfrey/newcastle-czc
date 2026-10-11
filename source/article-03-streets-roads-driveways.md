@@ -1,7 +1,7 @@
 ---
 article-number: "3"
 article-name: "Thoroughfares"
-footer-date: "Draft v0.2-draft"
+footer-date: "Adopted: September 14, 2026"
 ---
 
 # Article 3 Thoroughfares

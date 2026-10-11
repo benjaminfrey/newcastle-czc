@@ -3,6 +3,8 @@
 
   "_ownership_comment": "data_sources declares which files carry an Article's binding content, for the substantive-change determination. Each entry is {path, compare}: json-keyed (keyed leaf diff; carries key, and substantive_fields when only SOME fields are substantive -- when substantive_fields is ABSENT every leaf is substantive), binary-hash (report 'changed (binary)' and require a recorded human call), or generated-from (carries from; counts only through that file, and a change with an unchanged source is an ANOMALY). The FORM of key is interpreted by the consumer, not defined here: it mixes a path mini-grammar ('[].code', 'segments[].id') with a '$'-prefixed sentinel, and each entry's _key_note says what it means -- defining the grammar is the consuming tool's job. A path ending in / claims every tracked file beneath it. PRECEDENCE AND EXACTLY-ONCE: every tracked file under source/ must have exactly one claimant (build/tests/test_manifest_ownership.py fails otherwise, naming the file). The top-level shared and ignored lists are TERMINAL -- a path listed in either is claimed by that list alone, even if it also falls under a / prefix, which is how a file inside a claimed directory is carved out. Two Articles claiming the same path is a test failure, not a tie-break. PROSE IS NOT DECLARED HERE: ownership of an Article's prose is the article-0N-*.md convention, which is also build-standalone.sh's fallback, and declaring it would change manifest.py prose's output for Articles 4-9. OPEN -- what a change to a file in shared implies for the substantive-change determination is NOT decided. The candidate rule is that it flags every Article for a standalone and a standalone redline (standing rule 4), but nothing relies on it and shared is currently empty; the operator rules before the first entry is added. INTERIM (Ben Frey, 2026-10-09): build/czc_diff.py REFUSES, naming the file, when a changed file is listed in shared, until a person decides which Articles it affects. What IS settled: shared is a claimant of last resort, not an exemption -- a path goes there only when no single Article owns it. manifest.py data <NN> LISTS NON-PROSE FILES ONLY: prose is claimed by the article-0N-*.md convention and is never in data_sources, so data 7 returns [] although Article 7's binding content is entirely its prose -- an empty data_sources list never means no binding content.",
 
+  "_md_completeness_note": "md_completeness declares what a standalone .md holds: complete (all of the Article), prose-only (its text; native pages are named by pointer notes), prose-plus-appendix (its text plus a generated appendix of its native pages). build/czc_md.py refuses a declaration that contradicts the Article's units.",
+
   "shared": [],
   "ignored": [
     "legacy/article-02-districts.md",
@@ -12,6 +14,7 @@
   "_ignored_note": "legacy/article-02-districts.md is the retired markdown form of the district tables (Article 2 is native Typst now). inventory-sample.json is the LIVE Typst default for both Article 3 exhibit units (street-type-inventory.typ:23 and street-type-map.typ:40 read sys.inputs.at('data', default: 'exhibits/street-types/inventory-sample.json')); it is ignorable ONLY because this manifest always supplies the real data: path, so it never reaches a build -- if a unit stopped being given data:, the sample would silently become what the Code prints. sprites/NOTICE.md is a license notice for the sprite artwork, not a standard; it is carved out of the sprites/ prefix below because the lists are terminal.",
 
   "1": {
+    "md_completeness": "prose-only",
     "prose": "article-01-general.md",
     "units": [
       { "typ": "district-maps.typ", "label": "the District Maps", "splice": "after-prose", "pad_to": "even-block" }
@@ -23,6 +26,7 @@
   },
 
   "2": {
+    "md_completeness": "prose-plus-appendix",
     "prose": "article-02-prefatory.md",
     "units": [
       { "typ": "article-02.typ", "label": "the thirteen district pages (district standards and use tables)", "splice": "after-prose", "parity": "pad-to-odd-before" }
@@ -38,6 +42,7 @@
   },
 
   "3": {
+    "md_completeness": "prose-only",
     "prose": "article-03-streets-roads-driveways.md",
     "split_markers": ["TYPE-PAGES", "STREET-TYPE-EXHIBITS"],
     "units": [
@@ -93,10 +98,10 @@
     ]
   },
 
-  "4": { "units": [], "data_sources": [] },
-  "5": { "units": [], "data_sources": [] },
-  "6": { "units": [], "data_sources": [] },
-  "7": { "units": [], "data_sources": [] },
-  "8": { "units": [], "data_sources": [] },
-  "9": { "units": [], "data_sources": [] }
+  "4": { "md_completeness": "complete", "units": [], "data_sources": [] },
+  "5": { "md_completeness": "complete", "units": [], "data_sources": [] },
+  "6": { "md_completeness": "complete", "units": [], "data_sources": [] },
+  "7": { "md_completeness": "complete", "units": [], "data_sources": [] },
+  "8": { "md_completeness": "complete", "units": [], "data_sources": [] },
+  "9": { "md_completeness": "complete", "units": [], "data_sources": [] }
 }

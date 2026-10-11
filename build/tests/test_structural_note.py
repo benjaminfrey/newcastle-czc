@@ -511,3 +511,14 @@ def test_the_page_takes_the_stages_section_map_and_baseline_flag(tmp_path, tree)
     assert counts["map"] == 1, counts           # only the inserted section
     assert counts["nomap"] > 50, counts         # the control: without the map every shift counts
     assert counts["baseline"] == 1, counts
+
+
+def test_a_layout_change_note_reads_in_the_plural_for_plural_pages(tmp_path, tree):
+    p = tree / "article-02.typ"
+    p.write_text(p.read_text() + "\n// x\n")
+    text, _ = _note(tmp_path, "--scope", "article:2", "--old", "v1.0", "--new-dir", str(tree))
+    text = _flat(text)                       # PDF text wraps; the file's own helper joins it
+    assert "their layout changed" in text
+    assert "its layout changed" not in text
+    assert "lives in this file" not in text
+    assert "The use-table legend is part of these pages." in text

@@ -407,7 +407,7 @@ PY
             printf '     Sheepscot Village) appear here in the rendered PDF as full pages. They\n'
             printf '     are GIS raster composites (vector zoning districts over an aerial\n'
             printf '     basemap) rendered natively from source/district-maps.typ (reseating\n'
-            printf '     source/exhibits/district-maps/*.png). See the Integrated Draft PDF. -->\n\n'
+            printf '     source/exhibits/district-maps/*.png). See the PDF edition of this Code. -->\n\n'
           } >> "$COMBINED_MD"
           ;;
         *article-02-prefatory.md)
@@ -415,7 +415,7 @@ PY
             printf '\n\n'
             printf '<!-- The 13 District Standards spreads (D1-D6 + 7 Special Districts) are\n'
             printf '     rendered natively from article-02-data.json via source/article-02.typ.\n'
-            printf '     See the Integrated Draft PDF for the per-district 2-page spreads. -->\n\n'
+            printf '     See the PDF edition of this Code for the per-district 2-page spreads. -->\n\n'
           } >> "$COMBINED_MD"
           ;;
       esac
