@@ -65,6 +65,12 @@ def test_the_converted_tables_parse_as_tables():
     lambda b: b.replace("[20]", "[#strong[20]]", 1),
     lambda b: b.replace("TABLE 3.2 SIGHT DISTANCE", "Sight distance", 1),
     lambda b: b.replace("[20], [155],", "[20],", 1),               # a short row
+    lambda b: b.replace(                                            # header after a row
+        "table.header([Design Speed (MPH)], [Sight Distance (FT)]),\n    [20], [155],",
+        "[20], [155],\n    table.header([Design Speed (MPH)], [Sight Distance (FT)]),", 1),
+    lambda b: b.replace("SIGHT DISTANCE", "SIGHT #footnote[x] DISTANCE", 1),
+    lambda b: b.replace("SIGHT DISTANCE", "SIGHT $x$ DISTANCE", 1),
+    lambda b: b.replace("[155]", "[155~ft]", 1),
 ])
 def test_anything_unrecognised_is_refused(edit):
     sight = next(b for b in _blocks() if "TABLE 3.2" in b)

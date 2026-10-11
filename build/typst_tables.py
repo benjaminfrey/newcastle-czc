@@ -22,7 +22,8 @@ not a table a resident can read. This converts the ONE measured shape:
 
 into a caption paragraph and a pipe table, the form the Code's markdown tables
 already take (Article 4's TABLE 4.1). Anything else -- another argument, a
-table.cell, a span, Typst code in a cell, a short row -- returns None, and the
+table.cell, a span, Typst code or markup (# $ \\ ~ @ <) in a cell or the
+caption, a header line after a data row, a short row -- returns None, and the
 caller writes a note naming the table instead. Garbled output is never right; a
 note is.
 """
@@ -41,7 +42,7 @@ _BOLD = re.compile(r"(?<![*\w])\*([^*\n]+)\*(?![*\w])")
 
 def _cell(text: str) -> str | None:
     text = " ".join(text.split())
-    if any(ch in text for ch in "#$\\"):
+    if any(ch in text for ch in "#$\\~@<"):
         return None                                # Typst code, not text: refuse
     return _BOLD.sub(r"**\1**", text).replace("|", r"\|")
 
@@ -57,7 +58,9 @@ def to_markdown(block: str) -> str | None:
     m = _CAPTION.fullmatch(body[1])
     if not m or body[2] != "#table(" or body[-2] != ")":
         return None
-    caption = " ".join(m.group(1).split())
+    caption = _cell(m.group(1))
+    if caption is None:
+        return None
     ncols, header, rows = None, None, []
     for ln in body[3:-2]:
         c = _COLUMNS.fullmatch(ln)
@@ -68,7 +71,7 @@ def to_markdown(block: str) -> str | None:
             continue
         h = _HEADER.fullmatch(ln)
         if h:
-            if header is not None or not _ROW.fullmatch(h.group(1).strip()):
+            if header is not None or rows or not _ROW.fullmatch(h.group(1).strip()):
                 return None
             header = _CELL.findall(h.group(1))
             continue
