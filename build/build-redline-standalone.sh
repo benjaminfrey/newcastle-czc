@@ -25,6 +25,8 @@
 #   SRC_DIR            the NEW tree                       (default: $REPO_ROOT/source)
 #   ADOPTION_BASELINE  1 = compare against the previously adopted Code (adoption-map.json)
 #   ADOPTION_MODE / ADOPTION_EVENT_DATE   chrome mode, through build-standalone.sh
+#   SECTION_MAP        a derived section map (build/section_map.py derive): renumbering after
+#                      an inserted section is not marked, in the stage or on the disclosure page
 #   REDLINE_OUT        a DIRECTORY; both files go there and releases/ is not touched
 #
 # Output: <Article N Name (Standalone <ver>) — Redline>.pdf and .md in
@@ -82,9 +84,9 @@ source "$REPO_ROOT/build/pagecount.sh"
 echo "Standalone redline: Article $NUM, NEW = $SRC (labeled $NEW_V)   vs   OLD = $OLD_V"
 
 # --- 1. stage the one Article twice: Typst-marked (PDF) and plain-marked (.md) --
-czc_redline_stage "$SRC" "$TMP/stage" "$OLD_V" "$BASELINE_FLAG" "" "$PRO" \
+CZC_SECTION_MAP="${SECTION_MAP:-}" czc_redline_stage "$SRC" "$TMP/stage" "$OLD_V" "$BASELINE_FLAG" "" "$PRO" \
   || { echo "redline-standalone: staging the PDF side failed." >&2; exit 1; }
-czc_redline_stage "$SRC" "$TMP/plain" "$OLD_V" "$BASELINE_FLAG" "--plain" "$PRO" \
+CZC_SECTION_MAP="${SECTION_MAP:-}" czc_redline_stage "$SRC" "$TMP/plain" "$OLD_V" "$BASELINE_FLAG" "--plain" "$PRO" \
   || { echo "redline-standalone: staging the markdown side failed." >&2; exit 1; }
 
 # --- 2. the "How to read this redline" page (PDF + markdown), even length -------
@@ -92,6 +94,7 @@ czc_redline_stage "$SRC" "$TMP/plain" "$OLD_V" "$BASELINE_FLAG" "--plain" "$PRO"
 # side the stage above marked; unquoted on purpose, so empty expands to nothing.
 python3 "$REPO_ROOT/build/structural_note.py" "$TMP/note.pdf" \
   --scope "article:$NUM" --old "$OLD_V" --new-dir "$SRC" $BASELINE_FLAG \
+  ${SECTION_MAP:+--section-map "$SECTION_MAP"} \
   --md "$TMP/note.md" --pad-to-even \
   || { echo "redline-standalone: could not write the disclosure page." >&2; exit 1; }
 

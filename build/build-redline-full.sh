@@ -33,13 +33,16 @@
 #   "Newcastle CZC (Town Meeting Edition <ver>)" for an adoption packet.
 #   With ADOPTION_BASELINE=1 the cover caveat also changes and a
 #   structural-changes page is inserted facing the cover (ADOPTION-SPEC.md §4.3).
+#   SRC_DIR=<dir> compares that tree as the NEW side instead of source/.
+#   SECTION_MAP=<file> passes a derived section map (build/section_map.py derive)
+#   to the staging, so renumbering after an inserted section is not marked.
 #   Override the destination with REDLINE_OUT=/path/out.pdf — e.g. a /tmp
 #   dry-run that must not overwrite a shipped release deliverable.
 
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SRC="$REPO_ROOT/source"
+SRC="${SRC_DIR:-$REPO_ROOT/source}"
 
 NEW_V="${1:-}"
 OLD_V="${2:-}"
@@ -108,7 +111,7 @@ if [ "${ADOPTION_BASELINE:-0}" = "1" ]; then BASELINE_FLAG="--baseline"; fi
 # chrome or residue checks matches them). The .md deliverable is produced by
 # the release driver, from its own stage. czc_redline_stage labels a plain
 # stage and the builders refuse it, so this is guarded as well as commented.
-czc_redline_stage "$SRC" "$STAGE" "$OLD_V" "$BASELINE_FLAG" ""
+CZC_SECTION_MAP="${SECTION_MAP:-}" czc_redline_stage "$SRC" "$STAGE" "$OLD_V" "$BASELINE_FLAG" ""
 
 # 3. Build the integrated draft against the staged (marked) source. SRC_DIR
 #    redirects the build's content; OUT_DIR keeps its output out of releases/;
