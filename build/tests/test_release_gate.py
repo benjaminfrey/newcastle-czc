@@ -175,3 +175,49 @@ def test_unreadable_plan_json_is_a_cli_refusal(rel, tmp_path):
 def test_duplicate_planned_file_is_a_problem(rel):
     probs = release_gate.check(plan("a.pdf", "a.md", "a.md"), rel)
     assert len(probs) == 1 and "a.md" in probs[0] and "twice" in probs[0]
+
+
+REPO = BUILD.parent
+
+
+def kind_plan(kind, *files):
+    return {"version": VER, "artifacts": [{"kind": kind, "article": None, "files": list(files)}]}
+
+
+@pytest.fixture
+def memo(tmp_path):
+    d = tmp_path / "memo"
+    d.mkdir()
+    (d / "m.md").write_text("# Use Table Changes\n\nOne use moved.\n\nAnother line.\n")
+    out = tmp_path / "rel2"
+    out.mkdir()
+    r = subprocess.run(["bash", str(BUILD / "build-memo.sh"), str(d / "m.md"), str(out / "m.pdf"),
+                        f"Use Table Changes — {VER}",
+                        "Newcastle Core Zoning Code · January 1, 2027"],
+                       cwd=REPO, capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    return out
+
+
+def test_real_memo_passes_under_use_table_changes(memo):
+    assert release_gate.check(kind_plan("use-table-changes", "m.pdf"), memo) == []
+
+
+def test_real_memo_refused_under_a_code_kind(memo):
+    probs = release_gate.check(kind_plan("standalone", "m.pdf"), memo)
+    assert len(probs) == 1 and "m.pdf" in probs[0]
+
+
+def test_unknown_kind_gets_the_strict_rules(memo):
+    assert release_gate.check(kind_plan("mystery", "m.pdf"), memo)
+
+
+def test_textless_pdf_refused_under_use_table_changes(tmp_path):
+    d = tmp_path / "r"
+    d.mkdir()
+    pdf = pymupdf.open()
+    pdf.new_page()
+    pdf.save(str(d / "m.pdf"))
+    pdf.close()
+    probs = release_gate.check(kind_plan("use-table-changes", "m.pdf"), d)
+    assert len(probs) == 1 and "m.pdf" in probs[0]

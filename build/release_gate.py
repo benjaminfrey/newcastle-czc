@@ -20,6 +20,11 @@ staged release against its plan (Ruling 10). It refuses; it does not report.
   - a malformed plan is a problem, never a traceback.
   - the gate does not check page chrome (running head, tab): a page whose
     footer vanished is skipped; build/tests/test_unit_chrome.py owns chrome.
+  - the footer/offset rules apply only to Code PDFs, decided by the artifact's
+    `kind` (never the file name): integrated, integrated-redline, standalone,
+    standalone-redline. A PDF of any other known kind (use-table-changes, a
+    memo with no "| N" footer) must only open, have a page and extractable
+    text on its first page. An unknown kind gets the strict Code rules.
   - a non-PDF file is checked only for existence and size > 0.
 
 Exit 0: one line `release_gate: N file(s) checked`.  Exit 1: one stderr line
@@ -34,6 +39,8 @@ import pymupdf
 
 FOOTER_NUMBER = re.compile(
     r"Newcastle Core Zoning Code\s*\|\s*(\d+)|(\d+)\s*\|\s*Newcastle Core Zoning Code")
+CODE_KINDS = {"integrated", "integrated-redline", "standalone", "standalone-redline"}
+MEMO_KINDS = {"use-table-changes"}
 BAND = 40  # pt, bottom of the page
 
 
@@ -68,7 +75,8 @@ def _planned(plan):
         if not isinstance(files, list) or not all(isinstance(f, str) for f in files):
             problems.append(f"plan artifact {i} has no files list")
             continue
-        names.extend(files)
+        kind = a.get("kind")
+        names.extend((f, kind) for f in files)
     return names, problems
 
 
@@ -88,11 +96,11 @@ def check(plan, dir):
     dir = Path(dir)
     planned, problems = _planned(plan)
     version = plan.get("version") if isinstance(plan, dict) else None
-    allowed = set(planned)
+    allowed = {n for n, _ in planned}
     if isinstance(version, str) and version:
         allowed.add(f"Summary of Changes {version}.pdf")
     seen = set()
-    for name in planned:
+    for name, kind in planned:
         if name in seen:
             problems.append(f"{name}: planned twice in the plan")
             continue
@@ -109,6 +117,21 @@ def check(plan, dir):
             problems.append(f"{name}: file is empty")
             continue
         if name.lower().endswith(".pdf"):
+            if kind in MEMO_KINDS:
+                try:
+                    d = pymupdf.open(str(f))
+                    try:
+                        text = d[0].get_text("text").strip() if len(d) else None
+                    finally:
+                        d.close()
+                except Exception as e:
+                    problems.append(f"{name}: cannot be opened as a PDF ({e})")
+                    continue
+                if text is None:
+                    problems.append(f"{name}: PDF has no pages")
+                elif not text:
+                    problems.append(f"{name}: first page has no extractable text")
+                continue
             try:
                 pairs = footer_numbers(f)
             except Exception as e:
@@ -153,7 +176,7 @@ def main(argv):
         for p in problems:
             print(f"release_gate: {p}", file=sys.stderr)
         return 1
-    print(f"release_gate: {len(set(_planned(plan)[0]))} file(s) checked")
+    print(f"release_gate: {len({n for n, _ in _planned(plan)[0]})} file(s) checked")
     return 0
 
 
