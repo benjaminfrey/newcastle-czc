@@ -39,7 +39,6 @@ import pymupdf
 
 FOOTER_NUMBER = re.compile(
     r"Newcastle Core Zoning Code\s*\|\s*(\d+)|(\d+)\s*\|\s*Newcastle Core Zoning Code")
-CODE_KINDS = {"integrated", "integrated-redline", "standalone", "standalone-redline"}
 MEMO_KINDS = {"use-table-changes"}
 BAND = 40  # pt, bottom of the page
 
@@ -76,6 +75,9 @@ def _planned(plan):
             problems.append(f"plan artifact {i} has no files list")
             continue
         kind = a.get("kind")
+        if not isinstance(kind, str) or not kind:
+            problems.append(f"plan artifact {i} has no kind string")
+            continue
         names.extend((f, kind) for f in files)
     return names, problems
 

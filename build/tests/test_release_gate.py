@@ -221,3 +221,16 @@ def test_textless_pdf_refused_under_use_table_changes(tmp_path):
     pdf.close()
     probs = release_gate.check(kind_plan("use-table-changes", "m.pdf"), d)
     assert len(probs) == 1 and "m.pdf" in probs[0]
+
+
+@pytest.mark.parametrize("kind", [["x"], {"a": 1}, 3, None, "MISSING"])
+def test_bad_artifact_kind_is_a_refusal_not_a_traceback(rel, tmp_path, kind):
+    art = {"files": ["a.pdf", "a.md"]}
+    if kind != "MISSING":
+        art["kind"] = kind
+    p = {"version": VER, "artifacts": [art]}
+    probs = release_gate.check(p, rel)
+    assert probs and any("kind" in x for x in probs)
+    r = run_cli(p, rel, tmp_path)
+    assert r.returncode == 1 and "release_gate: " in r.stderr
+    assert "Traceback" not in r.stderr
