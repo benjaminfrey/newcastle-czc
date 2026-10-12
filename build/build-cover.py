@@ -33,6 +33,7 @@ adoption date in adopted mode. See build/ADOPTION-SPEC.md §4.
 """
 import os
 import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import pymupdf  # PyMuPDF; `import fitz` is deprecated and prints a notice to stdout
 
 ARTICLE_BLUE = (0x36 / 255, 0x7A / 255, 0xAC / 255)
@@ -47,14 +48,17 @@ ATTEST_RECT = pymupdf.Rect(48, 626, 306, 754)
 
 # "AMENDED THROUGH: MARCH 24, 2025" -- the third of the three date lines under
 # "NEWCASTLE, MAINE". It is part of the scanned cover art, so restating it means
-# masking the old line and reprinting it. ADOPTED MODE ONLY: before the vote
-# nothing has been amended, so the draft and Town Meeting editions keep the
-# baseline date untouched. The two lines above it (EFFECTIVE / ADOPTED) stay as
+# masking the old line and reprinting it. Adopted mode reprints the adoption
+# date. Draft and Town Meeting editions reprint the BASELINE's amended-through
+# date (adoption-map.json) whenever it is not the scan's own date -- nothing is
+# claimed adopted before the vote; the line states when the existing Code was
+# last amended. The two lines above it (EFFECTIVE / ADOPTED) stay as
 # they are in every mode -- the Code really was adopted November 3, 2020, and
 # this edition amends it rather than replacing it.
 #
 # Measured off the baseline scan at 600 dpi: ink runs x 388.8..563.9,
 # cap-top 722.9, baseline 731.9 (comma descends to 732.8).
+SCAN_AMENDED_THROUGH = "March 24, 2025"  # the scan's own printed date (exact string)
 AMENDED_RECT = pymupdf.Rect(386, 721.0, 566, 733.8)
 AMENDED_RIGHT = 563.9      # right edge all three date lines align to
 AMENDED_BASELINE = 731.9
@@ -98,6 +102,16 @@ def build_cover(baseline_pdf, out_pdf, version, date_str, caveat=None,
     if mode in ("meeting", "adopted") and not event_date:
         raise ValueError(f"mode {mode!r} requires event_date")
 
+    # Draft and meeting covers state the baseline they were generated from.
+    baseline_through = None
+    if mode in ("draft", "meeting"):
+        import adoption_map
+        baseline_through = adoption_map.load().baseline_amended_through
+        if not baseline_through:
+            raise ValueError(
+                "adoption map has no baseline_amended_through; refusing to "
+                "guess the date the baseline Code was last amended")
+
     src = pymupdf.open(baseline_pdf)
     w, h = src[0].rect.width, src[0].rect.height
     # Baseline page 0 is /Rotate 90 over a landscape mediabox: rendering to a
@@ -119,9 +133,10 @@ def build_cover(baseline_pdf, out_pdf, version, date_str, caveat=None,
     #     the baseline's "AMENDED THROUGH: MARCH 24, 2025" is simply wrong --
     #     this Code is amended through the adoption date. Draft and meeting
     #     editions leave it alone: nothing is amended until the vote passes.
-    if mode == "adopted":
+    amended = event_date if mode == "adopted" else baseline_through
+    if mode == "adopted" or (amended and amended != SCAN_AMENDED_THROUGH):
         page.draw_rect(AMENDED_RECT, color=None, fill=NEAR_WHITE)
-        _draw_tracked(page, f"AMENDED THROUGH: {event_date.upper()}",
+        _draw_tracked(page, f"AMENDED THROUGH: {amended.upper()}",
                       AMENDED_RIGHT, AMENDED_BASELINE, AMENDED_SIZE,
                       AMENDED_TRACK, SCAN_INK)
 
@@ -134,9 +149,9 @@ def build_cover(baseline_pdf, out_pdf, version, date_str, caveat=None,
     BANNERS = {
         "draft": (
             "INTEGRATED DRAFT — NOT ADOPTED",
-            f"{version}  ·  includes proposed Article 3: Thoroughfares",
-            f"Generated {date_str} from the adopted Core Zoning Code "
-            f"(amended through March 24, 2025).\nFor review only — not a certified copy.",
+            f"{version}  ·  proposed amendments to the Core Zoning Code",
+            f"Generated {date_str} from the Core Zoning Code as amended "
+            f"through {baseline_through}.\nFor review only — not a certified copy.",
         ),
         "meeting": (
             "TOWN MEETING EDITION — NOT YET ADOPTED",
@@ -223,5 +238,8 @@ if __name__ == "__main__":
             "[REDLINE_CAVEAT] [--mode draft|meeting|adopted] [--event-date DATE]"
         )
     caveat = positional[4] if len(positional) == 5 else None
-    build_cover(positional[0], positional[1], positional[2], positional[3],
-                caveat, mode=mode, event_date=event_date)
+    try:
+        build_cover(positional[0], positional[1], positional[2], positional[3],
+                    caveat, mode=mode, event_date=event_date)
+    except ValueError as e:
+        sys.exit(f"build-cover.py: {e}")

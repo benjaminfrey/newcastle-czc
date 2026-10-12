@@ -105,20 +105,97 @@ def test_adopted_mode_removes_the_stale_amended_through_line(tmp_path):
     assert ink_pixels(doc, STALE_STRIP) == 0
 
 
-def test_meeting_mode_keeps_the_baseline_amended_through_line(tmp_path):
-    """Positive control for the test above -- same strip, ink present. Nothing
-    is amended until the vote passes, so the packet keeps the baseline date."""
+V01_MAP = REPO / "build" / "tests" / "fixtures" / "adoption-map-v0.1-baseline.json"
+AMENDED_ROW = pymupdf.Rect(300, 721, 566, 734)  # the whole third date line
+
+
+def test_meeting_mode_keeps_the_scan_when_baseline_is_the_scan(tmp_path, monkeypatch):
+    """Positive control for the adopted test above -- same strip, ink present.
+    With the v0.1 map the baseline IS the scan (March 24, 2025), so there is
+    nothing to restate and the scanned line is left alone."""
+    monkeypatch.setenv("ADOPTION_MAP", str(V01_MAP))
     doc = cover_pdf(tmp_path, "meeting", version="v1.0", date_str="August 24, 2026",
                     mode="meeting", event_date="March 15, 2027")
     assert ink_pixels(doc, STALE_STRIP) > 0
-    assert "AMENDED THROUGH" not in cover_text(
-        tmp_path, version="v1.0", date_str="August 24, 2026",
-        mode="meeting", event_date="March 15, 2027").upper()
+    assert "AMENDED THROUGH" not in doc[0].get_text().upper()
 
 
-def test_draft_mode_keeps_the_baseline_amended_through_line(tmp_path):
+def test_draft_mode_keeps_the_scan_when_baseline_is_the_scan(tmp_path, monkeypatch):
+    monkeypatch.setenv("ADOPTION_MAP", str(V01_MAP))
     doc = cover_pdf(tmp_path, "draft", version="v0.24-draft", date_str="August 24, 2026")
     assert ink_pixels(doc, STALE_STRIP) > 0
+    assert "as amended through March 24, 2025" in doc[0].get_text().replace("\n", " ")
+
+
+def test_draft_cover_states_the_baseline_it_was_generated_from(tmp_path):
+    t = cover_text(tmp_path, version="v0.25-draft", date_str="October 11, 2026").replace("\n", " ")
+    assert "proposed amendments to the Core Zoning Code" in t
+    assert "as amended through September 14, 2026" in t
+    assert "includes proposed Article 3" not in t
+    assert "March 24, 2025" not in t
+
+
+def _reprint_alone_ink(tmp_path, text):
+    """Ink in AMENDED_ROW of the reprint drawn by itself on a blank page."""
+    d = pymupdf.open()
+    pg = d.new_page(width=612, height=792)
+    build_cover_mod._draw_tracked(
+        pg, text, build_cover_mod.AMENDED_RIGHT, build_cover_mod.AMENDED_BASELINE,
+        build_cover_mod.AMENDED_SIZE, build_cover_mod.AMENDED_TRACK,
+        build_cover_mod.SCAN_INK)
+    return d
+
+
+def _ink_bitmap(doc, rect, dpi=600, threshold=150):
+    pix = doc[0].get_pixmap(dpi=dpi, clip=rect)
+    s, n = pix.samples, pix.n
+    return [(s[i] + s[i + 1] + s[i + 2]) / 3 < threshold for i in range(0, len(s), n)]
+
+
+import pytest  # noqa: E402
+
+
+@pytest.mark.parametrize("mode,kw", [
+    ("draft", {}),
+    ("meeting", {"event_date": "March 15, 2027"}),
+])
+def test_baseline_amended_through_line_replaces_the_stale_scan(tmp_path, mode, kw):
+    """With the real map the baseline is September 14, 2026, so the scanned
+    "AMENDED THROUGH: MARCH 24, 2025" must be gone and the new date reprinted.
+
+    Measured (600 dpi): the stale scan's ink spans x 388.8..563.9, but the
+    reprinted "AMENDED THROUGH: SEPTEMBER 14, 2026" is longer and starts at
+    x=367.3 -- so its own ink covers all of STALE_STRIP (388..408) and a
+    "0 ink in the strip" assertion is impossible here (it is used only by the
+    short-date adopted test). Instead the whole third date line is compared
+    pixel for pixel with the reprint drawn ALONE on a blank page: the two must
+    be identical. Any surviving stale glyph (mask deleted or mis-placed) adds
+    ink the blank-page render lacks, so this fails without the mask."""
+    doc = cover_pdf(tmp_path, mode, version="v1.0", date_str="August 24, 2026",
+                    mode=mode, **kw)
+    alone = _reprint_alone_ink(tmp_path, "AMENDED THROUGH: SEPTEMBER 14, 2026")
+    got, want = _ink_bitmap(doc, AMENDED_ROW), _ink_bitmap(alone, AMENDED_ROW)
+    differing = sum(1 for g, w in zip(got, want) if g != w)
+    # Measured: 2 differing pixels of ~33,800 (sub-pixel anti-aliasing at the
+    # threshold). A surviving stale line leaves thousands; 25 is a wide margin.
+    assert differing <= 25, differing
+    assert sum(_ink_bitmap(doc, AMENDED_ROW)) > 0  # not vacuous: the reprint is there
+    assert "AMENDED THROUGH: SEPTEMBER 14, 2026" in doc[0].get_text().upper()
+
+
+def test_cover_refuses_a_map_without_baseline_amended_through(tmp_path, monkeypatch):
+    import json
+    m = json.loads(V01_MAP.read_text())
+    del m["baseline_amended_through"]
+    p = tmp_path / "map.json"
+    p.write_text(json.dumps(m))
+    env = dict(__import__("os").environ, ADOPTION_MAP=str(p))
+    r = subprocess.run([sys.executable, str(REPO / "build" / "build-cover.py"),
+                        str(BASELINE), str(tmp_path / "x.pdf"), "v0.25-draft",
+                        "October 11, 2026"], capture_output=True, text=True, env=env)
+    assert r.returncode == 1
+    assert "baseline_amended_through" in r.stderr
+    assert not (tmp_path / "x.pdf").exists()
 
 
 def test_adopted_mode_requires_an_event_date_before_drawing(tmp_path):

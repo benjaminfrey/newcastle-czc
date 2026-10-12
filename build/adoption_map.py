@@ -34,6 +34,9 @@ class AdoptionMap:
     article_numbers: dict[int, int]
     files: dict[str, str | None]
     not_text_comparable: dict[str, str]
+    # The date the baseline Code was last amended (a printed date, e.g. "September 14, 2026").
+    # Optional in the schema; build-cover.py refuses to guess when it is empty.
+    baseline_amended_through: str = ""
 
     def baseline_path_for(self, current_basename: str) -> str | None:
         """Baseline filename for a current article file, or None if it is new.
@@ -77,4 +80,5 @@ def load(path: str | Path | None = None) -> AdoptionMap:
         article_numbers={int(k): int(v) for k, v in doc["article_numbers"].items()},
         files=dict(doc["files"]),
         not_text_comparable=dict(doc.get("not_text_comparable", {})),
+        baseline_amended_through=doc.get("baseline_amended_through", ""),
     )
