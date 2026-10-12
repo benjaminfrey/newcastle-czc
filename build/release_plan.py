@@ -33,6 +33,10 @@ REPO = BUILD.parent
 
 CALL_KEYS = {"article", "decision", "reason", "by"}
 DECISIONS = ("layout-only", "substantive")
+# Every kind of artifact a plan can list. ADOPTION-SPEC.md section 3.3 names exactly these
+# (tests/test_spec_agreement.py keeps the two in step).
+ARTIFACT_KINDS = ("integrated", "integrated-redline", "standalone", "standalone-redline",
+                  "use-table-changes", "summary", "record")
 VERDICTS = ("SUBSTANTIVE", "NEEDS-CALL", "RENUMBER-ONLY", "UNCHANGED")
 
 
@@ -236,6 +240,7 @@ def build(old, new_dir, version, date, section_map=None, calls_path=None,
     artifacts.append({"kind": "summary", "article": None, "files": [f"Summary of Changes {version}.md"]})
     artifacts.append({"kind": "record", "article": None, "files": ["release-plan.json", "ships.json"]})
 
+    assert {a["kind"] for a in artifacts} <= set(ARTIFACT_KINDS), "unlisted artifact kind"
     plan = {
         "schema": 1, "version": version, "date": date, "mode": mode, "old": old,
         "event_date": event_date if mode == "meeting" else None,
