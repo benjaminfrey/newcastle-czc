@@ -3,6 +3,7 @@
 The adopted cover must not carry draft language, and the meeting cover must
 still say NOT YET ADOPTED -- the vote has not happened when it is produced.
 """
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -11,6 +12,7 @@ REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO / "build"))
 BASELINE = REPO / "docs" / "Newcastle Core Zoning Code.pdf"
 
+import pytest  # noqa: E402
 import pymupdf  # noqa: E402
 import importlib.util  # noqa: E402
 
@@ -127,10 +129,29 @@ def test_draft_mode_keeps_the_scan_when_baseline_is_the_scan(tmp_path, monkeypat
     assert "as amended through March 24, 2025" in doc[0].get_text().replace("\n", " ")
 
 
-def test_draft_cover_states_the_baseline_it_was_generated_from(tmp_path):
+OWN_DATE = "September 14, 2026"
+
+
+@pytest.fixture
+def own_map(tmp_path, monkeypatch):
+    """A map this test owns: the v0.1 fixture's shape with a non-scan date."""
+    m = json.loads(V01_MAP.read_text())
+    m["baseline_amended_through"] = OWN_DATE
+    p = tmp_path / "own-map.json"
+    p.write_text(json.dumps(m))
+    monkeypatch.setenv("ADOPTION_MAP", str(p))
+
+
+def test_live_map_records_a_baseline_amended_through_date():
+    import adoption_map
+    v = adoption_map.load(REPO / "build" / "adoption-map.json").baseline_amended_through
+    assert isinstance(v, str) and v.strip()
+
+
+def test_draft_cover_states_the_baseline_it_was_generated_from(tmp_path, own_map):
     t = cover_text(tmp_path, version="v0.25-draft", date_str="October 11, 2026").replace("\n", " ")
     assert "proposed amendments to the Core Zoning Code" in t
-    assert "as amended through September 14, 2026" in t
+    assert f"as amended through {OWN_DATE}" in t
     assert "includes proposed Article 3" not in t
     assert "March 24, 2025" not in t
 
@@ -152,15 +173,13 @@ def _ink_bitmap(doc, rect, dpi=600, threshold=150):
     return [(s[i] + s[i + 1] + s[i + 2]) / 3 < threshold for i in range(0, len(s), n)]
 
 
-import pytest  # noqa: E402
-
-
 @pytest.mark.parametrize("mode,kw", [
     ("draft", {}),
     ("meeting", {"event_date": "March 15, 2027"}),
+    ("adopted", {"event_date": "September 14, 2026"}),
 ])
-def test_baseline_amended_through_line_replaces_the_stale_scan(tmp_path, mode, kw):
-    """With the real map the baseline is September 14, 2026, so the scanned
+def test_baseline_amended_through_line_replaces_the_stale_scan(tmp_path, mode, kw, own_map):
+    """With a test-owned map the baseline is September 14, 2026 (adopted: the event date), so the scanned
     "AMENDED THROUGH: MARCH 24, 2025" must be gone and the new date reprinted.
 
     Measured (600 dpi): the stale scan's ink spans x 388.8..563.9, but the
@@ -201,7 +220,6 @@ def test_cover_refuses_a_map_without_baseline_amended_through(tmp_path, monkeypa
 def test_adopted_mode_requires_an_event_date_before_drawing(tmp_path):
     """The amended-through overprint dereferences event_date, so the mode/date
     validation has to run before anything is drawn."""
-    import pytest
     with pytest.raises(ValueError, match="event_date"):
         build_cover_mod.build_cover(str(BASELINE), str(tmp_path / "x.pdf"),
                                     "v1.0", "March 15, 2027", mode="adopted")

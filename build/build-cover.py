@@ -129,10 +129,10 @@ def build_cover(baseline_pdf, out_pdf, version, date_str, caveat=None,
     # 2. Mask the personal attestation (invisible white-on-white).
     page.draw_rect(ATTEST_RECT, color=None, fill=NEAR_WHITE)
 
-    # 2b. ADOPTED ONLY: restate the amended-through date. On an adopted edition
-    #     the baseline's "AMENDED THROUGH: MARCH 24, 2025" is simply wrong --
-    #     this Code is amended through the adoption date. Draft and meeting
-    #     editions leave it alone: nothing is amended until the vote passes.
+    # 2b. Restate the amended-through date. Adopted: the adoption date (the
+    #     scan's March 24, 2025 is simply wrong). Draft and meeting: the
+    #     baseline's own amended-through date, only when it is not the scan's --
+    #     nothing is claimed adopted before the vote.
     amended = event_date if mode == "adopted" else baseline_through
     if mode == "adopted" or (amended and amended != SCAN_AMENDED_THROUGH):
         page.draw_rect(AMENDED_RECT, color=None, fill=NEAR_WHITE)
