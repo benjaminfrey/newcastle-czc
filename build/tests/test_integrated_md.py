@@ -90,7 +90,7 @@ def test_article_1_ends_with_the_district_maps_pointer(out):
     assert seg.endswith("*[the District Maps — in the PDF edition; not reproduced in this markdown version.]*")
 
 
-def test_a_damaged_split_marker_refuses_and_writes_nothing(tree, tmp_path):
+def test_a_damaged_split_marker_refuses_and_writes_nothing(tmp_path):
     bad = fx.copy_full_source(tmp_path / "source")
     art3 = sorted(bad.glob("article-03-*.md"))[0]
     art3.write_text(art3.read_text().replace("TYPE-PAGES", "TYPE-PAGE"), encoding="utf-8")
@@ -99,13 +99,22 @@ def test_a_damaged_split_marker_refuses_and_writes_nothing(tree, tmp_path):
         integrated_md.render(bad)
     r = subprocess.run([sys.executable, str(BUILD / "integrated_md.py"), str(bad), str(dest)],
                        capture_output=True, text=True)
-    assert r.returncode == 1 and not dest.exists() and "refusing" in r.stderr
+    assert r.returncode == 1 and "integrated_md: refusing" in r.stderr
+    assert not dest.exists() and not list(tmp_path.glob("x.md*"))
+
+
+def test_a_refusal_only_czc_md_makes_leaves_no_pdf_and_no_md(tmp_path):
+    # An unclosed comment passes the PDF stage; only the markdown walker refuses it.
+    bad = fx.copy_full_source(tmp_path / "source")
+    art7 = sorted(bad.glob("article-07-*.md"))[0]
+    art7.write_text(art7.read_text() + "\n<!-- never closed\n", encoding="utf-8")
     rel = tmp_path / "rel"
     r = subprocess.run(["bash", "build/build-full-czc.sh", "v0.98-draft", "January 1, 2027"], cwd=REPO,
                        env=dict(os.environ, SRC_DIR=str(bad), OUT_DIR=str(rel)),
                        capture_output=True, text=True)
     assert r.returncode != 0
-    assert not list(rel.glob("*.md"))
+    assert "integrated_md: refusing" in r.stderr
+    assert not list(rel.glob("*.pdf")) and not list(rel.glob("*.md"))
 
 
 def _build(tmp_path, mode, version, date):

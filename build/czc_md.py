@@ -128,6 +128,14 @@ def _split_frontmatter(text: str) -> tuple[list[str], str]:
     return [], text
 
 
+def frontmatter_block(text: str) -> str:
+    """The source's frontmatter verbatim, `---` fences included ('' if none)."""
+    lines = text.split("\n")
+    fm, _body = _split_frontmatter(text)
+    return "\n".join(lines[:len(fm) + 2]) if fm or (lines and lines[0].strip() == "---"
+                                                    and len(lines) > 1 and lines[1].strip() == "---") else ""
+
+
 def _unit_pointer(label: str) -> str:
     return f"*[{label} — in the PDF edition; not reproduced in this markdown version.]*"
 

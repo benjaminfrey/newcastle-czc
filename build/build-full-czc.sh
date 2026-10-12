@@ -172,6 +172,17 @@ if [ -f "$PLATES_TYP" ] && [ -n "$ART3_SRC" ]; then
   fi
 fi
 
+# The integrated markdown is built BEFORE any render (right after the Article 3 split check),
+# into a temp file, so a refusal (an
+# unclosed comment, a damaged split marker) stops the build before any PDF work
+# and a direct run into releases/<ver> never leaves a PDF without its .md. It is
+# moved beside the PDF at the end. build/integrated_md.py keeps each Article's
+# frontmatter verbatim and runs every body through czc_md's walker, with Article
+# 2's generated district appendix in place; it carries NO mode-dependent text, so
+# the meeting and adopted editions' markdown is byte-identical.
+MD_STAGE="$TMPDIR_PDFS/integrated.md"
+python3 "$REPO_ROOT/build/integrated_md.py" "$SOURCE_DIR" "$MD_STAGE" || exit 1
+
 # The artifact's own filename is chrome too: an ADOPTED document filed under a
 # name containing "Integrated Draft" or "Draft v..." carries exactly the
 # strings build/adopted_residue.py's CHROME list exists to catch, but the
@@ -355,14 +366,8 @@ pdfunite "${FRONT_PARTS[@]}" "$BODY_PDF" "$OUTPUT_PDF"
 echo "Adding clickable TOC links"
 python3 "$REPO_ROOT/build/toc_links.py" "$OUTPUT_PDF" "$FRONT_COUNT"
 
-# Also emit the integrated markdown -- the document the Town adopts, in text.
-# build/integrated_md.py keeps each Article's frontmatter verbatim and runs every
-# body through czc_md's walker (tables as markdown tables, pointer notes where
-# native pages sit, no build comments), with Article 2's generated district
-# appendix in place. It carries NO mode-dependent text, so the meeting and adopted
-# editions' markdown is byte-identical. A refusal writes nothing and fails the build.
+# Place the integrated markdown (built and checked at the top) beside the PDF.
 echo "Writing combined markdown: $COMBINED_MD"
-rm -f "$COMBINED_MD"
-python3 "$REPO_ROOT/build/integrated_md.py" "$SOURCE_DIR" "$COMBINED_MD" || exit 1
+mv -f "$MD_STAGE" "$COMBINED_MD"
 
 echo "Done: $OUTPUT_PDF"
