@@ -29,10 +29,11 @@
 //   typst compile source/street-type-map.typ /tmp/type-map.pdf \
 //     --root . --font-path style/fonts --input page_offset=2
 //
-// PARITY: chrome keys off logical page = here().page() + page_offset; margins come
-// from this unit's own physical page index. No leading blank, no pagebreak(to:...).
-// PARITY QUESTION IS OPEN AND UNVERIFIED for this unit; see the PARITY block in
-// source/article-02.typ.
+// PAGE SIDES: margins and chrome both key off the logical page (here().page() + page_offset);
+// Typst resolves inside/outside from this unit's own physical page, so `binding` flips
+// with the offset parity and odd pages are bound on the left, as in the 2020 Code
+// (see PAGE SIDES in source/article-02.typ; guarded by build/tests/test_binding_side.py).
+// No leading blank, no pagebreak(to:...).
 // =============================================================================
 
 #let page_offset = int(sys.inputs.at("page_offset", default: "2"))
@@ -83,6 +84,7 @@
 // ---- Page geometry (identical to czc-template.typ / district-maps.typ) -------
 #set page(
   paper: "us-letter",
+  binding: if calc.odd(page_offset) { right } else { left },
   margin: (inside: 90pt, outside: 44pt, top: 64pt, bottom: 56pt),
   header-ascent: 26pt,
   footer-descent: 28pt,

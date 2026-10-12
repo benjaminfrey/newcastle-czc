@@ -22,12 +22,13 @@
 //   typst compile source/district-maps.typ /tmp/maps.pdf \
 //     --root . --font-path style/fonts --input page_offset=2
 //
-// Build integration passes the running page-offset + footer date. Chrome keys off
-// logical page = here().page() + page_offset; margins are resolved by Typst from
-// this unit's own physical page index. This unit has no leading blank and no
-// pagebreak(to:...). PARITY QUESTION IS OPEN AND UNVERIFIED for this unit; see the
-// PARITY block in source/article-02.typ. (At offset 2 the three pages' chrome is
-// recto / verso / recto — the baseline's own 1.1 / 1.2 / 1.4 sequence.)
+// Build integration passes the running page-offset + footer date. This unit has no
+// leading blank and no pagebreak(to:...). PAGE SIDES: margins and chrome both key
+// off the logical page (here().page() + page_offset); Typst resolves inside/outside
+// from this unit's own physical page, so `binding` flips with the offset parity and
+// odd pages are bound on the left, as in the 2020 Code (see PAGE SIDES in
+// source/article-02.typ; guarded by build/tests/test_binding_side.py).
+// (At offset 2 the three pages' chrome is recto / verso / recto — the baseline's own 1.1 / 1.2 / 1.4 sequence.)
 // =============================================================================
 
 #let page_offset = int(sys.inputs.at("page_offset", default: "2"))
@@ -48,6 +49,7 @@
 // ---- Page geometry (identical to czc-template.typ / article-02.typ) ----------
 #set page(
   paper: "us-letter",
+  binding: if calc.odd(page_offset) { right } else { left },
   margin: (inside: 90pt, outside: 44pt, top: 64pt, bottom: 56pt),
   header-ascent: 26pt,
   footer-descent: 28pt,

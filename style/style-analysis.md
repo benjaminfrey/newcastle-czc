@@ -484,19 +484,13 @@ document. Read this section before acting on §16, §19 or §20.
   every district page, and `build/tests/test_structural_note.py` asserts the parity invariant on
   every body page — the guard the repository lacked when this shipped.
 
-### Open item — the binding margins are mirrored one page against the baseline
+### Resolved (branch `fix-binding-margins`) — the binding margins
 
-Measured on `releases/v1.0-adopted` (117 pp): **odd** physical pages carry body x0=44 / x1=522
-(gutter at the **fore edge**), **even** physical pages x0=90 / x1=568 (gutter at the **binding**).
-The baseline 2020 Code is the exact opposite. Prose pages mirror the same way as the district
-spreads, so it is **document-wide and pre-dates the guard removal**.
-
-Mechanism: chrome keys off `here().page() + page_offset`, but Typst resolves each unit's
-`inside`/`outside` margins from that unit's **own physical page index**, which the offset cannot
-move. §16's "every offset must be even" was the old workaround for exactly this; with no leading
-blank, no single offset satisfies both chrome and margins. **Neither offset is settled** — the
-full measurement is in `source/article-02.typ:25-41`, and no test asserts a margin side, so
-nothing in the repository blesses the current geometry. **This is an open operator decision.**
+Margins and chrome now both follow the LOGICAL page: every `#set page(` sets
+`binding: if calc.odd(page_offset) { right } else { left }` and the Article tab uses
+`here().page() + page_offset`, so odd pages are bound on the left as in the 2020 Code. The
+adopted v1.0 edition keeps the old (mirrored) geometry. Rule documented in
+`source/article-02.typ` (PAGE SIDES); guarded by `build/tests/test_binding_side.py`.
 
 ### Open item — the adopted edition's missing chrome
 

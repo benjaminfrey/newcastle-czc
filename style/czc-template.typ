@@ -68,10 +68,14 @@ $endif$
 //   Body text starts ~65pt from top, ends ~736pt; footer below.
 //   Two columns of 217pt each separated by a 44pt gutter:
 //     odd page: 90 | colL 90->307 | gutter 44 | colR 351->568 | 44
-// Typst flips inside/outside per page parity automatically (named-margin form).
+// Typst flips inside/outside per page parity automatically (named-margin form), but
+// from the unit's OWN physical page index; `binding` below flips it when page_offset is
+// odd so margins follow the LOGICAL page, like the chrome (odd pages bound on the left,
+// as in the 2020 Code). Guarded by build/tests/test_binding_side.py.
 
 #set page(
   paper: "us-letter",
+  binding: if calc.odd(page_offset) { right } else { left },
   margin: (
     inside: 90pt,       // binding/gutter side (WIDE) — measured
     outside: 44pt,      // tab/fore-edge side (NARROW) — measured
@@ -177,7 +181,7 @@ $endif$
 
 #set page(background: context {
   if article_tab_box == none { return [] }
-  let pn = here().page()
+  let pn = here().page() + page_offset
   let y_offset = 139.5pt  // matches baseline tab top edge
   if calc.even(pn) {
     place(top + left, dx: 0pt, dy: y_offset, article_tab_box)

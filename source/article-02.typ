@@ -15,29 +15,19 @@
 //   (pp. 12-13 = D1 spread). See style/style-analysis.md.
 //
 // Bare-`typst compile` invocation (a DEBUG CONVENIENCE ONLY; it reproduces neither
-// the integrated nor the standalone geometry — see PARITY below):
+// the integrated nor the standalone geometry — see PAGE SIDES below):
 //   typst compile source/article-02.typ /tmp/a2/a2.pdf \
 //     --font-path style/fonts --input page_offset=10
 //
 // Build integration passes the real cumulative page-offset + footer date:
 //   --input page_offset=<N> --input footer_date="Draft v0.4.x-draft"
 //
-// PARITY (KNOWN, UNRESOLVED; measured 2026-10-07, not a rule):
-//   The chrome here (badge/banner/header/footer/tab) keys off the LOGICAL page
-//   number = here().page() + page_offset, so its verso/recto side follows the
-//   offset. The inside/outside MARGINS, however, are resolved by Typst from this
-//   unit's OWN physical page index (unit page 1 = recto margins: inside = left =
-//   90pt), which page_offset cannot move. This unit inserts NO leading blank; D1's
-//   standards page is unit page 1 (see the RENDER note at the end of this file).
-//   So the two cannot both match the baseline:
-//     page_offset=10: D1 gets recto chrome (badge x0=522) on recto margins; the
-//                     spread is inverted (standards page on the right).
-//     page_offset=11: D1 gets verso chrome (tab left) on recto margins, so the
-//                     badge sits at x0=90, not the baseline's ~45; the use-matrix
-//                     page gets recto chrome on verso margins (body at x=44).
-//   Both real builds pass an ODD offset (build-full-czc.sh, build-standalone.sh),
-//   i.e. the second case. Which behaviour the bound Code should have is an open
-//   operator decision; do not treat either offset as settled here.
+// PAGE SIDES (rule): chrome (badge/banner/header/footer/tab) and margins both key
+// off the LOGICAL page, here().page() + page_offset. Typst resolves inside/outside
+// from this unit's OWN physical page index, so the `binding` set below flips with
+// the offset parity (an odd offset means unit page 1 is a logical even page). The
+// result matches the 2020 Code: odd pages bound on the left, even on the right.
+// Guarded by build/tests/test_binding_side.py.
 // =============================================================================
 
 // ---- Inputs (with standalone defaults) --------------------------------------
@@ -62,6 +52,7 @@
 // ---- Page geometry (identical to style/czc-template.typ) --------------------
 #set page(
   paper: "us-letter",
+  binding: if calc.odd(page_offset) { right } else { left },
   margin: (inside: 90pt, outside: 44pt, top: 64pt, bottom: 56pt),
   header-ascent: 26pt,
   footer-descent: 28pt,
@@ -364,8 +355,8 @@
 // RENDER
 // =============================================================================
 // The FIRST district's standards page is meant to land on a verso (even DISPLAYED
-// page), so its CHROME is verso chrome (see the PARITY block in the header — the
-// badge's actual x position is not settled there). D1 is this
+// page), so its CHROME is verso chrome and its binding is the right (see PAGE SIDES in
+// the header). D1 is this
 // unit's first page; the integrated build pads to an ODD running page-offset before
 // this unit, so D1 renders at an even displayed page (offset+1) with NO leading
 // blank. (A previous `#pagebreak(to:"even")` here, combined with the build's even

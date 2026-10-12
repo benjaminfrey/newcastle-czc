@@ -451,21 +451,19 @@ rebuild. No code changes.
   by Ben (**both permits required** for D3 Retail & Service, General); D-0034 logged (v1.0 standard s reads
   "phosphorous"). App suite 1099 passed / 0 errors; selftest 12/12; citations 157/157. Build tests 111.
 
-- **▶ OPEN — binding margins are mirrored one page (document-wide, PRE-EXISTING, in the adopted
-  edition).** Measured on `releases/v1.0-adopted` (117 pp): **odd** physical pages carry body
-  x0=44/x1=522 (gutter at the **fore edge**), **even** physical pages x0=90/x1=568 (gutter at the
-  **binding**) — the baseline 2020 Code is the exact opposite. Prose pages mirror the same way as
-  the Article 2 spreads, so it is not an Article 2 defect. Mechanism: chrome keys off
-  `here().page() + page_offset`, but Typst resolves each unit's `inside`/`outside` margins from
-  that unit's **own physical page index**, which the offset cannot move; with no leading blank, no
-  single offset satisfies both. The full measurement lives in `source/article-02.typ:25-41` (+ a
-  pointer from four sibling units and `style/style-analysis.md` §21); **no test asserts a margin
-  side**, so nothing blesses the current geometry. Fixing it is a code change to the margin model
-  plus a re-cut. **Still open (not fixed in Waves 0–4b)** — the hard deadline is the
-  **next freeze**: `build-adopted.sh`'s identity gate requires the adopted body to be byte-equal
-  to the Town Meeting edition, so whatever geometry is in the frozen packet is what the Town
-  adopts and it cannot be fixed afterward. Expected to be pagination-neutral (inside 90 + outside
-  44 = the same 478 pt text block either way, so nothing should reflow) — confirm with a build.
+- **✅ FIXED (branch `fix-binding-margins`) — binding margins were mirrored on 82 of 113 body pages.**
+  Typst resolves `inside`/`outside` from a unit's **own physical page**, but chrome keys off the
+  logical page (`here().page() + page_offset`), so every unit starting on an odd offset was bound
+  backwards; the rotated Article tab also lacked `+ page_offset`. **Rule: chrome and margins both
+  follow the LOGICAL page** — each of the six `#set page(` calls (template + five native units) now
+  sets `binding: if calc.odd(page_offset) { right } else { left }`, and the tab uses
+  `here().page() + page_offset`. Result matches the 2020 Code (odd pages bound on the left).
+  Measured: integrated **117 pp / 1 blank unchanged**, 0 pages reflowed, every numbered page bound
+  correctly. Guard: `build/tests/test_binding_side.py` (integrated + Article 2 + Article 3
+  standalones; fails 80/26/12 problems with the binding lines removed). This changes the Code's
+  layout units, so the next release needs layout-only calls for Articles 1, 2 and 3 (expected).
+  ⚠ The adopted v1.0 edition carries the OLD geometry and cannot be re-rendered
+  (`build-adopted.sh` renders from the tag); the next amendment supersedes it with the fix.
 - **▶ OPEN — the adopted v1.0 edition is missing chrome on physical page 12.** The first district
   page carries no running head, no footer page number and no rotated Article tab: three
   `if here().page() == 1 { return [] }` guards in `source/article-02.typ` outlived the leading

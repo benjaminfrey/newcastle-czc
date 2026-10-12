@@ -226,9 +226,8 @@ for ART in "${ARTICLES[@]}"; do
   # leading blank — it did until 2026-06, and chrome guards that outlived that
   # change suppressed the footer on D1's first page until 2026-10-07. Keep this
   # comment true: it is the model the next person reads.
-  # KNOWN, UNRESOLVED: this makes D1's CHROME verso, but Typst resolves the unit's
-  # inside/outside MARGINS from the unit's own physical page index, which the
-  # offset cannot move — see the header of article-02.typ. Open operator decision.
+  # D1 is therefore a logical verso; its margins follow because article-02.typ sets
+  # `binding` from the offset parity (see the page-sides rule in czc-template.typ).
   case "$ART" in
     */article-02.typ)
       if [ $((OFFSET % 2)) -eq 0 ]; then PDF_LIST+=("$BLANK_PDF"); OFFSET=$((OFFSET + 1)); fi ;;
