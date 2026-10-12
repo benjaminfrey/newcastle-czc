@@ -76,6 +76,12 @@ while [ $# -gt 0 ]; do
 done
 
 # --- 1. refusals, before anything is created --------------------------------
+# Inherited variables that silently change what a leaf builds are refused, never dropped.
+# (SRC_DIR is this driver's documented input; SECTION_MAP is unset on entry above.)
+for V in OUT_DIR OUT_NAME_OVERRIDE STANDALONE_FRONT_NOTE REDLINE_OUT REDLINE_MD_OUT \
+         FRONT_NOTE_PDF OUT_MD_SOURCE REDLINE_CAVEAT; do
+  [ -z "${!V:-}" ] || refuse "$V is set in the environment; it would change what the leaves build. Unset it."
+done
 [ -n "$VERSION" ] || refuse "usage: build-release.sh <version> [date] --old-ver=<ref> [--plan-only] [--out-dir DIR] [--calls FILE]"
 [ -n "$OLD_VER" ] || refuse "--old-ver=<ref> is required: a release is a comparison against the previous version."
 git -C "$REPO_ROOT" rev-parse --verify --quiet "${OLD_VER}^{commit}" >/dev/null \

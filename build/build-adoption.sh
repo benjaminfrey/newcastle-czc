@@ -191,7 +191,7 @@ fi
 # but its source/ tree must be byte-identical or the voters saw something else.
 for V in SRC_DIR OUT_DIR OUT_NAME_OVERRIDE STANDALONE_FRONT_NOTE SECTION_MAP REDLINE_OUT \
          REDLINE_MD_OUT CZC_LEAF_FULL CZC_LEAF_REDLINE_FULL CZC_LEAF_STANDALONE \
-         CZC_LEAF_REDLINE_STANDALONE; do
+         CZC_LEAF_REDLINE_STANDALONE FRONT_NOTE_PDF OUT_MD_SOURCE REDLINE_CAVEAT; do
   if [ -n "${!V:-}" ]; then
     echo "Refusing to freeze: $V is set in the environment." >&2
     echo "The freeze records the tree of source/ and the driver would build from" >&2

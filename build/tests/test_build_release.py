@@ -489,3 +489,18 @@ def test_placed_release_is_world_readable(a):
     _, rel, _, _ = a
     assert (rel.stat().st_mode & 0o777) == 0o755
     assert {(p.stat().st_mode & 0o777) for p in rel.iterdir()} == {0o644}
+
+
+@pytest.mark.parametrize("var", ["OUT_DIR", "OUT_NAME_OVERRIDE", "STANDALONE_FRONT_NOTE",
+                                 "REDLINE_OUT", "REDLINE_MD_OUT", "FRONT_NOTE_PDF",
+                                 "OUT_MD_SOURCE", "REDLINE_CAVEAT"])
+@pytest.mark.parametrize("mode", ["draft", "meeting"])
+def test_an_inherited_build_override_is_refused_before_staging(tmp_path, var, mode):
+    tree = fx.copy_full_source(tmp_path / "src")
+    rel = tmp_path / "rel"
+    kw = dict(version=MEETING_VER, env_extra={**MEETING_ENV, var: "/elsewhere"}) \
+        if mode == "meeting" else dict(env_extra={var: "/elsewhere"})
+    r = drive(["--out-dir", str(rel)], tree, **kw)
+    assert r.returncode == 1 and r.stderr.startswith("build-release: ") and var in r.stderr
+    assert not rel.exists()
+    assert not list(tmp_path.glob(".staging-*")) and not list(tmp_path.glob("**/.staging-*"))

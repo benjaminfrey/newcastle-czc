@@ -261,8 +261,9 @@ def wt(tmp_path):
     try:
         yield path
     finally:
-        subprocess.run(["git", "-C", str(REPO), "worktree", "remove", "--force", str(path)],
-                       capture_output=True)
+        r = subprocess.run(["git", "-C", str(REPO), "worktree", "remove", "--force", str(path)],
+                           capture_output=True, text=True)
+        assert r.returncode == 0, f"worktree teardown failed: {r.stderr}"
 
 
 def _stub_driver(tmp_path, wt, exit_code=0, place=True):
@@ -361,7 +362,8 @@ def test_failure_after_the_driver_placed_the_packet_says_so(tmp_path, wt):
 @pytest.mark.parametrize("var", [
     "SRC_DIR", "OUT_DIR", "OUT_NAME_OVERRIDE", "STANDALONE_FRONT_NOTE", "SECTION_MAP",
     "REDLINE_OUT", "REDLINE_MD_OUT", "CZC_LEAF_FULL", "CZC_LEAF_REDLINE_FULL",
-    "CZC_LEAF_STANDALONE", "CZC_LEAF_REDLINE_STANDALONE"])
+    "CZC_LEAF_STANDALONE", "CZC_LEAF_REDLINE_STANDALONE",
+    "FRONT_NOTE_PDF", "OUT_MD_SOURCE", "REDLINE_CAVEAT"])
 def test_inherited_build_overrides_are_refused_before_the_driver(tmp_path, wt, var):
     r, log = _freeze(tmp_path, wt, env={var: "/somewhere/else"})
     assert r.returncode == 1
