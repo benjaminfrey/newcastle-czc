@@ -83,9 +83,19 @@ def render(plan):
     nums = [str(i) for i in range(1, 10)]
     old = plan["old"]
     base = adoption_map.load().baseline_version
-    out = [f"# Summary of Changes — {plan['version']}", "",
-           f"{plan['version']}, {plan['date']}. Changes are stated against {old}"
-           + (", the Code as most recently adopted." if old == base else "."), ""]
+    if plan.get("mode") == "meeting":
+        # The text put before the voters is FOR adoption; nothing here may say it is adopted.
+        ev = plan.get("event_date")
+        if not isinstance(ev, str) or not ev:
+            raise Refusal("a Town Meeting plan has no event date")
+        out = [f"# Summary of Changes — {plan['version']}", "",
+               f"**For adoption at Town Meeting, {ev}.**", "",
+               f"{plan['version']}. Changes are stated against "
+               + (f"the Code as most recently adopted ({old})." if old == base else f"{old}."), ""]
+    else:
+        out = [f"# Summary of Changes — {plan['version']}", "",
+               f"{plan['version']}, {plan['date']}. Changes are stated against {old}"
+               + (", the Code as most recently adopted." if old == base else "."), ""]
 
     subst = [n for n in nums if arts[n]["status"] == "SUBSTANTIVE"]
     renum = [n for n in nums if arts[n]["status"] == "RENUMBER-ONLY"]

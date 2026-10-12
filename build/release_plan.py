@@ -8,6 +8,7 @@ missing or improper call stops the release, naming the Article.
 
   release_plan.py --old REF --new-dir DIR --version V --date D --out PLAN.json
                   --ships SHIPS.json [--section-map P] [--calls FILE]
+                  [--mode draft|meeting --event-date D]
 
 Exit 0: both files written.  Exit 1: refused (`release_plan: refusing -- ...` on
 stderr), and neither file exists afterwards.
@@ -32,6 +33,10 @@ REPO = BUILD.parent
 
 CALL_KEYS = {"article", "decision", "reason", "by"}
 DECISIONS = ("layout-only", "substantive")
+# Every kind of artifact a plan can list. ADOPTION-SPEC.md section 3.3 names exactly these
+# (tests/test_spec_agreement.py keeps the two in step).
+ARTIFACT_KINDS = ("integrated", "integrated-redline", "standalone", "standalone-redline",
+                  "use-table-changes", "summary", "record")
 VERDICTS = ("SUBSTANTIVE", "NEEDS-CALL", "RENUMBER-ONLY", "UNCHANGED")
 
 
@@ -115,8 +120,24 @@ def load_calls(path):
     return doc["calls"]
 
 
-def build(old, new_dir, version, date, section_map=None, calls_path=None):
-    """-> (plan dict, ships dict). Raises Refusal; writes nothing."""
+def build(old, new_dir, version, date, section_map=None, calls_path=None,
+          mode="draft", event_date=None):
+    """-> (plan dict, ships dict). Raises Refusal; writes nothing.
+
+    mode "meeting" is a Town Meeting packet: the text put before the voters, named by
+    adoption-name.sh's meeting forms, compared against the adopted baseline."""
+    if mode not in ("draft", "meeting"):
+        raise Refusal(f"mode must be draft or meeting, got {mode!r}")
+    if mode == "meeting":
+        if not event_date:
+            raise Refusal("meeting mode needs --event-date")
+        import adoption_map
+        base = adoption_map.load().baseline_version
+        if old != base:
+            raise Refusal(f"a Town Meeting packet is compared against the adopted baseline "
+                          f"({base}), not {old}")
+    elif event_date:
+        raise Refusal("--event-date belongs to meeting mode only")
     new_dir = Path(new_dir)
     calls = load_calls(calls_path) if calls_path else []
     by_art = {c["article"]: c for c in calls}
@@ -200,7 +221,7 @@ def build(old, new_dir, version, date, section_map=None, calls_path=None):
     def nm(*a):
         return _name_via_bash(list(a))
 
-    integ = nm("czc_integrated_name", "draft", version)
+    integ = nm("czc_integrated_name", mode, version)
     artifacts = [
         {"kind": "integrated", "article": None, "files": [f"{integ}.pdf", f"{integ}.md"]},
         {"kind": "integrated-redline", "article": None,
@@ -209,8 +230,8 @@ def build(old, new_dir, version, date, section_map=None, calls_path=None):
     for n in range(1, 10):
         if arts[n]["status"] != "SUBSTANTIVE":
             continue
-        s = nm("czc_standalone_name", "draft", str(n), arts[n]["name"], version)
-        sr = nm("czc_standalone_name", "draft", str(n), arts[n]["name"], version, "redline")
+        s = nm("czc_standalone_name", mode, str(n), arts[n]["name"], version)
+        sr = nm("czc_standalone_name", mode, str(n), arts[n]["name"], version, "redline")
         artifacts.append({"kind": "standalone", "article": n, "files": [f"{s}.pdf", f"{s}.md"]})
         artifacts.append({"kind": "standalone-redline", "article": n, "files": [f"{sr}.pdf", f"{sr}.md"]})
     if utc:
@@ -219,8 +240,10 @@ def build(old, new_dir, version, date, section_map=None, calls_path=None):
     artifacts.append({"kind": "summary", "article": None, "files": [f"Summary of Changes {version}.md"]})
     artifacts.append({"kind": "record", "article": None, "files": ["release-plan.json", "ships.json"]})
 
+    assert {a["kind"] for a in artifacts} <= set(ARTIFACT_KINDS), "unlisted artifact kind"
     plan = {
-        "schema": 1, "version": version, "date": date, "mode": "draft", "old": old,
+        "schema": 1, "version": version, "date": date, "mode": mode, "old": old,
+        "event_date": event_date if mode == "meeting" else None,
         "section_map": None if renumbered is None else {"renumbered": renumbered},
         "articles": {str(n): arts[n] for n in range(1, 10)},
         "artifacts": artifacts,
@@ -252,6 +275,8 @@ def main(argv=None):
     ap.add_argument("--ships", required=True)
     ap.add_argument("--section-map")
     ap.add_argument("--calls")
+    ap.add_argument("--mode", choices=("draft", "meeting"), default="draft")
+    ap.add_argument("--event-date")
     a = ap.parse_args(argv)
     out, ships_out = Path(a.out), Path(a.ships)
     # A refusal must never leave an earlier run's plan looking current.
@@ -259,10 +284,12 @@ def main(argv=None):
         if p.exists():
             p.unlink()
     try:
-        if subprocess.run([sys.executable, str(BUILD / "version_state.py"), "--require", "draft",
+        need = "adoption" if a.mode == "meeting" else "draft"
+        if subprocess.run([sys.executable, str(BUILD / "version_state.py"), "--require", need,
                            a.version], cwd=REPO, capture_output=True).returncode != 0:
-            raise Refusal(f"{a.version} is not a draft version")
-        plan, ships = build(a.old, a.new_dir, a.version, a.date, a.section_map, a.calls)
+            raise Refusal(f"{a.version} is not {'an' if need == 'adoption' else 'a'} {need} version")
+        plan, ships = build(a.old, a.new_dir, a.version, a.date, a.section_map, a.calls,
+                            a.mode, a.event_date)
         _atomic_write(ships_out, ships)
         _atomic_write(out, plan)
     except Refusal as e:

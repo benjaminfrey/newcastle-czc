@@ -20,6 +20,9 @@ REPO = fx.REPO
 DRIVER = REPO / "build" / "build-release.sh"
 VER = "v0.98-draft"
 DATE = "January 1, 2027"
+MEETING_VER = "v9.0"
+EVENT = "May 1, 2027"
+MEETING_ENV = {"ADOPTION_MODE": "meeting", "ADOPTION_EVENT_DATE": EVENT}
 
 
 def drive(args, tree, env_extra=None, version=VER, date=DATE, old="v1.0", unset=()):
@@ -283,14 +286,131 @@ def test_a_whole_number_version_is_refused(tmp_path):
     assert not (tmp_path / "rel").exists()
 
 
-def test_meeting_mode_is_refused(tmp_path):
+def test_meeting_mode_with_a_draft_version_is_refused(tmp_path):
     tree = fx.copy_full_source(tmp_path / "src")
     r = drive(["--out-dir", str(tmp_path / "rel")], tree,
               env_extra={"ADOPTION_MODE": "meeting", "ADOPTION_EVENT_DATE": "March 1, 2027"})
-    assert r.returncode == 1 and "ADOPTION_MODE=meeting" in r.stderr
+    assert r.returncode == 1 and "adoption version" in r.stderr
     assert not (tmp_path / "rel").exists()
 
 
+def test_adopted_mode_is_refused(tmp_path):
+    tree = fx.copy_full_source(tmp_path / "src")
+    r = drive(["--out-dir", str(tmp_path / "rel")], tree, version=MEETING_VER,
+              env_extra={"ADOPTION_MODE": "adopted", "ADOPTION_EVENT_DATE": EVENT})
+    assert r.returncode == 1 and "ADOPTION_MODE=adopted" in r.stderr
+    assert not (tmp_path / "rel").exists()
+
+
+def test_meeting_mode_needs_an_event_date(tmp_path):
+    tree = fx.copy_full_source(tmp_path / "src")
+    r = drive(["--out-dir", str(tmp_path / "rel")], tree, version=MEETING_VER,
+              env_extra={"ADOPTION_MODE": "meeting"}, unset=("ADOPTION_EVENT_DATE",))
+    assert r.returncode == 1 and "ADOPTION_EVENT_DATE" in r.stderr
+    assert not (tmp_path / "rel").exists()
+
+
+def test_meeting_mode_refuses_an_old_ver_that_is_not_the_baseline(tmp_path):
+    tree = fx.copy_full_source(tmp_path / "src")
+    old = subprocess.run(["git", "rev-parse", "HEAD"], cwd=REPO, capture_output=True,
+                         text=True, check=True).stdout.strip()
+    r = drive(["--out-dir", str(tmp_path / "rel")], tree, version=MEETING_VER, old=old,
+              env_extra=MEETING_ENV)
+    assert r.returncode == 1 and "adopted baseline" in r.stderr
+    assert not (tmp_path / "rel").exists()
+
+
+def test_a_draft_run_refuses_an_inherited_adoption_baseline(tmp_path):
+    tree = fx.copy_full_source(tmp_path / "src")
+    r = drive(["--out-dir", str(tmp_path / "rel")], tree, env_extra={"ADOPTION_BASELINE": "1"})
+    assert r.returncode == 1 and "ADOPTION_BASELINE" in r.stderr
+    assert not (tmp_path / "rel").exists()
+
+
+def test_a_draft_run_refuses_an_inherited_event_date(tmp_path):
+    tree = fx.copy_full_source(tmp_path / "src")
+    r = drive(["--out-dir", str(tmp_path / "rel")], tree, env_extra={"ADOPTION_EVENT_DATE": EVENT})
+    assert r.returncode == 1 and "ADOPTION_EVENT_DATE" in r.stderr
+    assert not (tmp_path / "rel").exists()
+
+
+def _env_spy(path, out, rc=0):
+    keys = "ADOPTION_MODE ADOPTION_EVENT_DATE ADOPTION_BASELINE"
+    body = "".join(f'echo "{k}=${{{k}-unset}}" >> "{out}"\n' for k in keys.split())
+    return write_stub(path, body + f"exit {rc}\n")
+
+
+def _spy_env(tmp_path):
+    seen = {n: tmp_path / f"seen-{n}.txt" for n in ("full", "rfull", "sa", "sr")}
+    d = tmp_path / "spies"
+    d.mkdir()
+    env = {
+        "CZC_LEAF_FULL": str(_env_spy(d / "full.sh", seen["full"])),
+        "CZC_LEAF_REDLINE_FULL": str(_env_spy(d / "rfull.sh", seen["rfull"])),
+        "CZC_LEAF_STANDALONE": str(_env_spy(d / "sa.sh", seen["sa"])),
+        "CZC_LEAF_REDLINE_STANDALONE": str(_env_spy(d / "sr.sh", seen["sr"], rc=1)),
+    }
+    return env, seen
+
+
+def test_meeting_mode_hands_every_leaf_the_mode_and_the_redlines_the_baseline(tmp_path):
+    tree = fx.copy_full_source(tmp_path / "src")
+    edit_a7(tree)
+    env, seen = _spy_env(tmp_path)
+    env.update(MEETING_ENV)
+    r = drive(["--out-dir", str(tmp_path / "rel")], tree, version=MEETING_VER, env_extra=env)
+    assert r.returncode == 1 and "standalone redline build failed" in r.stderr, r.stderr[-1500:]
+    for n, f in seen.items():
+        got = f.read_text().split("\n")
+        assert "ADOPTION_MODE=meeting" in got and f"ADOPTION_EVENT_DATE={EVENT}" in got, (n, got)
+        want = "ADOPTION_BASELINE=1" if n in ("rfull", "sr") else "ADOPTION_BASELINE=unset"
+        assert want in got, (n, got)
+
+
+def test_draft_mode_hands_the_leaves_no_adoption_variables(tmp_path):
+    tree = fx.copy_full_source(tmp_path / "src")
+    edit_a7(tree)
+    env, seen = _spy_env(tmp_path)
+    r = drive(["--out-dir", str(tmp_path / "rel")], tree, env_extra=env,
+              unset=("ADOPTION_MODE", "ADOPTION_EVENT_DATE", "ADOPTION_BASELINE"))
+    assert r.returncode == 1 and "standalone redline build failed" in r.stderr, r.stderr[-1500:]
+    for n, f in seen.items():
+        assert f.read_text().split("\n")[:3] == [
+            "ADOPTION_MODE=unset", "ADOPTION_EVENT_DATE=unset", "ADOPTION_BASELINE=unset"], n
+
+
+# ------------------------------------------------- one real Town Meeting packet
+
+@pytest.fixture(scope="module")
+def meeting(tmp_path_factory):
+    root = tmp_path_factory.mktemp("meeting")
+    tree = fx.copy_full_source(root / "src")
+    edit_a7(tree)
+    r = drive(["--out-dir", str(root / "rel")], tree, version=MEETING_VER, date=EVENT,
+              env_extra=MEETING_ENV)
+    return r, root / "rel", root
+
+
+def test_meeting_release_passes_the_gate_and_never_claims_adoption(meeting):
+    import pymupdf
+    r, rel, _ = meeting
+    assert r.returncode == 0, r.stderr[-3000:]
+    names = listing(rel)
+    plan = json.loads((rel / "release-plan.json").read_text())
+    assert plan["mode"] == "meeting" and plan["event_date"] == EVENT
+    assert sorted(n for n in names) == sorted(f for a in plan["artifacts"] for f in a["files"])
+    assert any("Standalone Town Meeting Edition" in n for n in names)
+    for n in names:
+        assert "Adopted" not in n and "Draft" not in n, n
+        if n.endswith(".md"):
+            body = (rel / n).read_text()
+            assert "Adopted v9.0" not in body and "ADOPTED" not in body.replace("NOT YET ADOPTED", ""), n
+    edition = next(n for n in names if n.startswith("Newcastle CZC (Town Meeting Edition")
+                   and n.endswith(".pdf") and "Redline" not in n)
+    cover = " ".join(pymupdf.open(rel / edition)[0].get_text().split())
+    assert "TOWN MEETING EDITION \u2014 NOT YET ADOPTED" in cover, cover
+    summary = (rel / f"Summary of Changes {MEETING_VER}.md").read_text()
+    assert f"**For adoption at Town Meeting, {EVENT}.**" in summary
 def test_an_existing_empty_release_dir_gets_the_generated_summary(a, tmp_path):
     _, a_rel, _, _ = a
     tree = fx.copy_full_source(tmp_path / "src")
@@ -369,3 +489,18 @@ def test_placed_release_is_world_readable(a):
     _, rel, _, _ = a
     assert (rel.stat().st_mode & 0o777) == 0o755
     assert {(p.stat().st_mode & 0o777) for p in rel.iterdir()} == {0o644}
+
+
+@pytest.mark.parametrize("var", ["OUT_DIR", "OUT_NAME_OVERRIDE", "STANDALONE_FRONT_NOTE",
+                                 "REDLINE_OUT", "REDLINE_MD_OUT", "FRONT_NOTE_PDF",
+                                 "OUT_MD_SOURCE", "REDLINE_CAVEAT"])
+@pytest.mark.parametrize("mode", ["draft", "meeting"])
+def test_an_inherited_build_override_is_refused_before_staging(tmp_path, var, mode):
+    tree = fx.copy_full_source(tmp_path / "src")
+    rel = tmp_path / "rel"
+    kw = dict(version=MEETING_VER, env_extra={**MEETING_ENV, var: "/elsewhere"}) \
+        if mode == "meeting" else dict(env_extra={var: "/elsewhere"})
+    r = drive(["--out-dir", str(rel)], tree, **kw)
+    assert r.returncode == 1 and r.stderr.startswith("build-release: ") and var in r.stderr
+    assert not rel.exists()
+    assert not list(tmp_path.glob(".staging-*")) and not list(tmp_path.glob("**/.staging-*"))

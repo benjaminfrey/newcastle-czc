@@ -128,6 +128,14 @@ def _split_frontmatter(text: str) -> tuple[list[str], str]:
     return [], text
 
 
+def frontmatter_block(text: str) -> str:
+    """The source's frontmatter verbatim, `---` fences included ('' if none)."""
+    lines = text.split("\n")
+    fm, _body = _split_frontmatter(text)
+    return "\n".join(lines[:len(fm) + 2]) if fm or (lines and lines[0].strip() == "---"
+                                                    and len(lines) > 1 and lines[1].strip() == "---") else ""
+
+
 def _unit_pointer(label: str) -> str:
     return f"*[{label} — in the PDF edition; not reproduced in this markdown version.]*"
 
@@ -312,10 +320,12 @@ def _tail(nn: int, kind: str, units: list, src_dir: Path, appendix: bool = True)
 
 
 def body_markdown(nn: int, text: str, *, src_dir: Path = SOURCE,
-                  doc: dict | None = None) -> str:
+                  doc: dict | None = None, appendix: bool = False) -> str:
     """One Article's body as markdown: frontmatter removed, raw-Typst tables
     converted, comments dropped, split markers turned into pointer notes, then a
-    pointer note for each after-prose unit (never an appendix). Raises MdError
+    pointer note for each after-prose unit (never an appendix unless ``appendix``
+    is true: then an Article that declares one gets its generated appendix IN PLACE
+    of that pointer -- the integrated Code's form). Raises MdError
     exactly where render would. Public so the redline's markdown reuses the walker
     rather than copying it."""
     src_dir = Path(src_dir)
@@ -325,7 +335,7 @@ def body_markdown(nn: int, text: str, *, src_dir: Path = SOURCE,
     _fm, body = _split_frontmatter(text)
     units = _active_units(entry, src_dir)
     out, _placed = _walk_checked(nn, f"Article {nn}", body, entry, units)
-    return out + _tail(nn, kind, units, src_dir, appendix=False) + "\n"
+    return out + _tail(nn, kind, units, src_dir, appendix=appendix) + "\n"
 
 
 def render(nn: int, *, src_dir: Path = SOURCE, mode: str = "draft",

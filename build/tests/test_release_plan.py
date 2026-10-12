@@ -255,3 +255,70 @@ def test_a_duplicate_key_in_a_call_is_refused(tmp_path, tree):
                        cwd=REPO, capture_output=True, text=True)
     assert r.returncode == 1 and "duplicate key" in r.stderr
     assert not out.exists() and not ships.exists()
+
+
+# ---------------------------------------------------------------- meeting mode
+
+MEETING_VER = "v9.0"
+EVENT = "May 1, 2027"
+
+
+def run_meeting(tmp_path, tree, version=MEETING_VER, old="v1.0", event=EVENT):
+    out, ships = tmp_path / "o" / "release-plan.json", tmp_path / "o" / "ships.json"
+    cmd = [sys.executable, str(BUILD / "release_plan.py"), "--old", old, "--new-dir", str(tree),
+           "--version", version, "--date", DATE, "--out", str(out), "--ships", str(ships),
+           "--mode", "meeting"]
+    if event is not None:
+        cmd += ["--event-date", event]
+    r = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True)
+    return r, out, ships
+
+
+def test_meeting_plan_is_named_by_the_meeting_forms_and_records_its_mode(tmp_path, tree):
+    edit_a7(tree)
+    r, out, _ = run_meeting(tmp_path, tree)
+    assert r.returncode == 0, r.stderr
+    plan = json.loads(out.read_text())
+    assert plan["mode"] == "meeting" and plan["event_date"] == EVENT
+    integ = bash_name("czc_integrated_name", "meeting", MEETING_VER)
+    assert integ == f"Newcastle CZC (Town Meeting Edition {MEETING_VER})"
+    by = {a["kind"]: a for a in plan["artifacts"]}
+    assert by["integrated"]["files"] == [f"{integ}.pdf", f"{integ}.md"]
+    assert by["integrated-redline"]["files"] == [f"{integ} \u2014 Redline.pdf", f"{integ} \u2014 Redline.md"]
+    name7 = plan["articles"]["7"]["name"]
+    s = bash_name("czc_standalone_name", "meeting", "7", name7, MEETING_VER)
+    sr = bash_name("czc_standalone_name", "meeting", "7", name7, MEETING_VER, "redline")
+    assert "Standalone Town Meeting Edition" in s
+    assert by["standalone"]["files"] == [f"{s}.pdf", f"{s}.md"]
+    assert by["standalone-redline"]["files"] == [f"{sr}.pdf", f"{sr}.md"]
+    assert not any("Adopted" in f or "Draft" in f for a in plan["artifacts"] for f in a["files"])
+
+
+def test_draft_plan_records_no_event_date(tmp_path, tree):
+    plan, _ = ok(tmp_path, tree)
+    assert plan["mode"] == "draft" and plan["event_date"] is None
+
+
+def _meeting_refused(tmp_path, tree, needle, **kw):
+    r, out, ships = run_meeting(tmp_path, tree, **kw)
+    assert r.returncode == 1, (r.returncode, r.stdout, r.stderr)
+    assert r.stderr.startswith("release_plan: refusing -- ") and needle in r.stderr, r.stderr
+    assert not out.exists() and not ships.exists()
+
+
+def test_meeting_mode_refuses_a_decimal_version(tmp_path, tree):
+    _meeting_refused(tmp_path, tree, "adoption version", version="v9.0-draft")
+
+
+def test_meeting_mode_needs_an_event_date(tmp_path, tree):
+    _meeting_refused(tmp_path, tree, "--event-date", event=None)
+
+
+def test_meeting_mode_must_compare_against_the_adopted_baseline(tmp_path, tree):
+    _meeting_refused(tmp_path, tree, "adopted baseline", old="v0.24-draft")
+
+
+def test_draft_mode_refuses_an_event_date(tmp_path, tree):
+    r, out, ships = run(tmp_path, tree, extra=["--event-date", EVENT])
+    assert r.returncode == 1 and "meeting mode only" in r.stderr
+    assert not out.exists() and not ships.exists()

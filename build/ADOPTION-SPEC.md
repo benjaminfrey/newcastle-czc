@@ -1,8 +1,10 @@
 # Adoption Release — Specification
 
-**Status:** design, approved 2026-08-24. Not yet implemented.
+**Status:** implemented. Approved 2026-08-24; v1.0 was adopted at Town Meeting on September 14, 2026.
+Revised 2026-10-11 to match the code (Wave 4b).
 **Scope:** `build/build-adoption.sh`, `build/build-adopted.sh`, `build/normalize_for_diff.py`,
-`build/adoption-map.json`, and adoption-mode changes to `build/build-cover.py`,
+`build/adoption-map.json`, `build/build-release.sh`, `build/release_plan.py`, `build/release_gate.py`,
+`build/section_map.py`, `build/structural_note.py`, `build/integrated_md.py`, and adoption-mode changes to `build/build-cover.py`,
 `build/build-full-czc.sh`, `build/build-redline-full.sh`, and the exhibit banners.
 
 Companion to `CLAUDE.md`'s "Build & release flow". This document is the authority on what an
@@ -129,17 +131,36 @@ redline, the normaliser, and any future baseline comparison, and gives it one pl
 
 The map must also mark `article-03-streets-roads-driveways.md` as **new at this adoption** (no
 baseline counterpart) so the redline renders it as wholly new rather than as an unmatched file.
+(That was the v0.1 map. Since the v1.0 rollover every field below is identity or empty.)
+
+The map records `baseline_version` and, since Wave 4b, `baseline_amended_through` — the date the
+baseline Code was last amended (September 14, 2026 for v1.0). The cover reads that date from here
+(§7). `baseline_selfcheck.py` guards the rollover (§3.5).
+
+**Section renumbering is not in this map.** When a section is inserted into an Article, later
+headings and cross-references shift. `build/section_map.py` *derives* that map from title-identical
+headings, in order, between the old ref and the new tree. It is never authored and never committed,
+and never goes in `adoption-map.json`. The reason is the 308-phantom-line failure of §3.5: a hand
+map that goes stale fails silently, and a derived map cannot go stale. It refuses below a 50%
+similarity floor, on a bad ref, or when nothing was compared. Its `selfcheck` requires every entry to
+pair title-identical headings and the map to equal a fresh derivation.
 
 ### 3.2 `build/normalize_for_diff.py`
 
-Normalisation applied to **both sides** before diffing. Each rule is separately testable and
-separately justifiable:
+Normalisation decides what counts as a difference. **When the result is rendered, it is applied to
+the OLD side only** (`normalize_old_side`). The comparison form (`normalize`) also re-wraps
+paragraphs; it must never reach a renderer, because it flattens the Code's lettered sub-clauses into
+run-on prose (measured: Article 8 went from 211 indented lines to 4). Each rule is separately
+testable and separately justifiable:
 
 | Rule | Why it is not substantive |
 |---|---|
 | Heading letter case (`### A.` → `### a.`) | The Typst template styles headings; case in source never reaches the page |
-| Cross-reference renumbering (via §3.1) | The renumbering is real, but is stated once as a structural change (§4.3) rather than marked 126 times |
-| Paragraph re-wrapping | Line breaks in markdown source do not survive rendering |
+| Cross-reference renumbering (via §3.1) | The renumbering is real, but is stated once as a structural change (§4.3) rather than marked 126 times (the count at the v1.0 adoption) |
+| Paragraph re-wrapping (comparison only, never rendered) | Line breaks in markdown source do not survive rendering |
+| Table renumbering (`TABLE 4.1` and its forms) | The leading number is an Article number, renumbered like a heading |
+| Frontmatter `article-number` renumbering | Same map, same reason |
+| Section renumbering (via the derived map, §3.1) | A pure renumbering of title-identical sections. Runs first; the map is keyed on baseline Article numbers |
 
 **The conservatism requirement is the load-bearing part of this module.** A normaliser that is too
 aggressive silently hides a real amendment — the worst failure this feature can produce, because an
@@ -154,24 +175,43 @@ Therefore:
   or any word not covered by a listed rule.
 - The module reports what each rule suppressed, by count, so the effect is visible rather than
   assumed.
+- **The section rule is the most conservative.** A bare or plural reference is rewritten only when
+  nothing qualifies it. It leaves raw anything it cannot prove internal: statute tokens, any
+  `<word> <number>` or `<name>,` before it, any `of …` after it (except "of this Article"), any
+  paragraph naming another Article, Ordinance or statute, and any range whose span changed. An
+  explicit `Article N Section M` resolves against Article N. With no map, nothing changes.
 
 ### 3.3 `build/build-adoption.sh <version> <meeting-date>`
 
-The freeze. Produces, into `releases/<version>/`:
+The freeze. It checks its own gates (§6.1), then runs the release driver `build/build-release.sh`
+in meeting mode (`ADOPTION_MODE=meeting`), against the previously adopted Code. The driver plans
+the packet from the change determination (`czc_diff.py`, `release_plan.py`) and builds it into
+`releases/<version>/`. The packet is whatever the plan lists; the kinds it can list are:
 
-1. **Town Meeting edition** — integrated CZC, PDF + md, adoption-mode chrome (§4).
-2. **Redline vs the previously adopted Code** — full publication layout, prose marked inline,
-   normalised per §3.2, mapped per §3.1.
-3. **Summary of Changes vs the previously adopted Code** — hand-written, per the existing house
-   rule: plain language, no file/path/script references.
-4. **Standalone Article 3** — PDF + md, as every release ships today.
+<!-- PACKET-KINDS -->
+- `integrated` — the Town Meeting edition: integrated CZC, PDF + md, meeting-mode chrome (§4).
+- `integrated-redline` — the integrated redline vs the previously adopted Code, PDF + md: full
+  publication layout, prose marked inline, normalised per §3.2, mapped per §3.1.
+- `standalone` — one per Article that changed **in substance**, PDF + md.
+- `standalone-redline` — the matching per-Article redline, PDF + md.
+- `use-table-changes` — the Use Table Changes memo, md + PDF; present only when district data moved.
+- `summary` — the Summary of Changes. The driver generates a skeleton; a person finishes it by
+  hand (plain language, no file/path/script references). `--render-summary` renders its PDF.
+- `record` — `release-plan.json` and `ships.json`: what was planned and what shipped.
+<!-- /PACKET-KINDS -->
 
-It reuses `build-full-czc.sh` through the existing `SRC_DIR`/`OUT_DIR` seams. It does not fork the
-builder.
+`build-adoption.sh` then writes `frozen-from.json` (the source tree the packet was built from; §6.1).
+An Article touched only by renumbering or cross-references ships no standalone; the Summary names it.
 
-**It prints the substantive-change breakdown by article before it finishes** (§1.2's 243 lines, by
-file), so the changes going into the packet can be reviewed before the packet exists rather than at
-the meeting.
+**The driver run directly is a proof, not a freeze.** `build-release.sh` in meeting mode has no
+dirty-source check and writes no `frozen-from.json`, so `build-adopted.sh` cannot adopt what it
+produced.
+
+Nothing here forks the builder: the leaves reuse `build-full-czc.sh` and `build-standalone.sh`
+through their `SRC_DIR`/`OUT_DIR` seams.
+
+**It prints the substantive-change breakdown by article before it finishes**, so the changes going
+into the packet can be reviewed before the packet exists rather than at the meeting.
 
 ### 3.4 `build/build-adopted.sh <version> <adoption-date>`
 
@@ -186,7 +226,7 @@ chrome (§6.2).
 
 ### 3.5 Previously adopted version
 
-For this adoption, the previously adopted version is **`v0.1-baseline`** — the transcription of the
+For the first adoption (v1.0), the previously adopted version was **`v0.1-baseline`** — the transcription of the
 Code adopted November 3, 2020 and amended through March 24, 2025. That tag exists for exactly this
 purpose; its own Summary states: *"All subsequent drafts diff against this v0.1-baseline rather than
 against the PDF, giving cleaner redlines and clearer change tracking."*
@@ -243,13 +283,12 @@ must not claim are normative.
 
 ### 4.1 Footer mechanics
 
-`build-full-czc.sh` currently overrides every article's `footer-date` with `Draft $VERSION`
-(lines 210/223/229). Adoption mode changes only that string. Per-article frontmatter
-`footer-date` values are untouched.
-
-**Note a latent inconsistency:** `article-03-streets-roads-driveways.md`'s own frontmatter still
-reads `"Draft v0.2-draft"`. It is always overridden by both the integrated and standalone builders,
-so it never reaches a page — but it is stale and should be corrected while this work is open.
+Each Article's `footer-date` is overridden on every PDF page by the build's chrome
+(`adoption-footer.sh`), and adoption mode changes only that string. The `.md` deliverables keep the
+frontmatter verbatim: the integrated `.md` (`build/integrated_md.py`) copies each Article's source
+frontmatter as-is, which is why the adopted `.md` residue scan reads it, and why v1.0 cannot be
+re-adopted (§7). Article 3's footer was corrected in source (commit 07e82db) to "Adopted: September
+14, 2026".
 
 ### 4.2 Exhibit banners
 
@@ -281,7 +320,20 @@ The Meeting-edition redline opens with a stated structural summary, before any m
   was deleted.
 
 This is what makes suppressing 126 renumbering marks honest rather than concealing: the reader is
-told the fact once, plainly, instead of encountering it 126 times.
+told the fact once, plainly, instead of encountering it 126 times (the count at the v1.0 adoption).
+
+`build/structural_note.py` writes the note in two scopes.
+
+- **Code scope** (the integrated redline): one page on the verso facing the cover. Every sentence
+  that names an Article, a count or a "new" status is generated from the adoption map, so under the
+  identity map it claims nothing is new, unmarked or renumbered. It names every data-generated page
+  (district pages, Type plates, Exhibits 3.1 and 3.2, District Maps) as shown unmarked. It refuses
+  rather than spill onto a second page.
+- **Article scope** (a standalone redline, `--scope article:N`): written from the change
+  determination. It names the kinds of change, never line counts, and each heading and table by
+  name. Markdown wording is used for the `.md`.
+
+The notes are truthful by construction: they say only what the determination and the map show.
 
 ---
 
@@ -300,13 +352,37 @@ told the fact once, plainly, instead of encountering it 126 times.
 
 This produces a legal instrument. Each gate **refuses**; none warns.
 
-### 6.1 Version-state gates
+### 6.1 Gates
 
-- `build-adopted.sh` refuses a decimal version.
-- `build-adoption.sh` refuses a version that is not `vN.0`.
-- `build-full-czc.sh` refuses to stamp a whole number with draft chrome.
+Each bullet names the script that runs the gate and a literal line from it: the refusal message,
+or the step that makes the refusal. A test finds each line in that one script, outside comments.
 
-Together these make "whole numbers are adopted law" unfakeable rather than conventional.
+<!-- GATES -->
+- `build-adopted.sh` — `build/version_state.py" --require adoption "$VERSION"` — version state, both
+  directions. A decimal is refused where adoption is required, and a whole number where draft is
+  required (`build-adoption.sh` refuses anything but `vN.0`; `build-release.sh` refuses a whole
+  number in draft mode and a decimal in meeting mode). Whole numbers are adopted law, unfakeably.
+- `build-adoption.sh` — `build/baseline_selfcheck.py" || exit 1` — the baseline compared against
+  itself must mark zero lines (§3.5). Run before anything is built.
+- `build-adoption.sh` — `Refusing to freeze: source/ has uncommitted or untracked changes.` — the
+  dirty-source refusal.
+- `build-adoption.sh` — `Refusing to freeze: $V is set in the environment.` — an inherited build
+  override is refused, never dropped. The freeze records the tree of `source/`.
+- `build-release.sh` — `it would change what the leaves build. Unset it.` — the same refusal in the
+  driver. It also refuses `ADOPTION_BASELINE` and `ADOPTION_EVENT_DATE` in draft mode.
+- `build-release.sh` — `the derived section map failed its selfcheck.` — the derived section map
+  must pass `section_map.py selfcheck` before it is used.
+- `build-release.sh` — `the release gate refused; nothing was released.` — `release_gate.py` refuses
+  a missing, empty or unplanned artifact, and a pagination fault (§6.5).
+- `build-adopted.sh` — `THE '$VERSION' TAG NO LONGER POINTS AT THE FROZEN SOURCE.` — the provenance
+  gate: the tag's `source/` tree must equal the tree recorded in `frozen-from.json`.
+- `build-adopted.sh` — `ADOPTED BODY DIFFERS FROM THE TOWN MEETING EDITION.` — the content-identity
+  gate (§6.2).
+- `build-adopted.sh` — `adopted: draft chrome found in the adopted MARKDOWN` — the draft-residue
+  gate on the `.md` (§6.3); `adopted_residue.py` also scans the PDF text and file names.
+- `build-adopted.sh` — `build/pdf_recap.py" "Adopted edition=` — fails on an unreadable or
+  zero-page PDF (§6.5).
+<!-- /GATES -->
 
 ### 6.2 Content-identity gate
 
@@ -315,14 +391,20 @@ Asserted by comparing the rendered markdown (not the PDF, which carries timestam
 reasoning that made `content_sha256` hash markdown in the permit-review app.
 
 **"Body" means the combined markdown with YAML frontmatter blocks stripped.** This is not a
-technicality: the combined `.md` carries a per-article `footer-date:` line, which is chrome and
-differs by state by design. Comparing the raw file would fail on every run for the one reason that
-does not matter. Verified 2026-08-24 — the v0.24 combined markdown carries three such lines.
+technicality: each Article's frontmatter carries a `footer-date:` line, which is chrome and differs
+by state by design. Comparing the raw file would fail on every run for the one reason that does not
+matter. The integrated markdown carries **nine** frontmatter blocks, one per Article.
+
+Since Wave 4b the body is **mode-independent by construction**: `build/integrated_md.py` writes it
+with no title, provenance or mode line, and no build comments or raw Typst, so the meeting and
+adopted editions' bodies are the same bytes. The gate confirms it; it no longer relies on a lucky
+match.
 
 ### 6.3 Draft-residue gate
 
-**No draft CHROME survives anywhere in the adopted PDF** — checked by extracting text from the
-rendered document, not by asserting the substitution ran.
+**No draft CHROME survives anywhere in the adopted PDF or the adopted `.md`** — checked by
+extracting text from the rendered document and reading the markdown bytes, not by asserting the
+substitution ran. The `.md` is scanned for chrome only; the damage check below stays on the PDF text.
 
 **The gate must target the chrome strings, not the bare word.** The Code's own adopted text uses
 "draft" substantively: Article 8 §979 reads *"The Planning Board, or its designnee, drafts the
@@ -343,18 +425,20 @@ Code's own text would be a far worse failure than one that left a banner behind.
 
 ### 6.5 Layout gates
 
-Parity holds (logical page == physical page, one constant offset); page counts and blank counts
-recorded for each artifact.
+Parity holds (logical page == physical page, one constant offset). `release_gate.py` **refuses**
+pagination that is not consistent: the printed-minus-physical page offset must be even and the same
+throughout. `pdf_recap.py` fails on an unreadable or zero-page PDF. Page counts and blank counts are
+a **report**, not a gate.
 
 ---
 
 ## 7. Open items
 
-- **The 243 substantive lines have not been reviewed.** They accumulated across 24 drafts and are
+- **At the v1.0 adoption, the 243 substantive lines had not been reviewed.** They accumulated across 24 drafts and are
   concentrated in Article 9 Definitions (115 lines — the v0.21 alphabetical merge of 25 Article-3
   terms) with the remainder scattered across Articles 4–8. They should be read before the packet is
   assembled, and `build-adoption.sh` printing the breakdown is what makes that possible.
-- **The stale `footer-date` in Article 3's frontmatter** (§4.1).
+- ~~**The stale `footer-date` in Article 3's frontmatter** (§4.1).~~ **FIXED** (commit `07e82db`).
 - **Typos inherited from the adopted Code.** `designnee` (×2) and `extentions` (×1) appear in the
   baseline Administration article and have been carried faithfully through 24 drafts. Adoption is
   the moment at which correcting them would be legitimate, since the Board is voting on the text.
@@ -365,9 +449,10 @@ recorded for each artifact.
   block reads "AMENDED THROUGH: MARCH 24, 2025", while the `adopted` banner above it reads "Adopted
   <date>, amending the Core Zoning Code adopted November 3, 2020" — two competing claims about
   currency on the cover of a legal instrument. `build-cover.py` now masks that one line and reprints
-  it as **"AMENDED THROUGH: <adoption date>"** in adopted mode. **Draft and meeting editions are
-  untouched**: before the vote nothing has been amended, so there the baseline's statement is still
-  true. The two lines above it (EFFECTIVE / ADOPTED) stay as they are in every mode — the Code
+  it as **"AMENDED THROUGH: <adoption date>"** in adopted mode. *Revised Wave 4b:* in **every** mode
+  the line is now generated from `baseline_amended_through` in the adoption map, so draft and meeting
+  covers state the baseline's amended-through date (September 14, 2026 under the v1.0 map) rather than
+  the scanned March 24, 2025. The two lines above it (EFFECTIVE / ADOPTED) stay as they are in every mode — the Code
   really was adopted November 3, 2020, and this edition amends it rather than replacing it.
   Implementation notes: the line is scanned art with **no text layer**, so a text-only assertion
   cannot see the stale line and would pass with the mask deleted — the gate is a **pixel** test that
@@ -377,6 +462,13 @@ recorded for each artifact.
   the baseline at 600 dpi (ink x 388.8–563.9, cap-top 722.9, baseline 731.9); the replacement is
   Barlow Condensed at 12.86 pt with +0.777 pt tracking, matching the scanned line's cap height and
   letterspacing, in the sampled scan ink (96,100,101).
-- **Whether the adopted edition ships a standalone Article 3 at all.** Once adopted, Article 3 is
-  simply part of the Code; a standalone excerpt may be a convenience or may be a confusion. Not
-  decided.
+- ~~**Whether the adopted edition ships a standalone Article 3 at all.**~~ **DECIDED (D5): adopted
+  releases ship no standalones.** Only the integrated Code is adopted; `build-release.sh` refuses
+  adopted mode, and `build-adopted.sh` builds the integrated edition alone.
+- **v1.0 cannot be re-adopted.** Re-adopting v1.0 is impossible (Wave 4b, ruling 10), and no code
+  works around it. `build-adopted.sh` renders the v1.0 tag's `source/` with *today's* builders and
+  compares the result with the committed `releases/v1.0` Town Meeting `.md`. The old assembler
+  wrote that file (raw Typst blocks, HTML comments, "See the Integrated Draft PDF"); today's
+  integrated `.md` body differs, so the identity gate refuses. The tag's Article 3 frontmatter also
+  still reads `footer-date: "Draft v0.2-draft"`, which the residue scan of the adopted `.md`
+  refuses. v1.0's adopted edition already exists (`releases/v1.0-adopted`).

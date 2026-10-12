@@ -1,22 +1,35 @@
 #!/usr/bin/env bash
 # Freeze a draft into a TOWN MEETING EDITION. See build/ADOPTION-SPEC.md §3.3.
 #
-# Produces, into releases/<version>/:
-#   1. the Town Meeting edition (integrated PDF + md)
-#   2. the redline vs the PREVIOUSLY ADOPTED Code (mapped + normalised)
-#   3. the standalone Article 3
-#   4. a Summary of Changes skeleton, to be written by hand in plain language
+# Freezes THROUGH the release driver (build-release.sh, ADOPTION_MODE=meeting), into
+# releases/<version>/: the Town Meeting edition and its redline vs the PREVIOUSLY
+# ADOPTED Code, an extract and redline for every Article that changed in substance,
+# the Use Table Changes memo whenever district tables moved, and a Summary of
+# Changes skeleton -- then writes frozen-from.json. This script keeps its own
+# gates (version state, baseline self-check, breakdown, dirty-source refusal).
 #
 # It does NOT stamp an adoption date. The vote has not happened.
 #
+# Test seams (tests only): CZC_LEAF_RELEASE (a script run in place of build-release.sh)
+# and ADOPTION_MAP (an alternative adoption map). Any other build override in the
+# environment (SRC_DIR, OUT_DIR, ...) is REFUSED: the freeze records the tree of
+# source/, so the driver must build from exactly that tree.
+#
 # Usage:  build-adoption.sh <version> <meeting-date> [--dry-run] [--freeze-date=<date>]
+#                           [--calls FILE]
+#         build-adoption.sh <version> <meeting-date> --render-summary
+#           renders "Summary of Changes <version>.pdf" from the hand-written .md in
+#           the frozen packet, and does nothing else.
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-source "$REPO_ROOT/build/adoption-name.sh"
 VERSION="${1:-}"
 MEETING_DATE="${2:-}"
 DRY_RUN=0
+RENDER_SUMMARY=0
+CALLS=""
+CALLS_GIVEN=0
+FREEZE_DATE_GIVEN=0
 # The date the packet is FROZEN -- today, not the meeting date. These are two
 # different facts and the cover states both: line 2 says "for adoption at Town
 # Meeting, <meeting-date>", line 3 says "Frozen <freeze-date>". Passing the
@@ -32,13 +45,31 @@ FREEZE_DATE="$(date +"%B %-d, %Y")"
 # not silently fall through to the branch that leaves a shipped-looking
 # releases/<version>/ directory behind.
 if [ $# -gt 2 ]; then
+  NEXT_IS_CALLS=0
   for ARG in "${@:3}"; do
+    if [ "$NEXT_IS_CALLS" = "1" ]; then
+      CALLS="$ARG"
+      CALLS_GIVEN=1
+      NEXT_IS_CALLS=0
+      continue
+    fi
     case "$ARG" in
       --dry-run)
         DRY_RUN=1
         ;;
+      --render-summary)
+        RENDER_SUMMARY=1
+        ;;
+      --calls=*)
+        CALLS="${ARG#--calls=}"
+        CALLS_GIVEN=1
+        ;;
+      --calls)
+        NEXT_IS_CALLS=1
+        ;;
       --freeze-date=*)
         FREEZE_DATE="${ARG#--freeze-date=}"
+        FREEZE_DATE_GIVEN=1
         if [ -z "$FREEZE_DATE" ]; then
           echo "build-adoption.sh: --freeze-date= requires a date." >&2
           exit 1
@@ -47,19 +78,65 @@ if [ $# -gt 2 ]; then
       *)
         echo "build-adoption.sh: unrecognised argument '$ARG' -- refusing rather " \
              "than silently building a release. The recognised flags are " \
-             "--dry-run and --freeze-date=<date>." >&2
+             "--dry-run, --freeze-date=<date>, --calls FILE and --render-summary." >&2
         exit 1
         ;;
     esac
   done
+  if [ "$NEXT_IS_CALLS" = "1" ]; then
+    echo "build-adoption.sh: --calls requires a file." >&2
+    exit 1
+  fi
+fi
+
+if [ "$RENDER_SUMMARY" = "1" ] && { [ "$DRY_RUN" = "1" ] || [ "$CALLS_GIVEN" = "1" ] || [ "$FREEZE_DATE_GIVEN" = "1" ]; }; then
+  echo "build-adoption.sh: --render-summary renders the Summary and nothing else; it cannot be combined with --dry-run, --calls or --freeze-date." >&2
+  exit 1
 fi
 
 if [ -z "$VERSION" ] || [ -z "$MEETING_DATE" ]; then
-  echo "usage: build-adoption.sh <version> <meeting-date> [--dry-run] [--freeze-date=<date>]" >&2
+  echo "usage: build-adoption.sh <version> <meeting-date> [--dry-run] [--freeze-date=<date>] [--calls FILE] [--render-summary]" >&2
+  exit 1
+fi
+if [ "$CALLS_GIVEN" = "1" ] && [ -z "$CALLS" ]; then
+  echo "build-adoption.sh: --calls requires a file." >&2
   exit 1
 fi
 
 python3 "$REPO_ROOT/build/version_state.py" --require adoption "$VERSION" || exit 1
+
+# --- --render-summary: render the hand-written Summary and do nothing else. ---
+# No rebuild, no re-freeze, no other file touched (so no --freeze-date needed).
+if [ "$RENDER_SUMMARY" = "1" ]; then
+  PACKET="$REPO_ROOT/releases/$VERSION"
+  SUMMARY="$PACKET/Summary of Changes $VERSION.md"
+  SUMMARY_PDF="$PACKET/Summary of Changes $VERSION.pdf"
+  if [ ! -d "$PACKET" ]; then
+    echo "build-adoption.sh: --render-summary: no frozen packet at $PACKET; freeze first." >&2
+    exit 1
+  fi
+  if [ ! -f "$SUMMARY" ]; then
+    echo "build-adoption.sh: --render-summary: $SUMMARY does not exist." >&2
+    exit 1
+  fi
+  if python3 - "$REPO_ROOT/build" "$SUMMARY" <<'PYEOF'
+import sys
+sys.path.insert(0, sys.argv[1])
+import summary_skeleton
+text = open(sys.argv[2], encoding="utf-8").read()
+sys.exit(0 if summary_skeleton.PLACEHOLDER in text else 1)
+PYEOF
+  then
+    echo "build-adoption.sh: --render-summary: the Summary is still the generated skeleton" >&2
+    echo "(its placeholder comment is present). Write it by hand first; refusing." >&2
+    exit 1
+  fi
+  bash "$REPO_ROOT/build/build-memo.sh" "$SUMMARY" "$SUMMARY_PDF" \
+    "Summary of Changes — $VERSION" \
+    "Newcastle Core Zoning Code · Town Meeting, $MEETING_DATE"
+  echo "Rendered Summary PDF: $SUMMARY_PDF"
+  exit 0
+fi
 
 BASELINE="$(python3 -c "
 import sys; sys.path.insert(0,'$REPO_ROOT/build')
@@ -97,8 +174,8 @@ fi
 # --- The freeze must be tied to a COMMIT, not just to a moment. --------------
 # build-adopted.sh renders the adopted edition from the `<version>` TAG, never
 # from the working tree, and that is the whole of the "cannot contain anything
-# the voters did not see" property. But nothing used to connect the two: this
-# script renders the meeting edition from the WORKING TREE, so if the tree was
+# the voters did not see" property. But nothing used to connect the two: the
+# meeting edition is rendered from the WORKING TREE, so if the tree was
 # dirty, or if the tag was later moved forward (which this repo does habitually
 # on re-cuts -- see CLAUDE.md's release flow), the identity gate would compare
 # two equally-new artifacts and pass vacuously.
@@ -112,6 +189,16 @@ fi
 # directory produced below is itself committed and tagged afterwards, so the
 # tag's commit is legitimately NOT the commit that was HEAD at freeze time --
 # but its source/ tree must be byte-identical or the voters saw something else.
+for V in SRC_DIR OUT_DIR OUT_NAME_OVERRIDE STANDALONE_FRONT_NOTE SECTION_MAP REDLINE_OUT \
+         REDLINE_MD_OUT CZC_LEAF_FULL CZC_LEAF_REDLINE_FULL CZC_LEAF_STANDALONE \
+         CZC_LEAF_REDLINE_STANDALONE FRONT_NOTE_PDF OUT_MD_SOURCE REDLINE_CAVEAT; do
+  if [ -n "${!V:-}" ]; then
+    echo "Refusing to freeze: $V is set in the environment." >&2
+    echo "The freeze records the tree of source/ and the driver would build from" >&2
+    echo "'$V' instead, so the packet could differ from what is recorded. Unset it." >&2
+    exit 1
+  fi
+done
 DIRTY="$(git -C "$REPO_ROOT" status --porcelain -- source)"
 if [ -n "$DIRTY" ]; then
   echo "Refusing to freeze: source/ has uncommitted or untracked changes." >&2
@@ -127,37 +214,36 @@ FROZEN_COMMIT="$(git -C "$REPO_ROOT" rev-parse HEAD)"
 FROZEN_SOURCE_TREE="$(git -C "$REPO_ROOT" rev-parse "HEAD:source")"
 
 OUT="$REPO_ROOT/releases/$VERSION"
-mkdir -p "$OUT"
 
-MEETING_NAME="$(czc_integrated_name meeting "$VERSION")"
-
-# 1. Town Meeting edition. The cover's two dates are DIFFERENT facts:
-#    DATE_STR (positional 2) is when this was frozen; ADOPTION_EVENT_DATE is
-#    when the vote happens. See FREEZE_DATE above.
+# The packet is built by the release driver in Town Meeting mode: the Town
+# Meeting edition, its redline vs the previously adopted Code, an extract and
+# a redline for every Article that changed in substance, the Use Table Changes
+# memo whenever district tables moved, and a Summary skeleton. The driver
+# gates everything before placing anything, and refuses an existing release
+# directory; if it refuses, nothing here is written either.
+# CZC_LEAF_RELEASE is a TEST SEAM ONLY (a script run in place of build-release.sh).
+LEAF_RELEASE="${CZC_LEAF_RELEASE:-$REPO_ROOT/build/build-release.sh}"
+DRIVER_ARGS=("$VERSION" "$FREEZE_DATE" "--old-ver=$BASELINE")
+if [ -n "$CALLS" ]; then
+  DRIVER_ARGS+=("--calls" "$CALLS")
+fi
+OUT_PRE_EXISTED=0
+[ -e "$OUT" ] && OUT_PRE_EXISTED=1
 ADOPTION_MODE=meeting ADOPTION_EVENT_DATE="$MEETING_DATE" \
-  bash "$REPO_ROOT/build/build-full-czc.sh" "$VERSION" "$FREEZE_DATE"
-MEETING_PDF="$OUT/$MEETING_NAME.pdf"
+  bash "$LEAF_RELEASE" "${DRIVER_ARGS[@]}" || {
+    if [ -d "$OUT" ] && [ "$OUT_PRE_EXISTED" = "0" ]; then
+      echo "build-adoption.sh: the freeze FAILED after the driver placed $OUT; it is incomplete" >&2
+      echo "(no frozen-from.json). Remove it and re-run." >&2
+    else
+      echo "build-adoption.sh: the release driver refused or failed; nothing was frozen." >&2
+    fi
+    exit 1
+  }
+[ -d "$OUT" ] || { echo "build-adoption.sh: the driver succeeded but $OUT does not exist." >&2; exit 1; }
 
-# 2. Redline vs the previously adopted Code. ADOPTION_BASELINE=1 also switches
-#    the cover caveat and inserts the §4.3 structural-changes page.
-ADOPTION_BASELINE=1 ADOPTION_MODE=meeting ADOPTION_EVENT_DATE="$MEETING_DATE" \
-  bash "$REPO_ROOT/build/build-redline-full.sh" "$VERSION" "$BASELINE" "$FREEZE_DATE"
-REDLINE_PDF="$OUT/$MEETING_NAME — Redline.pdf"
-
-# 3. Standalone Article 3
-#    OUT_NAME_OVERRIDE pins the historical filename (the one STANDALONE_PDF below
-#    names). Decision D5 has this artifact leaving the adoption packet, so it is
-#    not worth renaming now; build-standalone.sh's mode-bearing default
-#    ("... Standalone Town Meeting Edition ...") is deliberately NOT adopted here.
-#    test_build_adoption.py pins that this statement and STANDALONE_PDF agree.
-ADOPTION_MODE=meeting ADOPTION_EVENT_DATE="$MEETING_DATE" \
-  OUT_NAME_OVERRIDE="Article 3 Thoroughfares (Standalone $VERSION)" \
-  bash "$REPO_ROOT/build/build-standalone.sh" 3 "$VERSION" "$FREEZE_DATE"
-STANDALONE_PDF="$OUT/Article 3 Thoroughfares (Standalone $VERSION).pdf"
-
-# 3b. The freeze provenance record, read and enforced by build-adopted.sh.
+# The freeze provenance record, read and enforced by build-adopted.sh.
 PROVENANCE="$OUT/frozen-from.json"
-python3 - "$PROVENANCE" "$VERSION" "$MEETING_DATE" "$FREEZE_DATE" \
+if ! python3 - "$PROVENANCE" "$VERSION" "$MEETING_DATE" "$FREEZE_DATE" \
          "$FROZEN_COMMIT" "$FROZEN_SOURCE_TREE" <<'PYEOF'
 import json, sys
 out, version, meeting, frozen, commit, tree = sys.argv[1:7]
@@ -180,91 +266,19 @@ json.dump({
 open(out, "a").write("\n")
 print(f"Wrote freeze provenance: {out}")
 PYEOF
-
-# 4. Summary skeleton — written by hand, in plain language, no file/path refs.
-#
-#    NOTHING SUBSTANTIVE IS PRE-ASSERTED HERE. The skeleton used to ship the
-#    sentence "No standard, dimension or requirement was made stricter anywhere
-#    in this release except as described above" already written. That is a legal
-#    claim about the whole Code, asserted by a build script that has not read
-#    the Code, in a document a voter relies on — and it is exactly what this
-#    project's own honest-blanks rule forbids (an honest blank beats a
-#    confident guess; a long confident draft on an unreviewed body of changes
-#    is a failure, not a convenience). It is now a blank the author must fill,
-#    and the author must fill it against the printed per-article breakdown
-#    above.
-SUMMARY="$OUT/Summary of Changes $VERSION.md"
-SUMMARY_PDF="$OUT/Summary of Changes $VERSION.pdf"
-SUMMARY_IS_SKELETON=0
-if [ ! -f "$SUMMARY" ]; then
-  SUMMARY_IS_SKELETON=1
-  cat > "$SUMMARY" <<EOF
-# Summary of Changes — $VERSION
-
-**For adoption at Town Meeting, $MEETING_DATE.** Changes are stated against the
-Core Zoning Code adopted November 3, 2020 and amended through March 24, 2025.
-
-<!-- Write this by hand, in plain language: by section, by road name, by Type.
-     No file, path or script references. -->
-
-<!-- THE REDLINE CANNOT SHOW FOUR THINGS. Each must be described here, in
-     prose, or a reader of the packet will never learn it. The redline's own
-     structural-changes page states them; this document is where they are
-     actually explained:
-       1. Article 2 District Standards is reproduced UNMARKED — its standards
-          are generated spreads, not prose. Say what changed in Article 2.
-       2. Article renumbering (old 3-8 become 4-9) and the table renumbering
-          that follows it are suppressed as mechanical. Say so once.
-       3. Figures, tables, maps, the Inventory (Exhibit 3.1) and the Type Map
-          (Exhibit 3.2) render at current state and carry no marks. Describe
-          those changes by Type and by road name.
-       4. Article 3 Thoroughfares is entirely new, so its whole text is marked
-          as added; the redline cannot tell a reader what matters within it. -->
-
-## What is new
-
-## What changed
-
-## What did not change
-
-<!-- ANSWER THIS DELIBERATELY, do not delete it. Was any standard, dimension or
-     requirement made STRICTER than the adopted Code? Read the per-article
-     breakdown this build printed before answering, and state the answer
-     plainly here — including "yes, in the following places". An unanswered
-     question is honest; a pre-written "no" is not. -->
-EOF
-  echo "Wrote Summary skeleton: $SUMMARY"
+then
+  echo "build-adoption.sh: writing frozen-from.json FAILED; $OUT is incomplete. Remove it and re-run." >&2
+  exit 1
 fi
-
-# The house release flow renders the Summary to PDF (build-memo.sh + the CZC
-# memo template); the adoption path did not, so the one hand-written document
-# in the warrant packet was the only one shipping as bare markdown. It is
-# rendered only when the Summary was NOT just created — a PDF of an empty
-# skeleton is a shipped-looking placeholder, which is worse than none. Re-run
-# this command (or build-memo.sh directly) once the Summary is written.
-if [ "$SUMMARY_IS_SKELETON" = "0" ]; then
-  bash "$REPO_ROOT/build/build-memo.sh" "$SUMMARY" "$SUMMARY_PDF" \
-    "Summary of Changes — $VERSION" \
-    "Newcastle Core Zoning Code · Town Meeting, $MEETING_DATE"
-  echo "Rendered Summary PDF: $SUMMARY_PDF"
-fi
-
-# --- Layout recap (ADOPTION-SPEC.md §6.5: page + blank counts per artifact). -
-echo
-echo "Page / blank counts:"
-python3 "$REPO_ROOT/build/pdf_recap.py" \
-  "Meeting edition=$MEETING_PDF" \
-  "Baseline redline=$REDLINE_PDF" \
-  "Standalone Article 3=$STANDALONE_PDF"
 
 echo
 echo "Town Meeting edition $VERSION built into releases/$VERSION/"
 echo "Frozen from commit $FROZEN_COMMIT (source tree $FROZEN_SOURCE_TREE)"
 echo
 echo "NEXT:"
-echo "  1. Write the Summary by hand, then re-run this command to render its PDF."
-echo "     Pass --freeze-date=\"$FREEZE_DATE\" on that re-run. Without it the freeze date"
-echo "     restamps to today and frozen-from.json is rewritten from current HEAD."
+echo "  1. Write the Summary by hand in releases/$VERSION/ (replace the generated skeleton),"
+echo "     then render it: build-adoption.sh $VERSION \"$MEETING_DATE\" --render-summary"
+echo "  (To re-freeze, first remove releases/$VERSION/ -- the driver refuses an existing packet.)"
 echo "  2. Commit releases/$VERSION/ and tag $VERSION at that commit."
-echo "     The tag's source/ tree must stay $FROZEN_SOURCE_TREE — build-adopted.sh"
+echo "     The tag's source/ tree must stay $FROZEN_SOURCE_TREE -- build-adopted.sh"
 echo "     refuses if the tag is later moved onto different source."

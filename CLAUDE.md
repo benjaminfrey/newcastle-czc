@@ -91,8 +91,13 @@ Type (the §5 Inventory). Map/table legends show only Types actually present.
   names. A call can make a release ship more, never less. Everything builds into a sibling
   `.staging-<ver>.*` dir; `release_gate.py` refuses missing/empty/unplanned (incl. hidden) files
   and Code PDFs whose printed−physical page offset is inconsistent or odd; only then is it moved
-  into place (dir 755, files 644). Draft mode only — adoption still runs `build-adoption.sh`
-  until Wave 4b. ⚠ Against v1.0 the current tree reads **Articles 1, 2, 3 NEEDS-CALL** (the Wave
+  into place (dir 755, files 644). With `ADOPTION_MODE=meeting ADOPTION_EVENT_DATE=…` it builds a
+  Town Meeting packet (adoption version; `--old-ver` = the adopted baseline; baseline redlines) —
+  but run directly that is only a **proof** (no dirty-source check, no `frozen-from.json`); the real
+  freeze is `build-adoption.sh`. Adopted mode is refused (D5). The driver refuses inherited build
+  overrides (`OUT_DIR`, `OUT_NAME_OVERRIDE`, `STANDALONE_FRONT_NOTE`, `REDLINE_OUT`,
+  `REDLINE_MD_OUT`, `FRONT_NOTE_PDF`, `OUT_MD_SOURCE`, `REDLINE_CAVEAT`; draft also refuses
+  `ADOPTION_BASELINE`/`ADOPTION_EVENT_DATE`). ⚠ Against v1.0 the current tree reads **Articles 1, 2, 3 NEEDS-CALL** (the Wave
   0/1 chrome fix changed their layout units) — the first release needs layout-only calls for all
   three. The leaf commands below still work on their own.
 - **Integrated CZC:** `bash build/build-full-czc.sh vX.Y-draft "Month D, YYYY"`
@@ -144,12 +149,20 @@ local only). **Nothing here changes the ordinary draft flow** — with no adopti
   the only thing standing between an env var and a document that claims adoption.
 - **⛔ Nothing may claim adoption before the vote.** The frozen packet says **NOT YET ADOPTED**.
   The clerk attestation is masked in *every* mode.
-- **Freeze (before the meeting):** `bash build/build-adoption.sh v1.0 "<meeting date>"
-  [--freeze-date=<date>] [--dry-run]` → `releases/v1.0/`: the **Town Meeting edition**
-  (`Newcastle CZC (Town Meeting Edition v1.0).pdf`), a redline + Summary skeleton vs the
-  **previously adopted** Code, and **`frozen-from.json`**. Refuses a dirty `source/`. Then commit
-  `releases/v1.0/` and tag `v1.0` at that commit.
-  *Re-running to render the Summary PDF? Pass the same `--freeze-date=` or the cover restamps.*
+- **Freeze (before the meeting) — Wave 4b:** `bash build/build-adoption.sh vN.0 "<meeting date>"
+  [--freeze-date=<date>] [--calls calls.json] [--dry-run]` → `releases/vN.0/`. It keeps its own
+  gates (version state, `baseline_selfcheck`, the breakdown, `--dry-run`, the dirty-`source/`
+  refusal, **refusal of any inherited build override** — `SRC_DIR`, `OUT_DIR`, `FRONT_NOTE_PDF`,
+  `OUT_MD_SOURCE`, `REDLINE_CAVEAT`, … — so the packet is built from exactly the tree it records),
+  then calls `build-release.sh` in meeting mode: the **Town Meeting edition**, the baseline redline
+  (both formats), an extract + extract redline for **every SUBSTANTIVE Article**, the Use Table
+  Changes memo when district data moved, a generated Summary skeleton, `release-plan.json`,
+  `ships.json` — then writes **`frozen-from.json`**. NEEDS-CALL Articles need `--calls` (as for a
+  draft release). Hand-write the Summary in the packet, then `build-adoption.sh vN.0 "<meeting
+  date>" --render-summary` renders its PDF (and does nothing else; it refuses the unedited
+  skeleton). Then commit `releases/vN.0/` and tag `vN.0` at that commit. **To re-freeze, remove
+  `releases/vN.0/` first** (the driver refuses an existing packet). Test seams `CZC_LEAF_RELEASE`
+  and `ADOPTION_MAP` are for tests only.
 - **Adopt (after the vote):** `bash build/build-adopted.sh v1.0 "<adoption date>"` →
   `releases/v1.0-adopted/Newcastle CZC (Adopted v1.0).{pdf,md}`. It renders **from the tag, never
   the working tree**, so the adopted document structurally cannot contain anything the voters did
@@ -201,6 +214,8 @@ local only). **Nothing here changes the ordinary draft flow** — with no adopti
   `build/permit-review/BUILD-STATE.md` "The v1.0 adoption rollover".
 - **▶ AFTER THE VOTE — roll the baseline over.** *(Done 2026-09-14 — kept for the next adoption.)* Once `v1.0` is adopted it becomes the *previously
   adopted* version, and `build/adoption-map.json` resets: `baseline_version` → the new adoption,
+  **`baseline_amended_through` → its adoption date** (Wave 4b: the draft and Town Meeting covers
+  print "AMENDED THROUGH: <that date>" from it — a stale value prints a false cover),
   `article_numbers` + `files` → identity, `new_at_this_adoption` + `not_text_comparable` → empty.
   **Nothing performs that edit.** `build/baseline_selfcheck.py` guards it — the invariant is that
   **the baseline compared against ITSELF marks zero lines** — and `build-adoption.sh` runs it as a
@@ -211,7 +226,7 @@ local only). **Nothing here changes the ordinary draft flow** — with no adopti
   rewrites the old side's "Article 4" to "Article 5". That is why the guard exists; don't remove it
   because it looks inert.
 
-**Tests:** `python3 -m pytest build/tests -q` — **640**, ~12 min (they build real PDFs, redlines and releases).
+**Tests:** `python3 -m pytest build/tests -q` — **726**, ~13 min (they build real PDFs, redlines and releases).
 CI runs them on every PR and every push to `main` (`.github/workflows/build-tests.yml`);
 that workflow pins **Typst 0.14.2** and needs `fetch-depth: 0`, because the redline tests
 read real tags.
@@ -254,7 +269,7 @@ rebuild. No code changes.
 
 ---
 
-## Current state (as of 2026-10-11)
+## Current state (as of 2026-10-12)
 
 - **✅ MERGED to `main` — the release-deliverable machinery, Waves 0 and 1** (PR #1, merge
   commit `9291b20`, 31 commits). Build suite **111 → 196**. Wave 0 fixed the Article 2
@@ -272,16 +287,33 @@ rebuild. No code changes.
   under `source/`); and **`redline-stage.sh`**, now the single definition of
   `redline_resolve.py`'s rc 0/3/4/refuse contract, with a guard that stops plain-marked
   source reaching the PDF stage.
-  **Still to build (Ben split Wave 4 on 2026-10-11):** **Wave 4b** — the **integrated `.md`**
-  through `czc_md`'s walker (it still carries Tables 3.2–3.5 as raw Typst, an invisible HTML
-  comment where the district pages are, and pre-v0.15 names in its comments — so it is *less*
-  readable than the extracts that say it governs); generated draft-cover facts (D6);
-  `build-adoption.sh` calling the driver in meeting mode (keeping its own gates); `pdf_recap`
-  counts as assertions; `ADOPTION-SPEC.md` + CLAUDE.md revisions (P18). **Wave 4c** — the fifth
-  use-table status code (P15), **only after Ben or the Board supplies its four binding values**
-  (the code, the legend symbol, the legend row's wording, the rewritten Note); log a
-  DECISIONS-NEEDED entry per the D-0033 precedent.
-- **✅ Wave 4a built — the release driver** (branch `wave4-release-driver`, PR open; plan
+  **Still to build:** **Wave 4c** — the fifth use-table status code (P15), **only after Ben or
+  the Board supplies its four binding values** (the code, the legend symbol, the legend row's
+  wording, the rewritten Note); log a DECISIONS-NEEDED entry per the D-0033 precedent.
+- **✅ Wave 4b built — integrated markdown, cover facts, adoption through the driver** (branch
+  `wave4b-adoption-and-integrated-md`, PR open; plan
+  `plans/2026-10-11-wave4b-adoption-and-integrated-md.md`, ten rulings). Build suite **640 → 726**.
+  (1) **`build/integrated_md.py`**: the integrated `.md` — what the Town adopts — keeps each
+  Article's source frontmatter and runs every body through `czc_md.body_markdown` (tables as
+  tables, page pointers, no build comments) with **Article 2's 13-district appendix**; **no
+  mode-dependent text**, so meeting and adopted `.md` are byte-identical (the identity gate holds);
+  built before the PDF render, so a refusal leaves neither file. (2) **Cover facts (D6)**:
+  `adoption-map.json` gains **`baseline_amended_through`** ("September 14, 2026"); draft banner =
+  "proposed amendments to the Core Zoning Code" / "as amended through <it>"; the scanned AMENDED
+  THROUGH line is masked and reprinted in draft and meeting mode when the baseline is newer than
+  the scan (pixel test: the whole date row vs the reprint alone; the v0.1 fixture map keeps the
+  positive control). (3) **Meeting mode** in `build-release.sh`/`release_plan.py`/
+  `summary_skeleton.py`. (4) **`build-adoption.sh` freezes through the driver** (see Adoption
+  release); `pdf_recap` exits 1 on an unreadable or zero-page PDF. (5) **`ADOPTION-SPEC.md`
+  matches the code**, with agreement tests (§3.3 packet kinds = `release_plan.ARTIFACT_KINDS`;
+  §6.1 gates = script + literal refusal string in non-comment lines; negative controls).
+  ⚠ **v1.0 cannot be re-adopted**: `build-adopted.sh` renders the v1.0 tag's source with today's
+  builders and compares against the committed old-assembler Town Meeting `.md` (identity refuses),
+  and the tag's Article 3 footer still reads "Draft v0.2-draft" (the `.md` residue scan refuses).
+  No code works around it; v1.0's adopted edition already exists.
+  ⚠ The adoption breakdown counts Article 3's footer change since v1.0 as 2 substantive lines
+  while `czc_diff` calls Article 3 NEEDS-CALL (its layout units) — expect both at the next freeze.
+- **✅ Wave 4a MERGED — the release driver** (PR #7, merge `c5d6a0b`; plan
   `plans/2026-10-11-wave4a-release-driver.md`, twelve rulings). Build suite **522 → 640**.
   `build-release.sh` (see Build & release flow) composes: `release_plan.py` (czc_diff verdicts +
   written calls → `release-plan.json`; `ships.json` = czc_diff's JSON with `new` set to the version,
