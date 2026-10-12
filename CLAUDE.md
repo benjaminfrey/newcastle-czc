@@ -32,8 +32,8 @@ in-house GIS capacity. All ordinance changes require a **Town Meeting** vote (Ma
    Article 3 was the whole project; Article 3 was adopted at the September 14, 2026 Town Meeting.
    `build-redline-standalone.sh` was built in Wave 3b and the honest standalone `.md` in Wave 3c;
    the release driver that ships the whole set is Wave 4.)*
-5. Commit messages end with the trailer:
-   `Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`
+5. Commit messages end with a `Co-Authored-By:` trailer naming the Claude model that wrote the
+   change, e.g. `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
 6. On release: **isolate `git push origin main`** as its own command, then push the
    tag as a **separate** command. (Annotated tags, `vX.Y-draft`.)
 7. Match the baseline CZC formatting/typography; we have measured it forensically
@@ -290,8 +290,8 @@ rebuild. No code changes.
   **Still to build:** **Wave 4c** — the fifth use-table status code (P15), **only after Ben or
   the Board supplies its four binding values** (the code, the legend symbol, the legend row's
   wording, the rewritten Note); log a DECISIONS-NEEDED entry per the D-0033 precedent.
-- **✅ Wave 4b built — integrated markdown, cover facts, adoption through the driver** (branch
-  `wave4b-adoption-and-integrated-md`, PR open; plan
+- **✅ Wave 4b MERGED — integrated markdown, cover facts, adoption through the driver** (PR #8,
+  merge `5bd45b8`; plan
   `plans/2026-10-11-wave4b-adoption-and-integrated-md.md`, ten rulings). Build suite **640 → 726**.
   (1) **`build/integrated_md.py`**: the integrated `.md` — what the Town adopts — keeps each
   Article's source frontmatter and runs every body through `czc_md.body_markdown` (tables as
@@ -383,9 +383,6 @@ rebuild. No code changes.
   ref/Article cleanly, writing nothing). `build-standalone.sh` gains `OUT_MD_SOURCE`; shared
   `build/article-meta.sh`. ⚠ **Owed by P13:** thread the section map through staging AND pass it to
   the page (`--section-map`), else renumbering shows as many "Heading changed" notes.
-- **▶ OPEN — before the next freeze:** every draft cover (`build-cover.py`) still says "includes
-  proposed Article 3" and "amended through March 24, 2025" (decision D6, cover facts generated from
-  the baseline — P13).
 - **✅ Wave 3a MERGED — the change determination + Use Table Changes** (PR #4, merge
   `1f931b1`; CI also fixed `build-memo.sh`'s macOS-only `mktemp`; plan `plans/2026-10-09-wave3a-change-determination.md`,
   twelve rulings + amendments; Ben split Wave 3 into 3a/3b on 2026-10-09). Build suite
@@ -445,10 +442,6 @@ rebuild. No code changes.
 - **▶ PARTLY DECIDED — what a change to a `shared` file implies.** Interim ruling (Ben,
   2026-10-09): `czc_diff` **refuses**, naming the file, until a person decides which Articles it
   affects. The permanent rule (candidate: flag every Article) is still open; `shared` is empty.
-- **▶ OPEN — should a dropped heading or figure carry a visible placeholder in the
-  redline?** In `--source` a removed table or figure vanishes without trace and an added
-  heading is emitted unmarked; the legend now says so plainly instead of over-promising.
-  A visible placeholder is a new format element — Ben's call, Wave 3.
 
 - **CZC v1.0 was ADOPTED at the Special Town Meeting, September 14, 2026.** Adopted edition built from the
   tag (`releases/v1.0-adopted/`, md + gitignored pdf); baseline rolled over to v1.0. Future drafts are
@@ -458,37 +451,6 @@ rebuild. No code changes.
   by Ben (**both permits required** for D3 Retail & Service, General); D-0034 logged (v1.0 standard s reads
   "phosphorous"). App suite 1099 passed / 0 errors; selftest 12/12; citations 157/157. Build tests 111.
 
-- **Shipped `v0.24-draft`**; the **adoption-release machinery is merged to `main`** (20 commits,
-  `7a22319`) — see “Adoption release” above. The next release is the one that gets **frozen at
-  `v1.0`** for the special Town Meeting. Editing continues exactly as before until then.
-- **Shipped `v0.22-draft`** (re-cut several times; tag moved forward each time — main is never
-  rewritten, only the tag is force-pushed) — **two resident comments + a full §5 inventory audit.**
-  (1) **Driveway "road stubs":** §1.B.5 no-upgrade-on-adoption clause; §5.A.3 + §5.C.6 certainty
-  (the Inventory-assigned Type is fixed at adoption → **no CEO/PB Type determination and no
-  Town-Meeting amendment at development time**); §7.C.7 trigger (a driveway *expanded or altered to
-  serve* >2 SFD / >1 TFD is no longer a Driveway); **new §7.F phased obligation** — 3–4 dwellings =
-  safety-critical core only (Basic tier, no sidewalk/planting/full ROW), 5+/Subdivision/Town Way =
-  full Type, plus a stream/Shoreland safety floor; E-911 provenance on the Exhibit 3.1 caption.
-  (2) **Street trees:** new **§3.G** (Streets S1–S5) — strengthened planting + preservation of
-  **Significant Street Trees** (CRZ protection, required in-kind replacement, arborist review) for
-  Town/applicant ROW work; utilities *coordinate + restore* (no override of State/MPUC rights);
-  general maintenance ≠ removing a healthy mature tree; §6.D.4 canopy direction. New Art-9 defs:
-  **Critical Root Zone** (1 ft radius per inch DBH — also cures an undefined use in Art 4 §3.H),
-  **Significant Street Tree** (≥6 in caliper; qualifies when its **CRZ *or* canopy dripline reaches
-  into the ROW**, so a tree on adjacent land counts), **Certified Arborist**.
-  (3) **§5 inventory audit — 42 Type corrections across 18 roads** (the cause was the approximate
-  District trace, NOT the classifier): Main St all **S1**; Mills Rd all **S3**; Pond Rd all **R1**;
-  Timber Ln, Stonebridge Cir, Bay View, Gastaldo Farm, Ledge Hill, Bailey, Cole Cabin, Cottril,
-  East View, Middle Way → **R2**; Teague, High St → **S4**; Camp, Desperado, Fern Birch, Hawthorn →
-  **R3**; two State-Highway "River Road" junction pieces → **S1** (they are Main St / Route 1B) +
-  the Town Way connector → S3. Also **removed an 11 ft orphan `station-road-3`** fragment
-  (**215 → 214 segments**). All recorded in `overrides.json` (**48 entries**).
-  **S4 and R3 now appear for the first time** → both legends carry them (S5 Alley still absent).
-  Editorial pass: `is`→`shall` on the upgrade duty, `may`→required off-segment tree replacement,
-  "comes to serve"→"is expanded or altered to serve", §5.C.6 recast. Integrated **117 pp / 1 blank**.
-- **NEW pipeline capability:** an override entry may carry **`"exclude": true`** to drop a source
-  record that is not a real thoroughfare (orphan E-911 fragment) — implemented in `05_export.py`,
-  so the decision survives re-runs like every other override.
 - **▶ OPEN — binding margins are mirrored one page (document-wide, PRE-EXISTING, in the adopted
   edition).** Measured on `releases/v1.0-adopted` (117 pp): **odd** physical pages carry body
   x0=44/x1=522 (gutter at the **fore edge**), **even** physical pages x0=90/x1=568 (gutter at the
@@ -499,7 +461,7 @@ rebuild. No code changes.
   single offset satisfies both. The full measurement lives in `source/article-02.typ:25-41` (+ a
   pointer from four sibling units and `style/style-analysis.md` §21); **no test asserts a margin
   side**, so nothing blesses the current geometry. Fixing it is a code change to the margin model
-  plus a re-cut. **DEFERRED TO WAVE 1 by Ben, 2026-10-07** — the hard deadline is the
+  plus a re-cut. **Still open (not fixed in Waves 0–4b)** — the hard deadline is the
   **next freeze**: `build-adopted.sh`'s identity gate requires the adopted body to be byte-equal
   to the Town Meeting edition, so whatever geometry is in the frozen packet is what the Town
   adopts and it cannot be fixed afterward. Expected to be pagination-neutral (inside 90 + outside
@@ -507,11 +469,10 @@ rebuild. No code changes.
 - **▶ OPEN — the adopted v1.0 edition is missing chrome on physical page 12.** The first district
   page carries no running head, no footer page number and no rotated Article tab: three
   `if here().page() == 1 { return [] }` guards in `source/article-02.typ` outlived the leading
-  parity blank they were written for. **Fixed in the working tree** (branch `release-deliverables`)
-  and now guarded by `build/tests/test_unit_chrome.py` (chrome on every district page) +
-  `build/tests/test_structural_note.py` (parity on every body page). It **cannot** be back-applied
-  — `build-adopted.sh` renders from the tag, which is correct. **DEFERRED TO WAVE 1 by Ben,
-  2026-10-07.** No machine deadline: the next amendment supersedes the v1.0 edition and carries the
+  parity blank they were written for. **Fixed on `main`** (`6d5c299`, Wave 0) and guarded by
+  `build/tests/test_unit_chrome.py` + `build/tests/test_structural_note.py`. It **cannot** be
+  back-applied — `build-adopted.sh` renders from the tag, which is correct. No machine deadline:
+  the next amendment supersedes the v1.0 edition and carries the
   fix at zero cost. Only an external trigger forces it earlier (printed copies of the adopted
   edition distributed, a page-number citation hitting the unnumbered page, or the clerk noticing on
   the attested copy). What is missing is a page number, a running head and the Article tab —
@@ -526,28 +487,13 @@ rebuild. No code changes.
 - **▶ OPEN — 2 missing Ownership Categories:** `kavanagh-road-1` + `woods-island-road-1` matched no
   MaineDOT/E-911 jurisdiction record. **Ben to confirm against the Town's road records**; marker
   entries sit in `overrides.json` (note-only, no values set — they render as "—").
-- **Shipped `v0.21-draft`** — Article 3 batch + output cleanup. (1) §5 inventory: 4 Type
-  corrections (Academy Hill all S3; Stonebridge Circle end → R2; Route 1 Lewis Hill/Lynch →
-  Woods Island → R5) via `overrides.json` + promoted `inventory.json`; (2) **Exhibit 3.1 rows
-  numbered 1–215** (`street-type-inventory.typ`); (3) **S1 Main Street recalibrated** — sidewalk
-  6 ft, planting 2–6 ft (typ 3), ROW recomputed 50–62 ft (typ 56), SVG regenerated, + a
-  State-route/Route 1B caption (DOT controls the traveled way; S1 keeps its full standards, no
-  `maindot` flag); (4) **§6 New Thoroughfares tiered engineering/oversight** — new §6.e +
-  **Table 3.5** (Basic = S4/S5/R3 · Engineered = S2/S3/R1/R2 · State = S1/R4/R5) + safety floor
-  (stream/Shoreland crossings, Town-Way candidates, reviewing-authority bump-up); §6 subsections
-  renumbered e→h (§14 cross-ref 6.G→6.H); (5) RDEO **hammerhead/EMS turnaround** clause (>150 ft)
-  in §6.f; (6) **Article 9 definitions merged alphabetically** (the 25 Article-3 terms; Alley/
-  Driveway superseded; end-section removed); (7) **blank-page fix** — removed 2 redundant
-  Article-2 blanks (integrated now **116 pp / 1 blank**). **Output structure changed:** one
-  **full-document redline** vs prior version (dropped the vs-baseline + the changed-passages
-  digest); **Summary now md + PDF**, rewritten plain (no file/path refs). "cartway" left as-is
-  (already defined). Tags through v0.21-draft. *(Formatted full-layout redline — now
-  **IMPLEMENTED 2026-06-19** (working tree, pending Ben's commit/adoption decision):
-  `build/build-redline-full.sh` + `redline-text.py --source` + `SRC_DIR`/`OUT_DIR` seams in
-  `build-full-czc.sh` + a cover caveat in `build-cover.py`. Stages the marked source and runs the
-  real build, so it carries the full integrated layout with prose marked inline; native figures
-  render at current state, unmarked. Verified v0.20→v0.21: 117 pp / 1 blank, parity held. See the
-  Build & release flow "Redline" bullet.)*
+- **Still open:** finalize the district layer from the contractor's exact shapefile and re-run
+  the classification (see "100% map" below); any change it makes goes through Planning-Board
+  review and a Town-Meeting vote like any amendment.
+
+- **NEW pipeline capability:** an override entry may carry **`"exclude": true`** to drop a source
+  record that is not a real thoroughfare (orphan E-911 fragment) — implemented in `05_export.py`,
+  so the decision survives re-runs like every other override.
 - **Reviewed another planner's Fall-2026 redline of the CZC** (`docs/CZC Redline
   2026.06.docx` — a Google-Docs **color/strike legislative redline**, NOT Word
   track-changes: green/underline = add, red/strike = delete, yellow = moved;
@@ -569,64 +515,14 @@ rebuild. No code changes.
   Floodplain/etc.) are preserved; the safe self-contained **"Road" def fix** is a
   good near-term v0.x edit. The redline `.docx` sits in `docs/` (Ben placed it
   there; **left untracked** — relocate out of the baseline folder before tracking).
-- **Shipped `v0.20-draft`** — legal-drafting/editorial: **defined "Character"** and removed
-  it from the binding standards. New Article 9 definition anchors Character to measurable
-  physical/form attributes and **excludes ownership/occupancy/socioeconomic factors** (a
-  fair-housing safeguard). Replaced the **8 operative uses** with concrete terms (§5.D
-  "Built character test" → **"Built-form test"**; §5.E/§6.C/§6.D/§14.E "built character /
-  future character" → **"built form"**; two Art. 8 criteria "character" → **"nature"**).
-  **Kept** the word in non-binding **purpose** statements (now anchored), the form-based
-  **"form and character"** pairing, and the policy term **"rural character."** **Left
-  verbatim for town counsel + filed two tracking memos in `memos/`:** the **Variance**
-  standards (Art. 8 §19.d — mirror 30-A M.R.S. §4353; the new def could narrow the
-  statutory term → savings-clause suggested) and the **Human Service Facility** standards
-  (Art. 7 §34.b — FHA / Maine Human Rights Act exposure: a need/overconcentration/character
-  gate on a protected-class use). Text-only; **parity held** (integrated 118 pp/3 blank,
-  standalone 27 pp/0 blank). Tags through v0.20-draft.
-- **Shipped `v0.19-draft`** — integrated-PDF output only (no content change; integrated
-  `.md` byte-identical to v0.18). Removed the inter-article recto-opening blank pages —
-  the build now threads the **true** running `page_offset` instead of padding each
-  Article to a recto (**10→3 blanks, 125→118 pp**; the 3 remaining are structural —
-  Article 2's 2-page district spreads need a verso start + the front-matter TOC blank).
-  Added a **clickable TOC** (`build/toc_links.py` adds a GoTo link per row → its page;
-  188 links). Standalone unchanged. Tags through v0.19-draft.
-- **Shipped `v0.18-draft`** — classification-engine improvement. The §5.D form-first
-  rubric is now implemented in code (`lib.classify_type`; was prose-only since v0.16),
-  plus a most-urban-District-wins-in-the-village tweak (25% overlap gate; arterials
-  always R4/R5). Re-typed **9 village segments R→S** (Mills Rd→S3, River Rd→S2,
-  Stonebridge→S3, Teague→S2, Austin→S3, High St→S3); now **215/215 typed (0 pending)**.
-  `03_join` emits `district_fracs`; `04_classify` consumes them via `lib`. No prose
-  change (engine/data only).
-- **Shipped `v0.17-draft`** — editorial: the repealed RDEO is now named only in the
-  §1.A repeal/supersede clause; the 3 incidental mentions (§3.E grade rationale, §14.D
-  substantial-reconstruction definition) reworded to keep substance without the
-  citation. Also trimmed the always-empty ROW/Nonconformity columns from Exhibit 3.1
-  (JSON fields kept). No standard/definition change.
-- **Shipped `v0.16-draft`** — **Main Street reconciliation.** Typed the downtown core
-  **S1** (Mills Rd → Damariscotta bridge) + **S2** (Mills → River Rd), Ownership kept
-  **State Highway** (`overrides.json`: main-street-9→S2, -10/-11/-12→S1); **S1 went
-  0 → 3 segments**. Amended §5.D ¶d so MaineDOT functional class drives Type only in
-  road-default Districts; in the village the form test governs (Main-St-is-S1 example,
-  §12 coordination). Western approach to Route 1 left R-typed.
-- **Shipped `v0.15-draft`** — the **Thoroughfares** terminology release. Collective
-  "Street/Road" → **Thoroughfare**; Article 3 retitled **"Thoroughfares"**;
-  `Street/Road Type` → `Thoroughfare Type`. Street & Road kept for the families, Type
-  names, driveway/entrance connection phrases, Comp Plan citation. Regulation-neutral.
-  Standalone lost its 2 recto-opening blanks (27 pp, continuous).
-- **"Thoroughfare" is the umbrella** (already defined in Article 9, includes Driveway);
-  **Street** (S1–S5) + **Road** (R1–R5) are the two families.
-- v0.14 (commit `4444972`) = first release where Article 3 §5 **renders** Exhibit 3.1
-  (Inventory) + Exhibit 3.2 (Type Map) from a real but **DRAFT** classification
-  (~90–95%, auto-traced from the District Map; banner says so). 215 segments, 214 typed.
-- **Before any vote:** (1) finalize the district layer via the contractor's exact
-  shapefile + re-run (the hand-eyeball of the distorted draft trace proved low-value —
-  see NEXT); (2) Planning-Board review → Town-Meeting adoption.
+- **Release history (v0.14 – v0.24, pre-adoption):** see `HISTORY.md`. The rules those releases
+  established live in the sections above.
 
 ## ✅ DONE: per-Article standalone build system + safe-set disk reclaim (2026-06-21)
 
 **The ask (2026-06-06, built 2026-06-21):** work on **any** CZC Article the way Article 3 works —
 standalone draft + md, while the integrated CZC + redline pick up the changes. **Implemented in
-the working tree (pending Ben's commit):**
+`main`:**
 - **`build/build-standalone.sh <article-NN> <version> [date]`** — unified standalone builder for
   any Article 1–9, driven by **`build/article-manifest.json`** (+ tiny `build/manifest.py` reader).
   Pure-prose fast path (Art 4–9); after-prose splice (Art 1 maps; Art 2 spreads with the
@@ -642,13 +538,12 @@ the working tree (pending Ben's commit):**
   **declined for now** (revisit if local space gets tight; needs a force-push + reclone).
 - **PDF policy:** **stop committing generated PDFs** — `.gitignore` now ignores `releases/**/*.pdf`
   (regenerable from tags); markdown/Summaries + the `docs/` baseline + `memos/` PDFs stay tracked.
-  The 75 pruned PDF deletions + the policy are **pending Ben's commit** (standing rule #1); the
-  v0.21 reference + baseline PDFs remain tracked + on disk.
+  The policy is committed (`.gitignore`: `releases/**/*.pdf`); the v0.21 reference + baseline
+  PDFs remain tracked + on disk.
 
-**Deferred (documented options):** per-Article *standalone* redline (the integrated
-`build-redline-full.sh` already isolates one Article's changes; a `build-redline-standalone.sh`
-would reuse `redline-text.py --source` on one file); the `git filter-repo` history purge; a shared
-render-lib unifying `build-standalone.sh` + `build-full-czc.sh`.
+**Deferred (documented options):** the `git filter-repo` history purge; a shared render-lib
+unifying `build-standalone.sh` + `build-full-czc.sh`. (The per-Article standalone redline was
+built in Wave 3b.)
 
 - **▶ PAUSED (resumable) — Permit-review app, `build/permit-review/`.** The 2026-06-09 question
   ("should we build a permit-review + Findings-of-Fact drafter?") was **answered yes** and the app
@@ -671,8 +566,8 @@ render-lib unifying `build-standalone.sh` + `build-full-czc.sh`.
   - **`DECISIONS-NEEDED.md` (27 entries) is the "never guess a legal value" ledger.** Only D-0025
     blocks anything; the rest are deliberately collected, incl. the missing appeal-rights paragraph
     (D-0026) and the "preparer of record" issue (D-0027 — Ben is Chair, author and operator).
-  - ⚠ **Nothing in `build/permit-review/` is committed** — it is one untracked directory and HEAD
-    is still `e956296`. No recovery point exists if it is lost.
+  - The app is committed under `build/permit-review/` (214 files); `BUILD-STATE.md` is the
+    resume document.
 - **100% map (the real fix):** the draft district trace is a ~0.77-IoU georeferenced
   approximation — spatially distorted, so a hand polygon-review is low-value (we did the
   v0.18 engine tweak instead, which sharpened the *village* classification on the
