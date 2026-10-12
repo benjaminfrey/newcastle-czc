@@ -283,13 +283,12 @@ must not claim are normative.
 
 ### 4.1 Footer mechanics
 
-`build-full-czc.sh` currently overrides every article's `footer-date` with `Draft $VERSION`
-(lines 210/223/229). Adoption mode changes only that string. Per-article frontmatter
-`footer-date` values are untouched.
-
-**Note a latent inconsistency:** `article-03-streets-roads-driveways.md`'s own frontmatter still
-reads `"Draft v0.2-draft"`. It is always overridden by both the integrated and standalone builders,
-so it never reaches a page — but it is stale and should be corrected while this work is open.
+Each Article's `footer-date` is overridden on every PDF page by the build's chrome
+(`adoption-footer.sh`), and adoption mode changes only that string. The `.md` deliverables keep the
+frontmatter verbatim: the integrated `.md` (`build/integrated_md.py`) copies each Article's source
+frontmatter as-is, which is why the adopted `.md` residue scan reads it, and why v1.0 cannot be
+re-adopted (§7). Article 3's footer was corrected in source (commit 07e82db) to "Adopted: September
+14, 2026".
 
 ### 4.2 Exhibit banners
 

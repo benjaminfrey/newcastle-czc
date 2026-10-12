@@ -55,6 +55,11 @@ def _gates(text):
     return out
 
 
+def gate_bullet_count(text):
+    """Bullet lines in the GATES block (every one must parse as a gate)."""
+    return sum(1 for l in _block(text, "GATES").splitlines() if re.match(r"\s*[-*]\s", l))
+
+
 def missing_gates(text, code=_code_lines):
     """Gates whose literal line is not in a non-comment line of the script named."""
     gates = _gates(text)
@@ -100,3 +105,13 @@ def test_gates_ignore_comment_lines():
     text = "<!-- GATES -->\n- `build-adopted.sh` — `a comment only` — x\n<!-- /GATES -->"
     fake = lambda name: "\n".join(l for l in ["# a comment only", "echo hi"] if not l.startswith("#"))
     assert missing_gates(text, code=fake) == [("build-adopted.sh", "a comment only")]
+
+
+def test_every_gate_bullet_is_parsed():
+    assert gate_bullet_count(_spec()) == len(_gates(_spec()))
+
+
+def test_gate_count_negative_control():
+    wrapped = _spec().replace("<!-- /GATES -->",
+                              "- `build-adopted.sh` — `a literal\n  that wraps` — x\n<!-- /GATES -->")
+    assert gate_bullet_count(wrapped) != len(_gates(wrapped))
