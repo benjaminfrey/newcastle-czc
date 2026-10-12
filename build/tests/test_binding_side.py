@@ -4,11 +4,12 @@ The 2020 Code binds odd pages on the LEFT (wide 90 pt margin left, page number a
 Article tab on the right) and even pages on the right. Before this test nothing
 asserted a margin side, and the integrated draft shipped with 82 of 113 body pages
 mirrored: Typst resolves inside/outside from a unit's own physical page index, so a
-unit that starts on an even physical page was bound backwards, and the rotated
+unit whose page_offset is odd was bound backwards, and the rotated
 Article tab keyed off here().page() without the page offset.
 
 Trees are v1.0 content (stable) with the WORKING-TREE layout units (*.typ) laid
 over them, because the layout units are what is under test. Output goes to tmp_path.
+A future unit that reads a data field added after v1.0 would need its fixture updated.
 """
 import os
 import re

@@ -90,12 +90,10 @@ PY
 # ---- optional front note (uncounted; K must be even) ------------------------
 # Prepended to PARTS but NOT added to OFF, so the Article opener still prints
 # "1" and the extract keeps the 1..N convention this script documents at the
-# top. Physical page = printed page + K. Chrome keys off the PRINTED number
-# (here().page() + page_offset, style/czc-template.typ) and picks verso/recto
-# with calc.even, while Typst resolves the binding margin from the PHYSICAL
-# page -- so the two agree only when K is even. An odd note silently reverses
-# the binding margins of the whole extract and still exits 0, which is why
-# this refuses rather than warns.
+# top. Physical page = printed page + K. K must be even so that the logical
+# (printed) page equals the physical page in the bound extract; an odd note
+# would shift every page's recto/verso side by one and still exit 0, which is
+# why this refuses rather than warns.
 FRONT_NOTE="${STANDALONE_FRONT_NOTE:-}"
 if [ -n "$FRONT_NOTE" ]; then
   if [ ! -f "$FRONT_NOTE" ]; then

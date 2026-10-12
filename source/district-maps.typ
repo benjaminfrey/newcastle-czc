@@ -23,11 +23,12 @@
 //     --root . --font-path style/fonts --input page_offset=2
 //
 // Build integration passes the running page-offset + footer date. This unit has no
-// leading blank and no pagebreak(to:...). PAGE SIDES: margins and chrome both key off the logical page (here().page() + page_offset);
-// Typst resolves inside/outside from this unit's own physical page, so `binding` flips
-// with the offset parity and odd pages are bound on the left, as in the 2020 Code
-// (see PAGE SIDES in source/article-02.typ; guarded by build/tests/test_binding_side.py). (At offset 2 the three pages' chrome is
-// recto / verso / recto — the baseline's own 1.1 / 1.2 / 1.4 sequence.)
+// leading blank and no pagebreak(to:...). PAGE SIDES: margins and chrome both key
+// off the logical page (here().page() + page_offset); Typst resolves inside/outside
+// from this unit's own physical page, so `binding` flips with the offset parity and
+// odd pages are bound on the left, as in the 2020 Code (see PAGE SIDES in
+// source/article-02.typ; guarded by build/tests/test_binding_side.py).
+// (At offset 2 the three pages' chrome is recto / verso / recto — the baseline's own 1.1 / 1.2 / 1.4 sequence.)
 // =============================================================================
 
 #let page_offset = int(sys.inputs.at("page_offset", default: "2"))
