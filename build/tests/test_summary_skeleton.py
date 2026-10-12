@@ -196,3 +196,21 @@ def test_cli_refuses_bad_json(tmp_path):
     pj.write_text("{nope")
     r = cli(pj, out)
     assert r.returncode == 1 and not out.exists()
+
+
+def test_meeting_summary_says_for_adoption_and_never_adopted_about_the_new_version():
+    base = adoption_map.load().baseline_version
+    p = mixed()
+    p.update(mode="meeting", event_date="May 1, 2027", version="v9.0", old=base)
+    t = ss.render(p)
+    assert t.split("\n")[2] == "**For adoption at Town Meeting, May 1, 2027.**"
+    assert f"Changes are stated against the Code as most recently adopted ({base})." in t
+    # the only use of "adopted" is the baseline sentence
+    assert t.lower().count("adopted") == 1
+    assert "draft" not in t.lower()
+
+
+def test_meeting_summary_requires_an_event_date():
+    p = plan(mode="meeting", event_date=None, version="v9.0")
+    with pytest.raises(ss.Refusal):
+        ss.render(p)

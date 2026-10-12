@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# build-release.sh -- one command for a DRAFT release, and the gate it must pass.
+# build-release.sh -- one command for a DRAFT release or a Town Meeting packet, and the gate it must pass.
 #
 #   bash build/build-release.sh <version> [date] --old-ver=<ref>
 #        [--plan-only] [--out-dir DIR] [--calls FILE]
@@ -12,8 +12,10 @@
 #   --out-dir    the release directory itself (default releases/<version>)
 #   --calls FILE a person's written calls for NEEDS-CALL Articles (release_plan.py)
 #
-# Environment: SRC_DIR is the NEW tree (default source/). ADOPTION_MODE must be unset
-# or "draft".
+# Environment: SRC_DIR is the NEW tree (default source/). ADOPTION_MODE is unset/"draft"
+# (a draft release: ADOPTION_BASELINE and ADOPTION_EVENT_DATE must then be unset) or
+# "meeting" with ADOPTION_EVENT_DATE (a Town Meeting packet: an adoption version, --old-ver
+# = the adoption map's baseline, redlines in baseline mode). "adopted" is refused (D5).
 #
 # Sequence (the first failure stops the run; nothing is placed until the gate passes):
 #   1. refusals: --old-ver present and a commit; draft version; draft mode; source dir
@@ -78,11 +80,29 @@ done
 [ -n "$OLD_VER" ] || refuse "--old-ver=<ref> is required: a release is a comparison against the previous version."
 git -C "$REPO_ROOT" rev-parse --verify --quiet "${OLD_VER}^{commit}" >/dev/null \
   || refuse "--old-ver '$OLD_VER' is not a git commit."
-VS_MSG="$(python3 "$BUILD/version_state.py" --require draft "$VERSION" 2>&1)" \
-  || refuse "'$VERSION' cannot be released here (draft versions only; adoption runs through build-adoption.sh). $VS_MSG"
-case "${ADOPTION_MODE:-draft}" in
-  draft) ;;
-  *) refuse "ADOPTION_MODE=${ADOPTION_MODE} is set; a draft release runs in draft mode only." ;;
+MODE="${ADOPTION_MODE:-draft}"
+case "$MODE" in
+  draft)
+    VS_MSG="$(python3 "$BUILD/version_state.py" --require draft "$VERSION" 2>&1)" \
+      || refuse "'$VERSION' cannot be released here (a draft release takes a decimal draft version; a Town Meeting packet needs ADOPTION_MODE=meeting). $VS_MSG"
+    # Inherited adoption variables would reach the redline builders and change what they
+    # compare against and what they print: refuse them, never silently drop them.
+    [ -z "${ADOPTION_BASELINE:-}" ] \
+      || refuse "ADOPTION_BASELINE=${ADOPTION_BASELINE} is set; a draft release compares against --old-ver only."
+    [ -z "${ADOPTION_EVENT_DATE:-}" ] \
+      || refuse "ADOPTION_EVENT_DATE is set; a draft release has no event date."
+    ;;
+  meeting)
+    [ -n "${ADOPTION_EVENT_DATE:-}" ] \
+      || refuse "ADOPTION_MODE=meeting needs ADOPTION_EVENT_DATE (the Town Meeting date)."
+    VS_MSG="$(python3 "$BUILD/version_state.py" --require adoption "$VERSION" 2>&1)" \
+      || refuse "'$VERSION' cannot be a Town Meeting packet (an adoption version, vN.0, is required). $VS_MSG"
+    BASELINE="$(python3 -c 'import sys; sys.path.insert(0, sys.argv[1]); import adoption_map; print(adoption_map.load().baseline_version)' "$BUILD")" \
+      || refuse "could not read the adopted baseline from the adoption map."
+    [ "$OLD_VER" = "$BASELINE" ] \
+      || refuse "a Town Meeting packet is compared against the adopted baseline ($BASELINE); --old-ver is '$OLD_VER'."
+    ;;
+  *) refuse "ADOPTION_MODE=${MODE} is not released here (decision D5: adopted editions are built by build-adopted.sh from the tag)." ;;
 esac
 NEW_DIR="${SRC_DIR:-$REPO_ROOT/source}"
 [ -d "$NEW_DIR" ] || refuse "source directory '$NEW_DIR' does not exist."
@@ -157,9 +177,15 @@ PLAN="$WORK/release-plan.json"
 SHIPS="$WORK/ships.json"
 CALLS_ARGS=()
 [ -z "$CALLS" ] || CALLS_ARGS=(--calls "$CALLS")
+MODE_ARGS=()
+if [ "$MODE" = meeting ]; then
+  MODE_ARGS=(--mode meeting --event-date "$ADOPTION_EVENT_DATE")
+  # Every leaf runs in meeting mode; the leaves that redline compare against the adopted baseline.
+  export ADOPTION_MODE=meeting ADOPTION_EVENT_DATE
+fi
 python3 "$BUILD/release_plan.py" --old "$OLD_VER" --new-dir "$NEW_DIR" --version "$VERSION" \
   --date "$DATE_STR" --out "$PLAN" --ships "$SHIPS" ${MAP_ARGS[@]+"${MAP_ARGS[@]}"} \
-  ${CALLS_ARGS[@]+"${CALLS_ARGS[@]}"} >&2 \
+  ${CALLS_ARGS[@]+"${CALLS_ARGS[@]}"} ${MODE_ARGS[@]+"${MODE_ARGS[@]}"} >&2 \
   || refuse "release_plan.py refused; no release was built."
 
 if [ "$PLAN_ONLY" = 1 ]; then
@@ -183,6 +209,8 @@ PLIST="$MAPDIR/plan-list"
 plan_list() { plan_files "$1" > "$PLIST" || refuse "could not read the release plan ($1)"; }
 
 export SRC_DIR="$NEW_DIR"
+REDLINE_BASELINE_ENV=()
+[ "$MODE" != meeting ] || REDLINE_BASELINE_ENV=(ADOPTION_BASELINE=1)
 
 # --- 6. build into staging ----------------------------------------------------------
 say "building the integrated Code"
@@ -198,6 +226,7 @@ done < "$PLIST"
 if [ -n "$RL_PDF" ]; then
   say "building the integrated redline"
   REDLINE_OUT="$STAGING/$RL_PDF" REDLINE_MD_OUT="${RL_MD:+$STAGING/$RL_MD}" \
+    env ${REDLINE_BASELINE_ENV[@]+"${REDLINE_BASELINE_ENV[@]}"} \
     bash "$LEAF_REDLINE_FULL" "$VERSION" "$OLD_VER" "$DATE_STR" >&2 \
     || refuse "the integrated redline build failed (exit $?)"
 fi
@@ -218,7 +247,7 @@ while IFS='|' read -r art f; do
   case "$f" in *.pdf) ;; *) continue ;; esac
   NN=$(printf "%02d" "$((10#$art))")
   say "building the Article $art standalone redline"
-  REDLINE_OUT="$STAGING" bash "$LEAF_REDLINE_STANDALONE" "$NN" "$VERSION" "$OLD_VER" "$DATE_STR" >&2 \
+  REDLINE_OUT="$STAGING" env ${REDLINE_BASELINE_ENV[@]+"${REDLINE_BASELINE_ENV[@]}"} bash "$LEAF_REDLINE_STANDALONE" "$NN" "$VERSION" "$OLD_VER" "$DATE_STR" >&2 \
     || refuse "the Article $art standalone redline build failed (exit $?)"
 done < "$PLIST"
 
