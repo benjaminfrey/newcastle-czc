@@ -40,12 +40,28 @@ def packet_disagreement(text):
     return sorted(listed ^ real)
 
 
-def missing_gates(text, scripts=None):
-    if scripts is None:
-        scripts = "\n".join((BUILD / n).read_text(encoding="utf-8") for n in SCRIPTS)
-    names = _names(text, "GATES")
-    assert names, "the GATES block names no gate"
-    return [n for n in names if n not in scripts]
+def _code_lines(name):
+    """The script's non-comment lines (whole-line `#` comments dropped)."""
+    lines = (BUILD / name).read_text(encoding="utf-8").splitlines()
+    return "\n".join(l for l in lines if not l.lstrip().startswith("#"))
+
+
+def _gates(text):
+    out = []
+    for line in _block(text, "GATES").splitlines():
+        m = re.match(r"\s*[-*]\s+`([^`]+)`\s+\S+\s+`([^`]+)`", line)
+        if m:
+            out.append((m.group(1), m.group(2)))
+    return out
+
+
+def missing_gates(text, code=_code_lines):
+    """Gates whose literal line is not in a non-comment line of the script named."""
+    gates = _gates(text)
+    assert gates, "the GATES block names no gate"
+    for script, _ in gates:
+        assert script in SCRIPTS, f"{script} is not one of {SCRIPTS}"
+    return [(sc, st) for sc, st in gates if st not in code(sc)]
 
 
 def _spec():
@@ -68,5 +84,19 @@ def test_gates_are_reachable_from_the_scripts():
 
 
 def test_gates_negative_control():
-    doctored = _spec().replace("<!-- /GATES -->", "- `no_such_gate.py`\n<!-- /GATES -->")
-    assert missing_gates(doctored) == ["no_such_gate.py"]
+    doctored = _spec().replace("<!-- /GATES -->",
+                               "- `build-adopted.sh` — `no such refusal anywhere` — x\n<!-- /GATES -->")
+    assert missing_gates(doctored) == [("build-adopted.sh", "no such refusal anywhere")]
+
+
+def test_gates_wrong_script_negative_control():
+    real = "Refusing to freeze: source/ has uncommitted or untracked changes."
+    assert real in _code_lines("build-adoption.sh")
+    text = f"<!-- GATES -->\n- `build-release.sh` — `{real}` — x\n<!-- /GATES -->"
+    assert missing_gates(text) == [("build-release.sh", real)]
+
+
+def test_gates_ignore_comment_lines():
+    text = "<!-- GATES -->\n- `build-adopted.sh` — `a comment only` — x\n<!-- /GATES -->"
+    fake = lambda name: "\n".join(l for l in ["# a comment only", "echo hi"] if not l.startswith("#"))
+    assert missing_gates(text, code=fake) == [("build-adopted.sh", "a comment only")]

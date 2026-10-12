@@ -156,7 +156,7 @@ testable and separately justifiable:
 | Rule | Why it is not substantive |
 |---|---|
 | Heading letter case (`### A.` → `### a.`) | The Typst template styles headings; case in source never reaches the page |
-| Cross-reference renumbering (via §3.1) | The renumbering is real, but is stated once as a structural change (§4.3) rather than marked 126 times |
+| Cross-reference renumbering (via §3.1) | The renumbering is real, but is stated once as a structural change (§4.3) rather than marked 126 times (the count at the v1.0 adoption) |
 | Paragraph re-wrapping (comparison only, never rendered) | Line breaks in markdown source do not survive rendering |
 | Table renumbering (`TABLE 4.1` and its forms) | The leading number is an Article number, renumbered like a heading |
 | Frontmatter `article-number` renumbering | Same map, same reason |
@@ -321,7 +321,7 @@ The Meeting-edition redline opens with a stated structural summary, before any m
   was deleted.
 
 This is what makes suppressing 126 renumbering marks honest rather than concealing: the reader is
-told the fact once, plainly, instead of encountering it 126 times.
+told the fact once, plainly, instead of encountering it 126 times (the count at the v1.0 adoption).
 
 `build/structural_note.py` writes the note in two scopes.
 
@@ -355,31 +355,35 @@ This produces a legal instrument. Each gate **refuses**; none warns.
 
 ### 6.1 Gates
 
-Each gate is named by the script that runs it. The names below must appear in
-`build-adoption.sh`, `build-release.sh` or `build-adopted.sh`; a test checks it.
+Each bullet names the script that runs the gate and a literal line from it: the refusal message,
+or the step that makes the refusal. A test finds each line in that one script, outside comments.
 
 <!-- GATES -->
-- `version_state.py` — both directions: a decimal version is refused where adoption is required, a
-  whole number where draft is required. `build-adopted.sh` refuses a decimal, `build-adoption.sh`
-  refuses anything but `vN.0`, `build-release.sh` refuses a whole number in draft mode and a decimal
-  in meeting mode. Whole numbers are adopted law, unfakeably rather than conventionally.
-- `baseline_selfcheck.py` — the baseline compared against itself must mark zero lines (§3.5). Run by
-  `build-adoption.sh` before anything is built.
-- `dirty` — `build-adoption.sh` refuses to freeze from a dirty `source/` tree.
-- `ADOPTION_BASELINE` — inherited build overrides are refused, never dropped. `build-release.sh`
-  refuses the leaf-changing variables, and `ADOPTION_BASELINE` or `ADOPTION_EVENT_DATE` in draft
-  mode; `build-adoption.sh` refuses `SRC_DIR`, `OUT_DIR` and the rest, because the freeze records the
-  tree of `source/` and the driver must build from exactly that tree.
-- `section_map.py` — the derived section map must pass its `selfcheck` before it is used.
-- `release_gate.py` — the release gate: refuses a missing, empty or unplanned artifact, and a
-  pagination fault (§6.5).
-- `frozen-from.json` — the provenance gate in `build-adopted.sh`: the tag's `source/` tree must
-  still equal the tree recorded at the freeze.
-- `adopted_residue.py` — the draft-residue gate (§6.3).
-- `pdf_recap.py` — fails on an unreadable or zero-page PDF (§6.5).
+- `build-adopted.sh` — `build/version_state.py" --require adoption "$VERSION"` — version state, both
+  directions. A decimal is refused where adoption is required, and a whole number where draft is
+  required (`build-adoption.sh` refuses anything but `vN.0`; `build-release.sh` refuses a whole
+  number in draft mode and a decimal in meeting mode). Whole numbers are adopted law, unfakeably.
+- `build-adoption.sh` — `build/baseline_selfcheck.py" || exit 1` — the baseline compared against
+  itself must mark zero lines (§3.5). Run before anything is built.
+- `build-adoption.sh` — `Refusing to freeze: source/ has uncommitted or untracked changes.` — the
+  dirty-source refusal.
+- `build-adoption.sh` — `Refusing to freeze: $V is set in the environment.` — an inherited build
+  override is refused, never dropped. The freeze records the tree of `source/`.
+- `build-release.sh` — `it would change what the leaves build. Unset it.` — the same refusal in the
+  driver. It also refuses `ADOPTION_BASELINE` and `ADOPTION_EVENT_DATE` in draft mode.
+- `build-release.sh` — `the derived section map failed its selfcheck.` — the derived section map
+  must pass `section_map.py selfcheck` before it is used.
+- `build-release.sh` — `the release gate refused; nothing was released.` — `release_gate.py` refuses
+  a missing, empty or unplanned artifact, and a pagination fault (§6.5).
+- `build-adopted.sh` — `THE '$VERSION' TAG NO LONGER POINTS AT THE FROZEN SOURCE.` — the provenance
+  gate: the tag's `source/` tree must equal the tree recorded in `frozen-from.json`.
+- `build-adopted.sh` — `ADOPTED BODY DIFFERS FROM THE TOWN MEETING EDITION.` — the content-identity
+  gate (§6.2).
+- `build-adopted.sh` — `adopted: draft chrome found in the adopted MARKDOWN` — the draft-residue
+  gate on the `.md` (§6.3); `adopted_residue.py` also scans the PDF text and file names.
+- `build-adopted.sh` — `build/pdf_recap.py" "Adopted edition=` — fails on an unreadable or
+  zero-page PDF (§6.5).
 <!-- /GATES -->
-
-The content-identity gate in `build-adopted.sh` is described in §6.2.
 
 ### 6.2 Content-identity gate
 
@@ -431,7 +435,7 @@ a **report**, not a gate.
 
 ## 7. Open items
 
-- **The 243 substantive lines have not been reviewed.** They accumulated across 24 drafts and are
+- **At the v1.0 adoption, the 243 substantive lines had not been reviewed.** They accumulated across 24 drafts and are
   concentrated in Article 9 Definitions (115 lines — the v0.21 alphabetical merge of 25 Article-3
   terms) with the remainder scattered across Articles 4–8. They should be read before the packet is
   assembled, and `build-adoption.sh` printing the breakdown is what makes that possible.
@@ -462,31 +466,10 @@ a **report**, not a gate.
 - ~~**Whether the adopted edition ships a standalone Article 3 at all.**~~ **DECIDED (D5): adopted
   releases ship no standalones.** Only the integrated Code is adopted; `build-release.sh` refuses
   adopted mode, and `build-adopted.sh` builds the integrated edition alone.
-- **v1.0 cannot be re-adopted.** Re-adopting v1.0 is impossible by design (Wave 4b, ruling 10): a
-  whole number is spent on one adoption, and the v1.0 rollover (§3.5) has already made v1.0 the
-  baseline. A new adoption is a new whole number.
-- ~~**The adopted cover contradicts itself on dates.**~~ **RESOLVED 2026-08-25 — Ben chose (b),
-  overprint, scoped to `adopted` mode only.** The cover reuses the baseline scan art, whose lower
-  block reads "AMENDED THROUGH: MARCH 24, 2025", while the `adopted` banner above it reads "Adopted
-  <date>, amending the Core Zoning Code adopted November 3, 2020" — two competing claims about
-  currency on the cover of a legal instrument. `build-cover.py` now masks that one line and reprints
-  it as **"AMENDED THROUGH: <adoption date>"** in adopted mode. *Revised Wave 4b:* in **every** mode
-  the line is now generated from `baseline_amended_through` in the adoption map, so draft and meeting
-  covers state the baseline's amended-through date (September 14, 2026 under the v1.0 map) rather than
-  the scanned March 24, 2025. The two lines above it (EFFECTIVE / ADOPTED) stay as they are in every mode — the Code
-  really was adopted November 3, 2020, and this edition amends it rather than replacing it.
-  Implementation notes: the line is scanned art with **no text layer**, so a text-only assertion
-  cannot see the stale line and would pass with the mask deleted — the gate is a **pixel** test that
-  renders with a short adoption date (leaving the stale line's left end uncovered by the
-  replacement) and asserts zero ink there, with meeting mode as the positive control. Verified by
-  mutation: both deleting the mask and mis-positioning it fail the test. Geometry was measured off
-  the baseline at 600 dpi (ink x 388.8–563.9, cap-top 722.9, baseline 731.9); the replacement is
-  Barlow Condensed at 12.86 pt with +0.777 pt tracking, matching the scanned line's cap height and
-  letterspacing, in the sampled scan ink (96,100,101).
-- ~~**Whether the adopted edition ships a standalone Article 3 at all.**~~ **DECIDED (D5): adopted
-  releases ship no standalones.** Only the integrated Code is adopted; `build-release.sh` refuses
-  adopted mode, and `build-adopted.sh` builds the integrated edition alone.
-- **v1.0 cannot be re-adopted.** A whole number is spent once. `build-adopted.sh` renders from the
-  tag and checks it against `frozen-from.json`; the rollover has already made v1.0 the baseline, so
-  a second adoption of the same number has nothing to compare against and is not supported by design
-  (Wave 4b, ruling 10). A new adoption is a new whole number.
+- **v1.0 cannot be re-adopted.** Re-adopting v1.0 is impossible (Wave 4b, ruling 10), and no code
+  works around it. `build-adopted.sh` renders the v1.0 tag's `source/` with *today's* builders and
+  compares the result with the committed `releases/v1.0` Town Meeting `.md`. The old assembler
+  wrote that file (raw Typst blocks, HTML comments, "See the Integrated Draft PDF"); today's
+  integrated `.md` body differs, so the identity gate refuses. The tag's Article 3 frontmatter also
+  still reads `footer-date: "Draft v0.2-draft"`, which the residue scan of the adopted `.md`
+  refuses. v1.0's adopted edition already exists (`releases/v1.0-adopted`).
