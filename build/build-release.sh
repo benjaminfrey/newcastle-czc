@@ -32,7 +32,7 @@
 #      redline, the Use Table Changes memo (md+pdf), the Summary skeleton
 #   7. release_gate.py plan staging -- refuses a missing, empty, unplanned or
 #      mis-paginated file, so a leaf that exits 0 having written nothing is caught
-#   8. move into place; pdf_recap (report only); "Release <v>: N file(s) -> <dir>"
+#   8. move into place; pdf_recap (exits 1 on an unreadable or empty PDF); "Release <v>: N file(s) -> <dir>"
 #
 # Test seams (default: the real scripts; a test seam only, like ADOPTION_MAP):
 #   CZC_LEAF_FULL, CZC_LEAF_REDLINE_FULL, CZC_LEAF_STANDALONE, CZC_LEAF_REDLINE_STANDALONE
@@ -314,5 +314,5 @@ while IFS= read -r p; do
   [ -n "$p" ] || continue
   RECAP+=("$(basename "$p")=$p")
 done < <(find "$RELEASE_DIR" -mindepth 1 -maxdepth 1 -name '*.pdf' | sort)
-[ "${#RECAP[@]}" -eq 0 ] || python3 "$BUILD/pdf_recap.py" "${RECAP[@]}" >&2 || true
+[ "${#RECAP[@]}" -eq 0 ] || python3 "$BUILD/pdf_recap.py" "${RECAP[@]}" >&2
 echo "Release $VERSION: $COUNT file(s) -> $RELEASE_DIR"

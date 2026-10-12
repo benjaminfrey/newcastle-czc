@@ -267,39 +267,173 @@ def test_refuses_to_freeze_a_dirty_source_tree(tmp_path):
             shutil.rmtree(release_dir)
 
 
-def test_freeze_expects_the_standalone_name_the_builder_actually_writes(tmp_path):
-    """build-adoption.sh composes STANDALONE_PDF by hand and later hands it to
-    pdf_recap.py. Nothing failed when build-standalone.sh's default name moved
-    (the adoption tests only run --dry-run), so a real freeze would have died
-    at the very end. This pins the agreement without running a freeze: take the
-    build-standalone.sh statement and the STANDALONE_PDF assignment VERBATIM out
-    of build-adoption.sh, execute the former for real in meeting mode, and
-    require the file the latter names to exist."""
-    lines = (REPO / "build" / "build-adoption.sh").read_text().splitlines()
-    idx = [i for i, l in enumerate(lines) if "build-standalone.sh" in l and
-           not l.lstrip().startswith("#")]
-    assert len(idx) == 1, f"expected one build-standalone.sh invocation, found {idx}"
-    start = idx[0]
-    while start > 0 and lines[start - 1].rstrip().endswith("\\"):
-        start -= 1
-    statement = "\n".join(lines[start:idx[0] + 1])
-    assignment = [l for l in lines if l.startswith("STANDALONE_PDF=")]
-    assert len(assignment) == 1, assignment
+# --- The freeze goes through the release driver ----------------------------
 
-    out = tmp_path / "packet"
-    script = "\n".join([
-        "set -euo pipefail",
-        f'REPO_ROOT="{REPO}"',
-        'VERSION=v94.0', 'MEETING_DATE="March 15, 2027"',
-        'FREEZE_DATE="August 24, 2026"',
-        f'OUT="{out}"',
-        statement,
-        assignment[0],
-        'test -f "$STANDALONE_PDF" || { echo "freeze expects: $STANDALONE_PDF" >&2; '
-        'ls "$OUT" >&2; exit 9; }',
-    ])
-    r = subprocess.run(["bash", "-c", script], cwd=REPO, capture_output=True, text=True,
-                       env=dict(os.environ, OUT_DIR=str(out)))
-    assert r.returncode == 0, (
-        "build-adoption.sh expects a standalone filename that build-standalone.sh "
-        f"does not write in meeting mode:\n{r.stderr[-600:]}")
+import shutil
+
+_SCRIPT = (REPO / "build" / "build-adoption.sh").read_text()
+
+
+def _stub_driver(tmp_path, exit_code=0):
+    """A stand-in for build-release.sh: records its argv and environment and, on
+    success, places a release dir the way the real driver does."""
+    log = tmp_path / "driver.log"
+    stub = tmp_path / "stub-release.sh"
+    stub.write_text(
+        '#!/usr/bin/env bash\n'
+        f'printf "%s\\n" "$@" > "{log}"\n'
+        f'echo "MODE=$ADOPTION_MODE DATE=$ADOPTION_EVENT_DATE" >> "{log}"\n'
+        f'if [ {exit_code} -ne 0 ]; then exit {exit_code}; fi\n'
+        f'mkdir -p "{REPO}/releases/$1"\n'
+        f'echo x > "{REPO}/releases/$1/Newcastle CZC (Town Meeting Edition $1).md"\n')
+    return stub, log
+
+
+def _freeze(tmp_path, extra=(), exit_code=0):
+    stub, log = _stub_driver(tmp_path, exit_code)
+    r = subprocess.run(
+        ["bash", "build/build-adoption.sh", "v9.0", "March 15, 2027",
+         "--freeze-date=January 2, 2027", *extra],
+        cwd=REPO, capture_output=True, text=True,
+        env=dict(os.environ, CZC_LEAF_RELEASE=str(stub)))
+    return r, log
+
+
+def _clean_v9():
+    d = REPO / "releases" / "v9.0"
+    if d.exists():
+        shutil.rmtree(d)
+
+
+def test_freeze_has_no_article_number_in_a_build_command_and_one_driver_call():
+    code = "\n".join(l for l in _SCRIPT.splitlines() if not l.lstrip().startswith("#"))
+    assert "build-standalone.sh" not in code
+    assert not re.search(r"\bArticle \d", code), "an Article number in a build command"
+    assert code.count("build-release.sh") == 1, code.count("build-release.sh")
+    assert 'LEAF_RELEASE="${CZC_LEAF_RELEASE:-' in code
+
+
+def test_stale_strings_are_gone_from_the_script():
+    for stale in ("March 24, 2025", "3-8 become 4-9", "entirely new"):
+        assert stale not in _SCRIPT, stale
+
+
+def test_freeze_calls_the_driver_in_meeting_mode_and_writes_provenance(tmp_path):
+    assert not (REPO / "releases" / "v9.0").exists()
+    try:
+        r, log = _freeze(tmp_path)
+        assert r.returncode == 0, r.stdout + r.stderr
+        argv = log.read_text().splitlines()
+        assert argv[:3] == ["v9.0", "January 2, 2027", f"--old-ver={json.loads(_PRE_ROLLOVER_MAP.read_text())['baseline_version']}"], argv
+        assert "--calls" not in argv
+        assert "MODE=meeting DATE=March 15, 2027" in argv
+        prov = json.loads((REPO / "releases" / "v9.0" / "frozen-from.json").read_text())
+        assert set(prov) == {"_README", "version", "meeting_date", "frozen_on",
+                             "frozen_from_commit", "frozen_source_tree"}
+        assert prov["version"] == "v9.0"
+        assert prov["meeting_date"] == "March 15, 2027"
+        assert prov["frozen_on"] == "January 2, 2027"
+    finally:
+        _clean_v9()
+
+
+def test_freeze_passes_calls_through(tmp_path):
+    calls = tmp_path / "calls.json"
+    calls.write_text("{}")
+    try:
+        r, log = _freeze(tmp_path, extra=("--calls", str(calls)))
+        assert r.returncode == 0, r.stdout + r.stderr
+        argv = log.read_text().splitlines()
+        assert argv[argv.index("--calls") + 1] == str(calls), argv
+    finally:
+        _clean_v9()
+
+
+def test_driver_refusal_exits_1_and_writes_nothing(tmp_path):
+    try:
+        r, _ = _freeze(tmp_path, exit_code=1)
+        assert r.returncode == 1
+        assert not (REPO / "releases" / "v9.0").exists()
+    finally:
+        _clean_v9()
+
+
+def test_dirty_source_is_refused_before_the_driver_runs(tmp_path):
+    stray = REPO / "source" / "ZZZ-uncommitted-driver-test.md"
+    assert not stray.exists()
+    stray.write_text("stray\n")
+    try:
+        r, log = _freeze(tmp_path)
+        assert r.returncode != 0
+        assert "refusing to freeze" in (r.stdout + r.stderr).lower()
+        assert not log.exists(), "the driver ran despite a dirty source/"
+        assert not (REPO / "releases" / "v9.0").exists()
+    finally:
+        stray.unlink(missing_ok=True)
+        _clean_v9()
+
+
+def test_dry_run_exits_before_any_driver_call(tmp_path):
+    r, log = _freeze(tmp_path, extra=("--dry-run",))
+    assert r.returncode == 0, r.stderr
+    assert not log.exists()
+    assert not (REPO / "releases" / "v9.0").exists()
+
+
+# --- --render-summary --------------------------------------------------------
+
+def _render(tmp_path):
+    return subprocess.run(
+        ["bash", "build/build-adoption.sh", "v9.0", "March 15, 2027", "--render-summary"],
+        cwd=REPO, capture_output=True, text=True)
+
+
+def test_render_summary_refuses_without_a_packet():
+    assert not (REPO / "releases" / "v9.0").exists()
+    r = _render(None)
+    assert r.returncode == 1
+    assert "no frozen packet" in r.stderr
+
+
+def test_render_summary_refuses_without_the_md():
+    packet = REPO / "releases" / "v9.0"
+    packet.mkdir(parents=True)
+    try:
+        r = _render(None)
+        assert r.returncode == 1
+        assert "does not exist" in r.stderr
+    finally:
+        _clean_v9()
+
+
+def test_render_summary_refuses_the_generated_skeleton():
+    import sys as _sys
+    _sys.path.insert(0, str(REPO / "build"))
+    import summary_skeleton
+    packet = REPO / "releases" / "v9.0"
+    packet.mkdir(parents=True)
+    (packet / "Summary of Changes v9.0.md").write_text(
+        "# Summary of Changes\n\n" + summary_skeleton.PLACEHOLDER + "\n")
+    try:
+        r = _render(None)
+        assert r.returncode == 1
+        assert "skeleton" in r.stderr
+        assert not (packet / "Summary of Changes v9.0.pdf").exists()
+    finally:
+        _clean_v9()
+
+
+def test_render_summary_renders_only_the_pdf():
+    packet = REPO / "releases" / "v9.0"
+    packet.mkdir(parents=True)
+    (packet / "Summary of Changes v9.0.md").write_text(
+        "# Summary of Changes\n\nThe voters will see one change: a comma.\n")
+    (packet / "marker.txt").write_text("untouched")
+    try:
+        r = _render(None)
+        assert r.returncode == 0, r.stdout + r.stderr
+        assert sorted(p.name for p in packet.iterdir()) == [
+            "Summary of Changes v9.0.md", "Summary of Changes v9.0.pdf", "marker.txt"]
+        assert (packet / "marker.txt").read_text() == "untouched"
+    finally:
+        _clean_v9()

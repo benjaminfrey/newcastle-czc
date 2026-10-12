@@ -10,6 +10,8 @@ running head) as blank; this narrower test does not.
 
 Usage: pdf_recap.py "<label>=<path>" [...]
 Prints one line per PDF: "<label>: N pages, B blank".
+Exit 1 (after printing every line) if any PDF cannot be opened or has zero
+pages; blank-page counts are a report, never a failure.
 """
 from __future__ import annotations
 
@@ -33,11 +35,19 @@ def main() -> int:
     if len(sys.argv) < 2:
         print("usage: pdf_recap.py \"<label>=<path>\" [...]", file=sys.stderr)
         return 1
+    status = 0
     for arg in sys.argv[1:]:
         label, _, path = arg.partition("=")
-        n, blanks = counts(path)
+        try:
+            n, blanks = counts(path)
+        except Exception as e:  # unopenable / corrupt / missing
+            print(f"  {label:35s} UNREADABLE ({path}): {e}")
+            status = 1
+            continue
         print(f"  {label:35s} {n:4d} pages, {blanks} blank")
-    return 0
+        if n == 0:
+            status = 1
+    return status
 
 
 if __name__ == "__main__":
