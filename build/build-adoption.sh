@@ -10,6 +10,11 @@
 #
 # It does NOT stamp an adoption date. The vote has not happened.
 #
+# Test seams (tests only): CZC_LEAF_RELEASE (a script run in place of build-release.sh)
+# and ADOPTION_MAP (an alternative adoption map). Any other build override in the
+# environment (SRC_DIR, OUT_DIR, ...) is REFUSED: the freeze records the tree of
+# source/, so the driver must build from exactly that tree.
+#
 # Usage:  build-adoption.sh <version> <meeting-date> [--dry-run] [--freeze-date=<date>]
 #                           [--calls FILE]
 #         build-adoption.sh <version> <meeting-date> --render-summary
@@ -24,6 +29,7 @@ DRY_RUN=0
 RENDER_SUMMARY=0
 CALLS=""
 CALLS_GIVEN=0
+FREEZE_DATE_GIVEN=0
 # The date the packet is FROZEN -- today, not the meeting date. These are two
 # different facts and the cover states both: line 2 says "for adoption at Town
 # Meeting, <meeting-date>", line 3 says "Frozen <freeze-date>". Passing the
@@ -63,6 +69,7 @@ if [ $# -gt 2 ]; then
         ;;
       --freeze-date=*)
         FREEZE_DATE="${ARG#--freeze-date=}"
+        FREEZE_DATE_GIVEN=1
         if [ -z "$FREEZE_DATE" ]; then
           echo "build-adoption.sh: --freeze-date= requires a date." >&2
           exit 1
@@ -80,6 +87,11 @@ if [ $# -gt 2 ]; then
     echo "build-adoption.sh: --calls requires a file." >&2
     exit 1
   fi
+fi
+
+if [ "$RENDER_SUMMARY" = "1" ] && { [ "$DRY_RUN" = "1" ] || [ "$CALLS_GIVEN" = "1" ] || [ "$FREEZE_DATE_GIVEN" = "1" ]; }; then
+  echo "build-adoption.sh: --render-summary renders the Summary and nothing else; it cannot be combined with --dry-run, --calls or --freeze-date." >&2
+  exit 1
 fi
 
 if [ -z "$VERSION" ] || [ -z "$MEETING_DATE" ]; then
@@ -177,6 +189,16 @@ fi
 # directory produced below is itself committed and tagged afterwards, so the
 # tag's commit is legitimately NOT the commit that was HEAD at freeze time --
 # but its source/ tree must be byte-identical or the voters saw something else.
+for V in SRC_DIR OUT_DIR OUT_NAME_OVERRIDE STANDALONE_FRONT_NOTE SECTION_MAP REDLINE_OUT \
+         REDLINE_MD_OUT CZC_LEAF_FULL CZC_LEAF_REDLINE_FULL CZC_LEAF_STANDALONE \
+         CZC_LEAF_REDLINE_STANDALONE; do
+  if [ -n "${!V:-}" ]; then
+    echo "Refusing to freeze: $V is set in the environment." >&2
+    echo "The freeze records the tree of source/ and the driver would build from" >&2
+    echo "'$V' instead, so the packet could differ from what is recorded. Unset it." >&2
+    exit 1
+  fi
+done
 DIRTY="$(git -C "$REPO_ROOT" status --porcelain -- source)"
 if [ -n "$DIRTY" ]; then
   echo "Refusing to freeze: source/ has uncommitted or untracked changes." >&2
@@ -205,16 +227,23 @@ DRIVER_ARGS=("$VERSION" "$FREEZE_DATE" "--old-ver=$BASELINE")
 if [ -n "$CALLS" ]; then
   DRIVER_ARGS+=("--calls" "$CALLS")
 fi
+OUT_PRE_EXISTED=0
+[ -e "$OUT" ] && OUT_PRE_EXISTED=1
 ADOPTION_MODE=meeting ADOPTION_EVENT_DATE="$MEETING_DATE" \
   bash "$LEAF_RELEASE" "${DRIVER_ARGS[@]}" || {
-    echo "build-adoption.sh: the release driver refused or failed; nothing was frozen." >&2
+    if [ -d "$OUT" ] && [ "$OUT_PRE_EXISTED" = "0" ]; then
+      echo "build-adoption.sh: the freeze FAILED after the driver placed $OUT; it is incomplete" >&2
+      echo "(no frozen-from.json). Remove it and re-run." >&2
+    else
+      echo "build-adoption.sh: the release driver refused or failed; nothing was frozen." >&2
+    fi
     exit 1
   }
 [ -d "$OUT" ] || { echo "build-adoption.sh: the driver succeeded but $OUT does not exist." >&2; exit 1; }
 
 # The freeze provenance record, read and enforced by build-adopted.sh.
 PROVENANCE="$OUT/frozen-from.json"
-python3 - "$PROVENANCE" "$VERSION" "$MEETING_DATE" "$FREEZE_DATE" \
+if ! python3 - "$PROVENANCE" "$VERSION" "$MEETING_DATE" "$FREEZE_DATE" \
          "$FROZEN_COMMIT" "$FROZEN_SOURCE_TREE" <<'PYEOF'
 import json, sys
 out, version, meeting, frozen, commit, tree = sys.argv[1:7]
@@ -237,6 +266,10 @@ json.dump({
 open(out, "a").write("\n")
 print(f"Wrote freeze provenance: {out}")
 PYEOF
+then
+  echo "build-adoption.sh: writing frozen-from.json FAILED; $OUT is incomplete. Remove it and re-run." >&2
+  exit 1
+fi
 
 echo
 echo "Town Meeting edition $VERSION built into releases/$VERSION/"
@@ -245,6 +278,7 @@ echo
 echo "NEXT:"
 echo "  1. Write the Summary by hand in releases/$VERSION/ (replace the generated skeleton),"
 echo "     then render it: build-adoption.sh $VERSION \"$MEETING_DATE\" --render-summary"
+echo "  (To re-freeze, first remove releases/$VERSION/ -- the driver refuses an existing packet.)"
 echo "  2. Commit releases/$VERSION/ and tag $VERSION at that commit."
 echo "     The tag's source/ tree must stay $FROZEN_SOURCE_TREE -- build-adopted.sh"
 echo "     refuses if the tag is later moved onto different source."

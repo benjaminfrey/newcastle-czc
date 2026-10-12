@@ -241,68 +241,67 @@ def test_rejects_an_empty_freeze_date():
 
 # --- The freeze must be tied to a commit ------------------------------------
 
-def test_refuses_to_freeze_a_dirty_source_tree(tmp_path):
-    """The meeting edition renders from the working tree; the adopted edition
-    renders from the tag. If the tree is dirty at freeze time there is no
-    commit that represents what the voters were shown, so the tie cannot be
-    recorded and the freeze must refuse."""
-    release_dir = REPO / "releases" / "v9.0"
-    assert not release_dir.exists(), "a prior test/run left releases/v9.0 behind"
-    stray = REPO / "source" / "ZZZ-uncommitted-test-file.md"
-    assert not stray.exists()
-    stray.write_text("stray\n")
-    try:
-        r = subprocess.run(["bash", "build/build-adoption.sh", "v9.0", "March 15, 2027"],
-                           cwd=REPO, capture_output=True, text=True)
-        assert r.returncode != 0
-        out = (r.stdout + r.stderr).lower()
-        assert "refusing to freeze" in out
-        assert "zzz-uncommitted-test-file.md" in out
-        assert not release_dir.exists(), (
-            "a refused freeze left a shipped-looking release directory behind")
-    finally:
-        stray.unlink(missing_ok=True)
-        if release_dir.exists():
-            import shutil
-            shutil.rmtree(release_dir)
-
-
 # --- The freeze goes through the release driver ----------------------------
 
 import shutil
 
+import pytest
+
 _SCRIPT = (REPO / "build" / "build-adoption.sh").read_text()
 
 
-def _stub_driver(tmp_path, exit_code=0):
-    """A stand-in for build-release.sh: records its argv and environment and, on
-    success, places a release dir the way the real driver does."""
+@pytest.fixture
+def wt(tmp_path):
+    """A detached worktree of HEAD carrying the working-tree build-adoption.sh, so
+    freezes write into it and never into the real repo."""
+    path = tmp_path / "wt"
+    subprocess.run(["git", "-C", str(REPO), "worktree", "add", "--detach", str(path), "HEAD"],
+                   check=True, capture_output=True)
+    shutil.copy(REPO / "build" / "build-adoption.sh", path / "build" / "build-adoption.sh")
+    try:
+        yield path
+    finally:
+        subprocess.run(["git", "-C", str(REPO), "worktree", "remove", "--force", str(path)],
+                       capture_output=True)
+
+
+def _stub_driver(tmp_path, wt, exit_code=0, place=True):
+    """A stand-in for build-release.sh: records argv and environment and, if
+    `place`, places a release dir inside the worktree as the real driver does."""
     log = tmp_path / "driver.log"
     stub = tmp_path / "stub-release.sh"
     stub.write_text(
         '#!/usr/bin/env bash\n'
         f'printf "%s\\n" "$@" > "{log}"\n'
         f'echo "MODE=$ADOPTION_MODE DATE=$ADOPTION_EVENT_DATE" >> "{log}"\n'
-        f'if [ {exit_code} -ne 0 ]; then exit {exit_code}; fi\n'
-        f'mkdir -p "{REPO}/releases/$1"\n'
-        f'echo x > "{REPO}/releases/$1/Newcastle CZC (Town Meeting Edition $1).md"\n')
+        + (f'mkdir -p "{wt}/releases/$1"\n'
+           f'echo x > "{wt}/releases/$1/Newcastle CZC (Town Meeting Edition $1).md"\n'
+           if place else '')
+        + f'exit {exit_code}\n')
     return stub, log
 
 
-def _freeze(tmp_path, extra=(), exit_code=0):
-    stub, log = _stub_driver(tmp_path, exit_code)
+def _freeze(tmp_path, wt, extra=(), exit_code=0, place=True, env=None):
+    stub, log = _stub_driver(tmp_path, wt, exit_code, place)
     r = subprocess.run(
-        ["bash", "build/build-adoption.sh", "v9.0", "March 15, 2027",
+        ["bash", str(wt / "build" / "build-adoption.sh"), "v9.0", "March 15, 2027",
          "--freeze-date=January 2, 2027", *extra],
-        cwd=REPO, capture_output=True, text=True,
-        env=dict(os.environ, CZC_LEAF_RELEASE=str(stub)))
+        cwd=wt, capture_output=True, text=True,
+        env={**os.environ, "CZC_LEAF_RELEASE": str(stub), **(env or {})})
     return r, log
 
 
-def _clean_v9():
-    d = REPO / "releases" / "v9.0"
-    if d.exists():
-        shutil.rmtree(d)
+def test_refuses_to_freeze_a_dirty_source_tree(tmp_path, wt):
+    """The meeting edition renders from the working tree; the adopted edition
+    renders from the tag. A dirty tree has no commit representing what voters
+    saw, so the freeze refuses -- before the driver runs."""
+    (wt / "source" / "ZZZ-uncommitted-test-file.md").write_text("stray\n")
+    r, log = _freeze(tmp_path, wt)
+    assert r.returncode != 0
+    out = (r.stdout + r.stderr).lower()
+    assert "refusing to freeze" in out and "zzz-uncommitted-test-file.md" in out
+    assert not log.exists(), "the driver ran despite a dirty source/"
+    assert not (wt / "releases" / "v9.0").exists()
 
 
 def test_freeze_has_no_article_number_in_a_build_command_and_one_driver_call():
@@ -318,122 +317,122 @@ def test_stale_strings_are_gone_from_the_script():
         assert stale not in _SCRIPT, stale
 
 
-def test_freeze_calls_the_driver_in_meeting_mode_and_writes_provenance(tmp_path):
-    assert not (REPO / "releases" / "v9.0").exists()
-    try:
-        r, log = _freeze(tmp_path)
-        assert r.returncode == 0, r.stdout + r.stderr
-        argv = log.read_text().splitlines()
-        assert argv[:3] == ["v9.0", "January 2, 2027", f"--old-ver={json.loads(_PRE_ROLLOVER_MAP.read_text())['baseline_version']}"], argv
-        assert "--calls" not in argv
-        assert "MODE=meeting DATE=March 15, 2027" in argv
-        prov = json.loads((REPO / "releases" / "v9.0" / "frozen-from.json").read_text())
-        assert set(prov) == {"_README", "version", "meeting_date", "frozen_on",
-                             "frozen_from_commit", "frozen_source_tree"}
-        assert prov["version"] == "v9.0"
-        assert prov["meeting_date"] == "March 15, 2027"
-        assert prov["frozen_on"] == "January 2, 2027"
-    finally:
-        _clean_v9()
+def test_freeze_calls_the_driver_in_meeting_mode_and_writes_provenance(tmp_path, wt):
+    r, log = _freeze(tmp_path, wt)
+    assert r.returncode == 0, r.stdout + r.stderr
+    argv = log.read_text().splitlines()
+    baseline = json.loads(_PRE_ROLLOVER_MAP.read_text())["baseline_version"]
+    assert argv[:3] == ["v9.0", "January 2, 2027", f"--old-ver={baseline}"], argv
+    assert "--calls" not in argv
+    assert "MODE=meeting DATE=March 15, 2027" in argv
+    prov = json.loads((wt / "releases" / "v9.0" / "frozen-from.json").read_text())
+    assert set(prov) == {"_README", "version", "meeting_date", "frozen_on",
+                         "frozen_from_commit", "frozen_source_tree"}
+    assert prov["version"] == "v9.0"
+    assert prov["meeting_date"] == "March 15, 2027"
+    assert prov["frozen_on"] == "January 2, 2027"
+    assert "remove releases/v9.0/" in r.stdout
 
 
-def test_freeze_passes_calls_through(tmp_path):
+def test_freeze_passes_calls_through(tmp_path, wt):
     calls = tmp_path / "calls.json"
     calls.write_text("{}")
-    try:
-        r, log = _freeze(tmp_path, extra=("--calls", str(calls)))
-        assert r.returncode == 0, r.stdout + r.stderr
-        argv = log.read_text().splitlines()
-        assert argv[argv.index("--calls") + 1] == str(calls), argv
-    finally:
-        _clean_v9()
+    r, log = _freeze(tmp_path, wt, extra=("--calls", str(calls)))
+    assert r.returncode == 0, r.stdout + r.stderr
+    argv = log.read_text().splitlines()
+    assert argv[argv.index("--calls") + 1] == str(calls), argv
 
 
-def test_driver_refusal_exits_1_and_writes_nothing(tmp_path):
-    try:
-        r, _ = _freeze(tmp_path, exit_code=1)
-        assert r.returncode == 1
-        assert not (REPO / "releases" / "v9.0").exists()
-    finally:
-        _clean_v9()
+def test_driver_refusal_exits_1_and_writes_nothing(tmp_path, wt):
+    r, _ = _freeze(tmp_path, wt, exit_code=1, place=False)
+    assert r.returncode == 1
+    assert "nothing was frozen" in r.stderr
+    assert not (wt / "releases" / "v9.0").exists()
 
 
-def test_dirty_source_is_refused_before_the_driver_runs(tmp_path):
-    stray = REPO / "source" / "ZZZ-uncommitted-driver-test.md"
-    assert not stray.exists()
-    stray.write_text("stray\n")
-    try:
-        r, log = _freeze(tmp_path)
-        assert r.returncode != 0
-        assert "refusing to freeze" in (r.stdout + r.stderr).lower()
-        assert not log.exists(), "the driver ran despite a dirty source/"
-        assert not (REPO / "releases" / "v9.0").exists()
-    finally:
-        stray.unlink(missing_ok=True)
-        _clean_v9()
+def test_failure_after_the_driver_placed_the_packet_says_so(tmp_path, wt):
+    r, _ = _freeze(tmp_path, wt, exit_code=1, place=True)
+    assert r.returncode == 1
+    assert "nothing was frozen" not in r.stderr
+    assert "incomplete" in r.stderr and "releases/v9.0" in r.stderr
+    assert not (wt / "releases" / "v9.0" / "frozen-from.json").exists()
 
 
-def test_dry_run_exits_before_any_driver_call(tmp_path):
-    r, log = _freeze(tmp_path, extra=("--dry-run",))
+@pytest.mark.parametrize("var", [
+    "SRC_DIR", "OUT_DIR", "OUT_NAME_OVERRIDE", "STANDALONE_FRONT_NOTE", "SECTION_MAP",
+    "REDLINE_OUT", "REDLINE_MD_OUT", "CZC_LEAF_FULL", "CZC_LEAF_REDLINE_FULL",
+    "CZC_LEAF_STANDALONE", "CZC_LEAF_REDLINE_STANDALONE"])
+def test_inherited_build_overrides_are_refused_before_the_driver(tmp_path, wt, var):
+    r, log = _freeze(tmp_path, wt, env={var: "/somewhere/else"})
+    assert r.returncode == 1
+    assert var in r.stderr
+    assert not log.exists(), "the driver ran with an inherited override"
+    assert not (wt / "releases" / "v9.0").exists()
+
+
+def test_dry_run_exits_before_any_driver_call(tmp_path, wt):
+    r, log = _freeze(tmp_path, wt, extra=("--dry-run",))
     assert r.returncode == 0, r.stderr
     assert not log.exists()
-    assert not (REPO / "releases" / "v9.0").exists()
+    assert not (wt / "releases" / "v9.0").exists()
 
 
 # --- --render-summary --------------------------------------------------------
 
-def _render(tmp_path):
+def _render(wt, *extra):
     return subprocess.run(
-        ["bash", "build/build-adoption.sh", "v9.0", "March 15, 2027", "--render-summary"],
-        cwd=REPO, capture_output=True, text=True)
+        ["bash", str(wt / "build" / "build-adoption.sh"), "v9.0", "March 15, 2027",
+         "--render-summary", *extra],
+        cwd=wt, capture_output=True, text=True)
 
 
-def test_render_summary_refuses_without_a_packet():
-    assert not (REPO / "releases" / "v9.0").exists()
-    r = _render(None)
+def test_render_summary_refuses_without_a_packet(wt):
+    r = _render(wt)
     assert r.returncode == 1
     assert "no frozen packet" in r.stderr
 
 
-def test_render_summary_refuses_without_the_md():
-    packet = REPO / "releases" / "v9.0"
-    packet.mkdir(parents=True)
-    try:
-        r = _render(None)
-        assert r.returncode == 1
-        assert "does not exist" in r.stderr
-    finally:
-        _clean_v9()
+def test_render_summary_refuses_without_the_md(wt):
+    (wt / "releases" / "v9.0").mkdir(parents=True)
+    r = _render(wt)
+    assert r.returncode == 1
+    assert "does not exist" in r.stderr
 
 
-def test_render_summary_refuses_the_generated_skeleton():
+def test_render_summary_refuses_the_generated_skeleton(wt):
     import sys as _sys
     _sys.path.insert(0, str(REPO / "build"))
     import summary_skeleton
-    packet = REPO / "releases" / "v9.0"
+    packet = wt / "releases" / "v9.0"
     packet.mkdir(parents=True)
     (packet / "Summary of Changes v9.0.md").write_text(
         "# Summary of Changes\n\n" + summary_skeleton.PLACEHOLDER + "\n")
-    try:
-        r = _render(None)
-        assert r.returncode == 1
-        assert "skeleton" in r.stderr
-        assert not (packet / "Summary of Changes v9.0.pdf").exists()
-    finally:
-        _clean_v9()
+    r = _render(wt)
+    assert r.returncode == 1
+    assert "skeleton" in r.stderr
+    assert not (packet / "Summary of Changes v9.0.pdf").exists()
 
 
-def test_render_summary_renders_only_the_pdf():
-    packet = REPO / "releases" / "v9.0"
+@pytest.mark.parametrize("extra", [("--dry-run",), ("--calls", "x.json"),
+                                   ("--freeze-date=January 2, 2027",)])
+def test_render_summary_cannot_be_combined_with_freeze_flags(wt, extra):
+    packet = wt / "releases" / "v9.0"
+    packet.mkdir(parents=True)
+    (packet / "Summary of Changes v9.0.md").write_text("# Summary\n\nHand written.\n")
+    r = _render(wt, *extra)
+    assert r.returncode == 1
+    assert "cannot be combined" in r.stderr
+    assert not (packet / "Summary of Changes v9.0.pdf").exists()
+
+
+def test_render_summary_renders_only_the_pdf(wt):
+    packet = wt / "releases" / "v9.0"
     packet.mkdir(parents=True)
     (packet / "Summary of Changes v9.0.md").write_text(
         "# Summary of Changes\n\nThe voters will see one change: a comma.\n")
     (packet / "marker.txt").write_text("untouched")
-    try:
-        r = _render(None)
-        assert r.returncode == 0, r.stdout + r.stderr
-        assert sorted(p.name for p in packet.iterdir()) == [
-            "Summary of Changes v9.0.md", "Summary of Changes v9.0.pdf", "marker.txt"]
-        assert (packet / "marker.txt").read_text() == "untouched"
-    finally:
-        _clean_v9()
+    r = _render(wt)
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert sorted(p.name for p in packet.iterdir()) == [
+        "Summary of Changes v9.0.md", "Summary of Changes v9.0.pdf", "marker.txt"]
+    assert (packet / "marker.txt").read_text() == "untouched"
