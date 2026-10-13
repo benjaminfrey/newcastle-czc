@@ -228,9 +228,11 @@ local only). **Nothing here changes the ordinary draft flow** — with no adopti
 
 **Tests:** `python3 -m pytest build/tests -q` — **729**, ~13 min (they build real PDFs, redlines and releases).
 CI runs them on every PR and every push to `main` (`.github/workflows/build-tests.yml`);
-⚠ **Python:** CI pins **3.14**. On 2026-10-12 Homebrew moved `python3` to **3.15**, which has no
-PyMuPDF, and the builds fail with `No module named 'pymupdf'`. Run builds and tests with 3.14 first
-on `PATH` (e.g. a directory whose `python3` links to `/opt/homebrew/bin/python3.14`).
+⚠ **Python:** the build calls bare `python3` and needs only **PyMuPDF** and **pytest** (CI pins
+PyMuPDF `1.27.2.2`, Python 3.14). When Homebrew moves `python3` to a new minor version, the new
+one has neither, and builds fail with `No module named 'pymupdf'`. Fix (done for 3.15 on
+2026-10-12): `python3.X -m pip install --only-binary=:all: --break-system-packages
+"pymupdf==1.27.2.2" "pytest==9.0.3"`. The permit-review app is unaffected (own `.venv`, 3.14).
 that workflow pins **Typst 0.14.2** and needs `fetch-depth: 0`, because the redline tests
 read real tags.
 
