@@ -316,7 +316,7 @@ def test_the_code_note_names_every_unmarked_page_and_stays_one_page(tmp_path, ma
     assert pages == 1
     assert "Pages shown as they now stand, without marks" in flat
     for label in ("the District Maps (Article 1)", "the thirteen district pages",
-                  "the ten Thoroughfare Type pages", "Exhibit 3.1, the Thoroughfare Inventory",
+                  "the ten Thoroughfare Type pages", "Exhibit 3.1, the Inventory of Existing Thoroughfares",
                   "Exhibit 3.2, the Thoroughfare Type Map"):
         assert label in flat, label
 

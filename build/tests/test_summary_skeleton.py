@@ -79,7 +79,7 @@ def test_cannot_show_labels_and_tables():
     sec = t.split("## What the redline cannot show")[1].split("\n## ")[0]
     assert "unmarked" in sec and "table" in sec
     assert "the ten Thoroughfare Type pages" in sec           # data > 0
-    assert "Exhibit 3.1, the Thoroughfare Inventory" in sec
+    assert "Exhibit 3.1, the Inventory of Existing Thoroughfares" in sec
     assert "the thirteen district pages (district standards and use tables)" in sec  # layout call
 
 

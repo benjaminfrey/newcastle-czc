@@ -67,7 +67,7 @@ def test_article_3_tables_are_tables_and_no_typst_or_comments_remain(base_tree):
 def test_article_3_points_to_its_native_pages_where_they_sit(base_tree):
     out = md(base_tree, 3)
     plates = out.index("the ten Thoroughfare Type pages —")
-    ex1 = out.index("Exhibit 3.1, the Thoroughfare Inventory —")
+    ex1 = out.index("Exhibit 3.1, the Inventory of Existing Thoroughfares —")
     ex2 = out.index("Exhibit 3.2, the Thoroughfare Type Map —")
     # the plates' pointer sits where the TYPE-PAGES marker was: before the Driveway subsection
     assert plates < out.index("### d. DRIVEWAY")
@@ -80,7 +80,7 @@ def test_article_3_points_to_its_native_pages_where_they_sit(base_tree):
 def test_the_extract_note_reads_as_sentences(base_tree):
     out = md(base_tree, 3)
     assert ("*The PDF edition also contains the ten Thoroughfare Type pages; Exhibit 3.1, "
-            "the Thoroughfare Inventory; and Exhibit 3.2, the Thoroughfare Type Map. "
+            "the Inventory of Existing Thoroughfares; and Exhibit 3.2, the Thoroughfare Type Map. "
             "They are named below where they appear. "
             "The PDF edition is authoritative for them.*") in out
     assert czc_md._join_labels(["A"]) == "A"
@@ -108,9 +108,9 @@ def test_a_missing_conditional_file_drops_only_that_units_pointer(tmp_path, base
     (tree / "exhibits/street-types/inventory.json").unlink()
     out = md(tree, 3)
     assert "the ten Thoroughfare Type pages" in out
-    assert "Exhibit 3.1, the Thoroughfare Inventory —" not in out
+    assert "Exhibit 3.1, the Inventory of Existing Thoroughfares —" not in out
     assert "Exhibit 3.2, the Thoroughfare Type Map —" not in out
-    assert "Exhibit 3.1, the Thoroughfare Inventory;" not in out
+    assert "Exhibit 3.1, the Inventory of Existing Thoroughfares;" not in out
 
 
 def test_a_marker_that_is_absent_is_refused(tmp_path, base_tree):

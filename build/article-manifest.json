@@ -47,7 +47,7 @@
     "split_markers": ["TYPE-PAGES", "STREET-TYPE-EXHIBITS"],
     "units": [
       { "typ": "cross-section-plates.typ", "label": "the ten Thoroughfare Type pages", "splice": "at-marker:TYPE-PAGES" },
-      { "typ": "street-type-inventory.typ", "label": "Exhibit 3.1, the Thoroughfare Inventory", "splice": "at-marker:STREET-TYPE-EXHIBITS",
+      { "typ": "street-type-inventory.typ", "label": "Exhibit 3.1, the Inventory of Existing Thoroughfares", "splice": "at-marker:STREET-TYPE-EXHIBITS",
         "data": "exhibits/street-types/inventory.json",
         "conditional_on": "exhibits/street-types/inventory.json" },
       { "typ": "street-type-map.typ", "label": "Exhibit 3.2, the Thoroughfare Type Map", "splice": "at-marker:STREET-TYPE-EXHIBITS",

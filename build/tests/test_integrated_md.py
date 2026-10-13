@@ -67,7 +67,7 @@ def test_no_typst_or_build_comments_remain(out):
 def test_article_3_tables_are_pipe_tables_and_pointers_sit_at_the_markers(out):
     assert "TABLE 3.2 SIGHT DISTANCE\n\n| Design Speed (MPH) | Sight Distance (FT) |" in out
     plates = out.index("the ten Thoroughfare Type pages —")
-    ex1 = out.index("Exhibit 3.1, the Thoroughfare Inventory —")
+    ex1 = out.index("Exhibit 3.1, the Inventory of Existing Thoroughfares —")
     assert plates < out.index("### d. DRIVEWAY")
     assert plates < ex1 < out.index("### d. CLASSIFICATION RUBRIC")
 
