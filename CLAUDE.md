@@ -97,9 +97,9 @@ Type (the §5 Inventory). Map/table legends show only Types actually present.
   freeze is `build-adoption.sh`. Adopted mode is refused (D5). The driver refuses inherited build
   overrides (`OUT_DIR`, `OUT_NAME_OVERRIDE`, `STANDALONE_FRONT_NOTE`, `REDLINE_OUT`,
   `REDLINE_MD_OUT`, `FRONT_NOTE_PDF`, `OUT_MD_SOURCE`, `REDLINE_CAVEAT`; draft also refuses
-  `ADOPTION_BASELINE`/`ADOPTION_EVENT_DATE`). ⚠ Against v1.0 the current tree reads **Articles 1, 2, 3 NEEDS-CALL** (the Wave
-  0/1 chrome fix changed their layout units) — the first release needs layout-only calls for all
-  three. The leaf commands below still work on their own.
+  `ADOPTION_BASELINE`/`ADOPTION_EVENT_DATE`). v1.1-draft (the first driver release) recorded layout-only calls for Articles 1, 2, 3 —
+  each later release states its calls against its own `--old-ver`. The leaf commands below still
+  work on their own.
 - **Integrated CZC:** `bash build/build-full-czc.sh vX.Y-draft "Month D, YYYY"`
   → `releases/vX.Y-draft/Newcastle CZC (Integrated Draft vX.Y-draft).{pdf,md}`
 - **Standalone (any Article):** `bash build/build-standalone.sh <article-NN> vX.Y-draft`
@@ -226,8 +226,11 @@ local only). **Nothing here changes the ordinary draft flow** — with no adopti
   rewrites the old side's "Article 4" to "Article 5". That is why the guard exists; don't remove it
   because it looks inert.
 
-**Tests:** `python3 -m pytest build/tests -q` — **726**, ~13 min (they build real PDFs, redlines and releases).
+**Tests:** `python3 -m pytest build/tests -q` — **729**, ~13 min (they build real PDFs, redlines and releases).
 CI runs them on every PR and every push to `main` (`.github/workflows/build-tests.yml`);
+⚠ **Python:** CI pins **3.14**. On 2026-10-12 Homebrew moved `python3` to **3.15**, which has no
+PyMuPDF, and the builds fail with `No module named 'pymupdf'`. Run builds and tests with 3.14 first
+on `PATH` (e.g. a directory whose `python3` links to `/opt/homebrew/bin/python3.14`).
 that workflow pins **Typst 0.14.2** and needs `fetch-depth: 0`, because the redline tests
 read real tags.
 
@@ -270,6 +273,12 @@ rebuild. No code changes.
 ---
 
 ## Current state (as of 2026-10-12)
+
+- **✅ v1.1-draft CUT (2026-10-12)** — the first release through `build-release.sh`, against v1.0.
+  Layout only: the binding-margin fix and the Article 2 first-page chrome fix. Written calls
+  (Ben): Articles 1, 2, 3 layout-only. Ships the integrated Code + redline (no marks — no wording
+  changed), Summary, `release-plan.json`, `ships.json`; 117 pp / 1 blank. Also fixed the
+  manifest's Exhibit 3.1 label to the printed title, "Inventory of Existing Thoroughfares".
 
 - **✅ MERGED to `main` — the release-deliverable machinery, Waves 0 and 1** (PR #1, merge
   commit `9291b20`, 31 commits). Build suite **111 → 196**. Wave 0 fixed the Article 2
@@ -410,8 +419,7 @@ rebuild. No code changes.
   district lists every item), Permitted Buildings by row/column (named from both versions),
   district standards in plain words, and a total that **equals czc_diff's Article 2 data count**.
   Exit 2 = nothing to report, nothing written; outputs are cleared first so no stale file survives.
-  ⚠ **Next release: Articles 1, 2, 3 will read NEEDS-CALL** — the Wave 0/1 chrome fix changed
-  their layout units; the person's "layout only" call is recorded by P13 (not built yet).
+  (Articles 1, 2, 3 read NEEDS-CALL against v1.0; v1.1-draft recorded layout-only calls.)
 - **✅ Wave 2 MERGED — section renumbering** (PR #3, merge `91a81c9`; plan
   `plans/2026-10-08-wave2-section-map.md`, which records ten rulings and their amendments).
   Build suite **199 → 288**. When a section is inserted into an Article, later headings and
@@ -461,7 +469,7 @@ rebuild. No code changes.
   Measured: integrated **117 pp / 1 blank unchanged**, 0 pages reflowed, every numbered page bound
   correctly. Guard: `build/tests/test_binding_side.py` (integrated + Article 2 + Article 3
   standalones; fails 80/26/12 problems with the binding lines removed). This changes the Code's
-  layout units, so the next release needs layout-only calls for Articles 1, 2 and 3 (expected).
+  layout units, so v1.1-draft recorded layout-only calls for Articles 1, 2 and 3.
   ⚠ The adopted v1.0 edition carries the OLD geometry and cannot be re-rendered
   (`build-adopted.sh` renders from the tag); the next amendment supersedes it with the fix.
 - **▶ OPEN — the adopted v1.0 edition is missing chrome on physical page 12.** The first district

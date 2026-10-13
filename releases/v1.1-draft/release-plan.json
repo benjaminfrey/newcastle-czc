@@ -1,0 +1,204 @@
+{
+  "schema": 1,
+  "version": "v1.1-draft",
+  "date": "October 12, 2026",
+  "mode": "draft",
+  "old": "v1.0",
+  "event_date": null,
+  "section_map": {
+    "renumbered": 0
+  },
+  "articles": {
+    "1": {
+      "name": "General Standards",
+      "verdict": "NEEDS-CALL",
+      "status": "LAYOUT-ONLY",
+      "new": false,
+      "counts": {
+        "prose": 0,
+        "heading": 0,
+        "table": 0,
+        "data": 0,
+        "suppressed": 0
+      },
+      "needs_call": [
+        "district-maps.typ: a layout unit changed. A person decides whether it changes what the Code says or only how it is laid out."
+      ],
+      "call": {
+        "article": 1,
+        "decision": "layout-only",
+        "reason": "The district map pages are now bound on the correct side of the page, so the inside margin falls at the binding as in the 2020 Code. No map, label or wording changed.",
+        "by": "Ben Frey"
+      }
+    },
+    "2": {
+      "name": "District Standards",
+      "verdict": "NEEDS-CALL",
+      "status": "LAYOUT-ONLY",
+      "new": false,
+      "counts": {
+        "prose": 0,
+        "heading": 0,
+        "table": 0,
+        "data": 0,
+        "suppressed": 0
+      },
+      "needs_call": [
+        "article-02.typ: a layout unit changed. A person decides whether it changes what the Code says or only how it is laid out. (The use-table legend is part of these pages.)"
+      ],
+      "call": {
+        "article": 2,
+        "decision": "layout-only",
+        "reason": "The district pages are now bound on the correct side of the page, and the first district page (D1) again shows its page number, running head and Article tab, which were missing from the adopted edition. No district standard, use, or table entry changed.",
+        "by": "Ben Frey"
+      }
+    },
+    "3": {
+      "name": "Thoroughfares",
+      "verdict": "NEEDS-CALL",
+      "status": "LAYOUT-ONLY",
+      "new": false,
+      "counts": {
+        "prose": 0,
+        "heading": 0,
+        "table": 0,
+        "data": 0,
+        "suppressed": 0
+      },
+      "needs_call": [
+        "cross-section-plates.typ: a layout unit changed. A person decides whether it changes what the Code says or only how it is laid out.",
+        "street-type-inventory.typ: a layout unit changed. A person decides whether it changes what the Code says or only how it is laid out.",
+        "street-type-map.typ: a layout unit changed. A person decides whether it changes what the Code says or only how it is laid out."
+      ],
+      "call": {
+        "article": 3,
+        "decision": "layout-only",
+        "reason": "The Thoroughfare Type plates, the Inventory of Existing Thoroughfares (Exhibit 3.1) and the Thoroughfare Type Map (Exhibit 3.2) are now bound on the correct side of the page. The footer now reads 'Adopted: September 14, 2026' instead of an old draft label. No standard, Type assignment or inventory entry changed.",
+        "by": "Ben Frey"
+      }
+    },
+    "4": {
+      "name": "Site Standards",
+      "verdict": "UNCHANGED",
+      "status": "UNCHANGED",
+      "new": false,
+      "counts": {
+        "prose": 0,
+        "heading": 0,
+        "table": 0,
+        "data": 0,
+        "suppressed": 0
+      },
+      "needs_call": [],
+      "call": null
+    },
+    "5": {
+      "name": "Building Standards",
+      "verdict": "UNCHANGED",
+      "status": "UNCHANGED",
+      "new": false,
+      "counts": {
+        "prose": 0,
+        "heading": 0,
+        "table": 0,
+        "data": 0,
+        "suppressed": 0
+      },
+      "needs_call": [],
+      "call": null
+    },
+    "6": {
+      "name": "Design Standards",
+      "verdict": "UNCHANGED",
+      "status": "UNCHANGED",
+      "new": false,
+      "counts": {
+        "prose": 0,
+        "heading": 0,
+        "table": 0,
+        "data": 0,
+        "suppressed": 0
+      },
+      "needs_call": [],
+      "call": null
+    },
+    "7": {
+      "name": "Use Standards",
+      "verdict": "UNCHANGED",
+      "status": "UNCHANGED",
+      "new": false,
+      "counts": {
+        "prose": 0,
+        "heading": 0,
+        "table": 0,
+        "data": 0,
+        "suppressed": 0
+      },
+      "needs_call": [],
+      "call": null
+    },
+    "8": {
+      "name": "Administration",
+      "verdict": "UNCHANGED",
+      "status": "UNCHANGED",
+      "new": false,
+      "counts": {
+        "prose": 0,
+        "heading": 0,
+        "table": 0,
+        "data": 0,
+        "suppressed": 0
+      },
+      "needs_call": [],
+      "call": null
+    },
+    "9": {
+      "name": "Definitions",
+      "verdict": "UNCHANGED",
+      "status": "UNCHANGED",
+      "new": false,
+      "counts": {
+        "prose": 0,
+        "heading": 0,
+        "table": 0,
+        "data": 0,
+        "suppressed": 0
+      },
+      "needs_call": [],
+      "call": null
+    }
+  },
+  "artifacts": [
+    {
+      "kind": "integrated",
+      "article": null,
+      "files": [
+        "Newcastle CZC (Integrated Draft v1.1-draft).pdf",
+        "Newcastle CZC (Integrated Draft v1.1-draft).md"
+      ]
+    },
+    {
+      "kind": "integrated-redline",
+      "article": null,
+      "files": [
+        "Newcastle CZC (Integrated Draft v1.1-draft) — Redline.pdf",
+        "Newcastle CZC (Integrated Draft v1.1-draft) — Redline.md"
+      ]
+    },
+    {
+      "kind": "summary",
+      "article": null,
+      "files": [
+        "Summary of Changes v1.1-draft.md"
+      ]
+    },
+    {
+      "kind": "record",
+      "article": null,
+      "files": [
+        "release-plan.json",
+        "ships.json"
+      ]
+    }
+  ]
+}
