@@ -62,17 +62,28 @@ def _art7() -> str:
     return (SRC / "article-07-use-standards.md").read_text(encoding="utf-8")
 
 
-def tier_table() -> dict[str, set[str]]:
-    """TABLE 7.1 → {tier: set of district labels}. 'All districts' → all 13."""
+def _districts(where: str) -> set[str]:
+    if where == "All districts":
+        return set(DISTRICT_ORDER)
+    if where in ("—", ""):
+        return set()
+    return {d.strip() for d in where.split(",")}
+
+
+def tier_table_full() -> dict[str, tuple[set[str], set[str]]]:
+    """TABLE 7.1 → {tier: (by right, by Special Permit)} (R35 added the second column)."""
     text = _art7()
     block = text.split("TABLE 7.1 AGRICULTURE TIERS BY DISTRICT", 1)[1].split("\n\n", 2)[1]
     out = {}
     for line in block.splitlines()[2:]:
         cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        where = cells[-1]
-        out[cells[0]] = (set(DISTRICT_ORDER) if where == "All districts"
-                         else {d.strip() for d in where.split(",")})
+        out[cells[0]] = (_districts(cells[2]), _districts(cells[3]))
     return out
+
+
+def tier_table() -> dict[str, set[str]]:
+    """TABLE 7.1's by-right districts per tier."""
+    return {k: v[0] for k, v in tier_table_full().items()}
 
 
 def test_tier_table_follows_the_spec():
@@ -81,6 +92,11 @@ def test_tier_table_follows_the_spec():
     assert t["Cultivation"] == t["Beekeeping"] == t["Small Stock"] == set(DISTRICT_ORDER)
     assert t["Medium Stock"] == {"D1", "D2", "D3", "SD-Rural Highway", "SD-Conservation", "SD-Campus"}
     assert t["Large Stock"] == {"D1", "D2", "SD-Rural Highway", "SD-Conservation", "SD-Campus"}
+    sp = {k: v[1] for k, v in tier_table_full().items()}                 # R35
+    assert sp["Medium Stock"] == {"D4", "D5", "D6", "SD-Historic", "SD-Highway Commercial",
+                                  "SD-Marine", "SD-Fabrication"}
+    assert sp["Large Stock"] == {"D3"}
+    assert sp["Cultivation"] == sp["Beekeeping"] == sp["Small Stock"] == set()
 
 
 def test_article_7_sections_are_consecutive():
@@ -169,11 +185,12 @@ def _data(ref: str | None = None) -> list:
 
 
 def test_tier_table_matches_the_district_tables():
-    st, tiers = _statuses(_data()), tier_table()
+    st, tiers = _statuses(_data()), tier_table_full()
     for tier in TIERS:
         row = f"Home Agriculture: {tier}"
+        right, sp = tiers[tier]
         for district in DISTRICT_ORDER:
-            want = "br" if district in tiers[tier] else ""
+            want = "br" if district in right else "sp" if district in sp else ""
             assert st[district][row] == want, f"{district} {row}"
 
 
@@ -218,3 +235,62 @@ def test_agricultural_building_columns():
         else:
             assert "Agricultural Building" not in cols, label     # D6 (R14); no-matrix SDs (R15)
         assert "Agricultural Use" not in cols, label
+
+
+
+# --- Whole-branch review, decisions R30-R35 and drafting fixes ------------------
+
+def _sec3() -> str:
+    return " ".join(_art7().split("## 3. RIGHT TO FARM", 1)[1].split("\n## 4. ", 1)[0].split())
+
+
+def _def(term: str) -> str:
+    text = (SRC / "article-09-definitions.md").read_text(encoding="utf-8")
+    return text.split(f"**{term}:**\n", 1)[1].split("\n\n", 1)[0]
+
+
+def test_dwelling_distance_is_measured_to_the_dwelling():                      # R30
+    s = _sec3()
+    assert "measured to the dwelling itself" in s
+    assert "nearest boundary of the lot containing the dwelling" not in s
+    assert "built after" in s
+
+
+def test_the_300_ft_rule_is_for_large_manure_storage_and_others_wells():       # R31
+    s = _sec3()
+    assert "all Manure Storage must be at least 300 ft" not in s
+    assert "well on another lot, a public water supply, or a water body" in s
+
+
+def test_pets_are_not_agriculture_and_small_stock_has_room():                  # R32
+    assert "household pets" in _def("Agriculture")
+    small = _def("Small Stock")
+    assert "quail" in small and "pigeons" in small and "similar small mammals" in small
+
+
+def test_commercial_agriculture_is_production_based():                         # R33
+    c = _def("Commercial Agriculture")
+    assert "§152" not in c and "produces agricultural products on the lot" in c
+    assert "Production" in _sec3() or "production" in _sec3().split("### j.", 1)[1]
+
+
+def test_board_review_is_a_special_permit():                                   # R34
+    s = _sec3()
+    assert "Special Permit under Article 8 Section 18" in s
+    assert "does not apply while the Planning Board decides" in s
+
+
+def test_the_state_shield_is_not_enlarged_by_the_code():                       # review F8
+    s = _sec3()
+    assert "It is not limited to particular standards of this Code" not in s
+    assert "this Code neither enlarges nor limits it" in s
+
+
+def test_fencing_is_not_held_to_building_setbacks():                           # review F7
+    g5 = _sec3().split("### g.", 1)[1].split("### h.", 1)[0]
+    assert "Fencing follows Article 4 Section 8" in g5
+
+
+def test_farmstand_is_defined_once():                                          # review F12
+    sec = _art7().split("## 27. FARMSTAND", 1)[1].split("\n## ", 1)[0]
+    assert "Farmstand, as defined in Article 9." in sec

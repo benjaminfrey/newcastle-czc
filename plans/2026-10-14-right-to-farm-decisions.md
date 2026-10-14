@@ -97,3 +97,17 @@ Small-stock housing (coops, hutches) and hives are **permitted in every district
 Table 5.2**. Where Table 5.2 reads "Not Permitted" or "n/a" (D6, SD-Campus, SD-Marine) they are
 limited to **100 sq ft in total per lot**; elsewhere they count toward the Table 5.2 area as other
 additional structures do. Accessory Building Placement setbacks and the §3 separations apply.
+
+## R30–R35 · After the whole-branch review (2026-10-14)
+
+The fresh-context review of the branch found that several approved values did not work together.
+Ben Frey decided:
+
+| # | Finding | Decision |
+|---|---|---|
+| R30 | F1: the dwelling distance, measured to the neighbor's lot line (spec §3.5 item 3), made the 120/220 ft lot-width gate unattainable with no relief | Measure **to the dwelling itself**. A dwelling built after the animal housing does not make that housing nonconforming |
+| R31 | F2: "all Manure Storage 300 ft from a well" caught a backyard bedding pile and the owner's own well | The 300 ft rule applies only to **Manure Storage over 50 cubic yards**, measured from **a well on another lot, a public water supply, or a water body**. "Water body" goes to counsel to define |
+| R32 | F3: pets read as stock; quail, pigeons and a seventh rabbit fit no tier | Agriculture **excludes household pets** (dogs, cats, animals kept indoors). Small Stock is **up to six small poultry birds** (hens, ducks, quail, pigeons; no roosters or drakes) **and up to six rabbits or similar small mammals**; a seventh of either makes Medium Stock |
+| R33 | F4/F5: the §152-tied Commercial definition swallowed own-lot sales and let a resale yard claim the carve-outs | Commercial Agriculture is **production-based**: producing agricultural products on the lot for sale off the lot, wholesale, or processing. Own-lot sales stay Home/Personal (D7). Resale only as an accessory part of on-lot production; §3.j's carve-outs cover production areas only. The §152 tie leaves the definition (§3.h still cites §152 for the shield) |
+| R34 | F6: Table 7.3 approval had no procedure; the safe harbour could disarm the Board | Table 7.3 approvals are **Special Permits under Article 8 Section 18**. The §3.h.3 safe harbour does not apply while the Board decides one |
+| R35 | F9: the tiers withdrew the old "private, non-commercial agricultural uses permitted in every district" for new Medium Stock in D4–D6 and the districts mapped to D5, and new Large Stock in D3 | **Medium Stock by Special Permit** in D4, D5, D6, SD-Historic, SD-Highway Commercial, SD-Marine and SD-Fabrication; **Large Stock by Special Permit** in D3 (❷ in the use tables). **Disclose plainly in the Summary** |

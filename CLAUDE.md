@@ -66,7 +66,7 @@ Neighborhood Business · D4 Village Residential · D5 Village Business · D6 Tow
 
 ## Commands
 
-- **Tests:** `python3 -m pytest build/tests -q` — 729 tests, ~15–20 min (they build real PDFs,
+- **Tests:** `python3 -m pytest build/tests -q` — ~760 tests, ~15–20 min (they build real PDFs,
   redlines and releases). CI runs them on every PR and push to `main`, pinned to Python 3.14,
   PyMuPDF 1.27.2.2 and Typst 0.14.2, with full git history because the redline tests read tags.
 - **Releases, redlines, standalones, the Summary of Changes, Town Meeting freezes and the adopted
@@ -112,13 +112,12 @@ Neighborhood Business · D4 Village Residential · D5 Village Business · D6 Tow
 
 ## Open items
 
-- **Right to Farm amendment** (Articles 1, 2, 4, 5, 7, 9) — design spec with decisions D1–D7 at
-  `specs/2026-10-07-right-to-farm-design.md` on branch `right-to-farm`, approved 2026-10-14;
-  decisions R1–R29 in `plans/2026-10-14-right-to-farm-decisions.md`; Plan A (status code) and
-  Plan B (ordinance + v1.2-draft) in `plans/`. Drafts will be v1.2-draft.
-- **Wave 4c done on `right-to-farm`** — the fifth status `br` / ○ "No Permit Required" is in the
-  legend and both readers (Plan A, decisions R1–R5). No cell uses it until Plan B; it ships only
-  with Right to Farm (its Note cites Article 7 Section 3). The app refuses `br` cells (D-0035).
+- **Right to Farm amendment** (Articles 1, 2, 4, 5, 7, 9) — drafted on branch `right-to-farm`
+  (Plans A and B done; spec `specs/2026-10-07-right-to-farm-design.md`; decisions R1–R35 in
+  `plans/2026-10-14-right-to-farm-decisions.md`). New Article 7 §3; Article 7 §§3–66 became
+  §§4–67. The fifth use status `br` / ○ "No Permit Required" (Wave 4c) is in the legend and the
+  data; the permit app refuses `br` cells and 69 uses (D-0035). Next: merge, then cut v1.2-draft
+  on `main`; counsel's questions in spec §7; the DACF notice (7 M.R.S. §155).
 - **For counsel:** Article 9's Variance definition cites the Massachusetts Zoning Act (Maine's is
   30-A M.R.S. §4353); typos "Atricle" (Article 7), "extentions", "designnee" — fixing "designnee"
   also means updating the residue gate's expected sentence in the same commit.

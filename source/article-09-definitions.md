@@ -52,7 +52,7 @@ A person who acts on behalf of another person or group.
 A building used for Agriculture, such as a barn, stable, equipment or storage shed, silo, or greenhouse. Hoop houses, high tunnels, and other seasonal or unenclosed structures are not Agricultural Buildings. Small Stock housing and hives are not Agricultural Buildings; they are additional structures, governed by Article 7 Section 3.
 
 **Agriculture:**
-The cultivation of plants and the keeping of animals. Agriculture comprises Home/Personal Agriculture and Commercial Agriculture, which this Code regulates separately because they differ in scale and impact.
+The cultivation of plants and the keeping of animals, other than household pets such as dogs, cats, and animals kept indoors. Agriculture comprises Home/Personal Agriculture and Commercial Agriculture, which this Code regulates separately because they differ in scale and impact.
 
 **Agritourism:**
 Events and visits on a farm that are open to the public and held in connection with the farm's Agriculture, such as tours, pick-your-own harvests, farm meals, workshops, and seasonal festivals.
@@ -172,7 +172,7 @@ Any retail, service, or auto-oriented use that deals with transactions with the 
 A building that supports or compliments a commercial use, not a residential use.
 
 **Commercial Agriculture:**
-Agriculture carried on for the commercial production of agricultural products, as a farm and a farm operation are described in 7 M.R.S. §152, including production for wholesale and the sale of products not grown or made on the lot. Boarding horses owned by others, riding lessons, shows, and events are a Stables/Riding Center use, not Commercial Agriculture.
+Agriculture that produces agricultural products on the lot for sale off the lot, for wholesale, or for processing. Selling from the lot the products grown or made on that lot, including from a Farmstand, is Home/Personal Agriculture. Selling products not produced on the lot is part of Commercial Agriculture only as an accessory part of an operation that produces on the lot. Boarding horses owned by others, riding lessons, shows, and events are a Stables/Riding Center use, not Commercial Agriculture.
 
 **Component:**
 One of the elements that make up a building, the other being the main building mass. Components are comprised of smaller attachments to the main building mass and provide architectural articulation and additional usable space.
@@ -256,7 +256,7 @@ The surface of a structure or element, especially one that is presented to the v
 The land, plants, animals, buildings, structures, ponds and machinery used in the commercial production of agricultural products.
 
 **Farmstand:**
-A permanent or semi-permanent structure on a lot from which products grown or made on that lot are sold directly to the public. Selling from a Farmstand is Home/Personal Agriculture.
+A permanent or semi-permanent structure on a lot from which agricultural products grown, raised, or made on that lot are sold directly to the public. Selling from a Farmstand is Home/Personal Agriculture.
 
 **Field:**
 An area of undeveloped land primarily covered by grass, including uncultivated meadows and open areas traditionally used for agricultural purposes.
@@ -473,7 +473,7 @@ A development plan and supporting illustrations and documents providing a framew
 Equipment, devices, and accessories used for water supply, drainage, heating, ventilating, air conditioning, including elevator shafts, heating and cooling units, utility cabinets, and other visible structures that are located on or near a building or structure.
 
 **Medium Stock:**
-Goats, sheep, alpacas, miniature horses, miniature donkeys, and miniature breeds of Large Stock; roosters, drakes, turkeys, geese, and guinea fowl; any flock of more than six birds; and other animals of similar size.
+Goats, sheep, alpacas, miniature horses, miniature donkeys, and miniature breeds of Large Stock; roosters, drakes, turkeys, geese, and guinea fowl; any flock of more than six birds; more than six rabbits or similar small mammals; and other animals of similar size.
 
 **Multi-unit Commercial Building:**
 A building occupied by two or more commercial uses and no residential uses.
@@ -722,7 +722,7 @@ A lot or parcel occupied or planned for occupation by a use, including structure
 The ratio of vertical to horizontal distance.
 
 **Small Stock:**
-Up to six hens or ducks, in any combination, and up to six rabbits. Roosters and drakes are not Small Stock. A seventh bird makes the flock Medium Stock.
+Up to six small poultry birds, such as hens, ducks, quail, and pigeons, in any combination, and up to six rabbits or similar small mammals. Roosters and drakes are not Small Stock. A seventh bird, or a seventh small mammal, makes the group Medium Stock.
 
 **Solar Farm:**
 A site at which photovoltaic modules are used to generate and produce electric power for distribution to consumers, typically managed by a single entity.

@@ -96,27 +96,28 @@ footer-date: "Adopted: November 3, 2020"
 
 ### c. PERMISSION
 
-1. Home/Personal Agriculture within the tiers of Table 7.1 is permitted without a permit. Article 1 Section 2.b.8 does not apply to it. The general standards of this Code, including the separation distances of Table 7.2, still apply.
+1. Home/Personal Agriculture is permitted without a permit in the districts where Table 7.1 permits its tier by right. Article 1 Section 2.b.8 does not apply to it. The general standards of this Code, including the separation distances of Table 7.2, still apply.
 2. Moving from one tier to another is not a change of use under Article 7 Section 1.g.
 3. Commercial Agriculture requires a Use Permit where the district use table requires one, and requires Planning Board review only as provided in Table 7.3.
-4. For any agricultural activity or Agricultural Building within the limits of this Section, the Code Enforcement Officer may not refer the application to the Planning Board under the Buildings Standards of a district in Article 2 or under Article 8 Section 10.c.3 or Section 11.c.3. Only the activities in Table 7.3 require Planning Board review.
-5. The Nuisance Standards in Article 7 Section 1.h apply to all Agriculture, subject to Article 7 Section 3.h.3.
+4. A tier that Table 7.1 permits by Special Permit in a district requires a Special Permit there under Table 7.3.
+5. For any agricultural activity or Agricultural Building within the limits of this Section, the Code Enforcement Officer may not refer the application to the Planning Board under the Buildings Standards of a district in Article 2 or under Article 8 Section 10.c.3 or Section 11.c.3. Only the activities in Table 7.3 require Planning Board review.
+6. The Nuisance Standards in Article 7 Section 1.h apply to all Agriculture, subject to Article 7 Section 3.h.3.
 
 ### d. TIERS
 
-1. Home/Personal Agriculture is permitted in the tiers and districts of Table 7.1.
+1. Home/Personal Agriculture is permitted in the tiers and districts of Table 7.1, by right or by Special Permit as the table shows. A tier not listed for a district is not permitted there.
 2. There is no limit on the number of Medium Stock or Large Stock kept on a lot. Separation distances and lot widths govern instead.
 3. The tiers do not limit agriculture lawfully existing on the effective date of this Section. See Article 7 Section 3.i.
 
 TABLE 7.1 AGRICULTURE TIERS BY DISTRICT
 
-| Tier | Covers | Districts |
-| :--- | :--- | :--- |
-| Cultivation | Growing plants at any scale, and selling from the lot what is grown or made there | All districts |
-| Beekeeping | Hives, registered as state law requires | All districts |
-| Small Stock | As defined in Article 9 | All districts |
-| Medium Stock | As defined in Article 9 | D1, D2, D3, SD-Conservation, SD-Rural Highway, SD-Campus |
-| Large Stock | As defined in Article 9 | D1, D2, SD-Conservation, SD-Rural Highway, SD-Campus |
+| Tier | Covers | By right | By Special Permit |
+| :--- | :--- | :--- | :--- |
+| Cultivation | Growing plants at any scale, and selling from the lot what is grown or made there | All districts | — |
+| Beekeeping | Hives, registered as state law requires | All districts | — |
+| Small Stock | As defined in Article 9 | All districts | — |
+| Medium Stock | As defined in Article 9 | D1, D2, D3, SD-Conservation, SD-Rural Highway, SD-Campus | D4, D5, D6, SD-Historic, SD-Highway Commercial, SD-Marine, SD-Fabrication |
+| Large Stock | As defined in Article 9 | D1, D2, SD-Conservation, SD-Rural Highway, SD-Campus | D3 |
 
 ### e. SEPARATION
 
@@ -129,8 +130,8 @@ TABLE 7.1 AGRICULTURE TIERS BY DISTRICT
     b. screening or topography reduces the effect on neighboring lots; and
     c. a manure management plan is in place.
 6. Small Stock housing has no lot width requirement. On a lot too narrow for a 10 ft separation, the district's Accessory Building Placement setback governs. The 25 ft separation from a dwelling applies only where the lot is at least 50 ft wide.
-7. Manure Storage of more than 50 cubic yards must be at least 100 ft from a property line, and all Manure Storage must be at least 300 ft from a well or water body, except as the Planning Board approves under Table 7.3.
-8. A distance to a dwelling is measured to the nearest boundary of the lot containing the dwelling, as in Article 7 Section 4.b.1.a.
+7. Manure Storage of more than 50 cubic yards must be at least 100 ft from a property line and at least 300 ft from a well on another lot, a public water supply, or a water body, except as the Planning Board approves under Table 7.3. Smaller Manure Storage must meet the property line distance of its tier's housing.
+8. A distance to a dwelling is measured to the dwelling itself. A dwelling built after animal housing or Manure Storage was lawfully placed does not make that housing or storage nonconforming.
 
 TABLE 7.2 SEPARATION DISTANCES
 
@@ -141,12 +142,12 @@ TABLE 7.2 SEPARATION DISTANCES
 | Small Stock housing | 10 ft | 25 ft, on lots at least 50 ft wide | Any |
 | Medium Stock housing | 50 ft | 100 ft | 120 ft or more |
 | Large Stock housing | 100 ft | 150 ft | 220 ft or more |
-| Manure Storage | 100 ft, for more than 50 cubic yards | 300 ft from a well or water body | Any |
+| Manure Storage | 100 ft, for more than 50 cubic yards | 300 ft from a well on another lot, a public water supply, or a water body, for more than 50 cubic yards | Any |
 
 ### f. PLANNING BOARD REVIEW
 
 1. Agriculture is permitted as provided in this Section, except that the activities in Table 7.3 require Planning Board approval.
-2. The Planning Board applies the approval standards of Article 8 Section 18.e, together with any finding this Section names.
+2. An approval under Table 7.3 is a Special Permit under Article 8 Section 18, and follows its procedure, approval standards, conditions, and validity, together with any finding this Section names.
 
 TABLE 7.3 PLANNING BOARD REVIEW
 
@@ -158,8 +159,9 @@ TABLE 7.3 PLANNING BOARD REVIEW
 | Agritourism | Events with more than 50 attendees, or more than 12 events a year. |
 | Agricultural Buildings | No limit in D1, SD-Conservation, and SD-Rural Highway. Over 5,000 sq ft in D2 and SD-Campus; over 3,000 sq ft in D3; over 2,000 sq ft in D4, D5, SD-Historic, SD-Highway Commercial, SD-Marine, and SD-Fabrication. In D6, as its Permitted Buildings matrix provides. |
 | Seasonal and unenclosed structures | No limit in D1, D2, SD-Conservation, SD-Rural Highway, and SD-Campus. Over 3,000 sq ft in total in D3; over 2,000 sq ft in total in D4, D5, D6, SD-Historic, SD-Highway Commercial, SD-Marine, and SD-Fabrication. |
-| Manure Storage | More than 50 cubic yards within 100 ft of a property line, or any Manure Storage within 300 ft of a well or water body. |
+| Manure Storage | More than 50 cubic yards within 100 ft of a property line, or within 300 ft of a well on another lot, a public water supply, or a water body. |
 | Reduced separation | Medium Stock or Large Stock on a lot narrower than Table 7.2 requires, under Article 7 Section 3.e.5. |
+| Stock by Special Permit | Medium Stock or Large Stock in a district where Table 7.1 permits it by Special Permit. |
 
 ### g. BUILDINGS AND STRUCTURES
 
@@ -167,18 +169,18 @@ TABLE 7.3 PLANNING BOARD REVIEW
 2. SD-Conservation, SD-Campus, and SD-Marine have no Permitted Buildings matrix. In them, Agricultural Buildings follow the Agricultural Building column of D1, D2, and D5 respectively.
 3. D6 has no Agricultural Building column. In D6, Agricultural Buildings follow its Commercial Accessory column.
 4. This Section adds to the Connected Farm building group of Article 5 Section 18.b and does not limit it.
-5. Hoop Houses, High Tunnels, trellising, fencing, temporary animal shelters, and field-season equipment covers are seasonal or unenclosed structures, not buildings. They do not count toward the structure area of Table 5.2 and are not subject to the removal rule of Article 5 Section 10.c.2. Their total footprint on a lot is limited only as Table 7.3 provides. They must meet the district's Accessory Building Placement setbacks.
+5. Hoop Houses, High Tunnels, trellising, temporary animal shelters, and field-season equipment covers are seasonal or unenclosed structures, not buildings. They do not count toward the structure area of Table 5.2 and are not subject to the removal rule of Article 5 Section 10.c.2. Their total footprint on a lot is limited only as Table 7.3 provides. They must meet the district's Accessory Building Placement setbacks. Fencing follows Article 4 Section 8, not these setbacks.
 6. Small Stock housing and hives are permitted in every district, notwithstanding Table 5.2. Where Table 5.2 reads "Not Permitted" or "n/a", they are limited to 100 sq ft in total on a lot. Elsewhere they count toward the structure area of Table 5.2.
 
 ### h. PROTECTION
 
 1. Agriculture is expected and encouraged in every district where this Section permits it. The presence of a lawful agricultural operation is not, by itself, grounds for restricting ordinary agricultural activity.
 2. Under 7 M.R.S. §154, a farm operation in an area where agricultural activities are permitted may not be considered a violation of a municipal ordinance if it conforms to Best Management Practices.
-    a. Because this Section permits Agriculture in every district, that protection applies by force of state law wherever this Code permits Agriculture. It is not limited to particular standards of this Code.
+    a. That protection is given by State law, which sets its reach; this Code neither enlarges nor limits it. Because this Section permits Agriculture in every district, it may apply to a farm operation in any of them.
     b. It applies only to a farm or farm operation as 7 M.R.S. §152 describes them, not to all Home/Personal Agriculture.
     c. Whether a farm operation conforms to Best Management Practices is determined by the Commissioner under 7 M.R.S. §156, not by the Code Enforcement Officer.
     d. A person claiming this protection bears the burden of showing conformance. A written determination of the Commissioner under 7 M.R.S. §156 is that showing. When conformance is disputed, the Code Enforcement Officer must request a determination from the Commissioner, and enforcement on that question waits for it.
-3. An agricultural activity that meets the numeric standards of this Section is not, by reason of noise, odor, dust, or other ordinary effects of Agriculture, a violation of Article 7 Section 1.h or Article 4 Section 12.h, nor grounds for denial under Article 8 Section 18.e.
+3. An agricultural activity that meets the numeric standards of this Section is not, by reason of noise, odor, dust, or other ordinary effects of Agriculture, a violation of Article 7 Section 1.h or Article 4 Section 12.h, nor grounds for denial under Article 8 Section 18.e. This does not apply while the Planning Board decides a Special Permit under Table 7.3 for that activity.
 
 ### i. EXISTING AGRICULTURE
 
@@ -188,7 +190,8 @@ TABLE 7.3 PLANNING BOARD REVIEW
 
 1. Where this Code exempts Agriculture from a standard or relaxes a standard for it, the exemption applies only to the agricultural activity and the part of the lot it occupies, its agricultural area, as Article 1 Section 2.b.6 allows. It never applies to a non-agricultural use on the same lot.
 2. The fence exemptions of Article 4 Section 8.c.6 and Section 8.c.7.b apply to fencing that encloses an agricultural area of any tier.
-3. The exemption of Article 4 Section 7.b.2, the allowances of Article 5 Section 2.c.2.b and Section 2.c.3.a, and the outdoor storage and work yard screening exemptions of Article 5 Section 18.c and Section 18.d apply only to an agricultural area used for Commercial Agriculture, for Medium Stock or Large Stock, or for at least ½ acre of cultivation.
+3. The exemption of Article 4 Section 7.b.2, the allowances of Article 5 Section 2.c.2.b and Section 2.c.3.a, and the outdoor storage and work yard screening exemptions of Article 5 Section 18.c and Section 18.d apply only to an agricultural area used for production by Commercial Agriculture, for Medium Stock or Large Stock, or for at least ½ acre of cultivation.
+4. An area used to store or sell products not produced on the lot is never an agricultural area.
 
 ## 4. ADULT ESTABLISHMENT
 
@@ -425,7 +428,7 @@ The direct sales of goods and/or products by multiple farmers or vendors from in
 
 ### a. DEFINITION
 
-The direct sale of produce, grown or processed on the property, located within a permanent or semi-permanent structure also on the property.
+Farmstand, as defined in Article 9.
 
 ### b. STANDARDS
 
