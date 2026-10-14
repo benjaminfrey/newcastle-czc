@@ -48,14 +48,14 @@ A dwelling unit which a household whose income does not exceed 80% of the median
 **Agent:**
 A person who acts on behalf of another person or group.
 
-**Agricultural Buildings:**
-Buildings associated with the planting, cultivating, producing, growing, and harvesting of agricultural or horticultural products, the raising of livestock and poultry, and any work performed in conjunction with the above farm operations, including the packing, drying, and storing of products produced on-premises. Includes buildings for equine, or horse-related activities, including boarding, lessons, rides, breeding, veterinary care, races, events, and shows.
-
 **Agricultural Building:**
-Includes storage sheds, apiaries, hoop houses, chicken coops, cold frames, compost bin, greenhouses, silos, rain barrels.
+A building used for Agriculture, such as a barn, stable, equipment or storage shed, silo, or greenhouse. Hoop houses, high tunnels, and other seasonal or unenclosed structures are not Agricultural Buildings. Small Stock housing and hives are not Agricultural Buildings; they are additional structures, governed by Article 7 Section 3.
 
-**Agricultural Use:**
-The commercial planting, cultivating, producing, growing, and harvesting of agricultural or horticultural products, the raising of livestock and poultry, and any work performed in conjunction with the above farm operations, including the packing, drying, and storing of products produced on-premises. Agriculture also includes all equine, or horse-related activities, including boarding, lessons, rides, breeding, veterinary care, races, events, and shows. Unless otherwise specified in this Code, the term 'agriculture' refers to commercial agriculture.
+**Agriculture:**
+The cultivation of plants and the keeping of animals. Agriculture comprises Home/Personal Agriculture and Commercial Agriculture, which this Code regulates separately because they differ in scale and impact.
+
+**Agritourism:**
+Events and visits on a farm that are open to the public and held in connection with the farm's Agriculture, such as tours, pick-your-own harvests, farm meals, workshops, and seasonal festivals.
 
 **Alley (S5):**
 A Street Type for narrow service streets internal to a block, providing access to the side or rear of lots for parking, loading, accessory buildings, and utility easements; buildings do not front on an Alley. Formerly combined with the Lane as Type "S4 Lane/Alley"; the two are now distinct Types (Lane = S4, fronting; Alley = S5, service). Defined in Article 3 Section 2 (Type S5).
@@ -78,11 +78,17 @@ Businesses that relate to vehicular sales and service. All auto-oriented uses, d
 **Average Ground Level:**
 The mean (average) ground level at the corners of the main body of a building type.
 
+**Barn:**
+An Agricultural Building used to house animals, equipment, feed, or crops.
+
 **Basement:**
 A story of a building that is, in whole or in part, below the first story.
 
 **Beam:**
 A large structural framing member.
+
+**Best Management Practices:**
+For a farm operation, the practices that the Commissioner of the Maine Department of Agriculture, Conservation and Forestry determines to be best management practices under 7 M.R.S. §§154 and 156.
 
 **Blank Wall:**
 A portion of any facade of a building that does not include windows, doors, columns, pilasters, or other architectural features.
@@ -165,6 +171,9 @@ Any retail, service, or auto-oriented use that deals with transactions with the 
 **Commercial Accessory Building:**
 A building that supports or compliments a commercial use, not a residential use.
 
+**Commercial Agriculture:**
+Agriculture carried on for the commercial production of agricultural products, as a farm and a farm operation are described in 7 M.R.S. §152, including production for wholesale and the sale of products not grown or made on the lot. Boarding horses owned by others, riding lessons, shows, and events are a Stables/Riding Center use, not Commercial Agriculture.
+
 **Component:**
 One of the elements that make up a building, the other being the main building mass. Components are comprised of smaller attachments to the main building mass and provide architectural articulation and additional usable space.
 
@@ -245,6 +254,9 @@ The surface of a structure or element, especially one that is presented to the v
 
 **Farm:**
 The land, plants, animals, buildings, structures, ponds and machinery used in the commercial production of agricultural products.
+
+**Farmstand:**
+A permanent or semi-permanent structure on a lot from which products grown or made on that lot are sold directly to the public. Selling from a Farmstand is Home/Personal Agriculture.
 
 **Field:**
 An area of undeveloped land primarily covered by grass, including uncultivated meadows and open areas traditionally used for agricultural purposes.
@@ -327,6 +339,9 @@ An accessory building that may be occupied by a residential use or a non-residen
 **Grade:**
 The natural finished ground level of land ground level, or the elevation, at any given point.
 
+**Greenhouse:**
+An Agricultural Building with a roof and walls of glass, plastic, or other light-transmitting material, used to grow plants.
+
 **Ground Plane:**
 The surface of the ground.
 
@@ -342,8 +357,17 @@ The distance between two points along a vertical plane.
 **Height, Absolute:**
 See Absolute Height.
 
+**High Tunnel:**
+A frame structure covered with removable plastic film, with crops grown in the soil beneath it and no permanent heating, used to extend the growing season. A High Tunnel is a seasonal structure, not a building.
+
 **Highway Commercial (R4):**
 A Road Type for auto-oriented commercial corridors with access management, sidewalks where feasible, and MaineDOT-coordinated cartway geometry. Defined in Article 3 Section 2 (Type R4).
+
+**Home/Personal Agriculture:**
+Agriculture that is not Commercial Agriculture. It includes growing food-producing plants and flowers, keeping bees, and keeping Small, Medium, or Large Stock within the tiers of Article 7 Section 3, together with the sale from the lot of products grown or made on that lot, including from a Farmstand. Also called Home Agriculture.
+
+**Hoop House:**
+A frame of hoops covered with removable plastic film or fabric, used to shelter plants or animals. A Hoop House is a seasonal structure, not a building.
 
 **Improvements:**
 Any alteration of land, a lot, a building or a structure.
@@ -375,8 +399,8 @@ Landscaping includes areas of arranged plant materials.
 **Lane (S4):**
 A Street Type for narrow, low-speed fronting streets internal to a neighborhood or village block, carrying two narrow travel lanes that operate in a yield fashion, with a sidewalk on one side or none. A Lane provides frontage and may connect to other Street Types or "punch in" to open the interior of a block; it is larger than an Alley (S5). Defined in Article 3 Section 2 (Type S4).
 
-**Large Animals:**
-Large domestic animals including cows, sheep, pigs, and horses raised for home use or for profit.
+**Large Stock:**
+Cattle, horses, pigs, llamas, emus, standard donkeys, mules, and other animals of similar or greater size.
 
 **Length:**
 In a three-dimensional measurement system, length is a horizontal measurement, distinct and longer than width.
@@ -439,11 +463,17 @@ The volume of a primary or accessory building as defined by the dimensional stan
 **Main Street (S1):**
 The most urban Street Type, providing the central organizing thoroughfare of the Town Center with continuous building streetwalls, active ground-floor uses, wide sidewalks, on-street parking both sides, and the lowest design speed in the typology. Defined in Article 3 Section 2 (Type S1).
 
+**Manure Storage:**
+An area, pile, pit, or structure used to hold animal manure or used bedding before it is spread, composted, or removed.
+
 **Master Plan:**
 A development plan and supporting illustrations and documents providing a framework for future development of a site. A Master Plan provides guidance to the applicant and Town regarding applicable permitting and decision making processes.
 
 **Mechanical Equipment:**
 Equipment, devices, and accessories used for water supply, drainage, heating, ventilating, air conditioning, including elevator shafts, heating and cooling units, utility cabinets, and other visible structures that are located on or near a building or structure.
+
+**Medium Stock:**
+Goats, sheep, alpacas, miniature horses, miniature donkeys, and miniature breeds of Large Stock; roosters, drakes, turkeys, geese, and guinea fowl; any flock of more than six birds; and other animals of similar size.
 
 **Multi-unit Commercial Building:**
 A building occupied by two or more commercial uses and no residential uses.
@@ -471,6 +501,9 @@ A single, internally connected space that comprises a building or a part of a bu
 
 **Office:**
 The transaction of general business, including administrative, professional, and clerical activities, but excluding retail. All office uses, definitions, and standards may be found in Article 7 Use Standards.
+
+**On-Farm Processing:**
+Washing, sorting, drying, packing, and processing on a farm of products grown or raised on that farm.
 
 **On-Site Civic Space:**
 Civic space owned, maintained, and administered by a private entity, provided on the same lot as a building or on a lot associated with a building group, for the purpose of adding publicly accessible amenity space to a development project.
@@ -688,8 +721,8 @@ A lot or parcel occupied or planned for occupation by a use, including structure
 **Slope:**
 The ratio of vertical to horizontal distance.
 
-**Small Animals:**
-Small domestic animals including rabbits, chickens, goats, ducks, alpaca, emu, and other similarly sized animals raised for home use or for profit.
+**Small Stock:**
+Up to six hens or ducks, in any combination, and up to six rabbits. Roosters and drakes are not Small Stock. A seventh bird makes the flock Medium Stock.
 
 **Solar Farm:**
 A site at which photovoltaic modules are used to generate and produce electric power for distribution to consumers, typically managed by a single entity.
