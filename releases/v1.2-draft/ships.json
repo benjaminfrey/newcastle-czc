@@ -1,0 +1,720 @@
+{
+  "old": "v1.1-draft",
+  "new": "v1.2-draft",
+  "articles": {
+    "1": {
+      "prose": 2,
+      "heading": 0,
+      "table": 0,
+      "data": 0,
+      "suppressed": 0,
+      "new": false,
+      "verdict": "SUBSTANTIVE",
+      "needs_call": [],
+      "data_detail": {}
+    },
+    "2": {
+      "prose": 0,
+      "heading": 0,
+      "table": 0,
+      "data": 151,
+      "suppressed": 0,
+      "new": false,
+      "verdict": "SUBSTANTIVE",
+      "needs_call": [
+        "article-02.typ: a layout unit changed. A person decides whether it changes what the Code says or only how it is laid out. (The use-table legend is part of these pages.)"
+      ],
+      "data_detail": {
+        "article-02-data.json": {
+          "changed": [
+            {
+              "path": "D1 / RURAL › matrix › cols › [2]",
+              "old": "Agricultural Use",
+              "new": "Agricultural Building"
+            }
+          ],
+          "added": [
+            {
+              "path": "D1 / RURAL › use_col1 › AGRICULTURAL › entries › Farmstand",
+              "new": "br"
+            },
+            {
+              "path": "D1 / RURAL › use_col1 › AGRICULTURAL › entries › Home Agriculture: Cultivation",
+              "new": "br"
+            },
+            {
+              "path": "D1 / RURAL › use_col1 › AGRICULTURAL › entries › Home Agriculture: Beekeeping",
+              "new": "br"
+            },
+            {
+              "path": "D1 / RURAL › use_col1 › AGRICULTURAL › entries › Home Agriculture: Small Stock",
+              "new": "br"
+            },
+            {
+              "path": "D1 / RURAL › use_col1 › AGRICULTURAL › entries › Home Agriculture: Medium Stock",
+              "new": "br"
+            },
+            {
+              "path": "D1 / RURAL › use_col1 › AGRICULTURAL › entries › Home Agriculture: Large Stock",
+              "new": "br"
+            },
+            {
+              "path": "D2 / NEIGHBORHOOD RESIDENTIAL › matrix › cols › [3]",
+              "new": "Agricultural Building"
+            },
+            {
+              "path": "D2 / NEIGHBORHOOD RESIDENTIAL › matrix › rows › Permitting Authority › [3]",
+              "new": "CEO"
+            },
+            {
+              "path": "D2 / NEIGHBORHOOD RESIDENTIAL › matrix › rows › Building Width › [3]",
+              "new": "-"
+            },
+            {
+              "path": "D2 / NEIGHBORHOOD RESIDENTIAL › matrix › rows › Building Depth › [3]",
+              "new": "-"
+            },
+            {
+              "path": "D2 / NEIGHBORHOOD RESIDENTIAL › matrix › rows › Building Floor Area › [3]",
+              "new": "5,000 sf"
+            },
+            {
+              "path": "D2 / NEIGHBORHOOD RESIDENTIAL › matrix › rows › Total Stories › [3]",
+              "new": "2"
+            },
+            {
+              "path": "D2 / NEIGHBORHOOD RESIDENTIAL › matrix › rows › First Floor Height › [3]",
+              "new": "16 ft"
+            },
+            {
+              "path": "D2 / NEIGHBORHOOD RESIDENTIAL › matrix › rows › Upper Floor Height › [3]",
+              "new": "10 ft"
+            },
+            {
+              "path": "D2 / NEIGHBORHOOD RESIDENTIAL › matrix › rows › Number of Units › [3]",
+              "new": "-"
+            },
+            {
+              "path": "D2 / NEIGHBORHOOD RESIDENTIAL › use_col1 › AGRICULTURAL › entries › Farmstand",
+              "new": "br"
+            },
+            {
+              "path": "D2 / NEIGHBORHOOD RESIDENTIAL › use_col1 › AGRICULTURAL › entries › Home Agriculture: Cultivation",
+              "new": "br"
+            },
+            {
+              "path": "D2 / NEIGHBORHOOD RESIDENTIAL › use_col1 › AGRICULTURAL › entries › Home Agriculture: Beekeeping",
+              "new": "br"
+            },
+            {
+              "path": "D2 / NEIGHBORHOOD RESIDENTIAL › use_col1 › AGRICULTURAL › entries › Home Agriculture: Small Stock",
+              "new": "br"
+            },
+            {
+              "path": "D2 / NEIGHBORHOOD RESIDENTIAL › use_col1 › AGRICULTURAL › entries › Home Agriculture: Medium Stock",
+              "new": "br"
+            },
+            {
+              "path": "D2 / NEIGHBORHOOD RESIDENTIAL › use_col1 › AGRICULTURAL › entries › Home Agriculture: Large Stock",
+              "new": "br"
+            },
+            {
+              "path": "D3 / NEIGHBORHOOD BUSINESS › matrix › cols › [4]",
+              "new": "Agricultural Building"
+            },
+            {
+              "path": "D3 / NEIGHBORHOOD BUSINESS › matrix › rows › Permitting Authority › [4]",
+              "new": "CEO"
+            },
+            {
+              "path": "D3 / NEIGHBORHOOD BUSINESS › matrix › rows › Building Width › [4]",
+              "new": "-"
+            },
+            {
+              "path": "D3 / NEIGHBORHOOD BUSINESS › matrix › rows › Building Depth › [4]",
+              "new": "-"
+            },
+            {
+              "path": "D3 / NEIGHBORHOOD BUSINESS › matrix › rows › Building Floor Area › [4]",
+              "new": "3,000 sf"
+            },
+            {
+              "path": "D3 / NEIGHBORHOOD BUSINESS › matrix › rows › Total Stories › [4]",
+              "new": "2"
+            },
+            {
+              "path": "D3 / NEIGHBORHOOD BUSINESS › matrix › rows › First Floor Height › [4]",
+              "new": "16 ft"
+            },
+            {
+              "path": "D3 / NEIGHBORHOOD BUSINESS › matrix › rows › Upper Floor Height › [4]",
+              "new": "10 ft"
+            },
+            {
+              "path": "D3 / NEIGHBORHOOD BUSINESS › matrix › rows › Number of Units › [4]",
+              "new": "-"
+            },
+            {
+              "path": "D3 / NEIGHBORHOOD BUSINESS › use_col1 › AGRICULTURAL › entries › Farmstand",
+              "new": "br"
+            },
+            {
+              "path": "D3 / NEIGHBORHOOD BUSINESS › use_col1 › AGRICULTURAL › entries › Home Agriculture: Cultivation",
+              "new": "br"
+            },
+            {
+              "path": "D3 / NEIGHBORHOOD BUSINESS › use_col1 › AGRICULTURAL › entries › Home Agriculture: Beekeeping",
+              "new": "br"
+            },
+            {
+              "path": "D3 / NEIGHBORHOOD BUSINESS › use_col1 › AGRICULTURAL › entries › Home Agriculture: Small Stock",
+              "new": "br"
+            },
+            {
+              "path": "D3 / NEIGHBORHOOD BUSINESS › use_col1 › AGRICULTURAL › entries › Home Agriculture: Medium Stock",
+              "new": "br"
+            },
+            {
+              "path": "D3 / NEIGHBORHOOD BUSINESS › use_col1 › AGRICULTURAL › entries › Home Agriculture: Large Stock",
+              "new": "sp"
+            },
+            {
+              "path": "D4 / VILLAGE RESIDENTIAL › matrix › cols › [2]",
+              "new": "Agricultural Building"
+            },
+            {
+              "path": "D4 / VILLAGE RESIDENTIAL › matrix › rows › Permitting Authority › [2]",
+              "new": "CEO"
+            },
+            {
+              "path": "D4 / VILLAGE RESIDENTIAL › matrix › rows › Building Width › [2]",
+              "new": "-"
+            },
+            {
+              "path": "D4 / VILLAGE RESIDENTIAL › matrix › rows › Building Depth › [2]",
+              "new": "-"
+            },
+            {
+              "path": "D4 / VILLAGE RESIDENTIAL › matrix › rows › Building Floor Area › [2]",
+              "new": "2,000 sf"
+            },
+            {
+              "path": "D4 / VILLAGE RESIDENTIAL › matrix › rows › Total Stories › [2]",
+              "new": "2"
+            },
+            {
+              "path": "D4 / VILLAGE RESIDENTIAL › matrix › rows › First Floor Height › [2]",
+              "new": "16 ft"
+            },
+            {
+              "path": "D4 / VILLAGE RESIDENTIAL › matrix › rows › Upper Floor Height › [2]",
+              "new": "10 ft"
+            },
+            {
+              "path": "D4 / VILLAGE RESIDENTIAL › matrix › rows › Number of Units › [2]",
+              "new": "-"
+            },
+            {
+              "path": "D4 / VILLAGE RESIDENTIAL › use_col1 › AGRICULTURAL › entries › Farmstand",
+              "new": "br"
+            },
+            {
+              "path": "D4 / VILLAGE RESIDENTIAL › use_col1 › AGRICULTURAL › entries › Home Agriculture: Cultivation",
+              "new": "br"
+            },
+            {
+              "path": "D4 / VILLAGE RESIDENTIAL › use_col1 › AGRICULTURAL › entries › Home Agriculture: Beekeeping",
+              "new": "br"
+            },
+            {
+              "path": "D4 / VILLAGE RESIDENTIAL › use_col1 › AGRICULTURAL › entries › Home Agriculture: Small Stock",
+              "new": "br"
+            },
+            {
+              "path": "D4 / VILLAGE RESIDENTIAL › use_col1 › AGRICULTURAL › entries › Home Agriculture: Medium Stock",
+              "new": "sp"
+            },
+            {
+              "path": "D4 / VILLAGE RESIDENTIAL › use_col1 › AGRICULTURAL › entries › Home Agriculture: Large Stock",
+              "new": ""
+            },
+            {
+              "path": "D5 / VILLAGE BUSINESS › matrix › cols › [5]",
+              "new": "Agricultural Building"
+            },
+            {
+              "path": "D5 / VILLAGE BUSINESS › matrix › rows › Permitting Authority › [5]",
+              "new": "CEO"
+            },
+            {
+              "path": "D5 / VILLAGE BUSINESS › matrix › rows › Building Width › [5]",
+              "new": "-"
+            },
+            {
+              "path": "D5 / VILLAGE BUSINESS › matrix › rows › Building Depth › [5]",
+              "new": "-"
+            },
+            {
+              "path": "D5 / VILLAGE BUSINESS › matrix › rows › Building Floor Area › [5]",
+              "new": "2,000 sf"
+            },
+            {
+              "path": "D5 / VILLAGE BUSINESS › matrix › rows › Total Stories › [5]",
+              "new": "2"
+            },
+            {
+              "path": "D5 / VILLAGE BUSINESS › matrix › rows › First Floor Height › [5]",
+              "new": "16 ft"
+            },
+            {
+              "path": "D5 / VILLAGE BUSINESS › matrix › rows › Upper Floor Height › [5]",
+              "new": "10 ft"
+            },
+            {
+              "path": "D5 / VILLAGE BUSINESS › matrix › rows › Number of Units › [5]",
+              "new": "-"
+            },
+            {
+              "path": "D5 / VILLAGE BUSINESS › use_col1 › AGRICULTURAL › entries › Farmstand",
+              "new": "br"
+            },
+            {
+              "path": "D5 / VILLAGE BUSINESS › use_col1 › AGRICULTURAL › entries › Home Agriculture: Cultivation",
+              "new": "br"
+            },
+            {
+              "path": "D5 / VILLAGE BUSINESS › use_col1 › AGRICULTURAL › entries › Home Agriculture: Beekeeping",
+              "new": "br"
+            },
+            {
+              "path": "D5 / VILLAGE BUSINESS › use_col1 › AGRICULTURAL › entries › Home Agriculture: Small Stock",
+              "new": "br"
+            },
+            {
+              "path": "D5 / VILLAGE BUSINESS › use_col1 › AGRICULTURAL › entries › Home Agriculture: Medium Stock",
+              "new": "sp"
+            },
+            {
+              "path": "D5 / VILLAGE BUSINESS › use_col1 › AGRICULTURAL › entries › Home Agriculture: Large Stock",
+              "new": ""
+            },
+            {
+              "path": "D6 / TOWN CENTER › use_col1 › AGRICULTURAL › entries › Farmstand",
+              "new": "br"
+            },
+            {
+              "path": "D6 / TOWN CENTER › use_col1 › AGRICULTURAL › entries › Home Agriculture: Cultivation",
+              "new": "br"
+            },
+            {
+              "path": "D6 / TOWN CENTER › use_col1 › AGRICULTURAL › entries › Home Agriculture: Beekeeping",
+              "new": "br"
+            },
+            {
+              "path": "D6 / TOWN CENTER › use_col1 › AGRICULTURAL › entries › Home Agriculture: Small Stock",
+              "new": "br"
+            },
+            {
+              "path": "D6 / TOWN CENTER › use_col1 › AGRICULTURAL › entries › Home Agriculture: Medium Stock",
+              "new": "sp"
+            },
+            {
+              "path": "D6 / TOWN CENTER › use_col1 › AGRICULTURAL › entries › Home Agriculture: Large Stock",
+              "new": ""
+            },
+            {
+              "path": "SD / HISTORIC › matrix › cols › [2]",
+              "new": "Agricultural Building"
+            },
+            {
+              "path": "SD / HISTORIC › matrix › rows › Permitting Authority › [2]",
+              "new": "CEO"
+            },
+            {
+              "path": "SD / HISTORIC › matrix › rows › Building Width › [2]",
+              "new": "-"
+            },
+            {
+              "path": "SD / HISTORIC › matrix › rows › Building Depth › [2]",
+              "new": "-"
+            },
+            {
+              "path": "SD / HISTORIC › matrix › rows › Building Floor Area › [2]",
+              "new": "2,000 sf"
+            },
+            {
+              "path": "SD / HISTORIC › matrix › rows › Total Stories › [2]",
+              "new": "2"
+            },
+            {
+              "path": "SD / HISTORIC › matrix › rows › First Floor Height › [2]",
+              "new": "16 ft"
+            },
+            {
+              "path": "SD / HISTORIC › matrix › rows › Upper Floor Height › [2]",
+              "new": "10 ft"
+            },
+            {
+              "path": "SD / HISTORIC › matrix › rows › Number of Units › [2]",
+              "new": "-"
+            },
+            {
+              "path": "SD / HISTORIC › use_col1 › AGRICULTURAL › entries › Farmstand",
+              "new": "br"
+            },
+            {
+              "path": "SD / HISTORIC › use_col1 › AGRICULTURAL › entries › Home Agriculture: Cultivation",
+              "new": "br"
+            },
+            {
+              "path": "SD / HISTORIC › use_col1 › AGRICULTURAL › entries › Home Agriculture: Beekeeping",
+              "new": "br"
+            },
+            {
+              "path": "SD / HISTORIC › use_col1 › AGRICULTURAL › entries › Home Agriculture: Small Stock",
+              "new": "br"
+            },
+            {
+              "path": "SD / HISTORIC › use_col1 › AGRICULTURAL › entries › Home Agriculture: Medium Stock",
+              "new": "sp"
+            },
+            {
+              "path": "SD / HISTORIC › use_col1 › AGRICULTURAL › entries › Home Agriculture: Large Stock",
+              "new": ""
+            },
+            {
+              "path": "SD / CONSERVATION › use_col1 › AGRICULTURAL › entries › Farmstand",
+              "new": "br"
+            },
+            {
+              "path": "SD / CONSERVATION › use_col1 › AGRICULTURAL › entries › Home Agriculture: Cultivation",
+              "new": "br"
+            },
+            {
+              "path": "SD / CONSERVATION › use_col1 › AGRICULTURAL › entries › Home Agriculture: Beekeeping",
+              "new": "br"
+            },
+            {
+              "path": "SD / CONSERVATION › use_col1 › AGRICULTURAL › entries › Home Agriculture: Small Stock",
+              "new": "br"
+            },
+            {
+              "path": "SD / CONSERVATION › use_col1 › AGRICULTURAL › entries › Home Agriculture: Medium Stock",
+              "new": "br"
+            },
+            {
+              "path": "SD / CONSERVATION › use_col1 › AGRICULTURAL › entries › Home Agriculture: Large Stock",
+              "new": "br"
+            },
+            {
+              "path": "SD / HIGHWAY COMMERCIAL › matrix › cols › [5]",
+              "new": "Agricultural Building"
+            },
+            {
+              "path": "SD / HIGHWAY COMMERCIAL › matrix › rows › Permitting Authority › [5]",
+              "new": "CEO"
+            },
+            {
+              "path": "SD / HIGHWAY COMMERCIAL › matrix › rows › Building Width › [5]",
+              "new": "-"
+            },
+            {
+              "path": "SD / HIGHWAY COMMERCIAL › matrix › rows › Building Depth › [5]",
+              "new": "-"
+            },
+            {
+              "path": "SD / HIGHWAY COMMERCIAL › matrix › rows › Building Floor Area › [5]",
+              "new": "2,000 sf"
+            },
+            {
+              "path": "SD / HIGHWAY COMMERCIAL › matrix › rows › Total Stories › [5]",
+              "new": "2"
+            },
+            {
+              "path": "SD / HIGHWAY COMMERCIAL › matrix › rows › First Floor Height › [5]",
+              "new": "16 ft"
+            },
+            {
+              "path": "SD / HIGHWAY COMMERCIAL › matrix › rows › Upper Floor Height › [5]",
+              "new": "10 ft"
+            },
+            {
+              "path": "SD / HIGHWAY COMMERCIAL › matrix › rows › Number of Units › [5]",
+              "new": "-"
+            },
+            {
+              "path": "SD / HIGHWAY COMMERCIAL › use_col1 › AGRICULTURAL › entries › Farmstand",
+              "new": "br"
+            },
+            {
+              "path": "SD / HIGHWAY COMMERCIAL › use_col1 › AGRICULTURAL › entries › Home Agriculture: Cultivation",
+              "new": "br"
+            },
+            {
+              "path": "SD / HIGHWAY COMMERCIAL › use_col1 › AGRICULTURAL › entries › Home Agriculture: Beekeeping",
+              "new": "br"
+            },
+            {
+              "path": "SD / HIGHWAY COMMERCIAL › use_col1 › AGRICULTURAL › entries › Home Agriculture: Small Stock",
+              "new": "br"
+            },
+            {
+              "path": "SD / HIGHWAY COMMERCIAL › use_col1 › AGRICULTURAL › entries › Home Agriculture: Medium Stock",
+              "new": "sp"
+            },
+            {
+              "path": "SD / HIGHWAY COMMERCIAL › use_col1 › AGRICULTURAL › entries › Home Agriculture: Large Stock",
+              "new": ""
+            },
+            {
+              "path": "SD / RURAL HIGHWAY › matrix › cols › [5]",
+              "new": "Agricultural Building"
+            },
+            {
+              "path": "SD / RURAL HIGHWAY › matrix › rows › Permitting Authority › [5]",
+              "new": "CEO"
+            },
+            {
+              "path": "SD / RURAL HIGHWAY › matrix › rows › Building Width › [5]",
+              "new": "-"
+            },
+            {
+              "path": "SD / RURAL HIGHWAY › matrix › rows › Building Depth › [5]",
+              "new": "-"
+            },
+            {
+              "path": "SD / RURAL HIGHWAY › matrix › rows › Building Floor Area › [5]",
+              "new": "-"
+            },
+            {
+              "path": "SD / RURAL HIGHWAY › matrix › rows › Total Stories › [5]",
+              "new": "-"
+            },
+            {
+              "path": "SD / RURAL HIGHWAY › matrix › rows › First Floor Height › [5]",
+              "new": "-"
+            },
+            {
+              "path": "SD / RURAL HIGHWAY › matrix › rows › Upper Floor Height › [5]",
+              "new": "-"
+            },
+            {
+              "path": "SD / RURAL HIGHWAY › matrix › rows › Number of Units › [5]",
+              "new": "-"
+            },
+            {
+              "path": "SD / RURAL HIGHWAY › use_col1 › AGRICULTURAL › entries › Farmstand",
+              "new": "br"
+            },
+            {
+              "path": "SD / RURAL HIGHWAY › use_col1 › AGRICULTURAL › entries › Home Agriculture: Cultivation",
+              "new": "br"
+            },
+            {
+              "path": "SD / RURAL HIGHWAY › use_col1 › AGRICULTURAL › entries › Home Agriculture: Beekeeping",
+              "new": "br"
+            },
+            {
+              "path": "SD / RURAL HIGHWAY › use_col1 › AGRICULTURAL › entries › Home Agriculture: Small Stock",
+              "new": "br"
+            },
+            {
+              "path": "SD / RURAL HIGHWAY › use_col1 › AGRICULTURAL › entries › Home Agriculture: Medium Stock",
+              "new": "br"
+            },
+            {
+              "path": "SD / RURAL HIGHWAY › use_col1 › AGRICULTURAL › entries › Home Agriculture: Large Stock",
+              "new": "br"
+            },
+            {
+              "path": "SD / CAMPUS › use_col1 › AGRICULTURAL › entries › Farmstand",
+              "new": "br"
+            },
+            {
+              "path": "SD / CAMPUS › use_col1 › AGRICULTURAL › entries › Home Agriculture: Cultivation",
+              "new": "br"
+            },
+            {
+              "path": "SD / CAMPUS › use_col1 › AGRICULTURAL › entries › Home Agriculture: Beekeeping",
+              "new": "br"
+            },
+            {
+              "path": "SD / CAMPUS › use_col1 › AGRICULTURAL › entries › Home Agriculture: Small Stock",
+              "new": "br"
+            },
+            {
+              "path": "SD / CAMPUS › use_col1 › AGRICULTURAL › entries › Home Agriculture: Medium Stock",
+              "new": "br"
+            },
+            {
+              "path": "SD / CAMPUS › use_col1 › AGRICULTURAL › entries › Home Agriculture: Large Stock",
+              "new": "br"
+            },
+            {
+              "path": "SD / MARINE › use_col1 › AGRICULTURAL › entries › Farmstand",
+              "new": "br"
+            },
+            {
+              "path": "SD / MARINE › use_col1 › AGRICULTURAL › entries › Home Agriculture: Cultivation",
+              "new": "br"
+            },
+            {
+              "path": "SD / MARINE › use_col1 › AGRICULTURAL › entries › Home Agriculture: Beekeeping",
+              "new": "br"
+            },
+            {
+              "path": "SD / MARINE › use_col1 › AGRICULTURAL › entries › Home Agriculture: Small Stock",
+              "new": "br"
+            },
+            {
+              "path": "SD / MARINE › use_col1 › AGRICULTURAL › entries › Home Agriculture: Medium Stock",
+              "new": "sp"
+            },
+            {
+              "path": "SD / MARINE › use_col1 › AGRICULTURAL › entries › Home Agriculture: Large Stock",
+              "new": ""
+            },
+            {
+              "path": "SD / FABRICATION › matrix › cols › [5]",
+              "new": "Agricultural Building"
+            },
+            {
+              "path": "SD / FABRICATION › matrix › rows › Permitting Authority › [5]",
+              "new": "CEO"
+            },
+            {
+              "path": "SD / FABRICATION › matrix › rows › Building Width › [5]",
+              "new": "-"
+            },
+            {
+              "path": "SD / FABRICATION › matrix › rows › Building Depth › [5]",
+              "new": "-"
+            },
+            {
+              "path": "SD / FABRICATION › matrix › rows › Building Floor Area › [5]",
+              "new": "2,000 sf"
+            },
+            {
+              "path": "SD / FABRICATION › matrix › rows › Total Stories › [5]",
+              "new": "2"
+            },
+            {
+              "path": "SD / FABRICATION › matrix › rows › First Floor Height › [5]",
+              "new": "16 ft"
+            },
+            {
+              "path": "SD / FABRICATION › matrix › rows › Upper Floor Height › [5]",
+              "new": "10 ft"
+            },
+            {
+              "path": "SD / FABRICATION › matrix › rows › Number of Units › [5]",
+              "new": "-"
+            },
+            {
+              "path": "SD / FABRICATION › use_col1 › AGRICULTURAL › entries › Farmstand",
+              "new": "br"
+            },
+            {
+              "path": "SD / FABRICATION › use_col1 › AGRICULTURAL › entries › Home Agriculture: Cultivation",
+              "new": "br"
+            },
+            {
+              "path": "SD / FABRICATION › use_col1 › AGRICULTURAL › entries › Home Agriculture: Beekeeping",
+              "new": "br"
+            },
+            {
+              "path": "SD / FABRICATION › use_col1 › AGRICULTURAL › entries › Home Agriculture: Small Stock",
+              "new": "br"
+            },
+            {
+              "path": "SD / FABRICATION › use_col1 › AGRICULTURAL › entries › Home Agriculture: Medium Stock",
+              "new": "sp"
+            },
+            {
+              "path": "SD / FABRICATION › use_col1 › AGRICULTURAL › entries › Home Agriculture: Large Stock",
+              "new": ""
+            }
+          ],
+          "removed": []
+        }
+      }
+    },
+    "3": {
+      "prose": 0,
+      "heading": 0,
+      "table": 0,
+      "data": 0,
+      "suppressed": 0,
+      "new": false,
+      "verdict": "UNCHANGED",
+      "needs_call": [],
+      "data_detail": {}
+    },
+    "4": {
+      "prose": 8,
+      "heading": 0,
+      "table": 0,
+      "data": 0,
+      "suppressed": 0,
+      "new": false,
+      "verdict": "SUBSTANTIVE",
+      "needs_call": [],
+      "data_detail": {}
+    },
+    "5": {
+      "prose": 11,
+      "heading": 0,
+      "table": 0,
+      "data": 0,
+      "suppressed": 0,
+      "new": false,
+      "verdict": "SUBSTANTIVE",
+      "needs_call": [],
+      "data_detail": {}
+    },
+    "6": {
+      "prose": 0,
+      "heading": 0,
+      "table": 0,
+      "data": 0,
+      "suppressed": 0,
+      "new": false,
+      "verdict": "UNCHANGED",
+      "needs_call": [],
+      "data_detail": {}
+    },
+    "7": {
+      "prose": 118,
+      "heading": 12,
+      "table": 0,
+      "data": 0,
+      "suppressed": 64,
+      "new": false,
+      "verdict": "SUBSTANTIVE",
+      "needs_call": [],
+      "data_detail": {}
+    },
+    "8": {
+      "prose": 0,
+      "heading": 0,
+      "table": 0,
+      "data": 0,
+      "suppressed": 0,
+      "new": false,
+      "verdict": "UNCHANGED",
+      "needs_call": [],
+      "data_detail": {}
+    },
+    "9": {
+      "prose": 40,
+      "heading": 0,
+      "table": 0,
+      "data": 0,
+      "suppressed": 0,
+      "new": false,
+      "verdict": "SUBSTANTIVE",
+      "needs_call": [],
+      "data_detail": {}
+    }
+  }
+}

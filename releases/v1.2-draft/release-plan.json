@@ -1,0 +1,287 @@
+{
+  "schema": 1,
+  "version": "v1.2-draft",
+  "date": "October 14, 2026",
+  "mode": "draft",
+  "old": "v1.1-draft",
+  "event_date": null,
+  "section_map": {
+    "renumbered": 64
+  },
+  "articles": {
+    "1": {
+      "name": "General Standards",
+      "verdict": "SUBSTANTIVE",
+      "status": "SUBSTANTIVE",
+      "new": false,
+      "counts": {
+        "prose": 2,
+        "heading": 0,
+        "table": 0,
+        "data": 0,
+        "suppressed": 0
+      },
+      "needs_call": [],
+      "call": null
+    },
+    "2": {
+      "name": "District Standards",
+      "verdict": "SUBSTANTIVE",
+      "status": "SUBSTANTIVE",
+      "new": false,
+      "counts": {
+        "prose": 0,
+        "heading": 0,
+        "table": 0,
+        "data": 151,
+        "suppressed": 0
+      },
+      "needs_call": [
+        "article-02.typ: a layout unit changed. A person decides whether it changes what the Code says or only how it is laid out. (The use-table legend is part of these pages.)"
+      ],
+      "call": null
+    },
+    "3": {
+      "name": "Thoroughfares",
+      "verdict": "UNCHANGED",
+      "status": "UNCHANGED",
+      "new": false,
+      "counts": {
+        "prose": 0,
+        "heading": 0,
+        "table": 0,
+        "data": 0,
+        "suppressed": 0
+      },
+      "needs_call": [],
+      "call": null
+    },
+    "4": {
+      "name": "Site Standards",
+      "verdict": "SUBSTANTIVE",
+      "status": "SUBSTANTIVE",
+      "new": false,
+      "counts": {
+        "prose": 8,
+        "heading": 0,
+        "table": 0,
+        "data": 0,
+        "suppressed": 0
+      },
+      "needs_call": [],
+      "call": null
+    },
+    "5": {
+      "name": "Building Standards",
+      "verdict": "SUBSTANTIVE",
+      "status": "SUBSTANTIVE",
+      "new": false,
+      "counts": {
+        "prose": 11,
+        "heading": 0,
+        "table": 0,
+        "data": 0,
+        "suppressed": 0
+      },
+      "needs_call": [],
+      "call": null
+    },
+    "6": {
+      "name": "Design Standards",
+      "verdict": "UNCHANGED",
+      "status": "UNCHANGED",
+      "new": false,
+      "counts": {
+        "prose": 0,
+        "heading": 0,
+        "table": 0,
+        "data": 0,
+        "suppressed": 0
+      },
+      "needs_call": [],
+      "call": null
+    },
+    "7": {
+      "name": "Use Standards",
+      "verdict": "SUBSTANTIVE",
+      "status": "SUBSTANTIVE",
+      "new": false,
+      "counts": {
+        "prose": 118,
+        "heading": 12,
+        "table": 0,
+        "data": 0,
+        "suppressed": 64
+      },
+      "needs_call": [],
+      "call": null
+    },
+    "8": {
+      "name": "Administration",
+      "verdict": "UNCHANGED",
+      "status": "UNCHANGED",
+      "new": false,
+      "counts": {
+        "prose": 0,
+        "heading": 0,
+        "table": 0,
+        "data": 0,
+        "suppressed": 0
+      },
+      "needs_call": [],
+      "call": null
+    },
+    "9": {
+      "name": "Definitions",
+      "verdict": "SUBSTANTIVE",
+      "status": "SUBSTANTIVE",
+      "new": false,
+      "counts": {
+        "prose": 40,
+        "heading": 0,
+        "table": 0,
+        "data": 0,
+        "suppressed": 0
+      },
+      "needs_call": [],
+      "call": null
+    }
+  },
+  "artifacts": [
+    {
+      "kind": "integrated",
+      "article": null,
+      "files": [
+        "Newcastle CZC (Integrated Draft v1.2-draft).pdf",
+        "Newcastle CZC (Integrated Draft v1.2-draft).md"
+      ]
+    },
+    {
+      "kind": "integrated-redline",
+      "article": null,
+      "files": [
+        "Newcastle CZC (Integrated Draft v1.2-draft) — Redline.pdf",
+        "Newcastle CZC (Integrated Draft v1.2-draft) — Redline.md"
+      ]
+    },
+    {
+      "kind": "standalone",
+      "article": 1,
+      "files": [
+        "Article 1 General Standards (Standalone v1.2-draft).pdf",
+        "Article 1 General Standards (Standalone v1.2-draft).md"
+      ]
+    },
+    {
+      "kind": "standalone-redline",
+      "article": 1,
+      "files": [
+        "Article 1 General Standards (Standalone v1.2-draft) — Redline.pdf",
+        "Article 1 General Standards (Standalone v1.2-draft) — Redline.md"
+      ]
+    },
+    {
+      "kind": "standalone",
+      "article": 2,
+      "files": [
+        "Article 2 District Standards (Standalone v1.2-draft).pdf",
+        "Article 2 District Standards (Standalone v1.2-draft).md"
+      ]
+    },
+    {
+      "kind": "standalone-redline",
+      "article": 2,
+      "files": [
+        "Article 2 District Standards (Standalone v1.2-draft) — Redline.pdf",
+        "Article 2 District Standards (Standalone v1.2-draft) — Redline.md"
+      ]
+    },
+    {
+      "kind": "standalone",
+      "article": 4,
+      "files": [
+        "Article 4 Site Standards (Standalone v1.2-draft).pdf",
+        "Article 4 Site Standards (Standalone v1.2-draft).md"
+      ]
+    },
+    {
+      "kind": "standalone-redline",
+      "article": 4,
+      "files": [
+        "Article 4 Site Standards (Standalone v1.2-draft) — Redline.pdf",
+        "Article 4 Site Standards (Standalone v1.2-draft) — Redline.md"
+      ]
+    },
+    {
+      "kind": "standalone",
+      "article": 5,
+      "files": [
+        "Article 5 Building Standards (Standalone v1.2-draft).pdf",
+        "Article 5 Building Standards (Standalone v1.2-draft).md"
+      ]
+    },
+    {
+      "kind": "standalone-redline",
+      "article": 5,
+      "files": [
+        "Article 5 Building Standards (Standalone v1.2-draft) — Redline.pdf",
+        "Article 5 Building Standards (Standalone v1.2-draft) — Redline.md"
+      ]
+    },
+    {
+      "kind": "standalone",
+      "article": 7,
+      "files": [
+        "Article 7 Use Standards (Standalone v1.2-draft).pdf",
+        "Article 7 Use Standards (Standalone v1.2-draft).md"
+      ]
+    },
+    {
+      "kind": "standalone-redline",
+      "article": 7,
+      "files": [
+        "Article 7 Use Standards (Standalone v1.2-draft) — Redline.pdf",
+        "Article 7 Use Standards (Standalone v1.2-draft) — Redline.md"
+      ]
+    },
+    {
+      "kind": "standalone",
+      "article": 9,
+      "files": [
+        "Article 9 Definitions (Standalone v1.2-draft).pdf",
+        "Article 9 Definitions (Standalone v1.2-draft).md"
+      ]
+    },
+    {
+      "kind": "standalone-redline",
+      "article": 9,
+      "files": [
+        "Article 9 Definitions (Standalone v1.2-draft) — Redline.pdf",
+        "Article 9 Definitions (Standalone v1.2-draft) — Redline.md"
+      ]
+    },
+    {
+      "kind": "use-table-changes",
+      "article": 2,
+      "files": [
+        "Use Table Changes v1.2-draft.md",
+        "Use Table Changes v1.2-draft.pdf"
+      ]
+    },
+    {
+      "kind": "summary",
+      "article": null,
+      "files": [
+        "Summary of Changes v1.2-draft.md"
+      ]
+    },
+    {
+      "kind": "record",
+      "article": null,
+      "files": [
+        "release-plan.json",
+        "ships.json"
+      ]
+    }
+  ]
+}

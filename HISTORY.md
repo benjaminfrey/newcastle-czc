@@ -111,6 +111,12 @@ instructions; open items are listed in CLAUDE.md.
 
 ## Status log as of 2026-10-12
 
+- **✅ v1.2-draft CUT (2026-10-14) — Right to Farm** (PR #11, merge `e709b1d`; spec
+  `specs/2026-10-07-right-to-farm-design.md`, decisions R1–R35, Plans A and B in `plans/`). New
+  Article 7 §3 (Article 7 §§3–66 → §§4–67); the fifth use status ○ No Permit Required (`br`);
+  six AGRICULTURAL rows in all 13 districts and an Agricultural Building column in eight; Articles
+  1, 4, 5 and 9 edited. Substantive: Articles 1, 2, 4, 5, 7, 9. 119 pp integrated Code; full suite
+  768 passed. Open: the permit app (D-0035), counsel's questions, the DACF notice (7 M.R.S. §155).
 - **✅ Right to Farm Plan A — Wave 4c, the fifth use status (2026-10-14, branch `right-to-farm`;
   plan `plans/2026-10-14-right-to-farm-plan-a-status-code.md`, decisions R1–R5).** Article 2's
   legend gains ○ **No Permit Required** (data code `br`, authority —) and a two-sentence Note
