@@ -266,13 +266,14 @@ nonconformity definitions disagree with each other on exactly this point — fla
 
 Six provisions today turn on whether a **lot** is "used for agricultural activities": the fence
 material and crossing exemptions (Article 4 §8), the field-review exemption (Article 4 §7), the
-one-accessory-building cap and the no-primary-building allowance (Article 5 §9), and the outdoor
+one-accessory-building cap and the no-primary-building allowance (Article 5 §2.c.2.b and §2.c.3.a — corrected 2026-10-14
+from "§9", which is Additional Structures), and the outdoor
 storage and work-yard screening exemptions (Article 5 §18). Once Cultivation is permitted in all
 thirteen districts, any lot in town can qualify with a token planting, and the carve-outs transfer to
 whatever non-farm use shares the lot — a landscaping yard, a contractor's equipment, a kennel.
 
 All six are re-keyed to the **activity and its own footprint** rather than the lot, using Article 1
-§2.c.6 ("'lot' … also refer[s] to any portion thereof"), with a threshold so a token planting does
+§2.b.6 (corrected 2026-10-14 from "§2.c.6"; "'lot' … also refer[s] to any portion thereof"), with a threshold so a token planting does
 not qualify. The spec states expressly that a co-located non-agricultural business gets no benefit
 from any of them.
 

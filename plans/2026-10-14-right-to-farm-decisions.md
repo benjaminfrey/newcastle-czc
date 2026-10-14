@@ -51,7 +51,7 @@ reviewed change (Plan A) before the ordinance data, and both ship together in **
 
 **Split by carve-out.** Fence materials and crossing (Art. 4 §8): any tier, only for fencing that
 encloses the agricultural area itself. The other four (field review, Art. 4 §7; accessory cap and
-no-primary-building, Art. 5 §9; storage and work-yard screening, Art. 5 §18): Commercial
+no-primary-building, Art. 5 §2.c.2.b and §2.c.3.a — the spec's "§9" is a citation error, corrected 2026-10-14; storage and work-yard screening, Art. 5 §18): Commercial
 Agriculture, or medium or large stock, or at least ½ acre in cultivation. A co-located
 non-agricultural business gets no benefit from any of them.
 
@@ -83,3 +83,17 @@ Alpacas, miniature horses and miniature donkeys are **medium stock**; standard d
 Counsel's questions in spec §7 stand, including 7 M.R.S. §219-D (small stock in every district),
 §§293/296 (no permit for cultivation), §154's reach, and the §155 clock. The drafting follows the
 spec's working assumption on each. The §3.4 thresholds are the spec's starting numbers for the Board.
+
+## R27–R28 · The district use tables (spec §4, Article 2)
+
+| # | Question | Decision |
+|---|---|---|
+| R27 | How Home/Personal Agriculture appears | **One row per tier** in the AGRICULTURAL category: Cultivation, Beekeeping, Small Stock, Medium Stock, Large Stock, each ○ where spec §3.3 allows that tier and blank elsewhere; plus **Farmstand** ○ in all thirteen (R19). Six new rows (63 → 69 uses) |
+| R28 | Commercial Agriculture's statuses | **Unchanged**: ● in D1, D2, SD-Conservation, SD-Highway Commercial, SD-Rural Highway and SD-Campus |
+
+## R29 · Small-stock housing and hives (spec §3.3, §3.6; Art. 5 Table 5.2)
+
+Small-stock housing (coops, hutches) and hives are **permitted in every district notwithstanding
+Table 5.2**. Where Table 5.2 reads "Not Permitted" or "n/a" (D6, SD-Campus, SD-Marine) they are
+limited to **100 sq ft in total per lot**; elsewhere they count toward the Table 5.2 area as other
+additional structures do. Accessory Building Placement setbacks and the §3 separations apply.
