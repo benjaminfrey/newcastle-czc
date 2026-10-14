@@ -219,7 +219,7 @@ A commercial facility for spectator and participatory uses conducted outdoors or
 
 ### b. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 
 ## 7. ANIMAL CARE, INDOOR
 
@@ -229,7 +229,7 @@ A facility where animals not owned by the proprietor are sheltered and fed, and 
 
 ### b. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 
 ## 8. ANIMAL CARE, OUTDOOR
 
@@ -244,7 +244,7 @@ A facility where animals not owned by the proprietor are sheltered and fed. Incl
     b. must be located no less than 200 feet from any abutting residential use.
     c. must meet state and federal regulations regarding shelter against weather.
     d. must provide fencing of adequate height to prevent escape.
-2. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+2. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 
 ## 9. AQUACULTURE
 
@@ -265,7 +265,7 @@ A facility that has organized services, meetings, events, or programs to benefit
 ### b. STANDARDS
 
 1. Meeting facilities and places of worship may include functionally related internal facilities such as kitchens, multi-purpose rooms, and offices. Places of worship may establish schools, daycare centers, and on-site social programs such as health care clinics, and food banks.
-2. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+2. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 
 ## 11. BANKING & FINANCIAL SERVICES
 
@@ -312,7 +312,7 @@ A site where one or more lots are used, or are intended to be used, by campers w
 
 ### b. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 
 ## 15. CAR WASH
 
@@ -332,12 +332,12 @@ A post-secondary institution for higher learning that grants associate, bachelor
 
 ### a. DEFINITION
 
-The commercial planting, cultivating, producing, growing, and harvesting of agricultural or horticultural products, the raising of livestock and poultry, and any work performed in conjunction with the above farm operations, including the packing, drying, and storing of products produced on-premises.
+Commercial Agriculture, as defined in Article 9.
 
 ### b. GENERAL STANDARDS FOR USE.
 
-1. Private, non-commercial agricultural uses are permitted in every district but may not adversely affect the use and quiet enjoyment of abutting property as a result of noise, vibrations, fumes, odor, dust, glare, or other cause.
-2. Agriculture uses must follow the Mainie State Agriculture Protection Act standards.
+1. Commercial Agriculture must meet the standards of Article 7 Section 3 Right to Farm, which also governs Home/Personal Agriculture.
+2. The protection that 7 M.R.S. §154 gives a farm operation following Best Management Practices is described in Article 7 Section 3.h.2.
 
 ## 18. COMMERCIAL SCHOOL
 
@@ -384,7 +384,7 @@ The storage and dispatch of ambulances, taxis, limousines, armored cars, tow tru
 ### b. STANDARDS
 
 1. The storage of vehicles must be within a fully-enclosed structure or behind a 25 ft deep Level 2 Natural Screen or a 50% opaque fence.
-2. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+2. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
     a. Emergency Services are exempt from noise and glare requirements.
 
 ## 23. DISTRICT ENERGY SYSTEM
@@ -427,6 +427,11 @@ The direct sales of goods and/or products by multiple farmers or vendors from in
 
 The direct sale of produce, grown or processed on the property, located within a permanent or semi-permanent structure also on the property.
 
+### b. STANDARDS
+
+1. A Farmstand is Home/Personal Agriculture and requires no permit.
+2. A Farmstand structure must meet the district's Accessory Building Placement setbacks.
+
 ## 28. FOOD PANTRY
 
 ### a. DEFINITION
@@ -456,7 +461,7 @@ A facility engaged in the retail sales of personal or commercial vehicle fuels.
 
 ### b. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 
 ## 31. HEALTH CARE PROVIDER
 
@@ -511,7 +516,7 @@ A manufacturing use involving small-scale production or assembly with no noxious
 
 ### b. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 2. Parking lots are not permitted within the frontage zone and must not be visible from any road, excluding alleys.
 
 ## 37. INDUSTRIAL, GENERAL
@@ -522,7 +527,7 @@ Uses that are associated with retail sales, outdoor storage, or light manufactur
 
 ### b. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 2. A Level 3 Screen, 25 ft deep, is required along all side and rear lot lines that abut residential uses.
 
 ## 38. INDUSTRIAL, HEAVY
@@ -558,7 +563,7 @@ Any activity provided for pleasure, quiet enjoyment, recreation, relaxation, div
 
 ### b. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 
 ## 41. MARINA, DRY STORAGE
 
@@ -611,6 +616,8 @@ An small office use involves the conduct of business relating to administration,
 
 The outdoor keeping of equipment, vehicles, waste, and any materials associated with uses or activities occurring within buildings on the same lot for a period greater than 48 hours.
 
+1. Equipment, vehicles, and materials in active agricultural use within an agricultural area under Article 7 Section 3.j, such as implements in season, hay, bedding, feed, and harvest bins, are not Outdoor Storage. Unused or inoperable equipment remains Outdoor Storage.
+
 ### b. STANDARDS
 
 1. The storage of refuse, recycling, or other materials is not permitted within the frontage zone.
@@ -647,7 +654,7 @@ A facility operated for an organization, which is open to people upon invitation
 
 ### b. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 
 ## 52. RECYCLING FACILITY
 
@@ -659,7 +666,7 @@ A facility that accepts materials, such as dry paper, glass, cans, or plastics, 
 
 1. Outdoor storage or operations of the recycling facility may not be located within the frontage zone and must be located behind a 50 ft deep Level 3 Natural Screen, or a 6 ft to 8 ft tall opaque fence. Outdoor storage or operations of any kind are prohibited outside the screened area.
 2. Recycling drop-off facilities, manned or unmanned, must be located behind the frontage zone.
-3. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+3. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 
 ## 53. RESEARCH LABORATORY
 
@@ -669,7 +676,7 @@ A facility for research and development that does not involve the use of human t
 
 ### b. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 
 ## 54. RESIDENCE
 
@@ -774,9 +781,12 @@ A facility where individual secured areas inside a structure are rented for shor
 
 A structure or land used, designed, and arranged for the care and shelter of equines, for riding, shows, or training, which may include horses not boarded on-site.
 
+1. Includes the boarding of horses owned by others, riding lessons, rides, breeding, veterinary care, races, events, and shows.
+
 ### b. STANDARDS
 
 1. A fence is required around all paddock areas.
+2. Keeping one's own horses is Large Stock under Article 7 Section 3, not a Stables/Riding Center use.
 
 ## 64. TOURIST RENTAL
 
@@ -804,7 +814,7 @@ The rental of a dwelling unit, or a portion of a dwelling unit, on an overnight 
     a. Glass cladding.
     b. Louvered or paneled shutters covering the panel in a "closed" position.
     c. A trellis, grille, grate, or fretwork.
-4. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+4. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 
 ## 66. VEHICLE RENTAL OR SALES
 
@@ -828,4 +838,4 @@ A business that repairs, installs, or maintains automobiles, small trucks or van
 2. No partially dismantled, wrecked, or unregistered vehicle may be stored outdoors for more than 30 days.
 3. Temporary storage of vehicles may not be located within the frontage zone and must be located behind a 25 ft Level 2 Natural Screen or a 6ft to 8 ft tall opaque fence.
 4. Outdoor storage or operations of any kind are prohibited in the frontage zone.
-5. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+5. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.

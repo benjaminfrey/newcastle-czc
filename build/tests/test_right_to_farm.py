@@ -119,3 +119,8 @@ def test_part_two_subsections_exist():
     for h in ("### g. BUILDINGS AND STRUCTURES", "### h. PROTECTION",
               "### i. EXISTING AGRICULTURE", "### j. AGRICULTURAL AREA"):
         assert h in sec3, h
+
+
+def test_nuisance_citations_point_at_1h():
+    assert "Section 1.G" not in _art7()
+    assert len(re.findall(r"Nuisance Standards in Article 7 Section 1\.H", _art7())) >= 15
