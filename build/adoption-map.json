@@ -1,6 +1,7 @@
 {
   "_README": "Baseline->current article correspondence for an adoption release. ROLLED OVER September 14, 2026, when Town Meeting adopted v1.0: v1.0 is now the previously adopted Code, it already has the nine-article numbering, and so every map below is identity and nothing is new or non-comparable. build/baseline_selfcheck.py guards this state (the baseline compared against itself must mark zero lines) and runs as a precondition of build-adoption.sh. Change this file again ONLY when a future amendment renumbers articles or renames article files: list the renumbering in article_numbers, the old filename for each current file in files (null for an article new at that adoption), and any article whose content leaves markdown for a native-Typst unit in not_text_comparable -- then reset to identity after that adoption, exactly as was done here. History: through v1.0 the baseline was v0.1-baseline (the 2020 Code, eight articles), mapped 3->4 ... 8->9 because Article 3 (Thoroughfares) was inserted, with Article 2 not text-comparable because its district standards moved to article-02.typ + article-02-data.json. See build/ADOPTION-SPEC.md §3.1.",
   "baseline_version": "v1.0",
+  "baseline_amended_through": "September 14, 2026",
   "article_numbers": {
     "1": 1,
     "2": 2,

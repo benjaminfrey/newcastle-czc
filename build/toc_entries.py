@@ -27,7 +27,7 @@ import os
 import re
 import sys
 
-import fitz  # PyMuPDF
+import pymupdf  # PyMuPDF; `import fitz` is deprecated and prints a notice to stdout
 
 ARTICLE_BLUE = 0x367AAC
 OPENER_SZ = (30.0, 35.0)
@@ -54,7 +54,7 @@ def _spans(doc):
 
 
 def extract(body_pdf, data_json):
-    doc = fitz.open(body_pdf)
+    doc = pymupdf.open(body_pdf)
     spans = list(_spans(doc))
 
     # --- Article openers (33pt blue): "ARTICLE N" then accumulate name spans ---

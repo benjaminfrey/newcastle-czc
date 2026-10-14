@@ -16,7 +16,7 @@ Usage:
   build-frontmatter-fidelity.py BASELINE_PDF DRAFT_PDF OUT_PDF
 """
 import sys
-import fitz
+import pymupdf
 
 PAIRS = [("COVER", 0, 0), ("TABLE OF CONTENTS — p.1", 1, 2),
          ("TABLE OF CONTENTS — p.2", 2, 3)]
@@ -29,9 +29,9 @@ GRAY = (0x7C / 255, 0x76 / 255, 0x6F / 255)
 
 
 def build(baseline_pdf, draft_pdf, out_pdf):
-    base = fitz.open(baseline_pdf)
-    draft = fitz.open(draft_pdf)
-    out = fitz.open()
+    base = pymupdf.open(baseline_pdf)
+    draft = pymupdf.open(draft_pdf)
+    out = pymupdf.open()
 
     for title, bp, dp in PAIRS:
         bpix = base[bp].get_pixmap(dpi=DPI)
@@ -46,20 +46,20 @@ def build(baseline_pdf, draft_pdf, out_pdf):
 
         # Caption band.
         page.insert_textbox(
-            fitz.Rect(MARGIN, MARGIN - 6, page_w - MARGIN, MARGIN + LABEL_H),
+            pymupdf.Rect(MARGIN, MARGIN - 6, page_w - MARGIN, MARGIN + LABEL_H),
             title, fontsize=15, color=ARTICLE_BLUE, fontname="hebo",
-            align=fitz.TEXT_ALIGN_CENTER)
+            align=pymupdf.TEXT_ALIGN_CENTER)
         y0 = MARGIN + LABEL_H
-        lrect = fitz.Rect(MARGIN, y0, MARGIN + bw, y0 + disp_h)
-        rrect = fitz.Rect(MARGIN + bw + GAP, y0, MARGIN + bw + GAP + dw, y0 + disp_h)
+        lrect = pymupdf.Rect(MARGIN, y0, MARGIN + bw, y0 + disp_h)
+        rrect = pymupdf.Rect(MARGIN + bw + GAP, y0, MARGIN + bw + GAP + dw, y0 + disp_h)
         page.insert_image(lrect, pixmap=bpix)
         page.insert_image(rrect, pixmap=dpix)
         # Sub-labels under each.
         for rect, lab in ((lrect, "BASELINE (adopted)"), (rrect, "INTEGRATED DRAFT")):
             page.insert_textbox(
-                fitz.Rect(rect.x0, rect.y0 + 2, rect.x1, rect.y0 + 16),
+                pymupdf.Rect(rect.x0, rect.y0 + 2, rect.x1, rect.y0 + 16),
                 lab, fontsize=8, color=GRAY, fontname="hebo",
-                align=fitz.TEXT_ALIGN_CENTER)
+                align=pymupdf.TEXT_ALIGN_CENTER)
         # Hairline frames.
         page.draw_rect(lrect, color=GRAY, width=0.5)
         page.draw_rect(rrect, color=GRAY, width=0.5)

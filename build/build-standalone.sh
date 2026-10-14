@@ -16,11 +16,23 @@
 # Examples:
 #   build-standalone.sh 7 v0.22-draft
 #   build-standalone.sh 3 v0.22-draft "June 21, 2026"
+#
+# Optional environment seams (each defaults to today's behaviour):
+#   SRC_DIR            input tree           (default: $REPO_ROOT/source)
+#   OUT_DIR            output directory     (default: $REPO_ROOT/releases/<version>)
+#   OUT_NAME_OVERRIDE  artifact stem, no extension
+#                                           (default: czc_standalone_name, adoption-name.sh)
+#   STANDALONE_FRONT_NOTE  path to a PDF prepended as uncounted front matter
+#                                           (default: none). Must have an EVEN page
+#                                           count -- see "optional front note" below.
+#   OUT_MD_SOURCE      file copied as the .md deliverable (default: the honest markdown
+#                                           that build/czc_md.py generates -- tables as
+#                                           tables, Article 2's district pages appended)
 
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SOURCE_DIR="$REPO_ROOT/source"
+SOURCE_DIR="${SRC_DIR:-$REPO_ROOT/source}"
 MANIFEST_PY="$REPO_ROOT/build/manifest.py"
 
 NN_RAW="${1:-}"
@@ -37,6 +49,7 @@ DATE_STR="${3:-}"        # reserved (standalone has no cover); kept for signatur
 # circulate on its own, so the standalone must refuse the same bypass the
 # integrated build does.
 source "$REPO_ROOT/build/adoption-footer.sh"
+source "$REPO_ROOT/build/pagecount.sh"
 
 if [ -z "$NN_RAW" ]; then
   echo "usage: build-standalone.sh <article-NN> <version> [date-str]" >&2
@@ -45,57 +58,77 @@ fi
 NN=$(printf "%02d" "$((10#$NN_RAW))")    # zero-padded "07"
 NUM=$((10#$NN))                          # numeric 7
 
-RELEASE_DIR="$REPO_ROOT/releases/$VERSION"
-mkdir -p "$RELEASE_DIR"
+RELEASE_DIR="${OUT_DIR:-$REPO_ROOT/releases/$VERSION}"
 
 # --- resolve the prose source: manifest 'prose', else glob article-0NN-*.md ----
-PROSE=""
-PRO=$(python3 "$MANIFEST_PY" prose "$NUM" 2>/dev/null || true)
-if [ -n "$PRO" ]; then
-  PROSE="$SOURCE_DIR/$PRO"
-else
-  for f in "$SOURCE_DIR"/article-"$NN"-*.md; do
-    [ -f "$f" ] && PROSE="$f" && break
-  done
-fi
-if [ -z "$PROSE" ] || [ ! -f "$PROSE" ]; then
+# (build/article-meta.sh: one definition, shared with build-redline-standalone.sh)
+source "$REPO_ROOT/build/article-meta.sh"
+if ! PRO=$(czc_article_prose "$SOURCE_DIR" "$NUM"); then
   echo "No prose source for Article $NUM (manifest 'prose' or source/article-$NN-*.md)" >&2
   exit 1
 fi
+PROSE="$SOURCE_DIR/$PRO"
 
 # --- article number/name from frontmatter (for the output filename) ------------
-read_meta() { python3 - "$1" "$2" <<'PY'
-import sys, re
-txt = open(sys.argv[1], encoding="utf-8").read()
-m = re.match(r"^---\n(.*?)\n---", txt, re.S)
-key, val = sys.argv[2], ""
-if m:
-    for ln in m.group(1).split("\n"):
-        if ln.startswith(key + ":"):
-            val = ln.split(":", 1)[1].strip().strip('"')
-            break
-print(val)
-PY
-}
-ANUM=$(read_meta "$PROSE" article-number); ANUM="${ANUM:-$NUM}"
-ANAME=$(read_meta "$PROSE" article-name);  ANAME="${ANAME:-Article $NUM}"
+ANUM=$(czc_read_meta "$PROSE" article-number); ANUM="${ANUM:-$NUM}"
+ANAME=$(czc_read_meta "$PROSE" article-name);  ANAME="${ANAME:-Article $NUM}"
 
-OUT_NAME="Article $ANUM $ANAME (Standalone $VERSION)"
+source "$REPO_ROOT/build/adoption-name.sh"
+OUT_NAME="${OUT_NAME_OVERRIDE:-$(czc_standalone_name "$ADOPTION_MODE" "$ANUM" "$ANAME" "$VERSION")}"
 OUTPUT_PDF="$RELEASE_DIR/$OUT_NAME.pdf"
 
 TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
 
-pagecount() { python3 - "$1" <<'PY'
-import sys, fitz
-print(fitz.open(sys.argv[1]).page_count)
-PY
-}
+pagecount() { czc_pagecount "$1"; }
 
 BLANK_PDF="$TMP/blank.pdf"
 python3 - "$BLANK_PDF" <<'PY'
-import sys, fitz
-d = fitz.open(); d.new_page(width=612, height=792); d.save(sys.argv[1]); d.close()
+import sys, pymupdf
+d = pymupdf.open(); d.new_page(width=612, height=792); d.save(sys.argv[1]); d.close()
 PY
+
+# ---- optional front note (uncounted; K must be even) ------------------------
+# Prepended to PARTS but NOT added to OFF, so the Article opener still prints
+# "1" and the extract keeps the 1..N convention this script documents at the
+# top. Physical page = printed page + K. K must be even so that the logical
+# (printed) page equals the physical page in the bound extract; an odd note
+# would shift every page's recto/verso side by one and still exit 0, which is
+# why this refuses rather than warns.
+FRONT_NOTE="${STANDALONE_FRONT_NOTE:-}"
+if [ -n "$FRONT_NOTE" ]; then
+  if [ ! -f "$FRONT_NOTE" ]; then
+    echo "standalone: front note not found: $FRONT_NOTE" >&2
+    exit 1
+  fi
+  NOTE_PAGES=$(pagecount "$FRONT_NOTE")
+  if [ $((NOTE_PAGES % 2)) -ne 0 ]; then
+    echo "standalone: the front note is $NOTE_PAGES page(s); it must be an even page count." >&2
+    echo "  The note is not counted in the page offset, so an odd note shifts every" >&2
+    echo "  physical page by an odd amount and inverts verso/recto chrome against the" >&2
+    echo "  binding margin for the whole extract. Pad the note to an even length." >&2
+    exit 1
+  fi
+fi
+
+# The .md deliverable's source. Defaults to the honest markdown that build/czc_md.py
+# generates (below); a redline supplies its own via OUT_MD_SOURCE, because the staged
+# prose is Typst-marked, not markdown, and czc_md is then not called.
+if [ -n "${OUT_MD_SOURCE:-}" ] && [ ! -f "$OUT_MD_SOURCE" ]; then
+  echo "standalone: OUT_MD_SOURCE not found: $OUT_MD_SOURCE" >&2
+  exit 1
+fi
+# Otherwise the .md is the honest markdown, generated BEFORE anything is rendered
+# or the release directory exists: a refused .md must leave no directory that looks
+# like a shipped release. (ADOPTION_MODE is set by adoption-footer.sh, above.)
+MD_OUT="${OUT_MD_SOURCE:-}"
+if [ -z "$MD_OUT" ]; then
+  MD_OUT="$TMP/out.md"
+  if ! python3 "$REPO_ROOT/build/czc_md.py" "$NUM" "$MD_OUT" \
+         --src-dir "$SOURCE_DIR" --mode "$ADOPTION_MODE" --version "$VERSION"; then
+    echo "standalone: the markdown deliverable was refused (see above); nothing built." >&2
+    exit 1
+  fi
+fi
 
 # Render one prose segment via the generic primitive. article-number/name come
 # from the markdown frontmatter; we override footer-date to the adoption-mode
@@ -170,7 +203,15 @@ else
   render_seg "$PROSE" "$TMP/prose.pdf" 0; PARTS+=("$TMP/prose.pdf")
 fi
 
+# Created only now, once every input and guard has passed: a build that cannot
+# start (or is refused, e.g. an odd front note) must not leave a directory that
+# looks like a shipped release. Nothing above writes into RELEASE_DIR.
+mkdir -p "$RELEASE_DIR"
 echo "Assembling: $OUTPUT_PDF"
-pdfunite "${PARTS[@]}" "$OUTPUT_PDF"
-cp "$PROSE" "$RELEASE_DIR/$OUT_NAME.md"
+if [ -n "$FRONT_NOTE" ]; then
+  pdfunite "$FRONT_NOTE" "${PARTS[@]}" "$OUTPUT_PDF"
+else
+  pdfunite "${PARTS[@]}" "$OUTPUT_PDF"
+fi
+cp "$MD_OUT" "$RELEASE_DIR/$OUT_NAME.md"
 echo "Done: $OUTPUT_PDF ($(pagecount "$OUTPUT_PDF") pages)"

@@ -39,6 +39,7 @@ DATE_STR="${2:-$(date +"%B %-d, %Y")}"
 # whole number cannot wear draft chrome, and adoption chrome cannot be stamped
 # on a decimal), and provides czc_integrated_name().
 source "$REPO_ROOT/build/adoption-footer.sh"
+source "$REPO_ROOT/build/pagecount.sh"
 
 BASELINE_PDF="$REPO_ROOT/docs/Newcastle Core Zoning Code.pdf"
 DATA_JSON="$SOURCE_DIR/article-02-data.json"
@@ -82,11 +83,13 @@ trap 'rm -rf "$TMPDIR_PDFS"' EXIT
 # markdown/pandoc cannot express, so — exactly like the Article-2 district
 # spreads (article-02.typ) and the Article-3 Type plates
 # (cross-section-plates.typ) — they render natively and are concatenated in
-# place. The render loop's *.typ branch threads the same cumulative even
-# page-offset + footer date, so the maps' parity-aware chrome (ARTICLE 1 tab,
-# GENERAL STANDARDS running head, continuous footer) is correct; the 3-page
-# (odd) block is padded with one trailing blank, keeping every downstream
-# Article's parity unchanged (an even shift of +4).
+# place. The render loop's *.typ branch threads the same running page-offset +
+# footer date, so the maps' parity-aware chrome (ARTICLE 1 tab, GENERAL STANDARDS
+# running head, continuous footer) follows the true running page number. The
+# loop adds no pad after the maps (the only pad the render loop can insert is the
+# conditional one before article-02.typ, below, which keeps the running offset
+# odd and fires only when the preceding page total is even; the front-matter
+# blanks are added after the loop).
 MAPS_TYP="$SOURCE_DIR/district-maps.typ"
 if [ -f "$MAPS_TYP" ]; then
   SPLICED=()
@@ -108,9 +111,9 @@ fi
 # markdown at the <!-- TYPE-PAGES --> marker into 03a (opener + §1 + §2.a-c) and
 # 03b (§2.d Driveway + §3..§14, rendered with continuation=true so the big
 # "ARTICLE 3" opener is not repeated). The render order becomes [03a, plates,
-# 03b]. Threading the running EVEN page offset through all three keeps footers
-# continuous and every unit's parity-aware chrome (tab/header/badge) correct; the
-# 10-page (EVEN) plate block preserves offset parity for the segments around it.
+# 03b]. Threading the true running page offset through all three keeps footers
+# continuous and every unit's parity-aware chrome (tab/header/badge) following
+# the running page number; the render loop adds no pad around the plate block.
 PLATES_TYP="$SOURCE_DIR/cross-section-plates.typ"
 INV_TYP="$SOURCE_DIR/street-type-inventory.typ"          # Exhibit 3.1 (Inventory table)
 MAP_TYP="$SOURCE_DIR/street-type-map.typ"                # Exhibit 3.2 (Type Map)
@@ -126,15 +129,19 @@ if [ -f "$PLATES_TYP" ] && [ -n "$ART3_SRC" ]; then
   CAND_03A="$TMPDIR_PDFS/article-03a.md"
   CAND_03B="$TMPDIR_PDFS/article-03b.md"
   CAND_03C="$TMPDIR_PDFS/article-03c.md"
-  if python3 "$REPO_ROOT/build/split-article-03.py" "$ART3_SRC" "$CAND_03A" "$CAND_03B" "$CAND_03C"; then
+  SPLIT_RC=0
+  python3 "$REPO_ROOT/build/split-article-03.py" "$ART3_SRC" "$CAND_03A" "$CAND_03B" "$CAND_03C" || SPLIT_RC=$?
+  if [ "$SPLIT_RC" -eq 0 ]; then
     SPLIT_03A="$CAND_03A"
     SPLIT_03B="$CAND_03B"
     # The §5 marker (when present) splits the post-plate body into 03b (§2.d..§5.C)
     # + 03c (§5.D..§14). 03c is ALWAYS spliced back so the body is never dropped;
     # the Exhibit 3.1 Inventory table + Exhibit 3.2 Type Map are inserted in front
     # of it ONLY when the real inventory.json exists (so a draft never appears until
-    # promoted). Render order: [03a, plates, 03b, (inventory, map,) 03c]. The table
-    # is even-paged; the 1-page map self-pads to keep §5.D verso/recto parity.
+    # promoted). Render order: [03a, plates, 03b, (inventory, map,) 03c]. The table's
+    # page count is data-driven and neither exhibit pads: neither source file
+    # contains a pagebreak or a blank, and nothing here enforces an even count.
+    # UNVERIFIED: whether §5.D opens on a verso or a recto in the built document.
     MID=("$PLATES_TYP" "$SPLIT_03B")
     if [ -s "$CAND_03C" ]; then
       SPLIT_03C="$CAND_03C"
@@ -153,17 +160,28 @@ if [ -f "$PLATES_TYP" ] && [ -n "$ART3_SRC" ]; then
     done
     ARTICLES=("${SPLICED[@]}")
   else
-    # No marker (older Article 3) — fall back to appending the plate block AFTER
-    # Article 3's prose, as a single pass (legacy behavior).
-    echo "split-article-03: no marker; appending plate block after Article 3" >&2
-    SPLICED=()
-    for f in "${ARTICLES[@]}"; do
-      SPLICED+=("$f")
-      case "$f" in */article-03-*.md) SPLICED+=("$PLATES_TYP") ;; esac
-    done
-    ARTICLES=("${SPLICED[@]}")
+    if [ "$SPLIT_RC" -eq 2 ]; then
+      echo "build-full-czc: Article 3's split marker is missing or damaged — refusing to build." >&2
+    else
+      echo "build-full-czc: splitting Article 3 failed (split-article-03.py exit $SPLIT_RC) — refusing to build." >&2
+    fi
+    echo "  The marker seats the Type plates inside §2. Appending them after the prose" >&2
+    echo "  instead produces a document whose plates sit in a place the Code does not" >&2
+    echo "  have, and it exits 0 while doing it. build-standalone.sh already refuses." >&2
+    exit 1
   fi
 fi
+
+# The integrated markdown is built BEFORE any render (right after the Article 3 split check),
+# into a temp file, so a refusal (an
+# unclosed comment, a damaged split marker) stops the build before any PDF work
+# and a direct run into releases/<ver> never leaves a PDF without its .md. It is
+# moved beside the PDF at the end. build/integrated_md.py keeps each Article's
+# frontmatter verbatim and runs every body through czc_md's walker, with Article
+# 2's generated district appendix in place; it carries NO mode-dependent text, so
+# the meeting and adopted editions' markdown is byte-identical.
+MD_STAGE="$TMPDIR_PDFS/integrated.md"
+python3 "$REPO_ROOT/build/integrated_md.py" "$SOURCE_DIR" "$MD_STAGE" || exit 1
 
 # The artifact's own filename is chrome too: an ADOPTED document filed under a
 # name containing "Integrated Draft" or "Draft v..." carries exactly the
@@ -178,21 +196,22 @@ OUT_NAME="$(czc_integrated_name "$ADOPTION_MODE" "$VERSION")"
 OUTPUT_PDF="$RELEASE_DIR/$OUT_NAME.pdf"
 COMBINED_MD="$RELEASE_DIR/$OUT_NAME.md"
 
-# A single blank US-Letter page, used to pad Articles that render to an odd page
-# count. Padding keeps each Article opening on a recto (odd) page and keeps the
-# cumulative page offset EVEN, so Typst's automatic inside/outside (binding)
-# margins stay aligned with the combined document's page parity.
+# A single blank US-Letter page, used (a) as the conditional parity pad before
+# article-02.typ in the render loop below (inserted only if the running offset
+# arriving there is even),
+# and (b) for the front-matter blanks.
+# The body flows continuously: Articles are NOT padded to open on a recto.
 BLANK_PDF="$TMPDIR_PDFS/blank.pdf"
 python3 - "$BLANK_PDF" <<'PY'
-import sys, fitz
-d = fitz.open(); d.new_page(width=612, height=792); d.save(sys.argv[1]); d.close()
+import sys, pymupdf
+d = pymupdf.open(); d.new_page(width=612, height=792); d.save(sys.argv[1]); d.close()
 PY
 
 # Render Articles in order, threading a running page offset so footers number
 # continuously across the combined document (instead of restarting at 1 per
 # Article). The page COUNT of a render does not depend on the offset, so a
 # single sequential pass suffices: when we render Article N the offset already
-# equals the (even) page total of Articles 1..N-1.
+# equals the page total of everything before it (including the article-02 pad).
 INDEX=0
 OFFSET=0
 PDF_LIST=()
@@ -203,20 +222,24 @@ for ART in "${ARTICLES[@]}"; do
   # Continuous flow: no recto-opening pads. The one unit needing parity alignment is
   # article-02.typ — its 2-page district spreads must land D1 on a verso (even
   # DISPLAYED page). D1 is that unit's FIRST page, so pad to an ODD running offset
-  # before it (offset+1 = even displayed page for D1). This keeps the district badges
-  # on the LEFT fore-edge with NO leading blank inside the unit. (Previously this
-  # padded to even AND the unit forced pagebreak(to:"even") — two redundant blanks.)
+  # before it (offset+1 = even displayed page for D1). The unit itself inserts NO
+  # leading blank — it did until 2026-06, and chrome guards that outlived that
+  # change suppressed the footer on D1's first page until 2026-10-07. Keep this
+  # comment true: it is the model the next person reads.
+  # D1 is therefore a logical verso; its margins follow because article-02.typ sets
+  # `binding` from the offset parity (see the page-sides rule in czc-template.typ).
   case "$ART" in
     */article-02.typ)
       if [ $((OFFSET % 2)) -eq 0 ]; then PDF_LIST+=("$BLANK_PDF"); OFFSET=$((OFFSET + 1)); fi ;;
   esac
   case "$ART" in
     *.typ)
-      # Native-Typst Article 2 district spreads. Rendered directly by typst (not
-      # pandoc), threading the same cumulative even page-offset and footer date.
-      # Its internal `pagebreak(to:"even")` lands the first district (D1) on a
-      # verso (even) page; the surrounding even OFFSET keeps logical==physical
-      # parity so the badge sits at the LEFT fore-edge. See article-02.typ.
+      # Native-Typst units (Article 2 district spreads, Article 1 maps, Article 3
+      # plates/exhibits). Rendered directly by typst (not pandoc), threading the
+      # running page-offset and footer date. For article-02.typ the offset is odd
+      # (the pad above guarantees it, and inserts a blank only when the preceding
+      # page total is even); the unit
+      # inserts no blank of its own.
       echo "Rendering article $INDEX (page offset $OFFSET, native Typst): $(basename "$ART")"
       # The `data=` input is read only by the §5 exhibit renderers (street-type-
       # inventory.typ / street-type-map.typ) to point at the promoted inventory;
@@ -255,11 +278,7 @@ for ART in "${ARTICLES[@]}"; do
       ;;
   esac
   PDF_LIST+=("$PART")
-  PAGES=$(python3 - "$PART" <<'PY'
-import sys, fitz
-print(fitz.open(sys.argv[1]).page_count)
-PY
-)
+  PAGES=$(czc_pagecount "$PART")
   OFFSET=$((OFFSET + PAGES))
 done
 
@@ -280,8 +299,9 @@ pdfunite "${PDF_LIST[@]}" "$BODY_PDF"
 #       in at compile time keyed to its own physical page parity). For that to
 #       match the final document, the number of pages BEFORE the TOC must be
 #       EVEN. Cover(1) + one blank(1) = 2  ->  TOC opens on a recto, correct.
-#   (2) Total front matter must be EVEN so the body's physical parity (every
-#       Article opens recto) is preserved. cover+blank+TOC(+pad) is forced even
+#   (2) Total front matter must be EVEN so the body's physical page parity
+#       matches its logical numbering (body page 1 is a recto; Articles are NOT
+#       padded to open on a recto, v0.19). cover+blank+TOC(+pad) is forced even
 #       by padding a trailing blank when the TOC page count T is odd.
 # Layout: [cover] [blank verso] [TOC ...] [blank if T odd] [body 1..N]
 COVER_PDF="$TMPDIR_PDFS/cover.pdf"
@@ -300,11 +320,7 @@ typst compile "$REPO_ROOT/build/toc.typ" "$TOC_PDF" \
   --input "data=$TOC_JSON" \
   --font-path "$REPO_ROOT/style/fonts"
 
-TOC_PAGES=$(python3 - "$TOC_PDF" <<'PY'
-import sys, fitz
-print(fitz.open(sys.argv[1]).page_count)
-PY
-)
+TOC_PAGES=$(czc_pagecount "$TOC_PDF")
 
 # cover, blank verso, TOC, then a trailing blank iff the TOC page count is odd.
 #
@@ -322,11 +338,7 @@ if [ -n "${FRONT_NOTE_PDF:-}" ]; then
     echo "FRONT_NOTE_PDF is set but does not exist: $FRONT_NOTE_PDF" >&2
     exit 1
   fi
-  NOTE_PAGES=$(python3 - "$FRONT_NOTE_PDF" <<'PY'
-import sys, fitz
-print(fitz.open(sys.argv[1]).page_count)
-PY
-)
+  NOTE_PAGES=$(czc_pagecount "$FRONT_NOTE_PDF")
   PRE_TOC_PARTS+=("$FRONT_NOTE_PDF")
   PRE_TOC_COUNT=$(( 1 + NOTE_PAGES ))
   echo "Front matter: inserting a $NOTE_PAGES-page structural note after the cover"
@@ -353,72 +365,8 @@ pdfunite "${FRONT_PARTS[@]}" "$BODY_PDF" "$OUTPUT_PDF"
 echo "Adding clickable TOC links"
 python3 "$REPO_ROOT/build/toc_links.py" "$OUTPUT_PDF" "$FRONT_COUNT"
 
-# Also emit the concatenated markdown source for reference (frontmatter intact;
-# read by humans, not re-rendered through pandoc as one input). Only the
-# markdown units are concatenated; the native-Typst district spreads have no
-# markdown form, so a pointer note is injected at Article 2's position. The
-# authoritative district content is article-02-data.json (rendered to the PDF).
+# Place the integrated markdown (built and checked at the top) beside the PDF.
 echo "Writing combined markdown: $COMBINED_MD"
-: > "$COMBINED_MD"
-for ART in "${MD_LIST[@]}"; do
-  case "$ART" in
-    *article-03-*.md)
-      # Article 3 now seats the ten Type pages INSIDE §2. Swap the TYPE-PAGES
-      # build marker for a human-readable pointer note IN PLACE (between §2.c and
-      # §2.d), so the combined markdown reads as the plates appear in the PDF.
-      python3 - "$ART" >> "$COMBINED_MD" <<'PY'
-import io, sys
-with io.open(sys.argv[1], encoding="utf-8") as f:
-    lines = f.read().split("\n")
-note = (
-    "<!-- The ten Street/Road Type pages (S1..S5, R1..R5) appear here in the\n"
-    "     rendered PDF, inside Section 2 between the General subsection and the\n"
-    "     Driveway subsection. Each is a full page rendered from\n"
-    "     source/cross-section-plates.typ (compositing\n"
-    "     source/exhibits/cross-sections/<CODE>.svg) and carries that Type's\n"
-    "     description, design standards, target Districts, and character — the\n"
-    "     one-stop Type page modeled on the Article 2 District pages. -->"
-)
-exhibits_note = (
-    "<!-- Exhibit 3.1 (Inventory of Existing Streets & Roads — the binding Type\n"
-    "     table) and Exhibit 3.2 (Street & Road Type Map) appear here in the\n"
-    "     rendered PDF, inside Section 5 between the Inventory subsection and the\n"
-    "     Classification Rubric. Both render natively from\n"
-    "     source/exhibits/street-types/inventory.json (Exhibit 3.1 via\n"
-    "     source/street-type-inventory.typ; 3.2 via source/street-type-map.typ). -->"
-)
-def swap(ln):
-    if "TYPE-PAGES" in ln: return note
-    if "STREET-TYPE-EXHIBITS" in ln: return exhibits_note
-    return ln
-sys.stdout.write("\n".join(swap(ln) for ln in lines))
-PY
-      ;;
-    *)
-      cat "$ART" >> "$COMBINED_MD"
-      case "$ART" in
-        *article-01-general.md)
-          {
-            printf '\n\n'
-            printf '<!-- The three District Map exhibits (EXHIBIT 1.1 District Map, 1.2\n'
-            printf '     District Map Inset - Newcastle Town Center, 1.4 District Map Inset -\n'
-            printf '     Sheepscot Village) appear here in the rendered PDF as full pages. They\n'
-            printf '     are GIS raster composites (vector zoning districts over an aerial\n'
-            printf '     basemap) rendered natively from source/district-maps.typ (reseating\n'
-            printf '     source/exhibits/district-maps/*.png). See the Integrated Draft PDF. -->\n\n'
-          } >> "$COMBINED_MD"
-          ;;
-        *article-02-prefatory.md)
-          {
-            printf '\n\n'
-            printf '<!-- The 13 District Standards spreads (D1-D6 + 7 Special Districts) are\n'
-            printf '     rendered natively from article-02-data.json via source/article-02.typ.\n'
-            printf '     See the Integrated Draft PDF for the per-district 2-page spreads. -->\n\n'
-          } >> "$COMBINED_MD"
-          ;;
-      esac
-      ;;
-  esac
-done
+mv -f "$MD_STAGE" "$COMBINED_MD"
 
 echo "Done: $OUTPUT_PDF"

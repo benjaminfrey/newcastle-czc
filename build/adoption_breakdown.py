@@ -4,7 +4,7 @@ TOTAL. Split out of build-adoption.sh's inline heredoc so it is directly
 testable (subprocess against a real or synthetic adoption-map.json), rather
 than only reachable through the shell wrapper.
 
-This is the instrument the packet's headline number (243) is read from, so
+This is the instrument the packet's headline number is read from, so
 two failure modes are NOT allowed to pass silently:
 
   * a mapped baseline file that does not exist at the baseline tag -- would
@@ -27,11 +27,13 @@ would report a move as a mass deletion.
 
 Exit codes:
   0  breakdown printed
-  1  a mapped file could not be resolved on one side -- fix adoption-map.json
+  1  a mapped file could not be resolved on one side (a bad adoption-map.json
+     entry, or an incomplete --src-dir / SRC_DIR source tree)
 """
 from __future__ import annotations
 
 import argparse
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -43,9 +45,24 @@ REPO = BUILD.parent
 import adoption_map  # noqa: E402
 import normalize_for_diff as nz  # noqa: E402
 
+# Test seam, a sibling of adoption_map.ENV_OVERRIDE and the same SRC_DIR that
+# build-full-czc.sh and build-redline-full.sh honour: where the CURRENT side of
+# the comparison is read from. Read at call time, never at import, so a test's
+# monkeypatch.setenv takes effect. Unset -> the live source/ tree, which is what
+# build-adoption.sh's precondition run must keep reading.
+SRC_ENV = "SRC_DIR"
+DEFAULT_SRC = REPO / "source"
 
-def run(map_path: str | None = None) -> int:
+
+def resolve_src_dir(src_dir: str | Path | None = None) -> Path:
+    """--src-dir beats SRC_DIR beats the repository's source/."""
+    return Path(src_dir or os.environ.get(SRC_ENV) or DEFAULT_SRC)
+
+
+def run(map_path: str | None = None, src_dir: str | Path | None = None) -> int:
     m = adoption_map.load(map_path)
+    src = resolve_src_dir(src_dir)
+    src_label = "source" if src == DEFAULT_SRC else str(src)
     total = 0
     excluded: list[str] = []
 
@@ -69,10 +86,18 @@ def run(map_path: str | None = None) -> int:
                   f"exist at {m.baseline_version}. Fix the map.", file=sys.stderr)
             return 1
 
-        cur_path = REPO / "source" / cur
+        cur_path = src / cur
         if not cur_path.exists():
-            print(f"{cur}: adoption-map.json maps this file, but source/{cur} "
-                  f"does not exist in the working tree. Fix the map.", file=sys.stderr)
+            if src == DEFAULT_SRC:
+                print(f"{cur}: adoption-map.json maps this file, but {src_label}/{cur} "
+                      f"does not exist in the working tree. Fix the map.", file=sys.stderr)
+            else:
+                # Not a map problem: the map is the freeze-gating file, and it
+                # must never be the instruction for a bad or incomplete path.
+                print(f"{cur}: the source tree {src} is incomplete -- {cur} "
+                      f"(mapped by adoption-map.json) does not exist there. Check "
+                      f"the --src-dir flag or the {SRC_ENV} environment variable; "
+                      f"the map is not at fault.", file=sys.stderr)
             return 1
 
         # nz.changed_line_count, NOT a local difflib call: this number is read
@@ -96,8 +121,13 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--map", default=None,
                     help="override adoption-map.json path (testing only)")
+    ap.add_argument("--src-dir", default=None,
+                    help="source tree to compare against the baseline "
+                         f"(default: the repository's source/). The {SRC_ENV} env "
+                         "var is honoured too, matching build-full-czc.sh's seam; "
+                         "the flag wins if both are given.")
     a = ap.parse_args()
-    return run(a.map)
+    return run(a.map, a.src_dir)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,7 @@
 {
   "_README": "Baseline->current article correspondence for an adoption release. The article files were renamed when Article 3 (Thoroughfares) was inserted, so a redline against the previously adopted Code cannot resolve the old side by filename. This map supplies that. Superseded ONLY when a future amendment renumbers articles again; after v1.0 is adopted it resets to identity. See build/ADOPTION-SPEC.md \u00a73.1. The article_numbers map was previously hardcoded at extract/verso.py:18 and is duplicated nowhere else. NOT_TEXT_COMPARABLE: an article whose content moved OUT of markdown into a native-Typst unit between the baseline and now. Article 2's district standards went from 2,444 lines of markdown to 125 lines of prefatory prose plus article-02.typ + article-02-data.json. A text diff cannot see the .typ, so it would mark ~2,319 lines DELETED -- reading, in a Town Meeting packet, as though the Town deleted all its district standards. These articles are rendered UNMARKED and described in the structural note instead, which is the same treatment the redline already gives every other native figure.",
   "baseline_version": "v0.1-baseline",
+  "baseline_amended_through": "March 24, 2025",
   "article_numbers": {
     "1": 1,
     "2": 2,

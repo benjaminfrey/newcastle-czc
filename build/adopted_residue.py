@@ -10,6 +10,11 @@ than never having had it.
 It also asserts the substantive occurrences are STILL PRESENT: a substitution
 that damaged the Code's own text would be a far worse failure than a leftover
 banner.
+
+`--residue-only` (a leading flag) checks CHROME only, never damage. The adopted
+markdown is scanned this way: the markdown is chrome-checked, while the damage
+check ("drafts the official map" must survive) stays on the PDF text, where the
+whole Code -- including Article 8 -- is.
 """
 from __future__ import annotations
 
@@ -55,8 +60,14 @@ def check(text: str, filenames: list[str] | None = None) -> tuple[list[str], lis
 
 
 def main() -> int:
+    args = sys.argv[1:]
+    residue_only = bool(args) and args[0] == "--residue-only"
+    if residue_only:
+        args = args[1:]
     text = sys.stdin.read()
-    residue, damage = check(text, sys.argv[1:])
+    residue, damage = check(text, args)
+    if residue_only:
+        damage = []
     for r in residue:
         print(f"DRAFT CHROME SURVIVED in the adopted document: {r!r}", file=sys.stderr)
     for d in damage:

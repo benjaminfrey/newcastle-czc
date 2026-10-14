@@ -87,6 +87,10 @@ def main(argv: list[str] | None = None) -> int:
 
     out = args.out or (APP_ROOT / "rulesets" / args.ruleset_key / "use-matrix.json")
 
+    from ruleset_build.supersession import refuse_if_superseded_path
+
+    refuse_if_superseded_path(out)
+
     matrix = build_use_matrix(args.src, args.legend_typ, args.ruleset_key)
     _atomic_write_json(out, matrix)
 

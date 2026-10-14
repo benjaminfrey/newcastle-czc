@@ -4,22 +4,24 @@
 
 A page counts as blank only if it has NEITHER extractable text NOR any
 embedded image -- matching exactly how this build's own pad pages are made
-(build-full-czc.sh / build-standalone.sh: `fitz.new_page()`, nothing drawn).
+(build-full-czc.sh / build-standalone.sh: `pymupdf.new_page()`, nothing drawn).
 Text-only emptiness would misclassify a map or plate page (vector art, no
 running head) as blank; this narrower test does not.
 
 Usage: pdf_recap.py "<label>=<path>" [...]
 Prints one line per PDF: "<label>: N pages, B blank".
+Exit 1 (after printing every line) if any PDF cannot be opened or has zero
+pages; blank-page counts are a report, never a failure.
 """
 from __future__ import annotations
 
 import sys
 
-import fitz  # PyMuPDF -- already a build dependency (build-full-czc.sh uses it)
+import pymupdf  # PyMuPDF -- already a build dependency (build-full-czc.sh uses it)
 
 
 def counts(path: str) -> tuple[int, int]:
-    doc = fitz.open(path)
+    doc = pymupdf.open(path)
     blanks = 0
     for page in doc:
         if not page.get_text().strip() and not page.get_images(full=True):
@@ -33,11 +35,19 @@ def main() -> int:
     if len(sys.argv) < 2:
         print("usage: pdf_recap.py \"<label>=<path>\" [...]", file=sys.stderr)
         return 1
+    status = 0
     for arg in sys.argv[1:]:
         label, _, path = arg.partition("=")
-        n, blanks = counts(path)
+        try:
+            n, blanks = counts(path)
+        except Exception as e:  # unopenable / corrupt / missing
+            print(f"  {label:35s} UNREADABLE ({path}): {e}")
+            status = 1
+            continue
         print(f"  {label:35s} {n:4d} pages, {blanks} blank")
-    return 0
+        if n == 0:
+            status = 1
+    return status
 
 
 if __name__ == "__main__":

@@ -36,10 +36,14 @@ Diff granularity:
   * Pipe-table rows (``| ... |``) are marked at the CELL level so the row keeps
     its ``|`` delimiters and still parses as a table.
 """
+import os
 import sys
 import re
 import hashlib
 import difflib
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import structure_text  # noqa: E402  (plain-words names; shared with the disclosure page)
 
 # Red used for additions. Matches the legend in style/redline-template.typ.
 RED = '#text(fill: rgb("#cc0000"))'
@@ -234,6 +238,94 @@ def wrap_red(s: str) -> str:
     return _wrap(s, lambda core: raw_typst_inline(f'{RED}[{md_inline_to_typ(core)}]'))
 
 
+# --plain: the markdown redline that survives in the repository (the PDF does
+# not -- releases/**/*.pdf is gitignored). Additions **bold**, deletions ~~struck~~
+# (already markdown), and no Typst anywhere in the markup. Decision D1.
+UNMARKED_FIGURE_NOTE = '<!-- unmarked: new or regenerated figure -->'
+# The comment renders as nothing (pandoc, GitHub), so it travels with a visible
+# line: a new or regenerated figure must not read as "compared and unchanged". The
+# comment stays its own whole line -- is_unmarkable_structure keys on that. The
+# visible line below is still used by the --full/digest path; --source writes the
+# new/changed note of Wave 3b instead (NOTE_BLOCK_ADDED / NOTE_BLOCK_CHANGED).
+UNMARKED_FIGURE_VISIBLE = '*[figure new or regenerated — shown unmarked]*'
+# Structural notes (Wave 3b, ruling 1): italic, bracketed BODY paragraphs, never
+# red (red means added Code text), never struck (strike means deleted Code text),
+# never a heading (the integrated TOC is read back from the PDF). The same text in
+# both modes. Labels come from structure_text and never carry a split-marker token.
+NOTE_HEADING_REMOVED = '*[Heading removed: “{}”]*'
+NOTE_HEADING_ADDED = '*[Heading added]*'
+NOTE_HEADING_CHANGED = '*[Heading changed — it read: “{}”]*'
+NOTE_TITLE_CHANGED = '*[Article title changed \u2014 it read: \u201c{}\u201d]*'
+NOTE_BLOCK_REMOVED = '*[Table or figure removed: “{}”]*'
+NOTE_BLOCK_ADDED = '*[New table or figure, shown in full: “{}”]*'
+NOTE_BLOCK_CHANGED = ('*[Table or figure changed — shown in its current form, '
+                      'not marked: “{}”]*')
+_STRUCT = {'n': 0}
+
+
+def _note(template: str, label: str = '') -> str:
+    _STRUCT['n'] += 1
+    for ch in '\\*_[]`@#':
+        label = label.replace(ch, '\\' + ch)
+    return template.format(label)
+
+
+# Leading marker for a line added in its ENTIRETY. The Code bolds every defined
+# term (548x in Article 9), so **bold** alone cannot tell an added term from an
+# unchanged one. U+2295 renders as visible text through pandoc -f gfm, is not
+# markdown structure (unlike a bare + or >), and appears nowhere in source/.
+SIGIL = '\u2295'
+LEGEND_KEY = ('Redline key: **bold** = text added; ~~struck~~ = text deleted; '
+              f'{SIGIL} marks a line that is new in its entirety')
+# Only the --full path still writes the visible "figure new or regenerated" line
+# (UNMARKED_FIGURE_VISIBLE); --source writes the structural notes instead, so its
+# legend must not define a phrase its output never contains.
+LEGEND_FIGURE_CLAUSE = ('; "figure new or regenerated \u2014 shown unmarked" = a figure shown in its '
+                        'current form, not compared.')
+LEGEND = LEGEND_KEY + LEGEND_FIGURE_CLAUSE
+# --source marks prose and table rows ONLY (headings and raw-Typst blocks are shown
+# in their current form). A heading or block that was added, removed or changed
+# leaves a note at that spot (Wave 3b): a removal no longer leaves no trace. The
+# legend for that mode must not promise more, in either direction.
+LEGEND_SOURCE_LIMITS = ('Only prose and the rows of simple tables are marked word by word. Headings, '
+                        'figures and complex tables (those laid out as figures rather than as plain '
+                        'rows) are shown in their current form; where one was added, removed or '
+                        'changed, a note in italics and square brackets says so at that spot. '
+                        'See the Summary of Changes for detail.')
+PLAIN = False
+
+
+def wrap_bold(s: str) -> str:
+    # A core that already holds **bold** (an added line opening "**Planting.** ...")
+    # would come out as "****Planting.**..."; __ nests around ** in pandoc and GFM.
+    return _wrap(s, lambda core: f'__{core}__' if '**' in core else f'**{core}**')
+
+
+def set_plain_mode() -> None:
+    """Switch the redline markup from Typst spans to plain markdown.
+
+    strike_line/red_line and strike_pipe/red_pipe resolve ``wrap_red`` as a
+    module global at call time, so rebinding it reaches every caller without
+    threading a flag through the dispatch. Deletions already use markdown
+    ``~~`` -- only additions carried Typst. The few places that build Typst
+    directly (the native-block note, the digest's breadcrumbs/rules/summary)
+    consult ``PLAIN`` themselves.
+    """
+    global wrap_red, PLAIN
+    PLAIN = True
+    wrap_red = wrap_bold
+
+
+def add_legend(result: str, source: bool = False) -> str:
+    """Put the one-line convention legend at the head of plain output -- after the
+    YAML front-matter when there is one, since --source output is a document the
+    build reads and front-matter must stay first. ``source`` appends the limits
+    of --source marking (see LEGEND_SOURCE_LIMITS)."""
+    fm, body = split_frontmatter(result)
+    legend = (LEGEND_KEY + '.' + ' ' + LEGEND_SOURCE_LIMITS) if source else LEGEND
+    return fm + legend + '\n\n' + body.lstrip('\n')
+
+
 # ---------------------------------------------------------------------------
 # Prose lines
 # ---------------------------------------------------------------------------
@@ -282,7 +374,9 @@ def strike_line(ln: str) -> str:
 
 def red_line(ln: str) -> str:
     prefix, content = split_prefix(ln)
-    return ln if content.strip() == '' else prefix + wrap_red(content)
+    if content.strip() == '':
+        return ln
+    return prefix + (SIGIL + ' ' if PLAIN else '') + wrap_red(content)
 
 
 # ---------------------------------------------------------------------------
@@ -319,7 +413,10 @@ def strike_pipe(ln: str) -> str:
 def red_pipe(ln: str) -> str:
     if is_pipe_sep(ln):
         return ln
-    return join_pipe([wrap_red(c.strip()) for c in pipe_cells(ln)])
+    cells = [wrap_red(c.strip()) for c in pipe_cells(ln)]
+    if PLAIN:
+        cells[0] = (SIGIL + ' ' + cells[0]).strip()
+    return join_pipe(cells)
 
 
 def pipe_word_diff(old: str, new: str) -> str:
@@ -348,6 +445,8 @@ def emit_deleted(ln: str, reg: dict) -> str:
 
 def emit_inserted(ln: str, reg: dict) -> str:
     if is_block_token(ln):
+        if PLAIN:
+            return UNMARKED_FIGURE_NOTE + '\n\n' + UNMARKED_FIGURE_VISIBLE + '\n\n' + reg[ln] + '\n'
         note = wrap_red('[native-Typst block added or updated — current version rendered below]')
         return note + '\n\n' + reg[ln] + '\n'
     return red_pipe(ln) if is_pipe_row(ln) else red_line(ln)
@@ -430,10 +529,14 @@ def breadcrumb_at(headings, j):
 
 def crumb_line(crumb) -> str:
     text = ' › '.join(crumb) if crumb else '(document start)'
+    if PLAIN:
+        return f'**{text}**'
     return raw_typst_para(f'#text(fill: rgb("{BLUE}"), weight: "bold", size: 11pt)[{typ_lit(text)}]')
 
 
 def rule_line() -> str:
+    if PLAIN:
+        return '---'
     return raw_typst_para(f'#line(length: 100%, stroke: 0.5pt + rgb("{HAIR}"))')
 
 
@@ -441,6 +544,8 @@ def context_line(ln: str, reg: dict) -> str:
     """Unchanged orientation line. Whole native-Typst blocks are collapsed to a
     one-line placeholder so a digest hunk doesn't dump an entire table."""
     if is_block_token(ln):
+        if PLAIN:
+            return '*[unchanged table/figure omitted]*'
         return raw_typst_para(f'#text(fill: rgb("{GRAY}"), style: "italic")[\\[unchanged table/figure omitted\\]]')
     return ln
 
@@ -503,10 +608,14 @@ def digest(old_text: str, new_text: str, context: int = 2):
                     out.extend(emit_deleted(ln, reg) for ln in ol)
                     out.extend(emit_inserted(ln, reg) for ln in nl)
         n_hunks += 1
+    no_change = 'No textual changes between the two versions. (Layout, native tables, and images are not compared.)'
+    passages = f'{n_hunks} changed passage(s) shown below, each under its Section location. Unchanged text is omitted.'
     if n_hunks == 0:
-        body = raw_typst_para(f'#text(fill: rgb("{GRAY}"), style: "italic")[No textual changes between the two versions. (Layout, native tables, and images are not compared.)]')
+        body = (f'*{no_change}*' if PLAIN else
+                raw_typst_para(f'#text(fill: rgb("{GRAY}"), style: "italic")[{no_change}]'))
     else:
-        summary = raw_typst_para(f'#text(style: "italic")[{n_hunks} changed passage(s) shown below, each under its Section location. Unchanged text is omitted.]')
+        summary = (f'*{passages}*' if PLAIN else
+                   raw_typst_para(f'#text(style: "italic")[{passages}]'))
         body = summary + '\n' + '\n'.join(out)
     return body, n_del, n_ins, n_hunks
 
@@ -543,57 +652,166 @@ def is_heading(ln: str) -> bool:
     return bool(HEADING_LINE_RE.match(ln))
 
 
+HTML_COMMENT_LINE_RE = re.compile(r'^\s*<!--.*?-->\s*$', re.S)
+
+
+def is_unmarkable_structure(ln: str) -> bool:
+    """A line that is WHOLLY an HTML comment.
+
+    These carry structure, not prose: build-standalone.sh and build-full-czc.sh
+    seat native-Typst units at them (source/article-03-*.md's TYPE-PAGES and
+    STREET-TYPE-EXHIBITS). prepare_source deliberately keeps HTML comments
+    intact, so without this a DELETED marker is struck rather than dropped,
+    reaching the marked file as ``~~<!-- TYPE-PAGES -->~~``. split-article-03.py
+    matches markers by substring, so it then splits at a marker the new source
+    does not have and exits 0 -- the plates are seated in a position the real
+    document lacks. Measured 2026-10-07.
+
+    Narrow by construction: a prose line that merely mentions the token, or that
+    carries a trailing inline comment, is not wholly a comment and is still marked.
+
+    Known limits: the match is per line, so a MULTI-line comment is not
+    recognised; and the lazy ``.*?`` spans a middle, so ``<!-- a --> prose
+    <!-- b -->`` is (wrongly) treated as structure. Neither occurs in source/*.md,
+    where every structural comment is a single line.
+    """
+    return bool(HTML_COMMENT_LINE_RE.match(ln))
+
+
 def _markable(ln: str) -> bool:
     """A line that actually receives a mark (used only for the stderr tally)."""
-    return bool(ln.strip()) and not is_block_token(ln) and not is_heading(ln)
+    return (bool(ln.strip()) and not is_block_token(ln) and not is_heading(ln)
+            and not is_unmarkable_structure(ln))
 
 
-def emit_deleted_src(ln: str, reg: dict) -> str:
-    if is_block_token(ln) or is_heading(ln):
-        return ''            # native block / heading: gone from NEW, drop silently
+_NO_CTX = {'removed': set(), 'added': set(), 'changed': set(),
+           'h_removed': set(), 'h_added': set(), 'h_changed': {}}
+
+
+def emit_deleted_src(ln: str, reg: dict, ctx: dict | None = None, pos: int = -1) -> str:
+    ctx = ctx or _NO_CTX
+    if is_block_token(ln):
+        # A changed block's note sits at its new version; a moved one needs none.
+        if ln not in ctx['removed']:
+            return ''
+        return _note(NOTE_BLOCK_REMOVED, structure_text.block_caption(reg[ln]))
+    if is_heading(ln):
+        # A changed heading's note sits at its new version; an unchanged one needs none.
+        if pos not in ctx['h_removed']:
+            return ''
+        return _note(NOTE_HEADING_REMOVED, structure_text.heading_label(ln))
+    if is_unmarkable_structure(ln):
+        return ''            # build structure (a split marker), not Code text: silent (ruling 5)
     return strike_pipe(ln) if is_pipe_row(ln) else strike_line(ln)
 
 
-def emit_inserted_src(ln: str, reg: dict) -> str:
+def emit_inserted_src(ln: str, reg: dict, ctx: dict | None = None, pos: int = -1) -> str:
+    ctx = ctx or _NO_CTX
     if is_block_token(ln):
-        return reg[ln]       # NEW fenced / raw-Typst block VERBATIM, no note
+        if ln in ctx['changed']:
+            template = NOTE_BLOCK_CHANGED
+        elif ln in ctx['added']:
+            template = NOTE_BLOCK_ADDED
+        else:
+            return reg[ln]   # an unchanged block that only moved: no note
+        note = _note(template, structure_text.block_caption(reg[ln]))
+        lead = (UNMARKED_FIGURE_NOTE + '\n\n') if PLAIN else ''
+        return lead + note + '\n\n' + reg[ln]
     if is_heading(ln):
-        return ln            # NEW heading text VERBATIM, unmarked (clean TOC)
+        # the heading stays a heading (TOC, structure); the note is its own paragraph after it
+        if pos in ctx['h_added']:
+            return ln + '\n\n' + _note(NOTE_HEADING_ADDED)
+        if pos in ctx['h_changed']:
+            return ln + '\n\n' + _note(NOTE_HEADING_CHANGED, ctx['h_changed'][pos])
+        return ln
+    if is_unmarkable_structure(ln):
+        return ln            # NEW split marker VERBATIM: it is structure the splitter reads
     return red_pipe(ln) if is_pipe_row(ln) else red_line(ln)
+
+
+_TITLE_RE = re.compile(r'^article-name:[ \t]*(.*?)[ \t]*$', re.M)
+
+
+def _article_title(fm: str):
+    m = _TITLE_RE.search(fm)
+    return m.group(1).strip('"\'') if m else None
+
+
+def emit_equal_src(old_ln: str, new_ln: str, reg: dict, ctx: dict, i: int, j: int) -> str:
+    """An unchanged line -- except that the text must reflect the heading
+    classification fully, whatever the body diff did: a heading classified added
+    or changed gets its note after it; one classified removed leaves its note."""
+    if not is_heading(new_ln) and not is_heading(old_ln):
+        return emit_equal(new_ln, reg)
+    out = []
+    if is_heading(old_ln) and i in ctx['h_removed']:
+        out.append(_note(NOTE_HEADING_REMOVED, structure_text.heading_label(old_ln)))
+    if is_heading(new_ln):
+        if j in ctx['h_added']:
+            out.append(new_ln + '\n\n' + _note(NOTE_HEADING_ADDED))
+        elif j in ctx['h_changed']:
+            out.append(new_ln + '\n\n' + _note(NOTE_HEADING_CHANGED, ctx['h_changed'][j]))
+        else:
+            out.append(new_ln)
+    return '\n\n'.join(out)
 
 
 def redline_source(old_text: str, new_text: str):
     """Mark prose in one article ``.md`` (OLD vs NEW) while preserving NEW
     front-matter and structure. Returns ``(marked_markdown, n_del, n_ins)``."""
     new_fm, new_body = split_frontmatter(new_text)
-    _, old_body = split_frontmatter(old_text)
+    old_fm, old_body = split_frontmatter(old_text)
     a, reg_a = prepare_source(old_body)
     b, reg_b = prepare_source(new_body)
     reg = {**reg_a, **reg_b}
+    _STRUCT['n'] = 0
+    # One classifier (structure_text.classify_blocks) decides added / removed /
+    # changed for raw blocks -- the same one the disclosure page uses.
+    a_heads = [k for k, t in enumerate(a) if is_heading(t)]
+    b_heads = [k for k, t in enumerate(b) if is_heading(t)]
+    hcls = structure_text.classify_headings([a[k] for k in a_heads], [b[k] for k in b_heads])
+    old_toks = [t for t in a if is_block_token(t)]
+    new_toks = [t for t in b if is_block_token(t)]
+    cls = structure_text.classify_blocks([reg_a[t] for t in old_toks], [reg_b[t] for t in new_toks])
+    ctx = {'removed': {old_toks[i] for i in cls['removed']},
+           'added': {new_toks[j] for j in cls['added']},
+           'changed': {new_toks[j] for _, j in cls['changed']},
+           'h_removed': {a_heads[i] for i in hcls['removed']},
+           'h_added': {b_heads[j] for j in hcls['added']},
+           'h_changed': {b_heads[j]: structure_text.heading_label(a[a_heads[i]])
+                         for i, j in hcls['changed']}}
     sm = difflib.SequenceMatcher(None, a, b, autojunk=False)
     out = []
     n_del = n_ins = 0
     for tag, i1, i2, j1, j2 in sm.get_opcodes():
         if tag == 'equal':
-            out.extend(emit_equal(ln, reg) for ln in a[i1:i2])
+            out.extend(emit_equal_src(ln, b[j1 + k], reg, ctx, i1 + k, j1 + k)
+                       for k, ln in enumerate(a[i1:i2]))
         elif tag == 'delete':
             n_del += sum(1 for ln in a[i1:i2] if _markable(ln))
-            out.extend(emit_deleted_src(ln, reg) for ln in a[i1:i2])
+            out.extend(emit_deleted_src(ln, reg, ctx, i1 + k) for k, ln in enumerate(a[i1:i2]))
         elif tag == 'insert':
             n_ins += sum(1 for ln in b[j1:j2] if _markable(ln))
-            out.extend(emit_inserted_src(ln, reg) for ln in b[j1:j2])
+            out.extend(emit_inserted_src(ln, reg, ctx, j1 + k) for k, ln in enumerate(b[j1:j2]))
         else:  # replace
             ol, nl = a[i1:i2], b[j1:j2]
             n_del += sum(1 for ln in ol if _markable(ln))
             n_ins += sum(1 for ln in nl if _markable(ln))
             if (len(ol) == 1 and len(nl) == 1
                     and not is_block_token(ol[0]) and not is_block_token(nl[0])
-                    and not is_heading(ol[0]) and not is_heading(nl[0])):
+                    and not is_heading(ol[0]) and not is_heading(nl[0])
+                    and not is_unmarkable_structure(ol[0])
+                    and not is_unmarkable_structure(nl[0])):
                 out.append(mark_replace_1to1(ol[0], nl[0]))
             else:
-                out.extend(emit_deleted_src(ln, reg) for ln in ol)
-                out.extend(emit_inserted_src(ln, reg) for ln in nl)
+                out.extend(emit_deleted_src(ln, reg, ctx, i1 + k) for k, ln in enumerate(ol))
+                out.extend(emit_inserted_src(ln, reg, ctx, j1 + k) for k, ln in enumerate(nl))
     body_marked = '\n'.join(out)
+    old_title, new_title = _article_title(old_fm), _article_title(new_fm)
+    if old_title is not None and new_title is not None and old_title != new_title:
+        # the title is frontmatter, so no heading note can carry it: say it first
+        body_marked = (_note(NOTE_TITLE_CHANGED, structure_text._clean(old_title))
+                       + '\n\n' + body_marked)
     return ((new_fm + body_marked) if new_fm else body_marked), n_del, n_ins
 
 
@@ -601,8 +819,10 @@ def main():
     args = [a for a in sys.argv[1:] if not a.startswith('--')]
     flags = {a for a in sys.argv[1:] if a.startswith('--')}
     if len(args) != 3:
-        sys.exit('usage: redline-text.py <old.md> <new.md> <out.md> [--digest|--full|--source]')
+        sys.exit('usage: redline-text.py <old.md> <new.md> <out.md> [--digest|--full|--source] [--plain]')
     old_f, new_f, out_f = args
+    if '--plain' in flags:
+        set_plain_mode()
     with open(old_f, encoding='utf-8') as f:
         old_text = f.read()
     with open(new_f, encoding='utf-8') as f:
@@ -615,9 +835,13 @@ def main():
         n_hunks = None
     else:  # default: changes-only digest
         result, n_del, n_ins, n_hunks = digest(old_text, new_text)
+    if PLAIN:
+        result = add_legend(result, source='--source' in flags)
     with open(out_f, 'w', encoding='utf-8') as f:
         f.write(result)
     extra = '' if n_hunks is None else f', {n_hunks} passage(s)'
+    if '--source' in flags:
+        extra = f', {_STRUCT["n"]} structural change(s) noted'
     print(f'redline: {n_del} line(s) removed, {n_ins} line(s) added{extra}', file=sys.stderr)
 
 

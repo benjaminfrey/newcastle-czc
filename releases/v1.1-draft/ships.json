@@ -1,0 +1,113 @@
+{
+  "old": "v1.0",
+  "new": "v1.1-draft",
+  "articles": {
+    "1": {
+      "prose": 0,
+      "heading": 0,
+      "table": 0,
+      "data": 0,
+      "suppressed": 0,
+      "new": false,
+      "verdict": "NEEDS-CALL",
+      "needs_call": [
+        "district-maps.typ: a layout unit changed. A person decides whether it changes what the Code says or only how it is laid out."
+      ],
+      "data_detail": {}
+    },
+    "2": {
+      "prose": 0,
+      "heading": 0,
+      "table": 0,
+      "data": 0,
+      "suppressed": 0,
+      "new": false,
+      "verdict": "NEEDS-CALL",
+      "needs_call": [
+        "article-02.typ: a layout unit changed. A person decides whether it changes what the Code says or only how it is laid out. (The use-table legend is part of these pages.)"
+      ],
+      "data_detail": {}
+    },
+    "3": {
+      "prose": 0,
+      "heading": 0,
+      "table": 0,
+      "data": 0,
+      "suppressed": 0,
+      "new": false,
+      "verdict": "NEEDS-CALL",
+      "needs_call": [
+        "cross-section-plates.typ: a layout unit changed. A person decides whether it changes what the Code says or only how it is laid out.",
+        "street-type-inventory.typ: a layout unit changed. A person decides whether it changes what the Code says or only how it is laid out.",
+        "street-type-map.typ: a layout unit changed. A person decides whether it changes what the Code says or only how it is laid out."
+      ],
+      "data_detail": {}
+    },
+    "4": {
+      "prose": 0,
+      "heading": 0,
+      "table": 0,
+      "data": 0,
+      "suppressed": 0,
+      "new": false,
+      "verdict": "UNCHANGED",
+      "needs_call": [],
+      "data_detail": {}
+    },
+    "5": {
+      "prose": 0,
+      "heading": 0,
+      "table": 0,
+      "data": 0,
+      "suppressed": 0,
+      "new": false,
+      "verdict": "UNCHANGED",
+      "needs_call": [],
+      "data_detail": {}
+    },
+    "6": {
+      "prose": 0,
+      "heading": 0,
+      "table": 0,
+      "data": 0,
+      "suppressed": 0,
+      "new": false,
+      "verdict": "UNCHANGED",
+      "needs_call": [],
+      "data_detail": {}
+    },
+    "7": {
+      "prose": 0,
+      "heading": 0,
+      "table": 0,
+      "data": 0,
+      "suppressed": 0,
+      "new": false,
+      "verdict": "UNCHANGED",
+      "needs_call": [],
+      "data_detail": {}
+    },
+    "8": {
+      "prose": 0,
+      "heading": 0,
+      "table": 0,
+      "data": 0,
+      "suppressed": 0,
+      "new": false,
+      "verdict": "UNCHANGED",
+      "needs_call": [],
+      "data_detail": {}
+    },
+    "9": {
+      "prose": 0,
+      "heading": 0,
+      "table": 0,
+      "data": 0,
+      "suppressed": 0,
+      "new": false,
+      "verdict": "UNCHANGED",
+      "needs_call": [],
+      "data_detail": {}
+    }
+  }
+}

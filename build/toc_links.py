@@ -13,14 +13,14 @@ import os
 import re
 import sys
 
-import fitz
+import pymupdf
 
 ROW = re.compile(r"(?:\.\s*){3,}(\d+)\s*$")   # name <dot leader> <page>
 
 
 def main() -> int:
     pdf, front = sys.argv[1], int(sys.argv[2])
-    doc = fitz.open(pdf)
+    doc = pymupdf.open(pdf)
     n = doc.page_count
     added = 0
     for pno in range(min(front, n)):          # TOC lives in the front matter
@@ -35,10 +35,10 @@ def main() -> int:
                 if not (0 <= target < n):
                     continue
                 page.insert_link({
-                    "kind": fitz.LINK_GOTO,
-                    "from": fitz.Rect(line["bbox"]),
+                    "kind": pymupdf.LINK_GOTO,
+                    "from": pymupdf.Rect(line["bbox"]),
                     "page": target,
-                    "to": fitz.Point(0, 0),
+                    "to": pymupdf.Point(0, 0),
                 })
                 added += 1
     tmp = pdf + ".linked.tmp"

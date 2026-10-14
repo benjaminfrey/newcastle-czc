@@ -129,3 +129,142 @@ def test_not_text_comparable_article_renders_with_no_marks(tmp_path):
     assert "~~" not in rendered, "no struck (deleted) text should appear"
     assert "cc0000" not in rendered, "no red (added) text should appear"
     assert rendered.strip() == current.strip()
+
+
+# --- --section-map and --report -------------------------------------------------
+
+import json  # noqa: E402
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import section_fixtures as fx  # noqa: E402
+
+
+def _map_for_an_insertion(tmp_path):
+    """A real derived map: Article 7 with a section inserted at §3."""
+    tree = fx.copy_source(tmp_path / "src")
+    art7 = tree / "article-07-use-standards.md"
+    art7.write_text(fx.insert_section(art7.read_text(), 3, "AGRICULTURE"))
+    out = tmp_path / "map.json"
+    r = subprocess.run([sys.executable, str(REPO / "build" / "section_map.py"), "derive",
+                        "v1.0", "--new-dir", str(tree), "--out", str(out)],
+                       capture_output=True, text=True, cwd=REPO)
+    assert r.returncode == 0, r.stderr
+    return out, tree
+
+
+def test_the_draft_path_is_byte_identical_to_git_without_a_map(tmp_path):
+    """The existing draft-path test only checks the length is over 1,000. This
+    checks the content, so a change to the raw path cannot pass unnoticed."""
+    out = tmp_path / "old.md"
+    r = run("article-07-use-standards.md", "v1.0", str(out))
+    assert r.returncode == 0, r.stderr
+    expected = subprocess.run(["git", "-C", str(REPO), "show",
+                               "v1.0:source/article-07-use-standards.md"],
+                              capture_output=True, text=True).stdout
+    assert out.read_text() == expected
+
+
+def test_the_draft_path_applies_ONLY_rule_6_with_a_map(tmp_path):
+    smap_path, tree = _map_for_an_insertion(tmp_path)
+    out = tmp_path / "old.md"
+    r = run("article-07-use-standards.md", "v1.0", str(out), "--section-map", str(smap_path),
+            "--new-dir", str(tree))
+    assert r.returncode == 0, r.stderr
+    raw = subprocess.run(["git", "-C", str(REPO), "show",
+                          "v1.0:source/article-07-use-standards.md"],
+                         capture_output=True, text=True).stdout
+    sys.path.insert(0, str(REPO / "build"))
+    import normalize_for_diff as nz
+    import section_map
+    assert out.read_text() == nz.normalize_sections_only(raw, smap=section_map.load(smap_path))
+    assert "## 4. ADULT ESTABLISHMENT" in out.read_text()     # and it really moved
+
+
+def test_a_map_for_a_different_old_ref_is_refused_and_nothing_written(tmp_path):
+    smap_path, tree = _map_for_an_insertion(tmp_path)
+    out = tmp_path / "old.md"
+    r = run("article-07-use-standards.md", "v0.24-draft", str(out), "--section-map", str(smap_path),
+            "--new-dir", str(tree))
+    assert r.returncode == 1
+    assert "section map refused" in r.stderr
+    assert not out.exists()
+
+
+def test_a_map_without_its_tree_is_refused_and_nothing_written(tmp_path):
+    """A map is valid only for the tree it was derived against. Without
+    --new-dir the resolver cannot check that, so it refuses rather than apply
+    a possibly stale map -- which could hide a retargeted reference (D8)."""
+    smap_path, _ = _map_for_an_insertion(tmp_path)
+    out = tmp_path / "old.md"
+    r = run("article-07-use-standards.md", "v1.0", str(out), "--section-map", str(smap_path))
+    assert r.returncode == 1
+    assert "--new-dir" in r.stderr
+    assert not out.exists()
+
+
+def test_report_is_opt_in(tmp_path):
+    out = tmp_path / "old.md"
+    r = run("article-08-administration.md", "v0.1-baseline", str(out), "--baseline")
+    assert r.returncode == 0, r.stderr
+    assert "suppressed" not in r.stderr
+
+
+def test_report_names_every_rule_on_the_baseline_path(tmp_path):
+    out = tmp_path / "old.md"
+    r = run("article-08-administration.md", "v0.1-baseline", str(out), "--baseline", "--report")
+    assert r.returncode == 0, r.stderr
+    line = next(l for l in r.stderr.splitlines() if "suppressed" in l)
+    for key in ("heading_case=", "renumber=", "tables=", "frontmatter=", "sections="):
+        assert key in line, key
+
+
+def test_a_hand_edited_map_is_refused_and_nothing_written(tmp_path):
+    """check() reads only the ref and tree strings, so a map with an added entry
+    still passes it. The resolver must re-derive (selfcheck) before applying."""
+    smap_path, tree = _map_for_an_insertion(tmp_path)
+    doc = json.loads(smap_path.read_text())
+    doc["articles"]["7"]["2"] = 2
+    smap_path.write_text(json.dumps(doc))
+    out = tmp_path / "old.md"
+    r = run("article-07-use-standards.md", "v1.0", str(out), "--section-map", str(smap_path),
+            "--new-dir", str(tree))
+    assert r.returncode == 1
+    assert "section map refused" in r.stderr
+    assert not out.exists()
+
+
+def test_a_missing_map_file_is_refused_not_a_traceback(tmp_path):
+    _, tree = _map_for_an_insertion(tmp_path)
+    out = tmp_path / "old.md"
+    r = run("article-07-use-standards.md", "v1.0", str(out), "--section-map",
+            str(tmp_path / "no-such-map.json"), "--new-dir", str(tree))
+    assert r.returncode == 1
+    assert "section map refused" in r.stderr
+    assert "Traceback" not in r.stderr
+    assert not out.exists()
+
+
+def test_a_malformed_map_file_is_refused_not_a_traceback(tmp_path):
+    _, tree = _map_for_an_insertion(tmp_path)
+    bad = tmp_path / "bad.json"
+    bad.write_text("{not json")
+    out = tmp_path / "old.md"
+    r = run("article-07-use-standards.md", "v1.0", str(out), "--section-map", str(bad),
+            "--new-dir", str(tree))
+    assert r.returncode == 1
+    assert "section map refused" in r.stderr
+    assert "Traceback" not in r.stderr
+    assert not out.exists()
+
+
+def test_the_baseline_path_applies_the_section_map(tmp_path, monkeypatch):
+    """The shipped identity case is not reachable on --baseline under the
+    pinned v0.1 fixture, so this one test runs against the shipped map (identity,
+    baseline v1.0) with the insertion map and its tree."""
+    smap_path, tree = _map_for_an_insertion(tmp_path)
+    monkeypatch.setenv("ADOPTION_MAP", str(REPO / "build" / "adoption-map.json"))
+    out = tmp_path / "old.md"
+    r = run("article-07-use-standards.md", "v1.0", str(out), "--baseline",
+            "--section-map", str(smap_path), "--new-dir", str(tree))
+    assert r.returncode == 0, r.stderr
+    assert "## 4. ADULT ESTABLISHMENT" in out.read_text()

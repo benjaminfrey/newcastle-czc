@@ -86,6 +86,10 @@ def main(argv: list[str] | None = None) -> int:
 
     out = args.out or (APP_ROOT / "rulesets" / args.ruleset_key / "districts.json")
 
+    from ruleset_build.supersession import refuse_if_superseded_path
+
+    refuse_if_superseded_path(out)
+
     try:
         doc = build_districts(args.src, args.overrides, args.ruleset_key)
     except AmbiguousDimension as exc:

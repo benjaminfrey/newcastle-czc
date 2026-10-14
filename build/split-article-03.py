@@ -18,12 +18,16 @@ and the running head still render (they key off article-number / article-name,
 which the split preserves on both halves). The marker line itself is dropped.
 
 Usage:
-  split-article-03.py <article-03.md> <out-03a.md> <out-03b.md>
+  split-article-03.py <article-03.md> <out-03a.md> <out-03b.md> [<out-03c.md>]
 
 Exit status:
   0  split written
   1  bad arguments
-  2  no marker line found (caller may fall back to a single-pass render)
+  2  no marker line found. CALLERS MUST REFUSE -- do NOT fall back to a
+     single-pass render. That fallback is the defect: it appends the Type plates
+     after the prose, seating them where the Code has no such position, and the
+     build exits 0 while doing it. (build-full-czc.sh and build-standalone.sh
+     both refuse; a new caller must too.) Treat ANY non-zero status the same way.
 """
 import io
 import sys

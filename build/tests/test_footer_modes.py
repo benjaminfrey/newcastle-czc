@@ -21,34 +21,22 @@ def build(tmp_path, version, date_str, **env):
     return "\n".join(p.get_text() for p in d)
 
 
-def build_standalone(article, version, date_str, **env):
-    """build-standalone.sh has no OUT_DIR seam -- it always writes into
-    releases/<version>/ in the real repo tree. Callers must pass a throwaway,
-    test-only VERSION (never a real release version); this helper deletes that
-    directory again once the PDF has been read, so it leaves nothing behind.
-
-    The version must ALSO be well-formed, because build-standalone.sh now
-    refuses an unrecognised version string (build/version_state.py's --require
-    draft no longer fails open). The test versions below are therefore real
-    vX.Y-draft / vN.0 strings picked far outside the release series -- and this
-    helper refuses to run if that directory already exists, so a well-formed
-    test version can never rmtree a real release."""
-    release_dir = REPO / "releases" / version
-    assert not release_dir.exists(), (
-        f"{release_dir} already exists — refusing to run, because this helper "
-        f"deletes that directory afterwards and it may be a real release")
-    e = dict(os.environ, **env)
+def build_standalone(article, version, date_str, tmp_path, **env):
+    """Builds into tmp_path via OUT_DIR, so nothing under releases/ is created
+    or deleted. The version must still be well-formed, because
+    build-standalone.sh enforces the version-state rule in both directions
+    (build/version_state.py --require)."""
+    out = tmp_path / "standalone"
+    e = dict(os.environ, OUT_DIR=str(out), **env)
+    subprocess.run(["bash", "build/build-standalone.sh", article, version, date_str],
+                   cwd=REPO, env=e, check=True, capture_output=True)
+    pdfs = [p for p in out.glob("*.pdf") if " — Redline" not in p.name]
+    assert len(pdfs) == 1, f"expected exactly one standalone pdf, found {pdfs}"
+    d = pymupdf.open(pdfs[0])
     try:
-        subprocess.run(["bash", "build/build-standalone.sh", article, version, date_str],
-                       cwd=REPO, env=e, check=True, capture_output=True)
-        pdf = next(release_dir.glob(f"Article {article} *.pdf"))
-        d = pymupdf.open(pdf)
-        text = "\n".join(p.get_text() for p in d)
-        page_count = d.page_count
-        d.close()
+        return "\n".join(p.get_text() for p in d), d.page_count
     finally:
-        shutil.rmtree(release_dir, ignore_errors=True)
-    return text, page_count
+        d.close()
 
 
 def test_draft_footer_is_unchanged(tmp_path):
@@ -141,14 +129,14 @@ def test_standalone_adopted_mode_refuses_a_draft_version():
 # likely to circulate on its own.
 
 def test_standalone_draft_footer_is_unchanged(tmp_path):
-    t, pages = build_standalone("3", "v0.94-draft", "August 24, 2026")
+    t, pages = build_standalone("3", "v0.94-draft", "August 24, 2026", tmp_path)
     assert "Draft v0.94-draft" in t
     assert pages == 28
 
 
 def test_standalone_meeting_footer_is_town_meeting_edition(tmp_path):
     t, pages = build_standalone(
-        "3", "v94.0", "August 24, 2026",
+        "3", "v94.0", "August 24, 2026", tmp_path,
         ADOPTION_MODE="meeting", ADOPTION_EVENT_DATE="March 15, 2027")
     assert "Town Meeting Edition v94.0" in t
     assert "Draft v" not in t
@@ -157,7 +145,7 @@ def test_standalone_meeting_footer_is_town_meeting_edition(tmp_path):
 
 def test_standalone_adopted_footer_carries_the_adoption_date(tmp_path):
     t, pages = build_standalone(
-        "3", "v93.0", "March 15, 2027",
+        "3", "v93.0", "March 15, 2027", tmp_path,
         ADOPTION_MODE="adopted", ADOPTION_EVENT_DATE="March 15, 2027")
     assert "Adopted: March 15, 2027" in t
     assert "Draft v" not in t

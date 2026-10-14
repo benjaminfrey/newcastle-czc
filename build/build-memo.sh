@@ -22,7 +22,7 @@ FOOT="${4:-}"
 [ -f "$IN" ] || { echo "memo not found: $IN" >&2; exit 1; }
 mkdir -p "$(dirname "$OUT")"
 
-TMP="$(mktemp -t memo).md"
+TMP="$(mktemp "${TMPDIR:-/tmp}/memo.XXXXXX").md"
 trap 'rm -f "$TMP"' EXIT
 
 # Preprocess on the temp copy only:

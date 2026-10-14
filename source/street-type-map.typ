@@ -25,12 +25,15 @@
 //   to page with north up. NOT wired into the production build until real data
 //   exists (so sample data never lands in a deliverable).
 //
-// Render the sample standalone (lands on a recto via even offset):
+// Render the sample standalone (debug convenience; offset 2 shown):
 //   typst compile source/street-type-map.typ /tmp/type-map.pdf \
 //     --root . --font-path style/fonts --input page_offset=2
 //
-// PARITY INVARIANT identical to the other native units: chrome keys off logical
-// page = here().page() + page_offset; keep page_offset EVEN.
+// PAGE SIDES: margins and chrome both key off the logical page (here().page() + page_offset);
+// Typst resolves inside/outside from this unit's own physical page, so `binding` flips
+// with the offset parity and odd pages are bound on the left, as in the 2020 Code
+// (see PAGE SIDES in source/article-02.typ; guarded by build/tests/test_binding_side.py).
+// No leading blank, no pagebreak(to:...).
 // =============================================================================
 
 #let page_offset = int(sys.inputs.at("page_offset", default: "2"))
@@ -81,6 +84,7 @@
 // ---- Page geometry (identical to czc-template.typ / district-maps.typ) -------
 #set page(
   paper: "us-letter",
+  binding: if calc.odd(page_offset) { right } else { left },
   margin: (inside: 90pt, outside: 44pt, top: 64pt, bottom: 56pt),
   header-ascent: 26pt,
   footer-descent: 28pt,
