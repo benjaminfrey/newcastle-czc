@@ -148,13 +148,22 @@ def legend_delta(old: dict, new: dict) -> list[str]:
     for code in sorted(set(old["glyphs"]) | set(new["glyphs"])):
         og, ng = old["glyphs"].get(code), new["glyphs"].get(code)
         if og != ng:
-            out.append(f"The symbol for `{code}` changed: {og or 'none'} → {ng or 'none'}.")
+            out.append(f"The symbol for `{code}` changed: {_glyph_name(og)} → {_glyph_name(ng)}.")
     if old["note"] != new["note"]:
         out.append(f"The legend's note now reads \"{new['note']}\" (it read \"{old['note']}\").")
     if not out and old["block"] != new["block"]:
         out.append("The legend's text changed in a way this document cannot itemise; "
                    "its before and after text are shown below.")
     return out
+
+
+def _glyph_name(g: str | None) -> str:
+    """A use-table symbol in words (ruling 11: the glyphs are not in
+    style/fonts, so this document never prints one)."""
+    if not g:
+        return "none"
+    import unicodedata
+    return " ".join(unicodedata.name(c, "an unnamed symbol").lower() for c in g)
 
 
 def legend_block_changed(old: dict, new: dict) -> bool:
@@ -538,6 +547,8 @@ def main(argv=None) -> int:
     side = ap.add_mutually_exclusive_group()
     side.add_argument("--new-ref", help="the new version as a git ref")
     side.add_argument("--new-dir", help="the new version as a source directory (default: source/)")
+    ap.add_argument("--new-label", help="how the document names the new version (default: the ref "
+                                        "or directory); the release driver passes the version")
     ap.add_argument("--json", help="also write the counts as JSON to this path")
     a = ap.parse_args(argv)
     for stale in (a.out, a.json):          # a refusal or an empty run must not leave an
@@ -547,6 +558,8 @@ def main(argv=None) -> int:
         old = czc_diff.Side(ref=a.old_ref)
         new = (czc_diff.Side(ref=a.new_ref) if a.new_ref
                else czc_diff.Side(root=Path(a.new_dir) if a.new_dir else czc_diff.SOURCE))
+        if a.new_label:
+            new.label = a.new_label
         report = build(old, new)
     except czc_diff.Refusal as exc:
         print(f"use_table_changes: refusing -- {exc}", file=sys.stderr)

@@ -179,7 +179,8 @@ def test_added_removed_and_glyph_changes_are_itemised():
     assert any("`ex` removed" in s for s in utc.legend_delta(old, gone))
     assert any("`ex` added" in s for s in utc.legend_delta(gone, old))
     glyph = utc.legend_delta(old, utc.parse_legend(_typ().replace('u: "●"', 'u: "○"', 1)))
-    assert any("symbol for `u` changed" in s and "●" in s and "○" in s for s in glyph)
+    # Named in words, never printed (ruling 11; changed 2026-10-14, v1.2-draft proof).
+    assert any("symbol for `u` changed: black circle → white circle" in s for s in glyph)
 
 
 def test_an_unitemisable_change_falls_back_to_the_block():
@@ -303,7 +304,7 @@ def test_an_unitemisable_legend_change_shows_both_texts(tree, tmp_path):
     assert legend.count("```") == 4
     assert "[ CEO ]" in legend.split("After:")[1]
     assert "[ CEO ]" not in legend.split("After:")[0]
-    assert not any(g in out.read_text() for g in "●❶❷✪")           # ruling 11: no glyph, anywhere
+    assert not any(g in out.read_text() for g in "●❶❷✪○")          # ruling 11: no glyph, anywhere
     assert '#let glyphs' not in legend and 'status("' not in legend
 
 
@@ -593,3 +594,24 @@ def test_adding_br_is_reported_as_a_legend_change():
     delta = utc.legend_delta(utc.parse_legend(_typ()), utc.parse_legend(_typ_with_br()))
     assert "Status code `br` added: No Permit Required (—)." in delta
     assert any(s.startswith("The legend's note now reads") for s in delta)
+
+
+# --- Found in the v1.2-draft proof release (Right to Farm Plan B, Task 7) -------
+
+def test_a_new_symbol_is_named_in_words_not_printed():
+    """Ruling 11: no glyph anywhere. Adding br printed "none → ○"."""
+    delta = utc.legend_delta(utc.parse_legend(_typ()), utc.parse_legend(_typ_with_br()))
+    line = next(s for s in delta if s.startswith("The symbol for `br`"))
+    assert not any(g in line for g in "●❶❷✪○")
+    assert "white circle" in line
+
+
+def test_the_new_side_is_labelled_by_version_not_by_folder(tmp_path):
+    """The release driver passes a source folder; the document's subtitle
+    printed that folder's absolute path."""
+    out = tmp_path / "u.md"
+    r = _run("v1.0", str(out), "--new-dir", str(REPO / "source"), "--new-label", "v9.9-draft")
+    assert r.returncode == 0, r.stderr
+    text = out.read_text()
+    assert "v1.0 → v9.9-draft**" in text
+    assert str(REPO) not in text
