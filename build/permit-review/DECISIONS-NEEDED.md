@@ -1443,9 +1443,14 @@ doubt; the wording is the Town's, and the app does not edit the Town's words.
 authority —. Its values were decided by the Planning Board chair on 2026-10-14 (decisions R1–R4).
 Uses so marked are permitted without any permit, subject to Article 7 Section 3.
 
-**Why the app refuses rather than renders.** `app/citation.py:required_review_row` treats a cell with
-no `permit` as prohibited and prints "A <Use> use is not allowed in the <District> District." A `br`
-cell would be printed as the opposite of what the Code says. So `ruleset_build/build_use_matrix.py`
+**Why the app refuses rather than renders.** The `br` legend row's `permit` is the string "No
+Permit" (the legend reader derives it from "No Permit Required"), so `app/citation.py` would treat
+a `br` cell as an ordinary one-permit cell: `cell_reviews` returns a "No Permit / —" review and
+`required_review_row` prints "A Farmstand use in the D1-Rural District requires a No Permit which
+must be issued by the —." That sentence is meaningless, and a Required Review(s) table carrying it
+would tell an applicant to obtain a permit that does not exist. (Corrected 2026-10-14: this entry
+first said the app would print the cell as "not allowed"; the fresh-context review of Plan A
+showed otherwise.) So `ruleset_build/build_use_matrix.py`
 refuses any `br` cell, naming this entry, and refuses `br` combined with another code for good
 (release-machinery spec D3).
 

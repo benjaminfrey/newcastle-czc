@@ -307,3 +307,20 @@ def test_a_refusal_from_czc_md_itself_leaves_no_release_dir(tmp_path, base_tree)
                        env=dict(os.environ, SRC_DIR=str(tree), OUT_DIR=str(out)),
                        capture_output=True, text=True)
     assert r.returncode != 0 and "czc_md: refusing" in r.stderr and not out.exists()
+
+
+# --- Right to Farm Plan A review, findings 1 and 2: the .md legend and ○ -------
+
+def test_the_md_legend_words_the_permit_free_status_plainly():
+    md = czc_md.article2_appendix(REPO / "source")
+    legend = md.split("**Use table legend**", 1)[1].split("\n### ", 1)[0]
+    assert "- No Permit Required\n" in legend
+    assert "issued by —" not in legend
+    assert "- Use Permit — issued by CEO" in legend                      # the others unchanged
+
+
+def test_the_md_legend_carries_the_notes_second_sentence():
+    md = czc_md.article2_appendix(REPO / "source")
+    legend = md.split("**Use table legend**", 1)[1].split("\n### ", 1)[0]
+    assert ('- Uses marked "No Permit Required" require no permit but must meet the '
+            'standards of Article 7 Section 3.') in legend

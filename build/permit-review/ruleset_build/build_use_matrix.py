@@ -244,7 +244,8 @@ def build_use_matrix(src: Path, legend_typ: Path, ruleset_key: str) -> dict:
                 raise UseMatrixBuildError(
                     f"district {district_key!r}, use {use['label']!r}: status {code!r} "
                     f"(No Permit Required) is not yet modelled by the app — its citation "
-                    f"would print the cell as a prohibition. See DECISIONS-NEEDED.md D-0035."
+                    f"would print a meaningless 'requires a No Permit which must be issued "
+                    f"by the —' row. See DECISIONS-NEEDED.md D-0035."
                 )
             by_code_counts[code] = by_code_counts.get(code, 0) + 1
             cells.append(

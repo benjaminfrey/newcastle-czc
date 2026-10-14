@@ -104,3 +104,14 @@ def test_br_combined_with_another_code_is_refused(tmp_path, combo):
     data, typ = _data_with(combo, tmp_path)
     with pytest.raises(UseMatrixBuildError, match="br"):
         build_use_matrix(data, typ, "adopted")
+
+
+def test_the_refusal_states_the_real_risk(tmp_path):
+    """Review of Plan A, finding 3: citation.py would not print a br cell as a
+    prohibition -- the br row's permit, "No Permit", is truthy -- it would print
+    'requires a No Permit which must be issued by the —'. Say that."""
+    data, typ = _data_with("br", tmp_path)
+    with pytest.raises(UseMatrixBuildError) as e:
+        build_use_matrix(data, typ, "adopted")
+    assert "prohibition" not in str(e.value)
+    assert "requires a No Permit" in str(e.value)
