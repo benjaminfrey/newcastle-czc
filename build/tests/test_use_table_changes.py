@@ -549,3 +549,47 @@ def test_a_manifest_without_article_2_is_a_refusal_not_a_keyerror():
     for doc in ({}, {"2": {}}, {"2": {"data_sources": "nope"}}, {"2": {"data_sources": []}}):
         with pytest.raises(czc_diff.Refusal):
             utc.build(old, new, doc=doc)
+
+
+# --- The fifth status, br / ○ "No Permit Required" (Right to Farm Plan A) ------
+
+def _typ_with_br() -> str:
+    """The v1.0 legend with Right to Farm's fifth row and Note (decisions R1-R4)."""
+    t = _typ()
+    t = t.replace('ex: "✪")', 'ex: "✪", br: "○")', 1)
+    ex_row = 'status("ex"), [Expanded Use Permit Required], [Planning Board],'
+    assert ex_row in t
+    t = t.replace(ex_row, ex_row + '\n        status("br"), [No Permit Required], [—],', 1)
+    old_note = ('Note: Uses without #status("u"), #status("rc"), #status("sp"), or '
+                '#status("ex") are not allowed in this District]')
+    assert old_note in t
+    return t.replace(old_note,
+                     'Note: Uses without #status("u"), #status("rc"), #status("sp"), '
+                     '#status("ex"), or #status("br") are not allowed in this District. '
+                     'Uses marked #status("br") require no permit but must meet the '
+                     'standards of Article 7 Section 3.]', 1)
+
+
+def test_the_br_row_is_read_and_both_readers_agree():
+    leg = _agree(_typ_with_br())
+    assert leg["rows"]["br"] == ("No Permit Required", "—")
+    assert leg["glyphs"]["br"] == "○"
+
+
+def test_br_is_worded_no_permit_required():
+    leg = utc.parse_legend(_typ_with_br())
+    assert utc.status_words("br", leg) == "No Permit Required"
+    assert utc.status_words("u", leg) == "Use Permit (CEO)"          # unchanged
+
+
+@pytest.mark.parametrize("combo", ["br u", "u br", "rc br"])
+def test_br_combined_with_another_code_is_refused(combo):
+    leg = utc.parse_legend(_typ_with_br())
+    with pytest.raises(utc.LegendError, match="br"):
+        utc.status_words(combo, leg)
+
+
+def test_adding_br_is_reported_as_a_legend_change():
+    delta = utc.legend_delta(utc.parse_legend(_typ()), utc.parse_legend(_typ_with_br()))
+    assert "Status code `br` added: No Permit Required (—)." in delta
+    assert any(s.startswith("The legend's note now reads") for s in delta)

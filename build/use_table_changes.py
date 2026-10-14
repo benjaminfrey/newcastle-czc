@@ -178,14 +178,27 @@ def display_block(legend: dict) -> str:
 
 def status_words(code: str, legend: dict) -> str:
     """A status code in words. A blank status is "Not allowed": 450 of the 819
-    cells carry it, and a blank in a report reads as "nothing here"."""
+    cells carry it, and a blank in a report reads as "nothing here".
+
+    A permit-free status (authority "—"; Right to Farm's `br`) reads as its
+    own label, "No Permit Required" -- "No Permit (—)" would read as a permit.
+    It may not share a cell with another status (release-machinery spec D3):
+    that is refused, so the .md and this document fail closed with the PDF."""
     if not code.strip():
         return "Not allowed"
+    codes = code.split()
+    free = [c for c in codes if legend["rows"].get(c, ("", ""))[1] == "—"]
+    if free and len(codes) > 1:
+        raise LegendError(f"use status `{code}` combines `{free[0]}` (no permit required) "
+                          "with another status -- not allowed (release-machinery spec D3)")
     parts = []
-    for c in code.split():
+    for c in codes:
         row = legend["rows"].get(c)
-        parts.append(f"{row[0].removesuffix(' Required')} ({row[1]})" if row
-                     else f"`{c}` (not in the legend)")
+        if row and row[1] == "—":
+            parts.append(row[0])
+        else:
+            parts.append(f"{row[0].removesuffix(' Required')} ({row[1]})" if row
+                         else f"`{c}` (not in the legend)")
     return " + ".join(parts)
 
 
