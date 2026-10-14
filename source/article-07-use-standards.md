@@ -161,6 +161,35 @@ TABLE 7.3 PLANNING BOARD REVIEW
 | Manure Storage | More than 50 cubic yards within 100 ft of a property line, or any Manure Storage within 300 ft of a well or water body. |
 | Reduced separation | Medium Stock or Large Stock on a lot narrower than Table 7.2 requires, under Article 7 Section 3.e.5. |
 
+### g. BUILDINGS AND STRUCTURES
+
+1. Agricultural Buildings must meet the Agricultural Building column of the district's Permitted Buildings matrix in Article 2. Larger Agricultural Buildings require Planning Board approval under Table 7.3.
+2. SD-Conservation, SD-Campus, and SD-Marine have no Permitted Buildings matrix. In them, Agricultural Buildings follow the Agricultural Building column of D1, D2, and D5 respectively.
+3. D6 has no Agricultural Building column. In D6, Agricultural Buildings follow its Commercial Accessory column.
+4. This Section adds to the Connected Farm building group of Article 5 Section 18.b and does not limit it.
+5. Hoop Houses, High Tunnels, trellising, fencing, temporary animal shelters, and field-season equipment covers are seasonal or unenclosed structures, not buildings. They do not count toward the structure area of Table 5.2 and are not subject to the removal rule of Article 5 Section 10.c.2. Their total footprint on a lot is limited only as Table 7.3 provides. They must meet the district's Accessory Building Placement setbacks.
+6. Small Stock housing and hives are permitted in every district, notwithstanding Table 5.2. Where Table 5.2 reads "Not Permitted" or "n/a", they are limited to 100 sq ft in total on a lot. Elsewhere they count toward the structure area of Table 5.2.
+
+### h. PROTECTION
+
+1. Agriculture is expected and encouraged in every district where this Section permits it. The presence of a lawful agricultural operation is not, by itself, grounds for restricting ordinary agricultural activity.
+2. Under 7 M.R.S. §154, a farm operation in an area where agricultural activities are permitted may not be considered a violation of a municipal ordinance if it conforms to Best Management Practices.
+    a. Because this Section permits Agriculture in every district, that protection applies by force of state law wherever this Code permits Agriculture. It is not limited to particular standards of this Code.
+    b. It applies only to a farm or farm operation as 7 M.R.S. §152 describes them, not to all Home/Personal Agriculture.
+    c. Whether a farm operation conforms to Best Management Practices is determined by the Commissioner under 7 M.R.S. §156, not by the Code Enforcement Officer.
+    d. A person claiming this protection bears the burden of showing conformance. A written determination of the Commissioner under 7 M.R.S. §156 is that showing. When conformance is disputed, the Code Enforcement Officer must request a determination from the Commissioner, and enforcement on that question waits for it.
+3. An agricultural activity that meets the numeric standards of this Section is not, by reason of noise, odor, dust, or other ordinary effects of Agriculture, a violation of Article 7 Section 1.h or Article 4 Section 12.h, nor grounds for denial under Article 8 Section 18.e.
+
+### i. EXISTING AGRICULTURE
+
+1. An agricultural activity lawfully conducted on the effective date of this Section may continue at its then-existing scale and location, without a permit and without becoming a nonconforming use; such an operation may enter a tier voluntarily; and nothing in this Section requires any existing building, fence, structure or manure facility to be altered.
+
+### j. AGRICULTURAL AREA
+
+1. Where this Code exempts Agriculture from a standard or relaxes a standard for it, the exemption applies only to the agricultural activity and the part of the lot it occupies, its agricultural area, as Article 1 Section 2.b.6 allows. It never applies to a non-agricultural use on the same lot.
+2. The fence exemptions of Article 4 Section 8.c.6 and Section 8.c.7.b apply to fencing that encloses an agricultural area of any tier.
+3. The exemption of Article 4 Section 7.b.2, the allowances of Article 5 Section 2.c.2.b and Section 2.c.3.a, and the outdoor storage and work yard screening exemptions of Article 5 Section 18.c and Section 18.d apply only to an agricultural area used for Commercial Agriculture, for Medium Stock or Large Stock, or for at least ½ acre of cultivation.
+
 ## 4. ADULT ESTABLISHMENT
 
 ### a. DEFINITION

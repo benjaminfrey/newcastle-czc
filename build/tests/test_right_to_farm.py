@@ -102,3 +102,20 @@ def test_the_legend_note_cites_the_right_to_farm_section():
     typ = (SRC / "article-02.typ").read_text(encoding="utf-8")
     assert "must meet the standards of Article 7 Section 3." in typ
     assert re.search(r"^## 3\. RIGHT TO FARM$", _art7(), flags=re.M)
+
+
+SAVINGS = ("An agricultural activity lawfully conducted on the effective date of this Section may "
+           "continue at its then-existing scale and location, without a permit and without becoming "
+           "a nonconforming use; such an operation may enter a tier voluntarily; and nothing in this "
+           "Section requires any existing building, fence, structure or manure facility to be altered.")
+
+
+def test_the_savings_clause_is_verbatim():
+    assert SAVINGS in " ".join(_art7().split())
+
+
+def test_part_two_subsections_exist():
+    sec3 = _art7().split("## 3. RIGHT TO FARM", 1)[1].split("\n## 4. ", 1)[0]
+    for h in ("### g. BUILDINGS AND STRUCTURES", "### h. PROTECTION",
+              "### i. EXISTING AGRICULTURE", "### j. AGRICULTURAL AREA"):
+        assert h in sec3, h
