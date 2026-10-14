@@ -66,6 +66,24 @@ EXPECTED_LEGEND: list[dict] = [
 ]
 
 _REQUIRED_CODES = ("u", "rc", "sp", "ex")
+# Right to Farm (plans/2026-10-14-right-to-farm-plan-a-status-code.md, R1-R4):
+# a fifth, permit-free status. Optional, so the v1.0 tag's four-code legend
+# still parses for redlines against the baseline.
+_OPTIONAL_CODES = ("br",)
+_CANONICAL_ORDER = _REQUIRED_CODES + _OPTIONAL_CODES
+
+EXPECTED_BR_ROW: dict = {
+    "code": "br",
+    "permit": "No Permit",
+    "permit_key": "no",
+    "authority": "—",
+    "authority_key": None,
+    "glyph": "○",
+    "allowed": True,
+}
+NOTE_WITH_BR = ("Uses without u, rc, sp, ex, or br are not allowed in this District. "
+                "Uses marked br require no permit but must meet the standards of "
+                "Article 7 Section 3.")
 
 _LEGEND_HEADING_RE = re.compile(r"USE TABLE LEGEND")
 _GLYPHS_RE = re.compile(r"#let\s+glyphs\s*=\s*\(([^)]*)\)")
@@ -75,7 +93,8 @@ _ROW_RE = re.compile(
     r"\[(?P<permit>[^\]]+)\]\s*,\s*"
     r"\[(?P<authority>[^\]]+)\]\s*,"
 )
-_NOTE_RE = re.compile(r"Note:\s*Uses without[^\]]*not allowed in this District", re.IGNORECASE)
+# To the Note's closing bracket: with `br` the Note has a second sentence.
+_NOTE_RE = re.compile(r"Note:\s*Uses without[^\]]*", re.IGNORECASE)
 _STATUS_CALL_RE = re.compile(r'#?status\(\s*"(\w+)"\s*\)')
 
 
@@ -87,7 +106,8 @@ class LegendParseError(RuntimeError):
 def parse_legend(typ_text: str) -> list[dict]:
     """Parse the USE TABLE LEGEND block out of article-02.typ.
 
-    Returns a list of 5 row dicts (u, rc, sp, ex, and the "" prohibited row),
+    Returns 5 row dicts (u, rc, sp, ex, and the "" prohibited row), or 6 when
+    the legend carries the optional `br` row, in the order u, rc, sp, ex, br, "";
     each: {code, permit, permit_key, authority, authority_key, glyph, allowed}
     plus "note" on the prohibited row.
 
@@ -112,14 +132,27 @@ def parse_legend(typ_text: str) -> list[dict]:
         raise LegendParseError(f"glyphs dict is missing codes: {missing_glyphs}")
 
     # Scan forward from the heading (not the whole file — status(...) is a
-    # generic renderer used elsewhere) for the four literal legend rows.
+    # generic renderer used elsewhere), and only up to the Note, for the
+    # literal legend rows.
     tail = typ_text[heading_match.end() :]
+    note_match = _NOTE_RE.search(tail)
+    if not note_match:
+        raise LegendParseError(
+            "could not find the legend's 'Note: Uses without ...' sentence"
+        )
     rows: list[dict] = []
     seen_codes: set[str] = set()
-    for m in _ROW_RE.finditer(tail):
+    for m in _ROW_RE.finditer(tail, 0, note_match.start()):
         code = m.group("code")
         if not code or code in seen_codes:
             continue
+        if code not in _CANONICAL_ORDER:
+            raise LegendParseError(
+                f"USE TABLE LEGEND has an unknown status code {code!r} — "
+                f"not one of {list(_CANONICAL_ORDER)}; CONTRACT.md §4.4 needs a decision first"
+            )
+        if code not in glyphs:
+            raise LegendParseError(f"glyphs dict is missing code {code!r}")
         seen_codes.add(code)
 
         permit_full = " ".join(m.group("permit").split())
@@ -142,13 +175,11 @@ def parse_legend(typ_text: str) -> list[dict]:
                 "permit": permit,
                 "permit_key": permit_key,
                 "authority": authority,
-                "authority_key": slug(authority),
+                "authority_key": slug(authority) or None,
                 "glyph": glyphs[code],
                 "allowed": True,
             }
         )
-        if len(seen_codes) == len(_REQUIRED_CODES):
-            break
 
     found_codes = {r["code"] for r in rows}
     missing = [c for c in _REQUIRED_CODES if c not in found_codes]
@@ -157,13 +188,8 @@ def parse_legend(typ_text: str) -> list[dict]:
             f"USE TABLE LEGEND block did not yield rows for: {missing} "
             f"(found: {sorted(found_codes)})"
         )
-    rows.sort(key=lambda r: _REQUIRED_CODES.index(r["code"]))  # canonical order
+    rows.sort(key=lambda r: _CANONICAL_ORDER.index(r["code"]))  # canonical order
 
-    note_match = _NOTE_RE.search(tail)
-    if not note_match:
-        raise LegendParseError(
-            "could not find the legend's 'Note: Uses without ...' sentence"
-        )
     note_text = _STATUS_CALL_RE.sub(lambda m: m.group(1), note_match.group(0))
     note_text = re.sub(r"^\s*Note:\s*", "", note_text)
     note_text = " ".join(note_text.split())
@@ -189,7 +215,13 @@ def parse_legend(typ_text: str) -> list[dict]:
 
 def _assert_matches_expected(rows: list[dict]) -> None:
     by_code = {r["code"]: r for r in rows}
-    for expected in EXPECTED_LEGEND:
+    has_br = "br" in by_code
+    expected_rows = list(EXPECTED_LEGEND)
+    if has_br:
+        expected_rows.append(EXPECTED_BR_ROW)
+        expected_rows = [dict(e, note=NOTE_WITH_BR) if e["code"] == "" else e
+                         for e in expected_rows]
+    for expected in expected_rows:
         actual = by_code.get(expected["code"])
         if actual is None:
             raise LegendParseError(f"parsed legend is missing code {expected['code']!r}")

@@ -156,6 +156,11 @@ def _multi_status_cell(district_key: str, use: dict, code: str, parts: list[str]
                 f"{where}: use-status {code!r} contains unknown code {part!r} — "
                 f"not one of {sorted(c for c in legend_by_code if c)}"
             )
+        if row["permit_key"] == "no":
+            raise UseMatrixBuildError(
+                f"{where}: use-status {code!r} combines {part!r} (No Permit Required) "
+                f"with another status — not allowed (release-machinery spec D3)"
+            )
         reviews.append({
             "code": part,
             "permit": row["permit"],
@@ -234,6 +239,12 @@ def build_use_matrix(src: Path, legend_typ: Path, ruleset_key: str) -> dict:
                     f"district {district_key!r}, use {use['label']!r}: "
                     f"unknown use-status code {code!r} — not one of "
                     f"{sorted(c for c in legend_by_code if c)} or '' (prohibited)"
+                )
+            if legend_row["permit_key"] == "no":
+                raise UseMatrixBuildError(
+                    f"district {district_key!r}, use {use['label']!r}: status {code!r} "
+                    f"(No Permit Required) is not yet modelled by the app — its citation "
+                    f"would print the cell as a prohibition. See DECISIONS-NEEDED.md D-0035."
                 )
             by_code_counts[code] = by_code_counts.get(code, 0) + 1
             cells.append(

@@ -1431,3 +1431,25 @@ marks, an artifact of extracting 2020 from a PDF and v1.0 from markdown, and are
 **Why it is not corrected.** It is now adopted text. Correcting it is a scrivener's-error question
 for the Board or counsel, the same class as D-0028 ("Conditions of Law"). The meaning is not in
 doubt; the wording is the Town's, and the app does not edit the Town's words.
+
+## D-0035 — The Code is gaining a permit-free use status (`br`, ○ "No Permit Required"), and the app cannot yet represent one
+
+- **Status:** OPEN — for the permit-review app plan; not blocking the CZC.
+- **Raised:** 2026-10-14, Right to Farm Plan A (`plans/2026-10-14-right-to-farm-plan-a-status-code.md`).
+- **Blocking:** only a ruleset rebuild from draft source once a district cell carries `br` (Right to
+  Farm Plan B). The binding ruleset is built from v1.0, which has no `br`.
+
+**The fact.** Right to Farm adds a fifth status to Article 2's legend: ○ *No Permit Required*,
+authority —. Its values were decided by the Planning Board chair on 2026-10-14 (decisions R1–R4).
+Uses so marked are permitted without any permit, subject to Article 7 Section 3.
+
+**Why the app refuses rather than renders.** `app/citation.py:required_review_row` treats a cell with
+no `permit` as prohibited and prints "A <Use> use is not allowed in the <District> District." A `br`
+cell would be printed as the opposite of what the Code says. So `ruleset_build/build_use_matrix.py`
+refuses any `br` cell, naming this entry, and refuses `br` combined with another code for good
+(release-machinery spec D3).
+
+**What the app plan must decide.** The Required Review(s) row for a `br` cell (a row saying no permit
+is required, or no row); the sentence (e.g. "A Farmstand use in the D1-Rural District is permitted
+without a permit."); and what `app/reviews.py:required_reviews` returns for `permit` and
+`permitting_authority`.
