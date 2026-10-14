@@ -1,592 +1,134 @@
-# Newcastle Core Zoning Code — project memory
+# Newcastle Core Zoning Code
 
-Working repo for integrating Newcastle, Maine's **repealed** Road/Driveway/Entrance
-Ordinance (RDEO) into the Core Zoning Code (CZC) as a **form-based Article 3,
-"Thoroughfares"** (titled "Streets, Roads & Driveways" through v0.14). The CZC is a SmartCode-style form-based code; our
-Article 3 must match its look, feel, and structure. Output is camera-ready PDF (via
-pandoc → Typst) plus markdown, released as tagged draft versions.
+Working repo for the Core Zoning Code (CZC) of Newcastle, Maine — a SmartCode-style, form-based
+code — and its amendments. Our main addition is **Article 3, "Thoroughfares"**, which replaced the
+repealed Road/Driveway/Entrance Ordinance and must match the CZC's look, feel and structure.
+Output is camera-ready PDF (pandoc → Typst) plus markdown, released as tagged versions.
 
-Repo: `/Users/ben/Developer/Claude/Projects/Newcastle Core Zoning Code`
-Remote: https://github.com/benjaminfrey/newcastle-czc.git · branch `main`
-User: Ben Frey <ben@homeportsupply.com>. Newcastle is a small town; Ben is the only
-in-house GIS capacity. All ordinance changes require a **Town Meeting** vote (Maine).
+Repo: `/Users/ben/Developer/Claude/Projects/Newcastle Core Zoning Code` · remote
+https://github.com/benjaminfrey/newcastle-czc.git · branch `main`. User: Ben Frey
+<ben@homeportsupply.com>, Planning Board chair and the Town's only in-house GIS capacity. Every
+ordinance change needs a Planning Board review and a **Town Meeting vote**, so what we ship is
+read by residents and voters, not just by us.
 
----
+The CZC **v1.0 was adopted on September 14, 2026**. New drafts are redlined against v1.0; the
+current draft is **v1.1-draft** (layout only). Past work, wave by wave: `HISTORY.md`.
 
-## ⛔ STANDING RULES — never violate (the user has insisted on each of these)
+## Working rules
 
-1. **NEVER commit unless explicitly asked.** "It is VERY IMPORTANT to only commit
-   when explicitly asked." Build, verify, document, then *wait* for the go-ahead.
-2. **NEVER `git add -A` or `git add .`** — always stage files **by name**.
-3. **Never touch `docs/*.pdf`** — those are the immutable baseline (original CZC,
-   Comp Plan, RDEO). Read-only reference.
-4. **Release deliverables.** Every release ships the **integrated full CZC**. In addition, every
-   Article containing **substantive changes** — changes to that Article's own standards,
-   definitions or data — ships as a **standalone document** and as a **standalone redline**, in
-   **BOTH** `.pdf` **AND** `.md`. Articles touched only by renumbering or cross-reference updates
-   are **named in the Summary of Changes** instead of shipped separately. The **integrated Code is
-   the document the Town adopts**; standalones are extracts and do not govern. Adoption releases
-   ship the frozen packet `build-adoption.sh` defines, plus a **Use Table Changes** artifact
-   whenever district tables moved.
-   *(Rewritten 2026-10-07. The former rule — integrated + standalone Article 3 — dated from when
-   Article 3 was the whole project; Article 3 was adopted at the September 14, 2026 Town Meeting.
-   `build-redline-standalone.sh` was built in Wave 3b and the honest standalone `.md` in Wave 3c;
-   the release driver that ships the whole set is Wave 4.)*
-5. Commit messages end with a `Co-Authored-By:` trailer naming the Claude model that wrote the
+Ben has asked for each of these; most exist because a mistake here is public or hard to undo.
+
+1. **Commit only when Ben asks.** Build, verify and document, then wait for the go-ahead — he
+   reviews what goes into the Town's record.
+2. **Stage files by name, never `git add -A` / `git add .`.** The tree holds untracked material
+   that must not be swept in (local settings, Ben's docs, scratch).
+3. **`docs/*.pdf` are the immutable baseline** (original CZC, Comp Plan, RDEO). Read only.
+4. **Release deliverables.** Every release ships the integrated Code (the document the Town
+   adopts). Each Article with substantive changes — its own standards, definitions or data — also
+   ships as a standalone and a standalone redline, in both `.pdf` and `.md`. Articles touched only
+   by renumbering or cross-reference updates are named in the Summary of Changes instead.
+   Adoption releases ship the frozen packet, plus a Use Table Changes memo when district tables
+   moved. Standalones are extracts and do not govern.
+5. **Commit messages end with a `Co-Authored-By:` trailer** naming the Claude model that wrote the
    change, e.g. `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
-6. On release: **isolate `git push origin main`** as its own command, then push the
-   tag as a **separate** command. (Annotated tags, `vX.Y-draft`.)
-7. Match the baseline CZC formatting/typography; we have measured it forensically
-   (see `style/style-analysis.md`).
-
----
+6. **On release, push `main` and the annotated tag (`vX.Y-draft`) as separate commands.** Never
+   force-push without Ben's explicit OK; re-cutting a pushed version means a new number unless he
+   says otherwise.
+7. **Match the baseline CZC's formatting and typography** — measured in `style/style-analysis.md`.
+8. **Nothing may claim adoption before the vote.** See the version-state gotcha below.
+9. **Never guess a legal value** (a statute, a use status, a standard). Write it down as an open
+   decision for Ben, the Board or counsel instead.
 
 ## Repo map
 
-- `source/` — the editable Code. Articles 1–9 as `article-0N-*.md`. Article 2
-  (districts) and the Article-3 exhibits are **native-Typst** (`*.typ`), spliced
-  into the pandoc flow at build time.
-  - `article-03-streets-roads-driveways.md` — our new Article 3.
-  - `cross-section-plates.typ` — the 10 Type "plate" pages (one per Type).
-  - `street-type-inventory.typ` — **Exhibit 3.1** (inventory table).
-  - `street-type-map.typ` — **Exhibit 3.2** (Type map).
-  - `exhibits/cross-sections/types.json` — the 10 Types' spec (standards, etc.).
-  - `exhibits/street-types/inventory.json` — the promoted classification data.
-- `style/` — Typst template (`czc-template.typ`), fonts, colors, style analysis.
-- `build/` — build scripts (see below) + `street-types/` GIS pipeline
-  + the adoption-release scripts (see “Adoption release”).
-  `build-standalone.sh <article-NN> <ver>` builds any Article standalone, driven by
-  `build/article-manifest.json` (+ `manifest.py` reader); `build-article-3.sh` is a shim to it.
-- `releases/vX.Y-draft/` — shipped deliverables + redlines + Summary per version.
-- `docs/` — **baseline PDFs, do not modify.**
-- `memos/` — supporting justification/discussion memos. Rendered to PDF in CZC
-  house style by `build/build-memo.sh` + `style/memo-template.typ` (memo builder
-  added during the Fall-2026 redline review; usage: `build-memo.sh <md> <pdf>
-  "running head" "footer"`; long tables flow across pages via breakable figures).
-- `extract/`, `review-d1/` — scratch/analysis.
+- `source/` — the editable Code: Articles 1–9 as `article-0N-*.md`. Native-Typst units are
+  spliced into the pandoc flow at build time: `article-02.typ` (district pages),
+  `district-maps.typ` (Article 1), and Article 3's `cross-section-plates.typ` (the 10 Type
+  plates), `street-type-inventory.typ` (Exhibit 3.1) and `street-type-map.typ` (Exhibit 3.2).
+  Data: `exhibits/cross-sections/types.json`, `exhibits/street-types/inventory.json`.
+- `style/` — Typst template (`czc-template.typ`), memo template, fonts, colors, style analysis.
+- `build/` — build and release scripts, `article-manifest.json` (which units and data belong to
+  which Article), tests in `build/tests/`, the GIS pipeline in `build/street-types/`, the
+  permit-review app in `build/permit-review/`.
+- `releases/<version>/` — shipped deliverables. Release PDFs are gitignored (rebuild from tags).
+- `memos/` — justification and analysis memos, rendered with `build/build-memo.sh`.
+- `plans/` — implementation plans; `build/ADOPTION-SPEC.md` — the adoption design (authoritative).
+- `docs/` — the baseline (see rule 3).
 
-## The Type system
+## The Type system (Article 3)
 
-"Thoroughfare" is the umbrella term (the §5 binding classification is a **Thoroughfare
-Type**); Street and Road are the two families.
+"Thoroughfare" is the umbrella term; each segment in town gets one binding **Thoroughfare Type**
+in the §5 Inventory. Street (S, urban) and Road (R, rural) families: `S1` Main Street · `S2`
+Village Street · `S3` Neighborhood Street · `S4` Lane · `S5` Alley · `R1` Connector Road · `R2`
+Rural Road · `R3` Rural Lane · `R4` Highway Commercial · `R5` Rural Highway. Legends show only
+Types actually present. Districts (Table 3.4): D1 Rural · D2 Neighborhood Residential · D3
+Neighborhood Business · D4 Village Residential · D5 Village Business · D6 Town Center.
 
-10 Types, prefix = family: **S = Street** (urban), **R = Road** (rural).
-`S1` Main Street · `S2` Village Street · `S3` Neighborhood Street · `S4` Lane ·
-`S5` Alley · `R1` Connector Road · `R2` Rural Road · `R3` Rural Lane ·
-`R4` Highway Commercial · `R5` Rural Highway. Each segment in town gets one binding
-Type (the §5 Inventory). Map/table legends show only Types actually present.
+## Commands
 
-## Build & release flow
+- **Tests:** `python3 -m pytest build/tests -q` — 729 tests, ~15–20 min (they build real PDFs,
+  redlines and releases). CI runs them on every PR and push to `main`, pinned to Python 3.14,
+  PyMuPDF 1.27.2.2 and Typst 0.14.2, with full git history because the redline tests read tags.
+- **Releases, redlines, standalones, the Summary of Changes, Town Meeting freezes and the adopted
+  edition:** use the **`czc-release` skill** — it holds the full procedure. The everyday entry
+  points are `build/build-release.sh` (a whole draft release; run `--plan-only` first),
+  `build/build-standalone.sh <NN> <ver>` (a focused proof of one Article) and
+  `build/build-full-czc.sh <ver> "<date>"` (the integrated Code alone).
+- **Memos:** `bash build/build-memo.sh <md> <pdf> "<running head>" "<footer>"`.
+- **GIS classification:** `build/street-types/run.sh [--from N]` (own venv; see its README).
 
-- **A whole draft release (Wave 4a — preferred):** `bash build/build-release.sh vX.Y-draft
-  "Month D, YYYY" --old-ver=<previous tag> [--calls calls.json] [--plan-only] [--out-dir DIR]`
-  → `releases/vX.Y-draft/`: integrated `.pdf`+`.md`, integrated redline `.pdf`+`.md`, each
-  SUBSTANTIVE Article's standalone + standalone redline (both formats), `Use Table Changes
-  <ver>.{md,pdf}` when district data moved, a generated `Summary of Changes <ver>.md` skeleton
-  (never overwrites a hand-written one), and the records `release-plan.json` + `ships.json`.
-  `--old-ver` is required. Run `--plan-only` first to see what will ship. **Any NEEDS-CALL Article
-  (a changed layout unit) needs a written call** — `{"calls": [{"article": N, "decision":
-  "layout-only"|"substantive", "reason": "...", "by": "..."}]}`; the release stops, listing every
-  Article missing one. Reasons are printed in the Summary: write them for residents, no file
-  names. A call can make a release ship more, never less. Everything builds into a sibling
-  `.staging-<ver>.*` dir; `release_gate.py` refuses missing/empty/unplanned (incl. hidden) files
-  and Code PDFs whose printed−physical page offset is inconsistent or odd; only then is it moved
-  into place (dir 755, files 644). With `ADOPTION_MODE=meeting ADOPTION_EVENT_DATE=…` it builds a
-  Town Meeting packet (adoption version; `--old-ver` = the adopted baseline; baseline redlines) —
-  but run directly that is only a **proof** (no dirty-source check, no `frozen-from.json`); the real
-  freeze is `build-adoption.sh`. Adopted mode is refused (D5). The driver refuses inherited build
-  overrides (`OUT_DIR`, `OUT_NAME_OVERRIDE`, `STANDALONE_FRONT_NOTE`, `REDLINE_OUT`,
-  `REDLINE_MD_OUT`, `FRONT_NOTE_PDF`, `OUT_MD_SOURCE`, `REDLINE_CAVEAT`; draft also refuses
-  `ADOPTION_BASELINE`/`ADOPTION_EVENT_DATE`). v1.1-draft (the first driver release) recorded layout-only calls for Articles 1, 2, 3 —
-  each later release states its calls against its own `--old-ver`. The leaf commands below still
-  work on their own.
-- **Integrated CZC:** `bash build/build-full-czc.sh vX.Y-draft "Month D, YYYY"`
-  → `releases/vX.Y-draft/Newcastle CZC (Integrated Draft vX.Y-draft).{pdf,md}`
-- **Standalone (any Article):** `bash build/build-standalone.sh <article-NN> vX.Y-draft`
-  → `releases/.../Article N <Name> (Standalone vX.Y-draft).{pdf,md}` — any Article 1–9 as its own
-  draft (no cover/TOC; pages 1..N). Native units splice per `build/article-manifest.json`
-  (Art 1 maps · Art 2 spreads w/ pad-to-odd D1-verso · Art 3 plates+exhibits); Articles 4–9 are
-  pure-prose single-pass. Reuses `build-article.sh` + `split-article-03.py`. **`build-article-3.sh`
-  is now a shim** → `build-standalone.sh 3` (so `build-article-3.sh vX.Y-draft` still works).
-  The `.md` is generated by **`build/czc_md.py`** (Wave 3c), not copied from the source — see
-  Current state.
-- **Working on Article N:** edit `source/article-0N-*.md` (+ its native unit/data for Art 1/2/3);
-  `build-standalone.sh N <ver>` for a focused proof; then `build-full-czc.sh <ver> <date>` for the
-  integrated draft and `build-redline-full.sh <ver>` for the redline (both already Article-agnostic).
-  Inline images need NO tooling — `![](exhibits/foo.png)` renders in any Article via pandoc; only
-  full-page native exhibits need a manifest entry.
-- **Redline (formatted, full-layout — canonical):** `bash build/build-redline-full.sh <new-ver> [old-ver] [date]`
-  → `releases/.../Newcastle CZC (Integrated Draft <new-ver>) — Redline.pdf` — the integrated draft
-  in its **full publication layout** (chrome + all native figures) with **prose** changes marked
-  inline (additions red, deletions struck) vs the **prior version**. Stages the working-tree
-  `source/` (marks each `article-*.md` via `redline-text.py --source` vs the old tag) and runs
-  `build-full-czc.sh` against it (`SRC_DIR`/`OUT_DIR` seams; the build threads parity for the
-  longer doc automatically). **v1 limit:** figures/tables/maps + inline raw-Typst tables render at
-  **current state, unmarked** (a text diff can't mark a regenerated figure) — narrate those in the
-  Summary; the cover carries a redline caveat. `REDLINE_OUT=<path>` = a dry-run that won't touch a
-  release. Implemented 2026-06-19 (verified v0.20→v0.21: 117 pp / 1 blank, parity held).
-- **Redline (plain text — legacy):** `bash build/build-redline.sh <new-ver> <old-ver>`
-  (`redline-text.py --full`) — single-column TEXT-only report, no chrome/figures; superseded by
-  the formatted redline above, kept for quick wording-only reads.
-- **Summary (md + PDF):** hand-write `releases/vX.Y-draft/Summary of Changes vX.Y-draft.md`
-  in **plain, human-readable** language — list changes by §/Table/Type/road name; **no file,
-  path, or script references**. Render to PDF with `bash build/build-memo.sh "<…Summary….md>"
-  "<…Summary….pdf>" "Summary of Changes — <ver>" "Newcastle Core Zoning Code · <date>"`.
-- **Re-cutting a shipped draft** (amending an already-pushed version, e.g. the v0.17
-  column trim) needs a **force-push** (history rewrite); the harness gates that pending
-  Ben's explicit OK. Default to a new version number unless Ben says "stay in vX.Y".
+## Gotchas that have bitten before
 
-### Adoption release (the Town-Meeting path) — merged 2026-08-25
+- **Python.** The build calls bare `python3` and needs only PyMuPDF and pytest. When Homebrew moves
+  `python3` to a new minor version, builds fail with `No module named 'pymupdf'`. Fix:
+  `python3.X -m pip install --only-binary=:all: --break-system-packages "pymupdf==1.27.2.2"
+  "pytest==9.0.3"`. The permit-review app has its own `.venv` and is unaffected.
+- **Page sides and parity.** Chrome (running head, footer number, Article tab) and binding margins
+  both follow the *logical* page, `here().page() + page_offset`; every `#set page(` call sets
+  `binding: if calc.odd(page_offset) { right } else { left }`. Each native unit must render at an
+  offset that makes logical == physical, and Article 2's D1 must land on a verso. Odd pages bind
+  on the left, as in the 2020 Code. Guards: `test_binding_side.py`, `test_unit_chrome.py`.
+- **The version number is the state.** Decimal (`v1.1-draft`) = draft; whole (`v2.0`) = adoption.
+  `build/version_state.py` enforces it in both directions; it is the only thing between an env
+  var and a document that falsely claims adoption, so never bypass it.
+- **Between a freeze and the vote, change no generator.** `build-adopted.sh` renders the tag's
+  source with the working tree's builders and requires the body to match the frozen Town Meeting
+  edition byte for byte. (This is why v1.0 itself can no longer be re-adopted — leave that alone.)
+- **The residue gate matches chrome strings, never the word "draft".** The Code's own text says
+  the Planning Board "drafts the official map", and the gate asserts that sentence is present. The
+  `.md` scan is case-insensitive and covers HTML comments, so new prose like "draft vote" or "not
+  adopted" in `source/` would make an adoption refuse.
+- **Normalise only the OLD side of a baseline redline.** Normalising the new side flattens the
+  Code's hierarchy in the typeset PDF.
+- **The cover's AMENDED THROUGH line is scanned art** with no text layer; only the pixel test
+  (`test_cover_modes.py`) can see it. Don't move `AMENDED_RECT` without re-measuring.
+- **After an adoption, roll the baseline over** in `build/adoption-map.json` (all fields, including
+  `baseline_amended_through`). `baseline_selfcheck.py` guards it: a half-done rollover can report
+  hundreds of phantom changes and still exit 0.
+- **Changes to layout units need a written call.** `czc_diff` marks an Article NEEDS-CALL when a
+  `.typ` unit or binary exhibit changed; the release stops until a person records whether it is
+  layout-only or substantive (the skill has the format). A change to a `shared` file stops the
+  determination until a person says which Articles it affects.
 
-Full design in **`build/ADOPTION-SPEC.md`** (authoritative); the 8-task build log and the
-adjudicated fix-later items are in `.superpowers/sdd/ADOPTION-PLAN/progress.md` (gitignored,
-local only). **Nothing here changes the ordinary draft flow** — with no adoption env vars set,
-`build-full-czc.sh` is byte-identical to before.
+## Open items
 
-- **The version number IS the state.** Decimal (`v0.24-draft`) = draft. **Whole (`v1.0`) = an
-  adoption version.** `build/version_state.py` enforces it **in both directions**: draft chrome
-  refuses a whole number, and meeting/adopted chrome refuses a decimal. Never bypass this — it is
-  the only thing standing between an env var and a document that claims adoption.
-- **⛔ Nothing may claim adoption before the vote.** The frozen packet says **NOT YET ADOPTED**.
-  The clerk attestation is masked in *every* mode.
-- **Freeze (before the meeting) — Wave 4b:** `bash build/build-adoption.sh vN.0 "<meeting date>"
-  [--freeze-date=<date>] [--calls calls.json] [--dry-run]` → `releases/vN.0/`. It keeps its own
-  gates (version state, `baseline_selfcheck`, the breakdown, `--dry-run`, the dirty-`source/`
-  refusal, **refusal of any inherited build override** — `SRC_DIR`, `OUT_DIR`, `FRONT_NOTE_PDF`,
-  `OUT_MD_SOURCE`, `REDLINE_CAVEAT`, … — so the packet is built from exactly the tree it records),
-  then calls `build-release.sh` in meeting mode: the **Town Meeting edition**, the baseline redline
-  (both formats), an extract + extract redline for **every SUBSTANTIVE Article**, the Use Table
-  Changes memo when district data moved, a generated Summary skeleton, `release-plan.json`,
-  `ships.json` — then writes **`frozen-from.json`**. NEEDS-CALL Articles need `--calls` (as for a
-  draft release). Hand-write the Summary in the packet, then `build-adoption.sh vN.0 "<meeting
-  date>" --render-summary` renders its PDF (and does nothing else; it refuses the unedited
-  skeleton). Then commit `releases/vN.0/` and tag `vN.0` at that commit. **To re-freeze, remove
-  `releases/vN.0/` first** (the driver refuses an existing packet). Test seams `CZC_LEAF_RELEASE`
-  and `ADOPTION_MAP` are for tests only.
-- **Adopt (after the vote):** `bash build/build-adopted.sh v1.0 "<adoption date>"` →
-  `releases/v1.0-adopted/Newcastle CZC (Adopted v1.0).{pdf,md}`. It renders **from the tag, never
-  the working tree**, so the adopted document structurally cannot contain anything the voters did
-  not see. Three gates: **provenance** (the tag's `source/` **tree** must still match
-  `frozen-from.json` — the *tree*, not the commit, so a legitimate re-tag of identical source still
-  passes, but moving the tag onto different source refuses), **identity** (adopted body byte-equal
-  to the meeting edition, frontmatter stripped — frontmatter is chrome and differs by design), and
-  **residue** (no draft chrome in page text *or* filename). Gates run **before** anything is
-  written, so a refusal leaves no shipped-looking release dir.
-  ⚠ **The residue gate matches chrome strings, never the bare word "draft"** — the Code's own
-  adopted text reads *"The Planning Board, or its designnee, **drafts** the official map of the
-  Town of Newcastle."* A blanket search fails on the Town's own words, and the natural 11pm fix is
-  to delete the gate. It also asserts that sentence is still **present**: a substitution that
-  damaged the Code's text would be far worse than a leftover banner.
-- **The baseline redline is not a plain diff.** `ADOPTION_BASELINE=1` compares against the
-  **adopted** Code, where ~80% of raw diff lines are formatting noise. `build/normalize_for_diff.py`
-  suppresses rewrap, heading case, **article renumbering** (`build/adoption-map.json`: adopted 3→
-  draft 4 … 8→9) and **table renumbering**; `build/redline_resolve.py` maps each file (exit 1
-  unmapped/refuse · 3 new · 4 not text-comparable). **Article 2 is not text-comparable across the
-  baseline** (native-Typst, rebuilt from data) — it renders **unmarked**. v0.24 → adopted baseline
-  = **151** substantive changed lines.
-  ⚠ **Normalise the OLD side only.** The NEW side gets *typeset*: normalising it flattens the
-  Code's hierarchy (measured: Article 8 went 211 indented sub-clause lines → 4). `normalize()` is
-  comparison-only; **`normalize_old_side()`** is the render-safe one.
-  ⚠ **A suppressed mark is honest only if the reader is told once.** `build/structural_note.py`
-  puts a **"HOW TO READ THIS REDLINE"** page on the verso facing the cover in baseline mode —
-  it says in plain words that Article 2 rendering unmarked is *not* a statement that it was
-  untouched, and prints the article map. It **replaces** the front-matter blank, so parity holds.
-- **Chrome is three-mode** (`draft` | `meeting` | `adopted`) via `ADOPTION_MODE` +
-  `ADOPTION_EVENT_DATE`, shared by the integrated and standalone builds through
-  `build/adoption-footer.sh` and `build/adoption-name.sh` (one `czc_integrated_name` — the
-  filename is chrome too; a page-text-only residue check cannot see it).
-- **The adopted cover restates its own amended-through date** (spec §7, decided 2026-08-25). The
-  baseline cover art reads "AMENDED THROUGH: MARCH 24, 2025"; in **adopted mode only**, that one
-  line is masked and reprinted as **"AMENDED THROUGH: <adoption date>"**. Draft and Town Meeting
-  editions keep the baseline date — before the vote nothing has been amended. EFFECTIVE and ADOPTED
-  stay untouched in every mode: the Code was adopted November 3, 2020 and this edition *amends* it.
-  ⚠ **That line is scanned art with no text layer**, so a text-only assertion cannot see the stale
-  line and passes with the mask deleted. The real gate is a **pixel** test (`test_cover_modes.py`)
-  using a short adoption date so the stale line's left end stays uncovered, with meeting mode as the
-  positive control. Geometry measured at 600 dpi; don't nudge `AMENDED_RECT` without re-measuring.
-
-- **✅ v1.0 ADOPTED at Town Meeting, September 14, 2026 — rollover done that night.** (1) `build-adopted.sh
-  v1.0 "September 14, 2026"` → `releases/v1.0-adopted/` (117 pp / 1 blank; provenance, identity and residue
-  gates passed; cover reads AMENDED THROUGH: SEPTEMBER 14, 2026). (2) `build/adoption-map.json` rolled over:
-  baseline `v1.0`, all identity; `baseline_selfcheck.py` → 0 marked lines. The old map lives on as
-  `build/tests/fixtures/adoption-map-v0.1-baseline.json`, pinned by the baseline-redline tests via the
-  `ADOPTION_MAP` env var (test seam only). (3) Permit-review app rolled over — see
-  `build/permit-review/BUILD-STATE.md` "The v1.0 adoption rollover".
-- **▶ AFTER THE VOTE — roll the baseline over.** *(Done 2026-09-14 — kept for the next adoption.)* Once `v1.0` is adopted it becomes the *previously
-  adopted* version, and `build/adoption-map.json` resets: `baseline_version` → the new adoption,
-  **`baseline_amended_through` → its adoption date** (Wave 4b: the draft and Town Meeting covers
-  print "AMENDED THROUGH: <that date>" from it — a stale value prints a false cover),
-  `article_numbers` + `files` → identity, `new_at_this_adoption` + `not_text_comparable` → empty.
-  **Nothing performs that edit.** `build/baseline_selfcheck.py` guards it — the invariant is that
-  **the baseline compared against ITSELF marks zero lines** — and `build-adoption.sh` runs it as a
-  precondition. It is **dormant** while the baseline is `v0.1-baseline` (not an adoption version)
-  and arms itself at the rollover.
-  ⚠ **A half-done rollover fails silently.** A stale `files` map refuses loudly, but a stale
-  `article_numbers` reports **308 phantom changed lines comparing v1.0 to itself and exits 0** — it
-  rewrites the old side's "Article 4" to "Article 5". That is why the guard exists; don't remove it
-  because it looks inert.
-
-**Tests:** `python3 -m pytest build/tests -q` — **729**, ~13 min (they build real PDFs, redlines and releases).
-CI runs them on every PR and every push to `main` (`.github/workflows/build-tests.yml`);
-⚠ **Python:** the build calls bare `python3` and needs only **PyMuPDF** and **pytest** (CI pins
-PyMuPDF `1.27.2.2`, Python 3.14). When Homebrew moves `python3` to a new minor version, the new
-one has neither, and builds fail with `No module named 'pymupdf'`. Fix (done for 3.15 on
-2026-10-12): `python3.X -m pip install --only-binary=:all: --break-system-packages
-"pymupdf==1.27.2.2" "pytest==9.0.3"`. The permit-review app is unaffected (own `.venv`, 3.14).
-that workflow pins **Typst 0.14.2** and needs `fetch-depth: 0`, because the redline tests
-read real tags.
-
-**Parity invariant (critical, don't break):** native-Typst units are spliced
-between pandoc passes; chrome (verso/recto binding margins, rotated Article tab,
-running head, footer page numbers) keys off `here().page() + page_offset`, so each
-unit must render at an offset that makes **logical == physical**.
-- **Integrated CZC:** threads the **true running** `page_offset` (continuous flow, no
-  recto-opening pads — v0.19). Only `article-02.typ` needs parity alignment: D1 (its first
-  page) must land on a verso, so the build pads to an **ODD** running offset before it
-  (offset+1 = even/verso for D1) and `article-02.typ` no longer self-forces
-  `pagebreak(to:"even")`. (Those two together previously produced **2 redundant blanks** —
-  removed 2026-06.) Front matter stays even (cover + blank + TOC). **Just 1 structural blank
-  remains (the front-matter blank).** After assembly, `build/toc_links.py` adds clickable
-  GoTo links from each TOC row to its page.
-- **Standalone Article 3 (excerpt):** threads the **true running page count** — no
-  recto-opening blanks — so it flows continuously (`build-article-3.sh`, v0.15).
-- Article 3 is split by `build/split-article-03.py` at two markers:
-  `<!-- TYPE-PAGES -->` (§2, before the plates) and `<!-- STREET-TYPE-EXHIBITS -->`
-  (§5.C, before the Classification Rubric — marker token unchanged by the rename)
-  → `03a / 03b / 03c`. Render order: `[03a, plates, 03b, Exhibit 3.1, Exhibit 3.2, 03c]`.
-  Backward-compatible and **dormant-safe** (marker absent ⇒ no change; body always
-  renders, exhibits only when `inventory.json` exists).
-
-## GIS pipeline (`build/street-types/`)
-
-Repeatable GeoPandas pipeline that produces the §5 classification. Venv at
-`build/street-types/.venv` (gitignored). `bash run.sh [--from N]` chains
-`01_fetch → 02_prepare → 03_join → 04_classify → 05_export`; `00_digitize_districts.py`
-+ `georef.py` + `sample_key.py` build the district layer from the District Map image.
-Durable human decisions live in `overrides.json`. Full docs: `build/street-types/README.md`.
-The **§5.D classification rule** is centralized in `lib.classify_type` (form-first;
-arterials always R4/R5; road-default Districts use MaineDOT functional class; the more
-urban *form* District wins when it covers ≥25% of a segment). `03_join` emits per-District
-overlap fractions (`district_fracs`); `04_classify` applies the rule (v0.18).
-**To get the 100% map later:** drop in the contractor's exact district shapefile,
-re-run from the join stage, re-promote `work/inventory.json` → `source/exhibits/...`,
-rebuild. No code changes.
-
----
-
-## Current state (as of 2026-10-12)
-
-- **✅ v1.1-draft CUT (2026-10-12)** — the first release through `build-release.sh`, against v1.0.
-  Layout only: the binding-margin fix and the Article 2 first-page chrome fix. Written calls
-  (Ben): Articles 1, 2, 3 layout-only. Ships the integrated Code + redline (no marks — no wording
-  changed), Summary, `release-plan.json`, `ships.json`; 117 pp / 1 blank. Also fixed the
-  manifest's Exhibit 3.1 label to the printed title, "Inventory of Existing Thoroughfares".
-
-- **✅ MERGED to `main` — the release-deliverable machinery, Waves 0 and 1** (PR #1, merge
-  commit `9291b20`, 31 commits). Build suite **111 → 196**. Wave 0 fixed the Article 2
-  first-page chrome defect that is live in the adopted v1.0 edition (physical page 12 —
-  it cannot be back-applied, because `build-adopted.sh` renders from the tag) and
-  de-pinned three tests that tracked the live working tree. Wave 1 built the seams a
-  per-Article redline needs: `czc_standalone_name`; `SRC_DIR`/`OUT_DIR`/
-  `OUT_NAME_OVERRIDE` on `build-standalone.sh`; `STANDALONE_FRONT_NOTE` (uncounted, and
-  it refuses an odd page count); whole-line HTML comments treated as **structure** in
-  `redline-text.py --source`, with the integrated build now refusing a damaged split
-  marker; **`--plain`**, the markdown redline (additions `**bold**` + a `⊕` sigil on
-  whole-line insertions, deletions `~~struck~~`, a legend, and a visible
-  figure-regenerated note); the **ownership map** in `article-manifest.json` +
-  `manifest.py` (`data`/`articles`/`owner`, with a coverage test over every tracked file
-  under `source/`); and **`redline-stage.sh`**, now the single definition of
-  `redline_resolve.py`'s rc 0/3/4/refuse contract, with a guard that stops plain-marked
-  source reaching the PDF stage.
-  **Still to build:** **Wave 4c** — the fifth use-table status code (P15), **only after Ben or
-  the Board supplies its four binding values** (the code, the legend symbol, the legend row's
-  wording, the rewritten Note); log a DECISIONS-NEEDED entry per the D-0033 precedent.
-- **✅ Wave 4b MERGED — integrated markdown, cover facts, adoption through the driver** (PR #8,
-  merge `5bd45b8`; plan
-  `plans/2026-10-11-wave4b-adoption-and-integrated-md.md`, ten rulings). Build suite **640 → 726**.
-  (1) **`build/integrated_md.py`**: the integrated `.md` — what the Town adopts — keeps each
-  Article's source frontmatter and runs every body through `czc_md.body_markdown` (tables as
-  tables, page pointers, no build comments) with **Article 2's 13-district appendix**; **no
-  mode-dependent text**, so meeting and adopted `.md` are byte-identical (the identity gate holds);
-  built before the PDF render, so a refusal leaves neither file. (2) **Cover facts (D6)**:
-  `adoption-map.json` gains **`baseline_amended_through`** ("September 14, 2026"); draft banner =
-  "proposed amendments to the Core Zoning Code" / "as amended through <it>"; the scanned AMENDED
-  THROUGH line is masked and reprinted in draft and meeting mode when the baseline is newer than
-  the scan (pixel test: the whole date row vs the reprint alone; the v0.1 fixture map keeps the
-  positive control). (3) **Meeting mode** in `build-release.sh`/`release_plan.py`/
-  `summary_skeleton.py`. (4) **`build-adoption.sh` freezes through the driver** (see Adoption
-  release); `pdf_recap` exits 1 on an unreadable or zero-page PDF. (5) **`ADOPTION-SPEC.md`
-  matches the code**, with agreement tests (§3.3 packet kinds = `release_plan.ARTIFACT_KINDS`;
-  §6.1 gates = script + literal refusal string in non-comment lines; negative controls).
-  ⚠ **v1.0 cannot be re-adopted**: `build-adopted.sh` renders the v1.0 tag's source with today's
-  builders and compares against the committed old-assembler Town Meeting `.md` (identity refuses),
-  and the tag's Article 3 footer still reads "Draft v0.2-draft" (the `.md` residue scan refuses).
-  No code works around it; v1.0's adopted edition already exists.
-  ⚠ The adoption breakdown counts Article 3's footer change since v1.0 as 2 substantive lines
-  while `czc_diff` calls Article 3 NEEDS-CALL (its layout units) — expect both at the next freeze.
-- **✅ Wave 4a MERGED — the release driver** (PR #7, merge `c5d6a0b`; plan
-  `plans/2026-10-11-wave4a-release-driver.md`, twelve rulings). Build suite **522 → 640**.
-  `build-release.sh` (see Build & release flow) composes: `release_plan.py` (czc_diff verdicts +
-  written calls → `release-plan.json`; `ships.json` = czc_diff's JSON with `new` set to the version,
-  never a local path; Use Table Changes decided by running `use_table_changes.py`; duplicate JSON
-  keys in the calls file refused), `summary_skeleton.py` (every non-UNCHANGED Article by status in
-  plain words; what the redline cannot show, from the plan's counts and the manifest's page labels;
-  none of the v0.1-era sentences), `release_gate.py` (the refusing gate; memo PDFs — kind
-  `use-table-changes` — only need to open with text, chosen by artifact kind, never file name), and
-  `redline_md.py` (the integrated redline's **markdown edition**, which never existed before; uses
-  `czc_md.body_markdown`). The **section map now reaches the redline**: `czc_redline_stage` reads
-  `CZC_SECTION_MAP`; `build-redline-full.sh` (now also honours `SRC_DIR`) and
-  `build-redline-standalone.sh` read `SECTION_MAP` (measured: one inserted section in Article 7 —
-  130 "Heading changed" notes without the map, 0 with it). Leaf builders are reachable through test
-  seams `CZC_LEAF_*` (test use only). First run of the Haiku tier for mechanical checks.
-- **✅ Wave 3c MERGED — honest standalone markdown** (PR #6, merge `809ebee`;
-  plan `plans/2026-10-11-wave3c-standalone-markdown.md`, ten rulings + one amendment). Build suite
-  **470 → 522**. (1) **Article 3's source `footer-date`** now reads "Adopted: September 14, 2026"
-  (its own commit, `07e82db`; it had read "Draft v0.2-draft" and sat in the adopted v1.0 `.md`).
-  (2) **`build/typst_tables.py`** converts Article 3's raw-Typst Tables 3.2–3.5 to markdown pipe
-  tables — strictly: anything outside the measured shape (a late header, Typst code in a caption or
-  cell, `# $ \ ~ @ <`, spans, short rows) returns None and the caller writes a note naming the
-  table. (3) **`build/czc_md.py <NN> <out.md> --src-dir --mode --version`** builds every standalone
-  `.md`: frontmatter minus `footer-date`; a mode-aware provenance line ("a working draft (v…)" /
-  "the Town Meeting edition (v1.0), not yet adopted" / "adopted (v1.0)"), **refusing a version that
-  contradicts the mode** (same `version_state` rule as the PDF chrome); "The integrated Code is the
-  document the Town adopts; this extract does not govern."; a note where each native page sits
-  (by manifest `label`); whole-line HTML comments dropped; an unclosed `<!--` refused.
-  **`md_completeness`** is declared per Article in `article-manifest.json` (1, 3 `prose-only`;
-  2 `prose-plus-appendix`; 4–9 `complete`) and a declaration that contradicts the units is refused.
-  (4) **Article 2's `.md` carries a generated appendix** of all 13 district pages from the same
-  data + legend reader as the PDF — panels, Permitted Buildings matrix (or "No Permitted Buildings
-  matrix."), use tables with all **819** statuses in words, use standards. (5) `build-standalone.sh`
-  calls `czc_md` **before** creating the release dir (a refusal leaves none); the redline path
-  (`OUT_MD_SOURCE`) skips it. (6) **`build-adopted.sh` step 4b** scans the adopted `.md` bytes with
-  `adopted_residue.py --residue-only` (chrome only; the "drafts the official map" damage check stays
-  on the PDF text), with an end-to-end negative control; the integrated `.md`'s pointer notes now
-  say "See the PDF edition of this Code".
-  ⚠ **`build-adopted.sh` pairs the TAG's source with the WORKING TREE's generators.** Any change to
-  text a generator writes (e.g. `build-full-czc.sh`'s pointer notes) between a freeze and the vote
-  breaks the identity gate. Consequence today: **re-running `build-adopted.sh v1.0` now refuses**
-  (identity, and step 4b — the v1.0 tag's Article 3 still reads "Draft v0.2-draft"). That is honest:
-  the shipped v1.0 `.md` really carries that chrome. **Do not revert the pointer wording to make v1.0
-  rebuild**; the next adoption builds from fixed source. Freeze → vote: change no generator.
-  ⚠ The `.md` chrome scan is **case-insensitive** and covers HTML comments the PDF never prints, so
-  ordinary prose like "draft vote" or "not adopted" in `source/` would refuse an adoption (nothing
-  matches today). Check before adding such wording.
-- **✅ Wave 3b MERGED — the per-Article redline** (PR #5, merge `82d097b`;
-  plan `plans/2026-10-10-wave3b-standalone-redline.md`, ten rulings + amendments). Build suite
-  **389 → 470**. **Ben ruled 2026-10-10: dropped headings/tables/figures are made visible BOTH on
-  the page AND in the text.** (1) `redline-text.py --source` (PDF and `--plain`) now writes an
-  italic bracketed note at the spot of every structural change — `*[Heading removed: “…”]*`,
-  `*[Heading added]*`, `*[Heading changed — it read: “…”]*`, `*[Table or figure removed/changed/
-  new …: “TABLE 3.2 …”]*`, `*[Article title changed …]*`; notes are body paragraphs (never red,
-  struck or a heading; never a split-marker token); the legend and tally say so. Previously a
-  removed table or heading left one blank line. (2) `build/structure_text.py` names headings and
-  tables and holds the ONE classifier for each (`classify_blocks`: exact-content matches first,
-  then by caption, untitled never paired; `classify_headings`: section-qualified keys, retitles by
-  similarity) — used by both the text and `czc_diff.structural_changes`, so page and text agree by
-  construction (measured on every real tag pair v0.3→v1.0). (3) `structural_note.py` is
-  **truthful** for the whole Code (no "Article 3 is new" / "NO marks" / March 2025 under the v1.0
-  map; names every data-generated page as unmarked, from new manifest unit `label`s) and has
-  `--scope article:N --old REF [--baseline] [--section-map] --md --pad-to-even`: kinds of change
-  (never line counts), each heading/table by name, flows across pages ("…and N more" past 4, full
-  list in the `.md`), markdown wording for the `.md`. (4) **`build/build-redline-standalone.sh
-  <NN> <new-ver> <old-ver>`** → `<…> — Redline.pdf` + `.md` (page in front as even, uncounted front
-  matter; parity, D1 verso and plate seating tested; `REDLINE_OUT=<dir>` dry run; refuses a bad
-  ref/Article cleanly, writing nothing). `build-standalone.sh` gains `OUT_MD_SOURCE`; shared
-  `build/article-meta.sh`. ⚠ **Owed by P13:** thread the section map through staging AND pass it to
-  the page (`--section-map`), else renumbering shows as many "Heading changed" notes.
-- **✅ Wave 3a MERGED — the change determination + Use Table Changes** (PR #4, merge
-  `1f931b1`; CI also fixed `build-memo.sh`'s macOS-only `mktemp`; plan `plans/2026-10-09-wave3a-change-determination.md`,
-  twelve rulings + amendments; Ben split Wave 3 into 3a/3b on 2026-10-09). Build suite
-  **288 → 389**.
-  **`build/czc_diff.py --old REF [--new-ref REF | --new-dir DIR] [--section-map P] [--json P]`**
-  decides, per Article, whether it changed in substance — prose AND data. Four disjoint counts:
-  `prose`, `heading` (incl. frontmatter `article-name`/`article-number` — the printed title;
-  `footer-date` is chrome), `table` (raw-Typst blocks, which the redline shows unmarked) and
-  `data` (json-keyed sources flattened to leaves keyed by record + title/label, D7 field filter).
-  Verdicts: **SUBSTANTIVE · NEEDS-CALL · RENUMBER-ONLY · UNCHANGED**. **NEEDS-CALL** (a ruling
-  beyond the spec) = a changed layout unit (`.typ`), binary exhibit, or a generated figure whose
-  source had no real data change — a machine cannot tell a legend edit from a layout edit.
-  It **refuses** (exit 1, names the file) on an unclaimed / doubly claimed / **shared** changed
-  file (**Ben, 2026-10-09: a shared-file change stops the determination until a person says
-  which Articles it affects**), a non-unique key, duplicate JSON keys, a misspelt substantive
-  field, a leaf path collision, broken JSON, a bad ref. Article 2's manifest key is now
-  **`[].code+name`** (code alone collides: seven districts are `SD`). Measured: v0.24-draft →
-  v1.0 = Article 2 data **87** (incl. the D3 Retail & Service, General `rc`→`rc sp` cell the
-  text-only breakdown missed), Article 3 prose 2 / data 10 (R2→R3), three layout units NEEDS-CALL;
-  v1.0 vs itself all UNCHANGED. `adoption_breakdown.py` left intact (spec: re-express later).
-  **`build/use_table_changes.py <old-ref> <out.md> [--new-ref|--new-dir] [--json]`** writes the
-  Use Table Changes memo (render with `build-memo.sh`): legend first (fail-closed reader of
-  `article-02.typ`, pinned to the permit-review app's reader by an agreement test), changed uses
-  in words ("Not allowed" for blank), added/removed uses and districts (a wholly added/removed
-  district lists every item), Permitted Buildings by row/column (named from both versions),
-  district standards in plain words, and a total that **equals czc_diff's Article 2 data count**.
-  Exit 2 = nothing to report, nothing written; outputs are cleared first so no stale file survives.
-  (Articles 1, 2, 3 read NEEDS-CALL against v1.0; v1.1-draft recorded layout-only calls.)
-- **✅ Wave 2 MERGED — section renumbering** (PR #3, merge `91a81c9`; plan
-  `plans/2026-10-08-wave2-section-map.md`, which records ten rulings and their amendments).
-  Build suite **199 → 288**. When a section is inserted into an Article, later headings and
-  cross-references shift; **`build/section_map.py`** *derives* a map of the pure renumberings
-  (title-identical headings, in order) between an old ref and a tree — never authored, never
-  committed, never in `adoption-map.json`. It refuses below a 50% similarity floor, on a bad
-  ref, or when nothing was compared; `check` verifies the map's ref **and tree**; `selfcheck`
-  (the gate) requires every entry to pair title-identical headings **and** the map to equal a
-  fresh derivation. **Rule 6** in `normalize_for_diff.py` rewrites those numbers on the OLD
-  side only, and leaves raw anything it cannot prove internal: statute tokens, any
-  `<word> <number>` or `<name>,` before, any `of …` after (except "of this Article"), any
-  paragraph naming another Article/Ordinance/statute, and any range whose span changed.
-  Measured: a section inserted into Article 7 drops that Article's count **132 → 4** (the
-  inserted lines). `redline_resolve.py` gains opt-in `--section-map` (requires `--new-dir`;
-  runs `selfcheck`, refuses with nothing written) and `--report` (every rule counted).
-  Also fixed: `changed_line_count` dropped changed lines beginning `--`/`++`.
-  `adoption-map.json`, `adoption_map.py`, `baseline_selfcheck.py` untouched.
-  ⚠ **Owed by P13/P18:** thread `--section-map`/`--new-dir` through `redline-stage.sh` and
-  the release driver; the redline's HOW-TO-READ note must say section renumbering was
-  suppressed and list the map. **Latent, accepted:** some foreign-reference forms not in
-  v1.0 could still be rewritten ("International Building Code Section 3", "Article Eight",
-  "Section 3 - Section 5"); full list in the Wave 2 SDD ledger.
-- **▶ For counsel / the next draft (found during Wave 2):** the adopted Article 9
-  **Variance** definition cites "Section 10 of Chapter 40A of the **Maine General Laws**" —
-  that is the **Massachusetts** Zoning Act; Maine's variance statute is 30-A M.R.S. §4353
-  (pairs with the Variance tracking memo). Adopted Article 7 has the typo **"Atricle 4
-  Section 17 Building Groups"**.
-- **▶ PARTLY DECIDED — what a change to a `shared` file implies.** Interim ruling (Ben,
-  2026-10-09): `czc_diff` **refuses**, naming the file, until a person decides which Articles it
-  affects. The permanent rule (candidate: flag every Article) is still open; `shared` is empty.
-
-- **CZC v1.0 was ADOPTED at the Special Town Meeting, September 14, 2026.** Adopted edition built from the
-  tag (`releases/v1.0-adopted/`, md + gitignored pdf); baseline rolled over to v1.0. Future drafts are
-  redlined against v1.0. Permit-review app: new binding ruleset `rulesets/adopted-v1.0` built from the tag
-  by `ruleset_build/build_edition.py` (current); the 2020 ruleset kept as `superseded`; per-Code article
-  schemes (`adopted` = 2020, `adopted-v1.0` = identity) instead of resetting the 2020 map; D-0033 resolved
-  by Ben (**both permits required** for D3 Retail & Service, General); D-0034 logged (v1.0 standard s reads
-  "phosphorous"). App suite 1099 passed / 0 errors; selftest 12/12; citations 157/157. Build tests 111.
-
-- **✅ FIXED (branch `fix-binding-margins`) — binding margins were mirrored on 82 of 113 body pages.**
-  Typst resolves `inside`/`outside` from a unit's **own physical page**, but chrome keys off the
-  logical page (`here().page() + page_offset`), so every unit starting on an odd offset was bound
-  backwards; the rotated Article tab also lacked `+ page_offset`. **Rule: chrome and margins both
-  follow the LOGICAL page** — each of the six `#set page(` calls (template + five native units) now
-  sets `binding: if calc.odd(page_offset) { right } else { left }`, and the tab uses
-  `here().page() + page_offset`. Result matches the 2020 Code (odd pages bound on the left).
-  Measured: integrated **117 pp / 1 blank unchanged**, 0 pages reflowed, every numbered page bound
-  correctly. Guard: `build/tests/test_binding_side.py` (integrated + Article 2 + Article 3
-  standalones; fails 80/26/12 problems with the binding lines removed). This changes the Code's
-  layout units, so v1.1-draft recorded layout-only calls for Articles 1, 2 and 3.
-  ⚠ The adopted v1.0 edition carries the OLD geometry and cannot be re-rendered
-  (`build-adopted.sh` renders from the tag); the next amendment supersedes it with the fix.
-- **▶ OPEN — the adopted v1.0 edition is missing chrome on physical page 12.** The first district
-  page carries no running head, no footer page number and no rotated Article tab: three
-  `if here().page() == 1 { return [] }` guards in `source/article-02.typ` outlived the leading
-  parity blank they were written for. **Fixed on `main`** (`6d5c299`, Wave 0) and guarded by
-  `build/tests/test_unit_chrome.py` + `build/tests/test_structural_note.py`. It **cannot** be
-  back-applied — `build-adopted.sh` renders from the tag, which is correct. No machine deadline:
-  the next amendment supersedes the v1.0 edition and carries the
-  fix at zero cost. Only an external trigger forces it earlier (printed copies of the adopted
-  edition distributed, a page-number citation hitting the unnumbered page, or the clerk noticing on
-  the attested copy). What is missing is a page number, a running head and the Article tab —
-  typography, not text; no standard, definition or sentence is affected.
-- **▶ OPEN — R2 vs R3 scope (Board decision).** R3 is currently only the 4 private lanes off
-  Route 1. A town-wide test was **deferred to the Planning Board**; memo written + committed:
-  `memos/Thoroughfares — Rural Road (R2) vs Rural Lane (R3) — Board Decision Memo.{md,pdf}`
-  (recommends a **600 ft test on private dead-end ways = 31 segments**; notes R3 is the *lighter*
-  standard — 12 ft gravel / 33 ft ROW vs R2's 18 ft two-lane / 40 ft — so it *reduces* the §7.F
-  obligation; caveats that length is a weak proxy for R3's actual <400 vpd volume test).
-  Inconsistency to resolve: Eden Lane (277 ft) is R2 while Camp Rd (303 ft) is R3.
-- **▶ OPEN — 2 missing Ownership Categories:** `kavanagh-road-1` + `woods-island-road-1` matched no
-  MaineDOT/E-911 jurisdiction record. **Ben to confirm against the Town's road records**; marker
-  entries sit in `overrides.json` (note-only, no values set — they render as "—").
-- **Still open:** finalize the district layer from the contractor's exact shapefile and re-run
-  the classification (see "100% map" below); any change it makes goes through Planning-Board
-  review and a Town-Meeting vote like any amendment.
-
-- **NEW pipeline capability:** an override entry may carry **`"exclude": true`** to drop a source
-  record that is not a real thoroughfare (orphan E-911 fragment) — implemented in `05_export.py`,
-  so the decision survives re-runs like every other override.
-- **Reviewed another planner's Fall-2026 redline of the CZC** (`docs/CZC Redline
-  2026.06.docx` — a Google-Docs **color/strike legislative redline**, NOT Word
-  track-changes: green/underline = add, red/strike = delete, yellow = moved;
-  ~690 adds / 380 dels across Articles 1,2,3,X,6,7,8 — built on the **original
-  adopted CZC numbering**, so it does NOT include our Article 3 Thoroughfares).
-  Wrote **4 analysis memos in `memos/`** (all built to PDF): (1) **Thoroughfares
-  reconciliation** — our form-based Article 3 vs their engineering-style
-  "Article X"; verdict **merge, not choose** (ours is the better fit + a near-
-  superset; harvest their culvert-embedment/hammerhead/road-spacing specifics;
-  borrow their ROW-as-easement def; **fix our stale "Road" definition**; ⛔ both
-  can't reach Town Meeting — conflicting Thoroughfare/Road/Driveway/ROW defs);
-  (2) **Reconciled definitions + Article X harvest list**; (3) a **2-page
-  summary**; (4) **Article 7 Administration** analysis (~496 changes = a wholesale
-  development-review rewrite: "Permitting Authority"→"reviewing authority" + CEO
-  sole permit-issuer; Select Board; Permit→Review; project-size tiers; CEO↔PB
-  authority shifts; LD-2003 / §4404 alignment). **Open coordination items:** the
-  Thoroughfares merge; their "reviewing authority" rename vs **our Art. 3 §13
-  "Permitting Authority"**; confirm their deleted overlay reviews (Shoreland/
-  Floodplain/etc.) are preserved; the safe self-contained **"Road" def fix** is a
-  good near-term v0.x edit. The redline `.docx` sits in `docs/` (Ben placed it
-  there; **left untracked** — relocate out of the baseline folder before tracking).
-- **Release history (v0.14 – v0.24, pre-adoption):** see `HISTORY.md`. The rules those releases
-  established live in the sections above.
-
-## ✅ DONE: per-Article standalone build system + safe-set disk reclaim (2026-06-21)
-
-**The ask (2026-06-06, built 2026-06-21):** work on **any** CZC Article the way Article 3 works —
-standalone draft + md, while the integrated CZC + redline pick up the changes. **Implemented in
-`main`:**
-- **`build/build-standalone.sh <article-NN> <version> [date]`** — unified standalone builder for
-  any Article 1–9, driven by **`build/article-manifest.json`** (+ tiny `build/manifest.py` reader).
-  Pure-prose fast path (Art 4–9); after-prose splice (Art 1 maps; Art 2 spreads with the
-  pad-to-odd D1-verso guard); at-marker splice (Art 3 plates + §5 exhibits). Reuses
-  `build-article.sh` + `split-article-03.py`. **`build-article-3.sh` is now a 3-line shim** →
-  `build-standalone.sh 3`. **`build-full-czc.sh` left untouched** (a shared-render-lib unification
-  is a future option). Verified: Art 7 (9 pp), Art 1 (maps), Art 2 (29 pp, D1 on a verso),
-  Art 3 (27 pp — matches the shipped v0.21 standalone); integrated build still **116 pp / 1 blank**.
-- **Disk reclaim — safe set done:** deleted `build/street-types/.venv` (−458 M, rebuilds from
-  `requirements.txt` via `run.sh`); pruned old release PDFs (80 → 5 on disk, keeping `v0.21-draft`
-  + `v0.1-baseline`), which removed the obsolete v0.8/v0.9 raster redlines. **~1.1 GB → ~446 M**
-  working tree. `.git` stays ~356 M — the `git filter-repo` history purge that would shrink it was
-  **declined for now** (revisit if local space gets tight; needs a force-push + reclone).
-- **PDF policy:** **stop committing generated PDFs** — `.gitignore` now ignores `releases/**/*.pdf`
-  (regenerable from tags); markdown/Summaries + the `docs/` baseline + `memos/` PDFs stay tracked.
-  The policy is committed (`.gitignore`: `releases/**/*.pdf`); the v0.21 reference + baseline
-  PDFs remain tracked + on disk.
-
-**Deferred (documented options):** the `git filter-repo` history purge; a shared render-lib
-unifying `build-standalone.sh` + `build-full-czc.sh`. (The per-Article standalone redline was
-built in Wave 3b.)
-
-- **▶ PAUSED (resumable) — Permit-review app, `build/permit-review/`.** The 2026-06-09 question
-  ("should we build a permit-review + Findings-of-Fact drafter?") was **answered yes** and the app
-  was designed and largely built 2026-08-20/21. **Read `build/permit-review/BUILD-STATE.md` first**
-  — it is the resume document (status, verify commands, open decisions, known issues, and the
-  orchestration lessons). Short version:
-  - **W1–W4 complete; W5 is next and is BLOCKED on decision D-0025.** ~31k lines Python,
-    **592 tests**, `run.py --selftest` 10/10, `--verify-citations` 157/157. Everything runs
-    **offline** — no network, no LLM, no PII, so far.
-  - **D-0025 is Ben's call and gates W5:** may application content (names, addresses, deed refs,
-    and page images of scans that *cannot* be name-redacted) go to a third-party API? Note it may
-    already be public record under **Maine FOAA** — confirm with counsel, don't assume.
-  - **Architecture:** FastAPI on 127.0.0.1, SQLite/WAL + numbered migrations, append-only
-    hash-chained `events` table, rules-as-data with per-case ruleset pinning (`rulesets.binding`
-    means real cases run against the **adopted** Code only; the draft CZC is for dogfooding),
-    pandoc→Typst output to `data/exports/`.
-  - **The design reframe that governs everything:** the app produces the **working draft the Board
-    marks up**, never a decision. It never concludes, never signs. Honest blanks beat confident
-    guesses — a long confident draft on a contradictory application is a *failure*.
-  - **`DECISIONS-NEEDED.md` (27 entries) is the "never guess a legal value" ledger.** Only D-0025
-    blocks anything; the rest are deliberately collected, incl. the missing appeal-rights paragraph
-    (D-0026) and the "preparer of record" issue (D-0027 — Ben is Chair, author and operator).
-  - The app is committed under `build/permit-review/` (214 files); `BUILD-STATE.md` is the
-    resume document.
-- **100% map (the real fix):** the draft district trace is a ~0.77-IoU georeferenced
-  approximation — spatially distorted, so a hand polygon-review is low-value (we did the
-  v0.18 engine tweak instead, which sharpened the *village* classification on the
-  existing trace). The accurate layer comes from the contractor's exact district
-  shapefile: drop it in → `run.sh` from the join stage → re-promote `inventory.json` →
-  rebuild. The §5.D rule is now in the engine (`lib.classify_type`), so correct Types
-  fall out automatically; `overrides.json` (incl. the Main St S1/S2 pins) carries forward.
-- **Deferred cosmetic cleanup** (optional, not user-facing): internal names still use
-  the old term — `street-type-{map,inventory}.typ`, dir `build/street-types/`, the
-  `STREET-TYPE-EXHIBITS` marker, build vars, JSON keys, `.typ` code comments.
-- **Adoption:** Planning-Board review → Town-Meeting vote (Maine).
-
-Districts (Table 3.4): D1 Rural · D2 Nbhd Residential · D3 Nbhd Business · D4 Village
-Residential · D5 Village Business (S2; S1 on designated) · D6 Town Center (S1).
+- **Right to Farm amendment** (Articles 7 and 2) — brainstorm started: farming by right, scaled by
+  district, leaning permissive, plus nuisance-defense protections.
+- **Wave 4c** — a fifth use-table status code; waits for four values from Ben or the Board (the
+  code, its legend symbol, the legend row wording, the rewritten Note).
+- **For counsel:** Article 9's Variance definition cites the Massachusetts Zoning Act (Maine's is
+  30-A M.R.S. §4353); typos "Atricle" (Article 7), "extentions", "designnee" — fixing "designnee"
+  also means updating the residue gate's expected sentence in the same commit.
+- **Planning Board:** R2 vs R3 scope (memo in `memos/`, recommends a 600 ft test on private
+  dead-end ways; Eden Lane vs Camp Rd inconsistency).
+- **Ben to confirm:** Ownership Categories for `kavanagh-road-1` and `woods-island-road-1`
+  (marker entries in `build/street-types/overrides.json`).
+- **The contractor's district shapefile** — drop it in, re-run the pipeline from the join stage,
+  re-promote `inventory.json`, rebuild; any change goes to the Board and Town Meeting.
+- **Another planner's Fall-2026 redline** (`docs/CZC Redline 2026.06.docx`, untracked) — four
+  analysis memos in `memos/`; open: merging their Article X into our Article 3, their "reviewing
+  authority" rename vs our "Permitting Authority", the stale "Road" definition.
+- **Permit-review app** (`build/permit-review/`) — paused; W5 blocked on decision D-0025 (may
+  application content go to a third-party API?). Read `build/permit-review/BUILD-STATE.md` first.
+- **The adopted v1.0 edition** lacks chrome on physical page 12 and has the old margins; it cannot
+  be re-rendered and the next amendment supersedes it.

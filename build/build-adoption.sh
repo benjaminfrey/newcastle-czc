@@ -177,7 +177,7 @@ fi
 # the voters did not see" property. But nothing used to connect the two: the
 # meeting edition is rendered from the WORKING TREE, so if the tree was
 # dirty, or if the tag was later moved forward (which this repo does habitually
-# on re-cuts -- see CLAUDE.md's release flow), the identity gate would compare
+# on re-cuts -- see the czc-release skill's release flow), the identity gate would compare
 # two equally-new artifacts and pass vacuously.
 #
 # Two halves close it:

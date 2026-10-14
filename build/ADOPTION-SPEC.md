@@ -7,7 +7,7 @@ Revised 2026-10-11 to match the code (Wave 4b).
 `build/section_map.py`, `build/structural_note.py`, `build/integrated_md.py`, and adoption-mode changes to `build/build-cover.py`,
 `build/build-full-czc.sh`, `build/build-redline-full.sh`, and the exhibit banners.
 
-Companion to `CLAUDE.md`'s "Build & release flow". This document is the authority on what an
+Companion to the "Build & release flow" in the `czc-release` skill (`.claude/skills/czc-release/SKILL.md`). This document is the authority on what an
 adoption release must produce and what it must refuse to produce.
 
 ---
