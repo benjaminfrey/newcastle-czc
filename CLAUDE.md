@@ -112,8 +112,9 @@ Neighborhood Business · D4 Village Residential · D5 Village Business · D6 Tow
 
 ## Open items
 
-- **Right to Farm amendment** (Articles 7 and 2) — brainstorm started: farming by right, scaled by
-  district, leaning permissive, plus nuisance-defense protections.
+- **Right to Farm amendment** (Articles 1, 2, 4, 5, 7, 9) — design spec with decisions D1–D7 at
+  `specs/2026-10-07-right-to-farm-design.md` on branch `right-to-farm`; awaiting Ben's review, then
+  a plan. Drafts will be v1.2-draft. Needs the fifth status code (Wave 4c) first.
 - **Wave 4c** — a fifth use-table status code; waits for four values from Ben or the Board (the
   code, its legend symbol, the legend row wording, the rewritten Note).
 - **For counsel:** Article 9's Variance definition cites the Massachusetts Zoning Act (Maine's is

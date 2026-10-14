@@ -3,13 +3,24 @@
 **Town of Newcastle, Maine · Core Zoning Code · branch `right-to-farm`**
 Written 2026-10-07 against the Code adopted at the Special Town Meeting of September 14, 2026
 (CZC v1.0, nine articles). Decisions in §2 were made by the Planning Board chair in brainstorming
-on 2026-10-06 and 2026-10-07. The homework behind §§3–7 is the twelve-agent review recorded at
-`scratchpad/rtf/homework.md` (167 findings, 9 blocking); the Code scan is `scratchpad/rtf/current-state.md`
-and the first law pass is `scratchpad/rtf/maine-law.md`.
+on 2026-10-06 and 2026-10-07. The homework behind §§3–7 was a twelve-agent review (167 findings,
+9 blocking), with a Code scan and a first law pass beside it.
+
+**Revised 2026-10-13** to bring the spec up to date with `main` after the release-machinery waves
+and the v1.1-draft layout release: §§5–7 and §9 now record what has since been built and decided.
+The Code citations were re-checked against `main`; the prose of Articles 1, 4, 5, 7, 8 and 9 and
+`source/article-02-data.json` are unchanged since this spec was written.
+
+**Approved by the Planning Board chair on 2026-10-14** as the basis for the implementation plan.
+
+> **The homework is lost.** It lived in a session scratchpad (`scratchpad/rtf/`) that was found
+> empty on 2026-10-13. This spec is the only surviving record of it, so its file-and-line evidence
+> and its URL for every statute are gone with it.
 
 > **Citation caution.** Every statute cited here was opened during the research, but two earlier
-> passes produced citation errors that had to be corrected, and 21 items remain marked UNVERIFIED in
-> the homework's source list. Town counsel cite-checks before any of this reaches a warrant article.
+> passes produced citation errors that had to be corrected, and 21 items were marked UNVERIFIED in
+> the homework's source list — which items is no longer recorded. Town counsel cite-checks every
+> citation before any of this reaches a warrant article.
 
 ---
 
@@ -88,7 +99,16 @@ This requires something the Code does not currently have. Article 1 §2.b.8 prov
 and the use-table data model carries exactly four status codes, with the legend stating that uses
 without one of them "are not allowed in this District". So the spec must add **a fifth status —
 permitted without a permit** — to the legend, the district tables and the Article 2 rendering, and
-§3 must expressly displace Article 1 §2.b.8 for Home/Personal Agriculture. Moving between tiers is
+§3 must expressly displace Article 1 §2.b.8 for Home/Personal Agriculture.
+
+The fifth status is item **P15 / Wave 4c** of the release-machinery spec
+(`specs/2026-10-07-release-deliverables-scope.md`), whose decision D3 has it **ship separately
+from Right to Farm**, with combination with another code in one cell **illegal (a build error)**
+until the Board rules otherwise. Whatever "separately" means for releases — its own change landing
+first, or its own release — it must land *before* this amendment's district data, because the use
+tables cannot carry Home/Personal Agriculture without it. **Ben to confirm** which reading D3
+intended. Its four binding values — the code, the legend symbol, the legend row's wording and the
+rewritten Note — are therefore decisions for this amendment, and are owed by Ben or the Board. Moving between tiers is
 expressly not a change of use under Article 7 §1.g.
 
 **Commercial Agriculture keeps a permit**, and reaches the Planning Board only through §3.4.
@@ -281,32 +301,49 @@ from any of them.
 
 This is the cost of D5, and it is the reason D5 was taken deliberately.
 
-1. **Section-renumbering suppression.** Inserting §3 renumbers 63 sections. `normalize_for_diff.py`
-   today suppresses article renumbering and table renumbering; it has no section-renumbering rule,
-   so the next redline would show 63 renumbered headings as unexplained noise in a warrant packet.
-   Extend it, with tests. This is reusable by every future amendment that inserts a section.
-2. **Permit-review app.** `CONTRACT.md` states "Section numbers are preserved; only article numbers
-   shift"; `crosswalk.py` anchors on section identity; a golden string pins "Article 7, Section
-   34.b"; a test pins RESIDENCE to its section. All need updating, and the ruleset rebuilt.
-3. **Use-matrix builder.** It hard-fails on an added use row and on an unknown status code, so the
-   permit-free status must be added to the legend parser and `build_use_matrix.py` before the
-   district data changes. (The builder's multi-status support, added for D-0033, is the model.)
-4. **Use Table Changes artifact.** The amendment should ship one, so the reader can see what moved
-   in thirteen tables without diffing JSON.
-5. **Standalones.** Standing rule 4 ships both the integrated Code and the standalone Article; decide
-   which standalones this release carries.
+Status as of 2026-10-13, after the release-machinery Waves 0–4b merged to `main`:
+
+1. **Section-renumbering suppression — built.** `normalize_for_diff.py` Rule 6 (added 2026-10-08,
+   Wave 2, with the section map in `build/section_map.py`) suppresses the renumbering of sections
+   when a section is inserted into an Article. Inserting §3 renumbers 63 sections; the redline
+   should now show them as renumbering, not as change. Confirm on the first draft build.
+2. **Permit-review app — still to do.** Unchanged: `CONTRACT.md` still states "Section numbers are
+   preserved; only article numbers shift"; `app/citation.py` carries the same rule and a golden
+   string pinning "Article 7, Section 34.b"; `crosswalk.py` anchors on section identity; a test pins
+   RESIDENCE to its section. All need updating, and the ruleset rebuilt. The app is paused on
+   D-0025, so this can follow the amendment rather than gate it.
+3. **Use-matrix builder — still to do (P15 / Wave 4c).** `build_use_matrix.py`, its legend reader
+   and `test_use_matrix.py` still know exactly four codes (`u`, `rc`, `sp`, `ex`) and hard-fail on
+   any other, so the permit-free status must land in them, and in the Article 2 legend, before the
+   district data changes. The builder's multi-status support, added for D-0033, is the model. See
+   §3.2 for the four values this waits on.
+4. **Use Table Changes document — built.** `build/use_table_changes.py` reports the legend first,
+   then every changed cell, matrix and district standard, in words. The amendment ships it.
+5. **Standalones — settled by standing rule 4.** Every Article with substantive changes ships a
+   standalone and a standalone redline, in `.pdf` and `.md`; Articles touched only by renumbering or
+   cross-reference updates are named in the Summary of Changes. On §4's edits that is expected to be
+   Articles 1, 2, 4, 5, 7 and 9 (and 8, if §3 ends up amending its text rather than only displacing
+   it — see §3.4); the release's change determination (`czc_diff.py`) makes the actual call.
 
 ## 6. Process and clocks
 
 Three statutory clocks run against the Town Meeting date, and they are not the same clock:
 
-- **7 M.R.S. §155** — the clerk submits the proposed ordinance to DACF **at least 90 days** before the
-  Town Meeting that votes on it. This is the long pole.
+- **7 M.R.S. §155** — the clerk submits the proposed ordinance to the Commissioner (DACF) **at least
+  90 days** before "the meeting of the legislative body or public hearing at which adoption of the
+  ordinance will be considered"
+  ([text](https://legislature.maine.gov/statutes/7/title7sec155.html), read 2026-10-13). The clock
+  may therefore run from a public hearing, not only from Town Meeting. **Scheduling assumption:**
+  count 90 days back from the earliest such hearing, whichever comes first, until counsel rules
+  (§7). The Commissioner's review is advisory — whether the ordinance restricts or prohibits best
+  management practices — and the section "does not affect municipal authority to enact
+  ordinances". This is the long pole.
 - **30-A M.R.S. §4352(9)** — the Code's own notice sequence, 13/12/7 days.
 - **30-A M.R.S. §3003(2)** — 30 days.
 
-Version: drafts in this cycle are **v1.1-draft** and successors, redlined against the **v1.0**
-baseline that was rolled over on September 14, 2026. The adoption version, if this reaches a vote,
+Version: **v1.1-draft** was taken on 2026-10-12 by a layout-only release (binding margins, Article 2
+first-page chrome). This amendment's drafts are therefore **v1.2-draft** and successors, redlined
+against the **v1.0** baseline that was rolled over on September 14, 2026. The adoption version, if this reaches a vote,
 is a whole number — **v2.0** — because the version number is the state.
 
 ## 7. Open questions
@@ -318,12 +355,20 @@ conditions enforceable against an operation showing BMP conformance? Does 30-A �
 town-wide text amendment? Was v1.0 itself submitted to DACF under §155 — and if not, is that a latent
 defect worth curing now? Is the Code already prohibiting registered medical-cannabis caregivers
 contrary to state law? Should the Code name a DACF publication, or key only to the statutory phrase?
+Under 7 M.R.S. §155, does the Planning Board's public hearing on this amendment count as a "public
+hearing at which adoption of the ordinance will be considered", so that the 90-day DACF clock runs
+from it rather than from Town Meeting?
 
 **For the Board.** Do pens, runs, paddocks and pasture hold separation, or only housing? Does the
 Code reference §1.h Nuisance Standards for every tier, or only commercial? Is seasonal farm-worker
 housing in scope — the Comprehensive Plan carries it as a named action? How does a farm show BMP
-conformance, and who may rebut? Which standalones ship? And the rule for flocks over six and for
-turkeys and geese, which the tiers do not yet cover.
+conformance, and who may rebut? And the rule for flocks over six and for turkeys and geese, which
+the tiers do not yet cover. (Which standalones ship is no longer open: standing rule 4 settles it —
+§5.5.)
+
+**For Ben or the Board — the fifth status code (§3.2, §5.3).** Its code, its legend symbol, the
+legend row's wording and the rewritten Note; and whether D3 of the release-machinery spec meant
+"its own change, landing first" or "its own release".
 
 ## 8. Out of scope
 
@@ -342,6 +387,7 @@ PL 2025 c.46 (livestock and crop buildings; state building code only) · DEP ch.
 *Dubois Livestock v. Arundel*, 2014 ME 122 (not opened; for counsel) · Newcastle CZC v1.0, Articles
 1, 2, 4, 5, 7, 8, 9 and `source/article-02-data.json`.
 
-Full evidence, with file and line numbers for every Code citation and URLs for every statute, is in
-`scratchpad/rtf/homework.md` — including 25 claims examined and cleared, so they are not
-re-litigated, and 21 items still marked UNVERIFIED.
+The full evidence — file and line numbers for every Code citation, URLs for every statute, 25 claims
+examined and cleared, and the 21 items marked UNVERIFIED — was in `scratchpad/rtf/homework.md`,
+which is lost (see the note at the head of this spec). The Code citations can be re-derived from
+`source/`; the statutory URLs and the UNVERIFIED list cannot, and fall to counsel's cite-check.
