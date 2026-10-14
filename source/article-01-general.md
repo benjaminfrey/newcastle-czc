@@ -50,7 +50,7 @@ footer-date: "Adopted: November 3, 2020"
 5. The words "may" and "should" are permissive.
 6. The words "building," "building type," "land," "lot," "building lot," "parcel," "premises," "site," "structure," and "road" also refer to any portion thereof.
 7. The word "description" is synonymous with "definition" when used in this Code.
-8. The term "Permitted" describes the condition where a specific standard, use, or activity described in this Code is permittable. Acquisition of a permit is mandatory prior to enacting anything noted as "Permitted" in this Code.
+8. The term "Permitted" describes the condition where a specific standard, use, or activity described in this Code is permittable. Acquisition of a permit is mandatory prior to enacting anything noted as "Permitted" in this Code, except as provided in Article 7 Section 3.
 
 ### c. TEXT & GRAPHICS
 

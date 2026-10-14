@@ -48,10 +48,10 @@ footer-date: "Adopted: November 3, 2020"
 1. Only one Primary Building may be built on each lot or virtual lot.
 2. Only one Accessory Building may be built on each lot or virtual lot except:
     a. Within permitted building groups.
-    b. On lots actively used for agricultural uses, additional non-residential accessory buildings that support agricultural activities are permitted.
+    b. Within an agricultural area that qualifies under Article 7 Section 3.j.3, additional non-residential accessory buildings that support Agriculture are permitted.
     c. When an Accessory Building is attached to the Primary Building, an additional detached Accessory Building is permitted.
 3. An Accessory Building may not permanently occupy a lot without a primary building except:
-    a. On lots actively used for commercial agricultural uses, an accessory building or buildings may occupy a lot without a primary building.
+    a. Within an agricultural area that qualifies under Article 7 Section 3.j.3, an accessory building or buildings may occupy a lot without a primary building.
     b. An accessory building may be built on a lot prior to a primary building only if both the primary and accessory buildings have been permitted according to the standards of this Code.
 
 ## 3. BUILDING ASSEMBLY
@@ -237,6 +237,8 @@ TABLE 5.1 ALLOWABLE ADDITION LOCATION BY DISTRICT
 4. Additional structures may be permitted on undeveloped lots in D1, D2, and SD-Conservation.
 5. A Marina, Dry Storage use shall be permitted to construct Additional Structures up to 1,200 sf in area.
     a. Additional Stuctures larger than the maximum structure area set forth in Table 5.2: Additional Structures shall be removed from the site at the time of the discontinuance of the Marina, Dry Storage use.
+6. Small Stock housing and hives are permitted in every district as provided in Article 7 Section 3.g.6.
+7. Seasonal and unenclosed agricultural structures under Article 7 Section 3.g.5 do not count toward the structure area of Table 5.2.
 
 ### d. SCREENING
 
@@ -285,6 +287,7 @@ TABLE 5.2: ADDITIONAL STRUCTURES
     b. The structure is removed from the lot within one week of installation.
 2. All Temporary Structures shall be removed from the lot after no more than 3 months.
     a. The Planning Board may grant an extention of up to one year, based on demonstrated need.
+3. Item 2 does not apply to seasonal and unenclosed agricultural structures under Article 7 Section 3.g.5.
 
 ## 11. PRIMARY ENTRANCES
 
@@ -518,7 +521,7 @@ TABLE 5.4 CONNECTED FARM - PERMITTED BUILDINGS
     g. Building lots within a small rural compound must have frontage on a Public or Private road.
     h. The primary building within a small rural compound must front onto a Public Road unless the primary building is located more than 300 feet from the primary Private or Public Road, in which case it may instead front on a new Public or Private Road.
     i. All additional buildings within the small rural compound must orient themselves perpendicular or parallel to the main primary building, except when located more than 300 ft from the primary Public Road, in which case they may front on a new Public or Private road.
-    j. Outdoor storage must be screened from any Public Road by a Level 4 Natural Screen that is a minimum of 50 ft deep, unless it is part of an active agricultural use.
+    j. Outdoor storage must be screened from any Public Road by a Level 4 Natural Screen that is a minimum of 50 ft deep, unless it is within an agricultural area that qualifies under Article 7 Section 3.j.3.
     k. Each small rural compound must have a maximum of one curb cut from a Public Road.
     l. The curb cut for a small rural compound must be a minimum of 500 ft from any adjacent curb cut.
 
@@ -556,7 +559,7 @@ TABLE 5.5 SMALL RURAL COMPOUND - PERMITTED BUILDINGS
     h. The primary building within a large rural compound must front onto a Public Road extant at the time of adoption of this Code unless it is located more than 300 feet from the primary Public Road, in which case it may instead front on a new Public or Private road.
     i. All additional buildings within the large rural compound must orient themselves perpendicular or parallel to the main primary building, except located more than 300 ft from the primary Public Road, in which case they may front on a new Public or Private Road.
     j. Single unit commercial and multi-unit commercial buildings must be set back at least 500 ft min from the frontage, 100 ft min side and rear setbacks. Frontage setback may be reduced to 250 ft min with the use of a Level 4 Natural Screen.
-    k. Work yards with material storage and long term equipment parking must be screened from any Public Road by buildings, a 25 ft deep Level 3 Natural Screen, or a fence between 6 ft and 8 ft tall, unless they are part of an active agricultural use.
+    k. Work yards with material storage and long term equipment parking must be screened from any Public Road by buildings, a 25 ft deep Level 3 Natural Screen, or a fence between 6 ft and 8 ft tall, unless they are within an agricultural area that qualifies under Article 7 Section 3.j.3.
     l. Each large rural compound must have a maximum of one curb cut from a Public Road and be a minimum of 500 ft from any adjacent curb cut.
 
 TABLE 5.6 LARGE RURAL COMPOUND PERMITTED-BUILDINGS

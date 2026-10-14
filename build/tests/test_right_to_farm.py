@@ -124,3 +124,19 @@ def test_part_two_subsections_exist():
 def test_nuisance_citations_point_at_1h():
     assert "Section 1.G" not in _art7()
     assert len(re.findall(r"Nuisance Standards in Article 7 Section 1\.H", _art7())) >= 15
+
+
+VARIANT_PHRASES = ["agricultural activities", "agricultural uses", "commercial agricultural uses",
+                   "active agricultural use", "new Commercial Agricultural uses"]
+
+
+def test_the_five_variant_trigger_phrases_are_resolved():
+    for f in ("article-04-site-standards.md", "article-05-building-standards.md"):
+        body = (SRC / f).read_text(encoding="utf-8")
+        for v in VARIANT_PHRASES:
+            assert v not in body, f"{f}: {v!r}"
+
+
+def test_article_1_permit_rule_carves_out_home_agriculture():
+    a1 = " ".join((SRC / "article-01-general.md").read_text(encoding="utf-8").split())
+    assert "except as provided in Article 7 Section 3" in a1
