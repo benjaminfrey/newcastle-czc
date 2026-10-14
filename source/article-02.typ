@@ -213,15 +213,21 @@
 )
 
 // ---- Use-status glyph -------------------------------------------------------
-#let glyphs = (u: "●", rc: "❶", sp: "❷", ex: "✪")
+#let glyphs = (u: "●", rc: "❶", sp: "❷", ex: "✪", br: "○")
 // A cell may carry MORE THAN ONE status. The adopted Code marks "Retail &
 // Service, General" in D3 Neighborhood Business with both the Residential
 // Companion symbol and the Special Permit symbol, i.e. CEO and Planning Board.
 // Codes are space-separated ("rc sp"); a single code behaves exactly as before.
+// `br` (○ No Permit Required, Right to Farm) may never share a cell with
+// another status (release-machinery spec D3): that is a build error.
 #let status(code) = {
   if code == none or code == "" { return [] }
+  let parts = code.split(" ")
+  if parts.len() > 1 and parts.contains("br") {
+    panic("use status " + repr(code) + ": br (No Permit Required) cannot share a cell with another status")
+  }
   text(font: glyph_font, fill: body_dark, size: 8pt,
-       code.split(" ").map(c => glyphs.at(c)).join(h(2pt)))
+       parts.map(c => glyphs.at(c)).join(h(2pt)))
 }
 
 // ---- One use category (heading + under-rule + use rows, no row rules) --------
@@ -326,9 +332,10 @@
         status("rc"), [Residential Companion Permit Required], [CEO],
         status("sp"), [Special Permit Required], [Planning Board],
         status("ex"), [Expanded Use Permit Required], [Planning Board],
+        status("br"), [No Permit Required], [—],
       )
       v(2pt)
-      text(size: 8pt)[Note: Uses without #status("u"), #status("rc"), #status("sp"), or #status("ex") are not allowed in this District]
+      text(size: 8pt)[Note: Uses without #status("u"), #status("rc"), #status("sp"), #status("ex"), or #status("br") are not allowed in this District. Uses marked #status("br") require no permit but must meet the standards of Article 7 Section 3.]
 
       if d.use_standards.title != none {
         panel(d.use_standards.title)

@@ -113,10 +113,12 @@ Neighborhood Business · D4 Village Residential · D5 Village Business · D6 Tow
 ## Open items
 
 - **Right to Farm amendment** (Articles 1, 2, 4, 5, 7, 9) — design spec with decisions D1–D7 at
-  `specs/2026-10-07-right-to-farm-design.md` on branch `right-to-farm`; awaiting Ben's review, then
-  a plan. Drafts will be v1.2-draft. Needs the fifth status code (Wave 4c) first.
-- **Wave 4c** — a fifth use-table status code; waits for four values from Ben or the Board (the
-  code, its legend symbol, the legend row wording, the rewritten Note).
+  `specs/2026-10-07-right-to-farm-design.md` on branch `right-to-farm`, approved 2026-10-14;
+  decisions R1–R29 in `plans/2026-10-14-right-to-farm-decisions.md`; Plan A (status code) and
+  Plan B (ordinance + v1.2-draft) in `plans/`. Drafts will be v1.2-draft.
+- **Wave 4c done on `right-to-farm`** — the fifth status `br` / ○ "No Permit Required" is in the
+  legend and both readers (Plan A, decisions R1–R5). No cell uses it until Plan B; it ships only
+  with Right to Farm (its Note cites Article 7 Section 3). The app refuses `br` cells (D-0035).
 - **For counsel:** Article 9's Variance definition cites the Massachusetts Zoning Act (Maine's is
   30-A M.R.S. §4353); typos "Atricle" (Article 7), "extentions", "designnee" — fixing "designnee"
   also means updating the residue gate's expected sentence in the same commit.
