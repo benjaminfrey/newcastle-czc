@@ -80,7 +80,120 @@ footer-date: "Adopted: November 3, 2020"
 1. Where designated on a Use Table, in Atricle 2 District Standards, a required Expanded Use Permit shall be permitable in a Small Rural Compound or a Large Rural Compound Building Group.
     a. Building Groups are defined in Atricle 4 Section 17 Building Groups.
 
-## 3. ADULT ESTABLISHMENT
+## 3. RIGHT TO FARM
+
+### a. PURPOSE
+
+1. To allow Agriculture as a spectrum, from a vegetable garden in any district to full-scale farming in D1, with its size, scale, and impact matched to each district's distance from the village center.
+2. To keep farming practical: where this Section is silent, it is to be read in favor of allowing Agriculture.
+3. To protect lawful Agriculture from being restricted for its ordinary sights, sounds, and smells.
+
+### b. APPLICABILITY
+
+1. Applies to all Agriculture in every district.
+2. Home/Personal Agriculture is governed by this Section.
+3. Commercial Agriculture is governed by this Section and by Article 7 Section 17 Commercial Agriculture.
+
+### c. PERMISSION
+
+1. Home/Personal Agriculture is permitted without a permit in the districts where Table 7.1 permits its tier by right. Article 1 Section 2.b.8 does not apply to it. The general standards of this Code, including the separation distances of Table 7.2, still apply.
+2. Moving from one tier to another is not a change of use under Article 7 Section 1.g.
+3. Commercial Agriculture requires a Use Permit where the district use table requires one, and requires Planning Board review only as provided in Table 7.3.
+4. A tier that Table 7.1 permits by Special Permit in a district requires a Special Permit there under Table 7.3.
+5. For any agricultural activity or Agricultural Building within the limits of this Section, the Code Enforcement Officer may not refer the application to the Planning Board under the Buildings Standards of a district in Article 2 or under Article 8 Section 10.c.3 or Section 11.c.3. Only the activities in Table 7.3 require Planning Board review.
+6. The Nuisance Standards in Article 7 Section 1.h apply to all Agriculture, subject to Article 7 Section 3.h.3.
+
+### d. TIERS
+
+1. Home/Personal Agriculture is permitted in the tiers and districts of Table 7.1, by right or by Special Permit as the table shows. A tier not listed for a district is not permitted there.
+2. There is no limit on the number of Medium Stock or Large Stock kept on a lot. Separation distances and lot widths govern instead.
+3. The tiers do not limit agriculture lawfully existing on the effective date of this Section. See Article 7 Section 3.i.
+
+TABLE 7.1 AGRICULTURE TIERS BY DISTRICT
+
+| Tier | Covers | By right | By Special Permit |
+| :--- | :--- | :--- | :--- |
+| Cultivation | Growing plants at any scale, and selling from the lot what is grown or made there | All districts | — |
+| Beekeeping | Hives, registered as state law requires | All districts | — |
+| Small Stock | As defined in Article 9 | All districts | — |
+| Medium Stock | As defined in Article 9 | D1, D2, D3, SD-Conservation, SD-Rural Highway, SD-Campus | D4, D5, D6, SD-Historic, SD-Highway Commercial, SD-Marine, SD-Fabrication |
+| Large Stock | As defined in Article 9 | D1, D2, SD-Conservation, SD-Rural Highway, SD-Campus | D3 |
+
+### e. SEPARATION
+
+1. Animal housing, Manure Storage, and hives must meet the separation distances of Table 7.2.
+2. Each distance is the greater of Table 7.2 and the district's Accessory Building Placement setback.
+3. Pens, runs, and paddocks must meet the property line distance of their tier's housing. Open pasture and grazing need no separation.
+4. Animal housing and Manure Storage must meet the district's Accessory Building Placement front setback, and may not be located forward of the primary building's front façade, except in D1, SD-Conservation, and SD-Rural Highway.
+5. Medium Stock and Large Stock are permitted by right where the lot is at least as wide as Table 7.2 requires. On a narrower lot they are not prohibited: the Planning Board may approve a reduced separation of no less than half the Table 7.2 distances, if it finds that:
+    a. no dwelling on another lot lies within the full Table 7.2 distance, or the owner of each such dwelling consents in writing;
+    b. screening or topography reduces the effect on neighboring lots; and
+    c. a manure management plan is in place.
+6. Small Stock housing has no lot width requirement. On a lot too narrow for a 10 ft separation, the district's Accessory Building Placement setback governs. The 25 ft separation from a dwelling applies only where the lot is at least 50 ft wide.
+7. Manure Storage of more than 50 cubic yards must be at least 100 ft from a property line and at least 300 ft from a well on another lot, a public water supply, or a water body, except as the Planning Board approves under Table 7.3. Smaller Manure Storage must meet the property line distance of its tier's housing.
+8. A distance to a dwelling is measured to the dwelling itself. A dwelling built after animal housing or Manure Storage was lawfully placed does not make that housing or storage nonconforming.
+
+TABLE 7.2 SEPARATION DISTANCES
+
+| Tier | From a property line | From a dwelling on another lot | By right where lot width is |
+| :--- | :--- | :--- | :--- |
+| Cultivation | None beyond district standards | None | Any |
+| Beekeeping | 10 ft, or a flyway barrier at the line | None | Any |
+| Small Stock housing | 10 ft | 25 ft, on lots at least 50 ft wide | Any |
+| Medium Stock housing | 50 ft | 100 ft | 120 ft or more |
+| Large Stock housing | 100 ft | 150 ft | 220 ft or more |
+| Manure Storage | 100 ft, for more than 50 cubic yards | 300 ft from a well on another lot, a public water supply, or a water body, for more than 50 cubic yards | Any |
+
+### f. PLANNING BOARD REVIEW
+
+1. Agriculture is permitted as provided in this Section, except that the activities in Table 7.3 require Planning Board approval.
+2. An approval under Table 7.3 is a Special Permit under Article 8 Section 18, and follows its procedure, approval standards, conditions, and validity, together with any finding this Section names.
+
+TABLE 7.3 PLANNING BOARD REVIEW
+
+| Activity | Planning Board approval is required for |
+| :--- | :--- |
+| Slaughter for sale | Any slaughter offered as a commercial service. Slaughter for the household is permitted. |
+| Processing for wholesale | Any processing for distribution off the farm. Washing, sorting, drying, packing, and processing for sale direct from the farm are permitted. |
+| Importing off-site organic material | More than 50 cubic yards a year. Composting the farm's own waste and bedding is permitted at any volume. |
+| Agritourism | Events with more than 50 attendees, or more than 12 events a year. |
+| Agricultural Buildings | No limit in D1, SD-Conservation, and SD-Rural Highway. Over 5,000 sq ft in D2 and SD-Campus; over 3,000 sq ft in D3; over 2,000 sq ft in D4, D5, SD-Historic, SD-Highway Commercial, SD-Marine, and SD-Fabrication. In D6, as its Permitted Buildings matrix provides. |
+| Seasonal and unenclosed structures | No limit in D1, D2, SD-Conservation, SD-Rural Highway, and SD-Campus. Over 3,000 sq ft in total in D3; over 2,000 sq ft in total in D4, D5, D6, SD-Historic, SD-Highway Commercial, SD-Marine, and SD-Fabrication. |
+| Manure Storage | More than 50 cubic yards within 100 ft of a property line, or within 300 ft of a well on another lot, a public water supply, or a water body. |
+| Reduced separation | Medium Stock or Large Stock on a lot narrower than Table 7.2 requires, under Article 7 Section 3.e.5. |
+| Stock by Special Permit | Medium Stock or Large Stock in a district where Table 7.1 permits it by Special Permit. |
+
+### g. BUILDINGS AND STRUCTURES
+
+1. Agricultural Buildings must meet the Agricultural Building column of the district's Permitted Buildings matrix in Article 2. Larger Agricultural Buildings require Planning Board approval under Table 7.3.
+2. SD-Conservation, SD-Campus, and SD-Marine have no Permitted Buildings matrix. In them, Agricultural Buildings follow the Agricultural Building column of D1, D2, and D5 respectively.
+3. D6 has no Agricultural Building column. In D6, Agricultural Buildings follow its Commercial Accessory column.
+4. This Section adds to the Connected Farm building group of Article 5 Section 18.b and does not limit it.
+5. Hoop Houses, High Tunnels, trellising, temporary animal shelters, and field-season equipment covers are seasonal or unenclosed structures, not buildings. They do not count toward the structure area of Table 5.2 and are not subject to the removal rule of Article 5 Section 10.c.2. Their total footprint on a lot is limited only as Table 7.3 provides. They must meet the district's Accessory Building Placement setbacks. Fencing follows Article 4 Section 8, not these setbacks.
+6. Small Stock housing and hives are permitted in every district, notwithstanding Table 5.2. Where Table 5.2 reads "Not Permitted" or "n/a", they are limited to 100 sq ft in total on a lot. Elsewhere they count toward the structure area of Table 5.2.
+
+### h. PROTECTION
+
+1. Agriculture is expected and encouraged in every district where this Section permits it. The presence of a lawful agricultural operation is not, by itself, grounds for restricting ordinary agricultural activity.
+2. Under 7 M.R.S. §154, a farm operation in an area where agricultural activities are permitted may not be considered a violation of a municipal ordinance if it conforms to Best Management Practices.
+    a. That protection is given by State law, which sets its reach; this Code neither enlarges nor limits it. Because this Section permits Agriculture in every district, it may apply to a farm operation in any of them.
+    b. It applies only to a farm or farm operation as 7 M.R.S. §152 describes them, not to all Home/Personal Agriculture.
+    c. Whether a farm operation conforms to Best Management Practices is determined by the Commissioner under 7 M.R.S. §156, not by the Code Enforcement Officer.
+    d. A person claiming this protection bears the burden of showing conformance. A written determination of the Commissioner under 7 M.R.S. §156 is that showing. When conformance is disputed, the Code Enforcement Officer must request a determination from the Commissioner, and enforcement on that question waits for it.
+3. An agricultural activity that meets the numeric standards of this Section is not, by reason of noise, odor, dust, or other ordinary effects of Agriculture, a violation of Article 7 Section 1.h or Article 4 Section 12.h, nor grounds for denial under Article 8 Section 18.e. This does not apply while the Planning Board decides a Special Permit under Table 7.3 for that activity.
+
+### i. EXISTING AGRICULTURE
+
+1. An agricultural activity lawfully conducted on the effective date of this Section may continue at its then-existing scale and location, without a permit and without becoming a nonconforming use; such an operation may enter a tier voluntarily; and nothing in this Section requires any existing building, fence, structure or manure facility to be altered.
+
+### j. AGRICULTURAL AREA
+
+1. Where this Code exempts Agriculture from a standard or relaxes a standard for it, the exemption applies only to the agricultural activity and the part of the lot it occupies, its agricultural area, as Article 1 Section 2.b.6 allows. It never applies to a non-agricultural use on the same lot.
+2. The fence exemptions of Article 4 Section 8.c.6 and Section 8.c.7.b apply to fencing that encloses an agricultural area of any tier.
+3. The exemption of Article 4 Section 7.b.2, the allowances of Article 5 Section 2.c.2.b and Section 2.c.3.a, and the outdoor storage and work yard screening exemptions of Article 5 Section 18.c and Section 18.d apply only to an agricultural area used for production by Commercial Agriculture, for Medium Stock or Large Stock, or for at least ½ acre of cultivation.
+4. An area used to store or sell products not produced on the lot is never an agricultural area.
+
+## 4. ADULT ESTABLISHMENT
 
 ### a. DEFINITION
 
@@ -95,13 +208,13 @@ A business that sells or disseminates explicit sexual material, and at which acc
 3. An adult establishment may be only one type of adult establishment: adult bookstore, adult cabaret, adult massage parlor, or adult motion picture theater. An adult establishment may not combine these uses.
 4. An adult establishment must not display obscene or indecent lights, posters, photographs, sketches, painted signs, laminated signs, or similar materials that are visible from the exterior of the building or visible through windows adjacent to a public right-of-way.
 
-## 4. AMUSEMENT, INDOOR
+## 5. AMUSEMENT, INDOOR
 
 ### a. DEFINITION
 
 A commercial facility for spectator and participatory uses conducted within an enclosed building, such as movie theaters, sports arenas, bowling alleys, tumbling centers, skating centers, roller rinks, and pool halls.
 
-## 5. AMUSEMENT, OUTDOOR
+## 6. AMUSEMENT, OUTDOOR
 
 ### a. DEFINITION
 
@@ -109,9 +222,9 @@ A commercial facility for spectator and participatory uses conducted outdoors or
 
 ### b. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 
-## 6. ANIMAL CARE, INDOOR
+## 7. ANIMAL CARE, INDOOR
 
 ### a. DEFINITION
 
@@ -119,9 +232,9 @@ A facility where animals not owned by the proprietor are sheltered and fed, and 
 
 ### b. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 
-## 7. ANIMAL CARE, OUTDOOR
+## 8. ANIMAL CARE, OUTDOOR
 
 ### a. DEFINITION
 
@@ -134,9 +247,9 @@ A facility where animals not owned by the proprietor are sheltered and fed. Incl
     b. must be located no less than 200 feet from any abutting residential use.
     c. must meet state and federal regulations regarding shelter against weather.
     d. must provide fencing of adequate height to prevent escape.
-2. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+2. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 
-## 8. AQUACULTURE
+## 9. AQUACULTURE
 
 ### a. DEFINITION
 
@@ -146,7 +259,7 @@ The commercial production of cultured fish, shellfish, seaweed, or other marine 
 
 1. All onshore aquaculture facilities must be located within fully enclosed structures designed for holding and rearing fish.
 
-## 9. ASSEMBLY
+## 10. ASSEMBLY
 
 ### a. DEFINITION
 
@@ -155,9 +268,9 @@ A facility that has organized services, meetings, events, or programs to benefit
 ### b. STANDARDS
 
 1. Meeting facilities and places of worship may include functionally related internal facilities such as kitchens, multi-purpose rooms, and offices. Places of worship may establish schools, daycare centers, and on-site social programs such as health care clinics, and food banks.
-2. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+2. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 
-## 10. BANKING & FINANCIAL SERVICES
+## 11. BANKING & FINANCIAL SERVICES
 
 ### a. DEFINITION
 
@@ -167,7 +280,7 @@ Uses related to the exchange, lending, borrowing, and safe-keeping of money.
 
 1. A freestanding Automated Teller Machine is not permitted, unless as part of a bank or financial building that shares the same site. An ATM must be integrated into the building if it is not housed inside the building in a lobby or vestibule.
 
-## 11. BAR OR TAVERN
+## 12. BAR OR TAVERN
 
 ### a. DEFINITION
 
@@ -182,7 +295,7 @@ A business that serves food and alcoholic beverages for on-premises consumption.
     d. Complies with Live Entertainment use standards.
 2. Ventilation systems may not be installed on the facade of any primary or secondary frontage unless the applicant can prove that no other feasible alternative is available. To the maximum extent feasible, ventilation systems must be directed away from adjacent residential properties.
 
-## 12. BED & BREAKFAST
+## 13. BED & BREAKFAST
 
 ### a. DEFINITION
 
@@ -194,7 +307,7 @@ When a permanent resident provides rooms within a single unit residential buildi
 2. Hourly rate lodging is not permitted.
 3. Guest stays are limited to a maximum of 30 consecutive days, with the exception of the winter months, when 3 month stays are permitted.
 
-## 13. CAMPGROUND
+## 14. CAMPGROUND
 
 ### a. DEFINITION
 
@@ -202,15 +315,15 @@ A site where one or more lots are used, or are intended to be used, by campers w
 
 ### b. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 
-## 14. CAR WASH
+## 15. CAR WASH
 
 ### a. DEFINITION
 
 An establishment for the washing of motor vehicles, which may employ production-line methods, mechanical devices, staffed hand wash facilities, or unstaffed self-wash facilities.
 
-## 15. COLLEGE/UNIVERSITY
+## 16. COLLEGE/UNIVERSITY
 
 ### a. DEFINITION
 
@@ -218,24 +331,24 @@ A post-secondary institution for higher learning that grants associate, bachelor
 
 1. Often includes related ancillary facilities, such as cafeterias, restaurants, retail, indoor or outdoor recreational facilities, research facilities, and similar uses, which require separate use permits.
 
-## 16. COMMERCIAL AGRICULTURE
+## 17. COMMERCIAL AGRICULTURE
 
 ### a. DEFINITION
 
-The commercial planting, cultivating, producing, growing, and harvesting of agricultural or horticultural products, the raising of livestock and poultry, and any work performed in conjunction with the above farm operations, including the packing, drying, and storing of products produced on-premises.
+Commercial Agriculture, as defined in Article 9.
 
 ### b. GENERAL STANDARDS FOR USE.
 
-1. Private, non-commercial agricultural uses are permitted in every district but may not adversely affect the use and quiet enjoyment of abutting property as a result of noise, vibrations, fumes, odor, dust, glare, or other cause.
-2. Agriculture uses must follow the Mainie State Agriculture Protection Act standards.
+1. Commercial Agriculture must meet the standards of Article 7 Section 3 Right to Farm, which also governs Home/Personal Agriculture.
+2. The protection that 7 M.R.S. §154 gives a farm operation following Best Management Practices is described in Article 7 Section 3.h.2.
 
-## 17. COMMERCIAL SCHOOL
+## 18. COMMERCIAL SCHOOL
 
 ### a. DEFINITION
 
 A school that teaches industrial, clerical, managerial, commercial, artistic, or other select skills; conducts a commercial enterprise, such as a driving school; or a privately operated school that does not offer a complete educational curriculum.
 
-## 18. CULTURAL FACILITY
+## 19. CULTURAL FACILITY
 
 ### a. DEFINITION
 
@@ -243,7 +356,7 @@ A facility open to the public for cultural services and exhibitions including, b
 
 1. A cultural facility may include ancillary assembly, retail, office, or restaurant uses, which require separate use permits.
 
-## 19. DAY CARE CENTER
+## 20. DAY CARE CENTER
 
 ### a. DEFINITION
 
@@ -254,7 +367,7 @@ A residential companion use that provides licensed care in a protective setting 
 1. Adult day care and child day care facilities must be licensed by and comply with all relevant state requirements.
 2. Outdoor play areas must be provided, and must be safely segregated from parking, loading, or service areas.
 
-## 20. DAY CARE FACILITY
+## 21. DAY CARE FACILITY
 
 ### a. DEFINITION
 
@@ -265,7 +378,7 @@ A facility where licensed care, protection, and supervision is provided in a pro
 1. Adult day care and child day care facilities must be licensed by and comply with all relevant state requirements.
 2. Outdoor play areas must be provided and must be safely segregated from parking, loading, or service areas.
 
-## 21. DISPATCH SERVICE
+## 22. DISPATCH SERVICE
 
 ### a. DEFINITION
 
@@ -274,10 +387,10 @@ The storage and dispatch of ambulances, taxis, limousines, armored cars, tow tru
 ### b. STANDARDS
 
 1. The storage of vehicles must be within a fully-enclosed structure or behind a 25 ft deep Level 2 Natural Screen or a 50% opaque fence.
-2. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+2. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
     a. Emergency Services are exempt from noise and glare requirements.
 
-## 22. DISTRICT ENERGY SYSTEM
+## 23. DISTRICT ENERGY SYSTEM
 
 ### a. DEFINITION
 
@@ -287,19 +400,19 @@ A community-based energy system shared by property owners for common use, or man
 
 1. In SD-Fab, SD-Historic, D3, D4, D5, and D6 systems must be located on a roof or roofs, not on the ground.
 
-## 23. DORMITORY
+## 24. DORMITORY
 
 ### a. DEFINITION
 
 Residential housing exclusively occupied by full or part-time students and/or educational staff and owned or operated by an educational institution.
 
-## 24. DRIVE-THROUGH FACILITY
+## 25. DRIVE-THROUGH FACILITY
 
 ### a. DEFINITION
 
 A facility that dispenses goods through an attendant window or automated machine to persons remaining in vehicles in a designated drive aisle.
 
-## 25. FARM/VENDOR MARKET
+## 26. FARM/VENDOR MARKET
 
 ### a. DEFINITION
 
@@ -311,13 +424,18 @@ The direct sales of goods and/or products by multiple farmers or vendors from in
 2. If located on private property, must receive written permission from the property owner. If located on public property, must receive written permission from the governmental agency.
 3. In D2, farm/vendor markets may occur only in accessory buildings.
 
-## 26. FARMSTAND
+## 27. FARMSTAND
 
 ### a. DEFINITION
 
-The direct sale of produce, grown or processed on the property, located within a permanent or semi-permanent structure also on the property.
+Farmstand, as defined in Article 9.
 
-## 27. FOOD PANTRY
+### b. STANDARDS
+
+1. A Farmstand is Home/Personal Agriculture and requires no permit.
+2. A Farmstand structure must meet the district's Accessory Building Placement setbacks.
+
+## 28. FOOD PANTRY
 
 ### a. DEFINITION
 
@@ -328,7 +446,7 @@ A not-for-profit use that distributes or facilitates the giving of food, clothin
 1. A food center or supply pantry is allowed within any place of worship or emergency shelter, regardless of district.
 2. The owner/operator must ensure that persons receiving assistance do not block public access to sidewalks, rights-of-way, or private property, and that emergency access points are clearly identified and maintained.
 
-## 28. FUNERAL SERVICES
+## 29. FUNERAL SERVICES
 
 ### a. DEFINITION
 
@@ -338,7 +456,7 @@ A facility where the deceased are prepared for burial display and for rituals be
 
 1. A crematorium requires a permit for a general industrial use.
 
-## 29. GAS STATION
+## 30. GAS STATION
 
 ### a. DEFINITION
 
@@ -346,21 +464,21 @@ A facility engaged in the retail sales of personal or commercial vehicle fuels.
 
 ### b. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 
-## 30. HEALTH CARE PROVIDER
+## 31. HEALTH CARE PROVIDER
 
 ### a. DEFINITION
 
 An office providing outpatient health services involving the diagnosis and treatment of physical or mental ailments and disorders, including doctors, dentists, mental health practitioners, physical therapists, and their substantial equivalents.
 
-## 31. HEALTH/FITNESS STUDIO
+## 32. HEALTH/FITNESS STUDIO
 
 ### a. DEFINITION
 
 A facility that provides interactive classes, personal or small group instruction, or other activities related to the improvement of the body, mind, and soul.
 
-## 32. HOSPITAL
+## 33. HOSPITAL
 
 ### a. DEFINITION
 
@@ -370,7 +488,7 @@ A facility that provides health, medical, or surgical care to the sick or injure
 
 1. Hospitals often include related ancillary facilities, such as laboratories, outpatient clinics, cafeterias, gift shops, training facilities, classrooms, central service facilities, which require separate use permits.
 
-## 33. HOTEL & HOSTEL
+## 34. HOTEL & HOSTEL
 
 ### a. DEFINITION
 
@@ -382,7 +500,7 @@ A commercial building(s) with guest rooms designed primarily for sleeping, and u
 2. Guest stays are limited to a maximum of 30 consecutive days.
 3. Hotel and Hostel may include related ancillary facilities, such as cafeterias, restaurants, retail, indoor or outdoor recreational facilities, and similar uses, which require separate use permits.
 
-## 34. HUMAN SERVICE FACILITY
+## 35. HUMAN SERVICE FACILITY
 
 ### a. DEFINITION
 
@@ -393,7 +511,7 @@ An establishment that provides services to persons in need of assistance due to 
 1. A special permit application for a human services facility must document the community's need for the proposed facility and provide a detailed description of the uses, including an estimation of the number of individuals to be served at the facility over a stated time period, activities and programs anticipate at the facility, hours of operations, degree of supervision at the facility, and any other information as may be reasonably necessary to ascertain the impact of the proposal facility on public safety, health, and welfare.
 2. A special permit for a human services facility may be granted only where the use is found to be consistent with the following criteria: The proposed use will not alter the essential nature and character of the community; The proposed use will not result in a duplication of services, in relation to need, cost, and service efficiency, that would hinder the community integration goals of the facility and create service capacity in excess of the overall need in the community. Considerations relevant for this determination are the distance between the proposed facility and to other facilities which offer the same services, the capacity of the proposed facility and the total capacity of all similar human service facilities in the community, the access or failure of other such facilities operated by the individual or group seeking approval, and the ability of the community to meet the special needs, if any, of the applicant facility.
 
-## 35. INDUSTRIAL, ARTISAN
+## 36. INDUSTRIAL, ARTISAN
 
 ### a. DEFINITION
 
@@ -401,10 +519,10 @@ A manufacturing use involving small-scale production or assembly with no noxious
 
 ### b. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 2. Parking lots are not permitted within the frontage zone and must not be visible from any road, excluding alleys.
 
-## 36. INDUSTRIAL, GENERAL
+## 37. INDUSTRIAL, GENERAL
 
 ### a. DEFINITION
 
@@ -412,10 +530,10 @@ Uses that are associated with retail sales, outdoor storage, or light manufactur
 
 ### b. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 2. A Level 3 Screen, 25 ft deep, is required along all side and rear lot lines that abut residential uses.
 
-## 37. INDUSTRIAL, HEAVY
+## 38. INDUSTRIAL, HEAVY
 
 ### a. DEFINITION
 
@@ -427,7 +545,7 @@ The processing, manufacturing, compounding, or storage of materials, products, o
 2. State-level environmental review is required.
 3. A 50 ft deep Level 4 Natural Screen is required to extend the entire length of the front, side, and rear lot lines.
 
-## 38. JUNK/SALVAGE YARD
+## 39. JUNK/SALVAGE YARD
 
 ### a. DEFINITION
 
@@ -440,7 +558,7 @@ Outdoor establishments primarily engaged in assembling, breaking up, sorting, an
 3. Outside storage of motor vehicles, equipment, parts, junk, or other materials must not be visible from roadways or adjacent residential uses.
 4. Burning of junk or vehicles in any junk or salvage yard is prohibited.
 
-## 39. LIVE ENTERTAINMENT
+## 40. LIVE ENTERTAINMENT
 
 ### a. DEFINITION
 
@@ -448,15 +566,15 @@ Any activity provided for pleasure, quiet enjoyment, recreation, relaxation, div
 
 ### b. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 
-## 40. MARINA, DRY STORAGE
+## 41. MARINA, DRY STORAGE
 
 ### a. DEFINITION
 
 A site used for the long-term dry storage of recreational watercraft in racks or other storage systems, and which may include ancillary repair facilities for watercraft.
 
-## 41. MARINA, RECREATION
+## 42. MARINA, RECREATION
 
 ### a. DEFINITION
 
@@ -467,7 +585,7 @@ A facility that has frontage on navigable water and allows for the short- or lon
 1. State-level environmental review is required.
 2. See Shoreland Zoning Ordinance
 
-## 42. MOBILE HOME PARK
+## 43. MOBILE HOME PARK
 
 ### a. DEFINITION
 
@@ -477,29 +595,31 @@ See Mobile Home Parks Ordinance
 
 See Mobile Home Parks Ordinance
 
-## 43. OFFICE, LARGE
+## 44. OFFICE, LARGE
 
 ### a. DEFINITION
 
 A medium office use involves the conduct of business relating to administration, clerical work, and consulting activities, not including medical offices, retail, or service uses. May include single or multiple companies within one unit or building. A large office has no maximum number of workers in a single building and no parking space limitations.
 
-## 44. OFFICE, MEDIUM
+## 45. OFFICE, MEDIUM
 
 ### a. DEFINITION
 
 A medium office use involves the conduct of business relating to administration, clerical work, and consulting activities, not including medical offices, retail, or service uses. May include single or multiple companies within one unit or building. A medium office has up to 35 workers in a single building and no parking space limitations.
 
-## 45. OFFICE, SMALL
+## 46. OFFICE, SMALL
 
 ### a. DEFINITION
 
 An small office use involves the conduct of business relating to administration, clerical work, and consulting activities, not including medical offices, retail, or service uses. May include single or multiple companies within one unit or building. A small office has up to 5 workers in a single building and 6 parking spaces per lot.
 
-## 46. OUTDOOR STORAGE
+## 47. OUTDOOR STORAGE
 
 ### a. DEFINITION
 
 The outdoor keeping of equipment, vehicles, waste, and any materials associated with uses or activities occurring within buildings on the same lot for a period greater than 48 hours.
+
+1. Equipment, vehicles, and materials in active agricultural use within an agricultural area under Article 7 Section 3.j, such as implements in season, hay, bedding, feed, and harvest bins, are not Outdoor Storage. Unused or inoperable equipment remains Outdoor Storage.
 
 ### b. STANDARDS
 
@@ -507,13 +627,13 @@ The outdoor keeping of equipment, vehicles, waste, and any materials associated 
 2. Outdoor storage is not permitted within the frontage zone and must not be visible from any road (excluding alleys) except when located behind a 25 ft deep Level 3 Natural Screen.
 3. Storage areas must be located at least 20 ft from any structure used as a dwelling.
 
-## 47. PACKAGED LIQUOR
+## 48. PACKAGED LIQUOR
 
 ### a. DEFINITION
 
 Any alcoholic beverage sales establishment involving the sale of alcohol where beer, wine or distilled spirits are sold for off-sale consumption.
 
-## 48. PARKING LOT
+## 49. PARKING LOT
 
 ### a. DEFINITION
 
@@ -523,13 +643,13 @@ A non-accessory parking lot made available to the general public in exchange for
 
 1. Parking lots must follow the standards for Vehicular Parking in Article 4 Site Standards.
 
-## 49. PRIMARY/SECONDARY SCHOOL
+## 50. PRIMARY/SECONDARY SCHOOL
 
 ### a. DEFINITION
 
 A public, private, or parochial institution with a primary function of offering instruction at any of all primary or secondary education levels, inclusive of kindergarten through the 12th grade. This use shall not include businesses that offer exclusively recreational classes, such as art classes, musical instruction, or other similar classes open to the general public.
 
-## 50. PRIVATE CLUB OR LODGE
+## 51. PRIVATE CLUB OR LODGE
 
 ### a. DEFINITION
 
@@ -537,9 +657,9 @@ A facility operated for an organization, which is open to people upon invitation
 
 ### b. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 
-## 51. RECYCLING FACILITY
+## 52. RECYCLING FACILITY
 
 ### a. DEFINITION
 
@@ -549,9 +669,9 @@ A facility that accepts materials, such as dry paper, glass, cans, or plastics, 
 
 1. Outdoor storage or operations of the recycling facility may not be located within the frontage zone and must be located behind a 50 ft deep Level 3 Natural Screen, or a 6 ft to 8 ft tall opaque fence. Outdoor storage or operations of any kind are prohibited outside the screened area.
 2. Recycling drop-off facilities, manned or unmanned, must be located behind the frontage zone.
-3. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+3. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 
-## 52. RESEARCH LABORATORY
+## 53. RESEARCH LABORATORY
 
 ### a. DEFINITION
 
@@ -559,9 +679,9 @@ A facility for research and development that does not involve the use of human t
 
 ### b. STANDARDS
 
-1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+1. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 
-## 53. RESIDENCE
+## 54. RESIDENCE
 
 ### a. DEFINITION
 
@@ -571,13 +691,13 @@ A dwelling unit used, intended, or designed to be rented, leased, let, or hired 
 
 1. Dwelling units are not permitted in first floor units that front shopfront streets identified on the District Map.
 
-## 54. RESIDENTIAL CARE FACILITY
+## 55. RESIDENTIAL CARE FACILITY
 
 ### a. DEFINITION
 
 A licensed care facility that provides 24-hour medical or non-medical care to persons in need of personal services, supervision, protection, or assistance essential for sustaining the activities of daily living. Residential care facilities include nursing homes, independent living, assisted living, continuum of care, and hospice facilities.
 
-## 55. RESOURCE EXTRACTION
+## 56. RESOURCE EXTRACTION
 
 ### a. DEFINITION
 
@@ -592,7 +712,7 @@ A licensed care facility that provides 24-hour medical or non-medical care to pe
 4. State-level environmental review is required.
 5. Water extraction for commercial processing, selling, or distributing is prohibited.
 
-## 56. RESTAURANT & CAFE
+## 57. RESTAURANT & CAFE
 
 ### a. DEFINITION
 
@@ -608,13 +728,13 @@ A business where food and beverages are prepared and served to patrons for consu
     d. Complies with Live Entertainment use standards.
 3. Ventilation systems may not be installed on the facade of any primary or secondary frontage unless the applicant can prove that no other feasible alternative is available. To the maximum extent feasible, ventilation systems must be directed away from adjacent residential properties.
 
-## 57. RETAIL & SERVICE, GENERAL
+## 58. RETAIL & SERVICE, GENERAL
 
 ### a. DEFINITION
 
 A business that provides goods or services directly to the consumer, where such goods or services are available for immediate purchase on the premises by the purchaser.
 
-## 58. RETAIL & SERVICE, HEAVY
+## 59. RETAIL & SERVICE, HEAVY
 
 ### a. DEFINITION
 
@@ -624,7 +744,7 @@ A retail and service business with permanent outdoor display, service, and stora
 
 1. A 50 ft deep Level 2 Natural Screen or 6 ft to 8 ft tall opaque fence is required along all side and rear lot lines that abut residential uses.
 
-## 59. RETAIL FIREARM SALES FACILITY
+## 60. RETAIL FIREARM SALES FACILITY
 
 ### a. DEFINITION
 
@@ -634,7 +754,7 @@ A business which publicly displays or offers Firearms, as defined by the Code of
 
 1. A Retail Firearm Sales Facility use, whether primary, accessory, or otherwise, shall not be located on any lot, or virtual lot, that is located completely, or partially, within 300 feet of any lot which contains a Primary/Secondary School use, College/University use, or a Dormitory use associated with a Primary/Secondary School use or College/University use.
 
-## 60. ROOMING HOUSE
+## 61. ROOMING HOUSE
 
 ### a. DEFINITION
 
@@ -645,7 +765,7 @@ A structure occupied, designed, or intended to be occupied by individuals who ma
 1. One on-site supervisor is required at all times for any rooming house with ten or more rooming units.
 2. Hourly rate lodging is not permitted. Lodging must be arranged on a week-to-week or longer basis.
 
-## 61. SELF-STORAGE FACILITY
+## 62. SELF-STORAGE FACILITY
 
 ### a. DEFINITION
 
@@ -658,17 +778,20 @@ A facility where individual secured areas inside a structure are rented for shor
 3. Garage doors serving individual storage units must be perpendicular to the primary road.
 4. Outdoor storage must be visually screened from any road by a 25 ft deep Level 2 Natural Screen or 6 ft to 8 ft tall opaque fence. Outdoor storage of any kind are prohibited outside the screened area.
 
-## 62. STABLES / RIDING CENTER
+## 63. STABLES / RIDING CENTER
 
 ### a. DEFINITION
 
 A structure or land used, designed, and arranged for the care and shelter of equines, for riding, shows, or training, which may include horses not boarded on-site.
 
+1. Includes the boarding of horses owned by others, riding lessons, rides, breeding, veterinary care, races, events, and shows.
+
 ### b. STANDARDS
 
 1. A fence is required around all paddock areas.
+2. Keeping one's own horses is Large Stock under Article 7 Section 3, not a Stables/Riding Center use.
 
-## 63. TOURIST RENTAL
+## 64. TOURIST RENTAL
 
 ### a. DEFINITION
 
@@ -678,7 +801,7 @@ The rental of a dwelling unit, or a portion of a dwelling unit, on an overnight 
 
 1. Tourist rentals require an annual license from the Code Enforcement Officer and may be approved or denied based on enforcement history at the location, whether or not the rental is unduly taxing public infrastructure, public services, has demonstrated a hazard to public safety, or otherwise disturbs the peace of neighbors and the community.
 
-## 64. UTILITIES & SERVICES
+## 65. UTILITIES & SERVICES
 
 ### a. DEFINITION
 
@@ -694,9 +817,9 @@ The rental of a dwelling unit, or a portion of a dwelling unit, on an overnight 
     a. Glass cladding.
     b. Louvered or paneled shutters covering the panel in a "closed" position.
     c. A trellis, grille, grate, or fretwork.
-4. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+4. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.
 
-## 65. VEHICLE RENTAL OR SALES
+## 66. VEHICLE RENTAL OR SALES
 
 ### a. DEFINITION
 
@@ -706,7 +829,7 @@ A business that sells, leases, or rents automobiles, vans, three-wheelers, motor
 
 1. The display of vehicles for rental or sale shall not occur within the frontage zone.
 
-## 66. VEHICLE REPAIR
+## 67. VEHICLE REPAIR
 
 ### a. DEFINITION
 
@@ -718,4 +841,4 @@ A business that repairs, installs, or maintains automobiles, small trucks or van
 2. No partially dismantled, wrecked, or unregistered vehicle may be stored outdoors for more than 30 days.
 3. Temporary storage of vehicles may not be located within the frontage zone and must be located behind a 25 ft Level 2 Natural Screen or a 6ft to 8 ft tall opaque fence.
 4. Outdoor storage or operations of any kind are prohibited in the frontage zone.
-5. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.G.
+5. The proposed Use shall comply with the Nuisance Standards in Article 7 Section 1.H.

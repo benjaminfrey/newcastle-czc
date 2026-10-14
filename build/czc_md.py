@@ -272,9 +272,19 @@ def article2_appendix(src_dir: Path) -> str:
         "*Generated from the district data the PDF edition's district pages are printed from. "
         "Use statuses are given in words; the PDF shows them as symbols.*",
     ]
-    bullets = [f"- {label.removesuffix(' Required')} — issued by {authority}"
+    # A permit-free status (authority "—", Right to Farm's ○) is worded as its
+    # label alone: "No Permit — issued by —" would read as a permit.
+    bullets = [f"- {label}" if authority == "—" else
+               f"- {label.removesuffix(' Required')} — issued by {authority}"
                for label, authority in legend["rows"].values()]
     bullets.append("- A use with no status is not allowed in that District.")
+    # The Note's later sentences (with ○: "Uses marked ○ require no permit but
+    # must meet the standards of Article 7 Section 3.") carry over from the
+    # legend itself, codes in words, so the .md never drops a condition.
+    for sentence in re.split(r"(?<=\.)\s+", legend["note"])[1:]:
+        sentence = re.sub(r"\b(" + "|".join(map(re.escape, legend["rows"])) + r")\b",
+                          lambda m: f'"{use_table_changes.status_words(m.group(1), legend)}"', sentence)
+        bullets.append(f"- {sentence.rstrip('.')}.")
     blocks.append("**Use table legend**\n\n" + "\n".join(bullets))
     for rec in data:
         blocks.append(f"### {rec['code']} {rec['name']}")

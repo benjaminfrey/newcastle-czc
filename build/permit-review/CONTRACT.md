@@ -669,6 +669,7 @@ one-or-two-letter cell into **permit type + permitting authority**, which *is* t
 | `rc` | Residential Companion Permit | `residential_companion` | CEO | `ceo` | `❶` | true |
 | `sp` | Special Permit | `special` | Planning Board | `planning_board` | `❷` | true |
 | `ex` | Expanded Use Permit | `expanded_use` | Planning Board | `planning_board` | `✪` | true |
+| `br` | *(no permit)* — "No Permit Required" | `no` | — | `null` | `○` | true |
 | `""` | *(none — prohibited)* | `prohibited` | — | — | — | false |
 
 Source note, carried into `legend[].note` for the empty code:
@@ -678,6 +679,13 @@ Source note, carried into `legend[].note` for the empty code:
 **assert** the parsed result equals the table above. If the `.typ` block moves or changes shape,
 the build fails loudly rather than silently shipping a stale legend. Glyphs come from the
 `#let glyphs = (u: "●", rc: "❶", sp: "❷", ex: "✪")` binding in the same file.
+
+The `br` row is **optional** (Right to Farm, `plans/2026-10-14-right-to-farm-plan-a-status-code.md`):
+the v1.0 legend has four codes, a draft legend five. With `br` present, the prohibited row's note
+reads *"Uses without u, rc, sp, ex, or br are not allowed in this District. Uses marked br require no
+permit but must meet the standards of Article 7 Section 3."* `br` may never share a cell with another
+code (`UseMatrixBuildError`). A `br` cell is **refused** by `build_use_matrix.py` until the app models
+a permit-free cell — see DECISIONS-NEEDED.md D-0035.
 
 This produces the Buehner-style row verbatim:
 

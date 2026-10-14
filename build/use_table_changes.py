@@ -148,13 +148,22 @@ def legend_delta(old: dict, new: dict) -> list[str]:
     for code in sorted(set(old["glyphs"]) | set(new["glyphs"])):
         og, ng = old["glyphs"].get(code), new["glyphs"].get(code)
         if og != ng:
-            out.append(f"The symbol for `{code}` changed: {og or 'none'} → {ng or 'none'}.")
+            out.append(f"The symbol for `{code}` changed: {_glyph_name(og)} → {_glyph_name(ng)}.")
     if old["note"] != new["note"]:
         out.append(f"The legend's note now reads \"{new['note']}\" (it read \"{old['note']}\").")
     if not out and old["block"] != new["block"]:
         out.append("The legend's text changed in a way this document cannot itemise; "
                    "its before and after text are shown below.")
     return out
+
+
+def _glyph_name(g: str | None) -> str:
+    """A use-table symbol in words (ruling 11: the glyphs are not in
+    style/fonts, so this document never prints one)."""
+    if not g:
+        return "none"
+    import unicodedata
+    return " ".join(unicodedata.name(c, "an unnamed symbol").lower() for c in g)
 
 
 def legend_block_changed(old: dict, new: dict) -> bool:
@@ -178,14 +187,27 @@ def display_block(legend: dict) -> str:
 
 def status_words(code: str, legend: dict) -> str:
     """A status code in words. A blank status is "Not allowed": 450 of the 819
-    cells carry it, and a blank in a report reads as "nothing here"."""
+    cells carry it, and a blank in a report reads as "nothing here".
+
+    A permit-free status (authority "—"; Right to Farm's `br`) reads as its
+    own label, "No Permit Required" -- "No Permit (—)" would read as a permit.
+    It may not share a cell with another status (release-machinery spec D3):
+    that is refused, so the .md and this document fail closed with the PDF."""
     if not code.strip():
         return "Not allowed"
+    codes = code.split()
+    free = [c for c in codes if legend["rows"].get(c, ("", ""))[1] == "—"]
+    if free and len(codes) > 1:
+        raise LegendError(f"use status `{code}` combines `{free[0]}` (no permit required) "
+                          "with another status -- not allowed (release-machinery spec D3)")
     parts = []
-    for c in code.split():
+    for c in codes:
         row = legend["rows"].get(c)
-        parts.append(f"{row[0].removesuffix(' Required')} ({row[1]})" if row
-                     else f"`{c}` (not in the legend)")
+        if row and row[1] == "—":
+            parts.append(row[0])
+        else:
+            parts.append(f"{row[0].removesuffix(' Required')} ({row[1]})" if row
+                         else f"`{c}` (not in the legend)")
     return " + ".join(parts)
 
 
@@ -525,6 +547,8 @@ def main(argv=None) -> int:
     side = ap.add_mutually_exclusive_group()
     side.add_argument("--new-ref", help="the new version as a git ref")
     side.add_argument("--new-dir", help="the new version as a source directory (default: source/)")
+    ap.add_argument("--new-label", help="how the document names the new version (default: the ref "
+                                        "or directory); the release driver passes the version")
     ap.add_argument("--json", help="also write the counts as JSON to this path")
     a = ap.parse_args(argv)
     for stale in (a.out, a.json):          # a refusal or an empty run must not leave an
@@ -534,6 +558,8 @@ def main(argv=None) -> int:
         old = czc_diff.Side(ref=a.old_ref)
         new = (czc_diff.Side(ref=a.new_ref) if a.new_ref
                else czc_diff.Side(root=Path(a.new_dir) if a.new_dir else czc_diff.SOURCE))
+        if a.new_label:
+            new.label = a.new_label
         report = build(old, new)
     except czc_diff.Refusal as exc:
         print(f"use_table_changes: refusing -- {exc}", file=sys.stderr)

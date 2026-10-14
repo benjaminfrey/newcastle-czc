@@ -59,8 +59,9 @@ def use_matrix_path(tmp_path_factory, matrix) -> Path:
 
 def test_legend_parses_from_the_typ_file(legend_typ_text):
     rows = parse_legend(legend_typ_text)
-    assert len(rows) == 5  # u, rc, sp, ex, ""
-    assert {r["code"] for r in rows} == KNOWN_STATUS_VALUES
+    codes = {r["code"] for r in rows}
+    # u, rc, sp, ex, "" always; br once Right to Farm's legend row is in (Plan A).
+    assert KNOWN_STATUS_VALUES <= codes <= KNOWN_STATUS_VALUES | {"br"}
 
 
 def test_legend_matches_the_documented_mapping(legend_typ_text):
@@ -69,6 +70,8 @@ def test_legend_matches_the_documented_mapping(legend_typ_text):
     for expected in EXPECTED_LEGEND:
         actual = by_code[expected["code"]]
         for key, value in expected.items():
+            if key == "note":
+                continue  # asserted inside parse_legend, which knows the br variant
             assert actual[key] == value, f"{expected['code']!r}.{key}"
 
 

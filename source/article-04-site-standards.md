@@ -143,6 +143,7 @@ footer-date: "Adopted: November 3, 2020"
 1. Applies to any application that requires a Special Permit or an Expanded Use Permit.
 2. Applies to any use that may negatively impact the peaceful enjoyment of abutting lots.
 3. When applied as a standard from any part of this Code.
+4. Item 2 does not apply to Agriculture that meets the standards of Article 7 Section 3.
 
 ### c. GENERAL
 
@@ -221,7 +222,7 @@ TABLE 4.1 SCREENING FORMULA
 ### b. APPLICABILITY
 
 1. Applies to any lot that contains a field of 5 acres or more.
-2. Does not apply to new Commercial Agricultural uses.
+2. Does not apply to an agricultural area that qualifies under Article 7 Section 3.j.3.
 
 ### c. GENERAL
 
@@ -248,10 +249,10 @@ TABLE 4.1 SCREENING FORMULA
 3. Fences and walls located within the frontage zone may be no more than 4 feet in height, and must be constructed of pickets or pickets set onto a low wall, where the pickets are no more than 50% opaque, except when fences are located within 4 feet of windows, then it must be a minimum of 70% opaque. Fence and gate posts may not be more than 4.5 feet in height.
 4. Fences and walls located behind the frontage zone may be up to 8 feet in height. Fence and gate posts may not be more than 8.5 feet in height.
 5. Fences and walls must be constructed of durable natural materials such as wood, brick, stone, or painted metal, or have the appearance of natural materials. Chain link fences are prohibited within the frontage zone, except when located behind a land type. Barbed wire and concertina wire are prohibited.
-6. Fences and walls may not cross roads, driveways, or parking lots, except where lots on both sides of a road or driveway are used for agricultural activities.
+6. Fences and walls may not cross roads, driveways, or parking lots, except where the fencing encloses agricultural areas under Article 7 Section 3.j.2 on both sides of a road or driveway.
 7. The following are exempt from the above standards:
     a. An open fence enclosing a tennis, basketball, pickleball, or other recreational court may be erected to a maximum of 12 feet in height and may be constructed of chain link fencing.
-    b. Fences made of plastic mesh, electrified wire, galvanized steel mesh, chicken wire, metal rails, and PVC may be installed on lots used for agricultural activities.
+    b. Fences made of plastic mesh, electrified wire, galvanized steel mesh, chicken wire, metal rails, and PVC may be installed to enclose an agricultural area under Article 7 Section 3.j.2.
     c. Split rail fences are permitted along any lot line in D1.
 
 ### d. RETAINING WALLS
@@ -345,6 +346,7 @@ TABLE 4.1 SCREENING FORMULA
 3. Holiday lighting.
 4. Outdoor lighting used for emergency equipment and work conducted in the interest of law enforcement or for public health, safety, or welfare.
 5. Ground mounted pedestrian lighting.
+6. Agricultural task lighting used only while agricultural work is underway. Permanent fixtures must still meet Article 4 Section 12.c.5 and Section 12.g.
 
 ### c. GENERAL
 

@@ -148,7 +148,7 @@
    "cols": [
     "Residential",
     "General Accessory",
-    "Agricultural Use"
+    "Agricultural Building"
    ],
    "rows": [
     [
@@ -319,6 +319,30 @@
      [
       "Farm/Vendor Market",
       "u"
+     ],
+     [
+      "Farmstand",
+      "br"
+     ],
+     [
+      "Home Agriculture: Cultivation",
+      "br"
+     ],
+     [
+      "Home Agriculture: Beekeeping",
+      "br"
+     ],
+     [
+      "Home Agriculture: Small Stock",
+      "br"
+     ],
+     [
+      "Home Agriculture: Medium Stock",
+      "br"
+     ],
+     [
+      "Home Agriculture: Large Stock",
+      "br"
      ]
     ]
    },
@@ -697,56 +721,65 @@
    "cols": [
     "Residential",
     "Mixed-Use",
-    "Residential Accessory"
+    "Residential Accessory",
+    "Agricultural Building"
    ],
    "rows": [
     [
      "Permitting Authority",
      "CEO",
      "Planning Board",
+     "CEO",
      "CEO"
     ],
     [
      "Building Width",
      "75 ft",
      "50 ft",
-     "30 ft"
+     "30 ft",
+     "-"
     ],
     [
      "Building Depth",
      "50 ft",
      "50 ft",
-     "40 ft"
+     "40 ft",
+     "-"
     ],
     [
      "Building Floor Area",
      "-",
      "-",
-     "-"
+     "-",
+     "5,000 sf"
     ],
     [
      "Total Stories",
      "2",
      "2",
-     "1"
+     "1",
+     "2"
     ],
     [
      "First Floor Height",
      "12 ft",
      "12 ft",
+     "16 ft",
      "16 ft"
     ],
     [
      "Upper Floor Height",
      "10 ft",
      "10 ft",
-     "8 ft"
+     "8 ft",
+     "10 ft"
     ],
     [
      "Number of Units",
      "-",
      "-",
-     "1"
+     "1",
+     "-"
     ]
    ]
   },
@@ -868,6 +901,30 @@
      [
       "Farm/Vendor Market",
       "rc"
+     ],
+     [
+      "Farmstand",
+      "br"
+     ],
+     [
+      "Home Agriculture: Cultivation",
+      "br"
+     ],
+     [
+      "Home Agriculture: Beekeeping",
+      "br"
+     ],
+     [
+      "Home Agriculture: Small Stock",
+      "br"
+     ],
+     [
+      "Home Agriculture: Medium Stock",
+      "br"
+     ],
+     [
+      "Home Agriculture: Large Stock",
+      "br"
      ]
     ]
    },
@@ -1222,7 +1279,8 @@
     "Residential",
     "Mixed-Use",
     "Residential Accessory",
-    "Commercial Accessory"
+    "Commercial Accessory",
+    "Agricultural Building"
    ],
    "rows": [
     [
@@ -1230,40 +1288,46 @@
      "Planning Board",
      "Planning Board",
      "CEO",
-     "Planning Board"
+     "Planning Board",
+     "CEO"
     ],
     [
      "Building Width",
      "50 ft",
      "60 ft",
      "30 ft",
-     "30 ft"
+     "30 ft",
+     "-"
     ],
     [
      "Building Depth",
      "50 ft",
      "50 ft",
      "40 ft",
-     "40 ft"
+     "40 ft",
+     "-"
     ],
     [
      "Building Floor Area",
      "-",
      "-",
      "-",
-     "-"
+     "-",
+     "3,000 sf"
     ],
     [
      "Total Stories",
      "2",
      "2",
      "1",
-     "1"
+     "1",
+     "2"
     ],
     [
      "First Floor Height",
      "12 ft",
      "15 ft",
+     "16 ft",
      "16 ft",
      "16 ft"
     ],
@@ -1272,14 +1336,16 @@
      "10 ft",
      "10 ft",
      "8 ft",
-     "8 ft"
+     "8 ft",
+     "10 ft"
     ],
     [
      "Number of Units",
      "-",
      "-",
      "1",
-     "1"
+     "1",
+     "-"
     ]
    ]
   },
@@ -1400,6 +1466,30 @@
      ],
      [
       "Farm/Vendor Market",
+      "sp"
+     ],
+     [
+      "Farmstand",
+      "br"
+     ],
+     [
+      "Home Agriculture: Cultivation",
+      "br"
+     ],
+     [
+      "Home Agriculture: Beekeeping",
+      "br"
+     ],
+     [
+      "Home Agriculture: Small Stock",
+      "br"
+     ],
+     [
+      "Home Agriculture: Medium Stock",
+      "br"
+     ],
+     [
+      "Home Agriculture: Large Stock",
       "sp"
      ]
     ]
@@ -1754,48 +1844,57 @@
    "title": "PERMITTED BUILDINGS",
    "cols": [
     "Residential",
-    "Residential Accessory"
+    "Residential Accessory",
+    "Agricultural Building"
    ],
    "rows": [
     [
      "Permitting Authority",
      "Planning Board",
+     "CEO",
      "CEO"
     ],
     [
      "Building Width",
      "60 ft",
-     "30 ft"
+     "30 ft",
+     "-"
     ],
     [
      "Building Depth",
      "50 ft",
-     "40 ft"
+     "40 ft",
+     "-"
     ],
     [
      "Building Floor Area",
      "8,000 sf",
-     "-"
+     "-",
+     "2,000 sf"
     ],
     [
      "Total Stories",
      "2",
-     "1"
+     "1",
+     "2"
     ],
     [
      "First Floor Height",
      "12 ft",
+     "16 ft",
      "16 ft"
     ],
     [
      "Upper Floor Height",
      "10 ft",
-     "8 ft"
+     "8 ft",
+     "10 ft"
     ],
     [
      "Number of Units",
      "-",
-     "1"
+     "1",
+     "-"
     ]
    ]
   },
@@ -1921,6 +2020,30 @@
      [
       "Farm/Vendor Market",
       "rc"
+     ],
+     [
+      "Farmstand",
+      "br"
+     ],
+     [
+      "Home Agriculture: Cultivation",
+      "br"
+     ],
+     [
+      "Home Agriculture: Beekeeping",
+      "br"
+     ],
+     [
+      "Home Agriculture: Small Stock",
+      "br"
+     ],
+     [
+      "Home Agriculture: Medium Stock",
+      "sp"
+     ],
+     [
+      "Home Agriculture: Large Stock",
+      ""
      ]
     ]
    },
@@ -2275,7 +2398,8 @@
     "Mixed-Use",
     "Multi-Unit Commercial",
     "Residential Accessory",
-    "Commercial Accessory"
+    "Commercial Accessory",
+    "Agricultural Building"
    ],
    "rows": [
     [
@@ -2284,7 +2408,8 @@
      "CEO",
      "Planning Board",
      "CEO",
-     "Planning Board"
+     "Planning Board",
+     "CEO"
     ],
     [
      "Building Width",
@@ -2292,7 +2417,8 @@
      "60 ft",
      "80 ft",
      "30 ft",
-     "30 ft"
+     "30 ft",
+     "-"
     ],
     [
      "Building Depth",
@@ -2300,7 +2426,8 @@
      "-",
      "-",
      "40 ft",
-     "30 ft"
+     "30 ft",
+     "-"
     ],
     [
      "Building Floor Area",
@@ -2308,7 +2435,8 @@
      "12,000",
      "-",
      "-",
-     "-"
+     "-",
+     "2,000 sf"
     ],
     [
      "Total Stories",
@@ -2316,7 +2444,8 @@
      "2",
      "2",
      "2",
-     "1"
+     "1",
+     "2"
     ],
     [
      "First Floor Height",
@@ -2324,6 +2453,7 @@
      "15 ft",
      "15 ft",
      "10 ft",
+     "16 ft",
      "16 ft"
     ],
     [
@@ -2332,7 +2462,8 @@
      "10 ft",
      "10 ft",
      "10 ft",
-     "8 ft"
+     "8 ft",
+     "10 ft"
     ],
     [
      "Number of Units",
@@ -2340,7 +2471,8 @@
      "-",
      "5",
      "1",
-     "1"
+     "1",
+     "-"
     ]
    ]
   },
@@ -2462,6 +2594,30 @@
      [
       "Farm/Vendor Market",
       "u"
+     ],
+     [
+      "Farmstand",
+      "br"
+     ],
+     [
+      "Home Agriculture: Cultivation",
+      "br"
+     ],
+     [
+      "Home Agriculture: Beekeeping",
+      "br"
+     ],
+     [
+      "Home Agriculture: Small Stock",
+      "br"
+     ],
+     [
+      "Home Agriculture: Medium Stock",
+      "sp"
+     ],
+     [
+      "Home Agriculture: Large Stock",
+      ""
      ]
     ]
    },
@@ -2995,6 +3151,30 @@
      [
       "Farm/Vendor Market",
       "u"
+     ],
+     [
+      "Farmstand",
+      "br"
+     ],
+     [
+      "Home Agriculture: Cultivation",
+      "br"
+     ],
+     [
+      "Home Agriculture: Beekeeping",
+      "br"
+     ],
+     [
+      "Home Agriculture: Small Stock",
+      "br"
+     ],
+     [
+      "Home Agriculture: Medium Stock",
+      "sp"
+     ],
+     [
+      "Home Agriculture: Large Stock",
+      ""
      ]
     ]
    },
@@ -3339,48 +3519,57 @@
    "title": "PERMITTED BUILDINGS",
    "cols": [
     "Residential",
-    "Residential Accessory"
+    "Residential Accessory",
+    "Agricultural Building"
    ],
    "rows": [
     [
      "Permitting Authority",
      "Planning Board",
+     "CEO",
      "CEO"
     ],
     [
      "Building Width",
      "75 ft",
-     "30 ft"
+     "30 ft",
+     "-"
     ],
     [
      "Building Depth",
      "50 ft",
-     "40 ft"
+     "40 ft",
+     "-"
     ],
     [
      "Building Floor Area",
      "-",
-     "-"
+     "-",
+     "2,000 sf"
     ],
     [
      "Total Stories",
      "2",
-     "1"
+     "1",
+     "2"
     ],
     [
      "First Floor Height",
      "12 ft",
+     "16 ft",
      "16 ft"
     ],
     [
      "Upper Floor Height",
      "10 ft",
-     "8 ft"
+     "8 ft",
+     "10 ft"
     ],
     [
      "Number of Units",
      "-",
-     "1"
+     "1",
+     "-"
     ]
    ]
   },
@@ -3502,6 +3691,30 @@
      [
       "Farm/Vendor Market",
       "rc"
+     ],
+     [
+      "Farmstand",
+      "br"
+     ],
+     [
+      "Home Agriculture: Cultivation",
+      "br"
+     ],
+     [
+      "Home Agriculture: Beekeeping",
+      "br"
+     ],
+     [
+      "Home Agriculture: Small Stock",
+      "br"
+     ],
+     [
+      "Home Agriculture: Medium Stock",
+      "sp"
+     ],
+     [
+      "Home Agriculture: Large Stock",
+      ""
      ]
     ]
    },
@@ -3903,6 +4116,30 @@
      [
       "Farm/Vendor Market",
       ""
+     ],
+     [
+      "Farmstand",
+      "br"
+     ],
+     [
+      "Home Agriculture: Cultivation",
+      "br"
+     ],
+     [
+      "Home Agriculture: Beekeeping",
+      "br"
+     ],
+     [
+      "Home Agriculture: Small Stock",
+      "br"
+     ],
+     [
+      "Home Agriculture: Medium Stock",
+      "br"
+     ],
+     [
+      "Home Agriculture: Large Stock",
+      "br"
      ]
     ]
    },
@@ -4267,7 +4504,8 @@
     "Mixed-Use",
     "Multi-Unit Commercial",
     "Commercial Accessory",
-    "Residential Accessory"
+    "Residential Accessory",
+    "Agricultural Building"
    ],
    "rows": [
     [
@@ -4276,6 +4514,7 @@
      "Planning Board",
      "Planning Board",
      "Planning Board",
+     "CEO",
      "CEO"
     ],
     [
@@ -4284,7 +4523,8 @@
      "120 ft",
      "120 ft",
      "30 ft",
-     "30 ft"
+     "30 ft",
+     "-"
     ],
     [
      "Building Depth",
@@ -4292,7 +4532,8 @@
      "-",
      "-",
      "40 ft",
-     "40 ft"
+     "40 ft",
+     "-"
     ],
     [
      "Building Floor Area",
@@ -4300,7 +4541,8 @@
      "40,000",
      "60,000",
      "-",
-     "-"
+     "-",
+     "2,000 sf"
     ],
     [
      "Total Stories",
@@ -4308,7 +4550,8 @@
      "3",
      "3",
      "1",
-     "1"
+     "1",
+     "2"
     ],
     [
      "First Floor Height",
@@ -4316,6 +4559,7 @@
      "15 ft",
      "15 ft",
      "15 ft",
+     "16 ft",
      "16 ft"
     ],
     [
@@ -4324,7 +4568,8 @@
      "10 ft",
      "10 ft",
      "10 ft",
-     "8 ft"
+     "8 ft",
+     "10 ft"
     ],
     [
      "Number of Units",
@@ -4332,7 +4577,8 @@
      "-",
      "-",
      "1",
-     "1"
+     "1",
+     "-"
     ]
    ]
   },
@@ -4454,6 +4700,30 @@
      [
       "Farm/Vendor Market",
       "u"
+     ],
+     [
+      "Farmstand",
+      "br"
+     ],
+     [
+      "Home Agriculture: Cultivation",
+      "br"
+     ],
+     [
+      "Home Agriculture: Beekeeping",
+      "br"
+     ],
+     [
+      "Home Agriculture: Small Stock",
+      "br"
+     ],
+     [
+      "Home Agriculture: Medium Stock",
+      "sp"
+     ],
+     [
+      "Home Agriculture: Large Stock",
+      ""
      ]
     ]
    },
@@ -4819,7 +5089,8 @@
     "Mixed-Use",
     "Multi-Unit Commercial",
     "Commercial Accessory",
-    "Residential Accessory"
+    "Residential Accessory",
+    "Agricultural Building"
    ],
    "rows": [
     [
@@ -4828,6 +5099,7 @@
      "Planning Board",
      "Planning Board",
      "Planning Board",
+     "CEO",
      "CEO"
     ],
     [
@@ -4836,7 +5108,8 @@
      "120 ft",
      "120 ft",
      "30 ft",
-     "30 ft"
+     "30 ft",
+     "-"
     ],
     [
      "Building Depth",
@@ -4844,13 +5117,15 @@
      "-",
      "-",
      "40 ft",
-     "40 ft"
+     "40 ft",
+     "-"
     ],
     [
      "Building Floor Area",
      "60,000 sf",
      "40,000 sf",
      "60,000 sf",
+     "-",
      "-",
      "-"
     ],
@@ -4860,7 +5135,8 @@
      "3",
      "3",
      "1",
-     "1"
+     "1",
+     "-"
     ],
     [
      "First Floor Height",
@@ -4868,7 +5144,8 @@
      "15 ft",
      "15 ft",
      "15 ft",
-     "16 ft"
+     "16 ft",
+     "-"
     ],
     [
      "Upper Floor Height",
@@ -4876,7 +5153,8 @@
      "10 ft",
      "10 ft",
      "10 ft",
-     "8 ft"
+     "8 ft",
+     "-"
     ],
     [
      "Number of Units",
@@ -4884,7 +5162,8 @@
      "-",
      "20",
      "1",
-     "1"
+     "1",
+     "-"
     ]
    ]
   },
@@ -5006,6 +5285,30 @@
      [
       "Farm/Vendor Market",
       "u"
+     ],
+     [
+      "Farmstand",
+      "br"
+     ],
+     [
+      "Home Agriculture: Cultivation",
+      "br"
+     ],
+     [
+      "Home Agriculture: Beekeeping",
+      "br"
+     ],
+     [
+      "Home Agriculture: Small Stock",
+      "br"
+     ],
+     [
+      "Home Agriculture: Medium Stock",
+      "br"
+     ],
+     [
+      "Home Agriculture: Large Stock",
+      "br"
      ]
     ]
    },
@@ -5442,6 +5745,30 @@
      [
       "Farm/Vendor Market",
       "u"
+     ],
+     [
+      "Farmstand",
+      "br"
+     ],
+     [
+      "Home Agriculture: Cultivation",
+      "br"
+     ],
+     [
+      "Home Agriculture: Beekeeping",
+      "br"
+     ],
+     [
+      "Home Agriculture: Small Stock",
+      "br"
+     ],
+     [
+      "Home Agriculture: Medium Stock",
+      "br"
+     ],
+     [
+      "Home Agriculture: Large Stock",
+      "br"
      ]
     ]
    },
@@ -5866,6 +6193,30 @@
      [
       "Farm/Vendor Market",
       ""
+     ],
+     [
+      "Farmstand",
+      "br"
+     ],
+     [
+      "Home Agriculture: Cultivation",
+      "br"
+     ],
+     [
+      "Home Agriculture: Beekeeping",
+      "br"
+     ],
+     [
+      "Home Agriculture: Small Stock",
+      "br"
+     ],
+     [
+      "Home Agriculture: Medium Stock",
+      "sp"
+     ],
+     [
+      "Home Agriculture: Large Stock",
+      ""
      ]
     ]
    },
@@ -6232,7 +6583,8 @@
     "Mixed-Use",
     "Multi-Unit Commercial",
     "Commercial Accessory",
-    "Residential Accessory"
+    "Residential Accessory",
+    "Agricultural Building"
    ],
    "rows": [
     [
@@ -6241,6 +6593,7 @@
      "Planning Board",
      "Planning Board",
      "Planning Board",
+     "CEO",
      "CEO"
     ],
     [
@@ -6249,7 +6602,8 @@
      "150 ft",
      "120 ft",
      "30 ft",
-     "30 ft"
+     "30 ft",
+     "-"
     ],
     [
      "Building Depth",
@@ -6257,7 +6611,8 @@
      "-",
      "-",
      "40 ft",
-     "40 ft"
+     "40 ft",
+     "-"
     ],
     [
      "Building Floor Area",
@@ -6265,7 +6620,8 @@
      "60,000",
      "50,000",
      "-",
-     "-"
+     "-",
+     "2,000 sf"
     ],
     [
      "Total Stories",
@@ -6273,7 +6629,8 @@
      "2",
      "2",
      "1",
-     "1"
+     "1",
+     "2"
     ],
     [
      "First Floor Height",
@@ -6281,6 +6638,7 @@
      "22 ft",
      "22 ft",
      "22 ft",
+     "16 ft",
      "16 ft"
     ],
     [
@@ -6289,7 +6647,8 @@
      "10 ft",
      "10 ft",
      "10 ft",
-     "8 ft"
+     "8 ft",
+     "10 ft"
     ],
     [
      "Number of Units",
@@ -6297,7 +6656,8 @@
      "-",
      "-",
      "1",
-     "1"
+     "1",
+     "-"
     ]
    ]
   },
@@ -6419,6 +6779,30 @@
      [
       "Farm/Vendor Market",
       "u"
+     ],
+     [
+      "Farmstand",
+      "br"
+     ],
+     [
+      "Home Agriculture: Cultivation",
+      "br"
+     ],
+     [
+      "Home Agriculture: Beekeeping",
+      "br"
+     ],
+     [
+      "Home Agriculture: Small Stock",
+      "br"
+     ],
+     [
+      "Home Agriculture: Medium Stock",
+      "sp"
+     ],
+     [
+      "Home Agriculture: Large Stock",
+      ""
      ]
     ]
    },

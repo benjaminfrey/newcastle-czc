@@ -266,7 +266,7 @@ done < "$PLIST"
 if [ -n "$UT_MD" ]; then
   say "building the Use Table Changes memo"
   set +e
-  python3 "$BUILD/use_table_changes.py" "$OLD_VER" "$STAGING/$UT_MD" --new-dir "$NEW_DIR" >&2
+  python3 "$BUILD/use_table_changes.py" "$OLD_VER" "$STAGING/$UT_MD" --new-dir "$NEW_DIR" --new-label "$VERSION" >&2
   RC=$?
   set -e
   [ "$RC" = 0 ] || refuse "use_table_changes.py exited $RC but the plan lists a Use Table Changes memo."

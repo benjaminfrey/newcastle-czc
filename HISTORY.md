@@ -111,6 +111,15 @@ instructions; open items are listed in CLAUDE.md.
 
 ## Status log as of 2026-10-12
 
+- **✅ Right to Farm Plan A — Wave 4c, the fifth use status (2026-10-14, branch `right-to-farm`;
+  plan `plans/2026-10-14-right-to-farm-plan-a-status-code.md`, decisions R1–R5).** Article 2's
+  legend gains ○ **No Permit Required** (data code `br`, authority —) and a two-sentence Note
+  pointing at Article 7 Section 3. Both legend readers take it — the permit app's `legend.py`
+  (optional row; the v1.0 four-code legend still parses) and `use_table_changes.py` (worded "No
+  Permit Required"). `br` alongside another code in one cell is refused by Typst, the `.md` and
+  the app (release spec D3). The app refuses any `br` cell until it can model one: DECISIONS-NEEDED
+  **D-0035**. Article 2 standalone unchanged at 29 pages; column 3 grows ~21 pt per legend page.
+  Commits `6d08332` (app), `898d4d3` (build reader), and the Article 2 commit. Ships only with Plan B.
 - **✅ v1.1-draft CUT (2026-10-12)** — the first release through `build-release.sh`, against v1.0.
   Layout only: the binding-margin fix and the Article 2 first-page chrome fix. Written calls
   (Ben): Articles 1, 2, 3 layout-only. Ships the integrated Code + redline (no marks — no wording

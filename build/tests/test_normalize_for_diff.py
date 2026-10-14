@@ -279,14 +279,24 @@ def test_changed_line_count_still_sees_a_real_amendment():
     assert nz.changed_line_count(old, new, amap=AMAP) == 2
 
 
-def test_breakdown_and_render_paths_agree_on_the_real_corpus():
+def test_breakdown_and_render_paths_agree_on_the_real_corpus(monkeypatch):
     """The agreement the reviewer asked to have asserted rather than assumed:
     across every mappable baseline->current article pair, the comparison-only
-    path (normalize() both sides, with rewrap) and the render path
-    (changed_line_count) must report the same number PER ARTICLE. If a future
-    normaliser rule breaks that, the operator's number and the packet's marks
-    have parted company and one of them is lying."""
+    path (normalize() both sides) and the render path (changed_line_count)
+    must report the same number PER ARTICLE. If a future normaliser rule breaks
+    that, the operator's number and the packet's marks have parted company and
+    one of them is lying.
+
+    Rewrap is held out of the comparison (2026-10-14, Right to Farm Plan B).
+    The operator's breakdown and the packet both count through
+    changed_line_count, which never rewraps; rewrap merges an indented
+    sub-clause into its parent line, so any new text with sub-items (Article 7
+    Section 3.e.5's a-c) is counted once rewrapped and four times as marked.
+    The two used to agree only by coincidence of the corpus. What this test
+    guards is that every OTHER normaliser treats both paths alike."""
     import subprocess
+
+    monkeypatch.setattr(nz, "_rewrap", lambda text: text)
 
     REPO = BUILD.parent
     for cur, base in sorted(AMAP.files.items()):

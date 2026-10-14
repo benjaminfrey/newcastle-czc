@@ -179,7 +179,8 @@ def test_added_removed_and_glyph_changes_are_itemised():
     assert any("`ex` removed" in s for s in utc.legend_delta(old, gone))
     assert any("`ex` added" in s for s in utc.legend_delta(gone, old))
     glyph = utc.legend_delta(old, utc.parse_legend(_typ().replace('u: "●"', 'u: "○"', 1)))
-    assert any("symbol for `u` changed" in s and "●" in s and "○" in s for s in glyph)
+    # Named in words, never printed (ruling 11; changed 2026-10-14, v1.2-draft proof).
+    assert any("symbol for `u` changed: black circle → white circle" in s for s in glyph)
 
 
 def test_an_unitemisable_change_falls_back_to_the_block():
@@ -303,7 +304,7 @@ def test_an_unitemisable_legend_change_shows_both_texts(tree, tmp_path):
     assert legend.count("```") == 4
     assert "[ CEO ]" in legend.split("After:")[1]
     assert "[ CEO ]" not in legend.split("After:")[0]
-    assert not any(g in out.read_text() for g in "●❶❷✪")           # ruling 11: no glyph, anywhere
+    assert not any(g in out.read_text() for g in "●❶❷✪○")          # ruling 11: no glyph, anywhere
     assert '#let glyphs' not in legend and 'status("' not in legend
 
 
@@ -549,3 +550,68 @@ def test_a_manifest_without_article_2_is_a_refusal_not_a_keyerror():
     for doc in ({}, {"2": {}}, {"2": {"data_sources": "nope"}}, {"2": {"data_sources": []}}):
         with pytest.raises(czc_diff.Refusal):
             utc.build(old, new, doc=doc)
+
+
+# --- The fifth status, br / ○ "No Permit Required" (Right to Farm Plan A) ------
+
+def _typ_with_br() -> str:
+    """The v1.0 legend with Right to Farm's fifth row and Note (decisions R1-R4)."""
+    t = _typ()
+    t = t.replace('ex: "✪")', 'ex: "✪", br: "○")', 1)
+    ex_row = 'status("ex"), [Expanded Use Permit Required], [Planning Board],'
+    assert ex_row in t
+    t = t.replace(ex_row, ex_row + '\n        status("br"), [No Permit Required], [—],', 1)
+    old_note = ('Note: Uses without #status("u"), #status("rc"), #status("sp"), or '
+                '#status("ex") are not allowed in this District]')
+    assert old_note in t
+    return t.replace(old_note,
+                     'Note: Uses without #status("u"), #status("rc"), #status("sp"), '
+                     '#status("ex"), or #status("br") are not allowed in this District. '
+                     'Uses marked #status("br") require no permit but must meet the '
+                     'standards of Article 7 Section 3.]', 1)
+
+
+def test_the_br_row_is_read_and_both_readers_agree():
+    leg = _agree(_typ_with_br())
+    assert leg["rows"]["br"] == ("No Permit Required", "—")
+    assert leg["glyphs"]["br"] == "○"
+
+
+def test_br_is_worded_no_permit_required():
+    leg = utc.parse_legend(_typ_with_br())
+    assert utc.status_words("br", leg) == "No Permit Required"
+    assert utc.status_words("u", leg) == "Use Permit (CEO)"          # unchanged
+
+
+@pytest.mark.parametrize("combo", ["br u", "u br", "rc br"])
+def test_br_combined_with_another_code_is_refused(combo):
+    leg = utc.parse_legend(_typ_with_br())
+    with pytest.raises(utc.LegendError, match="br"):
+        utc.status_words(combo, leg)
+
+
+def test_adding_br_is_reported_as_a_legend_change():
+    delta = utc.legend_delta(utc.parse_legend(_typ()), utc.parse_legend(_typ_with_br()))
+    assert "Status code `br` added: No Permit Required (—)." in delta
+    assert any(s.startswith("The legend's note now reads") for s in delta)
+
+
+# --- Found in the v1.2-draft proof release (Right to Farm Plan B, Task 7) -------
+
+def test_a_new_symbol_is_named_in_words_not_printed():
+    """Ruling 11: no glyph anywhere. Adding br printed "none → ○"."""
+    delta = utc.legend_delta(utc.parse_legend(_typ()), utc.parse_legend(_typ_with_br()))
+    line = next(s for s in delta if s.startswith("The symbol for `br`"))
+    assert not any(g in line for g in "●❶❷✪○")
+    assert "white circle" in line
+
+
+def test_the_new_side_is_labelled_by_version_not_by_folder(tmp_path):
+    """The release driver passes a source folder; the document's subtitle
+    printed that folder's absolute path."""
+    out = tmp_path / "u.md"
+    r = _run("v1.0", str(out), "--new-dir", str(REPO / "source"), "--new-label", "v9.9-draft")
+    assert r.returncode == 0, r.stderr
+    text = out.read_text()
+    assert "v1.0 → v9.9-draft**" in text
+    assert str(REPO) not in text
