@@ -1458,3 +1458,19 @@ refuses any `br` cell, naming this entry, and refuses `br` combined with another
 is required, or no row); the sentence (e.g. "A Farmstand use in the D1-Rural District is permitted
 without a permit."); and what `app/reviews.py:required_reviews` returns for `permit` and
 `permitting_authority`.
+
+**2026-10-14 — the app suite once Right to Farm Plan B's district data lands.** Run against the
+working tree (the binding ruleset is still v1.0, so the app itself is unaffected). Failing, by
+design, and **not re-pinned** (release-machinery spec P17):
+
+- `test_use_matrix.py` — 15 tests error in the `matrix` fixture: `build_use_matrix` refuses the
+  working tree with "expected 63 uses after the §4.3.2 merge" (Right to Farm adds six AGRICULTURAL
+  rows, 63 → 69), and would refuse the `br` cells next.
+- `test_parse_definitions.py::test_definitions_count_is_272` — Article 9 changed (16 terms added,
+  four retired, two merged).
+- `test_parse_definitions.py::test_uses_map_spot_check_residence` — Article 7 §3 Right to Farm was
+  inserted, so RESIDENCE moved from Section 53 to 54.
+
+Owed to the app plan, which must (a) model `br`, (b) accept 69 uses, and (c) decide whether these
+tests read the binding ruleset's source (v1.0) or the working tree. (`test_status_br.py` was moved
+onto v1.0's data in the same change, so it still tests the `br` refusal itself.)

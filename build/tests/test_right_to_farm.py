@@ -140,3 +140,81 @@ def test_the_five_variant_trigger_phrases_are_resolved():
 def test_article_1_permit_rule_carves_out_home_agriculture():
     a1 = " ".join((SRC / "article-01-general.md").read_text(encoding="utf-8").split())
     assert "except as provided in Article 7 Section 3" in a1
+
+
+NAME_TO_LABEL = {"RURAL": "D1", "NEIGHBORHOOD RESIDENTIAL": "D2", "NEIGHBORHOOD BUSINESS": "D3",
+                 "VILLAGE RESIDENTIAL": "D4", "VILLAGE BUSINESS": "D5", "TOWN CENTER": "D6",
+                 "HISTORIC": "SD-Historic", "CONSERVATION": "SD-Conservation",
+                 "HIGHWAY COMMERCIAL": "SD-Highway Commercial", "RURAL HIGHWAY": "SD-Rural Highway",
+                 "CAMPUS": "SD-Campus", "MARINE": "SD-Marine", "FABRICATION": "SD-Fabrication"}
+
+
+def _statuses(data: list) -> dict[str, dict[str, str]]:
+    out = {}
+    for d in data:
+        cells = {}
+        for col in ("use_col1", "use_col2"):
+            for cat in d[col]:
+                for use, status in cat["entries"]:
+                    cells[use] = status
+        out[NAME_TO_LABEL[d["name"]]] = cells
+    return out
+
+
+def _data(ref: str | None = None) -> list:
+    if ref is None:
+        return json.loads((SRC / "article-02-data.json").read_text(encoding="utf-8"))
+    return json.loads(subprocess.run(["git", "-C", str(REPO), "show", f"{ref}:source/article-02-data.json"],
+                                     capture_output=True, text=True, check=True).stdout)
+
+
+def test_tier_table_matches_the_district_tables():
+    st, tiers = _statuses(_data()), tier_table()
+    for tier in TIERS:
+        row = f"Home Agriculture: {tier}"
+        for district in DISTRICT_ORDER:
+            want = "br" if district in tiers[tier] else ""
+            assert st[district][row] == want, f"{district} {row}"
+
+
+def test_farmstand_needs_no_permit_anywhere():
+    st = _statuses(_data())
+    assert {st[d]["Farmstand"] for d in DISTRICT_ORDER} == {"br"}
+
+
+def test_unmoved_statuses_match_v1_0():
+    now, then = _statuses(_data()), _statuses(_data("v1.0"))
+    for use in ("Commercial Agriculture", "Farm/Vendor Market", "Stables/Riding Center"):
+        for d in DISTRICT_ORDER:
+            assert now[d][use] == then[d][use], f"{d} {use}"
+
+
+def test_only_the_six_new_rows_were_added():
+    now, then = _statuses(_data()), _statuses(_data("v1.0"))
+    added = set(now["D1"]) - set(then["D1"])
+    assert added == {"Farmstand"} | {f"Home Agriculture: {t}" for t in TIERS}
+    assert all(set(now[d]) == set(now["D1"]) for d in DISTRICT_ORDER)
+
+
+AG_COL = {"D1": ("CEO", "-"), "D2": ("CEO", "5,000 sf"), "D3": ("CEO", "3,000 sf"),
+          "D4": ("CEO", "2,000 sf"), "D5": ("CEO", "2,000 sf"), "SD-Historic": ("CEO", "2,000 sf"),
+          "SD-Highway Commercial": ("CEO", "2,000 sf"), "SD-Rural Highway": ("CEO", "-"),
+          "SD-Fabrication": ("CEO", "2,000 sf")}
+
+
+def test_agricultural_building_columns():
+    for d in _data():
+        label = NAME_TO_LABEL[d["name"]]
+        m = d.get("matrix")
+        cols = m["cols"] if m else []
+        if label in AG_COL:
+            assert "Agricultural Building" in cols, label
+            i = cols.index("Agricultural Building") + 1
+            rows = {r[0]: r[i] for r in m["rows"]}
+            authority, floor = AG_COL[label]
+            assert rows["Permitting Authority"] == authority and rows["Building Floor Area"] == floor, label
+            if floor != "-":
+                assert (rows["Total Stories"], rows["First Floor Height"], rows["Upper Floor Height"]) == ("2", "16 ft", "10 ft"), label
+        else:
+            assert "Agricultural Building" not in cols, label     # D6 (R14); no-matrix SDs (R15)
+        assert "Agricultural Use" not in cols, label

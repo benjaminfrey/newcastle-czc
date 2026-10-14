@@ -84,7 +84,12 @@ def test_a_br_row_with_the_wrong_symbol_is_refused():
 
 
 def _data_with(code: str, tmp_path: Path) -> tuple[Path, Path]:
-    districts = json.loads(SRC.read_text(encoding="utf-8"))
+    # v1.0's district data (the binding ruleset's source), not the working
+    # tree: Right to Farm adds six use rows, and the builder's 63-use check
+    # would then fire before the br check these tests are about (D-0035).
+    districts = json.loads(subprocess.run(
+        ["git", "-C", str(REPO_ROOT), "show", "v1.0:source/article-02-data.json"],
+        capture_output=True, text=True, check=True).stdout)
     districts[0]["use_col1"][0]["entries"][0][1] = code
     data = tmp_path / "article-02-data.json"
     data.write_text(json.dumps(districts), encoding="utf-8")
