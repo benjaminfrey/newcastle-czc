@@ -45,3 +45,32 @@ Its sign-in emails land in a separate Mailpit at http://192.168.1.6:8026, which 
 the `MAILPIT_UI_AUTH` line in `~/newcastle-czc/portal/deploy/.env` on the VM. Browsers warn about
 the certificate once per device (Caddy signs it locally); `portal/deploy/README.md` says how to
 trust it instead.
+
+## Property data (GIS)
+
+The "Where is it?" page looks properties up in four layers loaded into PostGIS by
+`python -m portal_api.gis` (run from `portal/api`, or inside the API container). Each load records
+its source and date and replaces the previous one:
+
+    .venv/bin/python -m portal_api.gis parcels --geolibrary
+    .venv/bin/python -m portal_api.gis addresses --e911
+    .venv/bin/python -m portal_api.gis districts --file ../../data/street-types/districts.geojson \
+        --ruleset ../../build/permit-review/rulesets/adopted-v1.0/districts.json --source-date 2026-06-01
+    .venv/bin/python -m portal_api.gis streets --inventory ../../source/exhibits/street-types/inventory.json \
+        --types ../../source/exhibits/cross-sections/types.json --source-date 2026-09-14
+
+**Parcels are the weak point.** Maine GeoLibrary's Newcastle parcels all date from April 1, 2012.
+Current lot lines are in the Town's AxisGIS (CAI), which is not open for download; when the
+assessor or CAI supplies an export, load it with
+
+    .venv/bin/python -m portal_api.gis parcels --file PATH --map-lot-field FIELD \
+        --location-field FIELD --source "Town tax maps (CAI export)" --source-date YYYY-MM-DD
+
+**The stale-parcel guard.** By default the API refuses parcel data more than three years old
+(`PORTAL_PARCEL_MAX_AGE_DAYS`, default 1095): lookup answers 503 and the page asks applicants to
+enter their map and lot themselves. Only development sets `PORTAL_ALLOW_STALE_PARCELS=true` — the
+dev API process and the LAN stack (`compose.lan.yml`). The base `compose.yml` never does.
+
+Districts come from a tracing of the District Map and are approximate; only districts in the
+adopted ruleset are named (the trace's SD-Civic area is not in v1.0, so it shows as "staff will
+confirm"). The basemap is self-hosted: see `portal/basemap/README.md`.

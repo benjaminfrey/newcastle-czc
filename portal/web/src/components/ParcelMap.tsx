@@ -1,11 +1,15 @@
 import { layers, namedFlavor } from "@protomaps/basemaps";
-import { addProtocol, LngLatBounds, Map as MlMap, NavigationControl, type GeoJSONSource, type MapMouseEvent } from "maplibre-gl";
+import { addProtocol, LngLatBounds, Map as MlMap, NavigationControl, setWorkerUrl, type GeoJSONSource, type MapMouseEvent } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
 import { useEffect, useRef } from "react";
 import type { Facts } from "../api";
 
 let protocolAdded = false;
+
+// MapLibre finds its worker next to its own script, which bundling moves. Point it at
+// the worker explicitly; Vite serves this file in dev and copies it into the build.
+setWorkerUrl(new URL("../../node_modules/maplibre-gl/dist/maplibre-gl-worker.mjs", import.meta.url).href);
 const NEWCASTLE: [number, number, number, number] = [-69.66, 43.96, -69.49, 44.13];
 
 type Props = {

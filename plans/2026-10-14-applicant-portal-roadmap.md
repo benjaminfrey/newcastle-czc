@@ -20,6 +20,10 @@ chair's approval.
 | M6 | **Submit and staff inbox** | Sign and submit; owner co-sign; frozen `submission` + revisions; staff role with authenticator-app second factor; inbox (view, download, completeness, fee paid, "please add…"); admin settings incl. standards-check modes; email notifications with retry; "needs attention" marker | End-to-end: applicant submits, staff marks complete and fee paid, requests more info, applicant answers with a revision; no-verdict guard green; applicant A cannot read B |
 | M7 | **Hardening and pilot** | Off-VM nightly backups + restore drill; security review; plain-language review; accessibility pass; pilot with the CEO on past applications | Restore drill recorded; review findings ruled on; pilot notes written up for the chair |
 
+**Status (2026-10-15):** M1 merged (#12). M2 built on branch `portal-m2-property`. **Open from
+M2:** current parcels from the assessor/CAI (GeoLibrary's Newcastle layer is from 2012; production
+refuses it), and whether SD-Civic (on the district trace, not in adopted v1.0) belongs.
+
 **Open decisions that gate milestones** (spec §9): O1 fee schedule (M3 shows the "set by the Town's
 fee schedule" fallback until supplied); O2 FOAA wording (M6 submit page); O8 staff list (M6);
 O7 web address (M1's VM can use an interim host name); O9 owner authorization (M6).
