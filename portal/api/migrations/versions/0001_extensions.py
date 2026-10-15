@@ -15,4 +15,7 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.execute("DROP EXTENSION IF EXISTS postgis")
+    # Deliberately a no-op. The PostGIS image installs postgis_topology and
+    # postgis_tiger_geocoder on top of postgis, and dropping postgis with CASCADE
+    # would also drop every geometry column. Extensions outlive this migration.
+    pass

@@ -42,6 +42,17 @@ def engine():
     eng.dispose()
 
 
+@pytest.fixture(autouse=True)
+def clean(request):
+    yield
+    if "engine" in request.fixturenames:
+        eng = request.getfixturevalue("engine")
+        with eng.begin() as conn:
+            conn.execute(text(
+                "TRUNCATE applicant, signin_token, session, event RESTART IDENTITY CASCADE"
+            ))
+
+
 @pytest.fixture
 def settings():
     return Settings(
