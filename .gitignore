@@ -60,3 +60,9 @@ build/permit-review/.venv/
 # from design-canvas artboards, measured geometry and pptxgenjs), not part of
 # the Code record; the handout markdown + PDF in memos/ stay tracked.
 memos/*.pptx
+
+# Applicant Portal
+portal/api/.venv/
+portal/web/node_modules/
+portal/web/dist/
+portal/deploy/.env
