@@ -50,6 +50,7 @@ compliant, meets or fails. Only a reviewing authority decides, and only in Phase
 | P10 | Architecture | React + TypeScript frontend, FastAPI backend, Postgres/PostGIS, S3-compatible file storage, Docker Compose. |
 | P11 | UI components | **HeroUI** (React, built on Tailwind CSS and React Aria). Version pinned in the plan. |
 | P12 | Location | A new top-level `portal/` folder in this repository. |
+| P13 | Civic district (added 2026-10-15) | SD-Civic (Art. 2 §5: municipally owned land, "not subject to the standards of this Ordinance") is an adopted district and is named as such. **Chair's ruling:** only the Town builds on SD-Civic land, on the Select Board's recommendation and a Town Meeting vote; the Town does not follow the CZC there and does not apply for permits. The portal tells applicants so; no application is made for Civic land. |
 
 ## 3. Architecture
 

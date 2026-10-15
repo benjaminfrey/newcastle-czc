@@ -112,7 +112,16 @@ def address_rows(features: list[Feature]) -> list[dict]:
     return rows
 
 
+# Article 2 §5 adopts the Civic District: municipally owned land, "not subject to the
+# standards of this Ordinance". It has no district page, so the ruleset's districts.json
+# (built from the 13 district pages) does not list it; it is recognised here instead.
+CIVIC_CODE = "SD-CIVIC"
+CIVIC_NAME = "Civic district (Town-owned land)"
+
+
 def _district_name(trace_code: str, ruleset: list[dict]) -> str | None:
+    if trace_code.upper() == CIVIC_CODE:
+        return CIVIC_NAME
     if trace_code.upper().startswith("SD-"):
         want = trace_code[3:].upper()
         for d in ruleset:

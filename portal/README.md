@@ -82,6 +82,8 @@ dev API command above and the LAN stack (`compose.lan.yml`). The base `compose.y
 live in the API process's memory, which is right for the one process the portal runs. The
 production API writes no access log, so searches are not recorded; errors still are.
 
-Districts come from a tracing of the District Map and are approximate; only districts in the
-adopted ruleset are named (the trace's SD-Civic area is not in v1.0, so it shows as "staff will
-confirm"). The basemap is self-hosted: see `portal/basemap/README.md`.
+Districts come from a tracing of the District Map and are approximate. They are named from the
+adopted ruleset's district pages, plus the Civic district (SD-Civic, Article 2 §5), which has no
+district page; an area the adopted Code does not have would show as "staff will confirm". On a
+Civic lot the page explains that only the Town builds there (spec P13). The basemap is
+self-hosted: see `portal/basemap/README.md`.

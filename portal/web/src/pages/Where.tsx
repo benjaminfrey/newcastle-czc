@@ -164,6 +164,8 @@ export default function Where() {
   }
 
   const district_ = facts ? districtLine(facts) : null;
+  // Article 2 §5; the chair's ruling of 2026-10-15 on who builds there and how.
+  const civic = facts?.districts.find((d) => d.code === "SD-Civic");
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-xl font-semibold">Where is your project?</h1>
@@ -199,6 +201,13 @@ export default function Where() {
             <p className="font-semibold">{mapLotLabel(facts.map_lot)}</p>
             <p>{district_.text}</p>
             {district_.staffWillConfirm && <p>Part of this lot is in an area staff will confirm.</p>}
+            {civic && (
+              <p>
+                {civic.share >= 0.99 ? "This lot is" : "Part of this lot is"} Town-owned land in the Civic district.
+                Only the Town builds on Civic land: Town Meeting votes on it, on the Select Board's
+                recommendation, and no permit application is made through this site.
+              </p>
+            )}
             <p>About {facts.acres} acres (measured from the map).</p>
             {facts.streets.map((s) => (
               <p key={`${s.name}-${s.type}`}>

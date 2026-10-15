@@ -36,6 +36,9 @@ Protomaps basemap (no third-party map requests) with MapLibre, plus our parcel t
   EPSG:26919, 14 areas). Every district answer says so and that the CEO confirms it.
 - **Only adopted districts are named.** The trace has 14 areas; the adopted ruleset
   (`build/permit-review/rulesets/adopted-v1.0/districts.json`) has 13 — **SD-Civic is not in it**.
+  > **Correction, 2026-10-15:** SD-Civic *is* adopted (Article 2 §5, "Civic District"); it is
+  > missing from `districts.json` only because it has no district page. The portal now names it
+  > (spec P13). The fixture and tests below were updated accordingly.
   An area not in the pinned ruleset is stored with `in_ruleset = false` and shown as "staff will
   confirm the district", never by its draft name.
 - **Street Types come from the adopted Exhibit 3.1** (`source/exhibits/street-types/inventory.json`,

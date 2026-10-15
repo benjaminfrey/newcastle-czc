@@ -97,10 +97,10 @@ def test_facts_lists_every_district_by_share(open_client):
     assert f["districts"][0]["name"] == "Neighborhood Residential (D2)"
 
 
-def test_facts_never_name_a_district_outside_the_ruleset(open_client):
+def test_facts_name_the_civic_district(open_client):
     f = open_client.get(f"/api/property/{_id(open_client, '4-38')}").json()
     civic = next(d for d in f["districts"] if d["code"] == "SD-Civic")
-    assert civic["in_ruleset"] is False and civic["name"] is None
+    assert civic["in_ruleset"] is True and civic["name"] == "Civic district (Town-owned land)"
 
 
 def test_facts_give_area_street_frontage_and_dates(open_client):
@@ -121,7 +121,8 @@ def test_unknown_parcel_is_404(open_client):
 
 def test_districts_list_only_adopted_ones(open_client):
     assert open_client.get("/api/property/districts").json() == [
-        {"code": "D1", "name": "Rural (D1)"}, {"code": "D2", "name": "Neighborhood Residential (D2)"}]
+        {"code": "D1", "name": "Rural (D1)"}, {"code": "D2", "name": "Neighborhood Residential (D2)"},
+        {"code": "SD-Civic", "name": "Civic district (Town-owned land)"}]
 
 
 def test_stale_parcels_are_refused_by_default(engine, settings, outbox, layers):

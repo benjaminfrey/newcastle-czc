@@ -45,7 +45,13 @@ def test_geolibrary_source_date_is_the_latest_update():
 def test_districts_are_named_only_from_the_ruleset():
     rows = {r["code"]: r for r in district_rows(read_features(str(FIX / "districts_26919.geojson")), RULESET)}
     assert rows["D2"]["name"] == "Neighborhood Residential (D2)" and rows["D2"]["in_ruleset"]
-    assert rows["SD-Civic"]["name"] is None and rows["SD-Civic"]["in_ruleset"] is False
+    # SD-Civic has no district page, but Article 2 §5 adopts it ("Civic District").
+    assert rows["SD-Civic"]["name"] == "Civic district (Town-owned land)" and rows["SD-Civic"]["in_ruleset"]
+
+
+def test_an_area_the_code_does_not_have_is_left_unnamed():
+    (row,) = district_rows([Feature({"district": "SD-Shoreland"}, None, 26919)], RULESET)
+    assert row["name"] is None and row["in_ruleset"] is False
 
 
 def test_special_districts_match_by_name():

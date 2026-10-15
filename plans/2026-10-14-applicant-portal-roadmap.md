@@ -20,8 +20,9 @@ chair's approval.
 | M6 | **Submit and staff inbox** | Sign and submit; owner co-sign; frozen `submission` + revisions; staff role with authenticator-app second factor; inbox (view, download, completeness, fee paid, "please add…"); admin settings incl. standards-check modes; email notifications with retry; "needs attention" marker | End-to-end: applicant submits, staff marks complete and fee paid, requests more info, applicant answers with a revision; no-verdict guard green; applicant A cannot read B |
 | M7 | **Hardening and pilot** | Off-VM nightly backups + restore drill; security review; plain-language review; accessibility pass; pilot with the CEO on past applications | Restore drill recorded; review findings ruled on; pilot notes written up for the chair |
 
-**Status (2026-10-15):** M1 merged (#12). M2 built on branch `portal-m2-property`. **Open from
-M2:** whether SD-Civic (on the district trace, not in adopted v1.0) belongs. Current parcels now come
+**Status (2026-10-15):** M1 merged (#12). M2 built on branch `portal-m2-property`. **From M2:**
+SD-Civic is adopted (Art. 2 §5) — an earlier note here wrongly said it was not; the chair ruled
+on 2026-10-15 that only the Town builds on Civic land (spec P13). Current parcels now come
 from the Town's AxisGIS (`parcels --axisgis`, fetch date recorded, chair's choice 2026-10-15); GeoLibrary's
 Newcastle layer is from 2012 and production refuses it.
 
@@ -75,8 +76,9 @@ were deferred:
   for a segment that leaves and returns to the lot (seen: 65 ft of Route 1 on 002-038).
 - The map/lot pattern matches "12 Route 1" (lists "Map 12, Lot 1" first) and misses
   "Map 4 Lot 36".
-- With a mostly-SD-Civic lot the page names the smaller adopted district while saving no
-  district; "(most of it)" shows even under 50 %.
+- With a lot mostly in an area the Code does not have, the page names the smaller adopted
+  district while saving no district; "(most of it)" shows even under 50 %. (SD-Civic, once
+  thought to be such an area, is adopted — see P13.)
 - The Where page keeps the previous lot's card after a new search or a failed tap; overlapping
   responses are not sequenced; a double-tap zoom fires two picks.
 - Any 5xx sends the person to manual entry with no way back to lookup; the loader does not run
