@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Query, Request
+from fastapi import APIRouter, Path, Query, Request, Response
 from fastapi.responses import JSONResponse
-from sqlalchemy import Connection
+from sqlalchemy import Connection, text
 
 from portal_api import property as prop
 from portal_api.db import transaction
@@ -47,3 +47,23 @@ def facts(parcel_id: int, request: Request, conn: Connection = transaction):
         return _unavailable()
     f = prop.facts(conn, parcel_id, imp)
     return f if f else JSONResponse({"detail": "no_such_parcel"}, status_code=404)
+
+
+@router.get("/api/tiles/parcels/{z}/{x}/{y}.pbf")
+def parcel_tile(request: Request, z: int = Path(ge=0, le=22), x: int = Path(ge=0), y: int = Path(ge=0),
+                conn: Connection = transaction):
+    imp = _parcels(conn, request)
+    if imp is None:
+        return _unavailable()
+    if z < 12 or x >= 2 ** z or y >= 2 ** z:
+        return Response(status_code=204)
+    tile = conn.execute(text(
+        "WITH b AS (SELECT ST_TileEnvelope(:z, :x, :y) AS env),"
+        " t AS (SELECT p.id, p.map_lot, ST_AsMVTGeom(ST_Transform(p.geom, 3857), b.env) AS geom"
+        "  FROM parcel p, b WHERE p.import_id = :i AND p.geom && ST_Transform(b.env, 26919))"
+        " SELECT ST_AsMVT(t.*, 'parcels') FROM t WHERE t.geom IS NOT NULL"
+    ), {"z": z, "x": x, "y": y, "i": imp.id}).scalar()
+    if not tile:
+        return Response(status_code=204)
+    return Response(bytes(tile), media_type="application/vnd.mapbox-vector-tile",
+                    headers={"Cache-Control": "public, max-age=3600"})
