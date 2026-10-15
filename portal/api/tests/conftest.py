@@ -12,6 +12,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, text
 
 from portal_api.config import Settings
+from portal_api.mail import OutboxMailer
 from portal_api.main import create_app
 
 API_DIR = Path(__file__).resolve().parent.parent
@@ -63,6 +64,11 @@ def settings():
 
 
 @pytest.fixture
-def client(engine, settings):
-    with TestClient(create_app(settings)) as c:
+def outbox():
+    return OutboxMailer()
+
+
+@pytest.fixture
+def client(engine, settings, outbox):
+    with TestClient(create_app(settings, outbox)) as c:
         yield c
