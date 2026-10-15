@@ -1,0 +1,50 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "ADDRESS_NUMBER": 461,
+    "ST_FULLNAME": "Sheepscot Road",
+    "UNIT": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -69.579,
+     44.041
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "ADDRESS_NUMBER": 465,
+    "ST_FULLNAME": "Sheepscot Road",
+    "UNIT": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -69.577,
+     44.041
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "ADDRESS_NUMBER": 12,
+    "ST_FULLNAME": "Main Street",
+    "UNIT": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -69.58,
+     44.03
+    ]
+   }
+  }
+ ]
+}
