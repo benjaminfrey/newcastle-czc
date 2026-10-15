@@ -31,7 +31,7 @@ The LAN stack sets `PORTAL_ALLOW_STALE_PARCELS=true` (development only). Load th
 its database with the API image and the repo mounted read-only, e.g.
 
     sudo docker compose -f compose.yml -f compose.lan.yml --env-file .env run --rm -T \
-      -v $HOME/newcastle-czc:/repo:ro api python -m portal_api.gis parcels --geolibrary
+      -v $HOME/newcastle-czc:/repo:ro api python -m portal_api.gis parcels --axisgis
 
 (see `portal/README.md` for all four layers). Build the basemap (`portal/basemap/`) before
 `vm.sh lan`, since the web image copies it in.

@@ -21,8 +21,9 @@ chair's approval.
 | M7 | **Hardening and pilot** | Off-VM nightly backups + restore drill; security review; plain-language review; accessibility pass; pilot with the CEO on past applications | Restore drill recorded; review findings ruled on; pilot notes written up for the chair |
 
 **Status (2026-10-15):** M1 merged (#12). M2 built on branch `portal-m2-property`. **Open from
-M2:** current parcels from the assessor/CAI (GeoLibrary's Newcastle layer is from 2012; production
-refuses it), and whether SD-Civic (on the district trace, not in adopted v1.0) belongs.
+M2:** whether SD-Civic (on the district trace, not in adopted v1.0) belongs. Current parcels now come
+from the Town's AxisGIS (`parcels --axisgis`, fetch date recorded, chair's choice 2026-10-15); GeoLibrary's
+Newcastle layer is from 2012 and production refuses it.
 
 **Open decisions that gate milestones** (spec §9): O1 fee schedule (M3 shows the "set by the Town's
 fee schedule" fallback until supplied); O2 FOAA wording (M6 submit page); O8 staff list (M6);
