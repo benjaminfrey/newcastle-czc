@@ -1,9 +1,10 @@
 import { layers, namedFlavor } from "@protomaps/basemaps";
-import { addProtocol, LngLatBounds, Map as MlMap, NavigationControl, setWorkerUrl, type GeoJSONSource, type MapMouseEvent } from "maplibre-gl";
+import { addProtocol, Map as MlMap, NavigationControl, setWorkerUrl, type MapMouseEvent } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
 import { useEffect, useRef } from "react";
 import type { Facts } from "../api";
+import { showSelection } from "./mapSelection";
 
 let protocolAdded = false;
 
@@ -65,20 +66,7 @@ export default function ParcelMap({ selected, focus, onPick }: Props) {
   }, []);
 
   useEffect(() => {
-    const m = map.current;
-    if (!m) return;
-    const apply = () => {
-      const src = m.getSource("selected") as GeoJSONSource | undefined;
-      src?.setData(selected ? { type: "Feature", properties: {}, geometry: selected }
-                            : { type: "FeatureCollection", features: [] });
-      if (selected) {
-        const b = new LngLatBounds();
-        for (const poly of selected.coordinates) for (const ring of poly) for (const c of ring) b.extend([c[0], c[1]]);
-        m.fitBounds(b, { padding: 40, maxZoom: 18 });
-      }
-    };
-    if (m.isStyleLoaded()) apply();
-    else m.once("load", apply);
+    if (map.current) showSelection(map.current, selected);
   }, [selected]);
 
   useEffect(() => {

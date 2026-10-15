@@ -33,6 +33,8 @@ function districtLine(f: Facts): { text: string; staffWillConfirm: boolean } {
 
 type Mode = "lookup" | "manual" | "saved";
 
+const BUSY = "You've looked up a lot of places in the last minute. Please wait a minute and try again.";
+
 export default function Where() {
   const [mode, setMode] = useState<Mode>("lookup");
   const [query, setQuery] = useState("");
@@ -59,6 +61,7 @@ export default function Where() {
   async function showParcel(id: number) {
     const f = await getProperty(id);
     if (f === "unavailable") return goManual(true);
+    if (f === "busy") return setMessage(BUSY);
     if (!f) return setMessage("We couldn't load that lot. Try another search, or tap your lot on the map.");
     setMessage(null);
     setDisputing(false);
@@ -70,6 +73,7 @@ export default function Where() {
     if (query.trim().length < 2) return;
     const res = await searchProperty(query.trim());
     if (res === "unavailable") return goManual(true);
+    if (res === "busy") return setMessage(BUSY);
     setHits(res);
     setMessage(res.length ? null : "We couldn't find that. Try just the house number and street, or your map and lot.");
   }
@@ -84,6 +88,7 @@ export default function Where() {
   async function onPick(lon: number, lat: number) {
     const id = await parcelAt(lon, lat);
     if (id === "unavailable") return goManual(true);
+    if (id === "busy") return setMessage(BUSY);
     if (id === null) return setMessage("There's no lot at that spot. Try tapping inside your lot's lines.");
     return showParcel(id);
   }

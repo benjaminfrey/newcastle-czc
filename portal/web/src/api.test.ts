@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { getMe, requestLink, verifyToken } from "./api";
+import { getMe, getProperty, parcelAt, requestLink, searchProperty, verifyToken } from "./api";
 
 const respond = (status: number, body: unknown = {}) =>
   vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify(body), { status }));
@@ -31,5 +31,16 @@ describe("api", () => {
     vi.restoreAllMocks();
     offline();
     expect(await getMe()).toBe("unavailable");
+  });
+
+  it("property lookups report a rate limit as busy", async () => {
+    respond(429, { detail: "too_many_requests" });
+    expect(await searchProperty("461 Sheepscot")).toBe("busy");
+    vi.restoreAllMocks();
+    respond(429, { detail: "too_many_requests" });
+    expect(await parcelAt(-69.5, 44.0)).toBe("busy");
+    vi.restoreAllMocks();
+    respond(429, { detail: "too_many_requests" });
+    expect(await getProperty(1)).toBe("busy");
   });
 });

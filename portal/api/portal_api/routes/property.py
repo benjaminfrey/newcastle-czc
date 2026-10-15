@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Path, Query, Request, Response
+from fastapi import APIRouter, Depends, Path, Query, Request, Response
 from fastapi.responses import JSONResponse
 from sqlalchemy import Connection, text
 
 from portal_api import property as prop
 from portal_api.db import transaction
+from portal_api.ratelimit import lookup_limit, tile_limit
 
 router = APIRouter()
 
@@ -19,13 +20,13 @@ def _parcels(conn, request):
         return None
 
 
-@router.get("/api/property/search")
+@router.get("/api/property/search", dependencies=[Depends(lookup_limit)])
 def search(request: Request, q: str = Query(min_length=2, max_length=100), conn: Connection = transaction):
     imp = _parcels(conn, request)
     return _unavailable() if imp is None else prop.search(conn, q, imp.id)
 
 
-@router.get("/api/property/at")
+@router.get("/api/property/at", dependencies=[Depends(lookup_limit)])
 def at(request: Request, lon: float = Query(ge=-180, le=180), lat: float = Query(ge=-90, le=90),
        conn: Connection = transaction):
     imp = _parcels(conn, request)
@@ -40,7 +41,7 @@ def districts(conn: Connection = transaction):
     return prop.adopted_districts(conn)
 
 
-@router.get("/api/property/{parcel_id}")
+@router.get("/api/property/{parcel_id}", dependencies=[Depends(lookup_limit)])
 def facts(parcel_id: int, request: Request, conn: Connection = transaction):
     imp = _parcels(conn, request)
     if imp is None:
@@ -49,7 +50,7 @@ def facts(parcel_id: int, request: Request, conn: Connection = transaction):
     return f if f else JSONResponse({"detail": "no_such_parcel"}, status_code=404)
 
 
-@router.get("/api/tiles/parcels/{z}/{x}/{y}.pbf")
+@router.get("/api/tiles/parcels/{z}/{x}/{y}.pbf", dependencies=[Depends(tile_limit)])
 def parcel_tile(request: Request, z: int = Path(ge=0, le=22), x: int = Path(ge=0), y: int = Path(ge=0),
                 conn: Connection = transaction):
     imp = _parcels(conn, request)

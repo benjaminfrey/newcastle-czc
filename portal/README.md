@@ -22,7 +22,7 @@ API, every time:
 
     portal/vm.sh run 'cd portal/api && .venv/bin/pytest'
     portal/vm.sh run 'cd portal/api && .venv/bin/python -m alembic upgrade head'
-    portal/vm.sh run 'cd portal/api && PORTAL_COOKIE_SECURE=false .venv/bin/uvicorn portal_api.main:create_app --factory --port 8000'
+    portal/vm.sh run 'cd portal/api && PORTAL_COOKIE_SECURE=false PORTAL_ALLOW_STALE_PARCELS=true .venv/bin/uvicorn portal_api.main:create_app --factory --port 8000'
 
 Web app:
 
@@ -69,7 +69,12 @@ assessor or CAI supplies an export, load it with
 **The stale-parcel guard.** By default the API refuses parcel data more than three years old
 (`PORTAL_PARCEL_MAX_AGE_DAYS`, default 1095): lookup answers 503 and the page asks applicants to
 enter their map and lot themselves. Only development sets `PORTAL_ALLOW_STALE_PARCELS=true` — the
-dev API process and the LAN stack (`compose.lan.yml`). The base `compose.yml` never does.
+dev API command above and the LAN stack (`compose.lan.yml`). The base `compose.yml` never does.
+
+**Lookup limits.** Search, point lookup and facts allow 60 requests a minute per address
+(`PORTAL_LOOKUP_LIMIT_PER_MINUTE`); map tiles 1,200 (`PORTAL_TILE_LIMIT_PER_MINUTE`). The limits
+live in the API process's memory, which is right for the one process the portal runs. The
+production API writes no access log, so searches are not recorded; errors still are.
 
 Districts come from a tracing of the District Map and are approximate; only districts in the
 adopted ruleset are named (the trace's SD-Civic area is not in v1.0, so it shows as "staff will

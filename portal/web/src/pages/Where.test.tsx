@@ -137,4 +137,12 @@ describe("Where", () => {
     expect(screen.getByLabelText("Map and lot")).toBeInTheDocument();
     expect(screen.getByRole("radio", { name: "I'm not sure" })).toBeInTheDocument();
   });
+
+  it("asks the person to wait when lookups are rate-limited", async () => {
+    vi.spyOn(api, "searchProperty").mockResolvedValue("busy");
+    renderPage();
+    await search("461 Sheepscot");
+    expect(await screen.findByText(/wait a minute/)).toBeInTheDocument();
+    expect(screen.queryByText(/couldn't find that/)).not.toBeInTheDocument();
+  });
 });

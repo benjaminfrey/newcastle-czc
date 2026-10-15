@@ -7,6 +7,11 @@ from datetime import date, timedelta
 from sqlalchemy import Connection, text
 
 _FT_PER_M = 3.28084
+# How far from a street's centreline a lot's front line may sit. State Highways have
+# wide rights-of-way: on the 2012 parcels many Route 1 lots sit 20-35 m out, while
+# town and private roads are within 15 m. Frontage is measured along the street, so
+# a longer reach does not inflate it.
+_REACH_SQL = "CASE WHEN s.ownership = 'State Highway' THEN 35 ELSE 20 END"
 _SQ_M_PER_ACRE = 4046.8564224
 
 
@@ -91,15 +96,15 @@ def facts(conn: Connection, parcel_id: int, parcels_imp) -> dict | None:
         "frontage_ft": int(5 * round(r.metres * _FT_PER_M / 5)),
     } for r in conn.execute(text(
         # Per segment: the stretch of street alongside the lot = the span, along the street,
-        # of the lot-boundary vertices within 20 m of it.
+        # of the lot-boundary vertices within reach of it.
         "WITH seg AS ("
         " SELECT s.name, s.type, s.type_name, s.ownership,"
         "  (max(ST_LineLocatePoint(l.line, d.geom)) - min(ST_LineLocatePoint(l.line, d.geom))) * ST_Length(l.line) AS metres"
         " FROM street_segment s"
         " JOIN parcel p ON p.id = :id"
         " CROSS JOIN LATERAL (SELECT ST_GeometryN(s.geom, 1) AS line) l"
-        " CROSS JOIN LATERAL ST_DumpPoints(ST_Intersection(ST_Boundary(p.geom), ST_Buffer(s.geom, 20))) d"
-        " WHERE s.import_id = :si AND ST_DWithin(s.geom, p.geom, 20)"
+        f" CROSS JOIN LATERAL ST_DumpPoints(ST_Intersection(ST_Boundary(p.geom), ST_Buffer(s.geom, {_REACH_SQL}))) d"
+        f" WHERE s.import_id = :si AND ST_DWithin(s.geom, p.geom, {_REACH_SQL})"
         " GROUP BY s.id, s.name, s.type, s.type_name, s.ownership, l.line)"
         " SELECT name, type, max(type_name) AS type_name, max(ownership) AS ownership, sum(metres) AS metres"
         " FROM seg GROUP BY name, type HAVING sum(metres) >= 3 ORDER BY metres DESC"

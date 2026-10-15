@@ -43,6 +43,8 @@ def geolibrary_source_date(features: list[Feature]) -> date:
 
 
 def parcel_rows(features: list[Feature], map_lot_field: str, location_field: str | None = None) -> list[dict]:
+    if features and map_lot_field not in features[0].attrs:
+        raise ValueError(f"the file has no {map_lot_field!r} field; its fields are {sorted(features[0].attrs)}")
     return [{"map_lot": str(f.attrs[map_lot_field]).strip(),
              "location": (str(f.attrs[location_field]).strip() or None) if location_field else None,
              "geom": f.geom, "srid": f.srid}

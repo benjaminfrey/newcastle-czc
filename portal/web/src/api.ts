@@ -60,21 +60,25 @@ export type Facts = {
 };
 export type Hit = { label: string; lon: number; lat: number; parcel_id: number | null };
 
-export async function searchProperty(q: string): Promise<Hit[] | "unavailable"> {
+// "busy": this address has made too many lookups in the last minute (HTTP 429).
+export async function searchProperty(q: string): Promise<Hit[] | "unavailable" | "busy"> {
   const r = await attempt(`/api/property/search?q=${encodeURIComponent(q)}`);
-  if (!r || r.status === 503 || r.status >= 500) return "unavailable";
+  if (!r || r.status >= 500) return "unavailable";
+  if (r.status === 429) return "busy";
   return r.ok ? ((await r.json()) as Hit[]) : [];
 }
 
-export async function parcelAt(lon: number, lat: number): Promise<number | null | "unavailable"> {
+export async function parcelAt(lon: number, lat: number): Promise<number | null | "unavailable" | "busy"> {
   const r = await attempt(`/api/property/at?lon=${lon}&lat=${lat}`);
   if (!r || r.status >= 500) return "unavailable";
+  if (r.status === 429) return "busy";
   return r.ok ? ((await r.json()) as { parcel_id: number }).parcel_id : null;
 }
 
-export async function getProperty(id: number): Promise<Facts | null | "unavailable"> {
+export async function getProperty(id: number): Promise<Facts | null | "unavailable" | "busy"> {
   const r = await attempt(`/api/property/${id}`);
   if (!r || r.status >= 500) return "unavailable";
+  if (r.status === 429) return "busy";
   return r.ok ? ((await r.json()) as Facts) : null;
 }
 

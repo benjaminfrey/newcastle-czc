@@ -63,6 +63,9 @@ _INSERT = {
 
 
 def load_layer(conn: Connection, *, layer: str, source: str, source_date: date, rows: list[dict]) -> int:
+    if not rows:
+        # An empty import would replace a working one and leave every lookup blank.
+        raise ValueError(f"no features to load for {layer}; the active import is unchanged")
     import_id = conn.execute(text(
         "INSERT INTO gis_import (layer, source, source_date) VALUES (:l, :s, :d) RETURNING id"
     ), {"l": layer, "s": source, "d": source_date}).scalar()
