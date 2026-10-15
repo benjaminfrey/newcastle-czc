@@ -52,16 +52,22 @@ The "Where is it?" page looks properties up in four layers loaded into PostGIS b
 `python -m portal_api.gis` (run from `portal/api`, or inside the API container). Each load records
 its source and date and replaces the previous one:
 
-    .venv/bin/python -m portal_api.gis parcels --geolibrary
+    .venv/bin/python -m portal_api.gis parcels --axisgis
     .venv/bin/python -m portal_api.gis addresses --e911
     .venv/bin/python -m portal_api.gis districts --file ../../data/street-types/districts.geojson \
         --ruleset ../../build/permit-review/rulesets/adopted-v1.0/districts.json --source-date 2026-06-01
     .venv/bin/python -m portal_api.gis streets --inventory ../../source/exhibits/street-types/inventory.json \
         --types ../../source/exhibits/cross-sections/types.json --source-date 2026-09-14
 
-**Parcels are the weak point.** Maine GeoLibrary's Newcastle parcels all date from April 1, 2012.
-Current lot lines are in the Town's AxisGIS (CAI), which is not open for download; when the
-assessor or CAI supplies an export, load it with
+**Parcels come from the Town's AxisGIS** (CAI's tax-map viewer, `axisgis.com/NewcastleME`), which
+the assessor keeps current. `--axisgis` reads the token the public viewer page gives every visitor
+and asks the "Parcel - Poly" layer for outlines and map/lot numbers only — never owner (CAMA) data.
+AxisGIS publishes no revision date, so the import records the fetch date (the chair's choice,
+2026-10-15); re-run it to refresh. Lots drawn as several pieces are merged into one per map/lot.
+On 2026-10-15: 1,571 pieces, 1,503 map/lots.
+
+Maine GeoLibrary (`--geolibrary`) also has Newcastle's parcels, but all are dated April 1, 2012; the
+stale-parcel guard refuses them in production. A file from the assessor or CAI loads with
 
     .venv/bin/python -m portal_api.gis parcels --file PATH --map-lot-field FIELD \
         --location-field FIELD --source "Town tax maps (CAI export)" --source-date YYYY-MM-DD

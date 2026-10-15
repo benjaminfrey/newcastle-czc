@@ -1,5 +1,6 @@
 """Load GIS layers for the property lookup.
 
+  python -m portal_api.gis parcels --axisgis [--slug NewcastleME]
   python -m portal_api.gis parcels --geolibrary
   python -m portal_api.gis parcels --file PATH --map-lot-field F [--location-field F] --source TEXT --source-date YYYY-MM-DD
   python -m portal_api.gis addresses --e911
@@ -33,8 +34,10 @@ def main(argv: list[str] | None = None) -> None:
     sub = p.add_subparsers(dest="layer", required=True)
     pa = sub.add_parser("parcels")
     g = pa.add_mutually_exclusive_group(required=True)
-    g.add_argument("--geolibrary", action="store_true")
+    g.add_argument("--axisgis", action="store_true", help="the Town's current tax maps (CAI AxisGIS)")
+    g.add_argument("--geolibrary", action="store_true", help="Maine GeoLibrary (Newcastle's is from 2012)")
     g.add_argument("--file")
+    pa.add_argument("--slug", default="NewcastleME", help="the town's AxisGIS page name")
     pa.add_argument("--map-lot-field", default="MAP_BK_LOT")
     pa.add_argument("--location-field")
     pa.add_argument("--source")
@@ -60,7 +63,15 @@ def main(argv: list[str] | None = None) -> None:
     engine = create_engine(Settings().database_url)
     with tempfile.TemporaryDirectory() as tmp, httpx.Client() as client, engine.begin() as conn:
         if a.layer == "parcels":
-            if a.geolibrary:
+            if a.axisgis:
+                path = f"{tmp}/parcels.geojson"
+                sources.fetch_axisgis_parcels(a.slug, path, client)
+                feats = read_features(path)
+                # AxisGIS publishes no revision date; the chair chose the fetch date (2026-10-15).
+                when = a.source_date or date.today()
+                source = a.source or f"Town tax maps (AxisGIS, CAI), public viewer; fetched {date.today().isoformat()}"
+                rows = sources.parcel_rows(feats, "Full_Num")
+            elif a.geolibrary:
                 path = f"{tmp}/parcels.geojson"
                 sources.fetch_arcgis(sources.GEOLIBRARY_PARCELS, sources.NEWCASTLE, path, client)
                 feats = read_features(path)
@@ -91,6 +102,8 @@ def main(argv: list[str] | None = None) -> None:
         else:
             rows = sources.street_rows(json.loads(Path(a.inventory).read_text()), _type_names(a.types))
             source, when = a.source, a.source_date
+        if a.layer == "parcels":
+            rows = sources.dissolve_by_map_lot(rows)
         import_id = load_layer(conn, layer=a.layer, source=source, source_date=when, rows=rows)
     print(f"{a.layer}: import {import_id}, {len(rows)} features, source date {when}")
 
