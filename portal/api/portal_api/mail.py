@@ -1,6 +1,7 @@
 import smtplib
 from dataclasses import dataclass, field
 from email.message import EmailMessage
+from email.utils import formatdate, make_msgid, parseaddr
 from typing import Protocol
 
 
@@ -23,14 +24,21 @@ class SmtpMailer:
     def __init__(self, host: str, port: int, sender: str):
         self.host, self.port, self.sender = host, port, sender
 
-    def send(self, email: Email) -> None:
+    def build(self, email: Email) -> EmailMessage:
         if any(c in email.to + email.subject for c in "\r\n"):
             raise MailError("line break in a header")
         msg = EmailMessage()
         msg["From"] = self.sender
         msg["To"] = email.to
         msg["Subject"] = email.subject
+        # A relay is not guaranteed to add these, and mailboxes refuse or junk mail without them.
+        msg["Date"] = formatdate(localtime=False, usegmt=True)
+        msg["Message-ID"] = make_msgid(domain=parseaddr(self.sender)[1].rpartition("@")[2] or None)
         msg.set_content(email.body)
+        return msg
+
+    def send(self, email: Email) -> None:
+        msg = self.build(email)
         try:
             with smtplib.SMTP(self.host, self.port, timeout=10) as smtp:
                 smtp.send_message(msg)

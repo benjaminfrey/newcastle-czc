@@ -44,3 +44,13 @@ def test_smtp_mailer_delivers_to_mailpit():
 def test_unreachable_relay_raises_mail_error():
     with pytest.raises(MailError):
         SmtpMailer("127.0.0.1", 1, "permits@localhost").send(Email("a@example.com", "s", "b"))
+
+
+def test_messages_carry_date_and_message_id():
+    # RFC 5322 requires Date; Gmail and others refuse or junk mail without a Message-ID,
+    # and a relay is not guaranteed to add either. Sign-in depends on this mail arriving.
+    msg = SmtpMailer("127.0.0.1", 1025, "Town of Newcastle Permits <permits@newcastle.example>").build(
+        Email("a@example.com", "s", "b")
+    )
+    assert msg["Date"]
+    assert msg["Message-ID"].startswith("<") and msg["Message-ID"].endswith("@newcastle.example>")
