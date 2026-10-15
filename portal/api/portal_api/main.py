@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from portal_api.config import Settings
 from portal_api.db import make_engine
 from portal_api.mail import Mailer, SmtpMailer
-from portal_api.routes import health
+from portal_api.routes import auth as auth_routes, health
 
 
 def create_app(settings: Settings | None = None, mailer: Mailer | None = None) -> FastAPI:
@@ -13,4 +13,5 @@ def create_app(settings: Settings | None = None, mailer: Mailer | None = None) -
     app.state.engine = make_engine(settings.database_url)
     app.state.mailer = mailer or SmtpMailer(settings.smtp_host, settings.smtp_port, settings.smtp_from)
     app.include_router(health.router)
+    app.include_router(auth_routes.router)
     return app
