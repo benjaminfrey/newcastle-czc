@@ -21,6 +21,7 @@ sync() {
   rsync -az --delete \
     --exclude '.venv/' --exclude 'node_modules/' --exclude 'dist/' \
     --exclude '__pycache__/' --exclude '.pytest_cache/' --exclude '.env' \
+    --exclude 'web/public/basemap/' \
     "$HERE/" "$VM:$REMOTE_ROOT/portal/"
   # Reference data the GIS loaders read, kept at the same repo-relative paths on the VM.
   (cd "$HERE/.." && rsync -azR \
