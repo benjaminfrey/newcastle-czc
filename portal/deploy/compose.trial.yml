@@ -1,0 +1,8 @@
+# Overlay for a trial of the production stack on the dev VM, with its own mail
+# catcher (SMTP_HOST=mail, SMTP_PORT=1025; web view on the VM at 127.0.0.1:8026).
+# Use with PORTAL_BIND=127.0.0.1 so nothing is published beyond the VM.
+# Deliberately NOT joined to the dev services' network: both stacks have a `db`.
+services:
+  mail:
+    image: axllent/mailpit:v1.27
+    ports: ["127.0.0.1:8026:8025"]
