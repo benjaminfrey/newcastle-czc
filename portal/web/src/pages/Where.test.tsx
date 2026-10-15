@@ -64,12 +64,25 @@ describe("Where", () => {
     vi.spyOn(api, "getProperty").mockResolvedValue({
       ...FACTS,
       districts: [{ code: "D1", name: "Rural (D1)", in_ruleset: true, share: 0.5 },
-                  { code: "SD-Civic", name: null, in_ruleset: false, share: 0.5 }],
+                  { code: "SD-Unmapped", name: null, in_ruleset: false, share: 0.5 }],
     });
     renderPage();
     await userEvent.click(screen.getByRole("button", { name: "tap the map" }));
     expect(await screen.findByText(/an area staff will confirm/)).toBeInTheDocument();
-    expect(screen.queryByText(/Civic/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Unmapped/)).not.toBeInTheDocument();
+  });
+
+  it("explains that only the Town builds on Civic land", async () => {
+    vi.spyOn(api, "parcelAt").mockResolvedValue(229);
+    vi.spyOn(api, "getProperty").mockResolvedValue({
+      ...FACTS,
+      districts: [{ code: "SD-Civic", name: "Civic district (Town-owned land)", in_ruleset: true, share: 1 }],
+    });
+    renderPage();
+    await userEvent.click(screen.getByRole("button", { name: "tap the map" }));
+    expect(await screen.findByText(/District: Civic district \(Town-owned land\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Only the Town builds on Civic land/)).toBeInTheDocument();
+    expect(screen.getByText(/Town Meeting/)).toBeInTheDocument();
   });
 
   it("asks for a tap when the address has no lot", async () => {
