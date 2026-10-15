@@ -50,7 +50,7 @@ def clean(request):
         eng = request.getfixturevalue("engine")
         with eng.begin() as conn:
             conn.execute(text(
-                "TRUNCATE applicant, signin_token, session, event RESTART IDENTITY CASCADE"
+                "TRUNCATE applicant, signin_token, session, event, gis_import RESTART IDENTITY CASCADE"
             ))
 
 
