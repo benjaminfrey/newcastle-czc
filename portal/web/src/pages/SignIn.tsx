@@ -3,7 +3,8 @@ import { useState, type FormEvent } from "react";
 import { requestLink, type LinkResult } from "../api";
 
 const MESSAGES: Record<Exclude<LinkResult, "sent">, string> = {
-  too_many_requests: "You've asked for several links in the last hour. Please wait a while and try again.",
+  too_many_requests:
+    "You've asked for several links in the last hour. If one has arrived, use the newest email. Otherwise, please wait a while and try again.",
   email_unavailable: "We couldn't send the email just now. Please try again in a few minutes.",
   invalid_email: "That doesn't look like an email address. Please check it and try again.",
 };

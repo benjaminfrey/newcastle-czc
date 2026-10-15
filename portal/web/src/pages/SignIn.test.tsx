@@ -23,6 +23,7 @@ describe("SignIn", () => {
     await userEvent.type(screen.getByLabelText("Your email address"), "a@example.com");
     await userEvent.click(screen.getByRole("button", { name: "Email me a sign-in link" }));
     expect(await screen.findByText(/asked for several links/)).toBeInTheDocument();
+    expect(screen.getByText(/use the newest email/)).toBeInTheDocument();
   });
 
   it("explains a mail outage in plain words", async () => {

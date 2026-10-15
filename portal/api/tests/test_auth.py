@@ -49,7 +49,7 @@ def test_email_is_normalised(client, outbox, engine):
     client.post("/api/auth/request-link", json={"email": "  Ben@Example.COM "})
     client.post("/api/auth/request-link", json={"email": "ben@example.com"})
     with engine.connect() as conn:
-        assert conn.execute(text("SELECT count(*) FROM applicant")).scalar() == 1
+        assert conn.execute(text("SELECT DISTINCT email FROM signin_token")).scalars().all() == ["ben@example.com"]
     assert {e.to for e in outbox.sent} == {"ben@example.com"}
 
 

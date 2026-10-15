@@ -16,6 +16,10 @@ class Settings(BaseSettings):
     smtp_from: str = "Town of Newcastle Permits <permits@localhost>"
     signin_link_minutes: int = 15
     session_days: int = 14
-    # Sign-in link requests allowed per hour.
-    signin_limit_per_email: int = 5
+    # Sign-in link requests allowed per hour. Per email *and* address, so a stranger
+    # asking for links to someone else's email cannot lock that person out; the
+    # per-email ceiling still bounds mail to one inbox. IPv6 counts per /64.
+    signin_limit_per_email_ip: int = 5
+    signin_limit_per_email: int = 20
     signin_limit_per_ip: int = 20
+    signin_limit_global: int = 500
