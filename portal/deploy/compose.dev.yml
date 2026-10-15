@@ -1,0 +1,21 @@
+# Development services only: the API and web app run on the host.
+# Postgres on 5433 so it never collides with another local Postgres.
+name: portal-dev
+services:
+  db:
+    image: postgis/postgis:17-3.5
+    environment:
+      POSTGRES_USER: portal
+      POSTGRES_PASSWORD: portal
+      POSTGRES_DB: portal
+    ports: ["127.0.0.1:5433:5432"]
+    volumes: [portal-dev-db:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portal"]
+      interval: 2s
+      retries: 30
+  mail:
+    image: axllent/mailpit:v1.27
+    ports: ["127.0.0.1:1025:1025", "127.0.0.1:8025:8025"]
+volumes:
+  portal-dev-db:
