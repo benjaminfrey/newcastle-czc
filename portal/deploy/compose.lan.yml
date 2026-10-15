@@ -1,0 +1,16 @@
+# Overlay for the development stack on the LAN: the production-shaped portal
+# (Caddy + API + Postgres) at https://$PORTAL_HOST, with its own mail catcher
+# instead of a real relay (SMTP_HOST=mail, SMTP_PORT=1025).
+#
+# Mailpit's web view is published on port 8026 and password-protected
+# (MAILPIT_UI_AUTH="user:password" in .env): it holds sign-in links, and
+# anyone who can read them can sign in as anyone.
+#
+# Deliberately NOT joined to the dev services' network: both stacks have a `db`.
+services:
+  mail:
+    image: axllent/mailpit:v1.27
+    restart: unless-stopped
+    environment:
+      MP_UI_AUTH: ${MAILPIT_UI_AUTH:?set in .env}
+    ports: ["${PORTAL_BIND:-0.0.0.0}:8026:8025"]

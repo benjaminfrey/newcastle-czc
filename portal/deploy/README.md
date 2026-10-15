@@ -9,15 +9,21 @@ The host needs Docker Engine with the Compose plugin and ports 80 and 443 open.
 
 Updating: sync the new code, then repeat step 3. Migrations run when the API container starts.
 
-## Trial run on the dev VM
+## The development stack on the LAN
 
-To try the production stack without putting it on the network, set in `.env`:
-`PORTAL_HOST=localhost`, `PORTAL_TLS=tls internal`, `PORTAL_BIND=127.0.0.1`,
-`SMTP_HOST=mail`, `SMTP_PORT=1025`, and add the trial overlay, which brings its own mail catcher:
+During development the portal runs on the dev VM for the local network only: never port-forwarded,
+never on the public internet. `.env` on the VM sets `PORTAL_HOST=<the VM's LAN address>`,
+`PORTAL_TLS=tls internal`, `PORTAL_BIND=` (empty: every interface), `SMTP_HOST=mail`,
+`SMTP_PORT=1025` and `MAILPIT_UI_AUTH=<user>:<password>`. The LAN overlay brings its own Mailpit;
+sign-in emails appear at `http://<VM>:8026` behind that password.
 
-    sudo docker compose -f compose.yml -f compose.trial.yml --env-file .env up -d --build --wait
+    portal/vm.sh lan        # from the Mac: sync, rebuild, restart
 
-Sign-in emails land in that Mailpit, at 127.0.0.1:8026 on the VM. Stop it with the same files and `down`.
+Caddy signs the HTTPS certificate with its own local authority, so browsers warn once per device.
+To stop the warning, trust Caddy's root certificate on that device; it is inside the `caddy-data`
+volume at `/data/caddy/pki/authorities/local/root.crt`.
+
+To keep a trial on the VM alone, set `PORTAL_BIND=127.0.0.1` instead.
 
 ## Moving to a managed platform later
 

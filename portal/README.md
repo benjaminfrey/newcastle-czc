@@ -32,3 +32,16 @@ Web app:
 In another terminal on the Mac, while working in a browser:
 
     portal/vm.sh tunnel
+
+## The portal on the local network
+
+The production-shaped portal (Caddy, API, Postgres) also runs on the VM for every device on the
+local network, so it can be tried on a phone: **https://192.168.1.6**. It is never port-forwarded
+or put on the public internet during development. Rebuild it after changes with:
+
+    portal/vm.sh lan
+
+Its sign-in emails land in a separate Mailpit at http://192.168.1.6:8026, which asks for a login:
+the `MAILPIT_UI_AUTH` line in `~/newcastle-czc/portal/deploy/.env` on the VM. Browsers warn about
+the certificate once per device (Caddy signs it locally); `portal/deploy/README.md` says how to
+trust it instead.

@@ -1,3 +1,9 @@
+{
+	# Clients connecting to a bare IP address send no SNI; without this Caddy
+	# cannot pick a certificate and the TLS handshake fails.
+	default_sni {$PORTAL_HOST}
+}
+
 {$PORTAL_HOST} {
 	{$PORTAL_TLS}
 	encode zstd gzip

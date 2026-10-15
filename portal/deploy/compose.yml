@@ -33,7 +33,9 @@ services:
       PORTAL_HOST: ${PORTAL_HOST}
       PORTAL_TLS: ${PORTAL_TLS:-}
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      # A directory, not the single file: a file mount pins the old inode when an
+      # update replaces the file (rsync, git checkout), and Caddy never sees the change.
+      - ./caddy:/etc/caddy:ro
       - caddy-data:/data
 volumes:
   db:
