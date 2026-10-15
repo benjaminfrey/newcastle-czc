@@ -23,3 +23,37 @@ chair's approval.
 **Open decisions that gate milestones** (spec §9): O1 fee schedule (M3 shows the "set by the Town's
 fee schedule" fallback until supplied); O2 FOAA wording (M6 submit page); O8 staff list (M6);
 O7 web address (M1's VM can use an interim host name); O9 owner authorization (M6).
+
+## Deferred from the M1 reviews
+
+Two fresh reviews ran on M1: one on the sign-in code after Task 5, one on the whole branch. Every
+Important finding was fixed (commits `db28baf`, `3844f15` for email headers, `627b7bd` for the web
+error handling). These Minor findings were deferred; M7's security review starts from this list, and any
+marked **before production** must be done before the portal faces the public.
+
+- **Before production:** `SmtpMailer` has no STARTTLS or AUTH. A relay that accepts plaintext on
+  587 would carry sign-in links unencrypted.
+- **Before production:** uvicorn trusts `X-Forwarded-For` from any peer (`--forwarded-allow-ips '*'`).
+  That is safe only while Caddy is the sole proxy. Narrow it to Caddy's address.
+- **Before production:** the API connects as the database superuser that owns the tables, and
+  `TRUNCATE` bypasses the event log's append-only trigger. Add a `BEFORE TRUNCATE` trigger and a
+  non-owner app role.
+- Overall sign-in cap (500/hour) can be exhausted by one person with an IPv6 /56. Count IPv6 per /56
+  as well, and word the overall-cap 429 differently ("the site is busy").
+- 20 links/hour per address may bite shared Town Office or library wifi.
+- Non-ASCII email addresses: no SMTPUTF8/IDN handling.
+- `/api/auth/verify` `token` has no length bound.
+- Verifying while signed in as someone else leaves the old session valid.
+- Sign-out has no `Origin` check (forceable from a same-site sibling subdomain).
+- If marking a link "sent" fails after the email went out, the person sees "couldn't send" and the
+  emailed link is dead (retry once; log).
+- Mail-relay failures are not logged.
+- `pg_isready` health checks use the socket and can pass before first-start init finishes; use
+  `-h 127.0.0.1`. (Self-heals via restart.)
+- `POSTGRES_PASSWORD` must be URL-safe (it is interpolated into the database URL); say so or encode it.
+- CI workflow has no `permissions: { contents: read }`.
+- Test suite never disposes per-app database engines (relies on garbage collection).
+- No Content-Security-Policy header in the Caddyfile.
+- `@heroui/styles` is used directly but not listed in `package.json`; base images
+  (`python:3.14-slim`, `node:24-slim`, `caddy:2`) are not pinned.
+- `requested_ip` is kept indefinitely — add it to open decision O3 (retention).
