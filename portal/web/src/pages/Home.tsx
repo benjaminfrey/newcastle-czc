@@ -10,8 +10,9 @@ export default function Home() {
           Answer a few simple questions to find out which permit you need, then apply online.
         </Card.Description>
       </Card.Header>
-      <Card.Content>
-        <p>This part of the site is being built. You can already sign in to try it.</p>
+      <Card.Content className="flex flex-col gap-2">
+        <p>This site is being built. You can already try the first step.</p>
+        <Link to="/where" className="underline">Start: where is your project?</Link>
         <Link to="/signin" className="underline">Sign in</Link>
       </Card.Content>
     </Card>
