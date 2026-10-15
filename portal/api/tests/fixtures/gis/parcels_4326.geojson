@@ -1,0 +1,110 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "MAP_BK_LOT": "004-036",
+    "PROP_LOC": "SHEEPSCOT ROAD",
+    "FMUPDAT": "4/1/2012"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -69.58,
+       44.04
+      ],
+      [
+       -69.578,
+       44.04
+      ],
+      [
+       -69.578,
+       44.042
+      ],
+      [
+       -69.58,
+       44.042
+      ],
+      [
+       -69.58,
+       44.04
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "MAP_BK_LOT": "004-037",
+    "PROP_LOC": "SHEEPSCOT ROAD",
+    "FMUPDAT": "4/1/2012"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -69.578,
+       44.04
+      ],
+      [
+       -69.576,
+       44.04
+      ],
+      [
+       -69.576,
+       44.042
+      ],
+      [
+       -69.578,
+       44.042
+      ],
+      [
+       -69.578,
+       44.04
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "MAP_BK_LOT": "004-038",
+    "PROP_LOC": "RIVER ROAD",
+    "FMUPDAT": "4/1/2012"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -69.576,
+       44.04
+      ],
+      [
+       -69.574,
+       44.04
+      ],
+      [
+       -69.574,
+       44.042
+      ],
+      [
+       -69.576,
+       44.042
+      ],
+      [
+       -69.576,
+       44.04
+      ]
+     ]
+    ]
+   }
+  }
+ ]
+}

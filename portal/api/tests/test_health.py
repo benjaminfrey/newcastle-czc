@@ -22,3 +22,13 @@ def test_health_reports_database_down_as_503():
 def test_postgis_extension_installed(engine):
     with engine.connect() as conn:
         assert conn.execute(text("SELECT extname FROM pg_extension WHERE extname='postgis'")).scalar() == "postgis"
+
+
+def test_database_connections_are_closed_when_the_app_stops(engine, settings):
+    # Every app opens a connection pool; one left open per app exhausted Postgres's
+    # 100-connection limit in the test suite (deferred M1 review minor, hit in M2).
+    app = create_app(settings)
+    with TestClient(app) as c:
+        c.get("/api/health")
+        assert app.state.engine.pool.checkedin() == 1
+    assert app.state.engine.pool.checkedin() == 0

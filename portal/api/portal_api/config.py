@@ -23,3 +23,11 @@ class Settings(BaseSettings):
     signin_limit_per_email: int = 20
     signin_limit_per_ip: int = 20
     signin_limit_global: int = 500
+    # Parcel data older than this is refused (lookup falls back to manual entry).
+    # Only the dev VM sets allow_stale_parcels, so old lot lines never reach applicants.
+    allow_stale_parcels: bool = False
+    parcel_max_age_days: int = 1095
+    # Public property lookups per address per minute (spec §6). The map asks for many
+    # tiles at once, so tiles have their own, larger allowance.
+    lookup_limit_per_minute: int = 60
+    tile_limit_per_minute: int = 1200

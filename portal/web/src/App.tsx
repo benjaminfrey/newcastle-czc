@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import MyApplications from "./pages/MyApplications";
 import SignIn from "./pages/SignIn";
 import Verify from "./pages/Verify";
+import Where from "./pages/Where";
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signin/verify" element={<Verify />} />
           <Route path="/my-applications" element={<MyApplications />} />
+          <Route path="/where" element={<Where />} />
         </Routes>
       </Layout>
     </BrowserRouter>

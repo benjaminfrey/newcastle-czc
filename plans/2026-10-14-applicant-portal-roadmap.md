@@ -20,6 +20,10 @@ chair's approval.
 | M6 | **Submit and staff inbox** | Sign and submit; owner co-sign; frozen `submission` + revisions; staff role with authenticator-app second factor; inbox (view, download, completeness, fee paid, "please add…"); admin settings incl. standards-check modes; email notifications with retry; "needs attention" marker | End-to-end: applicant submits, staff marks complete and fee paid, requests more info, applicant answers with a revision; no-verdict guard green; applicant A cannot read B |
 | M7 | **Hardening and pilot** | Off-VM nightly backups + restore drill; security review; plain-language review; accessibility pass; pilot with the CEO on past applications | Restore drill recorded; review findings ruled on; pilot notes written up for the chair |
 
+**Status (2026-10-15):** M1 merged (#12). M2 built on branch `portal-m2-property`. **Open from
+M2:** current parcels from the assessor/CAI (GeoLibrary's Newcastle layer is from 2012; production
+refuses it), and whether SD-Civic (on the district trace, not in adopted v1.0) belongs.
+
 **Open decisions that gate milestones** (spec §9): O1 fee schedule (M3 shows the "set by the Town's
 fee schedule" fallback until supplied); O2 FOAA wording (M6 submit page); O8 staff list (M6);
 O7 web address (M1's VM can use an interim host name); O9 owner authorization (M6).
@@ -57,3 +61,34 @@ marked **before production** must be done before the portal faces the public.
 - `@heroui/styles` is used directly but not listed in `package.json`; base images
   (`python:3.14-slim`, `node:24-slim`, `caddy:2`) are not pinned.
 - `requested_ip` is kept indefinitely — add it to open decision O3 (retention).
+
+## Deferred from the M2 review
+
+One fresh whole-branch review ran on M2 (no Critical findings). Fixed: the map outline could stay
+on the previous lot; an import with no features could replace a working one; lookups were not
+rate-limited (spec §6); the access log recorded searched addresses with IPs; State Highway lots
+20–35 m from the centreline showed no street (measured on the real data). These Minor findings
+were deferred:
+
+- Frontage is overstated for a lot that touches a street only at a corner at a shallow angle, and
+  for a segment that leaves and returns to the lot (seen: 65 ft of Route 1 on 002-038).
+- The map/lot pattern matches "12 Route 1" (lists "Map 12, Lot 1" first) and misses
+  "Map 4 Lot 36".
+- With a mostly-SD-Civic lot the page names the smaller adopted district while saving no
+  district; "(most of it)" shows even under 50 %.
+- The Where page keeps the previous lot's card after a new search or a failed tap; overlapping
+  responses are not sequenced; a double-tap zoom fires two picks.
+- Any 5xx sends the person to manual entry with no way back to lookup; the loader does not run
+  `ST_MakeValid`, so an invalid geometry in a future parcel file could cause 5xx on facts.
+- `fetch_arcgis` reads `exceededTransferLimit` at the top level (GeoJSON puts it under
+  `properties`) and assumes the page size — fine today (maxRecordCount 2000), wrong for a layer
+  over 2,000 features.
+- Guard dates: GeoLibrary's date is the *latest* `FMUPDAT` (a partial refresh would pass the
+  guard) — **chair's ruling**; a future or mistyped `--source-date` disables the guard.
+- Parcel tiles are cached for an hour, so old lines can linger after a reimport.
+- Out-of-range `/at` coordinates or a huge `parcel_id` give 500, not 404; a whitespace-only
+  search returns arbitrary addresses.
+- The loader turns a null location into the text "None", a numeric map-lot into "4036.0", and
+  fails on Z/M geometries (`ST_Force2D`).
+- A missing basemap file falls through Caddy's `try_files` to `index.html` (200), breaking the
+  map without a clear error.

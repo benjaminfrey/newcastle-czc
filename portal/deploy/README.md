@@ -25,6 +25,17 @@ volume at `/data/caddy/pki/authorities/local/root.crt`.
 
 To keep a trial on the VM alone, set `PORTAL_BIND=127.0.0.1` instead.
 
+### Property data on the LAN stack
+
+The LAN stack sets `PORTAL_ALLOW_STALE_PARCELS=true` (development only). Load the GIS layers into
+its database with the API image and the repo mounted read-only, e.g.
+
+    sudo docker compose -f compose.yml -f compose.lan.yml --env-file .env run --rm -T \
+      -v $HOME/newcastle-czc:/repo:ro api python -m portal_api.gis parcels --geolibrary
+
+(see `portal/README.md` for all four layers). Build the basemap (`portal/basemap/`) before
+`vm.sh lan`, since the web image copies it in.
+
 ## Moving to a managed platform later
 
 Point `PORTAL_DATABASE_URL` at managed Postgres with PostGIS, run the `api` and `web` images on any

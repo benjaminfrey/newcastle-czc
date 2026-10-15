@@ -1,0 +1,134 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "district": "D2"
+   },
+   "geometry": {
+    "type": "MultiPolygon",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "EPSG:26919"
+     }
+    },
+    "coordinates": [
+     [
+      [
+       [
+        452721.086,
+        4875374.076
+       ],
+       [
+        452736.988,
+        4877595.452
+       ],
+       [
+        453658.218,
+        4877588.92
+       ],
+       [
+        453642.625,
+        4875367.544
+       ],
+       [
+        452721.086,
+        4875374.076
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "district": "D1"
+   },
+   "geometry": {
+    "type": "MultiPolygon",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "EPSG:26919"
+     }
+    },
+    "coordinates": [
+     [
+      [
+       [
+        453642.625,
+        4875367.544
+       ],
+       [
+        453658.218,
+        4877588.92
+       ],
+       [
+        453938.592,
+        4877586.958
+       ],
+       [
+        453923.094,
+        4875365.582
+       ],
+       [
+        453642.625,
+        4875367.544
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "district": "SD-Civic"
+   },
+   "geometry": {
+    "type": "MultiPolygon",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "EPSG:26919"
+     }
+    },
+    "coordinates": [
+     [
+      [
+       [
+        453923.094,
+        4875365.582
+       ],
+       [
+        453938.592,
+        4877586.958
+       ],
+       [
+        454339.126,
+        4877584.175
+       ],
+       [
+        454323.763,
+        4875362.799
+       ],
+       [
+        453923.094,
+        4875365.582
+       ]
+      ]
+     ]
+    ]
+   }
+  }
+ ],
+ "crs": {
+  "type": "name",
+  "properties": {
+   "name": "urn:ogc:def:crs:EPSG::26919"
+  }
+ }
+}

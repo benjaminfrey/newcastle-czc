@@ -65,4 +65,5 @@ memos/*.pptx
 portal/api/.venv/
 portal/web/node_modules/
 portal/web/dist/
+portal/web/public/basemap/
 portal/deploy/.env

@@ -42,3 +42,47 @@ export async function signOut(): Promise<void> {
 }
 
 export const UNREACHABLE = "We couldn't reach the Town's server. Please check your connection and try again.";
+
+// ---- Property lookup (public; no sign-in) ----
+
+export type District = { code: string; name: string | null; in_ruleset: boolean; share: number };
+export type Street = { name: string; type: string | null; type_name: string | null; ownership: string | null; frontage_ft: number };
+export type Facts = {
+  parcel_id: number;
+  map_lot: string;
+  location: string | null;
+  acres: number;
+  districts: District[];
+  streets: Street[];
+  on_state_highway: boolean;
+  as_of: { parcels: string; parcels_source: string; districts_source: string | null };
+  geometry: { type: "MultiPolygon"; coordinates: number[][][][] };
+};
+export type Hit = { label: string; lon: number; lat: number; parcel_id: number | null };
+
+// "busy": this address has made too many lookups in the last minute (HTTP 429).
+export async function searchProperty(q: string): Promise<Hit[] | "unavailable" | "busy"> {
+  const r = await attempt(`/api/property/search?q=${encodeURIComponent(q)}`);
+  if (!r || r.status >= 500) return "unavailable";
+  if (r.status === 429) return "busy";
+  return r.ok ? ((await r.json()) as Hit[]) : [];
+}
+
+export async function parcelAt(lon: number, lat: number): Promise<number | null | "unavailable" | "busy"> {
+  const r = await attempt(`/api/property/at?lon=${lon}&lat=${lat}`);
+  if (!r || r.status >= 500) return "unavailable";
+  if (r.status === 429) return "busy";
+  return r.ok ? ((await r.json()) as { parcel_id: number }).parcel_id : null;
+}
+
+export async function getProperty(id: number): Promise<Facts | null | "unavailable" | "busy"> {
+  const r = await attempt(`/api/property/${id}`);
+  if (!r || r.status >= 500) return "unavailable";
+  if (r.status === 429) return "busy";
+  return r.ok ? ((await r.json()) as Facts) : null;
+}
+
+export async function getDistricts(): Promise<{ code: string; name: string }[]> {
+  const r = await attempt("/api/property/districts");
+  return r && r.ok ? ((await r.json()) as { code: string; name: string }[]) : [];
+}
