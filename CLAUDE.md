@@ -11,32 +11,31 @@ https://github.com/benjaminfrey/newcastle-czc.git · branch `main`. User: Ben Fr
 ordinance change needs a Planning Board review and a **Town Meeting vote**, so what we ship is
 read by residents and voters, not just by us.
 
-The CZC **v1.0 was adopted on September 14, 2026**. New drafts are redlined against v1.0; the
-current draft is **v1.1-draft** (layout only). Past work, wave by wave: `HISTORY.md`.
+The CZC **v1.0 was adopted on September 14, 2026**; new drafts are redlined against it. What
+has shipped, release by release: `HISTORY.md` and the tags. What is open: `OPEN_ITEMS.md`.
+Record status there, never here; edit this file only when a rule, command or gotcha changes.
 
 ## Working rules
 
 Ben has asked for each of these; most exist because a mistake here is public or hard to undo.
 
-1. **Commit only when Ben asks.** Build, verify and document, then wait for the go-ahead — he
-   reviews what goes into the Town's record.
-2. **Stage files by name, never `git add -A` / `git add .`.** The tree holds untracked material
-   that must not be swept in (local settings, Ben's docs, scratch).
-3. **`docs/*.pdf` are the immutable baseline** (original CZC, Comp Plan, RDEO). Read only.
-4. **Release deliverables.** Every release ships the integrated Code (the document the Town
+1. **Git: the global rules apply** (commit and push only on Ben's OK, stage by name, no
+   force-push, the model trailer). Here: build, verify and document, then wait — Ben reviews what
+   goes into the Town's record. The tree holds untracked material (local settings, Ben's docs,
+   scratch); `.claude/settings.json` denies the sweeping `git add` forms. On release, push `main`
+   and the annotated tag (`vX.Y-draft`); re-cutting a pushed version means a new number unless he
+   says otherwise.
+2. **`docs/*.pdf` are the immutable baseline** (original CZC, Comp Plan, RDEO). Read only;
+   `.claude/settings.json` denies edits.
+3. **Release deliverables.** Every release ships the integrated Code (the document the Town
    adopts). Each Article with substantive changes — its own standards, definitions or data — also
    ships as a standalone and a standalone redline, in both `.pdf` and `.md`. Articles touched only
    by renumbering or cross-reference updates are named in the Summary of Changes instead.
    Adoption releases ship the frozen packet, plus a Use Table Changes memo when district tables
    moved. Standalones are extracts and do not govern.
-5. **Commit messages end with a `Co-Authored-By:` trailer** naming the Claude model that wrote the
-   change, e.g. `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
-6. **On release, push `main` and the annotated tag (`vX.Y-draft`) as separate commands.** Never
-   force-push without Ben's explicit OK; re-cutting a pushed version means a new number unless he
-   says otherwise.
-7. **Match the baseline CZC's formatting and typography** — measured in `style/style-analysis.md`.
-8. **Nothing may claim adoption before the vote.** See the version-state gotcha below.
-9. **Never guess a legal value** (a statute, a use status, a standard). Write it down as an open
+4. **Match the baseline CZC's formatting and typography** — measured in `style/style-analysis.md`.
+5. **Nothing may claim adoption before the vote.** See the version-state gotcha below.
+6. **Never guess a legal value** (a statute, a use status, a standard). Write it down as an open
    decision for Ben, the Board or counsel instead.
 
 ## Repo map
@@ -53,7 +52,7 @@ Ben has asked for each of these; most exist because a mistake here is public or 
 - `releases/<version>/` — shipped deliverables. Release PDFs are gitignored (rebuild from tags).
 - `memos/` — justification and analysis memos, rendered with `build/build-memo.sh`.
 - `plans/` — implementation plans; `build/ADOPTION-SPEC.md` — the adoption design (authoritative).
-- `docs/` — the baseline (see rule 3).
+- `docs/` — the baseline (see rule 2).
 
 ## The Type system (Article 3)
 
@@ -110,27 +109,7 @@ Neighborhood Business · D4 Village Residential · D5 Village Business · D6 Tow
   layout-only or substantive (the skill has the format). A change to a `shared` file stops the
   determination until a person says which Articles it affects.
 
-## Open items
+## Open work
 
-- **Right to Farm amendment** (Articles 1, 2, 4, 5, 7, 9) — drafted on branch `right-to-farm`
-  (Plans A and B done; spec `specs/2026-10-07-right-to-farm-design.md`; decisions R1–R35 in
-  `plans/2026-10-14-right-to-farm-decisions.md`). New Article 7 §3; Article 7 §§3–66 became
-  §§4–67. The fifth use status `br` / ○ "No Permit Required" (Wave 4c) is in the legend and the
-  data; the permit app refuses `br` cells and 69 uses (D-0035). Next: merge, then cut v1.2-draft
-  on `main`; counsel's questions in spec §7; the DACF notice (7 M.R.S. §155).
-- **For counsel:** Article 9's Variance definition cites the Massachusetts Zoning Act (Maine's is
-  30-A M.R.S. §4353); typos "Atricle" (Article 7), "extentions", "designnee" — fixing "designnee"
-  also means updating the residue gate's expected sentence in the same commit.
-- **Planning Board:** R2 vs R3 scope (memo in `memos/`, recommends a 600 ft test on private
-  dead-end ways; Eden Lane vs Camp Rd inconsistency).
-- **Ben to confirm:** Ownership Categories for `kavanagh-road-1` and `woods-island-road-1`
-  (marker entries in `build/street-types/overrides.json`).
-- **The contractor's district shapefile** — drop it in, re-run the pipeline from the join stage,
-  re-promote `inventory.json`, rebuild; any change goes to the Board and Town Meeting.
-- **Another planner's Fall-2026 redline** (`docs/CZC Redline 2026.06.docx`, untracked) — four
-  analysis memos in `memos/`; open: merging their Article X into our Article 3, their "reviewing
-  authority" rename vs our "Permitting Authority", the stale "Road" definition.
-- **Permit-review app** (`build/permit-review/`) — paused; W5 blocked on decision D-0025 (may
-  application content go to a third-party API?). Read `build/permit-review/BUILD-STATE.md` first.
-- **The adopted v1.0 edition** lacks chrome on physical page 12 and has the old margins; it cannot
-  be re-rendered and the next amendment supersedes it.
+Amendments in progress, questions for counsel and the Board, and paused work are in
+`OPEN_ITEMS.md`.

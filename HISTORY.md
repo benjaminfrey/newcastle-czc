@@ -107,7 +107,7 @@ rules these releases established live in CLAUDE.md.
 # Build history and status log, 2026 (moved from CLAUDE.md on 2026-10-13)
 
 The Wave 0–4b record and the status notes as they stood at v1.1-draft. Kept as a record, not as
-instructions; open items are listed in CLAUDE.md.
+instructions; open items are listed in `OPEN_ITEMS.md`.
 
 ## Status log as of 2026-10-12
 
