@@ -1,16 +1,22 @@
 import { Button, Card } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { getMe, signOut, type Me } from "../api";
+import { getMe, signOut, UNREACHABLE, type Me } from "../api";
 
 export default function MyApplications() {
   const navigate = useNavigate();
   const [me, setMe] = useState<Me | null>(null);
+  const [unreachable, setUnreachable] = useState(false);
 
   useEffect(() => {
-    getMe().then((m) => (m ? setMe(m) : navigate("/signin", { replace: true })));
+    getMe().then((m) => {
+      if (m === "unavailable") setUnreachable(true);
+      else if (m) setMe(m);
+      else navigate("/signin", { replace: true });
+    });
   }, [navigate]);
 
+  if (unreachable) return <p role="alert">{UNREACHABLE}</p>;
   if (!me) return <p>Loading…</p>;
   return (
     <Card>

@@ -33,4 +33,13 @@ describe("SignIn", () => {
     await userEvent.click(screen.getByRole("button", { name: "Email me a sign-in link" }));
     expect(await screen.findByText(/couldn't send the email/)).toBeInTheDocument();
   });
+
+  it("says so when the connection drops, and lets the person try again", async () => {
+    vi.spyOn(api, "requestLink").mockResolvedValue("unreachable");
+    renderPage();
+    await userEvent.type(screen.getByLabelText("Your email address"), "a@example.com");
+    await userEvent.click(screen.getByRole("button", { name: "Email me a sign-in link" }));
+    expect(await screen.findByText(/couldn't reach the Town's server/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Email me a sign-in link" })).toBeEnabled();
+  });
 });

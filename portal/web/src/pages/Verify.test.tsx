@@ -31,7 +31,8 @@ describe("Verify", () => {
   });
 
   it("explains a used or expired link and offers a new one", async () => {
-    vi.spyOn(api, "verifyToken").mockResolvedValue(null);
+    vi.spyOn(api, "verifyToken").mockResolvedValue("invalid");
+    vi.spyOn(api, "getMe").mockResolvedValue(null);
     renderAt("#token=old");
     await userEvent.click(await screen.findByRole("button", { name: "Sign me in" }));
     expect(await screen.findByText(/expired or was already used/)).toBeInTheDocument();
@@ -44,5 +45,25 @@ describe("Verify", () => {
     expect(await screen.findByText(/expired or was already used/)).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Sign me in" })).not.toBeInTheDocument();
     expect(spy).not.toHaveBeenCalled();
+  });
+
+  it("keeps the link usable when the server can't be reached", async () => {
+    const spy = vi.spyOn(api, "verifyToken").mockResolvedValue("unavailable");
+    renderAt("#token=abc123");
+    await userEvent.click(await screen.findByRole("button", { name: "Sign me in" }));
+    expect(await screen.findByText(/couldn't reach the Town's server/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Sign me in" })).toBeEnabled();
+    spy.mockResolvedValue({ email: "a@example.com", role: "applicant" });
+    await userEvent.click(screen.getByRole("button", { name: "Sign me in" }));
+    expect(await screen.findByText("My applications page")).toBeInTheDocument();
+    expect(spy).toHaveBeenLastCalledWith("abc123");
+  });
+
+  it("goes on to My applications when the link was already used in another tab", async () => {
+    vi.spyOn(api, "verifyToken").mockResolvedValue("invalid");
+    vi.spyOn(api, "getMe").mockResolvedValue({ email: "a@example.com", role: "applicant" });
+    renderAt("#token=used");
+    await userEvent.click(await screen.findByRole("button", { name: "Sign me in" }));
+    expect(await screen.findByText("My applications page")).toBeInTheDocument();
   });
 });

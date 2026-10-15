@@ -1,7 +1,7 @@
 import { Button, Card } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { verifyToken } from "../api";
+import { getMe, UNREACHABLE, verifyToken } from "../api";
 
 // Pure, so React may call it twice in development (StrictMode) and get the same answer.
 function tokenFromUrl(): string | null {
@@ -13,6 +13,7 @@ export default function Verify() {
   const [token] = useState(tokenFromUrl);
   const [failed, setFailed] = useState(!token);
   const [busy, setBusy] = useState(false);
+  const [unreachable, setUnreachable] = useState(false);
 
   // The token leaves the address bar and history at once; it lives only in memory
   // until the person presses the button.
@@ -25,9 +26,23 @@ export default function Verify() {
   async function signIn() {
     if (!token) return;
     setBusy(true);
-    const me = await verifyToken(token);
-    if (me) navigate("/my-applications", { replace: true });
-    else setFailed(true);
+    setUnreachable(false);
+    try {
+      const result = await verifyToken(token);
+      if (result === "unavailable") {
+        // The link may still be good: keep it and let the person press again.
+        setUnreachable(true);
+      } else if (result !== "invalid") {
+        navigate("/my-applications", { replace: true });
+      } else {
+        // Already used in another tab? Then this person is signed in after all.
+        const me = await getMe();
+        if (me && me !== "unavailable") navigate("/my-applications", { replace: true });
+        else setFailed(true);
+      }
+    } finally {
+      setBusy(false);
+    }
   }
 
   if (failed) {
@@ -49,6 +64,11 @@ export default function Verify() {
         <Card.Title>Sign in to Newcastle permits</Card.Title>
         <Card.Description>Press the button to finish signing in.</Card.Description>
       </Card.Header>
+      {unreachable && (
+        <Card.Content>
+          <p role="alert">{UNREACHABLE}</p>
+        </Card.Content>
+      )}
       <Card.Footer>
         <Button variant="primary" onPress={signIn} isDisabled={busy}>Sign me in</Button>
       </Card.Footer>

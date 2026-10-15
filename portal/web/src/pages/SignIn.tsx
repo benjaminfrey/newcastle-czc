@@ -1,12 +1,13 @@
 import { Button, Card, Description, Form, Input, Label, TextField } from "@heroui/react";
 import { useState, type FormEvent } from "react";
-import { requestLink, type LinkResult } from "../api";
+import { requestLink, UNREACHABLE, type LinkResult } from "../api";
 
 const MESSAGES: Record<Exclude<LinkResult, "sent">, string> = {
   too_many_requests:
     "You've asked for several links in the last hour. If one has arrived, use the newest email. Otherwise, please wait a while and try again.",
   email_unavailable: "We couldn't send the email just now. Please try again in a few minutes.",
   invalid_email: "That doesn't look like an email address. Please check it and try again.",
+  unreachable: UNREACHABLE,
 };
 
 export default function SignIn() {
@@ -17,8 +18,11 @@ export default function SignIn() {
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setBusy(true);
-    setResult(await requestLink(email));
-    setBusy(false);
+    try {
+      setResult(await requestLink(email));
+    } finally {
+      setBusy(false);
+    }
   }
 
   if (result === "sent") {

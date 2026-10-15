@@ -27,4 +27,11 @@ describe("MyApplications", () => {
     renderPage();
     expect(await screen.findByText("Sign in page")).toBeInTheDocument();
   });
+
+  it("does not sign a person out when the server can't be reached", async () => {
+    vi.spyOn(api, "getMe").mockResolvedValue("unavailable");
+    renderPage();
+    expect(await screen.findByText(/couldn't reach the Town's server/)).toBeInTheDocument();
+    expect(screen.queryByText("Sign in page")).not.toBeInTheDocument();
+  });
 });
