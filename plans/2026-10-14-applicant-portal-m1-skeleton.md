@@ -61,21 +61,22 @@ Caddy 2.
 
 Not code. The implementer **stops and reports** if any check fails.
 
-- [ ] **Step 1: A Docker runtime on the Mac.** No Docker is installed today. The chair picks one;
-  the free command-line option is:
+> **Changed 2026-10-14 by the chair: the dev platform is a VM, not the Mac.** No Docker runs on the
+> Mac. The VM is `ben@192.168.1.6` (Debian 13, 2 CPU, 4 GB; passwordless sudo; Docker 29.8 +
+> Compose 5.6; Python 3.14.3 via `uv` at `~/.local/bin/python3.14`; Node 24.22 from nodejs.org).
+> The Mac keeps the git checkout and the editor; **`portal/vm.sh`** syncs `portal/` to
+> `~/newcastle-czc/portal/` on the VM and runs commands there. Read every command in this plan
+> through that lens:
+>
+> - `cd portal/api && .venv/bin/pytest` → `portal/vm.sh run 'cd portal/api && .venv/bin/pytest'`
+> - `/opt/homebrew/bin/python3.14` → `python3.14` (on the VM)
+> - `docker …` → `sudo docker …` (`ben` is not in the `docker` group, by choice)
+> - Browser checks: run `portal/vm.sh tunnel` on the Mac, then use `localhost:5173` / `:8025` there.
+> - The `.venv` and `node_modules` live on the VM only.
 
-```bash
-brew install colima docker docker-compose
-```
+- [x] **Step 1: A Docker runtime** — on the VM (above).
 
-```bash
-colima start --cpu 2 --memory 4
-```
-
-Check: `docker info` prints a Server section.
-
-- [ ] **Step 2: Python 3.14 present.** Check: `/opt/homebrew/bin/python3.14 --version` prints
-  `Python 3.14.x` (it does as of 2026-10-14).
+- [x] **Step 2: Python 3.14 present** — on the VM (above).
 
 - [ ] **Step 3 (needed only for Task 8): VM details.** Host name or IP, SSH user, and the host name
   the portal will answer on (an interim name is fine — spec O7). The VM needs Docker Engine with the
