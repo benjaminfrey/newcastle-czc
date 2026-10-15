@@ -22,6 +22,13 @@ sync() {
     --exclude '.venv/' --exclude 'node_modules/' --exclude 'dist/' \
     --exclude '__pycache__/' --exclude '.pytest_cache/' --exclude '.env' \
     "$HERE/" "$VM:$REMOTE_ROOT/portal/"
+  # Reference data the GIS loaders read, kept at the same repo-relative paths on the VM.
+  (cd "$HERE/.." && rsync -azR \
+    data/street-types/districts.geojson \
+    source/exhibits/street-types/inventory.json \
+    source/exhibits/cross-sections/types.json \
+    build/permit-review/rulesets/adopted-v1.0/districts.json \
+    "$VM:$REMOTE_ROOT/")
 }
 
 case "${1:-}" in
