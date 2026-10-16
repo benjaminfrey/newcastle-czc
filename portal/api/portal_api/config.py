@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     # Only the dev VM sets allow_stale_parcels, so old lot lines never reach applicants.
     allow_stale_parcels: bool = False
     parcel_max_age_days: int = 1095
+    # The screener's rules start as drafts the chair approves one by one. Production
+    # refuses answers that rest on a draft; only development sets this.
+    allow_draft_rules: bool = False
     # Public property lookups per address per minute (spec §6). The map asks for many
     # tiles at once, so tiles have their own, larger allowance.
     lookup_limit_per_minute: int = 60

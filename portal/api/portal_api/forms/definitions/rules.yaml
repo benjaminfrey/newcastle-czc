@@ -1,0 +1,78 @@
+# The screener's rules, evaluated in `order` against the applicant's answers.
+# `when` is a condition in the portal's condition language (portal_api/forms/expr.py).
+# Outcome kinds: application, use_table, note, town_only, contact_town.
+# A rule with stop: true ends evaluation when it applies. Every rule is a draft
+# until the chair approves it; production refuses answers that rest on a draft.
+- id: civic-land
+  order: 10
+  when: {eq: [property.civic, true]}
+  outcome: {kind: town_only}
+  cite: "2.5.b.1"
+  stop: true
+  status: draft
+- id: use-from-table
+  order: 20
+  when: {all: [{has: [project, use]}, {known: use_key}]}
+  outcome: {kind: use_table}
+  cite: "8.15.b.1"
+  status: draft
+- id: use-not-chosen
+  order: 21
+  when: {all: [{has: [project, use]}, {not: {known: use_key}}]}
+  outcome: {kind: note, text: "Choose the use you have in mind to see which permit the Code calls for."}
+  cite: "8.15.b.1"
+  status: draft
+- id: small-project
+  order: 30
+  when: {all: [{has: [project, build]}, {lte: [building.gross_floor_area_sf, 10000]}]}
+  outcome: {kind: application, application: small_project_plan, certainty: needed}
+  cite: "8.10.b.1"
+  status: draft
+- id: large-project
+  order: 31
+  when: {all: [{has: [project, build]}, {gt: [building.gross_floor_area_sf, 10000]}]}
+  outcome: {kind: application, application: large_project_plan, certainty: needed}
+  cite: "8.11.b.2"
+  status: draft
+- id: building-size-unknown
+  order: 32
+  when: {all: [{has: [project, build]}, {not: {known: building.gross_floor_area_sf}}]}
+  outcome: {kind: note, text: "Up to 10,000 square feet of floor area is a Small Project Plan; more is a Large Project Plan. Measure the floor area of every storey you're adding."}
+  cite: "8.10.b.1"
+  status: draft
+- id: three-or-more-homes
+  order: 33
+  when: {all: [{has: [project, build]}, {gte: [building.dwelling_units, 3]}]}
+  outcome: {kind: application, application: subdivision, certainty: needed}
+  cite: "8.12.b.3"
+  status: draft
+- id: divide-three-or-more
+  order: 40
+  when: {all: [{has: [project, divide]}, {gte: [division.lots_after, 3]}]}
+  outcome: {kind: application, application: subdivision, certainty: needed}
+  cite: "8.12.b.1"
+  status: draft
+- id: divide-fewer
+  order: 41
+  when: {all: [{has: [project, divide]}, {lt: [division.lots_after, 3]}]}
+  outcome: {kind: contact_town, text: "Dividing into fewer than three lots isn't a subdivision under the Code, but other rules may still apply. The Code Enforcement Officer can tell you what you need."}
+  cite: "8.12.b.1"
+  status: draft
+- id: driveway
+  order: 50
+  when: {has: [project, driveway]}
+  outcome: {kind: application, application: entrance_permit, certainty: needed}
+  cite: "3.7.b.1"
+  status: draft
+- id: maine-dot
+  order: 51
+  when: {all: [{has: [project, driveway]}, {eq: [property.on_state_highway, true]}]}
+  outcome: {kind: note, text: "Your lot is on a State highway, so the Maine Department of Transportation must also approve the entrance. Bring a copy of their permit to the Town."}
+  cite: "3.12.d.1"
+  status: draft
+- id: something-else
+  order: 90
+  when: {has: [project, other]}
+  outcome: {kind: contact_town, text: "Tell the Code Enforcement Officer what you have in mind; they can say what, if anything, you need."}
+  cite: "8.9.c.1"
+  status: draft
