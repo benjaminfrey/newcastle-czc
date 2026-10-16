@@ -1,0 +1,189 @@
+{
+  "schema": "newcastle.ruleset-manifest/1.1.0",
+  "id": "87bafd7eb2854c20acf5d5649be79e18",
+  "ruleset_key": "adopted-v1.0",
+  "kind": "adopted-czc",
+  "title": "Newcastle Core Zoning Code (Adopted September 14, 2026 — v1.0)",
+  "label": "Newcastle Core Zoning Code (Adopted September 14, 2026 — v1.0)",
+  "status": "active",
+  "binding": true,
+  "article_scheme": "adopted-v1.0",
+  "adopted_date": "2026-09-14",
+  "adopted_on": "2026-09-14",
+  "built_at": "2026-09-15T00:37:22Z",
+  "builder_version": "ruleset_build/2.1.0 (build_edition)",
+  "files": {
+    "articles": "articles.json",
+    "definitions": "definitions.json",
+    "uses": "uses.json",
+    "use_matrix": "use-matrix.json",
+    "districts": "districts.json",
+    "clocks": "clocks.json",
+    "criteria_subdivision": "criteria-subdivision.json"
+  },
+  "content_sha256": {
+    "articles": "d64aeee9960bfc4776e652668ce5d628b9fe4741330ab53cf195eac9f6891249",
+    "definitions": "40df5b9ce1d9e3bc330563ffe0ea7530c87b581676f39aa66eb64d13cc026e88",
+    "uses": "cda36e53b7f71c16d0a70c8ef05813ca6e6a74ec99001cb7914d1085f67215de",
+    "use_matrix": "f8afb1ed8f52a6699202bacf5bf930f7eacd3f7962347accb66ce18b79ab41d4",
+    "districts": "d684bacdaeebda888c0d8f835b250ca12004e6a34b823c10d0ca4debb3dde479",
+    "clocks": "5ae11889086669d4af18f47851901cfb14b0bcb22833f6fb13c65a124ed31529",
+    "criteria_subdivision": "d8862d9ea2b2388c377024fe0a5d0f6b9965d39a317d4b8c08f5713f128c158c"
+  },
+  "counts": {
+    "articles": {
+      "total_nodes": 1878,
+      "by_article": {
+        "1": 55,
+        "2": 56,
+        "3": 285,
+        "4": 212,
+        "5": 289,
+        "6": 240,
+        "7": 217,
+        "8": 524
+      }
+    },
+    "definitions": {
+      "terms": 272
+    },
+    "uses": {
+      "uses": 64
+    },
+    "use_matrix": {
+      "districts": 13,
+      "uses": 63,
+      "cells": 819,
+      "by_code": {
+        "u": 218,
+        "rc": 53,
+        "sp": 59,
+        "ex": 40,
+        "": 450
+      },
+      "multi_status_cells": 1
+    },
+    "districts": {
+      "districts": 13,
+      "dimensions": 148,
+      "unresolved": 2
+    },
+    "clocks": {
+      "clocks": 22
+    },
+    "criteria_subdivision": {
+      "rules": 21,
+      "by_kind": {
+        "procedural": 3,
+        "judgement": 14,
+        "boolean": 3,
+        "numeric": 1
+      },
+      "judgement_letters": [
+        "c",
+        "d",
+        "e",
+        "f",
+        "g",
+        "h",
+        "i",
+        "j",
+        "k",
+        "l",
+        "m",
+        "q",
+        "s",
+        "t"
+      ]
+    }
+  },
+  "source_sha256": {
+    "v1.0:source/article-01-general.md": "42d476a7945518d8cab848316834a7edde29f86b95dc9a562f3ede0a872e359d",
+    "v1.0:source/article-02-data.json": "36de156df4d1bc2c4970e2a73a96bfd2b42a470b09ff0fe9d4ce319f50484609",
+    "v1.0:source/article-02-prefatory.md": "cee1edf1a84089ad3bd4c7796b8209dd024116a1eec9a5cdbc838db7ede02c21",
+    "v1.0:source/article-02.typ": "578fdaafeff8d522b76382d5a29bfbf874b08b5dc1b028efa05a2231b326b93b",
+    "v1.0:source/article-03-streets-roads-driveways.md": "cadf4253caa8e94d08a10c8fdd0dcfa8d3bb60ee5c43953469335e74317a6e15",
+    "v1.0:source/article-04-site-standards.md": "96447491ae54b95e1a535ceee40554e3e675a66b44be7eaa80620fbf44371d22",
+    "v1.0:source/article-05-building-standards.md": "90f92ac042c55b87a85e6ea2e666b6b17de0f1edf4378e6305911f410c213191",
+    "v1.0:source/article-06-design-standards.md": "fb8350c00113cc52430d7df8188a9cfe25ccb66be3dbfe94fe957cead9bab347",
+    "v1.0:source/article-07-use-standards.md": "b2bf05e5f0dd2ecabf61bfb8041d93fadf419f8dd36411a21792e19107ec7a64",
+    "v1.0:source/article-08-administration.md": "5f0a667ea91b6e7ec92dfdd39f63e164c20e71e0a17b0d739824e0f6670bc458",
+    "v1.0:source/article-09-definitions.md": "fbc2019f5d6f0f888a3dbe3a290017c23de7ada1b3dae209c5fc6a18c6c57048"
+  },
+  "provenance": {
+    "tag": "v1.0",
+    "tag_commit": "ea8402d118f87c6d0958ee71809b56fce5e43945",
+    "source_tree": "a52dbde8d3c3c7a4d350bcf8bd8f7fb04f26005e",
+    "frozen_from": "releases/v1.0/frozen-from.json",
+    "adopted_edition_md": {
+      "path": "releases/v1.0-adopted/Newcastle CZC (Adopted v1.0).md",
+      "sha256": "0e47a9abc86c5f8fb89d68b2826df7b7e84a435fcfa18b576bd6d948265e956d"
+    }
+  },
+  "supersedes": {
+    "ruleset_key": "adopted",
+    "id": "2c6efca9c9b841dd9ed2a44291818a6a",
+    "adopted_on": "2020-11-03"
+  },
+  "changes_from_superseded": {
+    "clock_source_text_reworded": [
+      {
+        "clock_key": "subdivision_hearing_decision",
+        "citation": {
+          "article": 8,
+          "section": "12",
+          "subsection": "e.5"
+        },
+        "superseded_text": "Within 30 days after determining application completeness, the Planning Board must hold a public hearing and make a decision to approve, approve with modifications, deny, or grant withdrawal without prejudice the application for final plat plan approval.",
+        "adopted_text": "Within 30 days after determining application completeness, the Planning Board must hold a public hearing and make a decision to approve, approve with modifications, deny, or grant withdrawal without prejudice the application for final plat approval."
+      }
+    ],
+    "subdivision_criteria_text_changed": [
+      {
+        "standard_letter": "b",
+        "quotation_marks_only": false,
+        "superseded_text": "The Newcastle Road, Driveway, and Entrance Ordinance.",
+        "adopted_text": "The standards of Article 3 Thoroughfares."
+      },
+      {
+        "standard_letter": "f",
+        "quotation_marks_only": true,
+        "superseded_text": "Erosion: The proposed subdivision will not cause unreasonable soil erosion or a reduction in the land’s capacity to hold water so that a dangerous or unhealthy condition results.",
+        "adopted_text": "Erosion: The proposed subdivision will not cause unreasonable soil erosion or a reduction in the land's capacity to hold water so that a dangerous or unhealthy condition results."
+      },
+      {
+        "standard_letter": "i",
+        "quotation_marks_only": true,
+        "superseded_text": "Municipal Solid Waste Disposal: The proposed subdivision will not cause an unreasonable burden on the municipality’s ability to dispose of solid waste, if municipal services are to be utilized.",
+        "adopted_text": "Municipal Solid Waste Disposal: The proposed subdivision will not cause an unreasonable burden on the municipality's ability to dispose of solid waste, if municipal services are to be utilized."
+      },
+      {
+        "standard_letter": "n",
+        "quotation_marks_only": true,
+        "superseded_text": "Flood Areas: Based on the Federal Emergency Management Agency’s Flood Boundary and Floodway Maps and Flood Insurance Rate Maps, if the subdivision, or any part of it, is in such an area, the subdivider will determine the 100-year flood elevation and flood hazard boundaries within the subdivision. The proposed subdivision plan must include a condition of plan approval requiring that principal structures in the subdivision will be constructed with their lowest floor, including the basement, at least three feet above the 100-year flood elevation.",
+        "adopted_text": "Flood Areas: Based on the Federal Emergency Management Agency's Flood Boundary and Floodway Maps and Flood Insurance Rate Maps, if the subdivision, or any part of it, is in such an area, the subdivider will determine the 100-year flood elevation and flood hazard boundaries within the subdivision. The proposed subdivision plan must include a condition of plan approval requiring that principal structures in the subdivision will be constructed with their lowest floor, including the basement, at least three feet above the 100-year flood elevation."
+      },
+      {
+        "standard_letter": "p",
+        "quotation_marks_only": true,
+        "superseded_text": "River, Stream, or Brook: Any river, stream or brook within or abutting the proposed subdivision has been identified on any maps submitted as part of the application. For purposes of this section, “river, stream or brook” has the same meaning as in Title 38, Section 480-B, subsection 9.",
+        "adopted_text": "River, Stream, or Brook: Any river, stream or brook within or abutting the proposed subdivision has been identified on any maps submitted as part of the application. For purposes of this section, \"river, stream or brook\" has the same meaning as in Title 38, Section 480-B, subsection 9."
+      },
+      {
+        "standard_letter": "s",
+        "quotation_marks_only": false,
+        "superseded_text": "Lake Phosphorus Concentration: The long-term cumulative effects of the proposed subdivision will not unreasonably increase the phosphorus concentration in a Great Pond, (as defined in MRSA Title 38 Section 480-B), during the construction phase and life of the proposed subdivision, or in the absence of a Great Pond, otherwise cause phosphorous concentration in fresh water bodies.",
+        "adopted_text": "Lake Phosphorus Concentration: The long-term cumulative effects of the proposed subdivision will not unreasonably increase the phosphorous concentration in a Great Pond, (as defined in MRSA Title 38 Section 480-B), during the construction phase and life of the proposed subdivision, or in the absence of a Great Pond, otherwise cause phosphorous concentration in fresh water bodies."
+      }
+    ],
+    "use_matrix_cells_changed": [
+      {
+        "district_key": "d3",
+        "use_key": "retail_service_general",
+        "superseded_code": "rc",
+        "adopted_code": "rc sp"
+      }
+    ],
+    "district_dimensions_changed": []
+  }
+}
