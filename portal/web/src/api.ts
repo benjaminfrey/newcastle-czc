@@ -98,11 +98,13 @@ export type ScreenerResult = {
 };
 export type UseGroup = { key: string; plain: string; uses: { use_key: string; code_name: string; example: string; definition: string }[] };
 // "not_approved": the answer rests on screener rules the chair has not approved yet.
-type Refusal = "not_approved" | "busy" | "unavailable";
+// "invalid": the API could not use the answers (HTTP 422) — retrying won't help.
+type Refusal = "not_approved" | "busy" | "unavailable" | "invalid";
 
 async function refusal(r: Response | null): Promise<Refusal | null> {
   if (!r) return "unavailable";
   if (r.status === 429) return "busy";
+  if (r.status === 422) return "invalid";
   if (r.status === 503) {
     const body = (await r.json().catch(() => ({}))) as { detail?: string };
     return body.detail === "screener_not_approved" ? "not_approved" : "unavailable";

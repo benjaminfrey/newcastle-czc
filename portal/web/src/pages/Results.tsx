@@ -25,10 +25,11 @@ export default function Results() {
     runScreener({
       ...answers,
       property: { district_codes: codes, on_state_highway: property?.on_state_highway ?? null,
-                  civic: codes.includes("SD-Civic") },
+                  civic: false },  // the server decides whether the lot is wholly Civic
     }).then((r) => {
       if (r === "not_approved") setProblem("This tool isn't ready yet. Please contact the Town Office.");
       else if (r === "busy") setProblem("Please wait a minute and try again.");
+      else if (r === "invalid") setProblem("Some of your answers couldn't be used. Please go back and check them.");
       else if (r === "unavailable") setProblem("We couldn't reach the Town's server. Please try again.");
       else setResult(r);
     });
@@ -40,7 +41,7 @@ export default function Results() {
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-xl font-semibold">Here's what you'll need</h1>
-      {result.outcomes.length === 0 && result.not_listed.length === 0 && (
+      {result.outcomes.length === 0 && result.not_listed.length === 0 && result.notes.length === 0 && (
         <p>From your answers, the Code doesn't call for any of the applications this site covers.</p>
       )}
       {result.outcomes.map((o) => (
@@ -48,6 +49,7 @@ export default function Results() {
           <Card.Header>
             <Card.Title>{o.code_name}</Card.Title>
             <Card.Description>{o.plain}</Card.Description>
+            <p className="text-sm font-semibold">{o.certainty === "needed" ? "The Code calls for this." : "You may need this."}</p>
           </Card.Header>
           <Card.Content className="flex flex-col gap-1">
             {o.district && <p>For the part of your lot in the {o.district_name ?? o.district} district.</p>}

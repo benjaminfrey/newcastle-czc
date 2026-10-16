@@ -95,3 +95,28 @@ were deferred:
   fails on Z/M geometries (`ST_Force2D`).
 - A missing basemap file falls through Caddy's `try_files` to `index.html` (200), breaking the
   map without a clear error.
+
+## Deferred from the M3 review
+
+One fresh whole-branch review ran on M3 (no Critical findings). Fixed: a two-lot split was told it
+"isn't a subdivision" (false within 5 years of an earlier division); Small/Large Project Plan now
+asks the kind of work (renovation and parking triggers, §11.b.3–4); uncertain answers say "you may
+need"; the draft guard refuses while any entry is a draft; only a wholly-Civic lot is town-only
+(decided by the server); the MaineDOT note is conditional and shows when the road is unknown;
+subdivision counts new homes; bad numbers get a plain message instead of a dead end; unknown answer
+fields are refused. Readings these fixes rest on are questions 3–7 on the review sheet. Deferred
+Minor findings:
+
+- "Marine special district district": special-district names repeat "district" on results cards.
+- After a screener run, "Look up a property" from Home jumps to the old results (answers stay in
+  the tab); clear them at the end or carry the flow in the URL.
+- Applicant text written in the engine and pages (the not-listed/variance sentence, "Find your
+  property first", "doesn't call for any…") is not on the review sheet for approval; manual
+  "I'm not sure" gets "Find your property first" though a property was entered.
+- The clock check doesn't enforce that a clock's `applies_to` lists the application (correct today).
+- Evaluator parity: `eq` with a list compares deeply in Python, by reference in TypeScript; TS
+  `get` uses `in` (prototype keys). Reject non-scalar `eq`/`ne`/`has` values in `validate`; use
+  `Object.hasOwn`. (The TS evaluator isn't used yet.)
+- A traced district the Code doesn't have (e.g. "SD-Shoreland") is skipped silently by the use table.
+- Bed & Breakfast example says "where the owner lives"; the Code says "a permanent resident".
+- Results card titles render smaller than body text (HeroUI Card.Title) — styling polish.

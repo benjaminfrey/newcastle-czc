@@ -5,7 +5,13 @@ export type ProjectKind = "build" | "use" | "driveway" | "divide" | "other";
 export type ScreenerAnswers = {
   project: ProjectKind[];
   use_key: string | null;
-  building: { kind: "new" | "addition" | "renovation" | null; gross_floor_area_sf: number | null; dwelling_units: number | null };
+  building: {
+    kind: "new" | "addition" | "renovation" | "site" | null;
+    gross_floor_area_sf: number | null; // being built or added
+    total_floor_area_sf: number | null; // the whole building, for renovations
+    parking_spaces: number | null;
+    new_dwelling_units: number | null; // homes being built or placed, not ones already there
+  };
   division: { lots_after: number | null };
 };
 

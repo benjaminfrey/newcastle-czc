@@ -16,7 +16,7 @@ def draft_client(engine, settings, outbox):
 
 def answers(**kw):
     base = {"project": ["use"], "property": {"district_codes": ["D2"], "on_state_highway": False, "civic": False},
-            "use_key": None, "building": {"kind": None, "gross_floor_area_sf": None, "dwelling_units": None},
+            "use_key": None, "building": {"kind": None, "gross_floor_area_sf": None, "new_dwelling_units": None},
             "division": {"lots_after": None}}
     base.update(kw)
     return base
@@ -70,19 +70,21 @@ def test_no_district_yet_asks_for_the_property(draft_client):
 
 
 def test_small_and_large_project_by_floor_area(draft_client):
-    small = draft_client.post("/api/screener", json=answers(project=["build"], building={"kind": "new", "gross_floor_area_sf": 10000, "dwelling_units": 1}))
-    large = draft_client.post("/api/screener", json=answers(project=["build"], building={"kind": "new", "gross_floor_area_sf": 10001, "dwelling_units": 1}))
+    small = draft_client.post("/api/screener", json=answers(project=["build"], building={"kind": "new", "gross_floor_area_sf": 10000, "new_dwelling_units": 1}))
+    large = draft_client.post("/api/screener", json=answers(project=["build"], building={"kind": "new", "gross_floor_area_sf": 10001, "new_dwelling_units": 1}))
     assert {a for a, _ in _apps(small)} == {"small_project_plan"}
     assert {a for a, _ in _apps(large)} == {"large_project_plan"}
+    small_o = next(o for o in small.json()["outcomes"])
+    assert small_o["why"]["cite"] == "8.10.b.1" and small_o["certainty"] == "needed"
 
 
 def test_unknown_building_size_gives_both_with_the_threshold(draft_client):
-    res = draft_client.post("/api/screener", json=answers(project=["build"])).json()
+    res = draft_client.post("/api/screener", json=answers(project=["build"], building={"kind": "new"})).json()
     assert any("10,000 square feet" in n["text"] for n in res["notes"])
 
 
 def test_three_homes_is_a_subdivision(draft_client):
-    res = draft_client.post("/api/screener", json=answers(project=["build"], building={"kind": "new", "gross_floor_area_sf": 3000, "dwelling_units": 3}))
+    res = draft_client.post("/api/screener", json=answers(project=["build"], building={"kind": "new", "gross_floor_area_sf": 3000, "new_dwelling_units": 3}))
     assert "subdivision" in {a for a, _ in _apps(res)}
 
 
@@ -98,7 +100,7 @@ def test_driveway_on_a_state_highway_adds_maine_dot(draft_client):
 
 
 def test_civic_land_is_town_only(draft_client):
-    res = draft_client.post("/api/screener", json=answers(project=["build", "use"], use_key=_first_cell("u"),
+    res = draft_client.post("/api/screener", json=answers(project=["build", "use"], use_key=_first_cell("u"), building={"kind": "new", "gross_floor_area_sf": 500},
         property={"district_codes": ["SD-Civic"], "on_state_highway": False, "civic": True})).json()
     assert res["outcomes"] == [] and res["town_only"] is True
 

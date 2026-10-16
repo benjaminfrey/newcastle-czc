@@ -52,7 +52,7 @@
   status: draft
 - key: subdivision
   code_name: Subdivision
-  plain: The Planning Board's review of dividing land into three or more lots, or building three or more homes.
+  plain: The Planning Board's review of dividing land into three or more lots within five years, or creating three or more homes.
   reviewer: Planning Board
   cite: "8.12.b.1"
   clock_keys: []

@@ -25,7 +25,7 @@ const renderPage = () => render(<MemoryRouter><Results /></MemoryRouter>);
 beforeEach(() => {
   sessionStorage.clear();
   saveAnswers({ project: ["use"], use_key: "restaurant_cafe",
-                building: { kind: null, gross_floor_area_sf: null, dwelling_units: null }, division: { lots_after: null } });
+                building: { kind: null, gross_floor_area_sf: null, total_floor_area_sf: null, parking_spaces: null, new_dwelling_units: null }, division: { lots_after: null } });
   saveProperty({ source: "lookup", parcel_id: 229, map_lot: "004-036", district_code: "D1", district_codes: ["D1"],
                  on_state_highway: false, disputed: false, note: "", as_of: "2026-10-15" });
 });
@@ -90,5 +90,25 @@ describe("Results", () => {
     await screen.findByText("Use Permit");
     const text = container.textContent!.toLowerCase();
     for (const w of VERDICT_WORDS) expect(text).not.toContain(w);
+  });
+
+  it("says 'you may need' when the answer isn't certain", async () => {
+    vi.spyOn(api, "runScreener").mockResolvedValue({ ...RESULT, outcomes: [{ ...USE_PERMIT, certainty: "may_need" }] });
+    renderPage();
+    expect(await screen.findByText("You may need this.")).toBeInTheDocument();
+  });
+
+  it("never says nothing is needed beside a caveat", async () => {
+    vi.spyOn(api, "runScreener").mockResolvedValue({ ...RESULT, outcomes: [],
+      notes: [{ kind: "contact_town", text: "Talk to the Code Enforcement Officer.", cite: "8.9.c.1" }] });
+    renderPage();
+    expect(await screen.findByText("Talk to the Code Enforcement Officer.")).toBeInTheDocument();
+    expect(screen.queryByText(/doesn't call for any/)).not.toBeInTheDocument();
+  });
+
+  it("points back to the answers when they can't be used", async () => {
+    vi.spyOn(api, "runScreener").mockResolvedValue("invalid");
+    renderPage();
+    expect(await screen.findByText(/Some of your answers couldn't be used/)).toBeInTheDocument();
   });
 });

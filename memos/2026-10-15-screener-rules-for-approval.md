@@ -14,9 +14,13 @@ approved_on: 2026-10-15
 
 1. **An owner's own home.** The use table has no use for a home the owner lives in: *Residence* is defined as a dwelling "rented, leased, let, or hired out". So someone building their own house is told only about the Small Project Plan, and has no use to choose. Is that right, or does an owner-occupied home need something more?
 2. **Residential Companion permits have no time limit in the Code's clocks.** §17.c.1 says the procedure follows §15.D, but the clock for §15.d.1 lists only Use and Expanded Use permits. The screener therefore shows no time limit for a Residential Companion permit. Should it show 30 days?
-3. **Dividing into fewer than three lots** is not a subdivision (§12.b.1). The draft tells the person to ask the Code Enforcement Officer rather than guessing what else applies.
-4. **A Large Project Plan is the Code Enforcement Officer's** (§11.c.1), though §11.d.4 also gives the Planning Board a hearing and decision in some cases. The draft names the CEO as reviewer.
-5. **Use-table codes become applications** as follows: `u` → use permit, `rc` → residential companion, `ex` → expanded use, `sp` → special permit; a blank cell means the Code doesn't list the use in that district.
+3. **Dividing into fewer than three lots.** §12.b.1 counts 3 or more lots *within any 5-year period*, so a two-lot split can still be a subdivision if the parcel was divided recently. The screener does not ask about earlier divisions; it tells the person this and sends them to the Code Enforcement Officer. Should it ask instead?
+4. **Large additions.** §10.b.3 lists "additions of building components" under the Small Project Plan with no size limit, while §11.b.2–3 make new buildings and renovations over 10,000 sf a Large Project Plan. The screener tells anyone adding on that they *may* need a Small Project Plan and that the Code Enforcement Officer confirms which review applies. Is a large addition ever a Large Project Plan?
+5. **Renovations are measured by the whole building** (§10.b.2, §11.b.3: "building renovations up to / over 10,000 sf in gross floor area"). The screener asks for the whole building's floor area. Is that the right reading, or is it the area being renovated?
+6. **MaineDOT entrance permits.** §12.d.1 covers "an entrance onto a State Highway"; §8.c.1 says "State Highway (R4 or R5)". The Street Type inventory also has 14 State-owned S1 Main Street segments, named Main Street (U.S. Route 1B) and River Road. The screener shows the MaineDOT note, worded "if the entrance will be onto a State highway", when the lot touches any State-owned road, or when it doesn't know. Should S1 State routes count?
+7. **Subdivision by homes** counts homes being built or placed (§12.b.3, "construction or placement of 3 or more dwelling units"), not homes already on the lot. §12.b.3 states no time period; §12.b.1's 5-year window is for lots. Should homes added over several years be counted together?
+8. **A Large Project Plan is the Code Enforcement Officer's** (§11.c.1), though §11.d.4 also gives the Planning Board a hearing and decision in some cases. The draft names the CEO as reviewer.
+9. **Use-table codes become applications** as follows: `u` → use permit, `rc` → residential companion, `ex` → expanded use, `sp` → special permit; a blank cell means the Code doesn't list the use in that district.
 
 ## Applications (`applications.yaml`)
 
@@ -82,7 +86,7 @@ approved_on: 2026-10-15
 
 ### `subdivision` — Subdivision
 
-- Applicants read: The Planning Board's review of dividing land into three or more lots, or building three or more homes.
+- Applicants read: The Planning Board's review of dividing land into three or more lots within five years, or creating three or more homes.
 - Reviewer: Planning Board
 - Time limits shown: none
 - Apply on this site: no (Town Office)
@@ -129,33 +133,137 @@ approved_on: 2026-10-15
 
   > Applies to all applications seeking to engage in a new Use or a change of Use on a parcel of land, in a building, or group of buildings.
 
-### `small-project`
+### `new-building-small`
 
-- When: `{'all': [{'has': ['project', 'build']}, {'lte': ['building.gross_floor_area_sf', 10000]}]}`
+- When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'new']}, {'lte': ['building.gross_floor_area_sf', 10000]}]}`
 - Then: names the small project plan
 - Rests on Art. 8 §10.b.1:
 
   > All new buildings and accessory buildings up to 10,000 sf in gross floor area.
 
-### `large-project`
+### `new-building-large`
 
-- When: `{'all': [{'has': ['project', 'build']}, {'gt': ['building.gross_floor_area_sf', 10000]}]}`
+- When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'new']}, {'gt': ['building.gross_floor_area_sf', 10000]}]}`
 - Then: names the large project plan
 - Rests on Art. 8 §11.b.2:
 
   > All new buildings and accessory buildings over 10,000 sf in gross floor area.
 
-### `building-size-unknown`
+### `new-building-size-unknown-small`
 
-- When: `{'all': [{'has': ['project', 'build']}, {'not': {'known': 'building.gross_floor_area_sf'}}]}`
-- Then: Up to 10,000 square feet of floor area is a Small Project Plan; more is a Large Project Plan. Measure the floor area of every storey you're adding.
+- When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'new']}, {'not': {'known': 'building.gross_floor_area_sf'}}]}`
+- Then: names the small project plan
 - Rests on Art. 8 §10.b.1:
 
   > All new buildings and accessory buildings up to 10,000 sf in gross floor area.
 
-### `three-or-more-homes`
+### `new-building-size-unknown-large`
 
-- When: `{'all': [{'has': ['project', 'build']}, {'gte': ['building.dwelling_units', 3]}]}`
+- When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'new']}, {'not': {'known': 'building.gross_floor_area_sf'}}]}`
+- Then: names the large project plan
+- Rests on Art. 8 §11.b.2:
+
+  > All new buildings and accessory buildings over 10,000 sf in gross floor area.
+
+### `new-building-size-unknown-note`
+
+- When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'new']}, {'not': {'known': 'building.gross_floor_area_sf'}}]}`
+- Then: A new building of up to 10,000 square feet of floor area is a Small Project Plan; a larger one is a Large Project Plan. Count every storey.
+- Rests on Art. 8 §10.b.1:
+
+  > All new buildings and accessory buildings up to 10,000 sf in gross floor area.
+
+### `addition`
+
+- When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'addition']}]}`
+- Then: names the small project plan
+- Rests on Art. 8 §10.b.3:
+
+  > Additions of building components.
+
+### `addition-note`
+
+- When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'addition']}]}`
+- Then: The Code lists additions under the Small Project Plan. The Code Enforcement Officer confirms which review applies to your addition.
+- Rests on Art. 8 §10.b.3:
+
+  > Additions of building components.
+
+### `renovation-small`
+
+- When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'renovation']}, {'lte': ['building.total_floor_area_sf', 10000]}]}`
+- Then: names the small project plan
+- Rests on Art. 8 §10.b.2:
+
+  > Building renovations up to 10,000 sf in gross floor area.
+
+### `renovation-large`
+
+- When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'renovation']}, {'gt': ['building.total_floor_area_sf', 10000]}]}`
+- Then: names the large project plan
+- Rests on Art. 8 §11.b.3:
+
+  > Building renovations over 10,000 sf in gross floor area.
+
+### `renovation-size-unknown-small`
+
+- When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'renovation']}, {'not': {'known': 'building.total_floor_area_sf'}}]}`
+- Then: names the small project plan
+- Rests on Art. 8 §10.b.2:
+
+  > Building renovations up to 10,000 sf in gross floor area.
+
+### `renovation-size-unknown-large`
+
+- When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'renovation']}, {'not': {'known': 'building.total_floor_area_sf'}}]}`
+- Then: names the large project plan
+- Rests on Art. 8 §11.b.3:
+
+  > Building renovations over 10,000 sf in gross floor area.
+
+### `site-work`
+
+- When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'site']}, {'not': {'gt': ['building.parking_spaces', 50]}}]}`
+- Then: names the small project plan
+- Rests on Art. 8 §10.b.4:
+
+  > Site improvements.
+
+### `site-work-unknown-parking`
+
+- When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'site']}, {'not': {'known': 'building.parking_spaces'}}]}`
+- Then: names the small project plan
+- Rests on Art. 8 §10.b.4:
+
+  > Site improvements.
+
+### `large-parking`
+
+- When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'site']}, {'gt': ['building.parking_spaces', 50]}]}`
+- Then: names the large project plan
+- Rests on Art. 8 §11.b.4:
+
+  > Site improvements creating more than 50 parking spaces.
+
+### `build-kind-unknown`
+
+- When: `{'all': [{'has': ['project', 'build']}, {'not': {'known': 'building.kind'}}]}`
+- Then: Tell us whether you're putting up a new building, adding on, renovating, or working on the site, so we can say which review applies.
+- Rests on Art. 8 §10.b.1:
+
+  > All new buildings and accessory buildings up to 10,000 sf in gross floor area.
+
+### `large-project-impacts`
+
+- When: `{'has': ['project', 'build']}`
+- Then: Whatever its size, a project with significant effects — such as blasting, major grading, noise or glare, or work in the road — is a Large Project Plan.
+- Rests on Art. 8 §11.b.1:
+
+  > Projects that create significant on- or off-site impact.
+
+### `three-or-more-new-homes`
+
+- When: `{'all': [{'has': ['project', 'build']}, {'gte': ['building.new_dwelling_units', 3]}]}`
 - Then: names the subdivision
 - Rests on Art. 8 §12.b.3:
 
@@ -172,7 +280,15 @@ approved_on: 2026-10-15
 ### `divide-fewer`
 
 - When: `{'all': [{'has': ['project', 'divide']}, {'lt': ['division.lots_after', 3]}]}`
-- Then: Dividing into fewer than three lots isn't a subdivision under the Code, but other rules may still apply. The Code Enforcement Officer can tell you what you need.
+- Then: Dividing into fewer than three lots can still be a subdivision if the land was divided before within the last five years. The Code Enforcement Officer can tell you what applies.
+- Rests on Art. 8 §12.b.1:
+
+  > The division of a parcel of land into 3 or more lots within any 5 year period that begins on or after September 23, 1971.
+
+### `divide-lots-unknown`
+
+- When: `{'all': [{'has': ['project', 'divide']}, {'not': {'known': 'division.lots_after'}}]}`
+- Then: names the subdivision
 - Rests on Art. 8 §12.b.1:
 
   > The division of a parcel of land into 3 or more lots within any 5 year period that begins on or after September 23, 1971.
@@ -187,11 +303,27 @@ approved_on: 2026-10-15
 
 ### `maine-dot`
 
-- When: `{'all': [{'has': ['project', 'driveway']}, {'eq': ['property.on_state_highway', True]}]}`
-- Then: Your lot is on a State highway, so the Maine Department of Transportation must also approve the entrance. Bring a copy of their permit to the Town.
+- When: `{'all': [{'has': ['project', 'driveway']}, {'any': [{'eq': ['property.on_state_highway', True]}, {'not': {'known': 'property.on_state_highway'}}]}]}`
+- Then: If the entrance will be onto a State highway, the Maine Department of Transportation must also approve it. Bring a copy of their permit to the Town.
 - Rests on Art. 3 §12.d.1:
 
   > An entrance onto a State Highway requires a MaineDOT entrance permit under 23 MRSA §704 in addition to any permit required by this Article.
+
+### `residential-conversion`
+
+- When: `{'all': [{'has': ['project', 'use']}, {'oneof': ['use_key', ['residence', 'rooming_house', 'tourist_rental', 'dormitory']]}]}`
+- Then: Dividing a building into three or more homes is a subdivision, reviewed by the Planning Board.
+- Rests on Art. 8 §12.b.2:
+
+  > The division of structures into 3 or more dwelling units.
+
+### `civic-part`
+
+- When: `{'all': [{'has': ['property.district_codes', 'SD-Civic']}, {'ne': ['property.civic', True]}]}`
+- Then: Part of this lot is Town-owned land in the Civic district. The answers here are for the rest of the lot.
+- Rests on Art. 2 §5.b.1:
+
+  > Lots designated on the Zoning Map as SD-Civic are municipally owned and not subject to the standards of this Ordinance.
 
 ### `something-else`
 

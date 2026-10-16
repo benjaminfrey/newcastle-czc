@@ -15,6 +15,7 @@ export default function UsePicker() {
     getUseGroups().then((g) => {
       if (g === "not_approved") setProblem("This list isn't ready yet. Please contact the Town Office.");
       else if (g === "busy") setProblem("Please wait a minute and try again.");
+      else if (g === "invalid") setProblem("Something went wrong. Please start again.");
       else if (g === "unavailable") setProblem("We couldn't reach the Town's server. Please try again.");
       else setGroups(g);
     });

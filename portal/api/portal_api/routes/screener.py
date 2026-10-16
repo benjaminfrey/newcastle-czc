@@ -19,10 +19,11 @@ def screener(answers: Answers, request: Request):
     defs = load_definitions(ruleset)
     if answers.use_key is not None and answers.use_key not in {u["use_key"] for u in ruleset.uses}:
         raise HTTPException(status_code=422, detail="unknown_use")
-    result = run(answers.model_dump(), ruleset, defs)
-    if result["drafts_used"] and not request.app.state.settings.allow_draft_rules:
+    # Refuse while ANY entry is a draft, not only those an answer used: an answer where
+    # nothing applied ("the Code calls for nothing") rests on the drafts just as much.
+    if defs.drafts() and not request.app.state.settings.allow_draft_rules:
         return _not_approved()
-    return result
+    return run(answers.model_dump(), ruleset, defs)
 
 
 @router.get("/api/screener/uses", dependencies=[Depends(lookup_limit)])

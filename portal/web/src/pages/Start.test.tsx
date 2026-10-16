@@ -18,12 +18,44 @@ const renderPage = () =>
 beforeEach(() => sessionStorage.clear());
 
 describe("Start", () => {
-  it("asks floor area and homes only when building", async () => {
+  it("asks what kind of building work, and the right size question for it", async () => {
     renderPage();
     expect(screen.queryByLabelText(/How much floor area/)).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole("checkbox", { name: "Build something new or add on" }));
-    expect(screen.getByLabelText(/How much floor area/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/How many homes/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("radio", { name: "A new building" }));
+    expect(screen.getByLabelText(/How much floor area will the new building have/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/How many new homes/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("radio", { name: "Renovating a building" }));
+    expect(screen.getByLabelText(/floor area of the whole building/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("radio", { name: "Work on the site only (parking, grading, landscaping)" }));
+    expect(screen.getByLabelText(/How many parking spaces/)).toBeInTheDocument();
+  });
+
+  it("asks what kind of building work before going on", async () => {
+    renderPage();
+    await userEvent.click(screen.getByRole("checkbox", { name: "Build something new or add on" }));
+    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    expect(await screen.findByText(/Choose what kind of building work/)).toBeInTheDocument();
+  });
+
+  it("understands numbers written with commas or units", async () => {
+    renderPage();
+    await userEvent.click(screen.getByRole("checkbox", { name: "Build something new or add on" }));
+    await userEvent.click(screen.getByRole("radio", { name: "A new building" }));
+    await userEvent.type(screen.getByLabelText(/How much floor area/), "2,400 sq ft");
+    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    expect(await screen.findByText("Where page")).toBeInTheDocument();
+    expect(loadAnswers()?.building.gross_floor_area_sf).toBe(2400);
+  });
+
+  it("explains a count that isn't a whole number", async () => {
+    renderPage();
+    await userEvent.click(screen.getByRole("checkbox", { name: "Build something new or add on" }));
+    await userEvent.click(screen.getByRole("radio", { name: "A new building" }));
+    await userEvent.type(screen.getByLabelText(/How many new homes/), "2.5");
+    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    expect(await screen.findByText(/whole number/)).toBeInTheDocument();
+    expect(loadAnswers()).toBeNull();
   });
 
   it("asks how many lots only when dividing land", async () => {
@@ -36,15 +68,17 @@ describe("Start", () => {
     renderPage();
     await userEvent.click(screen.getByRole("checkbox", { name: "Build something new or add on" }));
     await userEvent.click(screen.getByRole("checkbox", { name: "Start a business or change how a building is used" }));
+    await userEvent.click(screen.getByRole("radio", { name: "A new building" }));
     await userEvent.type(screen.getByLabelText(/How much floor area/), "2400");
     await userEvent.click(screen.getByRole("button", { name: "Next" }));
     expect(await screen.findByText("Where page")).toBeInTheDocument();
-    expect(loadAnswers()).toMatchObject({ project: ["build", "use"], building: { gross_floor_area_sf: 2400 } });
+    expect(loadAnswers()).toMatchObject({ project: ["build", "use"], building: { kind: "new", gross_floor_area_sf: 2400 } });
   });
 
   it("leaves floor area unknown when left blank", async () => {
     renderPage();
     await userEvent.click(screen.getByRole("checkbox", { name: "Build something new or add on" }));
+    await userEvent.click(screen.getByRole("radio", { name: "A new building" }));
     await userEvent.click(screen.getByRole("button", { name: "Next" }));
     expect(await screen.findByText("Where page")).toBeInTheDocument();
     expect(loadAnswers()?.building.gross_floor_area_sf).toBeNull();

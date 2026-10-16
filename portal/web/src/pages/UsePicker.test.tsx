@@ -29,7 +29,7 @@ const renderPage = () =>
 
 beforeEach(() => {
   sessionStorage.clear();
-  saveAnswers({ project: ["use"], use_key: null, building: { kind: null, gross_floor_area_sf: null, dwelling_units: null },
+  saveAnswers({ project: ["use"], use_key: null, building: { kind: null, gross_floor_area_sf: null, total_floor_area_sf: null, parking_spaces: null, new_dwelling_units: null },
                 division: { lots_after: null } });
 });
 
