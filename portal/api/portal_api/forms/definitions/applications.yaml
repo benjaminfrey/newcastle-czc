@@ -1,0 +1,68 @@
+# The applications the screener can name. Every entry is a draft until the chair
+# approves it (status: approved, approved_by, approved_on). code_name is the Code's
+# own name; plain is what applicants read. clock_keys name entries in the ruleset's
+# clocks.json; an application no clock covers shows no time limit.
+- key: use_permit
+  code_name: Use Permit
+  plain: Permission to start a new use of land or a building, or to change from one use to another.
+  reviewer: Code Enforcement Officer
+  cite: "8.15.b.1"
+  clock_keys: [use_permit_decision]
+  in_portal: true
+  status: draft
+- key: residential_companion
+  code_name: Residential Companion Use Permit
+  plain: Permission for a use that goes along with a home on the same lot.
+  reviewer: Code Enforcement Officer
+  cite: "8.17.b.1"
+  clock_keys: []
+  in_portal: false
+  status: draft
+- key: expanded_use
+  code_name: Expanded Use Permit
+  plain: Permission for a use the Code normally places in busier districts.
+  reviewer: Planning Board
+  cite: "8.16.b.1"
+  clock_keys: [use_permit_decision]
+  in_portal: false
+  status: draft
+- key: special_permit
+  code_name: Special Permit
+  plain: A Planning Board decision, after a public hearing, on a use the Code allows only case by case.
+  reviewer: Planning Board
+  cite: "8.18.b.1"
+  clock_keys: [special_permit_review_hearing, special_permit_decision]
+  in_portal: false
+  status: draft
+- key: small_project_plan
+  code_name: Small Project Plan
+  plain: The Code Enforcement Officer's review of a new building, addition or site change up to 10,000 square feet.
+  reviewer: Code Enforcement Officer
+  cite: "8.10.b.1"
+  clock_keys: [small_project_decision]
+  in_portal: true
+  status: draft
+- key: large_project_plan
+  code_name: Large Project Plan
+  plain: A fuller review of a building over 10,000 square feet, a large parking lot, or a project with big effects on its surroundings.
+  reviewer: Code Enforcement Officer
+  cite: "8.11.b.2"
+  clock_keys: [large_project_ceo_decision]
+  in_portal: false
+  status: draft
+- key: subdivision
+  code_name: Subdivision
+  plain: The Planning Board's review of dividing land into three or more lots within five years, or creating three or more homes.
+  reviewer: Planning Board
+  cite: "8.12.b.1"
+  clock_keys: []
+  in_portal: false
+  status: draft
+- key: entrance_permit
+  code_name: Driveway and Entrance Permit
+  plain: Permission for a new driveway or entrance onto a street or road, or for moving one.
+  reviewer: Code Enforcement Officer
+  cite: "3.13.c.1"
+  clock_keys: []
+  in_portal: true
+  status: draft

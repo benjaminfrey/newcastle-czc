@@ -117,6 +117,7 @@ describe("Where", () => {
     await userEvent.click(await screen.findByRole("button", { name: "Yes, this is my property" }));
     expect(await screen.findByText(/Saved/)).toBeInTheDocument();
     expect(loadProperty()).toEqual({ source: "lookup", parcel_id: 229, map_lot: "004-036", district_code: "D2",
+                                     district_codes: ["D2", "D1"], on_state_highway: false,
                                      disputed: false, note: "", as_of: "2012-04-01" });
   });
 
@@ -141,7 +142,8 @@ describe("Where", () => {
     await userEvent.click(screen.getByRole("radio", { name: "Rural (D1)" }));
     await userEvent.click(screen.getByRole("button", { name: "Save" }));
     expect(await screen.findByText(/Saved/)).toBeInTheDocument();
-    expect(loadProperty()).toMatchObject({ source: "manual", parcel_id: null, map_lot: "4-36", district_code: "D1" });
+    expect(loadProperty()).toMatchObject({ source: "manual", parcel_id: null, map_lot: "4-36", district_code: "D1",
+                                           district_codes: ["D1"], on_state_highway: null });
   });
 
   it("offers manual entry when the person can't find their property", async () => {

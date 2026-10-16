@@ -82,6 +82,46 @@ export async function getProperty(id: number): Promise<Facts | null | "unavailab
   return r.ok ? ((await r.json()) as Facts) : null;
 }
 
+// ---- "Do I need a permit?" (public; no sign-in) ----
+
+export type Outcome = {
+  application: string; code_name: string; plain: string; reviewer: string;
+  certainty: "needed" | "may_need"; district: string | null; district_name: string | null; in_portal: boolean;
+  days: { label: string; days: number; basis: string; cite: string }[];
+  why: { cite: string; text: string };
+};
+export type ScreenerNote = { kind: "note" | "contact_town"; text: string; cite: string };
+export type ScreenerResult = {
+  outcomes: Outcome[]; notes: ScreenerNote[];
+  not_listed: { district: string; use: string; text: string; cite: string }[];
+  town_only: boolean; drafts_used: string[];
+};
+export type UseGroup = { key: string; plain: string; uses: { use_key: string; code_name: string; example: string; definition: string }[] };
+// "not_approved": the answer rests on screener rules the chair has not approved yet.
+// "invalid": the API could not use the answers (HTTP 422) — retrying won't help.
+type Refusal = "not_approved" | "busy" | "unavailable" | "invalid";
+
+async function refusal(r: Response | null): Promise<Refusal | null> {
+  if (!r) return "unavailable";
+  if (r.status === 429) return "busy";
+  if (r.status === 422) return "invalid";
+  if (r.status === 503) {
+    const body = (await r.json().catch(() => ({}))) as { detail?: string };
+    return body.detail === "screener_not_approved" ? "not_approved" : "unavailable";
+  }
+  return r.ok ? null : "unavailable";
+}
+
+export async function runScreener(answers: unknown): Promise<ScreenerResult | Refusal> {
+  const r = await attempt("/api/screener", { method: "POST", headers: json, body: JSON.stringify(answers) });
+  return (await refusal(r)) ?? ((await r!.json()) as ScreenerResult);
+}
+
+export async function getUseGroups(): Promise<UseGroup[] | Refusal> {
+  const r = await attempt("/api/screener/uses");
+  return (await refusal(r)) ?? ((await r!.json()) as UseGroup[]);
+}
+
 export async function getDistricts(): Promise<{ code: string; name: string }[]> {
   const r = await attempt("/api/property/districts");
   return r && r.ok ? ((await r.json()) as { code: string; name: string }[]) : [];

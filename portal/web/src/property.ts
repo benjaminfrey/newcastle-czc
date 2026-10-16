@@ -6,6 +6,8 @@ export type ChosenProperty = {
   parcel_id: number | null;
   map_lot: string;
   district_code: string | null;
+  district_codes: string[];
+  on_state_highway: boolean | null;
   disputed: boolean;
   note: string;
   as_of: string | null;

@@ -1,0 +1,277 @@
+# Plain groups for finding a use. Every use-table use appears in exactly one group,
+# with its uses.json definition key (shown to applicants word for word) and a short
+# plain example, drafted from that definition. Examples are drafts until the chair
+# approves them.
+- key: home
+  plain: "A home"
+  uses:
+    - use_key: residence
+      definition_key: "RESIDENCE"
+      example: "A house, apartment or room that is rented out to live in."
+      status: draft
+    - use_key: tourist_rental
+      definition_key: "TOURIST RENTAL"
+      example: "Renting out a home, or part of one, for stays shorter than 30 days."
+      status: draft
+    - use_key: bed_breakfast
+      definition_key: "BED & BREAKFAST"
+      example: "Guest rooms for overnight stays in a home where the owner lives."
+      status: draft
+    - use_key: rooming_house
+      definition_key: "ROOMING HOUSE"
+      example: "A building where unrelated people rent rooms and share kitchens or bathrooms."
+      status: draft
+    - use_key: dormitory
+      definition_key: "DORMITORY"
+      example: "Housing run by a school or college for its students or staff."
+      status: draft
+    - use_key: mobile_home_park
+      definition_key: "MOBILE HOME PARK"
+      example: "A park for mobile homes (the Town's Mobile Home Parks Ordinance also applies)."
+      status: draft
+- key: shop_office
+  plain: "A shop, office or service"
+  uses:
+    - use_key: retail_service_general
+      definition_key: "RETAIL & SERVICE, GENERAL"
+      example: "A shop or service you walk into and buy from on the spot, like a store or a hair salon."
+      status: draft
+    - use_key: retail_service_heavy
+      definition_key: "RETAIL & SERVICE, HEAVY"
+      example: "A business with goods displayed or stored outdoors, like a lumber yard or a garden center."
+      status: draft
+    - use_key: retail_firearm_sales_facility
+      definition_key: "RETAIL FIREARM SALES FACILITY"
+      example: "A business that displays or sells firearms."
+      status: draft
+    - use_key: packaged_liquor
+      definition_key: "PACKAGED LIQUOR"
+      example: "A store selling beer, wine or spirits to take away."
+      status: draft
+    - use_key: adult_establishment
+      definition_key: "ADULT ESTABLISHMENT"
+      example: "A business selling explicit sexual material, restricted to adults."
+      status: draft
+    - use_key: banking_services
+      definition_key: "BANKING & FINANCIAL SERVICES"
+      example: "A bank, credit union or other place that lends or keeps money."
+      status: draft
+    - use_key: office_small
+      definition_key: "OFFICE, SMALL"
+      example: "A small business office for administration or consulting (not medical)."
+      status: draft
+    - use_key: office_medium
+      definition_key: "OFFICE, MEDIUM"
+      example: "A mid-sized business office for administration or consulting (not medical)."
+      status: draft
+    - use_key: office_large
+      definition_key: "OFFICE, LARGE"
+      example: "A large business office for administration or consulting (not medical)."
+      status: draft
+    - use_key: health_care_provider
+      definition_key: "HEALTH CARE PROVIDER"
+      example: "A doctor's, dentist's or therapist's office for outpatient care."
+      status: draft
+    - use_key: animal_care_indoor
+      definition_key: "ANIMAL CARE, INDOOR"
+      example: "A vet's office or other indoor care for other people's animals."
+      status: draft
+    - use_key: funeral_services
+      definition_key: "FUNERAL SERVICES"
+      example: "A funeral home."
+      status: draft
+    - use_key: commercial_school
+      definition_key: "COMMERCIAL SCHOOL"
+      example: "A school teaching particular skills for a fee, like a driving or art school."
+      status: draft
+    - use_key: research_laboratory
+      definition_key: "RESEARCH LABORATORY"
+      example: "A lab for research and development."
+      status: draft
+    - use_key: vehicle_rental_or_sales
+      definition_key: "VEHICLE RENTAL OR SALES"
+      example: "Selling, leasing or renting cars, motorcycles or similar vehicles."
+      status: draft
+    - use_key: gas_station
+      definition_key: "GAS STATION"
+      example: "Selling fuel for vehicles."
+      status: draft
+    - use_key: car_wash
+      definition_key: "CAR WASH"
+      example: "Washing vehicles, by machine or by hand."
+      status: draft
+    - use_key: drive_through_facility
+      definition_key: "DRIVE-THROUGH FACILITY"
+      example: "Serving customers who stay in their cars, through a window or a machine."
+      status: draft
+- key: food_lodging
+  plain: "Food, drink or places to stay"
+  uses:
+    - use_key: restaurant_cafe
+      definition_key: "RESTAURANT & CAFE"
+      example: "A restaurant, cafe or takeaway."
+      status: draft
+    - use_key: bar_or_tavern
+      definition_key: "BAR OR TAVERN"
+      example: "A bar or tavern serving food and alcohol to have there."
+      status: draft
+    - use_key: live_entertainment
+      definition_key: "LIVE ENTERTAINMENT"
+      example: "Live music, performance or other entertainment by people present in person."
+      status: draft
+    - use_key: hotel_hostel
+      definition_key: "HOTEL & HOSTEL"
+      example: "A hotel, inn or hostel."
+      status: draft
+    - use_key: campground
+      definition_key: "CAMPGROUND"
+      example: "Sites for tents or recreational vehicles."
+      status: draft
+- key: farming
+  plain: "Farming and land"
+  uses:
+    - use_key: commercial_agriculture
+      definition_key: "COMMERCIAL AGRICULTURE"
+      example: "Growing crops or raising livestock to sell."
+      status: draft
+    - use_key: aquaculture
+      definition_key: "AQUACULTURE"
+      example: "Farming fish, shellfish or seaweed to sell."
+      status: draft
+    - use_key: farm_vendor_market
+      definition_key: "FARM/VENDOR MARKET"
+      example: "A market where several farmers or vendors sell from their own stands."
+      status: draft
+    - use_key: animal_care_outdoor
+      definition_key: "ANIMAL CARE, OUTDOOR"
+      example: "Boarding, sheltering or training other people's animals, with outdoor areas."
+      status: draft
+    - use_key: stables_riding_center
+      definition_key: "STABLES / RIDING CENTER"
+      example: "Stables for horses, riding lessons or shows."
+      status: draft
+    - use_key: resource_extraction
+      definition_key: "RESOURCE EXTRACTION"
+      example: "Removing soil, rock, timber or water from the land to sell."
+      status: draft
+- key: making_storing
+  plain: "Making, fixing or storing things"
+  uses:
+    - use_key: industrial_artisan
+      definition_key: "INDUSTRIAL, ARTISAN"
+      example: "Small-scale making or assembling, like a woodworking or pottery shop."
+      status: draft
+    - use_key: industrial_general
+      definition_key: "INDUSTRIAL, GENERAL"
+      example: "Light manufacturing, outdoor storage or trucking."
+      status: draft
+    - use_key: industrial_heavy
+      definition_key: "INDUSTRIAL, HEAVY"
+      example: "Large-scale processing or manufacturing with noise, dust or other effects beyond the lot."
+      status: draft
+    - use_key: vehicle_repair
+      definition_key: "VEHICLE REPAIR"
+      example: "A garage that repairs or services vehicles."
+      status: draft
+    - use_key: outdoor_storage
+      definition_key: "OUTDOOR STORAGE"
+      example: "Keeping equipment, vehicles or materials outdoors for a business on the same lot."
+      status: draft
+    - use_key: self_storage_facility
+      definition_key: "SELF-STORAGE FACILITY"
+      example: "Storage units rented out to the public."
+      status: draft
+    - use_key: marina_dry_storage
+      definition_key: "MARINA, DRY STORAGE"
+      example: "Storing boats out of the water, in racks or similar."
+      status: draft
+    - use_key: junk_salvage_yard
+      definition_key: "JUNK/SALVAGE YARD"
+      example: "A yard that breaks up, sorts or stores scrap or salvage."
+      status: draft
+    - use_key: recycling_facility
+      definition_key: "RECYCLING FACILITY"
+      example: "A place that takes in and processes recyclable materials."
+      status: draft
+- key: recreation_community
+  plain: "Recreation, community, care and schools"
+  uses:
+    - use_key: amusement_indoor
+      definition_key: "AMUSEMENT, INDOOR"
+      example: "Indoor entertainment or sport, like a cinema or a bowling alley."
+      status: draft
+    - use_key: amusement_outdoor
+      definition_key: "AMUSEMENT, OUTDOOR"
+      example: "Outdoor entertainment or sport, like a fairground or a mini-golf course."
+      status: draft
+    - use_key: assembly
+      definition_key: "ASSEMBLY"
+      example: "A place for meetings, services, events or programs."
+      status: draft
+    - use_key: cultural_facility
+      definition_key: "CULTURAL FACILITY"
+      example: "A museum, cultural center or historical society open to the public."
+      status: draft
+    - use_key: health_fitness_studio
+      definition_key: "HEALTH/FITNESS STUDIO"
+      example: "A place for exercise, yoga or similar classes."
+      status: draft
+    - use_key: marina_recreation
+      definition_key: "MARINA, RECREATION"
+      example: "Docks or moorings for recreational boats, on the water."
+      status: draft
+    - use_key: private_club_or_lodge
+      definition_key: "PRIVATE CLUB OR LODGE"
+      example: "A club or lodge open to members or invited guests."
+      status: draft
+    - use_key: college_university
+      definition_key: "COLLEGE/UNIVERSITY"
+      example: "A college or university."
+      status: draft
+    - use_key: primary_secondary_school
+      definition_key: "PRIMARY/SECONDARY SCHOOL"
+      example: "An elementary, middle or high school."
+      status: draft
+    - use_key: day_care_center
+      definition_key: "DAY CARE CENTER"
+      example: "Licensed day care run alongside a home."
+      status: draft
+    - use_key: day_care_facility
+      definition_key: "DAY CARE FACILITY"
+      example: "A licensed day care for children or adults."
+      status: draft
+    - use_key: hospital
+      definition_key: "HOSPITAL"
+      example: "A hospital."
+      status: draft
+    - use_key: human_service_facility
+      definition_key: "HUMAN SERVICE FACILITY"
+      example: "Services for people who need help because of age, disability, addiction, illness or injury."
+      status: draft
+    - use_key: residential_care_facility
+      definition_key: "RESIDENTIAL CARE FACILITY"
+      example: "A licensed home providing round-the-clock care."
+      status: draft
+    - use_key: food_pantry
+      definition_key: "FOOD PANTRY"
+      example: "A not-for-profit giving out food or essentials free or at low cost."
+      status: draft
+- key: transport_utilities
+  plain: "Transport, parking and utilities"
+  uses:
+    - use_key: dispatch_service
+      definition_key: "DISPATCH SERVICE"
+      example: "A base for taxis, ambulances, tow trucks or buses."
+      status: draft
+    - use_key: district_energy_system
+      definition_key: "DISTRICT ENERGY SYSTEM"
+      example: "An energy system shared by several properties."
+      status: draft
+    - use_key: utilities_services
+      definition_key: "UTILITIES & SERVICES"
+      example: "Buildings or structures for electricity, internet, gas, water or similar services."
+      status: draft
+    - use_key: paid_parking_lot
+      definition_key: "PARKING LOT"
+      example: "A parking lot open to the public for a fee."
+      status: draft

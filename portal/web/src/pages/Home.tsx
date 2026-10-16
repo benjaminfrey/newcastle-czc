@@ -12,7 +12,8 @@ export default function Home() {
       </Card.Header>
       <Card.Content className="flex flex-col gap-2">
         <p>This site is being built. You can already try the first step.</p>
-        <Link to="/where" className="underline">Start: where is your project?</Link>
+        <Link to="/start" className="underline">Do I need a permit?</Link>
+        <Link to="/where" className="underline">Look up a property</Link>
         <Link to="/signin" className="underline">Sign in</Link>
       </Card.Content>
     </Card>

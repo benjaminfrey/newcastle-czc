@@ -3,6 +3,8 @@ import { useEffect, useState, type FormEvent } from "react";
 import ParcelMap from "../components/ParcelMap";
 import { getDistricts, getProperty, parcelAt, searchProperty, type Facts, type Hit } from "../api";
 import { saveProperty } from "../property";
+import { loadAnswers } from "../screener";
+import { useNavigate } from "react-router";
 
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September",
                 "October", "November", "December"];
@@ -36,6 +38,7 @@ type Mode = "lookup" | "manual" | "saved";
 const BUSY = "You've looked up a lot of places in the last minute. Please wait a minute and try again.";
 
 export default function Where() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<Mode>("lookup");
   const [query, setQuery] = useState("");
   const [hits, setHits] = useState<Hit[] | null>(null);
@@ -99,18 +102,28 @@ export default function Where() {
     saveProperty({
       source: "lookup", parcel_id: facts.parcel_id, map_lot: facts.map_lot,
       district_code: main && main.in_ruleset ? main.code : null,
+      district_codes: facts.districts.map((d) => d.code), on_state_highway: facts.on_state_highway,
       disputed, note: disputed ? note.trim() : "", as_of: facts.as_of.parcels,
     });
-    setMode("saved");
+    afterSave();
+  }
+
+  // In the middle of "Do I need a permit?", go on to the next question.
+  function afterSave() {
+    const answers = loadAnswers();
+    if (!answers) return setMode("saved");
+    navigate(answers.project.includes("use") && !answers.use_key ? "/start/use" : "/start/results");
   }
 
   function saveManual(e: FormEvent) {
     e.preventDefault();
     saveProperty({
       source: "manual", parcel_id: null, map_lot: mapLot.trim(),
-      district_code: district === "unsure" ? null : district, disputed: false, note: "", as_of: null,
+      district_code: district === "unsure" ? null : district,
+      district_codes: district === "unsure" ? [] : [district], on_state_highway: null,
+      disputed: false, note: "", as_of: null,
     });
-    setMode("saved");
+    afterSave();
   }
 
   if (mode === "saved") {

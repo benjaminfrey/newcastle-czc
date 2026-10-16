@@ -28,7 +28,7 @@ sync() {
     data/street-types/districts.geojson \
     source/exhibits/street-types/inventory.json \
     source/exhibits/cross-sections/types.json \
-    build/permit-review/rulesets/adopted-v1.0/districts.json \
+    build/permit-review/rulesets/adopted-v1.0/ \
     "$VM:$REMOTE_ROOT/")
 }
 

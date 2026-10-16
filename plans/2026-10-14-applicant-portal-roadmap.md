@@ -20,7 +20,7 @@ chair's approval.
 | M6 | **Submit and staff inbox** | Sign and submit; owner co-sign; frozen `submission` + revisions; staff role with authenticator-app second factor; inbox (view, download, completeness, fee paid, "please add…"); admin settings incl. standards-check modes; email notifications with retry; "needs attention" marker | End-to-end: applicant submits, staff marks complete and fee paid, requests more info, applicant answers with a revision; no-verdict guard green; applicant A cannot read B |
 | M7 | **Hardening and pilot** | Off-VM nightly backups + restore drill; security review; plain-language review; accessibility pass; pilot with the CEO on past applications | Restore drill recorded; review findings ruled on; pilot notes written up for the chair |
 
-**Status (2026-10-15):** M1 merged (#12). M2 built on branch `portal-m2-property`. **From M2:**
+**Status (2026-10-15):** M1 merged (#12); M2 merged (#13, plus #14 AxisGIS parcels, #15 SD-Civic). M3 built on branch `portal-m3-forms`: **the chair approves the screener's draft rules** (`memos/2026-10-15-screener-rules-for-approval.md`, five questions) before production can show them. **From M2:**
 SD-Civic is adopted (Art. 2 §5) — an earlier note here wrongly said it was not; the chair ruled
 on 2026-10-15 that only the Town builds on Civic land (spec P13). Current parcels now come
 from the Town's AxisGIS (`parcels --axisgis`, fetch date recorded, chair's choice 2026-10-15); GeoLibrary's
@@ -95,3 +95,28 @@ were deferred:
   fails on Z/M geometries (`ST_Force2D`).
 - A missing basemap file falls through Caddy's `try_files` to `index.html` (200), breaking the
   map without a clear error.
+
+## Deferred from the M3 review
+
+One fresh whole-branch review ran on M3 (no Critical findings). Fixed: a two-lot split was told it
+"isn't a subdivision" (false within 5 years of an earlier division); Small/Large Project Plan now
+asks the kind of work (renovation and parking triggers, §11.b.3–4); uncertain answers say "you may
+need"; the draft guard refuses while any entry is a draft; only a wholly-Civic lot is town-only
+(decided by the server); the MaineDOT note is conditional and shows when the road is unknown;
+subdivision counts new homes; bad numbers get a plain message instead of a dead end; unknown answer
+fields are refused. Readings these fixes rest on are questions 3–7 on the review sheet. Deferred
+Minor findings:
+
+- "Marine special district district": special-district names repeat "district" on results cards.
+- After a screener run, "Look up a property" from Home jumps to the old results (answers stay in
+  the tab); clear them at the end or carry the flow in the URL.
+- Applicant text written in the engine and pages (the not-listed/variance sentence, "Find your
+  property first", "doesn't call for any…") is not on the review sheet for approval; manual
+  "I'm not sure" gets "Find your property first" though a property was entered.
+- The clock check doesn't enforce that a clock's `applies_to` lists the application (correct today).
+- Evaluator parity: `eq` with a list compares deeply in Python, by reference in TypeScript; TS
+  `get` uses `in` (prototype keys). Reject non-scalar `eq`/`ne`/`has` values in `validate`; use
+  `Object.hasOwn`. (The TS evaluator isn't used yet.)
+- A traced district the Code doesn't have (e.g. "SD-Shoreland") is skipped silently by the use table.
+- Bed & Breakfast example says "where the owner lives"; the Code says "a permanent resident".
+- Results card titles render smaller than body text (HeroUI Card.Title) — styling polish.
