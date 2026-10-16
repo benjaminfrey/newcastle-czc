@@ -36,6 +36,7 @@ def test_use_from_the_table(draft_client):
     o = next(o for o in r.json()["outcomes"] if o["application"] == "use_permit")
     assert o["reviewer"] == "Code Enforcement Officer" and o["days"][0]["days"] == 30
     assert o["why"]["cite"] == "8.15.b.1" and "new Use or a change of Use" in o["why"]["text"]
+    assert o["district_name"] == "Neighborhood Residential (D2)"
     assert o["in_portal"] is True
 
 

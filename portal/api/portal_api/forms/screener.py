@@ -66,7 +66,9 @@ def run(answers: dict, ruleset: Ruleset, defs: Definitions) -> dict:
         draft("applications.yaml", key, app.status)
         outcomes.setdefault((key, district), {
             "application": key, "code_name": app.code_name, "plain": app.plain, "reviewer": app.reviewer,
-            "certainty": certainty, "district": district, "in_portal": app.in_portal,
+            "certainty": certainty, "district": district,
+            "district_name": (_district_name(district, ruleset.districts) or district) if district else None,
+            "in_portal": app.in_portal,
             "days": _days(app, ruleset), "why": {"cite": app.cite, "text": ruleset.cite(app.cite)},
         })
 

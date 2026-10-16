@@ -6,15 +6,17 @@
 # (MAILPIT_UI_AUTH="user:password" in .env): it holds sign-in links, and
 # anyone who can read them can sign in as anyone.
 #
-# The LAN stack is development, so it accepts the 2012 GeoLibrary parcels
-# (PORTAL_ALLOW_STALE_PARCELS); the base compose.yml never sets it, so a
-# production deployment refuses stale parcel data.
+# The LAN stack is development, so it accepts stale parcels
+# (PORTAL_ALLOW_STALE_PARCELS) and the screener's draft rules
+# (PORTAL_ALLOW_DRAFT_RULES); the base compose.yml sets neither, so a production
+# deployment refuses both.
 #
 # Deliberately NOT joined to the dev services' network: both stacks have a `db`.
 services:
   api:
     environment:
       PORTAL_ALLOW_STALE_PARCELS: "true"
+      PORTAL_ALLOW_DRAFT_RULES: "true"
   mail:
     image: axllent/mailpit:v1.27
     restart: unless-stopped

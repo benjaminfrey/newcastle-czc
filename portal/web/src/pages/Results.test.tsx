@@ -8,7 +8,7 @@ import Results from "./Results";
 
 const USE_PERMIT: api.Outcome = {
   application: "use_permit", code_name: "Use Permit", plain: "Permission to start a new use.",
-  reviewer: "Code Enforcement Officer", certainty: "needed", district: "D1", in_portal: true,
+  reviewer: "Code Enforcement Officer", certainty: "needed", district: "D1", district_name: "Rural (D1)", in_portal: true,
   days: [{ label: "Use permit decision", days: 30, basis: "calendar", cite: "8.15.d" }],
   why: { cite: "8.15.b.1", text: "Applies to all applications seeking to engage in a new Use or a change of Use." },
 };
@@ -47,6 +47,7 @@ describe("Results", () => {
     expect(screen.getByText(/30 days/)).toBeInTheDocument();
     expect(screen.getByText(/Art\. 8 §15\.b\.1/)).toBeInTheDocument();
     expect(screen.getByText("Measure the floor area.")).toBeInTheDocument();
+    expect(screen.getAllByText(/the Rural \(D1\) district/).length).toBeGreaterThan(0);
   });
 
   it("marks the ones you can apply for here", async () => {

@@ -22,7 +22,7 @@ API, every time:
 
     portal/vm.sh run 'cd portal/api && .venv/bin/pytest'
     portal/vm.sh run 'cd portal/api && .venv/bin/python -m alembic upgrade head'
-    portal/vm.sh run 'cd portal/api && PORTAL_COOKIE_SECURE=false PORTAL_ALLOW_STALE_PARCELS=true .venv/bin/uvicorn portal_api.main:create_app --factory --port 8000'
+    portal/vm.sh run 'cd portal/api && PORTAL_COOKIE_SECURE=false PORTAL_ALLOW_STALE_PARCELS=true PORTAL_ALLOW_DRAFT_RULES=true .venv/bin/uvicorn portal_api.main:create_app --factory --port 8000'
 
 Web app:
 
@@ -87,3 +87,24 @@ adopted ruleset's district pages, plus the Civic district (SD-Civic, Article 2 �
 district page; an area the adopted Code does not have would show as "staff will confirm". On a
 Civic lot the page explains that only the Town builds there (spec P13). The basemap is
 self-hosted: see `portal/basemap/README.md`.
+
+## "Do I need a permit?" (the screener)
+
+The screener's answers come from data in `portal/api/portal_api/forms/definitions/`:
+`applications.yaml` (what each application is, who reviews it, the Code's time limits),
+`rules.yaml` (when each applies, in the condition language of `forms/expr.py`, mirrored in
+`web/src/forms/expr.ts`), and `use-groups.yaml` (plain groups and examples for the 63 uses). Every
+entry cites the Code section it rests on, checked against the pinned adopted ruleset
+(`portal_api/rulesets/adopted-v1.0/`, a SHA-verified copy of the Board app's ruleset).
+
+**Drafts and approval.** Every entry starts as `status: draft`. Production refuses any answer that
+rests on a draft (`503 screener_not_approved`; the page says the tool isn't ready). Only development
+sets `PORTAL_ALLOW_DRAFT_RULES=true` — the dev API command and the LAN stack. To approve an entry,
+set `status: approved`, `approved_by` and `approved_on` in its YAML. The review sheet lists every
+draft with the Code text it rests on:
+
+    .venv/bin/python -m portal_api.forms review-sheet > ../../memos/<date>-screener-rules-for-approval.md
+
+**Rolling to a newly adopted Code:** vendor the new ruleset folder next to `adopted-v1.0`, change
+`PINNED_KEY` in `portal_api/ruleset.py`, and run the tests — every citation is re-checked, and the
+819-cell scenario table re-compares the screener with the new use table.

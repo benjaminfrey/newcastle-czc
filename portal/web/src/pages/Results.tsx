@@ -50,7 +50,7 @@ export default function Results() {
             <Card.Description>{o.plain}</Card.Description>
           </Card.Header>
           <Card.Content className="flex flex-col gap-1">
-            {o.district && <p>For the part of your lot in district {o.district}.</p>}
+            {o.district && <p>For the part of your lot in the {o.district_name ?? o.district} district.</p>}
             <p>Reviewed by: {o.reviewer}.</p>
             {days(o) && <p>Time the Code gives the reviewer: {days(o)}.</p>}
             <details>
