@@ -5,6 +5,9 @@ import MyApplications from "./pages/MyApplications";
 import SignIn from "./pages/SignIn";
 import Verify from "./pages/Verify";
 import Where from "./pages/Where";
+import Results from "./pages/Results";
+import Start from "./pages/Start";
+import UsePicker from "./pages/UsePicker";
 
 export default function App() {
   return (
@@ -16,6 +19,9 @@ export default function App() {
           <Route path="/signin/verify" element={<Verify />} />
           <Route path="/my-applications" element={<MyApplications />} />
           <Route path="/where" element={<Where />} />
+          <Route path="/start" element={<Start />} />
+          <Route path="/start/use" element={<UsePicker />} />
+          <Route path="/start/results" element={<Results />} />
         </Routes>
       </Layout>
     </BrowserRouter>
