@@ -90,4 +90,33 @@ describe("Start", () => {
     expect(await screen.findByText(/Choose at least one/)).toBeInTheDocument();
     expect(loadAnswers()).toBeNull();
   });
+
+  it("asks about homes added in the last five years", async () => {
+    renderPage();
+    await userEvent.click(screen.getByRole("checkbox", { name: "Build something new or add on" }));
+    await userEvent.click(screen.getByRole("radio", { name: "A new building" }));
+    await userEvent.type(screen.getByLabelText(/How many new homes/), "1");
+    await userEvent.type(screen.getByLabelText(/added on this lot in the last five years/), "2");
+    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    expect(await screen.findByText("Where page")).toBeInTheDocument();
+    expect(loadAnswers()?.building).toMatchObject({ new_dwelling_units: 1, homes_added_last_5_years: 2 });
+  });
+
+  it("asks whether the land was divided in the last five years", async () => {
+    renderPage();
+    await userEvent.click(screen.getByRole("checkbox", { name: "Divide land" }));
+    await userEvent.type(screen.getByLabelText(/How many lots/), "2");
+    await userEvent.click(screen.getByRole("radio", { name: "Yes" }));
+    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    expect(await screen.findByText("Where page")).toBeInTheDocument();
+    expect(loadAnswers()?.division).toEqual({ lots_after: 2, divided_last_5_years: true });
+  });
+
+  it("leaves earlier divisions unknown by default", async () => {
+    renderPage();
+    await userEvent.click(screen.getByRole("checkbox", { name: "Divide land" }));
+    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    expect(await screen.findByText("Where page")).toBeInTheDocument();
+    expect(loadAnswers()?.division.divided_last_5_years).toBeNull();
+  });
 });

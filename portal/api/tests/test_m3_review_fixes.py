@@ -51,9 +51,10 @@ def test_a_big_parking_lot_is_a_large_project(draft_client):
 
 
 def test_an_addition_cites_additions(draft_client):
-    res = _post(draft_client, project=["build"], building={"kind": "addition", "gross_floor_area_sf": 12000})
+    # Superseded in part by the chair's ruling of 2026-10-18 (Q4): over 10,000 sf is Large.
+    res = _post(draft_client, project=["build"], building={"kind": "addition", "gross_floor_area_sf": 6000})
     o = next(o for o in res["outcomes"] if o["application"] == "small_project_plan")
-    assert o["why"]["cite"] == "8.10.b.3" and o["certainty"] == "may_need"
+    assert o["why"]["cite"] == "8.10.b.3" and o["certainty"] == "needed"
 
 
 def test_new_building_of_unknown_size_may_need_either(draft_client):
@@ -119,7 +120,9 @@ def test_no_maine_dot_note_on_a_town_road(draft_client):
 # 7. Subdivision by homes counts new homes; converting a building points to §12.b.2.
 
 def test_two_new_homes_are_not_a_subdivision(draft_client):
-    res = _post(draft_client, project=["build"], building={"kind": "new", "gross_floor_area_sf": 2000, "new_dwelling_units": 2})
+    # With no earlier homes in five years (the chair's ruling of 2026-10-18, Q7).
+    res = _post(draft_client, project=["build"], building={"kind": "new", "gross_floor_area_sf": 2000, "new_dwelling_units": 2,
+                                                           "homes_added_last_5_years": 0})
     assert "subdivision" not in {a for a, _ in _apps_of(res)}
 
 

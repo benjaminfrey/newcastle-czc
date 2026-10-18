@@ -35,11 +35,14 @@ class BuildingAnswer(BaseModel):
     parking_spaces: int | None = Field(default=None, ge=0, le=100_000)
     # homes being built or placed — not homes already there (§12.b.3)
     new_dwelling_units: int | None = Field(default=None, ge=0, le=10_000)
+    # homes added on the lot in the five years before this project (chair's ruling, 2026-10-18)
+    homes_added_last_5_years: int | None = Field(default=None, ge=0, le=10_000)
 
 
 class DivisionAnswer(BaseModel):
     model_config = ConfigDict(extra="forbid")
     lots_after: int | None = Field(default=None, ge=1, le=10_000)
+    divided_last_5_years: bool | None = None
 
 
 class Answers(BaseModel):
@@ -57,8 +60,14 @@ def _days(app, ruleset: Ruleset) -> list[dict]:
         c = ruleset.clocks[k]
         cit = c["citation"]
         out.append({"label": c["label"], "days": c["days"], "basis": c["basis"],
-                    "cite": f"{cit['article']}.{cit['section']}.{cit['subsection']}"})
+                    "cite": f"{cit['article']}.{cit['section']}.{cit['subsection']}",
+                    "when": app.clock_when.get(k)})
     return out
+
+
+def _ruling(entry) -> str | None:
+    r = getattr(entry, "ruling", None)
+    return f"{r['text']} (Ruling of {r['by']}, {r['on']}.)" if r else None
 
 
 def run(answers: dict, ruleset: Ruleset, defs: Definitions) -> dict:
@@ -67,6 +76,10 @@ def run(answers: dict, ruleset: Ruleset, defs: Definitions) -> dict:
     prop = answers.setdefault("property", {})
     codes = prop.get("district_codes") or []
     prop["civic"] = bool(codes) and all(c.upper() == "SD-CIVIC" for c in codes)
+    # Homes within five years = this project's plus earlier ones, when both are known.
+    b = answers.setdefault("building", {})
+    new, earlier = b.get("new_dwelling_units"), b.get("homes_added_last_5_years")
+    b["homes_within_5_years"] = new + earlier if new is not None and earlier is not None else None
     outcomes: dict[tuple, dict] = {}
     notes, not_listed, drafts = [], [], []
     town_only = False
@@ -75,21 +88,22 @@ def run(answers: dict, ruleset: Ruleset, defs: Definitions) -> dict:
         if status == "draft" and (file, ident) not in drafts:
             drafts.append((file, ident))
 
-    def add_app(key, district, certainty, cite=None):
+    def add_app(key, district, certainty, cite=None, ruling=None):
         app = defs.applications[key]
         draft("applications.yaml", key, app.status)
         cite = cite or app.cite
+        ruling = ruling or _ruling(app)
         existing = outcomes.get((key, district))
         if existing is not None:
             if certainty == "needed" and existing["certainty"] != "needed":
-                existing.update(certainty="needed", why={"cite": cite, "text": ruleset.cite(cite)})
+                existing.update(certainty="needed", why={"cite": cite, "text": ruleset.cite(cite), "ruling": ruling})
             return
         outcomes.setdefault((key, district), {
             "application": key, "code_name": app.code_name, "plain": app.plain, "reviewer": app.reviewer,
             "certainty": certainty, "district": district,
             "district_name": (_district_name(district, ruleset.districts) or district) if district else None,
             "in_portal": app.in_portal,
-            "days": _days(app, ruleset), "why": {"cite": cite, "text": ruleset.cite(cite)},
+            "days": _days(app, ruleset), "why": {"cite": cite, "text": ruleset.cite(cite), "ruling": ruling},
         })
 
     if answers.get("use_key"):
@@ -106,11 +120,13 @@ def run(answers: dict, ruleset: Ruleset, defs: Definitions) -> dict:
         if kind == "town_only":
             town_only = True
         elif kind == "application":
-            add_app(rule.outcome["application"], None, rule.outcome.get("certainty", "needed"), rule.cite)
+            add_app(rule.outcome["application"], None, rule.outcome.get("certainty", "needed"), rule.cite,
+                    _ruling(rule))
         elif kind in ("note", "contact_town"):
             if not any(n["text"] == rule.outcome["text"] for n in notes):
                 notes.append({"kind": kind, "text": rule.outcome["text"], "cite": rule.cite})
         elif kind == "use_table":
+            use_key = rule.outcome.get("use_key") or answers["use_key"]
             codes = answers.get("property", {}).get("district_codes") or []
             if not codes:
                 notes.append({"kind": "note", "cite": rule.cite,
@@ -119,15 +135,15 @@ def run(answers: dict, ruleset: Ruleset, defs: Definitions) -> dict:
                 dk = district_key_for(code)
                 if dk is None:
                     continue
-                cell = ruleset.cells[(dk, answers["use_key"])]
+                cell = ruleset.cells[(dk, use_key)]
                 permits = cell.get("codes") or ([cell["code"]] if cell["code"] else [])
                 if not permits:
                     name = _district_name(code, ruleset.districts) or code
-                    not_listed.append({"district": code, "use": answers["use_key"], "cite": "8.19.b.1", "text": (
+                    not_listed.append({"district": code, "use": use_key, "cite": "8.19.b.1", "text": (
                         f"The Code doesn't list this use in the {name} district. A variance can't be granted "
                         "for a use (Art. 8 §19.b). The Code Enforcement Officer can talk you through your options.")})
                 for p in permits:
-                    add_app(APP_FOR_CODE[p], code, "needed")
+                    add_app(APP_FOR_CODE[p], code, "needed", None, _ruling(rule))
         if rule.stop:
             break
 

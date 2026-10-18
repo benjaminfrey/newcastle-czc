@@ -44,6 +44,8 @@ export default function Start() {
   const [total, setTotal] = useState("");
   const [parking, setParking] = useState("");
   const [homes, setHomes] = useState("");
+  const [earlierHomes, setEarlierHomes] = useState("");
+  const [divided, setDivided] = useState<"yes" | "no" | "unsure">("unsure");
   const [lots, setLots] = useState("");
   const [error, setError] = useState<string | null>(null);
   const build = project.includes("build");
@@ -57,10 +59,11 @@ export default function Start() {
       total: kind === "renovation" ? parseNumber(total) : null,
       parking: kind === "site" ? parseNumber(parking) : null,
       homes: build ? parseNumber(homes) : null,
+      earlierHomes: build ? parseNumber(earlierHomes) : null,
       lots: project.includes("divide") ? parseNumber(lots) : null,
     };
     if (Object.values(n).some((v) => v !== null && Number.isNaN(v))) return setError("Please enter numbers as digits, like 2400.");
-    for (const [v, what] of [[n.parking, "parking spaces"], [n.homes, "homes"], [n.lots, "lots"]] as const) {
+    for (const [v, what] of [[n.parking, "parking spaces"], [n.homes, "homes"], [n.earlierHomes, "earlier homes"], [n.lots, "lots"]] as const) {
       if (v !== null && !Number.isInteger(v)) return setError(`The number of ${what} should be a whole number.`);
     }
     if (n.lots !== null && n.lots < 1) return setError("The number of lots should be 1 or more.");
@@ -68,8 +71,9 @@ export default function Start() {
       project: CHOICES.map((c) => c.value).filter((v) => project.includes(v)),
       use_key: null,
       building: { kind: build ? (kind as Kind) : null, gross_floor_area_sf: n.area, total_floor_area_sf: n.total,
-                  parking_spaces: n.parking, new_dwelling_units: n.homes },
-      division: { lots_after: n.lots },
+                  parking_spaces: n.parking, new_dwelling_units: n.homes, homes_added_last_5_years: n.earlierHomes },
+      division: { lots_after: n.lots,
+                  divided_last_5_years: project.includes("divide") && divided !== "unsure" ? divided === "yes" : null },
     });
     navigate("/where");
   }
@@ -125,13 +129,34 @@ export default function Start() {
                            help="Leave it blank if there's no parking, or you don't know yet." />
             )}
             {kind && (
-              <NumberField label="How many new homes will you build or place?" value={homes} onChange={setHomes}
-                           help="Count only new homes, not ones already there. Leave it blank if none." />
+              <>
+                <NumberField label="How many new homes will you build or place?" value={homes} onChange={setHomes}
+                             help="Count only new homes, not ones already there. Leave it blank if none." />
+                <NumberField label="How many homes were added on this lot in the last five years, before this project?"
+                             value={earlierHomes} onChange={setEarlierHomes}
+                             help="Homes added within five years count together. Leave it blank if you don't know." />
+              </>
             )}
           </>
         )}
         {project.includes("divide") && (
-          <NumberField label="How many lots will there be afterwards?" value={lots} onChange={setLots} />
+          <>
+            <NumberField label="How many lots will there be afterwards?" value={lots} onChange={setLots} />
+            <RadioGroup value={divided} onChange={(v) => setDivided(v as "yes" | "no" | "unsure")} name="divided">
+              <Label>Has this land been divided in the last five years?</Label>
+              <Description>Lots made within five years count together.</Description>
+              {([["yes", "Yes"], ["no", "No"], ["unsure", "I don't know"]] as const).map(([v, l]) => (
+                <Radio key={v} value={v}>
+                  <Radio.Content>
+                    <Radio.Control>
+                      <Radio.Indicator />
+                    </Radio.Control>
+                    {l}
+                  </Radio.Content>
+                </Radio>
+              ))}
+            </RadioGroup>
+          </>
         )}
         {error && <p role="alert">{error}</p>}
         <div>

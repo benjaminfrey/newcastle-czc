@@ -7,7 +7,7 @@
   uses:
     - use_key: residence
       definition_key: "RESIDENCE"
-      example: "A house, apartment or room that is rented out to live in."
+      example: "A house, apartment or room to live in, whether you live there yourself or rent it out."
       status: draft
     - use_key: tourist_rental
       definition_key: "TOURIST RENTAL"
