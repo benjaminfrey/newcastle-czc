@@ -11,8 +11,9 @@ export type ScreenerAnswers = {
     total_floor_area_sf: number | null; // the whole building, for renovations
     parking_spaces: number | null;
     new_dwelling_units: number | null; // homes being built or placed, not ones already there
+    homes_added_last_5_years: number | null; // before this project (chair's ruling, 2026-10-18)
   };
-  division: { lots_after: number | null };
+  division: { lots_after: number | null; divided_last_5_years: boolean | null };
 };
 
 const KEY = "portal.screener";

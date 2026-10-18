@@ -10,7 +10,8 @@ const CIVIC = "This is Town-owned land in the Civic district. Only the Town buil
 
 function days(o: Outcome): string | null {
   if (o.days.length === 0) return null;
-  return o.days.map((d) => `${d.label}: ${d.days} ${d.basis === "business" ? "business days" : "days"} (${citeLabel(d.cite)})`).join("; ");
+  return o.days.map((d) => `${d.label}: ${d.days} ${d.basis === "business" ? "business days" : "days"}` +
+    `${d.when ? `, ${d.when}` : ""} (${citeLabel(d.cite)})`).join("; ");
 }
 
 export default function Results() {
@@ -58,6 +59,7 @@ export default function Results() {
             <details>
               <summary>Why: {citeLabel(o.why.cite)}</summary>
               <p className="text-sm whitespace-pre-line">{o.why.text}</p>
+              {o.why.ruling && <p className="text-sm">{o.why.ruling}</p>}
             </details>
             <p className="font-semibold">{o.in_portal ? "You can apply here." : "Apply through the Town Office."}</p>
           </Card.Content>

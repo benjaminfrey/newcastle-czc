@@ -29,8 +29,8 @@ const renderPage = () =>
 
 beforeEach(() => {
   sessionStorage.clear();
-  saveAnswers({ project: ["use"], use_key: null, building: { kind: null, gross_floor_area_sf: null, total_floor_area_sf: null, parking_spaces: null, new_dwelling_units: null },
-                division: { lots_after: null } });
+  saveAnswers({ project: ["use"], use_key: null, building: { kind: null, gross_floor_area_sf: null, total_floor_area_sf: null, parking_spaces: null, new_dwelling_units: null, homes_added_last_5_years: null },
+                division: { lots_after: null, divided_last_5_years: null } });
 });
 
 describe("UsePicker", () => {

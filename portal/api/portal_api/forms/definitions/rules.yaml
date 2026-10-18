@@ -52,41 +52,59 @@
   outcome: {kind: note, text: "A new building of up to 10,000 square feet of floor area is a Small Project Plan; a larger one is a Large Project Plan. Count every storey."}
   cite: "8.10.b.1"
   status: draft
-- id: addition
+- id: addition-small
   order: 35
-  when: {all: [{has: [project, build]}, {eq: [building.kind, addition]}]}
+  when: {all: [{has: [project, build]}, {eq: [building.kind, addition]}, {lte: [building.gross_floor_area_sf, 10000]}]}
+  outcome: {kind: application, application: small_project_plan, certainty: needed}
+  cite: "8.10.b.3"
+  status: draft
+- id: addition-large
+  order: 35
+  when: {all: [{has: [project, build]}, {eq: [building.kind, addition]}, {gt: [building.gross_floor_area_sf, 10000]}]}
+  outcome: {kind: application, application: large_project_plan, certainty: needed}
+  cite: "8.11.b.1"
+  ruling: {by: "Ben Frey, Planning Board chair", "on": "2026-10-18", text: "Additions over 10,000 sf of floor area are a Large Project Plan. §11.b does not list additions, so this rests on §11.b.1 and this ruling."}
+  status: draft
+- id: addition-size-unknown-small
+  order: 35
+  when: {all: [{has: [project, build]}, {eq: [building.kind, addition]}, {not: {known: building.gross_floor_area_sf}}]}
   outcome: {kind: application, application: small_project_plan, certainty: may_need}
   cite: "8.10.b.3"
   status: draft
-- id: addition-note
-  order: 36
-  when: {all: [{has: [project, build]}, {eq: [building.kind, addition]}]}
-  outcome: {kind: note, text: "The Code lists additions under the Small Project Plan. The Code Enforcement Officer confirms which review applies to your addition."}
-  cite: "8.10.b.3"
+- id: addition-size-unknown-large
+  order: 35
+  when: {all: [{has: [project, build]}, {eq: [building.kind, addition]}, {not: {known: building.gross_floor_area_sf}}]}
+  outcome: {kind: application, application: large_project_plan, certainty: may_need}
+  cite: "8.11.b.1"
+  ruling: {by: "Ben Frey, Planning Board chair", "on": "2026-10-18", text: "Additions over 10,000 sf of floor area are a Large Project Plan. §11.b does not list additions, so this rests on §11.b.1 and this ruling."}
   status: draft
 - id: renovation-small
   order: 37
   when: {all: [{has: [project, build]}, {eq: [building.kind, renovation]}, {lte: [building.total_floor_area_sf, 10000]}]}
   outcome: {kind: application, application: small_project_plan, certainty: needed}
   cite: "8.10.b.2"
+  ruling: {by: "Ben Frey, Planning Board chair", "on": "2026-10-18", text: "For renovations, the 10,000 sf line measures the whole building's floor area."}
   status: draft
 - id: renovation-large
   order: 38
   when: {all: [{has: [project, build]}, {eq: [building.kind, renovation]}, {gt: [building.total_floor_area_sf, 10000]}]}
   outcome: {kind: application, application: large_project_plan, certainty: needed}
   cite: "8.11.b.3"
+  ruling: {by: "Ben Frey, Planning Board chair", "on": "2026-10-18", text: "For renovations, the 10,000 sf line measures the whole building's floor area."}
   status: draft
 - id: renovation-size-unknown-small
   order: 39
   when: {all: [{has: [project, build]}, {eq: [building.kind, renovation]}, {not: {known: building.total_floor_area_sf}}]}
   outcome: {kind: application, application: small_project_plan, certainty: may_need}
   cite: "8.10.b.2"
+  ruling: {by: "Ben Frey, Planning Board chair", "on": "2026-10-18", text: "For renovations, the 10,000 sf line measures the whole building's floor area."}
   status: draft
 - id: renovation-size-unknown-large
   order: 40
   when: {all: [{has: [project, build]}, {eq: [building.kind, renovation]}, {not: {known: building.total_floor_area_sf}}]}
   outcome: {kind: application, application: large_project_plan, certainty: may_need}
   cite: "8.11.b.3"
+  ruling: {by: "Ben Frey, Planning Board chair", "on": "2026-10-18", text: "For renovations, the 10,000 sf line measures the whole building's floor area."}
   status: draft
 - id: site-work
   order: 41
@@ -124,15 +142,57 @@
   outcome: {kind: application, application: subdivision, certainty: needed}
   cite: "8.12.b.3"
   status: draft
+- id: homes-within-five-years
+  order: 46
+  when: {all: [{has: [project, build]}, {gte: [building.homes_within_5_years, 3]}]}
+  outcome: {kind: application, application: subdivision, certainty: needed}
+  cite: "8.12.b.3"
+  ruling: {by: "Ben Frey, Planning Board chair", "on": "2026-10-18", text: "Homes added on the lot within five years count together toward §12.b.3's three. Counsel to confirm 30-A M.R.S. §4401(4)."}
+  status: draft
+- id: homes-earlier-unknown
+  order: 46
+  when: {all: [{has: [project, build]}, {gte: [building.new_dwelling_units, 1]}, {lt: [building.new_dwelling_units, 3]}, {not: {known: building.homes_within_5_years}}]}
+  outcome: {kind: application, application: subdivision, certainty: may_need}
+  cite: "8.12.b.3"
+  ruling: {by: "Ben Frey, Planning Board chair", "on": "2026-10-18", text: "Homes added on the lot within five years count together toward §12.b.3's three. Counsel to confirm 30-A M.R.S. §4401(4)."}
+  status: draft
+- id: new-homes-residence-use
+  order: 22
+  when: {all: [{has: [project, build]}, {gte: [building.new_dwelling_units, 1]}]}
+  outcome: {kind: use_table, use_key: residence}
+  cite: "8.15.b.1"
+  ruling: {by: "Ben Frey, Planning Board chair", "on": "2026-10-18", text: "Any home, whether the owner lives in it or rents it out, is the Residence use."}
+  status: draft
 - id: divide-three-or-more
   order: 47
   when: {all: [{has: [project, divide]}, {gte: [division.lots_after, 3]}]}
   outcome: {kind: application, application: subdivision, certainty: needed}
   cite: "8.12.b.1"
   status: draft
-- id: divide-fewer
+- id: divide-fewer-none-recent
   order: 48
-  when: {all: [{has: [project, divide]}, {lt: [division.lots_after, 3]}]}
+  when: {all: [{has: [project, divide]}, {lt: [division.lots_after, 3]}, {eq: [division.divided_last_5_years, false]}]}
+  outcome: {kind: contact_town, text: "Dividing into fewer than three lots, with no other division of the land in the last five years, isn't a subdivision under the Code. Other rules may still apply; the Code Enforcement Officer can tell you what you need."}
+  cite: "8.12.b.1"
+  ruling: {by: "Ben Frey, Planning Board chair", "on": "2026-10-18", text: "Ask about divisions in the last five years; after an earlier division the Code Enforcement Officer confirms how the lots count."}
+  status: draft
+- id: divide-fewer-recent
+  order: 48
+  when: {all: [{has: [project, divide]}, {lt: [division.lots_after, 3]}, {eq: [division.divided_last_5_years, true]}]}
+  outcome: {kind: application, application: subdivision, certainty: may_need}
+  cite: "8.12.b.1"
+  ruling: {by: "Ben Frey, Planning Board chair", "on": "2026-10-18", text: "Ask about divisions in the last five years; after an earlier division the Code Enforcement Officer confirms how the lots count."}
+  status: draft
+- id: divide-fewer-recent-note
+  order: 48
+  when: {all: [{has: [project, divide]}, {lt: [division.lots_after, 3]}, {eq: [division.divided_last_5_years, true]}]}
+  outcome: {kind: note, text: "Because the land was divided in the last five years, the lots may add up to three or more. The Code Enforcement Officer confirms how they count."}
+  cite: "8.12.b.1"
+  ruling: {by: "Ben Frey, Planning Board chair", "on": "2026-10-18", text: "Ask about divisions in the last five years; after an earlier division the Code Enforcement Officer confirms how the lots count."}
+  status: draft
+- id: divide-fewer-history-unknown
+  order: 48
+  when: {all: [{has: [project, divide]}, {lt: [division.lots_after, 3]}, {not: {known: division.divided_last_5_years}}]}
   outcome: {kind: contact_town, text: "Dividing into fewer than three lots can still be a subdivision if the land was divided before within the last five years. The Code Enforcement Officer can tell you what applies."}
   cite: "8.12.b.1"
   status: draft
@@ -153,6 +213,7 @@
   when: {all: [{has: [project, driveway]}, {any: [{eq: [property.on_state_highway, true]}, {not: {known: property.on_state_highway}}]}]}
   outcome: {kind: note, text: "If the entrance will be onto a State highway, the Maine Department of Transportation must also approve it. Bring a copy of their permit to the Town."}
   cite: "3.12.d.1"
+  ruling: {by: "Ben Frey, Planning Board chair", "on": "2026-10-18", text: "The MaineDOT note applies to any State-owned road, S1 State routes included. §8.c.1's '(R4 or R5)' is an open item."}
   status: draft
 - id: residential-conversion
   order: 60

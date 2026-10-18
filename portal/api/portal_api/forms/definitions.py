@@ -33,6 +33,8 @@ class Application:
     clock_keys: list
     in_portal: bool
     status: str
+    clock_when: dict = field(default_factory=dict)
+    ruling: dict | None = None
 
 
 @dataclass(frozen=True)
@@ -44,6 +46,7 @@ class Rule:
     cite: str
     status: str
     stop: bool = False
+    ruling: dict | None = None
 
 
 @dataclass(frozen=True)
@@ -92,6 +95,18 @@ def _check_status(where: str, e: dict) -> None:
             raise DefinitionError(f"{where}: an approved entry needs approved_on (YYYY-MM-DD)") from None
 
 
+def _check_ruling(where: str, e: dict) -> None:
+    r = e.get("ruling")
+    if r is None:
+        return
+    if not (isinstance(r, dict) and r.get("by") and r.get("text")):
+        raise DefinitionError(f"{where}: a ruling needs by, on and text")
+    try:
+        date.fromisoformat(str(r.get("on")))
+    except ValueError:
+        raise DefinitionError(f"{where}: a ruling's on must be YYYY-MM-DD") from None
+
+
 def _check_cite(where: str, ref: str, ruleset: Ruleset) -> None:
     try:
         ruleset.cite(ref)
@@ -111,6 +126,7 @@ def validate_entries(file: str, entries: list, ruleset: Ruleset) -> None:
         if file == "use-groups.yaml":
             continue
         _check_status(where, e)
+        _check_ruling(where, e)
         _check_cite(where, e["cite"], ruleset)
         if file == "rules.yaml":
             try:
@@ -119,10 +135,16 @@ def validate_entries(file: str, entries: list, ruleset: Ruleset) -> None:
                 raise DefinitionError(f"{where}: {exc}") from None
             if e["outcome"].get("kind") not in _OUTCOME_KINDS:
                 raise DefinitionError(f"{where}: unknown outcome kind")
+            uk = e["outcome"].get("use_key")
+            if uk is not None and uk not in {u["use_key"] for u in ruleset.uses}:
+                raise DefinitionError(f"{where}: use_key {uk!r} is not in {ruleset.key}")
         if file == "applications.yaml":
             for k in e.get("clock_keys", []):
                 if k not in ruleset.clocks:
                     raise DefinitionError(f"{where}: no clock {k!r} in {ruleset.key}")
+            for k in e.get("clock_when", {}):
+                if k not in e.get("clock_keys", []):
+                    raise DefinitionError(f"{where}: clock_when names {k!r}, which is not in clock_keys")
 
 
 def _read(name: str) -> list:

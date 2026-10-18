@@ -9,11 +9,11 @@ import Results from "./Results";
 const USE_PERMIT: api.Outcome = {
   application: "use_permit", code_name: "Use Permit", plain: "Permission to start a new use.",
   reviewer: "Code Enforcement Officer", certainty: "needed", district: "D1", district_name: "Rural (D1)", in_portal: true,
-  days: [{ label: "Use permit decision", days: 30, basis: "calendar", cite: "8.15.d" }],
-  why: { cite: "8.15.b.1", text: "Applies to all applications seeking to engage in a new Use or a change of Use." },
+  days: [{ label: "Use permit decision", days: 30, basis: "calendar", cite: "8.15.d", when: null }],
+  why: { cite: "8.15.b.1", text: "Applies to all applications seeking to engage in a new Use or a change of Use.", ruling: null },
 };
 const SPECIAL: api.Outcome = { ...USE_PERMIT, application: "special_permit", code_name: "Special Permit",
-  reviewer: "Planning Board", in_portal: false, days: [], why: { cite: "8.18.b.1", text: "Special permits may only be requested as specifically authorized." } };
+  reviewer: "Planning Board", in_portal: false, days: [], why: { cite: "8.18.b.1", text: "Special permits may only be requested as specifically authorized.", ruling: null } };
 const RESULT: api.ScreenerResult = {
   outcomes: [USE_PERMIT, SPECIAL], notes: [{ kind: "note", text: "Measure the floor area.", cite: "8.10.b.1" }],
   not_listed: [], town_only: false, drafts_used: [],
@@ -25,7 +25,7 @@ const renderPage = () => render(<MemoryRouter><Results /></MemoryRouter>);
 beforeEach(() => {
   sessionStorage.clear();
   saveAnswers({ project: ["use"], use_key: "restaurant_cafe",
-                building: { kind: null, gross_floor_area_sf: null, total_floor_area_sf: null, parking_spaces: null, new_dwelling_units: null }, division: { lots_after: null } });
+                building: { kind: null, gross_floor_area_sf: null, total_floor_area_sf: null, parking_spaces: null, new_dwelling_units: null, homes_added_last_5_years: null }, division: { lots_after: null, divided_last_5_years: null } });
   saveProperty({ source: "lookup", parcel_id: 229, map_lot: "004-036", district_code: "D1", district_codes: ["D1"],
                  on_state_highway: false, disputed: false, note: "", as_of: "2026-10-15" });
 });
@@ -110,5 +110,21 @@ describe("Results", () => {
     vi.spyOn(api, "runScreener").mockResolvedValue("invalid");
     renderPage();
     expect(await screen.findByText(/Some of your answers couldn't be used/)).toBeInTheDocument();
+  });
+
+  it("labels the Planning Board's timeline as conditional", async () => {
+    vi.spyOn(api, "runScreener").mockResolvedValue({ ...RESULT, outcomes: [{ ...USE_PERMIT,
+      application: "large_project_plan", code_name: "Large Project Plan",
+      days: [{ label: "Large Project Plan decision (CEO)", days: 45, basis: "calendar", cite: "8.11.d.3", when: null },
+             { label: "Planning Board hearing", days: 30, basis: "calendar", cite: "8.11.d.4.a", when: "if sent to the Planning Board" }] }] });
+    renderPage();
+    expect(await screen.findByText(/30 days, if sent to the Planning Board/)).toBeInTheDocument();
+  });
+
+  it("shows the chair's ruling under why", async () => {
+    vi.spyOn(api, "runScreener").mockResolvedValue({ ...RESULT, outcomes: [{ ...USE_PERMIT,
+      why: { ...USE_PERMIT.why, ruling: "Any home is the Residence use. (Ruling of Ben Frey, Planning Board chair, 2026-10-18.)" } }] });
+    renderPage();
+    expect(await screen.findByText(/Ruling of Ben Frey/)).toBeInTheDocument();
   });
 });

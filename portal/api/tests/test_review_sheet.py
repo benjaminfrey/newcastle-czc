@@ -17,3 +17,14 @@ def test_the_sheet_quotes_each_uses_code_definition():
     r = load_ruleset()
     sheet = review_sheet(r, load_definitions(r))
     assert r.definitions["DISPATCH SERVICE"]["definition"] in sheet
+
+
+def test_the_sheet_records_the_chairs_rulings():
+    r = load_ruleset()
+    defs = load_definitions(r)
+    sheet = review_sheet(r, defs)
+    assert "## The chair's rulings (2026-10-18)" in sheet
+    assert "Questions from drafting" not in sheet
+    rule = next(x for x in defs.rules if x.id == "addition-large")
+    assert rule.ruling["text"] in sheet
+    assert sheet.count("Ruling (Ben Frey, Planning Board chair, 2026-10-18)") >= 10

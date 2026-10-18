@@ -70,8 +70,8 @@ def test_no_district_yet_asks_for_the_property(draft_client):
 
 
 def test_small_and_large_project_by_floor_area(draft_client):
-    small = draft_client.post("/api/screener", json=answers(project=["build"], building={"kind": "new", "gross_floor_area_sf": 10000, "new_dwelling_units": 1}))
-    large = draft_client.post("/api/screener", json=answers(project=["build"], building={"kind": "new", "gross_floor_area_sf": 10001, "new_dwelling_units": 1}))
+    small = draft_client.post("/api/screener", json=answers(project=["build"], building={"kind": "new", "gross_floor_area_sf": 10000}))
+    large = draft_client.post("/api/screener", json=answers(project=["build"], building={"kind": "new", "gross_floor_area_sf": 10001}))
     assert {a for a, _ in _apps(small)} == {"small_project_plan"}
     assert {a for a, _ in _apps(large)} == {"large_project_plan"}
     small_o = next(o for o in small.json()["outcomes"])

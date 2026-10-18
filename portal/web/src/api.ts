@@ -87,8 +87,8 @@ export async function getProperty(id: number): Promise<Facts | null | "unavailab
 export type Outcome = {
   application: string; code_name: string; plain: string; reviewer: string;
   certainty: "needed" | "may_need"; district: string | null; district_name: string | null; in_portal: boolean;
-  days: { label: string; days: number; basis: string; cite: string }[];
-  why: { cite: string; text: string };
+  days: { label: string; days: number; basis: string; cite: string; when: string | null }[];
+  why: { cite: string; text: string; ruling: string | null };
 };
 export type ScreenerNote = { kind: "note" | "contact_town"; text: string; cite: string };
 export type ScreenerResult = {

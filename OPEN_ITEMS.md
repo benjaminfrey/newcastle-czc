@@ -24,5 +24,20 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
   authority" rename vs our "Permitting Authority", the stale "Road" definition.
 - **Permit-review app** (`build/permit-review/`) — paused; W5 blocked on decision D-0025 (may
   application content go to a third-party API?). Read `build/permit-review/BUILD-STATE.md` first.
+- **Applicant Portal** (`portal/`; roadmap `plans/2026-10-14-applicant-portal-roadmap.md`) — M1–M3
+  merged. **Ben to approve the screener's draft rules** (`memos/2026-10-15-screener-rules-for-approval.md`;
+  the nine questions were ruled on 2026-10-18); production refuses the screener until then. Raised by
+  those rulings:
+  - **Planning Board (next amendment):** Article 8 §11.b lists no line for additions; the chair ruled
+    additions over 10,000 sf are a Large Project Plan — add it to §11.b so the Code says so.
+  - **Planning Board / counsel:** Article 3 §8.c.1 says "State Highway (R4 or R5)" while §12.d.1 says
+    "State Highway"; the inventory has 14 State-owned S1 segments (Main Street, River Road). The
+    portal applies MaineDOT to any State-owned road (chair's ruling).
+  - **For counsel:** confirm 30-A M.R.S. §4401(4) applies the 5-year window to dwelling units, which
+    the chair's ruling on Article 8 §12.b.3 assumes.
+  - **For counsel / typo list:** Article 2 §5.b.1 says "Zoning Map"; the rest of the Code says
+    "District Map".
+  - **Permit-review app:** its `clocks.json` omits the Residential Companion permit from the §15.d.1
+    30-day clock, though §17.c.1 sends that procedure to §15.D (chair's ruling).
 - **The adopted v1.0 edition** lacks chrome on physical page 12 and has the old margins; it cannot
   be re-rendered and the next amendment supersedes it.

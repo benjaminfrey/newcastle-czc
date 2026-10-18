@@ -7,20 +7,22 @@ To approve, change `status: draft` to
 ```yaml
 status: approved
 approved_by: <name>
-approved_on: 2026-10-15
+approved_on: 2026-10-18
 ```
 
-## Questions from drafting
+## The chair's rulings (2026-10-18)
 
-1. **An owner's own home.** The use table has no use for a home the owner lives in: *Residence* is defined as a dwelling "rented, leased, let, or hired out". So someone building their own house is told only about the Small Project Plan, and has no use to choose. Is that right, or does an owner-occupied home need something more?
-2. **Residential Companion permits have no time limit in the Code's clocks.** §17.c.1 says the procedure follows §15.D, but the clock for §15.d.1 lists only Use and Expanded Use permits. The screener therefore shows no time limit for a Residential Companion permit. Should it show 30 days?
-3. **Dividing into fewer than three lots.** §12.b.1 counts 3 or more lots *within any 5-year period*, so a two-lot split can still be a subdivision if the parcel was divided recently. The screener does not ask about earlier divisions; it tells the person this and sends them to the Code Enforcement Officer. Should it ask instead?
-4. **Large additions.** §10.b.3 lists "additions of building components" under the Small Project Plan with no size limit, while §11.b.2–3 make new buildings and renovations over 10,000 sf a Large Project Plan. The screener tells anyone adding on that they *may* need a Small Project Plan and that the Code Enforcement Officer confirms which review applies. Is a large addition ever a Large Project Plan?
-5. **Renovations are measured by the whole building** (§10.b.2, §11.b.3: "building renovations up to / over 10,000 sf in gross floor area"). The screener asks for the whole building's floor area. Is that the right reading, or is it the area being renovated?
-6. **MaineDOT entrance permits.** §12.d.1 covers "an entrance onto a State Highway"; §8.c.1 says "State Highway (R4 or R5)". The Street Type inventory also has 14 State-owned S1 Main Street segments, named Main Street (U.S. Route 1B) and River Road. The screener shows the MaineDOT note, worded "if the entrance will be onto a State highway", when the lot touches any State-owned road, or when it doesn't know. Should S1 State routes count?
-7. **Subdivision by homes** counts homes being built or placed (§12.b.3, "construction or placement of 3 or more dwelling units"), not homes already on the lot. §12.b.3 states no time period; §12.b.1's 5-year window is for lots. Should homes added over several years be counted together?
-8. **A Large Project Plan is the Code Enforcement Officer's** (§11.c.1), though §11.d.4 also gives the Planning Board a hearing and decision in some cases. The draft names the CEO as reviewer.
-9. **Use-table codes become applications** as follows: `u` → use permit, `rc` → residential companion, `ex` → expanded use, `sp` → special permit; a blank cell means the Code doesn't list the use in that district.
+1. **An owner's own home.** Any home, whether the owner lives in it or rents it out, is the Residence use, so the use table's Residence column decides. Building or placing new homes also runs Residence through the use table.
+2. **Residential Companion time limit.** §17.c.1 sends the procedure to §15.D, so §15.d.1's 30 days are shown.
+3. **Dividing into fewer than three lots.** The screener asks whether the land was divided in the last five years. No earlier division: not a subdivision under §12.b.1. An earlier division: 'you may need' a Subdivision and the Code Enforcement Officer confirms how the lots count. Unknown: the cautious wording.
+4. **Large additions.** Additions over 10,000 sf of floor area are a Large Project Plan. §11.b does not list additions, so this rests on §11.b.1 and the ruling (open item: add additions to §11.b).
+5. **Renovations.** The 10,000 sf line measures the whole building's floor area.
+6. **MaineDOT entrance permits.** The note applies to any State-owned road, S1 State routes included (open item: §8.c.1's '(R4 or R5)').
+7. **Subdivision by homes.** Homes added on the lot within five years count together toward §12.b.3's three (open item for counsel: confirm 30-A M.R.S. §4401(4)).
+8. **Who reviews a Large Project Plan.** The Code Enforcement Officer, who may send it to the Planning Board for a public hearing (§11.c.3; §10.c.3 for the Small Project Plan); the Board's 30 + 30 days are shown 'if sent to the Planning Board'.
+9. **Use-table codes.** Confirmed: `u` → use permit, `rc` → residential companion, `ex` → expanded use, `sp` → special permit; the D3 `rc sp` cell needs both; a blank cell means the Code doesn't list the use in that district.
+
+Entries that rest on a ruling say so below.
 
 ## Applications (`applications.yaml`)
 
@@ -38,8 +40,9 @@ approved_on: 2026-10-15
 
 - Applicants read: Permission for a use that goes along with a home on the same lot.
 - Reviewer: Code Enforcement Officer
-- Time limits shown: none
+- Time limits shown: 30 calendar days
 - Apply on this site: no (Town Office)
+- Ruling (Ben Frey, Planning Board chair, 2026-10-18): §17.c.1 sends the Residential Companion procedure to §15.D, so §15.d.1's 30 days apply.
 - Rests on Art. 8 §17.b.1:
 
   > Applies to all applications seeking to engage in a new Residential Companion Use or a change of Use either to or from a Residential Companion Use.
@@ -67,9 +70,10 @@ approved_on: 2026-10-15
 ### `small_project_plan` — Small Project Plan
 
 - Applicants read: The Code Enforcement Officer's review of a new building, addition or site change up to 10,000 square feet.
-- Reviewer: Code Enforcement Officer
+- Reviewer: Code Enforcement Officer, who may send it to the Planning Board for a public hearing
 - Time limits shown: 10 calendar days
 - Apply on this site: yes
+- Ruling (Ben Frey, Planning Board chair, 2026-10-18): Show that §10.c.3 and §11.c.3 let the Code Enforcement Officer send the application to the Planning Board.
 - Rests on Art. 8 §10.b.1:
 
   > All new buildings and accessory buildings up to 10,000 sf in gross floor area.
@@ -77,9 +81,10 @@ approved_on: 2026-10-15
 ### `large_project_plan` — Large Project Plan
 
 - Applicants read: A fuller review of a building over 10,000 square feet, a large parking lot, or a project with big effects on its surroundings.
-- Reviewer: Code Enforcement Officer
-- Time limits shown: 45 calendar days
+- Reviewer: Code Enforcement Officer, who may send it to the Planning Board for a public hearing
+- Time limits shown: 45 calendar days, 30 calendar days, 30 calendar days
 - Apply on this site: no (Town Office)
+- Ruling (Ben Frey, Planning Board chair, 2026-10-18): Show that §10.c.3 and §11.c.3 let the Code Enforcement Officer send the application to the Planning Board.
 - Rests on Art. 8 §11.b.2:
 
   > All new buildings and accessory buildings over 10,000 sf in gross floor area.
@@ -133,6 +138,15 @@ approved_on: 2026-10-15
 
   > Applies to all applications seeking to engage in a new Use or a change of Use on a parcel of land, in a building, or group of buildings.
 
+### `new-homes-residence-use`
+
+- When: `{'all': [{'has': ['project', 'build']}, {'gte': ['building.new_dwelling_units', 1]}]}`
+- Then: use table
+- Ruling (Ben Frey, Planning Board chair, 2026-10-18): Any home, whether the owner lives in it or rents it out, is the Residence use.
+- Rests on Art. 8 §15.b.1:
+
+  > Applies to all applications seeking to engage in a new Use or a change of Use on a parcel of land, in a building, or group of buildings.
+
 ### `new-building-small`
 
 - When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'new']}, {'lte': ['building.gross_floor_area_sf', 10000]}]}`
@@ -173,26 +187,45 @@ approved_on: 2026-10-15
 
   > All new buildings and accessory buildings up to 10,000 sf in gross floor area.
 
-### `addition`
+### `addition-small`
 
-- When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'addition']}]}`
+- When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'addition']}, {'lte': ['building.gross_floor_area_sf', 10000]}]}`
 - Then: names the small project plan
 - Rests on Art. 8 §10.b.3:
 
   > Additions of building components.
 
-### `addition-note`
+### `addition-large`
 
-- When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'addition']}]}`
-- Then: The Code lists additions under the Small Project Plan. The Code Enforcement Officer confirms which review applies to your addition.
+- When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'addition']}, {'gt': ['building.gross_floor_area_sf', 10000]}]}`
+- Then: names the large project plan
+- Ruling (Ben Frey, Planning Board chair, 2026-10-18): Additions over 10,000 sf of floor area are a Large Project Plan. §11.b does not list additions, so this rests on §11.b.1 and this ruling.
+- Rests on Art. 8 §11.b.1:
+
+  > Projects that create significant on- or off-site impact.
+
+### `addition-size-unknown-small`
+
+- When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'addition']}, {'not': {'known': 'building.gross_floor_area_sf'}}]}`
+- Then: names the small project plan
 - Rests on Art. 8 §10.b.3:
 
   > Additions of building components.
+
+### `addition-size-unknown-large`
+
+- When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'addition']}, {'not': {'known': 'building.gross_floor_area_sf'}}]}`
+- Then: names the large project plan
+- Ruling (Ben Frey, Planning Board chair, 2026-10-18): Additions over 10,000 sf of floor area are a Large Project Plan. §11.b does not list additions, so this rests on §11.b.1 and this ruling.
+- Rests on Art. 8 §11.b.1:
+
+  > Projects that create significant on- or off-site impact.
 
 ### `renovation-small`
 
 - When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'renovation']}, {'lte': ['building.total_floor_area_sf', 10000]}]}`
 - Then: names the small project plan
+- Ruling (Ben Frey, Planning Board chair, 2026-10-18): For renovations, the 10,000 sf line measures the whole building's floor area.
 - Rests on Art. 8 §10.b.2:
 
   > Building renovations up to 10,000 sf in gross floor area.
@@ -201,6 +234,7 @@ approved_on: 2026-10-15
 
 - When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'renovation']}, {'gt': ['building.total_floor_area_sf', 10000]}]}`
 - Then: names the large project plan
+- Ruling (Ben Frey, Planning Board chair, 2026-10-18): For renovations, the 10,000 sf line measures the whole building's floor area.
 - Rests on Art. 8 §11.b.3:
 
   > Building renovations over 10,000 sf in gross floor area.
@@ -209,6 +243,7 @@ approved_on: 2026-10-15
 
 - When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'renovation']}, {'not': {'known': 'building.total_floor_area_sf'}}]}`
 - Then: names the small project plan
+- Ruling (Ben Frey, Planning Board chair, 2026-10-18): For renovations, the 10,000 sf line measures the whole building's floor area.
 - Rests on Art. 8 §10.b.2:
 
   > Building renovations up to 10,000 sf in gross floor area.
@@ -217,6 +252,7 @@ approved_on: 2026-10-15
 
 - When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'renovation']}, {'not': {'known': 'building.total_floor_area_sf'}}]}`
 - Then: names the large project plan
+- Ruling (Ben Frey, Planning Board chair, 2026-10-18): For renovations, the 10,000 sf line measures the whole building's floor area.
 - Rests on Art. 8 §11.b.3:
 
   > Building renovations over 10,000 sf in gross floor area.
@@ -269,6 +305,24 @@ approved_on: 2026-10-15
 
   > The construction or placement of 3 or more dwelling units.
 
+### `homes-within-five-years`
+
+- When: `{'all': [{'has': ['project', 'build']}, {'gte': ['building.homes_within_5_years', 3]}]}`
+- Then: names the subdivision
+- Ruling (Ben Frey, Planning Board chair, 2026-10-18): Homes added on the lot within five years count together toward §12.b.3's three. Counsel to confirm 30-A M.R.S. §4401(4).
+- Rests on Art. 8 §12.b.3:
+
+  > The construction or placement of 3 or more dwelling units.
+
+### `homes-earlier-unknown`
+
+- When: `{'all': [{'has': ['project', 'build']}, {'gte': ['building.new_dwelling_units', 1]}, {'lt': ['building.new_dwelling_units', 3]}, {'not': {'known': 'building.homes_within_5_years'}}]}`
+- Then: names the subdivision
+- Ruling (Ben Frey, Planning Board chair, 2026-10-18): Homes added on the lot within five years count together toward §12.b.3's three. Counsel to confirm 30-A M.R.S. §4401(4).
+- Rests on Art. 8 §12.b.3:
+
+  > The construction or placement of 3 or more dwelling units.
+
 ### `divide-three-or-more`
 
 - When: `{'all': [{'has': ['project', 'divide']}, {'gte': ['division.lots_after', 3]}]}`
@@ -277,9 +331,36 @@ approved_on: 2026-10-15
 
   > The division of a parcel of land into 3 or more lots within any 5 year period that begins on or after September 23, 1971.
 
-### `divide-fewer`
+### `divide-fewer-none-recent`
 
-- When: `{'all': [{'has': ['project', 'divide']}, {'lt': ['division.lots_after', 3]}]}`
+- When: `{'all': [{'has': ['project', 'divide']}, {'lt': ['division.lots_after', 3]}, {'eq': ['division.divided_last_5_years', False]}]}`
+- Then: Dividing into fewer than three lots, with no other division of the land in the last five years, isn't a subdivision under the Code. Other rules may still apply; the Code Enforcement Officer can tell you what you need.
+- Ruling (Ben Frey, Planning Board chair, 2026-10-18): Ask about divisions in the last five years; after an earlier division the Code Enforcement Officer confirms how the lots count.
+- Rests on Art. 8 §12.b.1:
+
+  > The division of a parcel of land into 3 or more lots within any 5 year period that begins on or after September 23, 1971.
+
+### `divide-fewer-recent`
+
+- When: `{'all': [{'has': ['project', 'divide']}, {'lt': ['division.lots_after', 3]}, {'eq': ['division.divided_last_5_years', True]}]}`
+- Then: names the subdivision
+- Ruling (Ben Frey, Planning Board chair, 2026-10-18): Ask about divisions in the last five years; after an earlier division the Code Enforcement Officer confirms how the lots count.
+- Rests on Art. 8 §12.b.1:
+
+  > The division of a parcel of land into 3 or more lots within any 5 year period that begins on or after September 23, 1971.
+
+### `divide-fewer-recent-note`
+
+- When: `{'all': [{'has': ['project', 'divide']}, {'lt': ['division.lots_after', 3]}, {'eq': ['division.divided_last_5_years', True]}]}`
+- Then: Because the land was divided in the last five years, the lots may add up to three or more. The Code Enforcement Officer confirms how they count.
+- Ruling (Ben Frey, Planning Board chair, 2026-10-18): Ask about divisions in the last five years; after an earlier division the Code Enforcement Officer confirms how the lots count.
+- Rests on Art. 8 §12.b.1:
+
+  > The division of a parcel of land into 3 or more lots within any 5 year period that begins on or after September 23, 1971.
+
+### `divide-fewer-history-unknown`
+
+- When: `{'all': [{'has': ['project', 'divide']}, {'lt': ['division.lots_after', 3]}, {'not': {'known': 'division.divided_last_5_years'}}]}`
 - Then: Dividing into fewer than three lots can still be a subdivision if the land was divided before within the last five years. The Code Enforcement Officer can tell you what applies.
 - Rests on Art. 8 §12.b.1:
 
@@ -305,6 +386,7 @@ approved_on: 2026-10-15
 
 - When: `{'all': [{'has': ['project', 'driveway']}, {'any': [{'eq': ['property.on_state_highway', True]}, {'not': {'known': 'property.on_state_highway'}}]}]}`
 - Then: If the entrance will be onto a State highway, the Maine Department of Transportation must also approve it. Bring a copy of their permit to the Town.
+- Ruling (Ben Frey, Planning Board chair, 2026-10-18): The MaineDOT note applies to any State-owned road, S1 State routes included. §8.c.1's '(R4 or R5)' is an open item.
 - Rests on Art. 3 §12.d.1:
 
   > An entrance onto a State Highway requires a MaineDOT entrance permit under 23 MRSA §704 in addition to any permit required by this Article.
@@ -349,7 +431,7 @@ Each use is shown to applicants with its Code name, the Code's definition word f
 
 ### A home
 
-- `residence` — **Residence**: A house, apartment or room that is rented out to live in.
+- `residence` — **Residence**: A house, apartment or room to live in, whether you live there yourself or rent it out.
   - Code: A dwelling unit used, intended, or designed to be rented, leased, let, or hired out to be occupied for living purposes.
 - `tourist_rental` — **Tourist Rental**: Renting out a home, or part of one, for stays shorter than 30 days.
   - Code: The rental of a dwelling unit, or a portion of a dwelling unit, on an overnight or short-term basis for less than 30 days at a time.

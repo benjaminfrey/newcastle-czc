@@ -15,8 +15,9 @@
   plain: Permission for a use that goes along with a home on the same lot.
   reviewer: Code Enforcement Officer
   cite: "8.17.b.1"
-  clock_keys: []
+  clock_keys: [use_permit_decision]
   in_portal: false
+  ruling: {by: "Ben Frey, Planning Board chair", "on": "2026-10-18", text: "§17.c.1 sends the Residential Companion procedure to §15.D, so §15.d.1's 30 days apply."}
   status: draft
 - key: expanded_use
   code_name: Expanded Use Permit
@@ -37,18 +38,21 @@
 - key: small_project_plan
   code_name: Small Project Plan
   plain: The Code Enforcement Officer's review of a new building, addition or site change up to 10,000 square feet.
-  reviewer: Code Enforcement Officer
+  reviewer: Code Enforcement Officer, who may send it to the Planning Board for a public hearing
   cite: "8.10.b.1"
   clock_keys: [small_project_decision]
   in_portal: true
+  ruling: {by: "Ben Frey, Planning Board chair", "on": "2026-10-18", text: "Show that §10.c.3 and §11.c.3 let the Code Enforcement Officer send the application to the Planning Board."}
   status: draft
 - key: large_project_plan
   code_name: Large Project Plan
   plain: A fuller review of a building over 10,000 square feet, a large parking lot, or a project with big effects on its surroundings.
-  reviewer: Code Enforcement Officer
+  reviewer: Code Enforcement Officer, who may send it to the Planning Board for a public hearing
   cite: "8.11.b.2"
-  clock_keys: [large_project_ceo_decision]
+  clock_keys: [large_project_ceo_decision, large_project_pb_completeness_hearing, large_project_pb_decision]
+  clock_when: {large_project_pb_completeness_hearing: if sent to the Planning Board, large_project_pb_decision: if sent to the Planning Board}
   in_portal: false
+  ruling: {by: "Ben Frey, Planning Board chair", "on": "2026-10-18", text: "Show that §10.c.3 and §11.c.3 let the Code Enforcement Officer send the application to the Planning Board."}
   status: draft
 - key: subdivision
   code_name: Subdivision
