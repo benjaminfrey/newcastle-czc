@@ -25,9 +25,9 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
 - **Permit-review app** (`build/permit-review/`) — paused; W5 blocked on decision D-0025 (may
   application content go to a third-party API?). Read `build/permit-review/BUILD-STATE.md` first.
 - **Applicant Portal** (`portal/`; roadmap `plans/2026-10-14-applicant-portal-roadmap.md`) — M1–M3
-  merged. **Ben to approve the screener's draft rules** (`memos/2026-10-15-screener-rules-for-approval.md`;
-  the nine questions were ruled on 2026-10-18); production refuses the screener until then. Raised by
-  those rulings:
+  merged; the chair ruled on the screener's nine questions on 2026-10-18 and approved every screener
+  entry on 2026-10-20 (`memos/2026-10-15-screener-rules-for-approval.md`). Next: Milestone 4 (the three
+  application wizards). Raised by the rulings:
   - **Planning Board (next amendment):** Article 8 §11.b lists no line for additions; the chair ruled
     additions over 10,000 sf are a Large Project Plan — add it to §11.b so the Code says so.
   - **Planning Board / counsel:** Article 3 §8.c.1 says "State Highway (R4 or R5)" while §12.d.1 says

@@ -97,7 +97,8 @@ The screener's answers come from data in `portal/api/portal_api/forms/definition
 entry cites the Code section it rests on, checked against the pinned adopted ruleset
 (`portal_api/rulesets/adopted-v1.0/`, a SHA-verified copy of the Board app's ruleset).
 
-**Drafts and approval.** Every entry starts as `status: draft`. Production refuses any answer that
+**Drafts and approval.** The chair approved every entry on 2026-10-20; the record is
+`memos/2026-10-15-screener-rules-for-approval.md`. A new or changed entry starts as `status: draft`. Production refuses any answer that
 rests on a draft (`503 screener_not_approved`; the page says the tool isn't ready). Only development
 sets `PORTAL_ALLOW_DRAFT_RULES=true` — the dev API command and the LAN stack. To approve an entry,
 set `status: approved`, `approved_by` and `approved_on` in its YAML. The review sheet lists every

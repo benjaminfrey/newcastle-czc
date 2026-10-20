@@ -3,14 +3,15 @@ from portal_api.forms.definitions import load_definitions
 from portal_api.ruleset import load_ruleset
 
 
-def test_the_sheet_lists_every_draft_with_its_code_text():
+def test_the_sheet_lists_every_entry_with_its_approval_and_code_text():
     r = load_ruleset()
     defs = load_definitions(r)
     sheet = review_sheet(r, defs)
-    for d in defs.drafts():
-        assert f"`{d.id}`" in sheet, d.id
+    ids = [*defs.applications, *(x.id for x in defs.rules), *(u.use_key for g in defs.groups for u in g.uses)]
+    for i in ids:
+        assert f"`{i}`" in sheet, i
     assert r.cite("8.10.b.1") in sheet
-    assert "status: approved" in sheet and "approved_by:" in sheet
+    assert sheet.count("Approved by Ben Frey, Planning Board chair, on 2026-10-20") == len(ids)
 
 
 def test_the_sheet_quotes_each_uses_code_definition():

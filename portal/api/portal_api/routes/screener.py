@@ -29,7 +29,9 @@ def screener(answers: Answers, request: Request):
 @router.get("/api/screener/uses", dependencies=[Depends(lookup_limit)])
 def uses(request: Request):
     ruleset = load_ruleset()
-    groups, drafts = use_groups(ruleset, load_definitions(ruleset))
-    if drafts and not request.app.state.settings.allow_draft_rules:
+    defs = load_definitions(ruleset)
+    # Same rule as the screener: while any entry is a draft, the flow is not offered at all.
+    if defs.drafts() and not request.app.state.settings.allow_draft_rules:
         return _not_approved()
+    groups, _drafts = use_groups(ruleset, defs)
     return groups

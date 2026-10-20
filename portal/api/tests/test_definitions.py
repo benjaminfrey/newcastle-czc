@@ -51,8 +51,12 @@ def test_no_verdict_words_in_applicant_text(defs):
         assert not any(w in t.lower() for w in VERDICT_WORDS), t
 
 
-def test_drafts_are_listed(defs):
-    assert defs.drafts()  # everything starts as a draft
+def test_every_entry_is_approved_by_the_chair(defs):
+    # The chair approved every entry in chat on 2026-10-20 ("i approve the screener entries").
+    assert defs.drafts() == []
+    entries = [*defs.applications.values(), *defs.rules, *(u for g in defs.groups for u in g.uses)]
+    for e in entries:
+        assert (e.status, e.approved_by, str(e.approved_on)) == ("approved", "Ben Frey, Planning Board chair", "2026-10-20"), e
 
 
 def test_a_bad_condition_names_the_entry():

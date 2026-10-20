@@ -105,7 +105,7 @@ def test_civic_land_is_town_only(draft_client):
     assert res["outcomes"] == [] and res["town_only"] is True
 
 
-def test_draft_rules_are_refused_by_default(engine, settings, outbox):
+def test_draft_rules_are_refused_by_default(engine, settings, outbox, one_draft):
     with TestClient(create_app(settings, outbox)) as c:
         r = c.post("/api/screener", json=answers(use_key=_first_cell("u")))
         assert r.status_code == 503 and r.json() == {"detail": "screener_not_approved"}
@@ -117,6 +117,13 @@ def test_uses_endpoint_quotes_the_code(draft_client):
     u = next(u for g in groups for u in g["uses"] if u["use_key"] == "dispatch_service")
     assert u["definition"] == load_ruleset().definitions["DISPATCH SERVICE"]["definition"]
     assert u["code_name"] == "Dispatch Service" and u["example"]
+
+
+def test_approved_screener_is_served_with_production_defaults(engine, settings, outbox):
+    assert settings.allow_draft_rules is False
+    with TestClient(create_app(settings, outbox)) as c:
+        assert c.post("/api/screener", json=answers(use_key=_first_cell("u"))).status_code == 200
+        assert c.get("/api/screener/uses").status_code == 200
 
 
 def test_bad_answers_are_422(draft_client):

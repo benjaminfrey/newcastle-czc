@@ -2,9 +2,9 @@
 
   python -m portal_api.forms review-sheet > memos/<date>-screener-rules-for-approval.md
 
-The review sheet lists every draft entry with what applicants would read, the Code
-section it rests on and that section's text quoted from the pinned ruleset, so the
-chair can approve entries one by one.
+The review sheet lists every entry with what applicants would read, the Code section
+it rests on (quoted from the pinned ruleset), any ruling, and whether the chair has
+approved it — a standing record, and the worklist when entries are drafts.
 """
 
 import argparse
@@ -38,43 +38,47 @@ RULINGS = [
 ]
 
 
+def _status_line(entry) -> list[str]:
+    if entry.status == "approved":
+        return [f"- Approved by {entry.approved_by}, on {entry.approved_on}."]
+    return ["- **Draft — awaiting the chair's approval.**"]
+
+
 def _ruling_line(entry) -> list[str]:
     r = getattr(entry, "ruling", None)
     return [f"- Ruling ({r['by']}, {r['on']}): {r['text']}"] if r else []
 
 
 def _approve_lines() -> str:
-    return (f"To approve, change `status: draft` to\n\n```yaml\nstatus: approved\napproved_by: <name>\n"
+    return (f"To approve a draft, change `status: draft` to\n\n```yaml\nstatus: approved\napproved_by: <name>\n"
             f"approved_on: {date.today().isoformat()}\n```\n")
 
 
 def review_sheet(ruleset: Ruleset, defs: Definitions) -> str:
-    draft_ids = {(d.file, d.id) for d in defs.drafts()}
-    out = [f"# Screener rules for approval ({ruleset.key})", "",
-           "Every entry below is a **draft**. Production will not show applicants any answer that rests on "
-           "a draft. Each entry shows what applicants would read, the Code section it rests on, and that "
-           "section quoted from the adopted ruleset.", "", _approve_lines(),
+    drafts = defs.drafts()
+    out = [f"# Screener rules: approval record ({ruleset.key})", "",
+           "Each entry shows what applicants read, the Code section it rests on (quoted from the adopted "
+           "ruleset), any ruling, and its approval. Production refuses the screener while any entry is a draft.",
+           "", (f"**{len(drafts)} entries await approval.**" if drafts else
+                "**Every entry is approved.** A new or changed entry goes back to draft until the chair approves it."),
+           "", _approve_lines(),
            f"## The chair's rulings ({RULINGS_ON})", "",
            *[f"{i}. **{title}.** {text}" for i, (title, text) in enumerate(RULINGS, 1)], "",
            "Entries that rest on a ruling say so below.", ""]
     out += ["## Applications (`applications.yaml`)", ""]
     for a in defs.applications.values():
-        if ("applications.yaml", a.key) not in draft_ids:
-            continue
         clocks = ", ".join(f"{ruleset.clocks[k]['days']} {ruleset.clocks[k]['basis']} days" for k in a.clock_keys) or "none"
         out += [f"### `{a.key}` — {a.code_name}", "", f"- Applicants read: {a.plain}",
                 f"- Reviewer: {a.reviewer}", f"- Time limits shown: {clocks}",
                 f"- Apply on this site: {'yes' if a.in_portal else 'no (Town Office)'}",
-                *_ruling_line(a),
+                *_ruling_line(a), *_status_line(a),
                 f"- Rests on Art. {a.cite.split('.')[0]} §{'.'.join(a.cite.split('.')[1:])}:", "",
                 *[f"  > {line}" for line in ruleset.cite(a.cite).splitlines()], ""]
     out += ["## Rules (`rules.yaml`)", ""]
     for r in defs.rules:
-        if ("rules.yaml", r.id) not in draft_ids:
-            continue
         what = r.outcome.get("text") or (f"names the {r.outcome['application'].replace('_', ' ')}"
                                          if r.outcome["kind"] == "application" else r.outcome["kind"].replace("_", " "))
-        out += [f"### `{r.id}`", "", f"- When: `{r.when}`", f"- Then: {what}", *_ruling_line(r),
+        out += [f"### `{r.id}`", "", f"- When: `{r.when}`", f"- Then: {what}", *_ruling_line(r), *_status_line(r),
                 f"- Rests on Art. {r.cite.split('.')[0]} §{'.'.join(r.cite.split('.')[1:])}:", "",
                 *[f"  > {line}" for line in ruleset.cite(r.cite).splitlines()], ""]
     out += ["## Plain examples for each use (`use-groups.yaml`)", "",
@@ -84,10 +88,9 @@ def review_sheet(ruleset: Ruleset, defs: Definitions) -> str:
     for g in defs.groups:
         out += [f"### {g.plain}", ""]
         for u in g.uses:
-            if ("use-groups.yaml", u.use_key) not in draft_ids:
-                continue
             out += [f"- `{u.use_key}` — **{labels[u.use_key]}**: {u.example}",
-                    f"  - Code: {ruleset.definitions[u.definition_key]['definition']}"]
+                    f"  - Code: {ruleset.definitions[u.definition_key]['definition']}",
+                    f"  {_status_line(u)[0]}"]
         out.append("")
     return "\n".join(out)
 

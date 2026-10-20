@@ -33,6 +33,8 @@ class Application:
     clock_keys: list
     in_portal: bool
     status: str
+    approved_by: str | None = None
+    approved_on: str | None = None
     clock_when: dict = field(default_factory=dict)
     ruling: dict | None = None
 
@@ -46,6 +48,8 @@ class Rule:
     cite: str
     status: str
     stop: bool = False
+    approved_by: str | None = None
+    approved_on: str | None = None
     ruling: dict | None = None
 
 
@@ -55,6 +59,8 @@ class UseEntry:
     definition_key: str
     example: str
     status: str
+    approved_by: str | None = None
+    approved_on: str | None = None
 
 
 @dataclass(frozen=True)
