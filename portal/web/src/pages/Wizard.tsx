@@ -186,7 +186,12 @@ export default function Wizard() {
   const step = inChapter.findIndex((s) => s.key === here.key) + 1;
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-sm">{form.official_title}</p>
+      <p className="text-sm">
+        {form.official_title}
+        {params.get("back") === "review" && (
+          <> · <Link className="underline" to={`/applications/${id}/review`}>Back to review</Link></>
+        )}
+      </p>
       <h1 className="text-xl font-semibold">{here.chapter}</h1>
       <p className="text-sm">Step {step} of {inChapter.length} in this part</p>
       {app.newer_version && (
