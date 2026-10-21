@@ -1,0 +1,639 @@
+{
+ "form": {
+  "key": "fixture_form",
+  "version": 1,
+  "ruleset_key": "adopted-v1.0",
+  "official_title": "Fixture Form",
+  "sections": [
+   {
+    "id": "site",
+    "official_title": "Site",
+    "chapter": "Your property",
+    "status": "approved",
+    "approved_by": "Fixture",
+    "approved_on": "2026-10-21",
+    "fields": [
+     {
+      "id": "map_lot",
+      "official_label": "Map / Lot",
+      "source": "property",
+      "from": "map_lot",
+      "status": "approved",
+      "approved_by": "Fixture",
+      "approved_on": "2026-10-21"
+     },
+     {
+      "id": "district",
+      "official_label": "Zoning District",
+      "source": "property",
+      "from": "districts",
+      "status": "approved",
+      "approved_by": "Fixture",
+      "approved_on": "2026-10-21"
+     },
+     {
+      "id": "lot_area",
+      "official_label": "Lot Area",
+      "source": "property",
+      "label": "lot area?",
+      "type": "number",
+      "why": "8.2.a.2",
+      "status": "approved",
+      "approved_by": "Fixture",
+      "approved_on": "2026-10-21",
+      "from": "acres",
+      "may_correct": true,
+      "required": true
+     },
+     {
+      "id": "frontage",
+      "official_label": "Frontage",
+      "source": "property",
+      "label": "frontage?",
+      "type": "number",
+      "why": "8.2.a.2",
+      "status": "approved",
+      "approved_by": "Fixture",
+      "approved_on": "2026-10-21",
+      "from": "streets",
+      "may_correct": true,
+      "required": true
+     },
+     {
+      "id": "email",
+      "official_label": "Email",
+      "source": "account",
+      "from": "email",
+      "status": "approved",
+      "approved_by": "Fixture",
+      "approved_on": "2026-10-21"
+     },
+     {
+      "id": "is_owner",
+      "official_label": "Do You Own It",
+      "source": "question",
+      "label": "do you own it?",
+      "type": "yesno",
+      "why": "8.2.a.2",
+      "status": "approved",
+      "approved_by": "Fixture",
+      "approved_on": "2026-10-21",
+      "required": true
+     },
+     {
+      "id": "highway",
+      "official_label": "Mainedot",
+      "source": "question",
+      "label": "mainedot?",
+      "type": "text",
+      "why": "8.2.a.2",
+      "status": "approved",
+      "approved_by": "Fixture",
+      "approved_on": "2026-10-21",
+      "required": true,
+      "show_if": {
+       "ne": [
+        "property.on_state_highway",
+        false
+       ]
+      }
+     }
+    ]
+   },
+   {
+    "id": "owner",
+    "official_title": "Owner",
+    "chapter": "Who",
+    "show_if": {
+     "eq": [
+      "answers.is_owner",
+      false
+     ]
+    },
+    "status": "approved",
+    "approved_by": "Fixture",
+    "approved_on": "2026-10-21",
+    "fields": [
+     {
+      "id": "owner_name",
+      "official_label": "Owner Name",
+      "source": "question",
+      "label": "owner name?",
+      "type": "text",
+      "why": "8.2.a.2",
+      "status": "approved",
+      "approved_by": "Fixture",
+      "approved_on": "2026-10-21",
+      "required": true
+     },
+     {
+      "id": "owner_copy",
+      "official_label": "Owner (copy)",
+      "source": "derived",
+      "from": "owner_name",
+      "status": "approved",
+      "approved_by": "Fixture",
+      "approved_on": "2026-10-21"
+     }
+    ]
+   },
+   {
+    "id": "b",
+    "official_title": "Building",
+    "chapter": "Buildings",
+    "repeat": {
+     "kind": "building",
+     "add_label": "Add another building",
+     "min": 1,
+     "max": 5
+    },
+    "status": "approved",
+    "approved_by": "Fixture",
+    "approved_on": "2026-10-21",
+    "fields": [
+     {
+      "id": "stories",
+      "official_label": "Stories",
+      "source": "question",
+      "label": "stories?",
+      "type": "number",
+      "why": "8.2.a.2",
+      "status": "approved",
+      "approved_by": "Fixture",
+      "approved_on": "2026-10-21",
+      "required": true,
+      "allow_unknown": true
+     }
+    ]
+   },
+   {
+    "id": "b2",
+    "official_title": "Floors",
+    "chapter": "Buildings",
+    "repeat": {
+     "kind": "building",
+     "add_label": "Add another building",
+     "min": 1,
+     "max": 5
+    },
+    "status": "approved",
+    "approved_by": "Fixture",
+    "approved_on": "2026-10-21",
+    "fields": [
+     {
+      "id": "height_2",
+      "official_label": "Second Floor Height",
+      "source": "question",
+      "label": "second floor height?",
+      "type": "number",
+      "why": "8.2.a.2",
+      "status": "approved",
+      "approved_by": "Fixture",
+      "approved_on": "2026-10-21",
+      "required": true,
+      "show_if": {
+       "gte": [
+        "item.stories",
+        2
+       ]
+      }
+     },
+     {
+      "id": "signature",
+      "official_label": "Signature",
+      "source": "at_submit",
+      "status": "approved",
+      "approved_by": "Fixture",
+      "approved_on": "2026-10-21"
+     }
+    ]
+   }
+  ]
+ },
+ "cases": [
+  {
+   "name": "owner, two buildings",
+   "current": {
+    "answers": [
+     [
+      "is_owner",
+      null,
+      true
+     ],
+     [
+      "stories",
+      "x1",
+      1
+     ],
+     [
+      "stories",
+      "x2",
+      3
+     ]
+    ],
+    "items": [
+     [
+      "x1",
+      "building",
+      0
+     ],
+     [
+      "x2",
+      "building",
+      1
+     ]
+    ],
+    "property": {
+     "map_lot": "004-036",
+     "location": null,
+     "acres": 2.1,
+     "districts": [
+      {
+       "code": "D2",
+       "name": "D2 - Neighborhood Residential"
+      }
+     ],
+     "streets": [
+      {
+       "name": "Sheepscot Road",
+       "type_name": "Rural Road",
+       "frontage_ft": 310
+      },
+      {
+       "name": "Hall Street",
+       "type_name": null,
+       "frontage_ft": 90
+      }
+     ],
+     "on_state_highway": false
+    },
+    "account": {
+     "email": "a@example.com"
+    }
+   },
+   "applicable": [
+    [
+     "lot_area",
+     null
+    ],
+    [
+     "frontage",
+     null
+    ],
+    [
+     "is_owner",
+     null
+    ],
+    [
+     "stories",
+     "x1"
+    ],
+    [
+     "stories",
+     "x2"
+    ],
+    [
+     "height_2",
+     "x2"
+    ]
+   ],
+   "missing": [
+    [
+     "height_2",
+     "x2"
+    ]
+   ],
+   "printed": [
+    [
+     "site",
+     null,
+     [
+      [
+       "map_lot",
+       "004-036"
+      ],
+      [
+       "district",
+       "D2 - Neighborhood Residential"
+      ],
+      [
+       "lot_area",
+       2.1
+      ],
+      [
+       "frontage",
+       400
+      ],
+      [
+       "email",
+       "a@example.com"
+      ],
+      [
+       "is_owner",
+       true
+      ]
+     ]
+    ],
+    [
+     "b",
+     "x1",
+     [
+      [
+       "stories",
+       1
+      ]
+     ]
+    ],
+    [
+     "b2",
+     "x1",
+     [
+      [
+       "signature",
+       null
+      ]
+     ]
+    ],
+    [
+     "b",
+     "x2",
+     [
+      [
+       "stories",
+       3
+      ]
+     ]
+    ],
+    [
+     "b2",
+     "x2",
+     [
+      [
+       "height_2",
+       null
+      ],
+      [
+       "signature",
+       null
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "name": "not owner, manual property, unknown stories",
+   "current": {
+    "answers": [
+     [
+      "is_owner",
+      null,
+      false
+     ],
+     [
+      "owner_name",
+      null,
+      "Grace"
+     ],
+     [
+      "stories",
+      "x1",
+      {
+       "unknown": true
+      }
+     ],
+     [
+      "lot_area",
+      null,
+      3
+     ]
+    ],
+    "items": [
+     [
+      "x1",
+      "building",
+      0
+     ]
+    ],
+    "property": {
+     "map_lot": "4-36",
+     "location": null,
+     "acres": null,
+     "districts": [],
+     "streets": [],
+     "on_state_highway": null
+    },
+    "account": {}
+   },
+   "applicable": [
+    [
+     "lot_area",
+     null
+    ],
+    [
+     "frontage",
+     null
+    ],
+    [
+     "is_owner",
+     null
+    ],
+    [
+     "highway",
+     null
+    ],
+    [
+     "owner_name",
+     null
+    ],
+    [
+     "stories",
+     "x1"
+    ],
+    [
+     "height_2",
+     "x1"
+    ]
+   ],
+   "missing": [
+    [
+     "frontage",
+     null
+    ],
+    [
+     "highway",
+     null
+    ],
+    [
+     "height_2",
+     "x1"
+    ]
+   ],
+   "printed": [
+    [
+     "site",
+     null,
+     [
+      [
+       "map_lot",
+       "4-36"
+      ],
+      [
+       "district",
+       null
+      ],
+      [
+       "lot_area",
+       3
+      ],
+      [
+       "frontage",
+       null
+      ],
+      [
+       "email",
+       null
+      ],
+      [
+       "is_owner",
+       false
+      ],
+      [
+       "highway",
+       null
+      ]
+     ]
+    ],
+    [
+     "owner",
+     null,
+     [
+      [
+       "owner_name",
+       "Grace"
+      ],
+      [
+       "owner_copy",
+       "Grace"
+      ]
+     ]
+    ],
+    [
+     "b",
+     "x1",
+     [
+      [
+       "stories",
+       {
+        "unknown": true
+       }
+      ]
+     ]
+    ],
+    [
+     "b2",
+     "x1",
+     [
+      [
+       "height_2",
+       null
+      ],
+      [
+       "signature",
+       null
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "name": "hidden answers are kept but not printed",
+   "current": {
+    "answers": [
+     [
+      "is_owner",
+      null,
+      true
+     ],
+     [
+      "owner_name",
+      null,
+      "Grace"
+     ]
+    ],
+    "items": [],
+    "property": {
+     "map_lot": "004-036",
+     "location": null,
+     "acres": 2.1,
+     "districts": [
+      {
+       "code": "D2",
+       "name": "D2 - Neighborhood Residential"
+      }
+     ],
+     "streets": [
+      {
+       "name": "Sheepscot Road",
+       "type_name": "Rural Road",
+       "frontage_ft": 310
+      },
+      {
+       "name": "Hall Street",
+       "type_name": null,
+       "frontage_ft": 90
+      }
+     ],
+     "on_state_highway": false
+    },
+    "account": {}
+   },
+   "applicable": [
+    [
+     "lot_area",
+     null
+    ],
+    [
+     "frontage",
+     null
+    ],
+    [
+     "is_owner",
+     null
+    ]
+   ],
+   "missing": [],
+   "printed": [
+    [
+     "site",
+     null,
+     [
+      [
+       "map_lot",
+       "004-036"
+      ],
+      [
+       "district",
+       "D2 - Neighborhood Residential"
+      ],
+      [
+       "lot_area",
+       2.1
+      ],
+      [
+       "frontage",
+       400
+      ],
+      [
+       "email",
+       null
+      ],
+      [
+       "is_owner",
+       true
+      ]
+     ]
+    ]
+   ]
+  }
+ ]
+}

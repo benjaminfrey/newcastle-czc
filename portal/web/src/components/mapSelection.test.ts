@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { showSelection } from "./mapSelection";
+import { showPin, showSelection } from "./mapSelection";
 
 const LOT = { type: "MultiPolygon" as const, coordinates: [[[[-69.6, 44.04], [-69.59, 44.04], [-69.59, 44.05], [-69.6, 44.04]]]] };
 
@@ -29,3 +29,15 @@ describe("showSelection", () => {
     expect(map.fitBounds).not.toHaveBeenCalled();
   });
 });
+
+describe("showPin", () => {
+  it("marks the point, and clears it", () => {
+    const setData = vi.fn();
+    const map = { getSource: () => ({ setData }), fitBounds: vi.fn(), once: vi.fn() };
+    showPin(map, { lon: -69.55, lat: 44.05 });
+    expect(setData).toHaveBeenLastCalledWith({ type: "Feature", properties: {}, geometry: { type: "Point", coordinates: [-69.55, 44.05] } });
+    showPin(map, null);
+    expect(setData).toHaveBeenLastCalledWith({ type: "FeatureCollection", features: [] });
+  });
+});
+
