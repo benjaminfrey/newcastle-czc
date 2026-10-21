@@ -10,7 +10,9 @@ Development runs on a VM, not the Mac. The Mac holds the git checkout and the ed
 The VM is `ben@192.168.1.6` unless `PORTAL_DEV_VM` says otherwise. Everything on the VM listens
 on 127.0.0.1 only; `portal/vm.sh tunnel` forwards the dev ports to the Mac.
 
-Start the database and the mail catcher (Mailpit, web view at http://127.0.0.1:8025 through the tunnel):
+Start the database, the mail catcher (Mailpit, web view at http://127.0.0.1:8025 through the tunnel),
+the upload store (RustFS, on 9000) and the virus scanner (ClamAV, on 3310; its first start downloads
+signatures for a few minutes):
 
     portal/vm.sh run 'sudo docker compose -f portal/deploy/compose.dev.yml up -d --wait'
 
@@ -109,3 +111,36 @@ draft with the Code text it rests on:
 **Rolling to a newly adopted Code:** vendor the new ruleset folder next to `adopted-v1.0`, change
 `PINNED_KEY` in `portal_api/ruleset.py`, and run the tests — every citation is re-checked, and the
 819-cell scenario table re-compares the screener with the new use table.
+
+## Applying (the three applications)
+
+Each application is a form definition in `portal_api/forms/definitions/forms/`: the Cover Sheet
+(`cover-sheet.v1.yaml`, part of every form) plus `use-permit.v1.yaml`, `small-project-plan.v1.yaml` and
+`entrance-permit.v1.yaml`. A definition lists the official form's sections and fields; each field says
+where its value comes from (a plain question, the property lookup, the account, another field, the
+signature at submit, or staff) and, for a question, when it is asked (`show_if`, the screener's
+condition language). The fields carry the Town's Planning Application packet; the Entrance / Driveway
+form is new. `forms/answers.py` decides what applies, what is still missing and what prints;
+`web/src/forms/applicability.ts` is its browser twin, and both are checked against
+`web/src/forms/form-fixtures.json`.
+
+**Approval.** Every entry starts as `status: draft`; production refuses a form with any draft in it
+(`503 form_not_approved`), as for the screener. The record for the chair:
+
+    .venv/bin/python -m portal_api.forms forms-sheet > ../../memos/<date>-application-forms-for-approval.md
+
+**Versions.** An application keeps the form version and ruleset it started on; a new version is a new
+file (`use-permit.v2.yaml`), never an edit to one in use.
+
+**Records.** Answers and section notes are insert-only (a change appends a row); every change bumps
+the application's revision, so a save from a tab that fell behind is refused (409) and the page offers
+"Load the latest" or "Keep mine". Events name fields, never values.
+
+**Uploads.** PDF, JPEG, PNG and HEIC, decided by the file's first bytes; 25 MB each; 60 a person an
+hour. Each is scanned by ClamAV before anything is stored; if the scanner can't be reached, the upload
+is refused. Files live in an S3-compatible store that only the API reaches (RustFS on the VM: MinIO no
+longer publishes images; S3 or R2 in production, via `S3_ENDPOINT`), and go back only to their owner,
+streamed through the API. The store's credentials are `STORE_ACCESS_KEY` / `STORE_SECRET_KEY` in the
+VM's `.env`. Tests use an in-memory store and a fake scanner; two integration tests run against the
+real ones when `PORTAL_TEST_S3_ENDPOINT` and `PORTAL_TEST_CLAMD_HOST` are set (CI sets the first).
+
