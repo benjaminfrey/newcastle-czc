@@ -6,6 +6,7 @@ fixture file, so the browser and the API always agree.
 
 A missing or null value makes a comparison unknown (None), never false:
 all/any/not combine true, false and unknown in the usual three-valued way.
+An "I don't know yet" answer ({"unknown": true}) reads as missing.
 """
 
 from numbers import Real
@@ -21,7 +22,15 @@ def _get(data, path: str):
         if not isinstance(cur, dict) or part not in cur or cur[part] is None:
             return _MISSING
         cur = cur[part]
-    return cur
+    return _MISSING if _is_unknown(cur) else cur
+
+
+def _is_unknown(v) -> bool:
+    return isinstance(v, dict) and v == {"unknown": True}
+
+
+def _is_scalar(v) -> bool:
+    return v is None or isinstance(v, (str, bool, Real))
 
 
 def _is_number(v) -> bool:
@@ -55,8 +64,10 @@ def validate(expr) -> None:
             raise ValueError(f"{op} takes [path, value]")
         if op in _COMPARE and not _is_number(arg[1]):
             raise ValueError(f"{op} compares with a number")
-        if op == "oneof" and not isinstance(arg[1], list):
+        if op == "oneof" and not (isinstance(arg[1], list) and all(_is_scalar(x) for x in arg[1])):
             raise ValueError("oneof takes [path, [values]]")
+        if op in ("eq", "ne", "has") and not _is_scalar(arg[1]):
+            raise ValueError(f"{op} compares with a single value, not a list or mapping")
     else:
         raise ValueError(f"unknown operator {op!r}")
 
@@ -89,3 +100,9 @@ def evaluate(expr: dict, data: dict) -> bool | None:
     if not _is_number(v):
         return None
     return {"gt": v > value, "gte": v >= value, "lt": v < value, "lte": v <= value}[op]
+
+
+def shown(show_if: dict | None, data: dict) -> bool:
+    """A question is asked unless its condition is known to be false: an answer
+    still missing, or a property fact nobody knows, keeps the question in."""
+    return show_if is None or evaluate(show_if, data) is not False

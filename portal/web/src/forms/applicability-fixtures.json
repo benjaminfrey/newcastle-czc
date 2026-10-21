@@ -1,0 +1,8 @@
+[
+  {"name": "no condition is shown", "show_if": null, "data": {}, "shown": true},
+  {"name": "true is shown", "show_if": {"eq": ["answers.a", true]}, "data": {"answers": {"a": true}}, "shown": true},
+  {"name": "false is hidden", "show_if": {"eq": ["answers.a", true]}, "data": {"answers": {"a": false}}, "shown": false},
+  {"name": "unknown show_if is shown", "show_if": {"ne": ["property.on_state_highway", false]}, "data": {"property": {"on_state_highway": null}}, "shown": true},
+  {"name": "unanswered is shown", "show_if": {"eq": ["answers.a", true]}, "data": {"answers": {}}, "shown": true},
+  {"name": "item scope hides", "show_if": {"gte": ["item.stories", 2]}, "data": {"item": {"stories": 1}}, "shown": false}
+]

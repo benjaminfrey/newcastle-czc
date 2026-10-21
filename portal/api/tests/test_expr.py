@@ -10,6 +10,10 @@ FIXTURES = json.loads((Path(__file__).resolve().parents[2] / "web/src/forms/expr
 
 @pytest.mark.parametrize("case", FIXTURES, ids=[c["name"] for c in FIXTURES])
 def test_shared_fixture(case):
+    if case.get("invalid"):
+        with pytest.raises(ValueError):
+            validate(case["expr"])
+        return
     validate(case["expr"])
     assert evaluate(case["expr"], case["data"]) == case["expect"]
 

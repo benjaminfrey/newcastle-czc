@@ -33,5 +33,12 @@
   {"name": "not unknown", "expr": {"not": {"eq": ["a", 1]}}, "data": {}, "expect": null},
   {"name": "not known", "expr": {"not": {"known": "a"}}, "data": {}, "expect": true},
   {"name": "empty all is true", "expr": {"all": []}, "data": {}, "expect": true},
-  {"name": "empty any is false", "expr": {"any": []}, "data": {}, "expect": false}
+  {"name": "empty any is false", "expr": {"any": []}, "data": {}, "expect": false},
+  {"name": "eq with a list is invalid", "expr": {"eq": ["a", [1]]}, "data": {}, "invalid": true},
+  {"name": "has with a mapping is invalid", "expr": {"has": ["a", {"x": 1}]}, "data": {}, "invalid": true},
+  {"name": "a prototype key is missing", "expr": {"eq": ["answers.constructor", "x"]}, "data": {"answers": {}}, "expect": null},
+  {"name": "known on a prototype key", "expr": {"known": "answers.toString"}, "data": {"answers": {}}, "expect": false},
+  {"name": "an unknown answer reads as missing", "expr": {"eq": ["answers.a", 1]}, "data": {"answers": {"a": {"unknown": true}}}, "expect": null},
+  {"name": "an unknown answer is not known", "expr": {"known": "answers.a"}, "data": {"answers": {"a": {"unknown": true}}}, "expect": false},
+  {"name": "item scope", "expr": {"gte": ["item.stories", 2]}, "data": {"item": {"stories": 3}}, "expect": true}
 ]
