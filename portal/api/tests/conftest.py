@@ -72,3 +72,21 @@ def outbox():
 def client(engine, settings, outbox):
     with TestClient(create_app(settings, outbox)) as c:
         yield c
+
+
+@pytest.fixture
+def one_draft(monkeypatch):
+    """Make the screener see one draft rule, so the draft guard can be tested after approval."""
+    import dataclasses
+
+    from portal_api.forms import definitions as d
+    from portal_api.routes import screener as routes
+
+    real = d.load_definitions
+
+    def with_a_draft(ruleset):
+        defs = real(ruleset)
+        rules = [dataclasses.replace(defs.rules[0], status="draft"), *defs.rules[1:]]
+        return d.Definitions(applications=defs.applications, rules=rules, groups=defs.groups)
+
+    monkeypatch.setattr(routes, "load_definitions", with_a_draft)

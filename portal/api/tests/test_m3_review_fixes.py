@@ -69,7 +69,7 @@ def test_building_results_mention_large_project_impacts(draft_client):
 
 # 4. In production, any draft refuses the answer — even an answer where no rule fired.
 
-def test_no_rule_firing_is_still_refused_while_rules_are_drafts(engine, settings, outbox):
+def test_no_rule_firing_is_still_refused_while_rules_are_drafts(engine, settings, outbox, one_draft):
     with TestClient(create_app(settings, outbox)) as c:
         r = c.post("/api/screener", json=answers(project=["divide"], division={"lots_after": None}))
         assert r.status_code == 503 and r.json() == {"detail": "screener_not_approved"}

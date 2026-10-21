@@ -1,5 +1,5 @@
-# The applications the screener can name. Every entry is a draft until the chair
-# approves it (status: approved, approved_by, approved_on). code_name is the Code's
+# The applications the screener can name. Approved in full by the chair on 2026-10-20; a new or
+# changed entry goes back to status: draft until the chair approves it. code_name is the Code's
 # own name; plain is what applicants read. clock_keys name entries in the ruleset's
 # clocks.json; an application no clock covers shows no time limit.
 - key: use_permit
@@ -9,7 +9,9 @@
   cite: "8.15.b.1"
   clock_keys: [use_permit_decision]
   in_portal: true
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-20"
 - key: residential_companion
   code_name: Residential Companion Use Permit
   plain: Permission for a use that goes along with a home on the same lot.
@@ -18,7 +20,9 @@
   clock_keys: [use_permit_decision]
   in_portal: false
   ruling: {by: "Ben Frey, Planning Board chair", "on": "2026-10-18", text: "§17.c.1 sends the Residential Companion procedure to §15.D, so §15.d.1's 30 days apply."}
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-20"
 - key: expanded_use
   code_name: Expanded Use Permit
   plain: Permission for a use the Code normally places in busier districts.
@@ -26,7 +30,9 @@
   cite: "8.16.b.1"
   clock_keys: [use_permit_decision]
   in_portal: false
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-20"
 - key: special_permit
   code_name: Special Permit
   plain: A Planning Board decision, after a public hearing, on a use the Code allows only case by case.
@@ -34,7 +40,9 @@
   cite: "8.18.b.1"
   clock_keys: [special_permit_review_hearing, special_permit_decision]
   in_portal: false
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-20"
 - key: small_project_plan
   code_name: Small Project Plan
   plain: The Code Enforcement Officer's review of a new building, addition or site change up to 10,000 square feet.
@@ -43,7 +51,9 @@
   clock_keys: [small_project_decision]
   in_portal: true
   ruling: {by: "Ben Frey, Planning Board chair", "on": "2026-10-18", text: "Show that §10.c.3 and §11.c.3 let the Code Enforcement Officer send the application to the Planning Board."}
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-20"
 - key: large_project_plan
   code_name: Large Project Plan
   plain: A fuller review of a building over 10,000 square feet, a large parking lot, or a project with big effects on its surroundings.
@@ -53,7 +63,9 @@
   clock_when: {large_project_pb_completeness_hearing: if sent to the Planning Board, large_project_pb_decision: if sent to the Planning Board}
   in_portal: false
   ruling: {by: "Ben Frey, Planning Board chair", "on": "2026-10-18", text: "Show that §10.c.3 and §11.c.3 let the Code Enforcement Officer send the application to the Planning Board."}
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-20"
 - key: subdivision
   code_name: Subdivision
   plain: The Planning Board's review of dividing land into three or more lots within five years, or creating three or more homes.
@@ -61,7 +73,9 @@
   cite: "8.12.b.1"
   clock_keys: []
   in_portal: false
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-20"
 - key: entrance_permit
   code_name: Driveway and Entrance Permit
   plain: Permission for a new driveway or entrance onto a street or road, or for moving one.
@@ -69,4 +83,6 @@
   cite: "3.13.c.1"
   clock_keys: []
   in_portal: true
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-20"
