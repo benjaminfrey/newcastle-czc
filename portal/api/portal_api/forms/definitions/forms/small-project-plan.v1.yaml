@@ -1,0 +1,585 @@
+# Small Project Plan (Art. 8 §10): the Cover Sheet, a short "Your Project" section
+# (new), one Building Form per building and one Components Section per addition,
+# porch, deck or other component, carried from the Town's Planning Application packet.
+# Sections with the same repeat kind share the same items: each building gets every
+# Building Form section. Every entry is a draft until the chair approves it.
+key: small_project_plan
+version: 1
+ruleset_key: adopted-v1.0
+official_title: Small Project Plan Application
+include: [cover-sheet.v1]
+sections:
+  - id: project
+    official_title: Your Project
+    chapter: Your project
+    status: draft
+    fields:
+      - id: work_kinds
+        official_label: Type of project
+        source: question
+        label: What kind of work is this?
+        help: Choose all that apply.
+        type: multichoice
+        options:
+          - {value: new_building, label: "A new building, such as a house, garage or shed", official: "New building or accessory building"}
+          - {value: addition, label: "An addition, porch, deck or other part added to a building", official: "Addition of building components"}
+          - {value: renovation, label: "Renovating a building, inside or out", official: "Building renovation"}
+          - {value: site, label: "Work on the land, such as a parking area, walls or grading", official: "Site improvements"}
+          - {value: nonconforming, label: "A change to a lot, use or building that doesn't fit today's Code", official: "Change to a nonconforming lot, use, structure or site improvement"}
+        why: 8.10.b.1
+        required: true
+        status: draft
+      - id: project_description
+        official_label: Project description
+        source: question
+        label: In a few sentences, what will you build or change?
+        type: longtext
+        why: 8.2.a.2
+        required: true
+        status: draft
+      - id: site_plan
+        official_label: Site plan or sketch
+        source: question
+        label: Add a site plan or a sketch showing where the work is on your lot.
+        help: A hand drawing is fine. Show the lot lines, the road, the buildings and their distances from the lot lines.
+        type: upload
+        why: 8.2.a.2
+        status: draft
+
+  - id: building
+    official_title: Building Form
+    chapter: Your buildings
+    repeat: {kind: building, add_label: Add another building, min: 1, max: 20}
+    status: draft
+    fields:
+      - id: building_map_lot
+        official_label: Map / Lot
+        source: derived
+        from: map_lot
+        status: draft
+      - id: building_address
+        official_label: Street Address
+        source: derived
+        from: street_address
+        status: draft
+      - id: building_district
+        official_label: Zoning District
+        source: derived
+        from: zoning_district
+        status: draft
+      - id: building_name
+        official_label: Building reference (name)
+        source: question
+        label: What do you call this building?
+        help: For example "house", "barn" or "new garage".
+        type: text
+        why: 8.2.a.2
+        required: true
+        status: draft
+      - id: renovation_only
+        official_label: Only being renovated, not changing size or location
+        source: question
+        label: Is this building only being renovated, without changing its size or where it sits?
+        type: yesno
+        why: 8.10.b.2
+        required: true
+        status: draft
+
+  - id: building_location
+    official_title: Building Location (proposed)
+    chapter: Your buildings
+    repeat: {kind: building, add_label: Add another building, min: 1, max: 20}
+    status: draft
+    fields:
+      - id: setback_front
+        official_label: Setback from front lot line
+        source: question
+        label: How far will the building be from the front lot line, the one along the road?
+        help: Measure in feet from the lot line to the closest part of the building.
+        type: number
+        unit: ft
+        min: 0
+        max: 50000
+        why: 2.3.c.3
+        allow_unknown: true
+        required: true
+        compare: primary_building_placement
+        status: draft
+      - id: setback_side_1
+        official_label: Setback from side lot line
+        source: question
+        label: How far will it be from the nearest side lot line?
+        help: In feet, from the lot line to the closest part of the building.
+        type: number
+        unit: ft
+        min: 0
+        max: 50000
+        why: 2.3.c.3
+        allow_unknown: true
+        required: true
+        compare: primary_building_placement
+        status: draft
+      - id: setback_side_2
+        official_label: Setback from other side lot line
+        source: question
+        label: How far will it be from the other side lot line?
+        type: number
+        unit: ft
+        min: 0
+        max: 50000
+        why: 2.3.c.3
+        allow_unknown: true
+        required: true
+        compare: primary_building_placement
+        status: draft
+      - id: setback_rear
+        official_label: Setback from rear lot line
+        source: question
+        label: How far will it be from the back lot line?
+        type: number
+        unit: ft
+        min: 0
+        max: 50000
+        why: 2.3.c.3
+        allow_unknown: true
+        required: true
+        compare: primary_building_placement
+        status: draft
+
+  - id: building_details
+    official_title: Building Details (proposed)
+    chapter: Your buildings
+    repeat: {kind: building, add_label: Add another building, min: 1, max: 20}
+    status: draft
+    fields:
+      - id: building_class
+        official_label: Building type
+        source: question
+        label: Which best describes this building?
+        help: If you're not sure, choose "I don't know yet". The Code Enforcement Officer decides when it isn't clear.
+        type: choice
+        options:
+          - {value: residential, label: "A home: a house, duplex or apartment building", official: "Residential Building"}
+          - {value: single_unit_commercial, label: "A building for one business", official: "Single Unit Commercial Building"}
+          - {value: multi_unit_commercial, label: "A building for several businesses", official: "Multi-unit Commercial Building"}
+          - {value: mixed_use, label: "A building with homes and businesses together", official: "Mixed-Use Building"}
+          - {value: residential_accessory, label: "A smaller building that goes with a home, like a garage or shed", official: "Residential Accessory Building"}
+          - {value: commercial_accessory, label: "A smaller building that goes with a business", official: "Commercial Accessory Building"}
+          - {value: general_accessory, label: "A smaller building that could serve a home or a business", official: "General Accessory Building"}
+          - {value: special_use, label: "A Special Use Building (staff can help you decide)", official: "Special Use Building"}
+          - {value: agricultural, label: "A farm building, like a barn, stable or greenhouse", official: "Agricultural Building"}
+        why: 5.1.c.1
+        allow_unknown: true
+        required: true
+        status: draft
+      - id: dwelling_units
+        official_label: Proposed number of dwelling units
+        source: question
+        label: How many homes will this building have?
+        help: Count each separate home with its own kitchen. Enter 0 if none.
+        type: number
+        min: 0
+        max: 500
+        why: 8.2.a.2
+        required: true
+        status: draft
+
+  - id: building_mass
+    official_title: Main Building Mass Details
+    chapter: Your buildings
+    repeat: {kind: building, add_label: Add another building, min: 1, max: 20}
+    status: draft
+    fields:
+      - id: mass_width
+        official_label: Width of Main Building Mass
+        source: question
+        label: How wide is the main part of the building, in feet?
+        help: >-
+          The "main building mass" is the main rectangular part of the building, not counting additions,
+          porches or decks. Width is measured along the side facing the road.
+        type: number
+        unit: ft
+        min: 0
+        max: 2000
+        why: 5.3.c.2
+        allow_unknown: true
+        required: true
+        status: draft
+      - id: mass_depth
+        official_label: Depth of Main Building Mass
+        source: question
+        label: How deep is the main part of the building, front to back, in feet?
+        type: number
+        unit: ft
+        min: 0
+        max: 2000
+        why: 5.3.c.2
+        allow_unknown: true
+        required: true
+        status: draft
+      - id: stories
+        official_label: Total number of stories
+        source: question
+        label: How many stories (floors above ground) will it have?
+        help: Don't count a basement or living space inside the roof.
+        type: number
+        min: 1
+        max: 10
+        why: 5.3.c.2
+        allow_unknown: true
+        required: true
+        status: draft
+      - id: floor_area
+        official_label: Floor Area of Main Building Mass
+        source: question
+        label: What is the floor area of the main part of the building, in square feet?
+        help: Add up every story of the main part. Space inside the roof doesn't count.
+        type: number
+        unit: sf
+        min: 0
+        max: 1000000
+        why: 5.3.c.4
+        allow_unknown: true
+        required: true
+        status: draft
+      - id: first_floor_elevation
+        official_label: Elevation of first (ground) floor
+        source: question
+        label: How high is the first floor above the ground at the front of the building, in feet?
+        help: Measure from the average ground level at the front to the top of the first floor.
+        type: number
+        unit: ft
+        min: 0
+        max: 30
+        why: 5.4.c.4
+        allow_unknown: true
+        required: true
+        status: draft
+      - id: floor_height_1
+        official_label: First floor height
+        source: question
+        label: How tall is the first story, floor to floor, in feet?
+        help: From the surface of the floor to the surface of the floor above (or to the top of the wall if there's no floor above).
+        type: number
+        unit: ft
+        min: 0
+        max: 50
+        why: 5.7.c.2
+        allow_unknown: true
+        required: true
+        status: draft
+      - id: floor_height_2
+        official_label: Second floor height
+        source: question
+        label: How tall is the second story, in feet?
+        type: number
+        unit: ft
+        min: 0
+        max: 50
+        why: 5.7.c.2
+        allow_unknown: true
+        required: true
+        show_if: {gte: [item.stories, 2]}
+        status: draft
+      - id: floor_height_3
+        official_label: Third floor height
+        source: question
+        label: How tall is the third story, in feet?
+        type: number
+        unit: ft
+        min: 0
+        max: 50
+        why: 5.7.c.2
+        allow_unknown: true
+        required: true
+        show_if: {gte: [item.stories, 3]}
+        status: draft
+      - id: floor_height_4
+        official_label: Fourth floor height
+        source: question
+        label: How tall is the fourth story, in feet?
+        type: number
+        unit: ft
+        min: 0
+        max: 50
+        why: 5.7.c.2
+        allow_unknown: true
+        required: true
+        show_if: {gte: [item.stories, 4]}
+        status: draft
+      - id: roof_style
+        official_label: Roof Style
+        source: question
+        label: What shape is the roof?
+        type: choice
+        options:
+          - {value: gable, label: "Gable: two slopes meeting at a peak", official: "Gable"}
+          - {value: mansard, label: "Mansard: steep lower slopes with a flatter top", official: "Mansard"}
+          - {value: gambrel, label: "Gambrel: a barn-style roof with two slopes on each side", official: "Gambrel"}
+          - {value: hipped, label: "Hipped: slopes on all four sides", official: "Hipped"}
+          - {value: shed, label: "Shed: a single slope", official: "Shed"}
+        why: 6.5.c.2
+        allow_unknown: true
+        required: true
+        status: draft
+      - id: roof_slope
+        official_label: Roof Slope on Main Building Mass
+        source: question
+        label: How steep is the roof?
+        help: Give the rise over 12 inches of run, for example "8/12".
+        type: text
+        why: 6.5.c.2
+        allow_unknown: true
+        required: true
+        status: draft
+      - id: exterior_finish
+        official_label: Exterior finish material
+        source: question
+        label: What will the outside walls and roof be covered with?
+        help: List them all, for example "clapboards, asphalt shingles".
+        type: text
+        why: 6.5.c.5
+        allow_unknown: true
+        required: true
+        status: draft
+
+  - id: building_windows
+    official_title: Windows & Doors - Main Building Mass
+    chapter: Your buildings
+    repeat: {kind: building, add_label: Add another building, min: 1, max: 20}
+    status: draft
+    fields:
+      - id: windows_north
+        official_label: North facing facade %
+        source: question
+        label: About what share of the north-facing wall is windows and doors, as a percent?
+        type: number
+        unit: "%"
+        min: 0
+        max: 100
+        why: 6.6.c.2
+        allow_unknown: true
+        required: true
+        status: draft
+      - id: windows_east
+        official_label: East facing facade %
+        source: question
+        label: And of the east-facing wall?
+        type: number
+        unit: "%"
+        min: 0
+        max: 100
+        why: 6.6.c.2
+        allow_unknown: true
+        required: true
+        status: draft
+      - id: windows_south
+        official_label: South facing facade %
+        source: question
+        label: And of the south-facing wall?
+        type: number
+        unit: "%"
+        min: 0
+        max: 100
+        why: 6.6.c.2
+        allow_unknown: true
+        required: true
+        status: draft
+      - id: windows_west
+        official_label: West facing facade %
+        source: question
+        label: And of the west-facing wall?
+        type: number
+        unit: "%"
+        min: 0
+        max: 100
+        why: 6.6.c.2
+        allow_unknown: true
+        required: true
+        status: draft
+
+  - id: component
+    official_title: Components Section
+    chapter: Additions, porches and decks
+    repeat: {kind: component, add_label: "Add an addition, porch or deck", min: 0, max: 30}
+    status: draft
+    fields:
+      - id: component_kind
+        official_label: Component
+        source: question
+        label: What are you adding or changing?
+        type: choice
+        options:
+          - {value: addition, label: "An addition to a building", official: "Addition"}
+          - {value: garage, label: "A garage", official: "Garage"}
+          - {value: porch, label: "A porch", official: "Porch"}
+          - {value: deck, label: "A deck", official: "Deck"}
+          - {value: patio, label: "A patio", official: "Patio"}
+          - {value: other, label: "Something else, like a dormer, bay window or cupola", official: "Other Architectural Component"}
+        why: 6.2.a.1
+        required: true
+        status: draft
+      - id: component_other_name
+        official_label: Name of other architectural component
+        source: question
+        label: What is it called?
+        type: text
+        why: 6.2.a.1
+        required: true
+        show_if: {eq: [item.component_kind, other]}
+        status: draft
+      - id: component_renovation_only
+        official_label: Only being renovated, not changing size or location
+        source: question
+        label: Is it only being renovated, without changing its size or where it sits?
+        type: yesno
+        why: 8.10.b.2
+        required: true
+        status: draft
+      - id: attached_to
+        official_label: Building attached to
+        source: question
+        label: Which building is it attached to?
+        help: Use the name you gave the building, or write "free standing" if it isn't attached to one.
+        type: text
+        why: 5.3.d.1
+        required: true
+        status: draft
+      - id: garage_attached
+        official_label: Garage attached or detached
+        source: question
+        label: Is the garage attached to another building, or separate?
+        type: choice
+        options:
+          - {value: attached, label: "Attached", official: "Attached"}
+          - {value: detached, label: "Separate (detached)", official: "Detached"}
+        why: 5.3.d.1
+        required: true
+        show_if: {eq: [item.component_kind, garage]}
+        status: draft
+      - id: component_width
+        official_label: Width
+        source: question
+        label: How wide is it, in feet?
+        type: number
+        unit: ft
+        min: 0
+        max: 2000
+        why: 6.2.a.1
+        allow_unknown: true
+        required: true
+        status: draft
+      - id: component_depth
+        official_label: Depth (Length for a Patio)
+        source: question
+        label: How deep is it, or how long for a patio, in feet?
+        type: number
+        unit: ft
+        min: 0
+        max: 2000
+        why: 6.2.a.1
+        allow_unknown: true
+        required: true
+        status: draft
+      - id: component_height
+        official_label: Height
+        source: question
+        label: How tall is it, from the ground to its highest point, in feet?
+        type: number
+        unit: ft
+        min: 0
+        max: 200
+        why: 6.2.a.1
+        allow_unknown: true
+        required: true
+        show_if: {ne: [item.component_kind, patio]}
+        status: draft
+      - id: component_roof_style
+        official_label: Roof Style on Component
+        source: question
+        label: What shape is its roof?
+        type: choice
+        options:
+          - {value: gable, label: "Gable: two slopes meeting at a peak", official: "Gable"}
+          - {value: mansard, label: "Mansard: steep lower slopes with a flatter top", official: "Mansard"}
+          - {value: gambrel, label: "Gambrel: a barn-style roof with two slopes on each side", official: "Gambrel"}
+          - {value: hipped, label: "Hipped: slopes on all four sides", official: "Hipped"}
+          - {value: shed, label: "Shed: a single slope", official: "Shed"}
+        why: 6.5.c.2
+        allow_unknown: true
+        required: true
+        show_if: {oneof: [item.component_kind, [addition, garage]]}
+        status: draft
+      - id: component_roof_slope
+        official_label: Roof Slope
+        source: question
+        label: How steep is its roof?
+        help: Give the rise over 12 inches of run, for example "6/12".
+        type: text
+        why: 6.5.c.2
+        allow_unknown: true
+        required: true
+        show_if: {oneof: [item.component_kind, [addition, garage]]}
+        status: draft
+      - id: component_finish
+        official_label: Exterior finish material
+        source: question
+        label: What will its outside walls and roof be covered with?
+        type: text
+        why: 6.5.c.5
+        allow_unknown: true
+        required: true
+        show_if: {oneof: [item.component_kind, [addition, garage]]}
+        status: draft
+      - id: component_windows_north
+        official_label: North facing facade %
+        source: question
+        label: About what share of its north-facing wall is windows and doors, as a percent?
+        type: number
+        unit: "%"
+        min: 0
+        max: 100
+        why: 6.6.c.2
+        allow_unknown: true
+        required: true
+        show_if: {oneof: [item.component_kind, [addition, garage]]}
+        status: draft
+      - id: component_windows_east
+        official_label: East facing facade %
+        source: question
+        label: And of its east-facing wall?
+        type: number
+        unit: "%"
+        min: 0
+        max: 100
+        why: 6.6.c.2
+        allow_unknown: true
+        required: true
+        show_if: {oneof: [item.component_kind, [addition, garage]]}
+        status: draft
+      - id: component_windows_south
+        official_label: South facing facade %
+        source: question
+        label: And of its south-facing wall?
+        type: number
+        unit: "%"
+        min: 0
+        max: 100
+        why: 6.6.c.2
+        allow_unknown: true
+        required: true
+        show_if: {oneof: [item.component_kind, [addition, garage]]}
+        status: draft
+      - id: component_windows_west
+        official_label: West facing facade %
+        source: question
+        label: And of its west-facing wall?
+        type: number
+        unit: "%"
+        min: 0
+        max: 100
+        why: 6.6.c.2
+        allow_unknown: true
+        required: true
+        show_if: {oneof: [item.component_kind, [addition, garage]]}
+        status: draft
