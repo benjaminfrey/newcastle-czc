@@ -127,4 +127,12 @@ describe("Results", () => {
     renderPage();
     expect(await screen.findByText(/Ruling of Ben Frey/)).toBeInTheDocument();
   });
+
+  it("offers Start only for the applications this site takes", async () => {
+    vi.spyOn(api, "runScreener").mockResolvedValue(RESULT);
+    renderPage();
+    const start = await screen.findByRole("link", { name: "Start your Use Permit application" });
+    expect(start).toHaveAttribute("href", "/apply/use_permit");
+    expect(screen.queryByRole("link", { name: /Start your Special Permit/ })).not.toBeInTheDocument();
+  });
 });
