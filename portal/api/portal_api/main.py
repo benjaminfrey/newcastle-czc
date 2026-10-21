@@ -8,8 +8,8 @@ from portal_api.mail import Mailer, SmtpMailer
 from portal_api.ratelimit import SlidingWindow
 from portal_api.scan import ClamdScanner, Scanner
 from portal_api.storage import ObjectStore, S3Store
-from portal_api.routes import applications as application_routes, auth as auth_routes, health, \
-    property as property_routes, screener as screener_routes
+from portal_api.routes import applications as application_routes, attachments as attachment_routes, \
+    auth as auth_routes, health, property as property_routes, screener as screener_routes
 
 
 @asynccontextmanager
@@ -35,4 +35,5 @@ def create_app(settings: Settings | None = None, mailer: Mailer | None = None,
     app.include_router(property_routes.router)
     app.include_router(screener_routes.router)
     app.include_router(application_routes.router)
+    app.include_router(attachment_routes.router)
     return app
