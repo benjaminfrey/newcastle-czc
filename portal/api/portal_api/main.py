@@ -6,6 +6,8 @@ from portal_api.config import Settings
 from portal_api.db import make_engine
 from portal_api.mail import Mailer, SmtpMailer
 from portal_api.ratelimit import SlidingWindow
+from portal_api.scan import ClamdScanner, Scanner
+from portal_api.storage import ObjectStore, S3Store
 from portal_api.routes import applications as application_routes, auth as auth_routes, health, \
     property as property_routes, screener as screener_routes
 
@@ -17,7 +19,8 @@ async def _lifespan(app: FastAPI):
     app.state.engine.dispose()
 
 
-def create_app(settings: Settings | None = None, mailer: Mailer | None = None) -> FastAPI:
+def create_app(settings: Settings | None = None, mailer: Mailer | None = None,
+               store: ObjectStore | None = None, scanner: Scanner | None = None) -> FastAPI:
     settings = settings or Settings()
     app = FastAPI(title="Newcastle Applicant Portal", docs_url=None, redoc_url=None, lifespan=_lifespan)
     app.state.settings = settings
@@ -25,6 +28,8 @@ def create_app(settings: Settings | None = None, mailer: Mailer | None = None) -
     app.state.lookup_limiter = SlidingWindow(settings.lookup_limit_per_minute)
     app.state.tile_limiter = SlidingWindow(settings.tile_limit_per_minute)
     app.state.mailer = mailer or SmtpMailer(settings.smtp_host, settings.smtp_port, settings.smtp_from)
+    app.state.store = store or S3Store(settings)
+    app.state.scanner = scanner or ClamdScanner(settings.clamd_host, settings.clamd_port)
     app.include_router(health.router)
     app.include_router(auth_routes.router)
     app.include_router(property_routes.router)

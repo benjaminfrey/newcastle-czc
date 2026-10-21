@@ -9,3 +9,5 @@ pyogrio==0.13.0
 shapely==2.2.0
 httpx==0.28.1
 pyyaml==6.0.3
+boto3==1.43.117
+python-multipart==0.0.32

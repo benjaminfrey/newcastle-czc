@@ -29,6 +29,15 @@ jobs:
       mail:
         image: axllent/mailpit:v1.27
         ports: ["1025:1025", "8025:8025"]
+      store:
+        image: rustfs/rustfs:1.0.3
+        env:
+          RUSTFS_ACCESS_KEY: portal
+          RUSTFS_SECRET_KEY: portal-dev-secret
+          RUSTFS_CONSOLE_ENABLE: "false"
+        ports: ["9000:9000"]
+    env:
+      PORTAL_TEST_S3_ENDPOINT: http://localhost:9000
     defaults:
       run:
         working-directory: portal/api
