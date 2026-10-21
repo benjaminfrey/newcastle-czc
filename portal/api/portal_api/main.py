@@ -6,7 +6,8 @@ from portal_api.config import Settings
 from portal_api.db import make_engine
 from portal_api.mail import Mailer, SmtpMailer
 from portal_api.ratelimit import SlidingWindow
-from portal_api.routes import auth as auth_routes, health, property as property_routes, screener as screener_routes
+from portal_api.routes import applications as application_routes, auth as auth_routes, health, \
+    property as property_routes, screener as screener_routes
 
 
 @asynccontextmanager
@@ -28,4 +29,5 @@ def create_app(settings: Settings | None = None, mailer: Mailer | None = None) -
     app.include_router(auth_routes.router)
     app.include_router(property_routes.router)
     app.include_router(screener_routes.router)
+    app.include_router(application_routes.router)
     return app
