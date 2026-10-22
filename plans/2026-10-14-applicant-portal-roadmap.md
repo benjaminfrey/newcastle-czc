@@ -120,3 +120,31 @@ Minor findings:
 - A traced district the Code doesn't have (e.g. "SD-Shoreland") is skipped silently by the use table.
 - Bed & Breakfast example says "where the owner lives"; the Code says "a permanent resident".
 - Results card titles render smaller than body text (HeroUI Card.Title) — styling polish.
+
+## Deferred from the M4 review
+
+One fresh whole-branch review ran on M4 (no Critical findings). Fixed: property values the
+applicant may correct now start filled in; with no street layer the road counts as unknown, so the
+MaineDOT question is asked; files over 25 MB are refused before they are sent; adding a building
+after a change in another tab offers "Load the latest"; buildings and components can be removed;
+optional new questions are flagged on review; a blank uses answer saves nothing. The journeys
+themselves found and fixed: button contrast below WCAG AA (HeroUI's default accent, every page since
+M1), a 429 crashing pages blank, uncached-by-design private responses (`no-store`). Deferred Minor
+findings:
+
+- The "(from the Town's maps — staff confirm)" tag also shows on hand-entered and corrected values.
+- A pending start (signed-out "Start") never expires in local storage; a shared computer could start
+  a draft for the previous visitor's lot. Add a timestamp, ignore after an hour.
+- The review page's conflict card offers only "Load the latest" (no "Keep mine").
+- **Before production:** uploads buffer about three times the file before the hourly limit applies,
+  and there is no per-applicant storage quota.
+- The ClamAV entrypoint appends `StreamMaxLength` to `clamd.conf` on every restart (duplicates).
+- Every answer save computes the parcel layer's extent; compute it only for map-point answers.
+- The Use Form's prefilled "Uses to be Established" has no `answers_saved` event.
+- `GET /api/applications` loads forms with the current ruleset, not each application's; a broken
+  definition gives 500.
+- **Before production:** `deploy/README.md` doesn't mention the `uploads` volume, which holds part of
+  the record and needs the off-VM backup too (M7).
+- Deleting an applicant would cascade into the insert-only answer and note tables and fail; account
+  deletion needs its own design (with retention, O3).
+- An unknown `use_key` at start says "Something about that property didn't work".
