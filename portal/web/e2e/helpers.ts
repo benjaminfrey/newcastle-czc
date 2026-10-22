@@ -2,6 +2,10 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page } from "@playwright/test";
 
 const MAILPIT = process.env.PORTAL_E2E_MAILPIT ?? "http://127.0.0.1:8025";
+// The LAN stack's Mailpit asks for a login ("user:password", as MAILPIT_UI_AUTH in .env).
+const MAILPIT_AUTH = process.env.PORTAL_E2E_MAILPIT_AUTH;
+const mailpit = (path: string) => fetch(`${MAILPIT}${path}`, MAILPIT_AUTH
+  ? { headers: { Authorization: `Basic ${Buffer.from(MAILPIT_AUTH).toString("base64")}` } } : undefined);
 const checked = new Set<string>();
 
 // Fails on serious or critical accessibility findings; each kind of page is checked once per run.
@@ -19,10 +23,10 @@ export function newEmail(tag: string): string {
 
 async function linkFor(email: string): Promise<string> {
   for (let i = 0; i < 30; i += 1) {
-    const r = await fetch(`${MAILPIT}/api/v1/search?query=${encodeURIComponent(`to:"${email}"`)}`);
+    const r = await mailpit(`/api/v1/search?query=${encodeURIComponent(`to:"${email}"`)}`);
     const found = (await r.json()) as { messages: { ID: string }[] };
     if (found.messages?.length) {
-      const m = (await (await fetch(`${MAILPIT}/api/v1/message/${found.messages[0].ID}`)).json()) as { Text: string };
+      const m = (await (await mailpit(`/api/v1/message/${found.messages[0].ID}`)).json()) as { Text: string };
       const link = m.Text.match(/https?:\/\/\S+\/signin\/verify#token=[\w-]+/);
       if (link) return link[0];
     }
