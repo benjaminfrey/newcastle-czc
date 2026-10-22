@@ -44,3 +44,15 @@ describe("api", () => {
     expect(await getProperty(1)).toBe("busy");
   });
 });
+
+describe("getUseGroups", () => {
+  it("fetches the list once and keeps it", async () => {
+    const { getUseGroups, clearUseGroupsCache } = await import("./api");
+    clearUseGroupsCache();
+    const spy = vi.spyOn(globalThis, "fetch").mockImplementation(async () => new Response("[]", { status: 200 }));
+    await getUseGroups();
+    await getUseGroups();
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+});
+

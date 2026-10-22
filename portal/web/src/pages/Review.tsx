@@ -30,6 +30,7 @@ export default function Review() {
     if (typeof a === "string") return setProblem(UNREACHABLE);
     const f = await getForm(a.form_key, a.form_version);
     if (f === "not_approved") return setProblem("This application isn't ready yet. Please contact the Town Office.");
+    if (f === "busy") return setProblem("The Town's server is busy. Please wait a minute and reload the page.");
     if (typeof f === "string") return setProblem(UNREACHABLE);
     setApp(a);
     setForm(f);

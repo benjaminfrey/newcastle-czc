@@ -30,6 +30,7 @@ const FORM: apps.FormDef = {
     ]),
     sec("owner", "Property Owner (if different)", [f("owner_name", "Name")],
         { show_if: { eq: ["answers.applicant_is_owner", false] } }),
+    sec("documents", "Attachments", [f("use_documents", "Other relevant documentation", { type: "upload", required: false })]),
     sec("certification", "Certification", [f("signature", "Applicant Signature", { source: "at_submit" })]),
     sec("office", "Official Use Only", [f("date_received", "Date Received", { source: "staff" })]),
   ],
@@ -153,5 +154,13 @@ describe("Review", () => {
     vi.spyOn(apps, "getApplication").mockResolvedValue(APP);
     renderPage();
     expect(await screen.findByRole("button", { name: /Submit/ })).toBeDisabled();
+  });
+
+  it("links uploaded files", async () => {
+    vi.spyOn(apps, "getApplication").mockResolvedValue({ ...APP, attachments: [
+      { id: "t1", field_id: "use_documents", item_id: null, filename: "plan.pdf", content_type: "application/pdf", size_bytes: 10 }] });
+    renderPage();
+    const docs = await screen.findByRole("region", { name: "Attachments" });
+    expect(within(docs).getByRole("link", { name: "plan.pdf" })).toHaveAttribute("href", "/api/attachments/t1");
   });
 });

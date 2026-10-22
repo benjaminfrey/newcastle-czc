@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 
 from portal_api.config import Settings
 from portal_api.db import make_engine
@@ -19,6 +19,9 @@ async def _lifespan(app: FastAPI):
     app.state.engine.dispose()
 
 
+_PRIVATE = ("/api/applications", "/api/attachments", "/api/me", "/api/auth")
+
+
 def create_app(settings: Settings | None = None, mailer: Mailer | None = None,
                store: ObjectStore | None = None, scanner: Scanner | None = None) -> FastAPI:
     settings = settings or Settings()
@@ -30,6 +33,15 @@ def create_app(settings: Settings | None = None, mailer: Mailer | None = None,
     app.state.mailer = mailer or SmtpMailer(settings.smtp_host, settings.smtp_port, settings.smtp_from)
     app.state.store = store or S3Store(settings)
     app.state.scanner = scanner or ClamdScanner(settings.clamd_host, settings.clamd_port)
+    @app.middleware("http")
+    async def _no_store(request: Request, call_next):
+        # Applicants' records are private and change as they type: never let a browser
+        # (or a shared library computer) keep a copy or reuse a stale one.
+        response = await call_next(request)
+        if request.url.path.startswith(_PRIVATE) and "cache-control" not in response.headers:
+            response.headers["Cache-Control"] = "no-store"
+        return response
+
     app.include_router(health.router)
     app.include_router(auth_routes.router)
     app.include_router(property_routes.router)

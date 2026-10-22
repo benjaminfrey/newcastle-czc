@@ -1,2 +1,13 @@
 @import "tailwindcss";
 @import "@heroui/styles";
+
+/* WCAG 2.1 AA (spec §4). HeroUI's default accent puts white text on #0485f7, a 3.6:1
+   contrast; buttons need 4.5:1. This blue gives about 6.5:1. */
+:root {
+  --accent: oklch(0.5 0.17 255);
+}
+
+/* The map's attribution links sit in a line of text, so they need more than colour. */
+.maplibregl-ctrl-attrib a {
+  text-decoration: underline;
+}

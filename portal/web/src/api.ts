@@ -117,9 +117,20 @@ export async function runScreener(answers: unknown): Promise<ScreenerResult | Re
   return (await refusal(r)) ?? ((await r!.json()) as ScreenerResult);
 }
 
+// The use list is the same for everyone and every page; fetch it once per page session.
+let useGroups: UseGroup[] | null = null;
+
+export function clearUseGroupsCache(): void {
+  useGroups = null;
+}
+
 export async function getUseGroups(): Promise<UseGroup[] | Refusal> {
+  if (useGroups) return useGroups;
   const r = await attempt("/api/screener/uses");
-  return (await refusal(r)) ?? ((await r!.json()) as UseGroup[]);
+  const no = await refusal(r);
+  if (no) return no;
+  useGroups = (await r!.json()) as UseGroup[];
+  return useGroups;
 }
 
 export async function getDistricts(): Promise<{ code: string; name: string }[]> {

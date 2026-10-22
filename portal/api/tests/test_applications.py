@@ -237,3 +237,11 @@ def test_application_keeps_its_form_version(alice, tmp_path, monkeypatch):
     form = alice.get("/api/forms/use_permit/v/1").json()
     assert "use_documents_section" in [s["id"] for s in form["sections"]]
     assert alice.get("/api/forms/use_permit").json()["version"] == 2
+
+
+def test_private_responses_are_never_cached(alice):
+    # Shared computers (the library, the Town Office): applicants' records must not sit in a
+    # browser cache, and a cached copy must never stand in for the latest answers.
+    app_id = create(alice)
+    for url in (f"/api/applications/{app_id}", "/api/applications", "/api/me"):
+        assert alice.get(url).headers.get("cache-control") == "no-store", url

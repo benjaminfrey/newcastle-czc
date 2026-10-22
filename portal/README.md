@@ -144,3 +144,12 @@ streamed through the API. The store's credentials are `STORE_ACCESS_KEY` / `STOR
 VM's `.env`. Tests use an in-memory store and a fake scanner; two integration tests run against the
 real ones when `PORTAL_TEST_S3_ENDPOINT` and `PORTAL_TEST_CLAMD_HOST` are set (CI sets the first).
 
+**Journeys (Playwright).** `web/e2e/` drives each application end to end, at desktop and phone width,
+with an accessibility check (axe; serious and critical findings fail) on every kind of page. They run
+on the VM against the dev stack, not in CI (ClamAV's signature download is refused from CI runners):
+
+    portal/vm.sh run 'cd portal/web && npx playwright install --with-deps chromium'   # once
+    # dev API as above, plus PORTAL_S3_ACCESS_KEY=portal PORTAL_S3_SECRET_KEY=portal-dev-secret
+    # and PORTAL_SIGNIN_LIMIT_PER_IP=100000 (every journey signs in from 127.0.0.1); npm run dev running
+    portal/vm.sh run 'cd portal/web && PORTAL_E2E_URL=http://127.0.0.1:5173 PORTAL_E2E_MAILPIT=http://127.0.0.1:8025 npm run e2e'
+

@@ -43,8 +43,9 @@ export type Change = { field_id: string; item_id: string | null; value: unknown 
 export type Problem = { field_id: string; item_id: string | null; reason: string };
 
 // "signed_out": the session ended; "not_approved": the form still has entries the chair
-// hasn't approved; "unavailable": the server or the connection failed.
-export type Refusal = "signed_out" | "not_approved" | "unavailable" | "not_found";
+// hasn't approved; "busy": too many requests from this address in the last minute;
+// "unavailable": the server or the connection failed.
+export type Refusal = "signed_out" | "not_approved" | "busy" | "unavailable" | "not_found";
 export type SaveResult = { revision: number; missing: AppState["missing"] } | { conflict: number } | { invalid: Problem[] } | Refusal;
 
 const json = { "Content-Type": "application/json" };
@@ -66,14 +67,30 @@ async function refused(r: Response | null): Promise<Refusal | null> {
     if (r && r.status === 503 && (await detail(r.clone())) === "form_not_approved") return "not_approved";
     return "unavailable";
   }
+  if (r.status === 429) return "busy";
   if (r.status === 401) return "signed_out";
   if (r.status === 404) return "not_found";
   return null;
 }
 
+// A form version never changes, so each is fetched once per page session (the wizard and
+// review pages ask for it on every load). Refusals are not kept.
+const formCache = new Map<string, FormDef>();
+
+export function clearFormCache(): void {
+  formCache.clear();
+}
+
 export async function getForm(key: string, version?: number): Promise<FormDef | Refusal> {
-  const r = await call(version ? `/api/forms/${key}/v/${version}` : `/api/forms/${key}`);
-  return (await refused(r)) ?? ((await r!.json()) as FormDef);
+  const url = version ? `/api/forms/${key}/v/${version}` : `/api/forms/${key}`;
+  const kept = formCache.get(url);
+  if (kept) return kept;
+  const r = await call(url);
+  const no = await refused(r);
+  if (no) return no;
+  const form = (await r!.json()) as FormDef;
+  if (version) formCache.set(url, form);
+  return form;
 }
 
 export async function createApplication(body: NewApplication): Promise<{ id: string } | Refusal | "property_unavailable" | "invalid"> {

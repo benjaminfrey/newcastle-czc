@@ -55,6 +55,8 @@ export default function OfficialSection(p: Props) {
   const [noting, setNoting] = useState(false);
   const [noteText, setNoteText] = useState(p.note);
 
+  const files = (field: FormField) => p.attachments.filter((a) => a.field_id === field.id && a.item_id === block.itemId);
+
   function startEdit() {
     setDrafts(Object.fromEntries(p.questions.map((r) => [r.field.id, toDraft(r.field, answerOf(p.cur, r.field.id, r.itemId))])));
     setErrors({});
@@ -93,7 +95,13 @@ export default function OfficialSection(p: Props) {
               <div key={field.id} className="contents">
                 <dt className="font-semibold">{field.official_label}</dt>
                 <dd className="mb-2 sm:mb-0">
-                  <span>{display(field, value, p.attachments, block.itemId, p.useNames)}</span>
+                  {field.type === "upload" && files(field).length > 0 ? (
+                    <span className="flex flex-col">
+                      {files(field).map((a) => <a key={a.id} className="underline" href={`/api/attachments/${a.id}`}>{a.filename}</a>)}
+                    </span>
+                  ) : (
+                    <span>{display(field, value, p.attachments, block.itemId, p.useNames)}</span>
+                  )}
                   {fromMaps(field) && value !== null && <span className="text-sm"> (from the Town's maps — staff confirm)</span>}
                 </dd>
               </div>
@@ -143,7 +151,7 @@ export default function OfficialSection(p: Props) {
           </>
         )}
         {!noting ? (
-          <Button variant="ghost" onPress={() => { setNoteText(p.note); setNoting(true); }} aria-label={`Add more detail to ${title}`}>
+          <Button variant="ghost" onPress={() => { setNoteText(p.note); setNoting(true); }} aria-label={p.note ? `Change the detail for ${title}` : `Add more detail to ${title}`}>
             {p.note ? "Change the detail" : "Add more detail"}
           </Button>
         ) : (
