@@ -113,6 +113,10 @@ def _snapshot(conn: Connection, request: Request, body: NewApplication) -> dict 
         if facts is None:
             return _json(422, "no_such_parcel")
         facts.pop("geometry", None)
+        if prop.active_import(conn, "streets") is None:
+            # No street layer: nobody knows whether the lot is on a State road, so the
+            # MaineDOT question must still be asked.
+            facts["on_state_highway"] = None
         return {"source": "lookup", "parcel_id": facts["parcel_id"], "map_lot": facts["map_lot"], "facts": facts,
                 "as_of": facts["as_of"]["parcels"], "verified": True, **common}
     if p.source == "manual" and p.map_lot and p.map_lot.strip():

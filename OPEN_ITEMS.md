@@ -29,8 +29,8 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
   entry on 2026-10-20 (`memos/2026-10-15-screener-rules-for-approval.md`). Milestone 4 (the three
   application wizards) is built on `portal-m4-applications`; its forms are drafts awaiting the chair
   (`memos/2026-10-21-application-forms-for-approval.md`). For M4:
-  - **For the chair:** approve the application forms, and answer the sheet's five questions (is a site
-    sketch required for a Small Project Plan; the dropped "Standard Met?" column; Special Use Building;
+  - **For the chair:** approve the application forms, and answer the sheet's six questions (is a site
+    sketch required for a Small Project Plan; does every Small Project Plan need a Building Form; the dropped "Standard Met?" column; Special Use Building;
     names added to the Owner and Agent blocks; anything missing from the blank packet).
   - **For the Town Office:** a blank copy of the current Planning Application packet. The fields were
     read from filled-in 2025 scans; any page they lack (a second Building Form page, the "Other

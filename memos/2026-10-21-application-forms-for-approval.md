@@ -18,7 +18,8 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 2. **"Standard Met?" column dropped.** The paper Building Form has "District Standard / Standard Met?" columns. "Standard Met?" is a verdict, which the portal never gives (spec §5). The District Standard column becomes Milestone 6's flags.
 3. **Special Use Building added.** The building types follow Art. 5 §1.c, which lists Special Use Building; the paper form omits it.
 4. **Name added to the Applicant, Owner and Agent blocks.** The paper takes the applicant's name only at the signature and the owner's and agent's not at all.
-5. **Is anything missing from the blank packet?** The fields were read from filled-in scans. If the Town's blank packet has more pages (a second Building Form page, the "Other Structures Form"), they are not here yet.
+5. **Does every Small Project Plan need a Building Form?** Drafted so (at least one building). A project that is only site work (§10.b.4) would then be asked building questions it can't answer; the Building Form could instead be asked only when the work includes a building.
+6. **Is anything missing from the blank packet?** The fields were read from filled-in scans. If the Town's blank packet has more pages (a second Building Form page, the "Other Structures Form"), they are not here yet.
 
 ## Cover Sheet (part of every application)
 

@@ -23,7 +23,7 @@ const NUMBER = /^-?\d+(\.\d+)?$/;
 
 // The value to save, or a plain message saying what to fix.
 export function fromDraft(field: FormField, draft: Draft): { value: unknown } | { error: string } {
-  if (draft === null || draft === "" || (Array.isArray(draft) && draft.length === 0 && field.type !== "uses")) return { value: null };
+  if (draft === null || draft === "" || (Array.isArray(draft) && draft.length === 0)) return { value: null };
   if (isUnknown(draft)) return { value: draft };
   if (field.type === "number") {
     const text = String(draft).replace(/,/g, "").trim();

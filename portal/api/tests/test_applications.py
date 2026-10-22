@@ -245,3 +245,14 @@ def test_private_responses_are_never_cached(alice):
     app_id = create(alice)
     for url in (f"/api/applications/{app_id}", "/api/applications", "/api/me"):
         assert alice.get(url).headers.get("cache-control") == "no-store", url
+
+
+def test_no_streets_layer_means_the_road_is_unknown(alice, engine):
+    # Without the street layer nobody knows whether the lot is on a State road, so the
+    # MaineDOT question must still be asked (Art. 3 §12.d).
+    with engine.begin() as conn:
+        conn.execute(text("UPDATE gis_import SET active = false WHERE layer = 'streets'"))
+    app_id = create(alice, form_key="entrance_permit")
+    body = get(alice, app_id)
+    assert body["property"]["facts"]["on_state_highway"] is None
+    assert "mainedot_permit" in {m["field_id"] for m in body["missing"]}

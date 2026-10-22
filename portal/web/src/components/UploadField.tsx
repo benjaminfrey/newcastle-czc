@@ -7,6 +7,7 @@ type Props = {
   attachments: Attachment[]; onChange: (all: Attachment[]) => void;
 };
 
+const MAX_BYTES = 26_214_400;
 const ACCEPT = ".pdf,.jpg,.jpeg,.png,.heic,.heif,application/pdf,image/jpeg,image/png,image/heic,image/heif";
 
 function size(bytes: number): string {
@@ -26,6 +27,11 @@ export default function UploadField({ appId, fieldId, itemId, label, attachments
     let all = attachments;
     for (const file of Array.from(files)) {
       setMessage(null);
+      // Checked here too, so nobody sends 26 MB over a phone connection only to be refused.
+      if (file.size > MAX_BYTES) {
+        setMessage(`${file.name}: ${UPLOAD_MESSAGES.too_large}`);
+        break;
+      }
       setProgress(0);
       const r = await uploadFile(appId, fieldId, itemId, file, setProgress);
       setProgress(null);

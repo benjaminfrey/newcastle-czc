@@ -34,6 +34,10 @@ QUESTIONS = [
      "The building types follow Art. 5 §1.c, which lists Special Use Building; the paper form omits it."),
     ("Name added to the Applicant, Owner and Agent blocks",
      "The paper takes the applicant's name only at the signature and the owner's and agent's not at all."),
+    ("Does every Small Project Plan need a Building Form?",
+     "Drafted so (at least one building). A project that is only site work (§10.b.4) would then be asked "
+     "building questions it can't answer; the Building Form could instead be asked only when the work "
+     "includes a building."),
     ("Is anything missing from the blank packet?",
      "The fields were read from filled-in scans. If the Town's blank packet has more pages (a second Building "
      "Form page, the \"Other Structures Form\"), they are not here yet."),

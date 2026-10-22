@@ -163,4 +163,55 @@ describe("Review", () => {
     const docs = await screen.findByRole("region", { name: "Attachments" });
     expect(within(docs).getByRole("link", { name: "plan.pdf" })).toHaveAttribute("href", "/api/attachments/t1");
   });
+
+  it("Edit shows the property value to confirm", async () => {
+    vi.spyOn(apps, "getForm").mockResolvedValue({ ...FORM, sections: [
+      sec("site", "Site Information (existing)", [f("lot_area", "Lot Area (acres)", { type: "number", source: "property", from: "acres", may_correct: true })])] });
+    vi.spyOn(apps, "getApplication").mockResolvedValue({ ...APP, property: { ...APP.property, facts: { acres: 2.1 } } });
+    renderPage();
+    await userEvent.click(await screen.findByRole("button", { name: "Edit Site Information (existing)" }));
+    expect(screen.getByLabelText("Lot Area (acres)?")).toHaveValue("2.1");
+  });
+
+  it("flags a new optional question too", async () => {
+    vi.spyOn(apps, "getForm").mockResolvedValue({ ...FORM, sections: [
+      sec("drive", "Entrance / Driveway Form", [
+        f("shared", "Shared with an abutting lot", { type: "yesno" }),
+        f("easement", "Access easement", { type: "upload", required: false, show_if: { eq: ["answers.shared", true] } })])] });
+    vi.spyOn(apps, "getApplication").mockResolvedValue({ ...APP, answers: [{ field_id: "shared", item_id: null, value: false }] });
+    vi.spyOn(apps, "saveAnswers").mockResolvedValue({ revision: 4, missing: [] });
+    renderPage();
+    await userEvent.click(await screen.findByRole("button", { name: "Edit Entrance / Driveway Form" }));
+    await userEvent.click(screen.getByRole("radio", { name: "Yes" }));
+    await userEvent.click(screen.getByRole("button", { name: "Save Entrance / Driveway Form" }));
+    expect(await screen.findByText("A few new questions apply")).toBeInTheDocument();
+  });
+
+  it("removes a building", async () => {
+    vi.spyOn(apps, "getForm").mockResolvedValue({ ...FORM, sections: [
+      sec("building", "Building Form", [f("building_name", "Building reference (name)")],
+          { repeat: { kind: "building", add_label: "Add another building", min: 1, max: 5 } }),
+      sec("component", "Components Section", [f("component_kind", "Component")],
+          { repeat: { kind: "component", add_label: "Add an addition, porch or deck", min: 0, max: 5 } })] });
+    const items = [{ id: "b1", kind: "building", position: 0 }, { id: "b2", kind: "building", position: 1 },
+                   { id: "c1", kind: "component", position: 0 }];
+    vi.spyOn(apps, "getApplication").mockResolvedValueOnce({ ...APP, items })
+      .mockResolvedValueOnce({ ...APP, revision: 4, items: items.filter((i) => i.id !== "c1") });
+    const remove = vi.spyOn(apps, "removeItem").mockResolvedValue({ revision: 4, missing: [] });
+    renderPage();
+    await userEvent.click(await screen.findByRole("button", { name: "Remove Components Section — Addition, porch or deck 1" }));
+    expect(remove).toHaveBeenCalledWith("abc", 3, "c1");
+    expect(screen.queryByRole("button", { name: /Remove Components Section/ })).not.toBeInTheDocument();
+  });
+
+  it("does not offer to remove the only building", async () => {
+    vi.spyOn(apps, "getForm").mockResolvedValue({ ...FORM, sections: [
+      sec("building", "Building Form", [f("building_name", "Building reference (name)")],
+          { repeat: { kind: "building", add_label: "Add another building", min: 1, max: 5 } })] });
+    vi.spyOn(apps, "getApplication").mockResolvedValue({ ...APP, items: [{ id: "b1", kind: "building", position: 0 }] });
+    renderPage();
+    await screen.findByRole("region", { name: /Building Form/ });
+    expect(screen.queryByRole("button", { name: /^Remove/ })).not.toBeInTheDocument();
+  });
 });
+

@@ -7,7 +7,7 @@ import {
 } from "../applications";
 import QuestionField, { fromDraft, isUnknown, toDraft, type Draft } from "../components/QuestionField";
 import WhyWeAsk from "../components/WhyWeAsk";
-import { answerOf, type Current } from "../forms/applicability";
+import { answerOf, valueOf, type Current } from "../forms/applicability";
 import { screens, type Screen } from "../forms/wizard";
 
 const REASONS: Record<string, string> = {
@@ -38,7 +38,8 @@ export default function Wizard() {
   const [problem, setProblem] = useState<string | null>(null);
   const [draft, setDraft] = useState<Draft>(null);
   const [message, setMessage] = useState<string | null>(null);
-  const [conflict, setConflict] = useState<{ revision: number; change: Change } | null>(null);
+  // change is null when what met the conflict was adding a building or component.
+  const [conflict, setConflict] = useState<{ revision: number; change: Change | null } | null>(null);
   const [busy, setBusy] = useState(false);
   const [useNames, setUseNames] = useState<Record<string, string>>({});
 
@@ -75,7 +76,8 @@ export default function Wizard() {
 
   // Show the saved answer when arriving at a question.
   useEffect(() => {
-    if (app && here?.kind === "question") setDraft(toDraft(here.field, answerOf(currentOf(app), here.field.id, here.itemId)));
+    // A value the applicant may correct (lot area, frontage) starts as the Town's figure.
+    if (app && form && here?.kind === "question") setDraft(toDraft(here.field, valueOf(form, here.field, here.itemId, currentOf(app))));
     setMessage(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [here?.key, app?.revision]);
@@ -134,12 +136,12 @@ export default function Wizard() {
   }
 
   async function keepMine() {
-    if (!conflict) return;
+    if (!conflict || !conflict.change) return;
     const c = conflict;
     setConflict(null);
     setBusy(true);
     try {
-      afterSave(await saveAnswers(id, c.revision, [c.change]), c.change);
+      afterSave(await saveAnswers(id, c.revision, [c.change!]), c.change!);
     } finally {
       setBusy(false);
     }
@@ -155,8 +157,8 @@ export default function Wizard() {
     setBusy(true);
     try {
       const r = await addItem(id, app!.revision, here.repeat.kind);
+      if (typeof r === "object" && "conflict" in r) return setConflict({ revision: r.conflict, change: null });
       if (typeof r === "string" || !("revision" in r)) {
-        if (typeof r === "object" && "conflict" in r) setConflict(null);
         setMessage("We couldn't add that — please try again.");
         return;
       }
@@ -206,7 +208,7 @@ export default function Wizard() {
           </Card.Header>
           <Card.Footer className="flex flex-wrap gap-2">
             <Button variant="primary" onPress={() => void loadLatest()}>Load the latest</Button>
-            <Button variant="secondary" onPress={() => void keepMine()}>Keep mine</Button>
+            {conflict.change && <Button variant="secondary" onPress={() => void keepMine()}>Keep mine</Button>}
           </Card.Footer>
         </Card>
       )}

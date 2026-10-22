@@ -132,4 +132,27 @@ describe("Wizard", () => {
     await userEvent.click(await screen.findByRole("button", { name: /Why we ask/ }));
     expect(await screen.findByText("Art. 8 §2.a.2")).toBeVisible();
   });
+
+  it("shows the property value a question asks the applicant to confirm", async () => {
+    const form: apps.FormDef = { ...FORM, sections: [{ ...FORM.sections[0], fields: [
+      q("lot_area", "How big is your lot, in acres?", { type: "number", source: "property", from: "acres", may_correct: true })] }] };
+    vi.spyOn(apps, "getForm").mockResolvedValue(form);
+    vi.spyOn(apps, "getApplication").mockResolvedValue({ ...APP, property: { ...APP.property, facts: { acres: 2.1 } } });
+    renderAt();
+    expect(await screen.findByLabelText("How big is your lot, in acres?")).toHaveValue("2.1");
+  });
+
+  it("offers Load the latest when adding a building meets a change from another tab", async () => {
+    const form: apps.FormDef = { ...FORM, sections: [{ ...FORM.sections[0], id: "building", chapter: "Your buildings",
+      repeat: { kind: "building", add_label: "Add another building", min: 0, max: 5 }, fields: [q("building_name", "What do you call it?")] }] };
+    vi.spyOn(apps, "getForm").mockResolvedValue(form);
+    const get = vi.spyOn(apps, "getApplication").mockResolvedValue(APP);
+    vi.spyOn(apps, "addItem").mockResolvedValue({ conflict: 7 });
+    renderAt();
+    await userEvent.click(await screen.findByRole("button", { name: "Yes, add one" }));
+    expect(await screen.findByText(/changed in another tab or window/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Load the latest" }));
+    expect(get).toHaveBeenCalledTimes(2);
+  });
 });
+

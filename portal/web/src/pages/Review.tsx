@@ -3,10 +3,10 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { getMe, getUseGroups, UNREACHABLE } from "../api";
 import {
-  getApplication, getForm, saveAnswers, saveNote, type AppState, type Change, type FormDef, type SaveResult,
+  getApplication, getForm, removeItem, saveAnswers, saveNote, type AppState, type Change, type FormDef, type SaveResult,
 } from "../applications";
 import OfficialSection from "../components/OfficialSection";
-import { applicable, printed, type Current } from "../forms/applicability";
+import { applicable, printed, valueOf, type Current } from "../forms/applicability";
 import { itemLabel, screenKey } from "../forms/wizard";
 import { longDate, mapLotLabel } from "../format";
 
@@ -79,15 +79,23 @@ export default function Review() {
     try {
       const r = await saveAnswers(id, app!.revision, changes);
       if (!handle(r)) return false;
-      const before = new Set(app!.missing.map((m) => `${m.field_id}|${m.item_id ?? ""}`));
+      // Questions the change brings in that have no answer yet, required or not.
+      const keyOf = (r: { section: { id: string }; field: { id: string }; itemId: string | null }) =>
+        screenKey(r.section.id, r.field.id, r.itemId);
+      const before = new Set(applicable(form!, cur!).map(keyOf));
       let answers = app!.answers;
       for (const c of changes) {
         answers = answers.filter((a) => !(a.field_id === c.field_id && a.item_id === c.item_id));
         if (c.value !== null) answers.push({ field_id: c.field_id, item_id: c.item_id, value: c.value });
       }
       setApp({ ...app!, answers, revision: r.revision, missing: r.missing });
-      const fresh = r.missing.filter((m) => !before.has(`${m.field_id}|${m.item_id ?? ""}`));
-      setNewKeys(fresh.map((m) => screenKey(sectionOf(m.field_id), m.field_id, m.item_id)));
+      const after: Current = { ...cur!, answers };
+      const unanswered = (row: ReturnType<typeof applicable>[number]) => row.field.type === "upload"
+        ? !app!.attachments.some((a) => a.field_id === row.field.id && a.item_id === row.itemId)
+        : [null, undefined, ""].includes(valueOf(form!, row.field, row.itemId, after) as null)
+          || (Array.isArray(valueOf(form!, row.field, row.itemId, after))
+              && (valueOf(form!, row.field, row.itemId, after) as unknown[]).length === 0);
+      setNewKeys(applicable(form!, after).filter((row) => !before.has(keyOf(row)) && unanswered(row)).map(keyOf));
       return true;
     } finally {
       setBusy(false);
@@ -108,8 +116,29 @@ export default function Review() {
     }
   }
 
+  async function onRemove(itemId: string) {
+    setBusy(true);
+    try {
+      if (!handle(await removeItem(id, app!.revision, itemId))) return;
+      await load();
+    } finally {
+      setBusy(false);
+    }
+  }
+
   if (problem) return <p role="alert">{problem}</p>;
   if (!app || !form || !cur) return <p>Loading…</p>;
+
+  // A building or component can be removed from its first section, while more than the
+  // form's minimum remain.
+  const firstOfKind = (sectionId: string) => {
+    const s = form.sections.find((x) => x.id === sectionId);
+    return !!s?.repeat && form.sections.find((x) => x.repeat?.kind === s.repeat!.kind)?.id === s.id;
+  };
+  const removable = (sectionId: string) => {
+    const s = form.sections.find((x) => x.id === sectionId)!;
+    return firstOfKind(sectionId) && app.items.filter((i) => i.kind === s.repeat!.kind).length > s.repeat!.min;
+  };
 
   const questions = applicable(form, cur);
   const blocks = printed(form, cur);
@@ -178,6 +207,15 @@ export default function Review() {
       {blocks.map((b) => {
         const title = b.itemId ? `${b.section.official_title} — ${itemLabel(form, cur, b.itemId)}` : b.section.official_title;
         return (
+          <div key={`${b.section.id}|${b.itemId ?? ""}`} className="flex flex-col gap-2">
+          {b.itemId && removable(b.section.id) && (
+            <div>
+              <Button variant="ghost" size="sm" isDisabled={busy} aria-label={`Remove ${title}`}
+                      onPress={() => void onRemove(b.itemId!)}>
+                Remove this {b.section.repeat!.kind === "building" ? "building" : "addition, porch or deck"}
+              </Button>
+            </div>
+          )}
           <OfficialSection
             key={`${b.section.id}|${b.itemId ?? ""}`} form={form} block={b} title={title} cur={cur}
             questions={questions.filter((q) => q.section.id === b.section.id && q.itemId === b.itemId)}
@@ -187,6 +225,7 @@ export default function Review() {
             onAttachments={(all) => setApp({ ...app, attachments: all })}
             onUseName={(k, n) => setUseNames({ ...useNames, [k]: n })}
           />
+          </div>
         );
       })}
       <Card>

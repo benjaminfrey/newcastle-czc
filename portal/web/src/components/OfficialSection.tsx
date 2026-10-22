@@ -2,7 +2,7 @@ import { Button, Card, Label, TextArea, TextField } from "@heroui/react";
 import { useState } from "react";
 import type { Attachment, FormDef, FormField } from "../applications";
 import type { Block, Current, Row } from "../forms/applicability";
-import { answerOf } from "../forms/applicability";
+import { answerOf, valueOf } from "../forms/applicability";
 import { mapLotLabel } from "../format";
 import QuestionField, { fromDraft, isUnknown, toDraft, type Draft } from "./QuestionField";
 
@@ -58,7 +58,7 @@ export default function OfficialSection(p: Props) {
   const files = (field: FormField) => p.attachments.filter((a) => a.field_id === field.id && a.item_id === block.itemId);
 
   function startEdit() {
-    setDrafts(Object.fromEntries(p.questions.map((r) => [r.field.id, toDraft(r.field, answerOf(p.cur, r.field.id, r.itemId))])));
+    setDrafts(Object.fromEntries(p.questions.map((r) => [r.field.id, toDraft(r.field, valueOf(p.form, r.field, r.itemId, p.cur))])));
     setErrors({});
     setEditing(true);
   }

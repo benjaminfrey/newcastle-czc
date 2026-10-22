@@ -25,4 +25,15 @@ describe("UploadField", () => {
     await userEvent.upload(screen.getByLabelText("Add a sketch."), new File(["x"], "plan.pdf", { type: "application/pdf" }));
     expect(onChange).toHaveBeenCalledWith([expect.objectContaining({ id: "t1", filename: "plan.pdf" })]);
   });
+
+  it("refuses a file over 25 MB before sending it", async () => {
+    const spy = vi.spyOn(apps, "uploadFile");
+    render(<UploadField appId="a" fieldId="f" itemId={null} label="Add a sketch." attachments={[]} onChange={vi.fn()} />);
+    const big = new File(["x"], "photo.jpg", { type: "image/jpeg" });
+    Object.defineProperty(big, "size", { value: 26_214_401 });
+    await userEvent.upload(screen.getByLabelText("Add a sketch."), big);
+    expect(await screen.findByRole("alert")).toHaveTextContent(/up to 25 MB/);
+    expect(spy).not.toHaveBeenCalled();
+  });
 });
+
