@@ -26,8 +26,15 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
   application content go to a third-party API?). Read `build/permit-review/BUILD-STATE.md` first.
 - **Applicant Portal** (`portal/`; roadmap `plans/2026-10-14-applicant-portal-roadmap.md`) — M1–M3
   merged; the chair ruled on the screener's nine questions on 2026-10-18 and approved every screener
-  entry on 2026-10-20 (`memos/2026-10-15-screener-rules-for-approval.md`). Next: Milestone 4 (the three
-  application wizards). Raised by the rulings:
+  entry on 2026-10-20 (`memos/2026-10-15-screener-rules-for-approval.md`). Milestone 4 (the three
+  application wizards) is built on `portal-m4-applications` (PR #19); the chair answered the forms
+  sheet's six questions on 2026-10-23, and the forms are drafts awaiting approval
+  (`memos/2026-10-21-application-forms-for-approval.md`). For M4:
+  - **For the chair:** approve the application forms (127 entries).
+  - **Planning Board (next amendment):** Article 5 §1.c lists "Special Use Building", but Article 9
+    does not define it; the forms keep it (chair's ruling, 2026-10-23).
+  - **O5 (CEO and Planning Board):** plain-language sign-off on the question wording — still open; M7.
+  Raised by the screener rulings:
   - **Planning Board (next amendment):** Article 8 §11.b lists no line for additions; the chair ruled
     additions over 10,000 sf are a Large Project Plan — add it to §11.b so the Code says so.
   - **Planning Board / counsel:** Article 3 §8.c.1 says "State Highway (R4 or R5)" while §12.d.1 says

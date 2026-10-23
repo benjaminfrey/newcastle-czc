@@ -2,10 +2,17 @@ import { Button, Card } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { getMe, UNREACHABLE, verifyToken } from "../api";
+import { peekPendingStart } from "../pendingStart";
 
 // Pure, so React may call it twice in development (StrictMode) and get the same answer.
 function tokenFromUrl(): string | null {
   return new URLSearchParams(window.location.hash.slice(1)).get("token");
+}
+
+// After signing in, go back to the application the person was starting, if any.
+function afterSignIn(): string {
+  const pending = peekPendingStart();
+  return pending ? `/apply/${pending.formKey}` : "/my-applications";
 }
 
 export default function Verify() {
@@ -33,11 +40,11 @@ export default function Verify() {
         // The link may still be good: keep it and let the person press again.
         setUnreachable(true);
       } else if (result !== "invalid") {
-        navigate("/my-applications", { replace: true });
+        navigate(afterSignIn(), { replace: true });
       } else {
         // Already used in another tab? Then this person is signed in after all.
         const me = await getMe();
-        if (me && me !== "unavailable") navigate("/my-applications", { replace: true });
+        if (me && me !== "unavailable") navigate(afterSignIn(), { replace: true });
         else setFailed(true);
       }
     } finally {

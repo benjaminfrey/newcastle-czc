@@ -13,7 +13,19 @@
 		Referrer-Policy no-referrer
 		X-Frame-Options DENY
 	}
+	# Uploads: 25 MB files plus multipart framing (the API checks the exact limit).
+	# Every other API request is small. (MiB, not MB: Caddy reads MB as 1,000,000.)
+	@uploads path_regexp ^/api/applications/[^/]+/attachments$
+	handle @uploads {
+		request_body {
+			max_size 26MiB
+		}
+		reverse_proxy api:8000
+	}
 	handle /api/* {
+		request_body {
+			max_size 4MiB
+		}
 		reverse_proxy api:8000
 	}
 	handle {

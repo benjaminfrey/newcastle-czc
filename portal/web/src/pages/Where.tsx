@@ -4,22 +4,8 @@ import ParcelMap from "../components/ParcelMap";
 import { getDistricts, getProperty, parcelAt, searchProperty, type Facts, type Hit } from "../api";
 import { saveProperty } from "../property";
 import { loadAnswers } from "../screener";
-import { useNavigate } from "react-router";
-
-const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September",
-                "October", "November", "December"];
-
-// "2012-04-01" → "April 1, 2012", without time-zone surprises.
-function longDate(iso: string): string {
-  const [y, m, d] = iso.split("-").map(Number);
-  return `${MONTHS[m - 1]} ${d}, ${y}`;
-}
-
-// "004-036" → "Map 4, Lot 36"; "003-073-00B" → "Map 3, Lot 73-B".
-function mapLotLabel(mapLot: string): string {
-  const [map, ...lot] = mapLot.split("-");
-  return `Map ${Number(map) || map}, Lot ${lot.map((p) => p.replace(/^0+(?=.)/, "")).join("-")}`;
-}
+import { useNavigate, useSearchParams } from "react-router";
+import { longDate, mapLotLabel } from "../format";
 
 function districtLine(f: Facts): { text: string; staffWillConfirm: boolean } {
   const named = f.districts.filter((d) => d.in_ruleset && d.name);
@@ -39,7 +25,10 @@ const BUSY = "You've looked up a lot of places in the last minute. Please wait a
 
 export default function Where() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<Mode>("lookup");
+  const [params] = useSearchParams();
+  // Starting an application sends people here first, then back (only to an /apply/ page).
+  const next = params.get("next")?.startsWith("/apply/") ? params.get("next") : null;
+  const [mode, setMode] = useState<Mode>(params.get("manual") === "1" ? "manual" : "lookup");
   const [query, setQuery] = useState("");
   const [hits, setHits] = useState<Hit[] | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -110,6 +99,7 @@ export default function Where() {
 
   // In the middle of "Do I need a permit?", go on to the next question.
   function afterSave() {
+    if (next) return navigate(next);
     const answers = loadAnswers();
     if (!answers) return setMode("saved");
     navigate(answers.project.includes("use") && !answers.use_key ? "/start/use" : "/start/results");

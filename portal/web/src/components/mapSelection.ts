@@ -33,3 +33,14 @@ export function showSelection(map: SelectionMap, lot: Lot | null): void {
   }
   map.fitBounds([[w, s], [e, n]], { padding: 40, maxZoom: 18 });
 }
+
+// Mark one point (where a driveway meets the road), or clear the mark.
+export function showPin(map: SelectionMap, pin: { lon: number; lat: number } | null): void {
+  const source = map.getSource("pin") as DataSource | undefined;
+  if (!source) {
+    map.once("load", () => showPin(map, pin));
+    return;
+  }
+  source.setData(pin ? { type: "Feature", properties: {}, geometry: { type: "Point", coordinates: [pin.lon, pin.lat] } }
+                     : { type: "FeatureCollection", features: [] });
+}

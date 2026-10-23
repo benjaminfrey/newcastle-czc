@@ -17,5 +17,23 @@ services:
   mail:
     image: axllent/mailpit:v1.27
     ports: ["127.0.0.1:1025:1025", "127.0.0.1:8025:8025"]
+  # Uploads: an S3-compatible store (RustFS; MinIO stopped publishing images in 2025)
+  # and ClamAV. The API reaches both; browsers never do.
+  store:
+    image: rustfs/rustfs:1.0.3
+    environment:
+      RUSTFS_ACCESS_KEY: portal
+      RUSTFS_SECRET_KEY: portal-dev-secret
+      RUSTFS_CONSOLE_ENABLE: "false"
+    ports: ["127.0.0.1:9000:9000"]
+    volumes: [portal-dev-store:/data]
+  clamav:
+    image: clamav/clamav:1.5.4-debian
+    # Room for a 25 MB upload plus framing (clamd's default stream limit is exactly 25 MB).
+    entrypoint: ["/bin/sh", "-c", "echo 'StreamMaxLength 30M' >> /etc/clamav/clamd.conf; exec /init"]
+    ports: ["127.0.0.1:3310:3310"]
+    volumes: [portal-dev-clamav:/var/lib/clamav]
 volumes:
   portal-dev-db:
+  portal-dev-store:
+  portal-dev-clamav:

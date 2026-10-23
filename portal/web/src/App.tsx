@@ -8,6 +8,9 @@ import Where from "./pages/Where";
 import Results from "./pages/Results";
 import Start from "./pages/Start";
 import UsePicker from "./pages/UsePicker";
+import ApplyStart from "./pages/ApplyStart";
+import Wizard from "./pages/Wizard";
+import Review from "./pages/Review";
 
 export default function App() {
   return (
@@ -22,6 +25,9 @@ export default function App() {
           <Route path="/start" element={<Start />} />
           <Route path="/start/use" element={<UsePicker />} />
           <Route path="/start/results" element={<Results />} />
+          <Route path="/apply/:formKey" element={<ApplyStart />} />
+          <Route path="/applications/:id" element={<Wizard />} />
+          <Route path="/applications/:id/review" element={<Review />} />
         </Routes>
       </Layout>
     </BrowserRouter>

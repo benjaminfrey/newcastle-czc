@@ -34,3 +34,14 @@ class Settings(BaseSettings):
     # tiles at once, so tiles have their own, larger allowance.
     lookup_limit_per_minute: int = 60
     tile_limit_per_minute: int = 1200
+    # Uploads (spec §6): any S3-compatible store, reached only by the API, and clamd.
+    # There is deliberately no setting that turns scanning off.
+    s3_endpoint: str = "http://localhost:9000"
+    s3_bucket: str = "portal-uploads"
+    s3_access_key: str = ""
+    s3_secret_key: str = ""
+    s3_region: str = "us-east-1"
+    clamd_host: str = "localhost"
+    clamd_port: int = 3310
+    upload_max_bytes: int = 26_214_400
+    upload_limit_per_hour: int = 60

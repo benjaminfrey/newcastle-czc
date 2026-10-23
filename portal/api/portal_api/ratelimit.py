@@ -14,8 +14,9 @@ from portal_api.auth import rate_bucket
 
 
 class SlidingWindow:
-    def __init__(self, per_minute: int):
-        self.per_minute = per_minute
+    def __init__(self, limit: int, window_seconds: float = 60):
+        self.limit = limit
+        self.window = window_seconds
         self._hits: dict[str, deque] = defaultdict(deque)
         self._lock = threading.Lock()
 
@@ -23,9 +24,9 @@ class SlidingWindow:
         now = time.monotonic()
         with self._lock:
             q = self._hits[key]
-            while q and now - q[0] > 60:
+            while q and now - q[0] > self.window:
                 q.popleft()
-            if len(q) >= self.per_minute:
+            if len(q) >= self.limit:
                 return False
             q.append(now)
             return True

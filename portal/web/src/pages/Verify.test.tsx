@@ -12,6 +12,7 @@ const renderAt = (hash: string) => {
       <Routes>
         <Route path="/signin/verify" element={<Verify />} />
         <Route path="/my-applications" element={<p>My applications page</p>} />
+        <Route path="/apply/:formKey" element={<p>Apply page</p>} />
       </Routes>
     </MemoryRouter>,
   );
@@ -65,5 +66,14 @@ describe("Verify", () => {
     renderAt("#token=used");
     await userEvent.click(await screen.findByRole("button", { name: "Sign me in" }));
     expect(await screen.findByText("My applications page")).toBeInTheDocument();
+  });
+
+  it("resumes a pending start", async () => {
+    localStorage.setItem("portal.pendingStart", JSON.stringify({ formKey: "entrance_permit", property: null, useKey: null }));
+    vi.spyOn(api, "verifyToken").mockResolvedValue({ email: "a@example.com", role: "applicant" });
+    renderAt("#token=abc123");
+    await userEvent.click(await screen.findByRole("button", { name: "Sign me in" }));
+    expect(await screen.findByText("Apply page")).toBeInTheDocument();
+    localStorage.clear();
   });
 });

@@ -20,7 +20,7 @@ chair's approval.
 | M6 | **Submit and staff inbox** | Sign and submit; owner co-sign; frozen `submission` + revisions; staff role with authenticator-app second factor; inbox (view, download, completeness, fee paid, "please add…"); admin settings incl. standards-check modes; email notifications with retry; "needs attention" marker | End-to-end: applicant submits, staff marks complete and fee paid, requests more info, applicant answers with a revision; no-verdict guard green; applicant A cannot read B |
 | M7 | **Hardening and pilot** | Off-VM nightly backups + restore drill; security review; plain-language review; accessibility pass; pilot with the CEO on past applications | Restore drill recorded; review findings ruled on; pilot notes written up for the chair |
 
-**Status (2026-10-15):** M1 merged (#12); M2 merged (#13, plus #14 AxisGIS parcels, #15 SD-Civic). M3 merged (#16). The chair ruled on the review sheet's nine questions on 2026-10-18 (#17) and approved every screener entry on 2026-10-20 (`memos/2026-10-15-screener-rules-for-approval.md`), so production now serves the screener. Next: M4. **From M2:**
+**Status (2026-10-15):** M1 merged (#12); M2 merged (#13, plus #14 AxisGIS parcels, #15 SD-Civic). M3 merged (#16). The chair ruled on the review sheet's nine questions on 2026-10-18 (#17) and approved every screener entry on 2026-10-20 (`memos/2026-10-15-screener-rules-for-approval.md`), so production now serves the screener. M4 built on `portal-m4-applications` (2026-10-21, PR #19); the chair ruled on the forms sheet's six questions on 2026-10-23 (the Building Form is asked only when the work includes a building), and the forms await the chair's approval (`memos/2026-10-21-application-forms-for-approval.md`), and production refuses them until then. Uploads use RustFS on the VM (MinIO no longer publishes images). **From M2:**
 SD-Civic is adopted (Art. 2 §5) — an earlier note here wrongly said it was not; the chair ruled
 on 2026-10-15 that only the Town builds on Civic land (spec P13). Current parcels now come
 from the Town's AxisGIS (`parcels --axisgis`, fetch date recorded, chair's choice 2026-10-15); GeoLibrary's
@@ -120,3 +120,31 @@ Minor findings:
 - A traced district the Code doesn't have (e.g. "SD-Shoreland") is skipped silently by the use table.
 - Bed & Breakfast example says "where the owner lives"; the Code says "a permanent resident".
 - Results card titles render smaller than body text (HeroUI Card.Title) — styling polish.
+
+## Deferred from the M4 review
+
+One fresh whole-branch review ran on M4 (no Critical findings). Fixed: property values the
+applicant may correct now start filled in; with no street layer the road counts as unknown, so the
+MaineDOT question is asked; files over 25 MB are refused before they are sent; adding a building
+after a change in another tab offers "Load the latest"; buildings and components can be removed;
+optional new questions are flagged on review; a blank uses answer saves nothing. The journeys
+themselves found and fixed: button contrast below WCAG AA (HeroUI's default accent, every page since
+M1), a 429 crashing pages blank, uncached-by-design private responses (`no-store`). Deferred Minor
+findings:
+
+- The "(from the Town's maps — staff confirm)" tag also shows on hand-entered and corrected values.
+- A pending start (signed-out "Start") never expires in local storage; a shared computer could start
+  a draft for the previous visitor's lot. Add a timestamp, ignore after an hour.
+- The review page's conflict card offers only "Load the latest" (no "Keep mine").
+- **Before production:** uploads buffer about three times the file before the hourly limit applies,
+  and there is no per-applicant storage quota.
+- The ClamAV entrypoint appends `StreamMaxLength` to `clamd.conf` on every restart (duplicates).
+- Every answer save computes the parcel layer's extent; compute it only for map-point answers.
+- The Use Form's prefilled "Uses to be Established" has no `answers_saved` event.
+- `GET /api/applications` loads forms with the current ruleset, not each application's; a broken
+  definition gives 500.
+- **Before production:** `deploy/README.md` doesn't mention the `uploads` volume, which holds part of
+  the record and needs the off-VM backup too (M7).
+- Deleting an applicant would cascade into the insert-only answer and note tables and fail; account
+  deletion needs its own design (with retention, O3).
+- An unknown `use_key` at start says "Something about that property didn't work".

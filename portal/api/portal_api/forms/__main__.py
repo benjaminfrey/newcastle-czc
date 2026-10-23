@@ -1,6 +1,7 @@
-"""Tools for the screener's definitions.
+"""Tools for the screener's definitions and the application forms.
 
   python -m portal_api.forms review-sheet > memos/<date>-screener-rules-for-approval.md
+  python -m portal_api.forms forms-sheet > memos/<date>-application-forms-for-approval.md
 
 The review sheet lists every entry with what applicants would read, the Code section
 it rests on (quoted from the pinned ruleset), any ruling, and whether the chair has
@@ -97,10 +98,15 @@ def review_sheet(ruleset: Ruleset, defs: Definitions) -> str:
 
 def main(argv: list[str] | None = None) -> None:
     p = argparse.ArgumentParser(prog="python -m portal_api.forms")
-    p.add_argument("command", choices=["review-sheet"])
-    p.parse_args(argv)
+    p.add_argument("command", choices=["review-sheet", "forms-sheet"])
+    args = p.parse_args(argv)
     r = load_ruleset()
-    print(review_sheet(r, load_definitions(r)))
+    if args.command == "forms-sheet":
+        from portal_api.forms.formdefs import FORM_KEYS, latest_version, load_form
+        from portal_api.forms.forms_sheet import forms_sheet
+        print(forms_sheet(r, [load_form(k, latest_version(k), r) for k in FORM_KEYS]))
+    else:
+        print(review_sheet(r, load_definitions(r)))
 
 
 if __name__ == "__main__":

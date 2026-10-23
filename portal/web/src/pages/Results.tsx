@@ -14,6 +14,12 @@ function days(o: Outcome): string | null {
     `${d.when ? `, ${d.when}` : ""} (${citeLabel(d.cite)})`).join("; ");
 }
 
+// One Start link per application, on its first card, when a lot in two districts
+// gets a card for each.
+function firstOf(all: Outcome[], o: Outcome): boolean {
+  return all.find((x) => x.application === o.application) === o;
+}
+
 export default function Results() {
   const [result, setResult] = useState<ScreenerResult | null>(null);
   const [problem, setProblem] = useState<string | null>(null);
@@ -62,6 +68,9 @@ export default function Results() {
               {o.why.ruling && <p className="text-sm">{o.why.ruling}</p>}
             </details>
             <p className="font-semibold">{o.in_portal ? "You can apply here." : "Apply through the Town Office."}</p>
+            {o.in_portal && firstOf(result.outcomes, o) && (
+              <Link to={`/apply/${o.application}`} className="underline">Start your {o.code_name} application</Link>
+            )}
           </Card.Content>
         </Card>
       ))}

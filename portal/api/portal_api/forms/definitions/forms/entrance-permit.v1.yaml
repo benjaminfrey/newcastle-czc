@@ -1,0 +1,212 @@
+# Entrance / Driveway Permit (Art. 3 §13.c.1.a–b): the Cover Sheet plus a new
+# Entrance / Driveway Form. The Town's packet has no driveway form; these fields are
+# drafted from Art. 3 §§7–8 and §12. Every entry is a draft until the chair approves it.
+key: entrance_permit
+version: 1
+ruleset_key: adopted-v1.0
+official_title: Entrance / Driveway Permit Application
+include: [cover-sheet.v1]
+sections:
+  - id: entrance
+    official_title: Entrance / Driveway Form
+    chapter: Your driveway
+    status: draft
+    fields:
+      - id: lot_streets
+        official_label: Streets and Roads along the lot (Town map)
+        source: property
+        from: streets
+        status: draft
+      - id: entrance_street
+        official_label: Street or Road the entrance is on
+        source: question
+        label: Which road will the driveway connect to?
+        help: For example "Sheepscot Road". The property page listed the roads along your lot.
+        type: text
+        why: 3.8.b.1
+        required: true
+        status: draft
+      - id: entrance_work
+        official_label: Work proposed
+        source: question
+        label: What are you doing?
+        type: choice
+        options:
+          - {value: new_driveway, label: "Putting in a new driveway", official: "New Driveway"}
+          - {value: relocate, label: "Moving an existing driveway", official: "Relocation of an existing Driveway"}
+          - {value: parking_lot, label: "Making a new entrance to a parking lot", official: "New entrance to a parking lot"}
+        why: 3.7.b.1
+        required: true
+        status: draft
+      - id: homes_single_family
+        official_label: Single-family dwellings served
+        source: question
+        label: How many single-family homes will use this driveway?
+        help: Count homes on your lot and any other lot that will share the driveway.
+        type: number
+        min: 0
+        max: 500
+        why: 3.7.c.7
+        required: true
+        status: draft
+      - id: homes_two_family
+        official_label: Two-family dwellings served
+        source: question
+        label: How many two-family homes (duplexes) will use it?
+        type: number
+        min: 0
+        max: 500
+        why: 3.7.c.7
+        required: true
+        status: draft
+      - id: shared_driveway
+        official_label: Shared with an abutting lot
+        source: question
+        label: Will a neighboring lot share this driveway?
+        type: yesno
+        why: 3.7.c.3
+        required: true
+        status: draft
+      - id: access_easement
+        official_label: Access easement
+        source: question
+        label: Add a copy of the access easement between the owners.
+        help: The Code allows a shared driveway where there is an access easement between all the owners.
+        type: upload
+        why: 3.7.c.3
+        show_if: {eq: [answers.shared_driveway, true]}
+        status: draft
+      - id: driveway_width
+        official_label: Driveway width (ft)
+        source: question
+        label: How wide will the driveway be, in feet?
+        type: number
+        unit: ft
+        min: 0
+        max: 200
+        why: 3.7.e.1
+        allow_unknown: true
+        required: true
+        status: draft
+      - id: first_20ft_slope
+        official_label: Slope of the first 20 ft (%)
+        source: question
+        label: How steep is the first 20 feet of driveway, up or down from the road, as a percent?
+        help: A 1-foot rise over 20 feet is 5%. If it's about level, enter 0.
+        type: number
+        unit: "%"
+        min: 0
+        max: 100
+        why: 3.7.d.2
+        allow_unknown: true
+        required: true
+        status: draft
+      - id: entrance_angle
+        official_label: Angle of intersection with the Street or Road (degrees)
+        source: question
+        label: At what angle will the driveway meet the road, in degrees?
+        help: Straight in, square to the road, is 90 degrees.
+        type: number
+        unit: degrees
+        min: 0
+        max: 90
+        why: 3.8.e.1
+        allow_unknown: true
+        required: true
+        status: draft
+      - id: intersection_distance
+        official_label: Distance to the nearest intersection (ft)
+        source: question
+        label: How far will the driveway be from the nearest road intersection, in feet?
+        type: number
+        unit: ft
+        min: 0
+        max: 50000
+        why: 3.8.f.2
+        allow_unknown: true
+        required: true
+        status: draft
+      - id: intersection_signal
+        official_label: Nearest intersection is signaled
+        source: question
+        label: Does that intersection have a traffic light?
+        type: yesno
+        why: 3.8.f.2
+        allow_unknown: true
+        required: true
+        status: draft
+      - id: sight_distance_left
+        official_label: Sight distance, looking left (ft)
+        source: question
+        label: Standing where the driveway will join the road, how far can you see to the left, in feet?
+        help: Look along the road for the farthest point where you could see an oncoming car.
+        type: number
+        unit: ft
+        min: 0
+        max: 5000
+        why: 3.8.f.1
+        allow_unknown: true
+        required: true
+        status: draft
+      - id: sight_distance_right
+        official_label: Sight distance, looking right (ft)
+        source: question
+        label: And how far to the right, in feet?
+        type: number
+        unit: ft
+        min: 0
+        max: 5000
+        why: 3.8.f.1
+        allow_unknown: true
+        required: true
+        status: draft
+      - id: roadside_ditch
+        official_label: Ditch along the road at the entrance
+        source: question
+        label: Is there a ditch along the road where the driveway will go?
+        help: If there is, a culvert may be needed under the driveway.
+        type: yesno
+        why: 3.7.d.3
+        allow_unknown: true
+        required: true
+        status: draft
+      - id: entrance_location
+        official_label: Location of the entrance
+        source: question
+        label: Tap the map where the driveway will meet the road.
+        type: point
+        why: 3.8.d.2
+        required: true
+        status: draft
+      - id: entrance_sketch
+        official_label: Sketch
+        source: question
+        label: Add a sketch of the driveway, if you have one.
+        help: A hand drawing is fine. Show the road, the lot lines and the driveway.
+        type: upload
+        why: 8.2.a.2
+        status: draft
+      - id: mainedot_permit
+        official_label: MaineDOT entrance permit
+        source: question
+        label: Do you have a MaineDOT entrance permit for this driveway?
+        help: >-
+          A driveway onto a State road also needs a permit from the Maine Department of Transportation.
+          The Town needs a copy before it issues the Zoning Permit.
+        type: choice
+        options:
+          - {value: have, label: "Yes, I have it", official: "Received"}
+          - {value: applied, label: "I've applied for it", official: "Applied for"}
+          - {value: not_yet, label: "Not yet", official: "Not yet applied for"}
+        why: 3.12.d.1
+        required: true
+        show_if: {ne: [property.on_state_highway, false]}
+        status: draft
+      - id: mainedot_copy
+        official_label: Copy of MaineDOT entrance permit
+        source: question
+        label: Add a copy of your MaineDOT entrance permit.
+        type: upload
+        why: 3.12.d.2
+        show_if: {eq: [answers.mainedot_permit, have]}
+        status: draft

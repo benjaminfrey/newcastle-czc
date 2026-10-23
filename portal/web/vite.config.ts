@@ -10,5 +10,7 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./src/test-setup.ts"],
     css: false,
+    // The Playwright journeys in e2e/ run against a live stack (npm run e2e), not here.
+    exclude: ["e2e/**", "node_modules/**"],
   },
 });
