@@ -40,9 +40,16 @@ def test_sheet_renders_conditions_in_words():
     assert condition_words(up, {"between": ["x", 1]}) == "`{'between': ['x', 1]}`"
 
 
-def test_sheet_marks_drafts_and_asks_the_chairs_questions():
+def test_sheet_marks_drafts_and_records_the_chairs_rulings():
     r, fs = forms()
     sheet = forms_sheet(r, fs)
     assert "**Draft — awaiting the chair's approval.**" in sheet
-    for q in ("site plan or sketch", "Standard Met?", "Special Use Building", "Name", "blank packet"):
-        assert q in sheet, q
+    assert "## The chair's rulings (2026-10-23)" in sheet
+    assert "## Questions for the chair" not in sheet
+    for words in ("Optional", "only when the work includes a building", "Standard Met?", "Special Use Building",
+                  "Name", "complete"):
+        assert words in sheet, words
+    sp = next(f for f in fs if f.key == "small_project_plan")
+    building = next(s for s in sp.sections if s.id == "building")
+    assert "Printed and asked only when (“Type of project” includes New building or accessory building)" in sheet
+    assert building.show_if is not None

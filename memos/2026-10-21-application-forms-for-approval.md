@@ -12,14 +12,14 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - **Buildings and components repeat**: the form prints one Building Form per building and one Components Section per addition, porch, deck or other component.
 - **Signatures, dates and "Name (print)"** are filled when the applicant signs and submits (Milestone 6).
 
-## Questions for the chair
+## The chair's rulings (2026-10-23)
 
-1. **Is a site plan or sketch required for a Small Project Plan?** Drafted as optional, with "staff may ask for one". The packet's Shoreland form requires a scaled site plan; the Small Project Plan pages seen do not say.
-2. **"Standard Met?" column dropped.** The paper Building Form has "District Standard / Standard Met?" columns. "Standard Met?" is a verdict, which the portal never gives (spec §5). The District Standard column becomes Milestone 6's flags.
-3. **Special Use Building added.** The building types follow Art. 5 §1.c, which lists Special Use Building; the paper form omits it.
-4. **Name added to the Applicant, Owner and Agent blocks.** The paper takes the applicant's name only at the signature and the owner's and agent's not at all.
-5. **Does every Small Project Plan need a Building Form?** Drafted so (at least one building). A project that is only site work (§10.b.4) would then be asked building questions it can't answer; the Building Form could instead be asked only when the work includes a building.
-6. **Is anything missing from the blank packet?** The fields were read from filled-in scans. If the Town's blank packet has more pages (a second Building Form page, the "Other Structures Form"), they are not here yet.
+1. **Site plan or sketch for a Small Project Plan.** Optional. Applicants are asked for one (a hand drawing is fine) and told staff may ask for it.
+2. **Building Form on a Small Project Plan.** Asked only when the work includes a building: a new building, an addition or a renovation. A project that is only site work, or only a change to a nonconforming lot or use, has no Building Form.
+3. **"Standard Met?" column.** Dropped. The new form has no pass/fail column; the CEO's conclusions belong in the decision. The District Standard column returns as Milestone 6's standards-check flags.
+4. **Special Use Building.** Kept: the building types follow Art. 5 §1.c, all nine. The Code does not define Special Use Building (open item for the next amendment).
+5. **Names on the Cover Sheet.** Kept: the Applicant, Property Owner and Agent blocks each have a Name line.
+6. **The packet.** The scanned 2025 forms are complete: the Cover Sheet, Use Form, Building Form (one page) and Components Section are the whole packet for these applications.
 
 ## Cover Sheet (part of every application)
 
@@ -511,6 +511,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 - Wizard chapter: Your buildings
 - Repeats: one per building (1 to 20); the wizard offers “Add another building”
+- Printed and asked only when (“Type of project” includes New building or accessory building) or (“Type of project” includes Addition of building components) or (“Type of project” includes Building renovation)
 - **Draft — awaiting the chair's approval.**
 
 #### Map / Lot (`building_map_lot`)
@@ -553,6 +554,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 - Wizard chapter: Your buildings
 - Repeats: one per building (1 to 20); the wizard offers “Add another building”
+- Printed and asked only when (“Type of project” includes New building or accessory building) or (“Type of project” includes Addition of building components) or (“Type of project” includes Building renovation)
 - **Draft — awaiting the chair's approval.**
 
 #### Setback from front lot line (`setback_front`)
@@ -601,6 +603,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 - Wizard chapter: Your buildings
 - Repeats: one per building (1 to 20); the wizard offers “Add another building”
+- Printed and asked only when (“Type of project” includes New building or accessory building) or (“Type of project” includes Addition of building components) or (“Type of project” includes Building renovation)
 - **Draft — awaiting the chair's approval.**
 
 #### Building type (`building_class`)
@@ -641,6 +644,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 - Wizard chapter: Your buildings
 - Repeats: one per building (1 to 20); the wizard offers “Add another building”
+- Printed and asked only when (“Type of project” includes New building or accessory building) or (“Type of project” includes Addition of building components) or (“Type of project” includes Building renovation)
 - **Draft — awaiting the chair's approval.**
 
 #### Width of Main Building Mass (`mass_width`)
@@ -782,6 +786,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 - Wizard chapter: Your buildings
 - Repeats: one per building (1 to 20); the wizard offers “Add another building”
+- Printed and asked only when (“Type of project” includes New building or accessory building) or (“Type of project” includes Addition of building components) or (“Type of project” includes Building renovation)
 - **Draft — awaiting the chair's approval.**
 
 #### North facing facade % (`windows_north`)

@@ -23,24 +23,25 @@ DECISIONS = [
     "**Signatures, dates and \"Name (print)\"** are filled when the applicant signs and submits (Milestone 6).",
 ]
 
-QUESTIONS = [
-    ("Is a site plan or sketch required for a Small Project Plan?",
-     "Drafted as optional, with \"staff may ask for one\". The packet's Shoreland form requires a scaled site plan; "
-     "the Small Project Plan pages seen do not say."),
-    ("\"Standard Met?\" column dropped",
-     "The paper Building Form has \"District Standard / Standard Met?\" columns. \"Standard Met?\" is a verdict, "
-     "which the portal never gives (spec §5). The District Standard column becomes Milestone 6's flags."),
-    ("Special Use Building added",
-     "The building types follow Art. 5 §1.c, which lists Special Use Building; the paper form omits it."),
-    ("Name added to the Applicant, Owner and Agent blocks",
-     "The paper takes the applicant's name only at the signature and the owner's and agent's not at all."),
-    ("Does every Small Project Plan need a Building Form?",
-     "Drafted so (at least one building). A project that is only site work (§10.b.4) would then be asked "
-     "building questions it can't answer; the Building Form could instead be asked only when the work "
-     "includes a building."),
-    ("Is anything missing from the blank packet?",
-     "The fields were read from filled-in scans. If the Town's blank packet has more pages (a second Building "
-     "Form page, the \"Other Structures Form\"), they are not here yet."),
+# The six questions from drafting, as the chair answered them on 2026-10-23.
+RULINGS_ON = "2026-10-23"
+RULINGS = [
+    ("Site plan or sketch for a Small Project Plan",
+     "Optional. Applicants are asked for one (a hand drawing is fine) and told staff may ask for it."),
+    ("Building Form on a Small Project Plan",
+     "Asked only when the work includes a building: a new building, an addition or a renovation. A project "
+     "that is only site work, or only a change to a nonconforming lot or use, has no Building Form."),
+    ("\"Standard Met?\" column",
+     "Dropped. The new form has no pass/fail column; the CEO's conclusions belong in the decision. The "
+     "District Standard column returns as Milestone 6's standards-check flags."),
+    ("Special Use Building",
+     "Kept: the building types follow Art. 5 §1.c, all nine. The Code does not define Special Use Building "
+     "(open item for the next amendment)."),
+    ("Names on the Cover Sheet",
+     "Kept: the Applicant, Property Owner and Agent blocks each have a Name line."),
+    ("The packet",
+     "The scanned 2025 forms are complete: the Cover Sheet, Use Form, Building Form (one page) and Components "
+     "Section are the whole packet for these applications."),
 ]
 
 
@@ -154,7 +155,8 @@ def forms_sheet(ruleset: Ruleset, forms: list[FormDef]) -> str:
            "To approve an entry, change `status: draft` to `status: approved` with `approved_by` and "
            "`approved_on` in its YAML file (`portal/api/portal_api/forms/definitions/forms/`).", "",
            "## Decisions so far", "", *[f"- {d}" for d in DECISIONS], "",
-           "## Questions for the chair", "", *[f"{i}. **{q}{'' if q.endswith('?') else '.'}** {why}" for i, (q, why) in enumerate(QUESTIONS, 1)], ""]
+           f"## The chair's rulings ({RULINGS_ON})", "",
+           *[f"{i}. **{title}.** {text}" for i, (title, text) in enumerate(RULINGS, 1)], ""]
     cover_done = False
     for form in forms:
         cover = [s for s in form.sections if s.file == "cover-sheet.v1.yaml"]

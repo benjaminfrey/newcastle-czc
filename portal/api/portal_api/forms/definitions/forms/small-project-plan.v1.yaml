@@ -2,7 +2,8 @@
 # (new), one Building Form per building and one Components Section per addition,
 # porch, deck or other component, carried from the Town's Planning Application packet.
 # Sections with the same repeat kind share the same items: each building gets every
-# Building Form section. Every entry is a draft until the chair approves it.
+# Building Form section. The Building Form is asked only when the work includes a
+# building (chair's ruling, 2026-10-23). Every entry is a draft until the chair approves it.
 key: small_project_plan
 version: 1
 ruleset_key: adopted-v1.0
@@ -49,6 +50,8 @@ sections:
   - id: building
     official_title: Building Form
     chapter: Your buildings
+    # Chair's ruling, 2026-10-23: only when the work includes a building.
+    show_if: {any: [{has: [answers.work_kinds, new_building]}, {has: [answers.work_kinds, addition]}, {has: [answers.work_kinds, renovation]}]}
     repeat: {kind: building, add_label: Add another building, min: 1, max: 20}
     status: draft
     fields:
@@ -88,6 +91,8 @@ sections:
   - id: building_location
     official_title: Building Location (proposed)
     chapter: Your buildings
+    # Chair's ruling, 2026-10-23: only when the work includes a building.
+    show_if: {any: [{has: [answers.work_kinds, new_building]}, {has: [answers.work_kinds, addition]}, {has: [answers.work_kinds, renovation]}]}
     repeat: {kind: building, add_label: Add another building, min: 1, max: 20}
     status: draft
     fields:
@@ -149,6 +154,8 @@ sections:
   - id: building_details
     official_title: Building Details (proposed)
     chapter: Your buildings
+    # Chair's ruling, 2026-10-23: only when the work includes a building.
+    show_if: {any: [{has: [answers.work_kinds, new_building]}, {has: [answers.work_kinds, addition]}, {has: [answers.work_kinds, renovation]}]}
     repeat: {kind: building, add_label: Add another building, min: 1, max: 20}
     status: draft
     fields:
@@ -187,6 +194,8 @@ sections:
   - id: building_mass
     official_title: Main Building Mass Details
     chapter: Your buildings
+    # Chair's ruling, 2026-10-23: only when the work includes a building.
+    show_if: {any: [{has: [answers.work_kinds, new_building]}, {has: [answers.work_kinds, addition]}, {has: [answers.work_kinds, renovation]}]}
     repeat: {kind: building, add_label: Add another building, min: 1, max: 20}
     status: draft
     fields:
@@ -346,6 +355,8 @@ sections:
   - id: building_windows
     official_title: Windows & Doors - Main Building Mass
     chapter: Your buildings
+    # Chair's ruling, 2026-10-23: only when the work includes a building.
+    show_if: {any: [{has: [answers.work_kinds, new_building]}, {has: [answers.work_kinds, addition]}, {has: [answers.work_kinds, renovation]}]}
     repeat: {kind: building, add_label: Add another building, min: 1, max: 20}
     status: draft
     fields:

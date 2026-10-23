@@ -48,3 +48,13 @@ describe("wizard screens", () => {
     expect(screens(form, cur([], items)).some((s) => s.kind === "add")).toBe(false);
   });
 });
+
+describe("a repeating part that doesn't apply", () => {
+  it("is not offered", () => {
+    const gated = { ...form, sections: form.sections.map((s) =>
+      s.repeat ? { ...s, show_if: { eq: ["answers.is_owner", true] } as FormDef["sections"][number]["show_if"] } : s) };
+    const ss = screens(gated, cur([{ field_id: "is_owner", item_id: null, value: false }], [{ id: "x1", kind: "building", position: 0 }]));
+    expect(ss.some((s) => s.kind === "add")).toBe(false);
+    expect(ss.some((s) => s.key.startsWith("b."))).toBe(false);
+  });
+});

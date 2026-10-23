@@ -1,7 +1,7 @@
 // The wizard's screens: one question each, in form order, only those that apply,
 // with an "Add another…?" screen after each repeating part (buildings, components).
 import type { FormDef, FormField, FormSection } from "../applications";
-import { answerOf, applicable, blocks, type Current } from "./applicability";
+import { answerOf, applicable, blocks, scope, shown, type Current } from "./applicability";
 
 export type QuestionScreen = {
   kind: "question"; key: string; chapter: string; section: FormSection; field: FormField;
@@ -61,7 +61,9 @@ export function screens(form: FormDef, cur: Current): Screen[] {
                    itemLabel: r.itemId ? itemLabel(form, cur, r.itemId) : null });
       }
     }
-    if (s.repeat) {
+    // Offer another only while the repeating part applies at all (a site-only project
+    // has no buildings to add).
+    if (s.repeat && shown(s.show_if, scope(cur, null))) {
       const count = cur.items.filter((it) => it.kind === s.repeat!.kind).length;
       if (count < s.repeat.max) out.push({ kind: "add", key: `add.${s.repeat.kind}`, chapter: s.chapter, repeat: s.repeat, count });
     }

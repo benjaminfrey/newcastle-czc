@@ -29,7 +29,7 @@ export function answerOf(cur: Current, fieldId: string, itemId: string | null): 
   return cur.answers.find((a) => a.field_id === fieldId && a.item_id === itemId)?.value ?? null;
 }
 
-function scope(cur: Current, itemId: string | null): Record<string, unknown> {
+export function scope(cur: Current, itemId: string | null): Record<string, unknown> {
   const answers: Record<string, unknown> = {};
   const item: Record<string, unknown> = {};
   for (const a of cur.answers) {

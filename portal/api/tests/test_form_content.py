@@ -139,3 +139,21 @@ def test_every_question_has_plain_help_or_short_label(forms):
             if f.is_question:
                 assert len(f.label) <= 140, f.id
                 assert f.label.rstrip().endswith("?") or f.type in ("upload", "point"), f.id
+
+
+BUILDING_SECTIONS = ("building", "building_location", "building_details", "building_mass", "building_windows")
+
+
+@pytest.mark.parametrize("kinds,asked", [
+    (["site"], False), (["nonconforming"], False), (["site", "renovation"], True),
+    (["new_building"], True), (["addition"], True), (None, True),
+])
+def test_building_form_only_when_the_work_includes_a_building(forms, kinds, asked):
+    # Chair's ruling, 2026-10-23: site-only work is not asked building questions.
+    from portal_api.forms.answers import Current, applicable
+
+    form = forms["small_project_plan"]
+    answers = {} if kinds is None else {("work_kinds", None): kinds}
+    cur = Current(answers=answers, items=[("b1", "building", 0)], property={"on_state_highway": False})
+    sections = {s.id for s, _, _ in applicable(form, cur)}
+    assert bool(sections & set(BUILDING_SECTIONS)) is asked
