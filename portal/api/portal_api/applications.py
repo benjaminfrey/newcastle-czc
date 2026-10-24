@@ -71,6 +71,7 @@ def create(conn: Connection, *, applicant_id: str, form: FormDef, snapshot: dict
 
 
 FORM_DEFAULT = "form-default"
+SCREENER = "screener"  # answered in "Do I need a permit?" and carried in
 
 
 def new_item(conn: Connection, app_id: str, form: FormDef, kind: str) -> str:
@@ -121,6 +122,15 @@ def answers(conn: Connection, app_id: str) -> dict:
         " WHERE application_id = :a ORDER BY field_id, item_id, seq DESC"
     ), {"a": app_id})
     return {(r.field_id, str(r.item_id) if r.item_id else None): r.value for r in rows if r.value is not None}
+
+
+def carried(conn: Connection, app_id: str) -> set[tuple]:
+    """(field, item) pairs whose current answer is still the one carried from the screener."""
+    rows = conn.execute(text(
+        "SELECT DISTINCT ON (field_id, item_id) field_id, item_id, set_by FROM answer"
+        " WHERE application_id = :a ORDER BY field_id, item_id, seq DESC"
+    ), {"a": app_id})
+    return {(r.field_id, str(r.item_id) if r.item_id else None) for r in rows if r.set_by == SCREENER}
 
 
 def save_answers(conn: Connection, app_id: str, changes: list[tuple], by: str) -> None:

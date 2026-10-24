@@ -5,6 +5,7 @@ import * as api from "../api";
 import * as apps from "../applications";
 import { peekPendingStart } from "../pendingStart";
 import { saveProperty } from "../property";
+import { saveAnswers } from "../screener";
 import ApplyStart from "./ApplyStart";
 
 const PROPERTY = { source: "lookup" as const, parcel_id: 229, map_lot: "004-036", district_code: "D2",
@@ -33,7 +34,7 @@ describe("ApplyStart", () => {
     vi.spyOn(api, "getMe").mockResolvedValue(null);
     renderAt();
     expect(await screen.findByText("Sign in page")).toBeInTheDocument();
-    expect(peekPendingStart()).toEqual({ formKey: "use_permit", property: PROPERTY, useKey: null });
+    expect(peekPendingStart()).toEqual({ formKey: "use_permit", property: PROPERTY, useKey: null, carry: null });
   });
 
   it("asks for the property first", async () => {
@@ -49,7 +50,19 @@ describe("ApplyStart", () => {
     renderAt();
     expect(await screen.findByText("Wizard page")).toBeInTheDocument();
     expect(spy).toHaveBeenCalledWith({ form_key: "use_permit", property: { source: "lookup", parcel_id: 229 },
-                                       disputed: false, note: "", use_key: null });
+                                       disputed: false, note: "", use_key: null, carry: null });
+  });
+
+  it("sends the screener's carry: the kind of work, its floor area and new homes", async () => {
+    saveProperty(PROPERTY);
+    saveAnswers({ project: ["build"], use_key: null, division: { lots_after: null, divided_last_5_years: null },
+                  building: { kind: "new", gross_floor_area_sf: 1200, total_floor_area_sf: null, parking_spaces: null,
+                              new_dwelling_units: 1, homes_added_last_5_years: null } });
+    vi.spyOn(api, "getMe").mockResolvedValue({ email: "a@example.com", role: "applicant" });
+    const spy = vi.spyOn(apps, "createApplication").mockResolvedValue({ id: "abc" });
+    renderAt("/apply/small_project_plan");
+    expect(await screen.findByText("Wizard page")).toBeInTheDocument();
+    expect(spy.mock.calls[0][0].carry).toEqual({ work_kind: "new", floor_area: 1200, new_homes: 1 });
   });
 
   it("uses the pending start after signing in, in a new tab", async () => {

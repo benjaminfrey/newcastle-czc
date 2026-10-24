@@ -39,7 +39,7 @@ export type Snapshot = {
 export type AppState = {
   id: string; form_key: string; form_version: number; ruleset_key: string; status: string; revision: number;
   property: Snapshot; items: Item[];
-  answers: { field_id: string; item_id: string | null; value: unknown }[];
+  answers: { field_id: string; item_id: string | null; value: unknown; carried?: boolean }[];
   notes: { section_id: string; item_id: string | null; text: string }[];
   attachments: Attachment[];
   missing: { field_id: string; item_id: string | null }[];
@@ -50,7 +50,10 @@ export type NewApplication = {
   form_key: string;
   property: { source: "lookup"; parcel_id: number } | { source: "manual"; map_lot: string; district_code: string | null };
   disputed: boolean; note: string; use_key: string | null;
+  carry: Carry | null;
 };
+// What "Do I need a permit?" already asked, so the application doesn't ask again.
+export type Carry = { work_kind: "new" | "addition" | "renovation" | "site"; floor_area: number | null; new_homes: number | null };
 export type Change = { field_id: string; item_id: string | null; value: unknown };
 export type Problem = { field_id: string; item_id: string | null; reason: string };
 

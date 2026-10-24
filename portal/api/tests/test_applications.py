@@ -322,3 +322,48 @@ def test_form_json_carries_steps_pages_and_controls(alice, tmp_path, monkeypatch
     location = next(s for s in form["sections"] if s["id"] == "location")
     assert location["screens"] == [{"id": "deed", "layout": None}] and "pages" not in location
     assert fields["deed_book"]["screen"] == fields["deed_page"]["screen"] == "deed"
+
+
+# ---- Answers carried from "Do I need a permit?" (wizard) ----
+
+def answers_by(body):
+    return {(a["field_id"], a["item_id"]): a for a in body["answers"]}
+
+
+def test_carry_fills_work_kinds_and_building_one(alice):
+    app_id = create(alice, form_key="small_project_plan", carry={"work_kind": "new", "floor_area": 1200, "new_homes": 1})
+    body = get(alice, app_id)
+    (b1,) = [i for i in body["items"] if i["kind"] == "building"]
+    got = answers_by(body)
+    assert got[("work_kinds", None)]["value"] == ["new_building"] and got[("work_kinds", None)]["carried"] is True
+    assert got[("floor_area", b1["id"])]["value"] == 1200 and got[("floor_area", b1["id"])]["carried"] is True
+    assert got[("dwelling_units", b1["id"])]["value"] == 1 and got[("dwelling_units", b1["id"])]["carried"] is True
+
+
+def test_carry_for_an_addition_fills_only_work_kinds(alice):
+    app_id = create(alice, form_key="small_project_plan", carry={"work_kind": "addition", "floor_area": 300, "new_homes": 0})
+    body = get(alice, app_id)
+    got = answers_by(body)
+    assert got[("work_kinds", None)]["value"] == ["addition"]
+    assert not any(f == "floor_area" for f, _ in got)
+
+
+def test_carry_ignored_by_forms_without_those_fields(alice):
+    app_id = create(alice, form_key="use_permit", carry={"work_kind": "new", "floor_area": 1200, "new_homes": 1})
+    got = answers_by(get(alice, app_id))
+    assert ("work_kinds", None) not in got and not any(f == "floor_area" for f, _ in got)
+
+
+def test_carry_values_are_checked(alice):
+    r = alice.post("/api/applications", json={"form_key": "small_project_plan", "property": lookup_property(alice),
+                                               "carry": {"work_kind": "new", "floor_area": -5, "new_homes": 1}})
+    assert r.status_code == 422 and r.json()["detail"] == "invalid"
+
+
+def test_an_edited_answer_is_not_carried(alice):
+    app_id = create(alice, form_key="small_project_plan", carry={"work_kind": "new", "floor_area": 1200, "new_homes": 1})
+    body = get(alice, app_id)
+    (b1,) = [i for i in body["items"] if i["kind"] == "building"]
+    assert save(alice, app_id, [{"field_id": "floor_area", "item_id": b1["id"], "value": 900}]).status_code == 200
+    a = answers_by(get(alice, app_id))[("floor_area", b1["id"])]
+    assert a["value"] == 900 and a["carried"] is False

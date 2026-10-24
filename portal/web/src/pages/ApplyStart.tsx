@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { getMe, UNREACHABLE } from "../api";
 import { createApplication, type NewApplication } from "../applications";
-import { savePendingStart, takePendingStart } from "../pendingStart";
+import { carryFrom, savePendingStart, takePendingStart } from "../pendingStart";
 import { loadProperty, type ChosenProperty } from "../property";
 import { loadAnswers } from "../screener";
 
@@ -36,13 +36,14 @@ export default function ApplyStart() {
       const fromPending = pending && pending.formKey === formKey ? pending : null;
       const property = fromPending?.property ?? loadProperty();
       const useKey = fromPending ? fromPending.useKey : (loadAnswers()?.use_key ?? null);
+      const carry = fromPending ? (fromPending.carry ?? null) : carryFrom(loadAnswers());
       if (!me) {
-        savePendingStart({ formKey, property, useKey });
+        savePendingStart({ formKey, property, useKey, carry });
         return navigate("/signin", { replace: true });
       }
       if (!property) return navigate(`/start/property?next=${encodeURIComponent(here)}`, { replace: true });
       const r = await createApplication({ form_key: formKey, property: propertyBody(property),
-                                          disputed: property.disputed, note: property.note, use_key: useKey });
+                                          disputed: property.disputed, note: property.note, use_key: useKey, carry });
       if (r === "property_unavailable") return setLookupDown(true);
       if (r === "not_approved") return setProblem("This application isn't ready yet. Please contact the Town Office.");
       if (r === "signed_out") return navigate("/signin", { replace: true });

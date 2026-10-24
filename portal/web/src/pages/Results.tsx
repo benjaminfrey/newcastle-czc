@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router";
 import SignInForm from "../components/SignInForm";
 import WhyWeAsk from "../components/WhyWeAsk";
 import InsetGroup from "../shell/InsetGroup";
-import { savePendingStart } from "../pendingStart";
+import { carryFrom, savePendingStart } from "../pendingStart";
 import Sheet from "../shell/Sheet";
 import { getMe, runScreener, type Outcome, type ScreenerResult } from "../api";
 import { loadProperty } from "../property";
@@ -40,7 +40,7 @@ export default function Results() {
   async function start(formKey: string) {
     const me = await getMe();
     if (me && me !== "unavailable") return navigate(`/apply/${formKey}`);
-    savePendingStart({ formKey, property: loadProperty(), useKey: loadAnswers()?.use_key ?? null });
+    savePendingStart({ formKey, property: loadProperty(), useKey: loadAnswers()?.use_key ?? null, carry: carryFrom(loadAnswers()) });
     setSignIn(true);
   }
   const [problem, setProblem] = useState<string | null>(null);

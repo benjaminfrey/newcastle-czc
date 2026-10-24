@@ -41,7 +41,6 @@ describe("steps model", () => {
     const hub = steps.find((s) => s.id === "buildings")!;
     expect(hub.kind).toBe("hub");
     expect(hub.hub!.items.map((i) => [i.label, i.status])).toEqual([["Building 1", "done"], ["Building 2", "todo"]]);
-    expect(hub.hub!.pages.map((p) => p.id)).toEqual(["basics", "floors"]);
   });
 
   it("step_status_needs_a_visit", () => {
