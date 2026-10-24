@@ -8,12 +8,12 @@ export default function UsePicker() {
   function choose(useKey: string) {
     const answers = loadAnswers();
     if (answers) saveAnswers({ ...answers, use_key: useKey });
-    navigate("/start/results");
+    navigate("/start/needs");
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-xl font-semibold">What will the land or building be used for?</h1>
+      <h2 className="text-[20px] font-semibold">What will the land or building be used for?</h2>
       <UseSearch onChoose={choose} />
     </div>
   );

@@ -1,7 +1,10 @@
-import { Card } from "@heroui/react";
+import { Button, Card } from "@heroui/react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
-import { runScreener, type Outcome, type ScreenerResult } from "../api";
+import { Link, useNavigate } from "react-router";
+import SignInForm from "../components/SignInForm";
+import { savePendingStart } from "../pendingStart";
+import Sheet from "../shell/Sheet";
+import { getMe, runScreener, type Outcome, type ScreenerResult } from "../api";
 import { loadProperty } from "../property";
 import { citeLabel, loadAnswers } from "../screener";
 
@@ -21,7 +24,18 @@ function firstOf(all: Outcome[], o: Outcome): boolean {
 }
 
 export default function Results() {
+  const navigate = useNavigate();
+  const [signIn, setSignIn] = useState(false);
   const [result, setResult] = useState<ScreenerResult | null>(null);
+
+  // Signed in: straight to the application. Signed out: sign in here, in a sheet; the emailed
+  // link brings the person back to start it.
+  async function start(formKey: string) {
+    const me = await getMe();
+    if (me && me !== "unavailable") return navigate(`/apply/${formKey}`);
+    savePendingStart({ formKey, property: loadProperty(), useKey: loadAnswers()?.use_key ?? null });
+    setSignIn(true);
+  }
   const [problem, setProblem] = useState<string | null>(null);
 
   useEffect(() => {
@@ -47,7 +61,6 @@ export default function Results() {
   if (result.town_only) return <p>{CIVIC}</p>;
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-xl font-semibold">Here's what you'll need</h1>
       {result.outcomes.length === 0 && result.not_listed.length === 0 && result.notes.length === 0 && (
         <p>From your answers, the Code doesn't call for any of the applications this site covers.</p>
       )}
@@ -69,7 +82,12 @@ export default function Results() {
             </details>
             <p className="font-semibold">{o.in_portal ? "You can apply here." : "Apply through the Town Office."}</p>
             {o.in_portal && firstOf(result.outcomes, o) && (
-              <Link to={`/apply/${o.application}`} className="underline">Start your {o.code_name} application</Link>
+              <div className="pt-2">
+                <Button variant="primary" className="min-h-11" aria-label={`Start this application: ${o.code_name}`}
+                        onPress={() => void start(o.application)}>
+                  Start this application
+                </Button>
+              </div>
             )}
           </Card.Content>
         </Card>
@@ -78,7 +96,10 @@ export default function Results() {
       {result.notes.map((n) => <p key={n.text}>{n.text}</p>)}
       <p>Fees: Set by the Town's fee schedule — the Town Office will tell you the amount.</p>
       <p className="text-sm">The Code Enforcement Officer confirms this when you apply.</p>
-      <Link to="/start" className="underline">Start again</Link>
+      <Link to="/start" className="min-h-11 text-[var(--app-accent-text)]">Start again</Link>
+      <Sheet open={signIn} title="Sign in to apply" doneLabel="Close" onCancel={() => setSignIn(false)} onDone={() => setSignIn(false)}>
+        <SignInForm />
+      </Sheet>
     </div>
   );
 }

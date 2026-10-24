@@ -31,7 +31,14 @@ export default function MyApplications() {
       </Card.Header>
       <Card.Content>
         {list === null && <p>Loading…</p>}
-        {list?.length === 0 && <p>You haven't started any applications yet.</p>}
+        {list?.length === 0 && (
+          <div className="flex flex-col items-start gap-3">
+            <p>You haven't started any applications yet.</p>
+            <Link to="/start" className="flex min-h-11 items-center rounded-full bg-[var(--app-accent)] px-6 font-semibold text-[var(--app-on-accent)]">
+              Start an application
+            </Link>
+          </div>
+        )}
         {list && list.length > 0 && (
           <ul className="flex flex-col gap-3">
             {list.map((a) => (

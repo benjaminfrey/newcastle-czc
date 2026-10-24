@@ -48,4 +48,11 @@ describe("MyApplications", () => {
     expect(screen.getByText(/Map 4, Lot 36/)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Continue" })).toHaveAttribute("href", "/applications/abc");
   });
+
+  it("empty state offers Start an application", async () => {
+    vi.spyOn(api, "getMe").mockResolvedValue({ email: "a@example.com", role: "applicant" });
+    vi.spyOn(apps, "listApplications").mockResolvedValue([]);
+    renderPage();
+    expect(await screen.findByRole("link", { name: "Start an application" })).toHaveAttribute("href", "/start");
+  });
 });

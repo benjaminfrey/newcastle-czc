@@ -5,6 +5,7 @@ import MyApplications from "./pages/MyApplications";
 import SignIn from "./pages/SignIn";
 import Verify from "./pages/Verify";
 import Where from "./pages/Where";
+import StartFlow, { Moved } from "./start/StartFlow";
 import Results from "./pages/Results";
 import Start from "./pages/Start";
 import UsePicker from "./pages/UsePicker";
@@ -21,14 +22,18 @@ export default function App() {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signin/verify" element={<Verify />} />
           <Route path="/my-applications" element={<MyApplications />} />
-          <Route path="/where" element={<Where />} />
-          <Route path="/start" element={<Start />} />
-          <Route path="/start/use" element={<UsePicker />} />
-          <Route path="/start/results" element={<Results />} />
+          <Route path="/where" element={<Moved to="/start/property" />} />
+          <Route path="/start/results" element={<Moved to="/start/needs" />} />
           <Route path="/apply/:formKey" element={<ApplyStart />} />
           <Route path="/applications/:id/review" element={<Review />} />
         </Route>
-        {/* The application window draws its own chrome. */}
+        {/* "Do I need a permit?" and each application are windows that draw their own chrome. */}
+        <Route element={<StartFlow />}>
+          <Route path="/start" element={<Start />} />
+          <Route path="/start/property" element={<Where />} />
+          <Route path="/start/use" element={<UsePicker />} />
+          <Route path="/start/needs" element={<Results />} />
+        </Route>
         <Route path="/applications/:id/:stepId?" element={<ApplicationPage />} />
       </Routes>
     </BrowserRouter>

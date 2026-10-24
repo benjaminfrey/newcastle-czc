@@ -17,13 +17,14 @@ type Props = {
   onReload?: () => void;
   onStep?: (id: string) => void; // ⌥⌘↑ / ⌥⌘↓
   actions?: ShellActions;
+  backLabel?: string; // the phone's ‹ chevron: "Application", or "Home" for the start steps
   children?: ReactNode;
 };
 
 // The application window: on a desktop, a sidebar of steps beside the content pane (toolbar,
 // content, Back and Continue); on a phone, a list of steps that pushes each step in. The
 // content sits in one form, so Return anywhere in a field means Continue.
-export default function AppShell({ steps, currentId, formTitle, saveState, rootHref, onDone, onReload, onStep, actions = {}, children }: Props) {
+export default function AppShell({ steps, currentId, formTitle, saveState, rootHref, onDone, onReload, onStep, actions = {}, backLabel = "Application", children }: Props) {
   const wide = useWideLayout();
   const flat = steps.flatMap((s) => [s, ...(s.children ?? [])]);
   const current = flat.find((s) => s.id === currentId);
@@ -50,17 +51,19 @@ export default function AppShell({ steps, currentId, formTitle, saveState, rootH
 
   if (!wide && !current) return <StepList steps={steps} title="Your application" subtitle={formTitle} />;
 
-  const content = (
-    <form onSubmit={onSubmit} noValidate className={`flex flex-col gap-6 ${wide ? "px-8 py-6" : "px-4 pb-32 pt-2"}`}>
+  // A pane that brings its own form (the start steps) gets a plain container, never a nested form.
+  const cls = `flex flex-col gap-6 ${wide ? "px-8 py-6" : "px-4 pb-32 pt-2"}`;
+  const content = actions.onContinue || actions.back ? (
+    <form onSubmit={onSubmit} noValidate className={cls}>
       {children}
       <ActionBar actions={actions} wide={wide} />
     </form>
-  );
+  ) : <div className={cls}>{children}</div>;
 
   if (!wide) {
     return (
       <div className="min-h-dvh bg-[var(--app-ground)]">
-        <NavBar title={current!.title} backHref={rootHref} backLabel="Application" saveState={saveState} onReload={onReload} />
+        <NavBar title={current!.title} backHref={rootHref} backLabel={backLabel} saveState={saveState} onReload={onReload} />
         {content}
       </div>
     );

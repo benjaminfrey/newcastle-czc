@@ -3,8 +3,10 @@ import { contrast, DARK, LIGHT, type Tokens } from "./tokens";
 // @ts-expect-error -- Node's types aren't installed in the web project; Vitest runs on Node.
 import { readFileSync } from "node:fs";
 
-// Read from disk: Vitest's CSS handling empties `?raw` CSS imports.
-const css: string = readFileSync(new URL("../index.css", import.meta.url), "utf8");
+// Read from disk: Vitest's CSS handling empties `?raw` CSS imports, and import.meta.url isn't
+// always a file: URL under jsdom. Vitest runs from portal/web.
+// @ts-expect-error -- Node's `process` isn't typed in the web project.
+const css: string = readFileSync(`${process.cwd()}/src/index.css`, "utf8");
 
 const MODES: [string, Tokens][] = [["light", LIGHT], ["dark", DARK]];
 

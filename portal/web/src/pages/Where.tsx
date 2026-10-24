@@ -102,7 +102,7 @@ export default function Where() {
     if (next) return navigate(next);
     const answers = loadAnswers();
     if (!answers) return setMode("saved");
-    navigate(answers.project.includes("use") && !answers.use_key ? "/start/use" : "/start/results");
+    navigate(answers.project.includes("use") && !answers.use_key ? "/start/use" : "/start/needs");
   }
 
   function saveManual(e: FormEvent) {
@@ -171,7 +171,7 @@ export default function Where() {
   const civic = facts?.districts.find((d) => d.code === "SD-Civic");
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-xl font-semibold">Where is your project?</h1>
+      <p className="text-[17px]">Search for the address, or the map and lot from your tax bill, or tap your lot on the map.</p>
       <Form onSubmit={onSearch} className="flex flex-col gap-2 sm:flex-row sm:items-end">
         <TextField value={query} onChange={setQuery} className="flex-1">
           <Label>Street address, or map and lot</Label>

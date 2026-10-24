@@ -34,7 +34,7 @@ describe("Results", () => {
   it("sends the answers and the property's districts to the screener", async () => {
     const spy = vi.spyOn(api, "runScreener").mockResolvedValue(RESULT);
     renderPage();
-    await screen.findByText("Here's what you'll need");
+    await screen.findByText("Use Permit");
     expect(spy).toHaveBeenCalledWith(expect.objectContaining({
       use_key: "restaurant_cafe", property: { district_codes: ["D1"], on_state_highway: false, civic: false } }));
   });
@@ -131,8 +131,7 @@ describe("Results", () => {
   it("offers Start only for the applications this site takes", async () => {
     vi.spyOn(api, "runScreener").mockResolvedValue(RESULT);
     renderPage();
-    const start = await screen.findByRole("link", { name: "Start your Use Permit application" });
-    expect(start).toHaveAttribute("href", "/apply/use_permit");
-    expect(screen.queryByRole("link", { name: /Start your Special Permit/ })).not.toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "Start this application: Use Permit" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Start this application: Special Permit/ })).not.toBeInTheDocument();
   });
 });

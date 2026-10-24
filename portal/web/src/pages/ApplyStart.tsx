@@ -40,7 +40,7 @@ export default function ApplyStart() {
         savePendingStart({ formKey, property, useKey });
         return navigate("/signin", { replace: true });
       }
-      if (!property) return navigate(`/where?next=${encodeURIComponent(here)}`, { replace: true });
+      if (!property) return navigate(`/start/property?next=${encodeURIComponent(here)}`, { replace: true });
       const r = await createApplication({ form_key: formKey, property: propertyBody(property),
                                           disputed: property.disputed, note: property.note, use_key: useKey });
       if (r === "property_unavailable") return setLookupDown(true);
@@ -59,7 +59,7 @@ export default function ApplyStart() {
           <Card.Description>You can enter your property's details yourself, and staff will check them.</Card.Description>
         </Card.Header>
         <Card.Content>
-          <Link className="underline" to={`/where?manual=1&next=${encodeURIComponent(here)}`}>Enter your property yourself</Link>
+          <Link className="underline" to={`/start/property?manual=1&next=${encodeURIComponent(here)}`}>Enter your property yourself</Link>
         </Card.Content>
       </Card>
     );

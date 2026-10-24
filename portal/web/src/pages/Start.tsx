@@ -1,6 +1,8 @@
-import { Button, Checkbox, CheckboxGroup, Description, Form, Input, Label, Radio, RadioGroup, TextField } from "@heroui/react";
+import { Checkbox, CheckboxGroup, Description, Form, Input, Label, Radio, RadioGroup, TextField } from "@heroui/react";
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
+import ActionBar from "../shell/ActionBar";
+import { useWideLayout } from "../shell/useWideLayout";
 import { saveAnswers, type ProjectKind, type ScreenerAnswers } from "../screener";
 
 const CHOICES: { value: ProjectKind; label: string }[] = [
@@ -38,6 +40,7 @@ function NumberField({ label, help, value, onChange }: { label: string; help?: s
 
 export default function Start() {
   const navigate = useNavigate();
+  const wide = useWideLayout();
   const [project, setProject] = useState<string[]>([]);
   const [kind, setKind] = useState<Kind | "">("");
   const [area, setArea] = useState("");
@@ -75,13 +78,12 @@ export default function Start() {
       division: { lots_after: n.lots,
                   divided_last_5_years: project.includes("divide") && divided !== "unsure" ? divided === "yes" : null },
     });
-    navigate("/where");
+    navigate("/start/property");
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-xl font-semibold">Do I need a permit?</h1>
-      <p>Answer a few questions and we'll tell you what the Town's Code calls for. It takes a couple of minutes.</p>
+      <p className="text-[17px]">Answer a few questions and we'll tell you what the Town's Code calls for. It takes a couple of minutes.</p>
       <Form onSubmit={onSubmit} className="flex flex-col gap-5">
         <CheckboxGroup value={project} onChange={(v) => { setProject(v); setError(null); }} name="project">
           <Label>What are you planning?</Label>
@@ -159,9 +161,7 @@ export default function Start() {
           </>
         )}
         {error && <p role="alert">{error}</p>}
-        <div>
-          <Button type="submit" variant="primary">Next</Button>
-        </div>
+        <ActionBar actions={{ onContinue: () => {} }} wide={wide} />
       </Form>
     </div>
   );

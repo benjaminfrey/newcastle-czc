@@ -10,7 +10,7 @@ const renderPage = () =>
     <MemoryRouter initialEntries={["/start"]}>
       <Routes>
         <Route path="/start" element={<Start />} />
-        <Route path="/where" element={<p>Where page</p>} />
+        <Route path="/start/property" element={<p>Where page</p>} />
       </Routes>
     </MemoryRouter>,
   );
@@ -34,7 +34,7 @@ describe("Start", () => {
   it("asks what kind of building work before going on", async () => {
     renderPage();
     await userEvent.click(screen.getByRole("checkbox", { name: "Build something new or add on" }));
-    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    await userEvent.click(screen.getByRole("button", { name: "Continue" }));
     expect(await screen.findByText(/Choose what kind of building work/)).toBeInTheDocument();
   });
 
@@ -43,7 +43,7 @@ describe("Start", () => {
     await userEvent.click(screen.getByRole("checkbox", { name: "Build something new or add on" }));
     await userEvent.click(screen.getByRole("radio", { name: "A new building" }));
     await userEvent.type(screen.getByLabelText(/How much floor area/), "2,400 sq ft");
-    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    await userEvent.click(screen.getByRole("button", { name: "Continue" }));
     expect(await screen.findByText("Where page")).toBeInTheDocument();
     expect(loadAnswers()?.building.gross_floor_area_sf).toBe(2400);
   });
@@ -53,7 +53,7 @@ describe("Start", () => {
     await userEvent.click(screen.getByRole("checkbox", { name: "Build something new or add on" }));
     await userEvent.click(screen.getByRole("radio", { name: "A new building" }));
     await userEvent.type(screen.getByLabelText(/How many new homes/), "2.5");
-    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    await userEvent.click(screen.getByRole("button", { name: "Continue" }));
     expect(await screen.findByText(/whole number/)).toBeInTheDocument();
     expect(loadAnswers()).toBeNull();
   });
@@ -70,7 +70,7 @@ describe("Start", () => {
     await userEvent.click(screen.getByRole("checkbox", { name: "Start a business or change how a building is used" }));
     await userEvent.click(screen.getByRole("radio", { name: "A new building" }));
     await userEvent.type(screen.getByLabelText(/How much floor area/), "2400");
-    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    await userEvent.click(screen.getByRole("button", { name: "Continue" }));
     expect(await screen.findByText("Where page")).toBeInTheDocument();
     expect(loadAnswers()).toMatchObject({ project: ["build", "use"], building: { kind: "new", gross_floor_area_sf: 2400 } });
   });
@@ -79,14 +79,14 @@ describe("Start", () => {
     renderPage();
     await userEvent.click(screen.getByRole("checkbox", { name: "Build something new or add on" }));
     await userEvent.click(screen.getByRole("radio", { name: "A new building" }));
-    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    await userEvent.click(screen.getByRole("button", { name: "Continue" }));
     expect(await screen.findByText("Where page")).toBeInTheDocument();
     expect(loadAnswers()?.building.gross_floor_area_sf).toBeNull();
   });
 
   it("requires at least one choice", async () => {
     renderPage();
-    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    await userEvent.click(screen.getByRole("button", { name: "Continue" }));
     expect(await screen.findByText(/Choose at least one/)).toBeInTheDocument();
     expect(loadAnswers()).toBeNull();
   });
@@ -97,7 +97,7 @@ describe("Start", () => {
     await userEvent.click(screen.getByRole("radio", { name: "A new building" }));
     await userEvent.type(screen.getByLabelText(/How many new homes/), "1");
     await userEvent.type(screen.getByLabelText(/added on this lot in the last five years/), "2");
-    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    await userEvent.click(screen.getByRole("button", { name: "Continue" }));
     expect(await screen.findByText("Where page")).toBeInTheDocument();
     expect(loadAnswers()?.building).toMatchObject({ new_dwelling_units: 1, homes_added_last_5_years: 2 });
   });
@@ -107,7 +107,7 @@ describe("Start", () => {
     await userEvent.click(screen.getByRole("checkbox", { name: "Divide land" }));
     await userEvent.type(screen.getByLabelText(/How many lots/), "2");
     await userEvent.click(screen.getByRole("radio", { name: "Yes" }));
-    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    await userEvent.click(screen.getByRole("button", { name: "Continue" }));
     expect(await screen.findByText("Where page")).toBeInTheDocument();
     expect(loadAnswers()?.division).toEqual({ lots_after: 2, divided_last_5_years: true });
   });
@@ -115,7 +115,7 @@ describe("Start", () => {
   it("leaves earlier divisions unknown by default", async () => {
     renderPage();
     await userEvent.click(screen.getByRole("checkbox", { name: "Divide land" }));
-    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    await userEvent.click(screen.getByRole("button", { name: "Continue" }));
     expect(await screen.findByText("Where page")).toBeInTheDocument();
     expect(loadAnswers()?.division.divided_last_5_years).toBeNull();
   });
