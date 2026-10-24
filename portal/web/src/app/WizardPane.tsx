@@ -128,7 +128,7 @@ export default function WizardPane({ screen, editing, errorsRef, onPick, onConfi
         const shown = display(row.field, value(row), {});
         return (
           <div className="flex w-full flex-col items-center gap-4">
-            <p className="text-[34px] font-semibold tabular-nums">{shown}</p>
+            <p className="text-[30px] font-semibold tabular-nums">{shown}</p>
             <p className="-mt-3 text-[13px] text-[var(--app-secondary-label)]">From the Town's map</p>
             {editing ? control(row, { bare: true }) : (
               <ChoiceTiles field={row.field} value={null}
@@ -186,7 +186,7 @@ export default function WizardPane({ screen, editing, errorsRef, onPick, onConfi
   return (
     <section className="flex flex-col items-center gap-2 py-6 text-center">
       {screen.itemId && <p className="text-[13px] text-[var(--app-secondary-label)]">{itemLabel(form!, cur!, screen.itemId)}</p>}
-      <h2 tabIndex={-1} data-screen-title className="max-w-[30ch] text-balance text-[26px] font-semibold leading-tight outline-none">{heading}</h2>
+      <h2 tabIndex={-1} data-screen-title className="max-w-[30ch] text-balance text-[22px] font-semibold leading-tight outline-none">{heading}</h2>
       <p className="mb-4 min-h-[1.25rem] max-w-[46ch] text-pretty text-[15px] text-[var(--app-secondary-label)]">{help ?? ""}</p>
       {body}
       {screen.unknown && screen.kind !== "confirm" && (

@@ -5,7 +5,7 @@ import MyApplications from "./pages/MyApplications";
 import SignIn from "./pages/SignIn";
 import Verify from "./pages/Verify";
 import Where from "./pages/Where";
-import StartFlow, { Moved } from "./start/StartFlow";
+import StartFlow, { Moved, StartSignIn } from "./start/StartFlow";
 import Results from "./pages/Results";
 import Start from "./pages/Start";
 import UsePicker from "./pages/UsePicker";
@@ -31,6 +31,7 @@ export default function App() {
           <Route path="/start/property" element={<Where />} />
           <Route path="/start/use" element={<UsePicker />} />
           <Route path="/start/needs" element={<Results />} />
+          <Route path="/start/signin" element={<StartSignIn />} />
         </Route>
         <Route path="/applications/:id/:stepId?" element={<ApplicationPage />} />
       </Routes>

@@ -39,14 +39,15 @@ describe("Results", () => {
       use_key: "restaurant_cafe", property: { district_codes: ["D1"], on_state_highway: false, civic: false } }));
   });
 
-  it("lists each application with reviewer, time limit and why", async () => {
+  it("lists each application with reviewer and time limit, with no Code citation or why", async () => {
     vi.spyOn(api, "runScreener").mockResolvedValue(RESULT);
     renderPage();
     expect(await screen.findByText("Use Permit")).toBeInTheDocument();
     expect(screen.getAllByText(/Code Enforcement Officer/).length).toBeGreaterThan(0);
     expect(screen.getByText(/30 days/)).toBeInTheDocument();
-    expect(screen.getByText(/Art\. 8 §15\.b\.1/)).toBeInTheDocument();
-    expect(screen.getByText("Measure the floor area.")).toBeInTheDocument();
+    expect(screen.queryByText(/Art\. \d/)).not.toBeInTheDocument();
+    expect(screen.getByText("Measure the floor area.")).toBeInTheDocument(); // a note in plain words stays
+    expect(screen.queryByText(/Why the Code/)).not.toBeInTheDocument();
     expect(screen.getAllByText(/the Rural \(D1\) district/).length).toBeGreaterThan(0);
   });
 
@@ -121,11 +122,12 @@ describe("Results", () => {
     expect(await screen.findByText(/30 days, if sent to the Planning Board/)).toBeInTheDocument();
   });
 
-  it("shows the chair's ruling under why", async () => {
+  it("doesn't show the Code's why, nor a ruling under it", async () => {
     vi.spyOn(api, "runScreener").mockResolvedValue({ ...RESULT, outcomes: [{ ...USE_PERMIT,
       why: { ...USE_PERMIT.why, ruling: "Any home is the Residence use. (Ruling of Ben Frey, Planning Board chair, 2026-10-18.)" } }] });
     renderPage();
-    expect(await screen.findByText(/Ruling of Ben Frey/)).toBeInTheDocument();
+    expect(await screen.findByText("Use Permit")).toBeInTheDocument();
+    expect(screen.queryByText(/Ruling of Ben Frey/)).not.toBeInTheDocument();
   });
 
   it("offers Start only for the applications this site takes", async () => {

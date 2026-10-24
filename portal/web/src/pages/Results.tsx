@@ -1,14 +1,11 @@
 import { Button } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import SignInForm from "../components/SignInForm";
-import WhyWeAsk from "../components/WhyWeAsk";
 import InsetGroup from "../shell/InsetGroup";
 import { carryFrom, savePendingStart } from "../pendingStart";
-import Sheet from "../shell/Sheet";
 import { getMe, runScreener, type Outcome, type ScreenerResult } from "../api";
 import { loadProperty } from "../property";
-import { citeLabel, loadAnswers } from "../screener";
+import { loadAnswers } from "../screener";
 
 const CIVIC = "This is Town-owned land in the Civic district. Only the Town builds on Civic land: Town Meeting " +
   "votes on it, on the Select Board's recommendation, and no permit application is made through this site.";
@@ -16,7 +13,7 @@ const CIVIC = "This is Town-owned land in the Civic district. Only the Town buil
 function days(o: Outcome): string | null {
   if (o.days.length === 0) return null;
   return o.days.map((d) => `${d.label}: ${d.days} ${d.basis === "business" ? "business days" : "days"}` +
-    `${d.when ? `, ${d.when}` : ""} (${citeLabel(d.cite)})`).join("; ");
+    `${d.when ? `, ${d.when}` : ""}`).join("; ");
 }
 
 // "a Use Permit", "an Entrance Permit".
@@ -32,7 +29,6 @@ function firstOf(all: Outcome[], o: Outcome): boolean {
 
 export default function Results() {
   const navigate = useNavigate();
-  const [signIn, setSignIn] = useState(false);
   const [result, setResult] = useState<ScreenerResult | null>(null);
 
   // Signed in: straight to the application. Signed out: sign in here, in a sheet; the emailed
@@ -41,7 +37,7 @@ export default function Results() {
     const me = await getMe();
     if (me && me !== "unavailable") return navigate(`/apply/${formKey}`);
     savePendingStart({ formKey, property: loadProperty(), useKey: loadAnswers()?.use_key ?? null, carry: carryFrom(loadAnswers()) });
-    setSignIn(true);
+    navigate("/start/signin");
   }
   const [problem, setProblem] = useState<string | null>(null);
 
@@ -88,7 +84,6 @@ export default function Results() {
             {days(o) && <InsetGroup.Row label="Time the Code gives">{days(o)}</InsetGroup.Row>}
             <InsetGroup.Row label="How to apply">{o.in_portal ? "You can apply here." : "Apply through the Town Office."}</InsetGroup.Row>
           </InsetGroup>
-          <WhyWeAsk why={o.why} label="Why the Code calls for it" extra={o.why.ruling} />
           {o.in_portal && firstOf(result.outcomes, o) && (
             <Button variant="primary" className="min-h-12 self-start px-6 text-[17px]" aria-label={`Start this application: ${o.code_name}`}
                     onPress={() => void start(o.application)}>
@@ -103,9 +98,6 @@ export default function Results() {
         <InsetGroup.Row label="Fees">Set by the Town's fee schedule — the Town Office will tell you the amount.</InsetGroup.Row>
       </InsetGroup>
       <Link to="/start" className="flex min-h-11 items-center self-start text-[15px] text-[var(--app-accent-text)]">Start again</Link>
-      <Sheet open={signIn} title="Sign in to apply" onCancel={() => setSignIn(false)}>
-        <SignInForm />
-      </Sheet>
     </div>
   );
 }

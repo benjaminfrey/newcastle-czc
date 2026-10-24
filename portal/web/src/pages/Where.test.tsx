@@ -102,6 +102,17 @@ describe("Where", () => {
     expect(await screen.findByText("Map 4, Lot 36")).toBeInTheDocument();
   });
 
+  it("the lot found is its own screen: Is this your property?", async () => {
+    vi.spyOn(api, "parcelAt").mockResolvedValue(229);
+    vi.spyOn(api, "getProperty").mockResolvedValue(FACTS);
+    renderPage();
+    await userEvent.click(screen.getByRole("button", { name: "tap the map" }));
+    expect(await screen.findByRole("heading", { name: "Is this your property?" })).toBeInTheDocument();
+    expect(screen.queryByLabelText("Street address, or map and lot")).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole("radio", { name: "No, search again" }));
+    expect(await screen.findByLabelText("Street address, or map and lot")).toBeInTheDocument();
+  });
+
   it("says so when nothing is at the tapped spot", async () => {
     vi.spyOn(api, "parcelAt").mockResolvedValue(null);
     renderPage();
@@ -114,7 +125,7 @@ describe("Where", () => {
     vi.spyOn(api, "getProperty").mockResolvedValue(FACTS);
     renderPage();
     await userEvent.click(screen.getByRole("button", { name: "tap the map" }));
-    await userEvent.click(await screen.findByRole("button", { name: "Yes, this is my property" }));
+    await userEvent.click(await screen.findByRole("radio", { name: "Yes, this is my property" }));
     expect(await screen.findByText(/Saved/)).toBeInTheDocument();
     expect(loadProperty()).toEqual({ source: "lookup", parcel_id: 229, map_lot: "004-036", district_code: "D2",
                                      district_codes: ["D2", "D1"], on_state_highway: false,
@@ -126,7 +137,7 @@ describe("Where", () => {
     vi.spyOn(api, "getProperty").mockResolvedValue(FACTS);
     renderPage();
     await userEvent.click(screen.getByRole("button", { name: "tap the map" }));
-    await userEvent.click(await screen.findByRole("button", { name: "This doesn't look right" }));
+    await userEvent.click(await screen.findByRole("radio", { name: "This doesn't look right" }));
     await userEvent.type(screen.getByLabelText("What looks wrong?"), "The lot was split in 2019");
     await userEvent.click(screen.getByRole("button", { name: "Save" }));
     expect(await screen.findByText(/Saved/)).toBeInTheDocument();

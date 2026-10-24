@@ -46,11 +46,13 @@ describe("the start window", () => {
     expect(screen.getByRole("heading", { level: 1, name: "What you'll need" })).toBeInTheDocument();
   });
 
-  it("Start this application opens the sign-in sheet when signed out", async () => {
+  it("Start this application goes to the sign-in screen when signed out", async () => {
     vi.spyOn(api, "getMe").mockResolvedValue(null);
     at("/start/needs");
     await userEvent.click(await screen.findByRole("button", { name: "Start this application: Small Project Plan" }));
-    expect(await screen.findByRole("dialog", { name: "Sign in to apply" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Sign in to apply" })).toBeInTheDocument();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(window.location.pathname).toBe("/start/signin");
     expect(peekPendingStart()?.formKey).toBe("small_project_plan");
   });
 
