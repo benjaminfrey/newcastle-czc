@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import { Button } from "@heroui/react";
 import { mapLotLabel } from "../format";
 import type { Attachment, FormField } from "../applications";
@@ -32,16 +33,20 @@ export function display(field: FormField, value: unknown, useNames: Record<strin
   return String(value);
 }
 
+const asked = (f: FormField) => (f.source === "question" || f.may_correct) && !!f.label;
+const unanswered = (v: unknown) => v === null || v === undefined || v === "" || (Array.isArray(v) && v.length === 0);
+
 const fromMaps = (f: FormField) => f.source === "property" || (f.source === "derived" && f.from === "map_lot");
 
 type Props = {
   block: Block; title: string; note: string; attachments: Attachment[]; useNames: Record<string, string>;
-  onEdit?: () => void; onAddDetail: () => void;
+  changeHref: (fieldId: string, itemId: string | null) => string | null; onAddDetail: () => void;
 };
 
-// One section of the official form as it will print: the Code's labels and the answers, then
-// the applicant's added detail. Edit opens the step it's asked in.
-export default function OfficialGroup({ block, title, note, attachments, useNames, onEdit, onAddDetail }: Props) {
+// One section of the official form: each answer under the question as it was asked, with the
+// form's own term beneath for staff (the printout keeps the form's labels), then the applicant's
+// added detail. Change opens that question's screen.
+export default function OfficialGroup({ block, title, note, attachments, useNames, changeHref, onAddDetail }: Props) {
   const files = (f: FormField) => attachments.filter((a) => a.field_id === f.id && a.item_id === block.itemId);
   const { cur, form } = useApplication();
   const changed = (fieldId: string) => cur!.answers.some((a) => a.field_id === fieldId && a.item_id === block.itemId);
@@ -49,7 +54,6 @@ export default function OfficialGroup({ block, title, note, attachments, useName
     <InsetGroup title={title}
                 footer={
                   <span className="flex flex-wrap gap-x-4">
-                    {onEdit && <Button variant="ghost" className="min-h-11 px-0 text-[var(--app-accent-text)]" onPress={onEdit} aria-label={`Edit ${title}`}>Edit</Button>}
                     <Button variant="ghost" className="min-h-11 px-0 text-[var(--app-accent-text)]" onPress={onAddDetail}
                             aria-label={`${note ? "Change the detail for" : "Add more detail to"} ${title}`}>
                       {note ? "Change the detail" : "Add more detail"}
@@ -60,19 +64,32 @@ export default function OfficialGroup({ block, title, note, attachments, useName
         // "Attached to" stores the building; print its name as it is now.
         const value = field.control === "building-picker" && typeof stored === "string" ? buildingLabel(form!, cur!, stored) : stored;
         return (
-        <InsetGroup.Row key={field.id} label={<span className="text-[var(--app-secondary-label)]">{field.official_label}</span>}>
+        <InsetGroup.Row key={field.id} label={asked(field) ? (
+          <span className="flex flex-col">
+            <span>{field.label}</span>
+            <span className="text-[13px] text-[var(--app-secondary-label)]">{field.official_label}</span>
+          </span>
+        ) : <span className="text-[var(--app-secondary-label)]">{field.official_label}</span>}>
           {field.type === "upload" && files(field).length > 0 ? (
             <span className="flex flex-col">
               {files(field).map((a) => <a key={a.id} className="underline" href={`/api/attachments/${a.id}`}>{a.filename}</a>)}
             </span>
           ) : (
-            <span>
-              <span>{field.type === "upload" ? "None added" : display(field, value, useNames)}</span>
+            <span className="flex flex-wrap items-baseline justify-between gap-x-3">
+              <span>
+              {asked(field) && field.type !== "upload" && unanswered(value)
+                ? <span className="text-[var(--app-destructive)]">Still to answer</span>
+                : <span>{field.type === "upload" ? "None added" : display(field, value, useNames)}</span>}
               {fromMaps(field) && value !== null && (
                 // A map value the applicant corrected is theirs, not the Town's: say which, for staff.
                 <span className="text-[13px] text-[var(--app-secondary-label)]">
                   {changed(field.id) ? " (you changed the map's value — staff confirm)" : " (from the Town's maps — staff confirm)"}
                 </span>
+              )}
+              </span>
+              {asked(field) && changeHref(field.id, block.itemId) && (
+                <Link to={changeHref(field.id, block.itemId)!} aria-label={`Change ${field.label}`}
+                      className="min-h-11 py-2 text-[15px] text-[var(--app-accent-text)]">Change</Link>
               )}
             </span>
           )}

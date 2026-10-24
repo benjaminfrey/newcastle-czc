@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -66,14 +66,17 @@ beforeEach(() => {
 });
 
 describe("ReviewPane", () => {
-  it("prints official labels, not questions", async () => {
+  it("rows lead with the question as asked, the form's term beneath", async () => {
     open();
     const applicant = await screen.findByRole("group", { name: "Applicant" });
+    expect(within(applicant).getByText("Name?")).toBeInTheDocument();
     expect(within(applicant).getByText("Name")).toBeInTheDocument();
+    const width = within(block("Site Information (existing)")).getByText("Lot Width (ft)?").closest("[data-row]")!;
+    expect(width.textContent!.startsWith("Lot Width (ft)?")).toBe(true);
+    expect(width).toHaveTextContent("Lot Width (ft)");
     expect(within(applicant).getByText("Ada Lovelace")).toBeInTheDocument();
     expect(within(applicant).getByText("ada@example.com")).toBeInTheDocument();
     expect(within(applicant).getByText("Yes")).toBeInTheDocument();
-    expect(screen.queryByText("Name?")).not.toBeInTheDocument();
     expect(screen.queryByRole("group", { name: "Property Owner (if different)" })).not.toBeInTheDocument();
     expect(within(block("Site Information (existing)")).getByText(/Not known yet/)).toBeInTheDocument();
     expect(within(block("Certification")).getByText("Signed when you submit")).toBeInTheDocument();
@@ -102,31 +105,6 @@ describe("ReviewPane", () => {
     expect(within(docs).getByRole("link", { name: "plan.pdf" })).toHaveAttribute("href", "/api/attachments/t1");
   });
 
-  it("Edit opens the step in a sheet, where new questions appear in place", async () => {
-    vi.spyOn(apps, "saveAnswers").mockResolvedValue({ revision: 4, missing: [] });
-    open();
-    await userEvent.click(await screen.findByRole("button", { name: "Edit Applicant" }));
-    const sheet = await screen.findByRole("dialog", { name: "About you" });
-    await userEvent.click(within(sheet).getByRole("switch", { name: "Do you own this property?" }));
-    expect(await within(sheet).findByRole("group", { name: "Property Owner (if different)" })).toBeInTheDocument();
-    await userEvent.click(within(sheet).getByRole("button", { name: "Done" }));
-    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-    expect(screen.getByRole("group", { name: "Property Owner (if different)" })).toBeInTheDocument();
-  });
-
-  it("Edit on a building's section opens that building's sheet at the section's page", async () => {
-    const building = sec("main_mass", "Main Building Mass Details", "buildings",
-      [q("width", "Width of Main Building Mass", { page: "size" })],
-      { repeat: { kind: "building", add_label: "Add a building", min: 1, max: 20, add_options: [] },
-        pages: [{ id: "basics", title: "Basics", layout: null }, { id: "size", title: "Size", layout: null }] });
-    vi.spyOn(apps, "getForm").mockResolvedValue({ ...FORM, steps: [...(FORM.steps ?? []), { id: "buildings", title: "Buildings" }],
-                                                  sections: [...FORM.sections, building] });
-    vi.spyOn(apps, "getApplication").mockResolvedValue({ ...APP, items: [{ id: "b1", kind: "building", position: 0 }] });
-    open();
-    await userEvent.click(await screen.findByRole("button", { name: "Edit Main Building Mass Details — Building 1" }));
-    await waitFor(() => expect(screen.getByTestId("where")).toHaveTextContent("/applications/abc/buildings?item=b1&page=size"));
-  });
-
   it("Add more detail saves a note printed under its section", async () => {
     const note = vi.spyOn(apps, "saveNote").mockResolvedValue({ revision: 4, missing: [] });
     open();
@@ -152,12 +130,43 @@ describe("ReviewPane", () => {
     expect(within(site).getByText("Map / Lot").closest("[data-row]")).toHaveTextContent("from the Town's maps");
   });
 
-  it("Still to answer links focus the field", async () => {
+  it("Still to answer links open the question's screen and come back", async () => {
     vi.spyOn(apps, "getApplication").mockResolvedValue({ ...APP, missing: [{ field_id: "lot_width", item_id: null }] });
     open();
     // The question as the resident was asked it leads; the form's own term follows, smaller.
     const link = await screen.findByRole("link", { name: /^Lot Width \(ft\)\?\s*Lot Width \(ft\)$/ });
-    expect(link).toHaveAttribute("href", "/applications/abc/your_lot?focus=lot_width");
+    expect(link).toHaveAttribute("href", "/applications/abc/your_lot?screen=lot_width&return=review");
+  });
+
+  it("Change opens the question's screen and comes back; no Edit sheets", async () => {
+    open();
+    const site = await screen.findByRole("group", { name: "Site Information (existing)" });
+    const change = within(site).getByRole("link", { name: "Change Lot Width (ft)?" });
+    expect(change).toHaveAttribute("href", "/applications/abc/your_lot?screen=lot_width&return=review");
+    expect(screen.queryByRole("button", { name: /^Edit / })).not.toBeInTheDocument();
+    await userEvent.click(change);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("a grouped screen's Change opens the group; a building's opens its own screen", async () => {
+    const deed = sec("location", "Location", "your_lot", [q("deed_book", "Deed Book", { screen: "deed" }), q("deed_page", "Page", { screen: "deed" })],
+                     { screens: [{ id: "deed", layout: null }] });
+    const building = sec("main_mass", "Main Building Mass Details", "buildings", [q("width", "Width of Main Building Mass")],
+                         { repeat: { kind: "building", add_label: "Add a building", min: 1, max: 20 } });
+    vi.spyOn(apps, "getForm").mockResolvedValue({ ...FORM, steps: [...(FORM.steps ?? []), { id: "buildings", title: "Buildings" }],
+                                                  sections: [deed, ...FORM.sections, building] });
+    vi.spyOn(apps, "getApplication").mockResolvedValue({ ...APP, items: [{ id: "b1", kind: "building", position: 0 }] });
+    open();
+    expect(await screen.findByRole("link", { name: "Change Page?" })).toHaveAttribute("href", "/applications/abc/your_lot?screen=deed_book&return=review");
+    expect(screen.getByRole("link", { name: "Change Width of Main Building Mass?" }))
+      .toHaveAttribute("href", "/applications/abc/buildings?screen=width&item=b1&return=review");
+  });
+
+  it("an unanswered question says Still to answer", async () => {
+    vi.spyOn(apps, "getApplication").mockResolvedValue({ ...APP, answers: APP.answers.filter((x) => x.field_id !== "applicant_name") });
+    open();
+    const applicant = await screen.findByRole("group", { name: "Applicant" });
+    expect(within(applicant).getByText("Name?").closest("[data-row]")).toHaveTextContent("Still to answer");
   });
 
   it("says when everything is answered, and ends with what happens next", async () => {

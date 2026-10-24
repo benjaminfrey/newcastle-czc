@@ -1,26 +1,25 @@
 import { TextArea, TextField } from "@heroui/react";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { getUseGroups } from "../api";
-import { applicable, printed } from "../forms/applicability";
+import { printed } from "../forms/applicability";
+import { screensOf } from "../forms/screens";
 import { itemLabel, type StepModel } from "../forms/steps";
 import { longDate, mapLotLabel } from "../format";
 import InsetGroup from "../shell/InsetGroup";
 import Sheet from "../shell/Sheet";
 import { useApplication } from "./ApplicationStore";
 import OfficialGroup from "./OfficialGroup";
-import StepPane from "./StepPane";
 
 // Sections the paper form ends with: the signatures and the office's box.
 const isClosing = (fields: { source: string }[]) => fields.length > 0 && fields.every((f) => f.source === "at_submit" || f.source === "staff");
 
-// Review and sign: the official form as it will print, section by section, each with Edit
-// (the step it's asked in, in a sheet) and Add more detail. Sending it arrives in Milestone 6.
+// Review and sign: the official form section by section, each answer under the question as it was
+// asked (the form's term beneath), with Change to that question's screen, which comes back here.
+// Add more detail sits on each section. Sending it arrives in Milestone 6.
 export default function ReviewPane({ models, base }: { models: StepModel[]; base: string }) {
-  const { app, form, cur, saveNote, flush } = useApplication();
-  const navigate = useNavigate();
+  const { app, form, cur, saveNote } = useApplication();
   const [useNames, setUseNames] = useState<Record<string, string>>({});
-  const [editing, setEditing] = useState<string | null>(null); // a step id
   const [detail, setDetail] = useState<{ sectionId: string; itemId: string | null; title: string; text: string } | null>(null);
   useEffect(() => {
     getUseGroups().then((g) => Array.isArray(g) && setUseNames(Object.fromEntries(g.flatMap((x) => x.uses).map((u) => [u.use_key, u.code_name]))));
@@ -30,25 +29,22 @@ export default function ReviewPane({ models, base }: { models: StepModel[]; base
     const all = printed(form!, cur!);
     return [...all.filter((b) => !isClosing(b.section.fields)), ...all.filter((b) => isClosing(b.section.fields))];
   }, [form, cur]);
-  const stepOfSection = (id: string) => form!.sections.find((s) => s.id === id)?.step ?? null;
-  // A plain step's section opens that step in a sheet here; a building's or an addition's opens
-  // its own sheet on its hub, at the page that section's questions are on.
-  const editOf = (sectionId: string, itemId: string | null, step: string | null) => {
-    if (!step || !models.some((m) => m.id === step)) return undefined;
-    if (!itemId) return models.some((m) => m.id === step && m.kind === "fields") ? () => setEditing(step) : undefined;
-    const page = form!.sections.find((s) => s.id === sectionId)?.fields.find((f) => f.page)?.page ?? "";
-    return () => void flush().then(() => navigate(`${base}/${step}?item=${itemId}&page=${page}`));
+  // The wizard screen a question is asked on (a grouped field opens its group), coming back here.
+  const screens = useMemo(() => models.flatMap((m) => screensOf(form!, cur!, m)), [models, form, cur]);
+  const changeHref = (fieldId: string, itemId: string | null): string | null => {
+    const s = screens.find((x) => x.rows.some((r) => r.field.id === fieldId && r.itemId === itemId));
+    if (!s) return null;
+    const q = new URLSearchParams({ screen: s.id, ...(s.itemId ? { item: s.itemId } : {}), return: "review" });
+    return `${base}/${s.step}?${q.toString().replace(/%3A/g, ":")}`;
   };
   const gaps = app!.missing.map((m) => {
     const sec = form!.sections.find((s) => s.fields.some((f) => f.id === m.field_id))!;
     const field = sec.fields.find((f) => f.id === m.field_id)!;
     const step = field.step ?? sec.step;
-    const href = m.item_id ? `${base}/${step}?item=${m.item_id}&page=${field.page ?? ""}` : `${base}/${step}?focus=${m.field_id}`;
+    const href = changeHref(m.field_id, m.item_id) ?? `${base}/${step}`;
     return { key: `${m.field_id}|${m.item_id ?? ""}`, question: field.label ?? field.official_label, official: field.official_label,
              href, item: m.item_id ? itemLabel(form!, cur!, m.item_id) : null };
   });
-  const editModel = models.find((m) => m.id === editing);
-  const editRows = editModel ? applicable(form!, cur!).filter((r) => (r.field.step ?? r.section.step) === editModel.id) : [];
 
   return (
     <>
@@ -80,12 +76,10 @@ export default function ReviewPane({ models, base }: { models: StepModel[]; base
       )}
       {blocks.map((b) => {
         const title = b.itemId ? `${b.section.official_title} — ${itemLabel(form!, cur!, b.itemId)}` : b.section.official_title;
-        const step = stepOfSection(b.section.id);
         const note = app!.notes.find((n) => n.section_id === b.section.id && n.item_id === b.itemId)?.text ?? "";
         return (
           <OfficialGroup key={`${b.section.id}|${b.itemId ?? ""}`} block={b} title={title} note={note}
-                         attachments={app!.attachments} useNames={useNames}
-                         onEdit={editOf(b.section.id, b.itemId, step)}
+                         attachments={app!.attachments} useNames={useNames} changeHref={changeHref}
                          onAddDetail={() => setDetail({ sectionId: b.section.id, itemId: b.itemId, title, text: note })} />
         );
       })}
@@ -98,11 +92,6 @@ export default function ReviewPane({ models, base }: { models: StepModel[]; base
           <span>Signing it and sending it to the Town arrives soon. Nothing has gone to the Town yet.</span>
         </InsetGroup.Row>
       </InsetGroup>
-      {editModel && (
-        <Sheet open title={editModel.title} onDone={() => void flush().then(() => setEditing(null))}>
-          <StepPane rows={editRows} sections={editModel.sections} />
-        </Sheet>
-      )}
       {detail && (
         <Sheet open title="More detail" onCancel={() => setDetail(null)}
                onDone={async () => { if (await saveNote(detail.sectionId, detail.itemId, detail.text)) setDetail(null); }}>
