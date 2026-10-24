@@ -111,6 +111,14 @@ def test_no_verdict_words_in_form_text(forms):
             for text in (s.official_title, s.chapter, f.official_label, f.label, f.help,
                          *(o.label for o in f.options), *(o.official for o in f.options)):
                 assert not VERDICT_WORDS.search(text or ""), (f.id, text)
+        # The layout's words reach the applicant too: steps, sheet pages, "Add a building" choices.
+        layout = [st.title for st in form.steps]
+        for s in form.sections:
+            layout += [p.title for p in s.pages] + [o.label for o in s.add_options]
+            if s.repeat:
+                layout.append(s.repeat.add_label)
+        for text in layout:
+            assert not VERDICT_WORDS.search(text or ""), text
 
 
 @pytest.mark.parametrize("on_highway,shown", [(True, True), (False, False), (None, True)])
@@ -190,7 +198,7 @@ def test_garage_preset_is_a_residential_accessory_building(forms):
     building = next(s for s in sp.sections if s.id == "building")
     labels = [o.label for o in building.add_options]
     assert labels == ["A building", "A detached garage or shed"]
-    assert building.add_options[1].preset == {"building_class": "residential_accessory", "building_name": "Garage"}
+    assert building.add_options[1].preset == {"building_class": "residential_accessory", "building_name": "Garage or shed"}
     _, kind = sp.field("component_kind")
     garage = next(o for o in kind.options if o.value == "garage")
     assert garage.label == "An attached garage" and garage.official == "Garage (attached)"

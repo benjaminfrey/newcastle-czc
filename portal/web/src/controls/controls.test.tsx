@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as api from "../api";
 import type { FormField } from "../applications";
 import * as storeModule from "../app/ApplicationStore";
+import { buildingLabel } from "./pickers";
 import FieldControl, { controlFor } from "./FieldControl";
 
 vi.mock("../components/ParcelMap", () => ({
@@ -93,7 +94,22 @@ describe("NumberControl", () => {
   });
 });
 
+describe("NumberControl ranges", () => {
+  it("a typed number outside the range goes as typed, for the form to explain, not quietly changed", async () => {
+    const onValue = draw(f({ type: "number", unit: "ft", min: 0, max: 30, label: "How high?" }));
+    await userEvent.type(screen.getByRole("textbox", { name: "How high?" }), "35");
+    await userEvent.tab();
+    expect(onValue).toHaveBeenCalledWith(35);
+  });
+});
+
 describe("SliderControl", () => {
+  it("an unanswered slider says so, rather than showing its lowest value as if chosen", () => {
+    draw(f({ type: "number", control: "slider", min: 0, max: 100, step_size: 5, unit: "%", label: "North wall" }));
+    expect(screen.getByText("Not answered yet")).toBeInTheDocument();
+    expect(screen.queryByText("0%")).not.toBeInTheDocument();
+  });
+
   it("steps by 5 and announces its value", async () => {
     const onValue = draw(f({ type: "number", control: "slider", min: 0, max: 100, step_size: 5, unit: "%", label: "North wall" }), 20);
     const thumb = screen.getByRole("slider", { name: "North wall" });
@@ -183,7 +199,16 @@ describe("BuildingPicker", () => {
     await userEvent.click(screen.getByRole("button", { name: /Which building/ }));
     expect(await screen.findByRole("option", { name: "Free-standing" })).toBeInTheDocument();
     await userEvent.click(screen.getByRole("option", { name: "Building 1: House" }));
-    expect(onValue).toHaveBeenCalledWith("Building 1: House");
+    expect(onValue).toHaveBeenCalledWith("b1"); // the building itself, so a rename or a deletion can't leave stale words
+  });
+
+  it("names the chosen building as it is now", () => {
+    const store = fakeStore({ cur: { answers: [{ field_id: "building_name", item_id: "b1", value: "Barn" }],
+                                     items: [{ id: "b1", kind: "building", position: 0 }], property: {}, account: {} } as never });
+    expect(buildingLabel(store.form!, store.cur!, "b1")).toBe("Building 1: Barn");
+    expect(buildingLabel(store.form!, store.cur!, "Free-standing")).toBe("Free-standing");
+    expect(buildingLabel(store.form!, store.cur!, "Building 1: House")).toBe("Building 1: House"); // an answer from before
+    expect(buildingLabel(store.form!, store.cur!, "00000000-0000-0000-0000-000000000000")).toBeNull(); // deleted since
   });
 });
 
@@ -243,9 +268,10 @@ describe("UsesControl", () => {
 });
 
 describe("UploadControl", () => {
-  it("offers the camera and states the limits", () => {
+  it("offers the camera and states the limits; each button is named for its question", () => {
     draw(f({ type: "upload", label: "Add a sketch." }));
-    const input = screen.getByLabelText("Take a photo or choose a file");
+    expect(screen.getByLabelText("Take a photo or choose a file: Add a sketch.")).toBeInTheDocument();
+    const input = screen.getByLabelText(/^Take a photo or choose a file/);
     expect(input).toHaveAttribute("accept", expect.stringContaining("image/*"));
     expect(screen.getByText("PDF, JPEG, PNG or HEIC · up to 25 MB")).toBeInTheDocument();
   });
@@ -256,7 +282,7 @@ describe("UploadControl", () => {
     draw(f({ type: "upload", label: "Add a sketch." }));
     const big = new File(["x"], "photo.jpg", { type: "image/jpeg" });
     Object.defineProperty(big, "size", { value: 26_214_401 });
-    await act(() => userEvent.upload(screen.getByLabelText("Take a photo or choose a file"), big));
+    await act(() => userEvent.upload(screen.getByLabelText(/^Take a photo or choose a file/), big));
     expect(await screen.findByRole("alert")).toHaveTextContent(/up to 25 MB/);
     expect(spy).not.toHaveBeenCalled();
   });
@@ -267,7 +293,7 @@ describe("UploadControl", () => {
     const attachmentAdded = vi.fn();
     fakeStore({ attachmentAdded } as never);
     draw(f({ id: "sketch", type: "upload", label: "Add a sketch." }));
-    await act(() => userEvent.upload(screen.getByLabelText("Take a photo or choose a file"), new File(["x"], "sketch.pdf", { type: "application/pdf" })));
+    await act(() => userEvent.upload(screen.getByLabelText(/^Take a photo or choose a file/), new File(["x"], "sketch.pdf", { type: "application/pdf" })));
     expect(attachmentAdded).toHaveBeenCalledWith(expect.objectContaining({ id: "a1", field_id: "sketch", item_id: null }));
   });
 

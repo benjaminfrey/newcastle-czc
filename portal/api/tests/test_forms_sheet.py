@@ -62,4 +62,5 @@ def test_sheet_shows_steps_and_controls():
     assert "- Step: Your lot" in sheet
     assert "- Control: switch (starts on)" in sheet
     assert "- Control: slider" in sheet
-    assert "Add options: A building; A detached garage or shed (starts as" in sheet
+    assert ("Add options: A building; A detached garage or shed (starts with Building type: "
+            "Residential Accessory Building; Building reference (name): Garage or shed)") in sheet

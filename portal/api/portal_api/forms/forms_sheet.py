@@ -123,6 +123,16 @@ def _status(e) -> str:
     return "- **Draft — awaiting the chair's approval.**"
 
 
+def _preset_words(form: FormDef, preset: dict) -> str:
+    """A preset as the chair reads it: "Building type: Residential Accessory Building; Name: Garage"."""
+    out = []
+    for fid, value in preset.items():
+        f = form.field(fid)[1]
+        shown = next((o.official for o in f.options if o.value == value), value)
+        out.append(f"{f.official_label}: {shown}")
+    return "; ".join(out)
+
+
 def _section(ruleset: Ruleset, form: FormDef, s) -> list[str]:
     steps = {st.id: st.title for st in form.steps}
     pages = {p.id: p for p in s.pages}
@@ -130,7 +140,7 @@ def _section(ruleset: Ruleset, form: FormDef, s) -> list[str]:
            *([f"- Step: {steps[s.step]}"] if s.step in steps else []),
            *([f"- Pages: " + "; ".join(p.title + (f" ({p.layout} layout)" if p.layout else "") for p in s.pages)]
              if s.pages else []),
-           *([f"- Add options: " + "; ".join(o.label + (f" (starts as {o.preset})" if o.preset else "")
+           *([f"- Add options: " + "; ".join(o.label + (f" (starts with {_preset_words(form, o.preset)})" if o.preset else "")
                                             for o in s.add_options)] if s.add_options else []),
            *([f"- Repeats: one per {s.repeat.kind} ({s.repeat.min} to {s.repeat.max}); "
               f"the wizard offers “{s.repeat.add_label}”"] if s.repeat else []),

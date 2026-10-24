@@ -3,6 +3,7 @@ import { mapLotLabel } from "../format";
 import type { Attachment, FormField } from "../applications";
 import type { Block } from "../forms/applicability";
 import InsetGroup from "../shell/InsetGroup";
+import { buildingLabel } from "../controls/pickers";
 import { useApplication } from "./ApplicationStore";
 
 const isUnknown = (v: unknown) => typeof v === "object" && v !== null && (v as { unknown?: unknown }).unknown === true;
@@ -42,7 +43,7 @@ type Props = {
 // the applicant's added detail. Edit opens the step it's asked in.
 export default function OfficialGroup({ block, title, note, attachments, useNames, onEdit, onAddDetail }: Props) {
   const files = (f: FormField) => attachments.filter((a) => a.field_id === f.id && a.item_id === block.itemId);
-  const { cur } = useApplication();
+  const { cur, form } = useApplication();
   const changed = (fieldId: string) => cur!.answers.some((a) => a.field_id === fieldId && a.item_id === block.itemId);
   return (
     <InsetGroup title={title}
@@ -55,7 +56,10 @@ export default function OfficialGroup({ block, title, note, attachments, useName
                     </Button>
                   </span>
                 }>
-      {block.rows.map(({ field, value }) => (
+      {block.rows.map(({ field, value: stored }) => {
+        // "Attached to" stores the building; print its name as it is now.
+        const value = field.control === "building-picker" && typeof stored === "string" ? buildingLabel(form!, cur!, stored) : stored;
+        return (
         <InsetGroup.Row key={field.id} label={<span className="text-[var(--app-secondary-label)]">{field.official_label}</span>}>
           {field.type === "upload" && files(field).length > 0 ? (
             <span className="flex flex-col">
@@ -73,7 +77,8 @@ export default function OfficialGroup({ block, title, note, attachments, useName
             </span>
           )}
         </InsetGroup.Row>
-      ))}
+        );
+      })}
       {note && (
         <InsetGroup.Row label={<span className="text-[var(--app-secondary-label)]">More detail</span>}>
           <p className="whitespace-pre-line">{note}</p>

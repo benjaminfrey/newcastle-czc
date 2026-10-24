@@ -2,7 +2,7 @@ import {
   Description, Input, Label, ListBox, NumberField, Radio, RadioGroup, Select, Slider, Switch, Tag, TagGroup, TextArea,
   TextField, ToggleButton, ToggleButtonGroup,
 } from "@heroui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { FormField } from "../applications";
 import RoofGlyph from "./RoofGlyph";
 
@@ -19,9 +19,15 @@ export function TextControl({ field, value, onValue, inputId, long }: ControlPro
     const v = draft.trim();
     if (v !== (typeof value === "string" ? value : "")) onValue(v === "" ? null : v);
   };
+  // The safety net: if the field goes away still holding an unsaved draft, save it then.
+  const latest = useRef(commit);
+  latest.current = commit;
+  useEffect(() => () => latest.current(), []);
   return (
     <TextField value={draft} onChange={setDraft} onBlur={commit} aria-label={label(field)} className="w-full">
-      {long ? <TextArea id={inputId} rows={4} /> : <Input id={inputId} autoComplete={field.autocomplete ?? undefined} />}
+      {/* The server's limits, so an answer can't grow past what it keeps. */}
+      {long ? <TextArea id={inputId} rows={4} maxLength={10000} />
+            : <Input id={inputId} autoComplete={field.autocomplete ?? undefined} maxLength={2000} />}
     </TextField>
   );
 }
@@ -34,8 +40,10 @@ export function NumberControl({ field, value, onValue, stepper }: ControlProps &
       <NumberField
         value={n}
         onChange={(v) => onValue(Number.isNaN(v) ? null : v)}
-        minValue={field.min ?? undefined}
-        maxValue={field.max ?? undefined}
+        // Only a stepper's buttons stop at the ends; a typed number goes as typed, and an
+        // out-of-range one comes back with a message, rather than being quietly changed.
+        minValue={stepper ? field.min ?? undefined : undefined}
+        maxValue={stepper ? field.max ?? undefined : undefined}
         step={field.step_size ?? (stepper ? 1 : undefined)}
         formatOptions={{ maximumFractionDigits: 2, useGrouping: false }}
         aria-label={label(field)}
@@ -57,14 +65,17 @@ export function SliderControl({ field, value, onValue }: ControlProps) {
   const min = field.min ?? 0;
   const max = field.max ?? 100;
   const [v, setV] = useState(typeof value === "number" ? value : min);
+  const [touched, setTouched] = useState(false);
   useEffect(() => { if (typeof value === "number") setV(value); }, [value]);
+  // Unanswered, the knob rests at the low end but the readout says so, rather than "0%".
+  const answered = typeof value === "number" || touched;
   // The spoken value comes from the number format: "20%", "45°".
   const format: Intl.NumberFormatOptions | undefined = field.unit === "%" ? { style: "unit", unit: "percent" }
     : field.unit === "degrees" ? { style: "unit", unit: "degree" } : undefined;
   return (
     <Slider
       value={v}
-      onChange={(x) => setV(x as number)}
+      onChange={(x) => { setTouched(true); setV(x as number); }}
       onChangeEnd={(x) => onValue(x as number)}
       minValue={min}
       maxValue={max}
@@ -73,7 +84,10 @@ export function SliderControl({ field, value, onValue }: ControlProps) {
       formatOptions={format}
       className="w-full"
     >
-      <div className="flex justify-end"><Slider.Output className="text-[15px] tabular-nums" /></div>
+      <div className="flex justify-end">
+        {answered ? <Slider.Output className="text-[15px] tabular-nums" />
+                  : <span className="text-[15px] text-[var(--app-secondary-label)]">Not answered yet</span>}
+      </div>
       <Slider.Track className="min-h-11">
         <Slider.Fill />
         {/* The iOS knob: a white circle with a soft shadow, not a pill. */}

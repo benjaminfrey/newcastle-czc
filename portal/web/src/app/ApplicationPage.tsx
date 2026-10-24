@@ -45,6 +45,10 @@ function Steps({ id }: { id: string }) {
   // Arriving at a step: the title takes focus and names the page, unless a link asked for one
   // question (Review's "Still to answer"), which then takes focus.
   const focus = params.get("focus");
+  // A step counts as visited once it is opened, however the person got there (the sidebar, the
+  // back chevron, a link from review), not only by Continue.
+  const currentId = current?.id;
+  useEffect(() => { if (currentId) markVisited(currentId); }, [currentId, markVisited]);
   useEffect(() => {
     if (!title || !form) return;
     document.title = `${title} — ${form.official_title}`;
@@ -77,7 +81,7 @@ function Steps({ id }: { id: string }) {
       formTitle={form.official_title}
       saveState={saveState}
       rootHref={base}
-      onDone={() => void flush().then(() => navigate("/my-applications"))}
+      onDone={() => void flush().then((ok) => ok && navigate("/my-applications"))}
       onReload={() => void reload()}
       onStep={(sid) => navigate(shellSteps.find((s) => s.id === sid)?.href ?? base)}
       actions={isReview ? { back: models.length ? () => navigate(`${base}/${models[models.length - 1].id}`) : undefined } : current ? {

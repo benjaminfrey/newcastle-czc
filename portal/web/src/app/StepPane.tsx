@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { FormSection } from "../applications";
+import type { FormField, FormSection } from "../applications";
 import WhyWeAsk from "../components/WhyWeAsk";
 import FieldControl from "../controls/FieldControl";
 import { valueOf, type Row } from "../forms/applicability";
@@ -16,6 +16,14 @@ export const REASONS: Record<string, string> = {
   unknown_not_allowed: "Please give an answer to this one.",
 };
 
+// A number out of range says what the range is.
+function reason(code: string, f: FormField): string {
+  if (code === "out_of_range" && f.min !== null && f.max !== null) {
+    return `Please enter a number from ${f.min} to ${f.max}${f.unit ? ` ${f.unit}` : ""}.`;
+  }
+  return REASONS[code] ?? REASONS.wrong_type;
+}
+
 // The controls for some rows, wired to the store: each answer saves as it is given.
 export function useRowControls() {
   const { form, cur, setAnswer } = useApplication();
@@ -28,7 +36,7 @@ export function useRowControls() {
                     onValue={async (v) => {
                       setErrors((e) => ({ ...e, [key]: "" }));
                       const out = await setAnswer(r.field.id, r.itemId, v);
-                      if ("error" in out) setErrors((e) => ({ ...e, [key]: REASONS[out.error] ?? REASONS.wrong_type }));
+                      if ("error" in out) setErrors((e) => ({ ...e, [key]: reason(out.error, r.field) }));
                     }} />
     );
   };

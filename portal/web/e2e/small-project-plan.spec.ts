@@ -12,7 +12,7 @@ test("a Small Project Plan in nine steps, with a house, a detached garage and a 
   }
   await completeApplication(page, SKETCH, { extraBuilding: true, component: true });
   await expectReviewComplete(page, "Small Project Plan Application");
-  await expect(page.getByRole("group", { name: /^Building Form — Building 2: Garage/ })).toBeVisible();
+  await expect(page.getByRole("group", { name: /^Building Form — Building 2: Garage or shed/ })).toBeVisible();
   await expect(page.getByRole("group", { name: /^Components Section — Addition 1/ })).toBeVisible();
   if (info.project.name === "desktop") {
     // Steps finish with checkmarks.

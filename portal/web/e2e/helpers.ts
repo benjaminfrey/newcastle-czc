@@ -81,8 +81,11 @@ export async function screenerToStart(page: Page, project: Project, application:
   await axe(page, "sign-in sheet");
   await signInHere(page, email);
   // A desktop opens the first unfinished step; a phone opens the list of steps, so tap it, as a person would.
-  await expect(page).toHaveURL(/\/applications\/[0-9a-f-]+(\/[a-z_]+)?$/);
-  if (/\/applications\/[0-9a-f-]+$/.test(page.url())) {
+  // Decided by the window, not the address: a desktop passes the bare address on its way to a step.
+  if ((page.viewportSize()?.width ?? 1280) >= 1024) {
+    await expect(page).toHaveURL(/\/applications\/[0-9a-f-]+\/[a-z_]+/);
+  } else {
+    await expect(page).toHaveURL(/\/applications\/[0-9a-f-]+$/);
     await axe(page, "step list");
     await page.getByRole("link", { name: /, (Not started|Started)/ }).first().click();
     await expect(page).toHaveURL(/\/applications\/[0-9a-f-]+\/[a-z_]+/);

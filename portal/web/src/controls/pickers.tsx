@@ -1,19 +1,31 @@
 import { Input, Radio, RadioGroup, TextField } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { useApplication } from "../app/ApplicationStore";
+import type { FormDef } from "../applications";
+import type { Current } from "../forms/applicability";
 import { itemLabel } from "../forms/steps";
 import { PickerControl, type ControlProps } from "./basic";
 
 const FREE = "Free-standing";
 const ANOTHER = "__another__";
 
-// "Attached to": one of this application's buildings, or free-standing. Stores the shown words.
+// "Attached to": one of this application's buildings, or free-standing. Stores the building's id,
+// so renaming or deleting a building can't leave stale words; review shows its name as it is now.
 export function BuildingPicker(p: ControlProps) {
   const { form, cur } = useApplication();
-  const names = (cur?.items ?? []).filter((i) => i.kind === "building")
-    .sort((a, b) => a.position - b.position).map((i) => itemLabel(form!, cur!, i.id));
-  const items = [...names, FREE].map((n) => ({ id: n, label: n }));
-  return <PickerControl {...p} items={items} />;
+  const buildings = (cur?.items ?? []).filter((i) => i.kind === "building").sort((a, b) => a.position - b.position);
+  const items = [...buildings.map((i) => ({ id: i.id, label: itemLabel(form!, cur!, i.id) })), { id: FREE, label: FREE }];
+  // An answer from before ids were stored names a building by its words: show it as that building.
+  const legacy = typeof p.value === "string" ? items.find((x) => x.label === p.value)?.id : undefined;
+  return <PickerControl {...p} value={legacy ?? p.value} items={items} />;
+}
+
+// The words for an "attached to" answer: the building's current name, "Free-standing", an older
+// answer's own words, or null when that building has since been deleted.
+export function buildingLabel(form: FormDef, cur: Current, value: string): string | null {
+  if (value === FREE) return FREE;
+  if (cur.items.some((i) => i.id === value)) return itemLabel(form, cur, value);
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-/.test(value) ? null : value;
 }
 
 // The entrance's road: one along the lot (from the Town's map), or another road, typed.

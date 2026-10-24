@@ -249,6 +249,22 @@ def test_rejects_bad_preset_value(tmp_path, ruleset):
     assert "preset" in broken_stepped(tmp_path, ruleset, bad)
 
 
+def test_rejects_malformed_step(tmp_path, ruleset):
+    msg = broken_stepped(tmp_path, ruleset, lambda c, f: f["steps"].append({"title": "No id"}))
+    assert "step" in msg and "test-permit" in msg
+
+
+def test_rejects_malformed_page(tmp_path, ruleset):
+    msg = broken_stepped(tmp_path, ruleset, lambda c, f: f["sections"][0]["pages"].append({"id": "nameless"}))
+    assert "page" in msg
+
+
+def test_rejects_control_that_does_not_suit_the_type(tmp_path, ruleset):
+    # A switch answers yes or no; on a number it would be refused at every save.
+    msg = broken_stepped(tmp_path, ruleset, lambda c, f: f["sections"][0]["fields"][0].update(control="switch"))
+    assert "switch" in msg and "number" in msg
+
+
 def test_rejects_bad_layout(tmp_path, ruleset):
     def bad(c, f):
         f["sections"][0]["pages"][1]["layout"] = "spiral"

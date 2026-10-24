@@ -50,7 +50,7 @@ export default function UploadControl({ field, itemId }: { field: FormField; ite
       <label htmlFor={inputId}
              className="flex min-h-14 cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-[var(--app-separator)] bg-[var(--app-row)] px-4 text-[17px] font-semibold text-[var(--app-accent-text)] focus-within:ring-2 focus-within:ring-[var(--app-accent-text)]">
         Take a photo or choose a file
-        <input id={inputId} type="file" multiple accept={ACCEPT} className="sr-only" disabled={progress !== null}
+        <input id={inputId} type="file" aria-label={`Take a photo or choose a file: ${field.label ?? field.official_label}`} multiple accept={ACCEPT} className="sr-only" disabled={progress !== null}
                onChange={(e) => { void onFiles(e.target.files); e.target.value = ""; }} />
       </label>
       <p className="text-[15px] text-[var(--app-secondary-label)]">PDF, JPEG, PNG or HEIC · up to 25 MB</p>

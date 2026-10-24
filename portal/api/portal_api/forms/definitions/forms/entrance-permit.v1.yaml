@@ -11,7 +11,7 @@ steps:
 - id: driveway
   title: The driveway
 - id: meets_road
-  title: Where it meets the road
+  title: Where it joins the road
 - id: safety
   title: Safety at the road
 - id: state_permit

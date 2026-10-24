@@ -91,6 +91,53 @@ describe("ApplicationStore", () => {
     expect(store.saveState).toBe("saved");
   });
 
+  it("flush sends what failed again, and says whether everything is saved", async () => {
+    const save = vi.spyOn(apps, "saveAnswers")
+      .mockResolvedValueOnce("unavailable")
+      .mockResolvedValueOnce("unavailable")
+      .mockResolvedValueOnce({ revision: 4, missing: [] });
+    await mount();
+    await act(async () => { await store.setAnswer("a", null, "one"); });
+    let ok: boolean | undefined;
+    await act(async () => { ok = await store.flush(); });
+    expect(ok).toBe(false); // still can't reach the Town's server: Save and close stays put
+    expect(store.saveState).toBe("error");
+    await act(async () => { ok = await store.flush(); });
+    expect(ok).toBe(true);
+    expect(save.mock.calls[2][2]).toEqual([{ field_id: "a", item_id: null, value: "one" }]);
+    expect(store.saveState).toBe("saved");
+  });
+
+  it("adding an item keeps a change that hasn't been sent yet", async () => {
+    vi.spyOn(apps, "saveAnswers").mockResolvedValueOnce("unavailable").mockResolvedValue({ revision: 5, missing: [] });
+    vi.spyOn(apps, "addItem").mockResolvedValue({ revision: 4, id: "b1" } as never);
+    await mount();
+    await act(async () => { await store.setAnswer("a", null, "one"); });
+    await act(async () => { await store.addItem("building"); });
+    expect(store.cur!.answers).toContainEqual({ field_id: "a", item_id: null, value: "one" });
+    let ok: boolean | undefined;
+    await act(async () => { ok = await store.flush(); });
+    expect(ok).toBe(true);
+  });
+
+  it("a refused answer is told to its own field and doesn't hold up the others", async () => {
+    const save = vi.spyOn(apps, "saveAnswers")
+      .mockResolvedValueOnce("unavailable") // "a" waits to be sent again
+      .mockResolvedValueOnce({ invalid: [{ field_id: "a", item_id: null, reason: "too_long" }] })
+      .mockResolvedValue({ revision: 4, missing: [] });
+    await mount();
+    await act(async () => { await store.setAnswer("a", null, "x".repeat(3000)); });
+    let outcome: unknown;
+    await act(async () => { outcome = await store.setAnswer("b", null, "two"); });
+    expect(outcome).toEqual({ ok: true }); // "b" isn't the one refused
+    await act(async () => { await store.flush(); });
+    expect(save.mock.calls.at(-1)![2]).toEqual([{ field_id: "b", item_id: null, value: "two" }]);
+    expect(store.cur!.answers).toContainEqual({ field_id: "b", item_id: null, value: "two" });
+    expect(store.cur!.answers.some((x) => x.field_id === "a")).toBe(false);
+    await act(async () => { outcome = await store.setAnswer("c", null, "three"); });
+    expect(outcome).toEqual({ ok: true });
+  });
+
   it("saved answers update cur immediately", async () => {
     vi.spyOn(apps, "saveAnswers").mockReturnValue(new Promise(() => {}));
     await mount();

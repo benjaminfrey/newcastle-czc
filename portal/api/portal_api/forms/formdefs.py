@@ -25,8 +25,11 @@ PROPERTY_KEYS = {"map_lot", "location", "acres", "districts", "streets", "on_sta
 ACCOUNT_KEYS = {"email"}
 SCOPES = ("answers.", "item.", "property.")
 # How a question is drawn (the browser picks a default by type when none is named).
-CONTROLS = {"stepper", "slider", "switch", "segmented", "tiles", "picker", "chips",
-            "building-picker", "street-picker", "building-type"}
+# Each control and the field types it can answer: a switch on a number would be refused at every save.
+CONTROL_TYPES = {"stepper": {"number"}, "slider": {"number"}, "switch": {"yesno"}, "segmented": {"choice", "yesno"},
+                 "tiles": {"choice"}, "picker": {"choice"}, "chips": {"multichoice"}, "building-picker": {"text"},
+                 "street-picker": {"text"}, "building-type": {"choice"}}
+CONTROLS = set(CONTROL_TYPES)
 AUTOCOMPLETE = {"name", "tel", "email", "street-address"}
 LAYOUTS = {"compass", "lot-diagram"}
 
@@ -210,6 +213,8 @@ def _field(file: str, sec_id: str, f: dict, ruleset: Ruleset) -> Field:
     _check_show_if(where, f.get("show_if"))
     if f.get("control") is not None and f["control"] not in CONTROLS:
         raise DefinitionError(f"{where}: unknown control {f['control']!r}")
+    if f.get("control") is not None and f.get("type") not in CONTROL_TYPES[f["control"]]:
+        raise DefinitionError(f"{where}: a {f['control']} can't answer a {f.get('type')} question")
     if f.get("autocomplete") is not None and f["autocomplete"] not in AUTOCOMPLETE:
         raise DefinitionError(f"{where}: unknown autocomplete {f['autocomplete']!r}")
     if "default" in f and not asked:
@@ -248,6 +253,8 @@ def _sections(file: str, doc: dict, ruleset: Ruleset) -> list[Section]:
         for pg in s.get("pages") or ():
             if pg.get("layout") is not None and pg["layout"] not in LAYOUTS:
                 raise DefinitionError(f"{where}: unknown layout {pg['layout']!r}")
+            if not pg.get("id") or not pg.get("title"):
+                raise DefinitionError(f"{where}: each page needs an id and a title")
             pages.append(Page(pg["id"], pg["title"], pg.get("layout")))
         out.append(Section(
             id=s["id"], official_title=s["official_title"], chapter=s["chapter"], file=file, status=s["status"],
@@ -255,6 +262,15 @@ def _sections(file: str, doc: dict, ruleset: Ruleset) -> list[Section]:
             repeat=repeat, show_if=s.get("show_if"), approved_by=s.get("approved_by"), approved_on=s.get("approved_on"),
             step=s.get("step"), pages=tuple(pages),
         ))
+    return out
+
+
+def _steps(file: str, doc: dict) -> list[Step]:
+    out = []
+    for st in doc.get("steps") or ():
+        if not isinstance(st, dict) or not st.get("id") or not st.get("title"):
+            raise DefinitionError(f"{file}: each step needs an id and a title")
+        out.append(Step(st["id"], st["title"]))
     return out
 
 
@@ -274,9 +290,9 @@ def _load(key: str, version: int, ruleset: Ruleset, root: Path) -> FormDef:
     for inc in doc.get("include") or []:
         inc_doc = _read(root, f"{inc}.yaml")
         sections += _sections(f"{inc}.yaml", inc_doc, ruleset)
-        steps += [Step(st["id"], st["title"]) for st in inc_doc.get("steps") or ()]
+        steps += _steps(f"{inc}.yaml", inc_doc)
     sections += _sections(name, doc, ruleset)
-    steps += [Step(st["id"], st["title"]) for st in doc.get("steps") or ()]
+    steps += _steps(name, doc)
     ids = [s.id for s in sections] + [f.id for s in sections for f in s.fields]
     seen = set()
     for i in ids:

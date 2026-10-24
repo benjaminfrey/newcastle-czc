@@ -1,4 +1,5 @@
 import { useEffect, useRef, type FormEvent, type PointerEvent, type ReactNode } from "react";
+import { commitFocused, isLongText } from "./commitFocused";
 import { useNavigate } from "react-router";
 import ActionBar from "./ActionBar";
 import NavBar from "./NavBar";
@@ -39,18 +40,22 @@ export default function AppShell({ steps, currentId, formTitle, saveState, rootH
   const swipe = useRef<number | null>(null);
   const onPointerDown = (e: PointerEvent) => { swipe.current = !wide && e.clientX <= 20 ? e.clientX : null; };
   const onPointerUp = (e: PointerEvent) => {
-    if (swipe.current !== null && e.clientX - swipe.current >= 80) navigate(rootHref);
+    if (swipe.current !== null && e.clientX - swipe.current >= 80) {
+      commitFocused();
+      navigate(rootHref);
+    }
     swipe.current = null;
   };
 
   useEffect(() => {
     if (!onStep || !currentId) return;
     const onKey = (e: KeyboardEvent) => {
-      if (!(e.altKey || e.metaKey) || (e.key !== "ArrowDown" && e.key !== "ArrowUp")) return;
+      if (!(e.altKey || e.metaKey) || (e.key !== "ArrowDown" && e.key !== "ArrowUp") || isLongText(e.target)) return;
       const at = steps.findIndex((s) => s.id === currentId);
       const next = steps[at + (e.key === "ArrowDown" ? 1 : -1)];
       if (next) {
         e.preventDefault();
+        commitFocused();
         onStep(next.id);
       }
     };
@@ -60,6 +65,7 @@ export default function AppShell({ steps, currentId, formTitle, saveState, rootH
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
+    commitFocused();
     actions.onContinue?.();
   }
 

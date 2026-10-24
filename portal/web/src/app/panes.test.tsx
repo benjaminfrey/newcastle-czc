@@ -104,6 +104,30 @@ describe("ApplicationPage", () => {
     expect(JSON.parse(localStorage.getItem("portal.visited.abc")!)).toContain("about_you");
   });
 
+  it("Return in a text field saves the answer before moving on", async () => {
+    const save = vi.spyOn(apps, "saveAnswers").mockResolvedValue({ revision: 4, missing: [] });
+    open("/applications/abc/about_you");
+    const name = await screen.findByRole("textbox", { name: "Name?" });
+    await userEvent.type(name, "Ada{Enter}");
+    await waitFor(() => expect(screen.getByTestId("where")).toHaveTextContent("/applications/abc/the_work"));
+    expect(save).toHaveBeenCalledWith("abc", 3, [{ field_id: "applicant_name", item_id: null, value: "Ada" }]);
+  });
+
+  it("⌘↓ from a text field saves the answer, and ⌘↓ in a long answer stays there", async () => {
+    const save = vi.spyOn(apps, "saveAnswers").mockResolvedValue({ revision: 4, missing: [] });
+    open("/applications/abc/about_you");
+    const name = await screen.findByRole("textbox", { name: "Name?" });
+    await userEvent.type(name, "Ada");
+    await userEvent.keyboard("{Meta>}{ArrowDown}{/Meta}");
+    await waitFor(() => expect(save).toHaveBeenCalledWith("abc", 3, [{ field_id: "applicant_name", item_id: null, value: "Ada" }]));
+  });
+
+  it("a step opened from the sidebar counts as visited", async () => {
+    open("/applications/abc/the_work");
+    await screen.findByRole("heading", { level: 1, name: "The work" });
+    await waitFor(() => expect(JSON.parse(localStorage.getItem("portal.visited.abc") ?? "[]")).toContain("the_work"));
+  });
+
   it("site-only work has no Buildings step", async () => {
     vi.spyOn(apps, "getApplication").mockResolvedValue({ ...APP, answers: [{ field_id: "work_kinds", item_id: null, value: ["site"] }] });
     open("/applications/abc/the_work");

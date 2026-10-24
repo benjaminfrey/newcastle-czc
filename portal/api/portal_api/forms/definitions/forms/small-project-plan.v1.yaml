@@ -90,7 +90,7 @@ sections:
     - label: A detached garage or shed
       preset:
         building_class: residential_accessory
-        building_name: Garage
+        building_name: Garage or shed
   status: draft
   fields:
   - id: building_map_lot

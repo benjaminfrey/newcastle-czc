@@ -513,7 +513,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 - Step: Buildings
 - Pages: Basics; Placement (lot-diagram layout); Size; Roof and walls; Windows (compass layout)
-- Add options: A building; A detached garage or shed (starts as {'building_class': 'residential_accessory', 'building_name': 'Garage'})
+- Add options: A building; A detached garage or shed (starts with Building type: Residential Accessory Building; Building reference (name): Garage or shed)
 - Repeats: one per building (1 to 20); the wizard offers “Add another building”
 - Printed and asked only when (“Type of project” includes New building or accessory building) or (“Type of project” includes Addition of building components) or (“Type of project” includes Building renovation)
 - **Draft — awaiting the chair's approval.**
@@ -1247,7 +1247,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Source: asked in the wizard
 - Applicants read: “Tap the map where the driveway will meet the road.”
 - Answer: point; required
-- Step: Where it meets the road
+- Step: Where it joins the road
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §8.d.2:
 
@@ -1258,7 +1258,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Source: asked in the wizard
 - Applicants read: “How wide will the driveway be, in feet?”
 - Answer: number (ft), 0–200; required; “I don't know yet” allowed
-- Step: Where it meets the road
+- Step: Where it joins the road
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §7.e.1:
 
@@ -1274,7 +1274,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “How steep is the first 20 feet of driveway, up or down from the road, as a percent?”
 - Help: A 1-foot rise over 20 feet is 5%. If it's about level, enter 0.
 - Answer: number (%), 0–25; required; “I don't know yet” allowed
-- Step: Where it meets the road
+- Step: Where it joins the road
 - Control: slider
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §7.d.2:
@@ -1287,7 +1287,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “At what angle will the driveway meet the road, in degrees?”
 - Help: Straight in, square to the road, is 90 degrees.
 - Answer: number (degrees), 0–90; required; “I don't know yet” allowed
-- Step: Where it meets the road
+- Step: Where it joins the road
 - Control: slider
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §8.e.1:
