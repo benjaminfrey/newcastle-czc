@@ -10,20 +10,26 @@ export type FormField = {
   type: "text" | "longtext" | "number" | "choice" | "multichoice" | "yesno" | "date" | "uses" | "point" | "upload" | null;
   unit: string | null; min: number | null; max: number | null; required: boolean; allow_unknown: boolean;
   show_if: Expr | null; options: Option[];
-  // The redesign's layer (forms/formdefs.py): the step it's asked in (resolved), its page in an
-  // item's sheet, the control to draw, the slider increment, a starting value, address autofill.
-  step?: string | null; page?: string | null;
+  // The wizard's layer (forms/formdefs.py): the step it's asked in (resolved), the screen it shares
+  // with others (deed book and page), whether it's asked before the rest of its item, the control
+  // to draw, the slider increment, a starting value, address autofill.
+  step?: string | null; screen?: string | null; ask_first?: boolean;
+  /** @deprecated sheet pages, gone from the API; read only by the item sheet until it is removed. */
+  page?: string | null;
   control?: "stepper" | "slider" | "switch" | "segmented" | "tiles" | "picker" | "chips"
     | "building-picker" | "street-picker" | "building-type" | null;
   step_size?: number | null; default?: unknown; autocomplete?: "name" | "tel" | "email" | "street-address" | null;
 };
 export type Page = { id: string; title: string; layout: "compass" | "lot-diagram" | null };
 export type AddOption = { label: string; preset: Record<string, unknown> };
+export type ScreenGroup = { id: string; layout: "compass" | "lot-diagram" | null };
 export type FormSection = {
   id: string; official_title: string; chapter: string; show_if: Expr | null;
   repeat: { kind: string; add_label: string; min: number; max: number; add_options?: AddOption[] } | null;
   fields: FormField[];
-  step?: string | null; pages?: Page[];
+  step?: string | null; screens?: ScreenGroup[];
+  /** @deprecated see FormField.page. */
+  pages?: Page[];
 };
 export type FormDef = {
   key: string; version: number; ruleset_key: string; official_title: string; sections: FormSection[];
