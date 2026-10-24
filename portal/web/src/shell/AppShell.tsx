@@ -1,4 +1,5 @@
-import { useEffect, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, type FormEvent, type PointerEvent, type ReactNode } from "react";
+import { useNavigate } from "react-router";
 import ActionBar from "./ActionBar";
 import NavBar from "./NavBar";
 import StepList from "./StepList";
@@ -26,8 +27,21 @@ type Props = {
 // content sits in one form, so Return anywhere in a field means Continue.
 export default function AppShell({ steps, currentId, formTitle, saveState, rootHref, onDone, onReload, onStep, actions = {}, backLabel = "Application", children }: Props) {
   const wide = useWideLayout();
+  const navigate = useNavigate();
   const flat = steps.flatMap((s) => [s, ...(s.children ?? [])]);
   const current = flat.find((s) => s.id === currentId);
+  const reduced = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // A step slides in on a phone and cross-fades on a desktop; with reduced motion, a short fade.
+  const motion = reduced ? "pane-fade" : wide ? "pane-cross" : "pane-push";
+  const top = steps.findIndex((s) => s.id === currentId || s.children?.some((c) => c.id === currentId));
+
+  // The iOS edge swipe: a drag that starts at the left edge and moves right goes back.
+  const swipe = useRef<number | null>(null);
+  const onPointerDown = (e: PointerEvent) => { swipe.current = !wide && e.clientX <= 20 ? e.clientX : null; };
+  const onPointerUp = (e: PointerEvent) => {
+    if (swipe.current !== null && e.clientX - swipe.current >= 80) navigate(rootHref);
+    swipe.current = null;
+  };
 
   useEffect(() => {
     if (!onStep || !currentId) return;
@@ -53,12 +67,22 @@ export default function AppShell({ steps, currentId, formTitle, saveState, rootH
 
   // A pane that brings its own form (the start steps) gets a plain container, never a nested form.
   const cls = `flex flex-col gap-6 ${wide ? "px-8 py-6" : "px-4 pb-32 pt-2"}`;
-  const content = actions.onContinue || actions.back ? (
+  const inner = actions.onContinue || actions.back ? (
     <form onSubmit={onSubmit} noValidate className={cls}>
       {children}
       <ActionBar actions={actions} wide={wide} />
     </form>
   ) : <div className={cls}>{children}</div>;
+  const content = (
+    <div key={currentId ?? "root"} data-pane className={motion} onPointerDown={onPointerDown} onPointerUp={onPointerUp}>
+      {inner}
+      {current && top >= 0 && (
+        <p data-testid="step-announcer" aria-live="polite" className="sr-only">
+          Step {top + 1} of {steps.length}: {current.title}
+        </p>
+      )}
+    </div>
+  );
 
   if (!wide) {
     return (
