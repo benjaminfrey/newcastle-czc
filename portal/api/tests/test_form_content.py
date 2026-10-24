@@ -49,7 +49,7 @@ BUILDING_FORM = {
 }
 COMPONENTS = {
     "Components Section": {"Only being renovated, not changing size or location", "Component",
-                           "Name of other architectural component", "Building attached to", "Garage attached or detached",
+                           "Name of other architectural component", "Building attached to",
                            "Width", "Depth (Length for a Patio)", "Height", "Roof Style on Component", "Roof Slope",
                            "Exterior finish material", "North facing facade %", "East facing facade %",
                            "South facing facade %", "West facing facade %"},
@@ -138,7 +138,8 @@ def test_every_question_has_plain_help_or_short_label(forms):
         for _, f in form.fields():
             if f.is_question:
                 assert len(f.label) <= 140, f.id
-                assert f.label.rstrip().endswith("?") or f.type in ("upload", "point"), f.id
+                # Uploads and map points are instructions; compass sliders are named by wall.
+                assert f.label.rstrip().endswith("?") or f.type in ("upload", "point") or f.control == "slider", f.id
 
 
 BUILDING_SECTIONS = ("building", "building_location", "building_details", "building_mass", "building_windows")
@@ -157,3 +158,104 @@ def test_building_form_only_when_the_work_includes_a_building(forms, kinds, aske
     cur = Current(answers=answers, items=[("b1", "building", 0)], property={"on_state_highway": False})
     sections = {s.id for s, _, _ in applicable(form, cur)}
     assert bool(sections & set(BUILDING_SECTIONS)) is asked
+
+
+
+# ---- The redesign (chair-approved brief, 2026-10-23) ----
+
+START_AND_REVIEW = 4  # Your project, Your property, What you'll need; Review and sign
+
+
+@pytest.mark.parametrize("key,steps", [("use_permit", 9), ("small_project_plan", 9), ("entrance_permit", 10)])
+def test_step_counts(forms, key, steps):
+    assert len(forms[key].steps) + START_AND_REVIEW == steps
+
+
+def test_cover_steps_come_first(forms):
+    for form in forms.values():
+        assert [s.title for s in form.steps[:2]] == ["Your lot", "About you"]
+
+
+def test_every_question_has_a_step_and_repeat_questions_a_page(forms):
+    for form in forms.values():
+        for s, f in form.fields():
+            if f.is_question:
+                assert form.step_of(f.id), f.id
+                if s.repeat:
+                    assert f.page, f.id
+
+
+def test_garage_preset_is_a_residential_accessory_building(forms):
+    sp = forms["small_project_plan"]
+    building = next(s for s in sp.sections if s.id == "building")
+    labels = [o.label for o in building.add_options]
+    assert labels == ["A building", "A detached garage or shed"]
+    assert building.add_options[1].preset == {"building_class": "residential_accessory", "building_name": "Garage"}
+    _, kind = sp.field("component_kind")
+    garage = next(o for o in kind.options if o.value == "garage")
+    assert garage.label == "An attached garage" and garage.official == "Garage (attached)"
+
+
+def test_no_garage_attached_question(forms):
+    with pytest.raises(KeyError):
+        forms["small_project_plan"].field("garage_attached")
+
+
+def test_roof_slope_options(forms):
+    for fid in ("roof_slope", "component_roof_slope"):
+        _, f = forms["small_project_plan"].field(fid)
+        assert f.type == "choice" and f.control == "picker"
+        assert [o.value for o in f.options] == ["flat", *[f"{n}_12" for n in range(2, 13)], "steeper"]
+        assert next(o for o in f.options if o.value == "8_12").official == "8/12"
+        assert f.options[0].label == "Flat (under 2/12)" and f.options[-1].label == "Steeper than 12/12"
+
+
+def test_finish_chips_have_an_other_field(forms):
+    sp = forms["small_project_plan"]
+    for fid, other in (("exterior_finish", "exterior_finish_other"), ("component_finish", "component_finish_other")):
+        _, f = sp.field(fid)
+        assert f.type == "multichoice" and f.control == "chips"
+        assert [o.official for o in f.options] == [
+            "Clapboard", "Wood shingle", "Vinyl siding", "Fibre-cement siding", "Brick", "Stone",
+            "Board-and-batten", "Metal siding", "Asphalt shingle roof", "Metal roof", "Slate roof", "Other"]
+        _, o = sp.field(other)
+        assert {"has": [f"item.{fid}", "other"]} in [o.show_if, *o.show_if.get("all", [])]
+
+
+def test_switch_defaults(forms):
+    want = {"applicant_is_owner": True, "has_agent": False, "renovation_only": False,
+            "component_renovation_only": False, "shared_driveway": False}
+    seen = {}
+    for form in forms.values():
+        for _, f in form.fields():
+            if f.control == "switch":
+                seen[f.id] = f.default
+    assert seen == want
+
+
+def test_pickers_for_buildings_and_roads(forms):
+    assert forms["small_project_plan"].field("attached_to")[1].control == "building-picker"
+    assert forms["entrance_permit"].field("entrance_street")[1].control == "street-picker"
+    assert forms["small_project_plan"].field("building_class")[1].control == "building-type"
+
+
+def test_window_walls_are_sliders_on_a_compass(forms):
+    sp = forms["small_project_plan"]
+    page = {p.id: p for s in sp.sections for p in s.pages}
+    for wall in ("north", "east", "south", "west"):
+        _, f = sp.field(f"windows_{wall}")
+        assert f.control == "slider" and f.step_size == 5
+        assert page[f.page].layout == "compass"
+        assert f.label == f"{wall.capitalize()} wall"
+
+
+def test_setbacks_are_on_the_lot_diagram(forms):
+    sp = forms["small_project_plan"]
+    page = {p.id: p for s in sp.sections for p in s.pages}
+    for fid in ("setback_front", "setback_side_1", "setback_side_2", "setback_rear"):
+        assert page[sp.field(fid)[1].page].layout == "lot-diagram"
+
+
+def test_changed_entries_are_drafts(forms):
+    for form in forms.values():
+        assert {f.status for _, f in form.fields()} == {"draft"}
