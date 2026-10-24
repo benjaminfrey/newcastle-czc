@@ -58,15 +58,14 @@ def form_json(form: FormDef, ruleset) -> dict:
         "steps": [{"id": st.id, "title": st.title} for st in form.steps],
         "sections": [{
             "id": s.id, "official_title": s.official_title, "chapter": s.chapter, "show_if": s.show_if,
-            "step": s.step, "pages": [{"id": p.id, "title": p.title, "layout": p.layout} for p in s.pages],
+            "step": s.step, "screens": [{"id": x.id, "layout": x.layout} for x in s.screens],
             "repeat": None if s.repeat is None else {
-                "kind": s.repeat.kind, "add_label": s.repeat.add_label, "min": s.repeat.min, "max": s.repeat.max,
-                "add_options": [{"label": o.label, "preset": o.preset} for o in s.repeat.add_options]},
+                "kind": s.repeat.kind, "add_label": s.repeat.add_label, "min": s.repeat.min, "max": s.repeat.max},
             "fields": [{
                 "id": f.id, "official_label": f.official_label, "source": f.source, "from": f.from_,
                 "may_correct": f.may_correct, "label": f.label, "help": f.help, "why": why(f.why), "type": f.type,
                 "unit": f.unit, "min": f.min, "max": f.max, "required": f.required, "allow_unknown": f.allow_unknown,
-                "show_if": f.show_if, "step": f.step or s.step, "page": f.page, "control": f.control,
+                "show_if": f.show_if, "step": f.step or s.step, "screen": f.screen, "ask_first": f.ask_first, "control": f.control,
                 "step_size": f.step_size, "default": f.default, "autocomplete": f.autocomplete,
                 "options": [{"value": o.value, "label": o.label, "official": o.official} for o in f.options],
             } for f in s.fields],
@@ -263,7 +262,6 @@ def save_answers(app_id: str, body: AnswersBody, applicant: auth.Applicant = aut
 class ItemBody(BaseModel):
     kind: str = PField(max_length=40)
     base_revision: int
-    preset: int | None = None
 
 
 class RevisionBody(BaseModel):
@@ -283,18 +281,14 @@ def add_item(app_id: str, body: ItemBody, applicant: auth.Applicant = auth.requi
     repeat = _repeat(form, body.kind)
     if repeat is None:
         return _json(422, "unknown_kind")
-    if body.preset is not None and not 0 <= body.preset < len(repeat.add_options):
-        return _json(422, "unknown_preset")
     if sum(1 for i in apps.items(conn, row.id) if i["kind"] == body.kind) >= repeat.max:
         return _json(422, "too_many")
     rev = apps.bump(conn, row.id, body.base_revision)
     if rev is None:
         return _conflict(conn, row.id)
-    preset = repeat.add_options[body.preset].preset if body.preset is not None else None
-    item_id = apps.new_item(conn, row.id, form, body.kind, preset, by=_actor(applicant))
+    item_id = apps.new_item(conn, row.id, form, body.kind)
     append_event(conn, actor=_actor(applicant), kind="application.item_added",
-                 payload={"application_id": row.id, "item_id": item_id, "kind": body.kind,
-                          "preset": body.preset, "fields": sorted(preset or {})})
+                 payload={"application_id": row.id, "item_id": item_id, "kind": body.kind})
     return {"id": item_id, "revision": rev}
 
 

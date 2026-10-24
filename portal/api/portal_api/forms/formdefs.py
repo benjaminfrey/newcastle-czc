@@ -42,19 +42,11 @@ class Option:
 
 
 @dataclass(frozen=True)
-class AddOption:
-    """One way to add an item ("A detached garage or shed"), with answers it starts with."""
-    label: str
-    preset: dict
-
-
-@dataclass(frozen=True)
 class Repeat:
     kind: str
     add_label: str
     min: int
     max: int
-    add_options: tuple = ()
 
 
 @dataclass(frozen=True)
@@ -64,10 +56,10 @@ class Step:
 
 
 @dataclass(frozen=True)
-class Page:
-    """A page of a repeating item's sheet ("Basics", "Placement")."""
+class Screen:
+    """Fields asked together on one screen of the wizard (deed book and page; the four setbacks),
+    with the drawing they sit around, if any."""
     id: str
-    title: str
     layout: str | None = None
 
 
@@ -95,7 +87,8 @@ class Field:
     approved_by: str | None = None
     approved_on: str | None = None
     step: str | None = None
-    page: str | None = None
+    screen: str | None = None
+    ask_first: bool = False  # asked before the rest of its item; print order is unchanged
     control: str | None = None
     step_size: float | None = None
     default: object = None
@@ -120,11 +113,7 @@ class Section:
     approved_by: str | None = None
     approved_on: str | None = None
     step: str | None = None
-    pages: tuple = ()
-
-    @property
-    def add_options(self) -> tuple:
-        return self.repeat.add_options if self.repeat else ()
+    screens: tuple = ()
 
 
 @dataclass(frozen=True)
@@ -226,7 +215,7 @@ def _field(file: str, sec_id: str, f: dict, ruleset: Ruleset) -> Field:
         options=tuple(Option(o["value"], o["label"], o["official"]) for o in f.get("options") or ()),
         required=bool(f.get("required")), allow_unknown=bool(f.get("allow_unknown")), show_if=f.get("show_if"),
         compare=f.get("compare"), approved_by=f.get("approved_by"), approved_on=f.get("approved_on"),
-        step=f.get("step"), page=f.get("page"), control=f.get("control"), step_size=f.get("step_size"),
+        step=f.get("step"), screen=f.get("screen"), ask_first=bool(f.get("ask_first")), control=f.get("control"), step_size=f.get("step_size"),
         default=f.get("default"), autocomplete=f.get("autocomplete"),
     )
 
@@ -239,28 +228,34 @@ def _sections(file: str, doc: dict, ruleset: Ruleset) -> list[Section]:
         where = f"{file}: {s.get('id')}"
         _check_status(where, s)
         _check_show_if(where, s.get("show_if"))
+        # The sheets' pages and "Add a building" presets gave way to one question per screen.
+        if "pages" in s:
+            raise DefinitionError(f"{where}: pages are gone; group fields with screens")
+        if any("page" in f for f in s.get("fields") or ()):
+            raise DefinitionError(f"{where}: a field's page is gone; use screen")
         rep = s.get("repeat")
         repeat = None
         if rep is not None:
+            if "add_options" in rep:
+                raise DefinitionError(f"{where}: add_options are gone; a building's type is its first question")
             try:
-                opts = tuple(AddOption(o["label"], dict(o.get("preset") or {})) for o in rep.get("add_options") or ())
-                repeat = Repeat(rep["kind"], rep["add_label"], int(rep["min"]), int(rep["max"]), opts)
+                repeat = Repeat(rep["kind"], rep["add_label"], int(rep["min"]), int(rep["max"]))
             except (KeyError, TypeError, ValueError):
                 raise DefinitionError(f"{where}: repeat needs kind, add_label, min and max") from None
             if not 0 <= repeat.min <= repeat.max or repeat.max < 1:
                 raise DefinitionError(f"{where}: repeat min must be between 0 and max")
-        pages = []
-        for pg in s.get("pages") or ():
-            if pg.get("layout") is not None and pg["layout"] not in LAYOUTS:
-                raise DefinitionError(f"{where}: unknown layout {pg['layout']!r}")
-            if not pg.get("id") or not pg.get("title"):
-                raise DefinitionError(f"{where}: each page needs an id and a title")
-            pages.append(Page(pg["id"], pg["title"], pg.get("layout")))
+        screens = []
+        for sc in s.get("screens") or ():
+            if not isinstance(sc, dict) or not sc.get("id"):
+                raise DefinitionError(f"{where}: each screen needs an id")
+            if sc.get("layout") is not None and sc["layout"] not in LAYOUTS:
+                raise DefinitionError(f"{where}: unknown layout {sc['layout']!r}")
+            screens.append(Screen(sc["id"], sc.get("layout")))
         out.append(Section(
             id=s["id"], official_title=s["official_title"], chapter=s["chapter"], file=file, status=s["status"],
             fields=tuple(_field(file, s["id"], f, ruleset) for f in s.get("fields") or ()),
             repeat=repeat, show_if=s.get("show_if"), approved_by=s.get("approved_by"), approved_on=s.get("approved_on"),
-            step=s.get("step"), pages=tuple(pages),
+            step=s.get("step"), screens=tuple(screens),
         ))
     return out
 
@@ -307,18 +302,18 @@ def _load(key: str, version: int, ruleset: Ruleset, root: Path) -> FormDef:
     _check_steps(name, sections, steps)
     form = FormDef(key=key, version=version, ruleset_key=doc["ruleset_key"],
                    official_title=doc["official_title"], sections=tuple(sections), steps=tuple(steps))
-    _check_defaults_and_presets(form)
+    _check_defaults(form)
     return form
 
 
 def _check_steps(name: str, sections: list, steps: list) -> None:
-    """A form that declares steps places every question in one, and every question of a
-    repeating section with pages on one of its pages."""
+    """A form that declares steps places every question in one; a field's screen is one its
+    section declares."""
     step_ids = [st.id for st in steps]
     if len(set(step_ids)) != len(step_ids):
         raise DefinitionError(f"{name}: duplicate step id")
     for s in sections:
-        page_ids = {p.id for p in s.pages}
+        screen_ids = {x.id for x in s.screens}
         for f in s.fields:
             where = f"{f.file}: {f.id}"
             step = f.step or s.step
@@ -326,13 +321,11 @@ def _check_steps(name: str, sections: list, steps: list) -> None:
                 raise DefinitionError(f"{where}: step {step!r} is not declared")
             if steps and f.is_question and step is None:
                 raise DefinitionError(f"{where}: a question needs a step")
-            if f.page is not None and f.page not in page_ids:
-                raise DefinitionError(f"{where}: page {f.page!r} is not one of {s.id}'s pages")
-            if steps and s.repeat and f.is_question and f.page is None:
-                raise DefinitionError(f"{where}: a question in a repeating section needs a page")
+            if f.screen is not None and f.screen not in screen_ids:
+                raise DefinitionError(f"{where}: screen {f.screen!r} is not one of {s.id}'s screens")
 
 
-def _check_defaults_and_presets(form: FormDef) -> None:
+def _check_defaults(form: FormDef) -> None:
     from portal_api.forms.answers import AnswerError, check_value  # answers imports this module
 
     for s, f in form.fields():
@@ -341,17 +334,6 @@ def _check_defaults_and_presets(form: FormDef) -> None:
                 check_value(f, f.default)
             except AnswerError as e:
                 raise DefinitionError(f"{f.file}: {f.id}: bad default ({e.reason})") from None
-    for s in form.sections:
-        for opt in s.add_options:
-            kind_fields = {f.id: f for x in form.sections if x.repeat and x.repeat.kind == s.repeat.kind
-                           for f in x.fields}
-            for fid, value in opt.preset.items():
-                if fid not in kind_fields:
-                    raise DefinitionError(f"{s.file}: {s.id}: preset names {fid!r}, not a field of a {s.repeat.kind}")
-                try:
-                    check_value(kind_fields[fid], value)
-                except AnswerError as e:
-                    raise DefinitionError(f"{s.file}: {s.id}: bad preset for {fid} ({e.reason})") from None
 
 
 _CACHE: dict[tuple, FormDef] = {}

@@ -114,7 +114,6 @@ def test_no_verdict_words_in_form_text(forms):
         # The layout's words reach the applicant too: steps, sheet pages, "Add a building" choices.
         layout = [st.title for st in form.steps]
         for s in form.sections:
-            layout += [p.title for p in s.pages] + [o.label for o in s.add_options]
             if s.repeat:
                 layout.append(s.repeat.add_label)
         for text in layout:
@@ -189,16 +188,52 @@ def test_every_question_has_a_step_and_repeat_questions_a_page(forms):
         for s, f in form.fields():
             if f.is_question:
                 assert form.step_of(f.id), f.id
-                if s.repeat:
-                    assert f.page, f.id
 
 
-def test_garage_preset_is_a_residential_accessory_building(forms):
+def building_questions(sp):
+    return [f.id for s, f in sp.fields() if s.repeat and s.repeat.kind == "building" and f.is_question]
+
+
+def test_building_starts_with_its_type(forms):
+    # A detached garage or shed is chosen by type, so the wizard asks the type first (wizard brief,
+    # section 4); the printed Building Form keeps the paper form's order.
     sp = forms["small_project_plan"]
-    building = next(s for s in sp.sections if s.id == "building")
-    labels = [o.label for o in building.add_options]
-    assert labels == ["A building", "A detached garage or shed"]
-    assert building.add_options[1].preset == {"building_class": "residential_accessory", "building_name": "Garage or shed"}
+    first = [fid for fid in building_questions(sp) if sp.field(fid)[1].ask_first]
+    assert first == ["building_class", "dwelling_units"]
+    assert building_questions(sp)[0] == "building_name"  # print order unchanged
+
+
+def test_front_facing_before_walls(forms):
+    sp = forms["small_project_plan"]
+    order = [f.id for _, f in sp.fields()]
+    for facing, first_wall in (("front_facing", "windows_north"), ("component_front_facing", "component_windows_north")):
+        assert order[order.index(facing) + 1] == first_wall, facing
+        _, f = sp.field(facing)
+        assert f.type == "choice" and [o.official for o in f.options] == ["North", "East", "South", "West"]
+        assert f.status == "draft" and f.allow_unknown
+    assert sp.field("component_front_facing")[1].show_if == sp.field("component_windows_north")[1].show_if
+
+
+def test_groupings(forms):
+    def screen_of(form, fid):
+        sec, f = forms[form].field(fid)
+        lay = {x.id: x.layout for x in sec.screens}
+        return f.screen, lay.get(f.screen)
+    pairs = [("cover_sheet_host", "deed_book", "deed_page"), ("small_project_plan", "mass_width", "mass_depth"),
+             ("small_project_plan", "component_width", "component_depth"),
+             ("entrance_permit", "sight_distance_left", "sight_distance_right"),
+             ("entrance_permit", "homes_single_family", "homes_two_family")]
+    for form, a, b in pairs:
+        form = "small_project_plan" if form == "cover_sheet_host" else form
+        assert screen_of(form, a)[0] is not None and screen_of(form, a) == screen_of(form, b), (a, b)
+    assert {screen_of("small_project_plan", f) for f in ("setback_front", "setback_side_1", "setback_side_2", "setback_rear")} \
+        == {("setbacks", "lot-diagram")}
+    assert len({screen_of("small_project_plan", f"windows_{w}") for w in ("north", "east", "south", "west")}) == 1
+    assert screen_of("small_project_plan", "windows_north")[1] == "compass"
+
+
+def test_attached_garage_is_an_addition(forms):
+    sp = forms["small_project_plan"]
     _, kind = sp.field("component_kind")
     garage = next(o for o in kind.options if o.value == "garage")
     assert garage.label == "An attached garage" and garage.official == "Garage (attached)"
@@ -247,21 +282,12 @@ def test_pickers_for_buildings_and_roads(forms):
     assert forms["small_project_plan"].field("building_class")[1].control == "building-type"
 
 
-def test_window_walls_are_sliders_on_a_compass(forms):
+def test_window_walls_are_sliders(forms):
     sp = forms["small_project_plan"]
-    page = {p.id: p for s in sp.sections for p in s.pages}
     for wall in ("north", "east", "south", "west"):
         _, f = sp.field(f"windows_{wall}")
-        assert f.control == "slider" and f.step_size == 5
-        assert page[f.page].layout == "compass"
+        assert f.control == "slider" and f.step_size == 5 and (f.min, f.max) == (0, 100)
         assert f.label == f"{wall.capitalize()} wall"
-
-
-def test_setbacks_are_on_the_lot_diagram(forms):
-    sp = forms["small_project_plan"]
-    page = {p.id: p for s in sp.sections for p in s.pages}
-    for fid in ("setback_front", "setback_side_1", "setback_side_2", "setback_rear"):
-        assert page[sp.field(fid)[1].page].layout == "lot-diagram"
 
 
 def test_changed_entries_are_drafts(forms):

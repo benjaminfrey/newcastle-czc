@@ -72,6 +72,7 @@ sections:
     status: draft
     step: driveway
     control: stepper
+    screen: homes
   - id: homes_two_family
     official_label: Two-family dwellings served
     source: question
@@ -84,6 +85,7 @@ sections:
     status: draft
     step: driveway
     control: stepper
+    screen: homes
   - id: shared_driveway
     official_label: Shared with an abutting lot
     source: question
@@ -176,6 +178,7 @@ sections:
     required: true
     status: draft
     step: safety
+    screen: sight
   - id: sight_distance_right
     official_label: Sight distance, looking right (ft)
     source: question
@@ -189,6 +192,7 @@ sections:
     required: true
     status: draft
     step: safety
+    screen: sight
   - id: intersection_distance
     official_label: Distance to the nearest intersection (ft)
     source: question
@@ -270,3 +274,8 @@ sections:
     why: 8.2.a.2
     status: draft
     step: state_permit
+  screens:
+  - id: sight
+    layout: null
+  - id: homes
+    layout: null

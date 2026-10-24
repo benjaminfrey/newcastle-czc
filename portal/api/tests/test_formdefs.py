@@ -166,7 +166,7 @@ def test_drafts_lists_sections_and_fields(tmp_path, ruleset):
         ("test-permit.v1.yaml", "building"), ("test-permit.v1.yaml", "roof"), ("cover-sheet.v1.yaml", "deed_book")}
 
 
-# ---- Steps, pages, controls, defaults and presets (redesign) ----
+# ---- Steps, screens, controls and defaults (the wizard) ----
 
 def stepped():
     cover = copy.deepcopy(COVER)
@@ -176,11 +176,9 @@ def stepped():
     form["steps"] = [{"id": "buildings", "title": "Buildings"}, {"id": "extra", "title": "Extra"}]
     b = form["sections"][0]
     b["step"] = "buildings"
-    b["pages"] = [{"id": "basics", "title": "Basics"}, {"id": "roof", "title": "Roof", "layout": "compass"}]
-    b["fields"][0].update(page="basics", control="stepper")
-    b["fields"][1].update(page="roof", control="tiles")
-    b["repeat"]["add_options"] = [{"label": "A building"},
-                                  {"label": "A tall building", "preset": {"stories": 3}}]
+    b["screens"] = [{"id": "shape", "layout": None}]
+    b["fields"][0].update(control="stepper", screen="shape")
+    b["fields"][1].update(control="tiles", screen="shape")
     return cover, form
 
 
@@ -200,9 +198,8 @@ def test_steps_load_in_order_with_the_cover_first(tmp_path, ruleset):
     assert [s.id for s in f.steps] == ["your_lot", "buildings", "extra"]
     assert f.step_of("deed_book") == "your_lot" and f.step_of("stories") == "buildings"
     b = f.sections[1]
-    assert [p.id for p in b.pages] == ["basics", "roof"] and b.pages[1].layout == "compass"
-    assert b.fields[0].page == "basics" and b.fields[0].control == "stepper"
-    assert b.add_options[1].preset == {"stories": 3}
+    assert [(x.id, x.layout) for x in b.screens] == [("shape", None)]
+    assert b.fields[0].screen == "shape" and b.fields[0].control == "stepper"
 
 
 def test_field_step_overrides_section_step(tmp_path, ruleset):
@@ -222,8 +219,29 @@ def test_rejects_unknown_step(tmp_path, ruleset):
     assert "nowhere" in broken_stepped(tmp_path, ruleset, lambda c, f: f["sections"][0].update(step="nowhere"))
 
 
-def test_rejects_repeat_question_without_a_page(tmp_path, ruleset):
-    assert "page" in broken_stepped(tmp_path, ruleset, lambda c, f: f["sections"][0]["fields"][0].pop("page"))
+def test_screen_groups_load(tmp_path, ruleset):
+    cover, form = stepped()
+    form["sections"][0]["screens"] = [{"id": "walls", "layout": "compass"}]
+    for fl in form["sections"][0]["fields"][:2]:
+        fl["screen"] = "walls"
+    write(tmp_path, cover=cover, form=form)
+    b = load_form("test_permit", 1, ruleset, root=tmp_path).sections[1]
+    assert b.screens[0].layout == "compass"
+    assert [fl.screen for fl in b.fields[:2]] == ["walls", "walls"]
+
+
+def test_rejects_undeclared_screen(tmp_path, ruleset):
+    assert "nowhere" in broken_stepped(tmp_path, ruleset, lambda c, f: f["sections"][0]["fields"][0].update(screen="nowhere"))
+
+
+def test_rejects_bad_screen_layout(tmp_path, ruleset):
+    assert "layout" in broken_stepped(tmp_path, ruleset, lambda c, f: f["sections"][0]["screens"][0].update(layout="spiral"))
+
+
+def test_pages_and_add_options_are_gone(tmp_path, ruleset):
+    assert "pages" in broken_stepped(tmp_path, ruleset, lambda c, f: f["sections"][0].update(pages=[{"id": "a", "title": "A"}]))
+    assert "add_options" in broken_stepped(
+        tmp_path, ruleset, lambda c, f: f["sections"][0]["repeat"].update(add_options=[{"label": "A building"}]))
 
 
 def test_rejects_unknown_control(tmp_path, ruleset):
@@ -237,38 +255,20 @@ def test_rejects_bad_default(tmp_path, ruleset):
     assert "default" in broken_stepped(tmp_path, ruleset, bad)
 
 
-def test_rejects_preset_for_unknown_field(tmp_path, ruleset):
-    def bad(c, f):
-        f["sections"][0]["repeat"]["add_options"][1]["preset"] = {"moat": 1}
-    assert "moat" in broken_stepped(tmp_path, ruleset, bad)
-
-
-def test_rejects_bad_preset_value(tmp_path, ruleset):
-    def bad(c, f):
-        f["sections"][0]["repeat"]["add_options"][1]["preset"] = {"stories": 99}
-    assert "preset" in broken_stepped(tmp_path, ruleset, bad)
-
-
 def test_rejects_malformed_step(tmp_path, ruleset):
     msg = broken_stepped(tmp_path, ruleset, lambda c, f: f["steps"].append({"title": "No id"}))
     assert "step" in msg and "test-permit" in msg
 
 
-def test_rejects_malformed_page(tmp_path, ruleset):
-    msg = broken_stepped(tmp_path, ruleset, lambda c, f: f["sections"][0]["pages"].append({"id": "nameless"}))
-    assert "page" in msg
+def test_rejects_malformed_screen(tmp_path, ruleset):
+    msg = broken_stepped(tmp_path, ruleset, lambda c, f: f["sections"][0]["screens"].append({"layout": "compass"}))
+    assert "screen" in msg
 
 
 def test_rejects_control_that_does_not_suit_the_type(tmp_path, ruleset):
     # A switch answers yes or no; on a number it would be refused at every save.
     msg = broken_stepped(tmp_path, ruleset, lambda c, f: f["sections"][0]["fields"][0].update(control="switch"))
     assert "switch" in msg and "number" in msg
-
-
-def test_rejects_bad_layout(tmp_path, ruleset):
-    def bad(c, f):
-        f["sections"][0]["pages"][1]["layout"] = "spiral"
-    assert "layout" in broken_stepped(tmp_path, ruleset, bad)
 
 
 def test_a_form_without_steps_still_loads(tmp_path, ruleset):

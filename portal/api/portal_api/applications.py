@@ -73,15 +73,12 @@ def create(conn: Connection, *, applicant_id: str, form: FormDef, snapshot: dict
 FORM_DEFAULT = "form-default"
 
 
-def new_item(conn: Connection, app_id: str, form: FormDef, kind: str, preset: dict | None = None,
-             by: str = FORM_DEFAULT) -> str:
-    """Add an item with its fields' defaults (by the form) and an add option's preset."""
+def new_item(conn: Connection, app_id: str, form: FormDef, kind: str) -> str:
+    """Add an item with its fields' defaults, saved as the form's."""
     item_id = add_item(conn, app_id, kind)
     defaults = [(f.id, item_id, f.default) for sec, f in form.fields()
                 if sec.repeat and sec.repeat.kind == kind and f.default is not None]
     save_answers(conn, app_id, defaults, FORM_DEFAULT)
-    if preset:
-        save_answers(conn, app_id, [(fid, item_id, v) for fid, v in preset.items()], by)
     return item_id
 
 

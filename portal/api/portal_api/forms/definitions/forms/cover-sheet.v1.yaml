@@ -43,6 +43,7 @@ sections:
     why: 8.2.a.2
     allow_unknown: true
     status: draft
+    screen: deed
   - id: deed_page
     official_label: Page
     source: question
@@ -52,7 +53,11 @@ sections:
     why: 8.2.a.2
     allow_unknown: true
     status: draft
+    screen: deed
   step: your_lot
+  screens:
+  - id: deed
+    layout: null
 - id: applicant
   official_title: Applicant
   chapter: Who's applying

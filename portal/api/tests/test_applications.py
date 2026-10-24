@@ -262,7 +262,7 @@ def test_no_streets_layer_means_the_road_is_unknown(alice, engine):
 
 @pytest.fixture
 def stepped_forms(tmp_path, monkeypatch):
-    """The real forms, with a default on applicant_is_owner and a building preset."""
+    """The real forms, with a default on applicant_is_owner and on a building's homes."""
     forms_dir = tmp_path / "forms"
     shutil.copytree(formdefs.DIR, forms_dir)
     cover = yaml.safe_load((forms_dir / "cover-sheet.v1.yaml").read_text())
@@ -273,10 +273,6 @@ def stepped_forms(tmp_path, monkeypatch):
     (forms_dir / "cover-sheet.v1.yaml").write_text(yaml.safe_dump(cover))
     spp = yaml.safe_load((forms_dir / "small-project-plan.v1.yaml").read_text())
     for s in spp["sections"]:
-        if s["id"] == "building":
-            s["repeat"]["add_options"] = [{"label": "A building"},
-                                          {"label": "A detached garage or shed",
-                                           "preset": {"building_class": "residential_accessory"}}]
         if s["id"] == "building_details":
             for f in s["fields"]:
                 if f["id"] == "dwelling_units":
@@ -295,24 +291,6 @@ def test_defaults_are_seeded_and_marked(alice, engine, stepped_forms):
     with engine.begin() as conn:
         assert conn.execute(text("SELECT set_by FROM answer WHERE field_id = 'applicant_is_owner'")).scalar() \
             == "form-default"
-
-
-def test_item_preset_saves_its_answers(alice, stepped_forms):
-    app_id = create(alice, form_key="small_project_plan")
-    rev = get(alice, app_id)["revision"]
-    r = alice.post(f"/api/applications/{app_id}/items", json={"kind": "building", "base_revision": rev, "preset": 1})
-    assert r.status_code == 201
-    item = r.json()["id"]
-    values = current_values(get(alice, app_id))
-    assert values[("building_class", item)] == "residential_accessory"
-    assert values[("dwelling_units", item)] == 0  # the item's defaults are seeded too
-
-
-def test_bad_preset_index_is_422(alice, stepped_forms):
-    app_id = create(alice, form_key="small_project_plan")
-    rev = get(alice, app_id)["revision"]
-    r = alice.post(f"/api/applications/{app_id}/items", json={"kind": "building", "base_revision": rev, "preset": 7})
-    assert r.status_code == 422 and r.json()["detail"] == "unknown_preset"
 
 
 def test_form_json_carries_steps_pages_and_controls(alice, tmp_path, monkeypatch):
@@ -341,3 +319,6 @@ def test_form_json_carries_steps_pages_and_controls(alice, tmp_path, monkeypatch
     assert fields["applicant_phone"]["autocomplete"] == "tel"
     assert fields["applicant_phone"]["step"] == "about_you"
     assert {s["id"]: s["step"] for s in form["sections"]}["existing"] == "uses"
+    location = next(s for s in form["sections"] if s["id"] == "location")
+    assert location["screens"] == [{"id": "deed", "layout": None}] and "pages" not in location
+    assert fields["deed_book"]["screen"] == fields["deed_page"]["screen"] == "deed"

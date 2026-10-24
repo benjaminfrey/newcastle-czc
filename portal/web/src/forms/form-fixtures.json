@@ -181,21 +181,10 @@
       "approved_by": "Fixture",
       "approved_on": "2026-10-21",
       "required": true,
-      "allow_unknown": true,
-      "page": "basics"
+      "allow_unknown": true
      }
     ],
-    "step": "buildings",
-    "pages": [
-     {
-      "id": "basics",
-      "title": "Basics"
-     },
-     {
-      "id": "floors",
-      "title": "Floors"
-     }
-    ]
+    "step": "buildings"
    },
    {
     "id": "b2",
@@ -227,8 +216,7 @@
         "item.stories",
         2
        ]
-      },
-      "page": "floors"
+      }
      },
      {
       "id": "signature",
@@ -239,17 +227,7 @@
       "approved_on": "2026-10-21"
      }
     ],
-    "step": "buildings",
-    "pages": [
-     {
-      "id": "basics",
-      "title": "Basics"
-     },
-     {
-      "id": "floors",
-      "title": "Floors"
-     }
-    ]
+    "step": "buildings"
    }
   ]
  },
