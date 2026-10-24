@@ -66,7 +66,7 @@ export default function FieldControl({ field, itemId, value, onValue, error, com
   })();
   const question = field.label ?? field.official_label;
   return (
-    <InsetGroup.Row stacked={!BESIDE.has(kind)}
+    <InsetGroup.Row stacked={!BESIDE.has(kind)} field={field.id}
                     label={<span id={labelId}>{kind === "text" || kind === "longtext" ? <label htmlFor={inputId}>{question}</label> : question}</span>}>
       <div className="flex flex-col gap-1.5">
         {control}

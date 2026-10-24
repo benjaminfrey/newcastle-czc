@@ -148,7 +148,7 @@ export function ChipsControl({ field, value, onValue }: ControlProps) {
     <TagGroup selectionMode="multiple" selectedKeys={new Set(chosen)} aria-label={label(field)}
               onSelectionChange={(keys) => {
                 const next = field.options.map((o) => o.value).filter((v) => (keys as Set<string>).has(v));
-                onValue(next);
+                onValue(next.length ? next : null); // nothing chosen is no answer, not an empty list
               }}>
       <TagGroup.List className="flex flex-wrap gap-2">
         {field.options.map((o) => (

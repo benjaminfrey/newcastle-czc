@@ -17,11 +17,14 @@ export default function UsesControl({ field, value, onValue }: ControlProps) {
     <div className="flex flex-col gap-3">
       {chosen.length > 0 && (
         <TagGroup aria-label={field.label ?? field.official_label}
-                  onRemove={(keys) => onValue(chosen.filter((k) => !(keys as Set<string>).has(k)))}>
+                  onRemove={(keys) => {
+                    const left = chosen.filter((k) => !(keys as Set<string>).has(k));
+                    onValue(left.length ? left : null); // no uses left is no answer, not an empty list
+                  }}>
           <TagGroup.List className="flex flex-wrap gap-2">
             {chosen.map((k) => (
               <Tag key={k} id={k} textValue={names[k] ?? k} className="min-h-11 rounded-full bg-[var(--app-selection)] px-4">
-                {names[k] ?? k}<Tag.RemoveButton aria-label={`Remove ${names[k] ?? k}`} />
+                {names[k] ?? k}<Tag.RemoveButton />
               </Tag>
             ))}
           </TagGroup.List>

@@ -154,6 +154,21 @@ describe("ChipsControl", () => {
   });
 });
 
+describe("blank lists", () => {
+  it("removing the last chip saves nothing, not an empty list", async () => {
+    const onValue = draw(f({ type: "multichoice", control: "chips", label: "Exterior finish?", options: opts("brick") }), ["brick"]);
+    await userEvent.click(screen.getByRole("row", { name: "BRICK" }));
+    expect(onValue).toHaveBeenCalledWith(null);
+  });
+
+  it("removing the last use saves nothing", async () => {
+    vi.spyOn(api, "getUseGroups").mockResolvedValue([]);
+    const onValue = draw(f({ type: "uses", label: "Which uses will stop?" }), ["office_small"]);
+    await userEvent.click(screen.getByRole("button", { name: /Remove/ }));
+    expect(onValue).toHaveBeenCalledWith(null);
+  });
+});
+
 describe("BuildingPicker", () => {
   it("lists this application's buildings", async () => {
     fakeStore({ cur: { answers: [{ field_id: "building_name", item_id: "b1", value: "House" }],

@@ -11,7 +11,6 @@ import Start from "./pages/Start";
 import UsePicker from "./pages/UsePicker";
 import ApplyStart from "./pages/ApplyStart";
 import ApplicationPage from "./app/ApplicationPage";
-import Review from "./pages/Review";
 
 export default function App() {
   return (
@@ -25,7 +24,6 @@ export default function App() {
           <Route path="/where" element={<Moved to="/start/property" />} />
           <Route path="/start/results" element={<Moved to="/start/needs" />} />
           <Route path="/apply/:formKey" element={<ApplyStart />} />
-          <Route path="/applications/:id/review" element={<Review />} />
         </Route>
         {/* "Do I need a permit?" and each application are windows that draw their own chrome. */}
         <Route element={<StartFlow />}>

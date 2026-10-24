@@ -7,6 +7,7 @@ import { useWideLayout } from "../shell/useWideLayout";
 import { ApplicationProvider, useApplication } from "./ApplicationStore";
 import HubPane from "./HubPane";
 import ItemSheet from "./ItemSheet";
+import ReviewPane from "./ReviewPane";
 import StepPane from "./StepPane";
 
 // /applications/:id/:stepId — one application in the shell.
@@ -36,21 +37,26 @@ function Steps({ id }: { id: string }) {
     { id: REVIEW_STEP.id, title: REVIEW_STEP.title, status: "todo" as const, unknowns: 0, href: `${base}/review` },
   ], [models, cur, visited, base]);
 
+  const isReview = stepId === REVIEW_STEP.id;
   const current = models.find((m) => m.id === stepId);
-  const at = models.findIndex((m) => m.id === stepId);
+  const at = isReview ? models.length : models.findIndex((m) => m.id === stepId);
+  const title = isReview ? REVIEW_STEP.title : current?.title;
 
-  // Arriving at a step: the title takes focus and names the page.
+  // Arriving at a step: the title takes focus and names the page, unless a link asked for one
+  // question (Review's "Still to answer"), which then takes focus.
+  const focus = params.get("focus");
   useEffect(() => {
-    if (!current || !form) return;
-    document.title = `${current.title} — ${form.official_title}`;
-    const h1 = document.querySelector<HTMLElement>("[data-step-title]");
-    h1?.focus();
-  }, [current?.id, form]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (!title || !form) return;
+    document.title = `${title} — ${form.official_title}`;
+    const q = focus ? `[data-field="${CSS.escape(focus)}"]` : null;
+    const target = q && document.querySelector<HTMLElement>(`${q} input, ${q} textarea, ${q} button`);
+    (target || document.querySelector<HTMLElement>("[data-step-title]"))?.focus();
+  }, [title, form, focus]);
 
   if (problem === "signed_out") return <Navigate to="/signin" replace />;
   if (problem) return <p role="alert" className="p-8">{problem}</p>;
   if (!app || !form || !cur) return <p className="p-8">Loading…</p>;
-  if (stepId && !current) return <Navigate to={base} replace />;
+  if (stepId && !current && !isReview) return <Navigate to={base} replace />;
   if (!stepId && wide) {
     const first = models.find((m) => statusOf(m, cur, visited).status !== "done") ?? models[0];
     return <Navigate to={first ? `${base}/${first.id}` : `${base}/review`} replace />;
@@ -67,19 +73,20 @@ function Steps({ id }: { id: string }) {
   return (
     <AppShell
       steps={shellSteps}
-      currentId={current?.id ?? null}
+      currentId={isReview ? REVIEW_STEP.id : current?.id ?? null}
       formTitle={form.official_title}
       saveState={saveState}
       rootHref={base}
       onDone={() => void flush().then(() => navigate("/my-applications"))}
       onReload={() => void reload()}
       onStep={(sid) => navigate(shellSteps.find((s) => s.id === sid)?.href ?? base)}
-      actions={current ? {
+      actions={isReview ? { back: models.length ? () => navigate(`${base}/${models[models.length - 1].id}`) : undefined } : current ? {
         back: at > 0 ? () => navigate(`${base}/${models[at - 1].id}`) : undefined,
         onContinue: () => void next(),
         continueLabel: models[at + 1] ? "Continue" : "Review",
       } : {}}
     >
+      {isReview && <ReviewPane models={models} base={base} />}
       {current?.kind === "fields" && <StepPane rows={current.rows} sections={current.sections} />}
       {current?.kind === "hub" && (
         <HubPane step={current} onOpen={(item, page) => setParams(page ? { item, page } : { item })} />
