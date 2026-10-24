@@ -83,7 +83,8 @@ describe("ReviewPane", () => {
     open();
     await screen.findByRole("group", { name: "Applicant" });
     const names = screen.getAllByRole("group").map((g) => g.getAttribute("aria-label") ?? g.textContent?.split("\n")[0]);
-    const titles = screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent);
+    // The official form's own sections; "What happens next" closes the page but isn't the form's.
+    const titles = screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent).filter((t) => t !== "What happens next");
     expect(titles.slice(-2)).toEqual(["Certification", "Official Use Only"]);
     expect(names.length).toBeGreaterThan(2);
   });
@@ -136,10 +137,35 @@ describe("ReviewPane", () => {
     expect(await within(block("Applicant")).findByText("Call after 5 pm.")).toBeInTheDocument();
   });
 
+  it("a map value the applicant changed isn't credited to the Town's maps", async () => {
+    const area = q("lot_area", "Lot Area (acres)", { source: "property", from: "acres", may_correct: true, type: "number" });
+    vi.spyOn(apps, "getForm").mockResolvedValue({ ...FORM, sections: FORM.sections.map((s) => s.id === "site" ? { ...s, fields: [...s.fields, { ...area, step: "your_lot" }] } : s) });
+    vi.spyOn(apps, "getApplication").mockResolvedValue({ ...APP, property: { ...APP.property, facts: { map_lot: "004-036", acres: 2.1 } },
+                                                         answers: [...APP.answers, { field_id: "lot_area", item_id: null, value: 2.4 }] });
+    open();
+    const site = await screen.findByRole("group", { name: "Site Information (existing)" });
+    const row = within(site).getByText("Lot Area (acres)").closest("[data-row]")!;
+    expect(row).toHaveTextContent("2.4");
+    expect(row).not.toHaveTextContent("from the Town's maps");
+    expect(row).toHaveTextContent("you changed the map's value");
+    // The map's own values keep their note.
+    expect(within(site).getByText("Map / Lot").closest("[data-row]")).toHaveTextContent("from the Town's maps");
+  });
+
   it("Still to answer links focus the field", async () => {
     vi.spyOn(apps, "getApplication").mockResolvedValue({ ...APP, missing: [{ field_id: "lot_width", item_id: null }] });
     open();
-    expect(await screen.findByRole("link", { name: "Lot Width (ft)" })).toHaveAttribute("href", "/applications/abc/your_lot?focus=lot_width");
+    // The question as the resident was asked it leads; the form's own term follows, smaller.
+    const link = await screen.findByRole("link", { name: /^Lot Width \(ft\)\?\s*Lot Width \(ft\)$/ });
+    expect(link).toHaveAttribute("href", "/applications/abc/your_lot?focus=lot_width");
+  });
+
+  it("says when everything is answered, and ends with what happens next", async () => {
+    open();
+    expect(await screen.findByText("Everything is answered.")).toBeInTheDocument();
+    const next = screen.getByRole("group", { name: "What happens next" });
+    expect(next).toHaveTextContent("Nothing has gone to the Town yet.");
+    expect(next).toHaveTextContent("My applications");
   });
 
   it("no Submit button, and no verdict words", async () => {

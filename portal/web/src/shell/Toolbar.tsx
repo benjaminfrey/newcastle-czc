@@ -20,14 +20,15 @@ export function SaveStatus({ state, onReload }: { state: SaveState; onReload?: (
 
 type Props = { title: string; saveState: SaveState; onDone?: () => void; onReload?: () => void };
 
-// The content pane's toolbar: the step's title, the save status and Done.
+// The content pane's toolbar: the step's title, the save status and Save and close (answers are
+// already saved; the label says so, where "Done" read as "sent to the Town").
 export default function Toolbar({ title, saveState, onDone, onReload }: Props) {
   return (
     <header className="flex min-h-14 items-center justify-between gap-4 border-b border-[var(--app-separator)] px-8 py-2">
       <h1 tabIndex={-1} data-step-title className="text-[22px] font-bold outline-none">{title}</h1>
       <div className="flex items-center gap-3">
         <SaveStatus state={saveState} onReload={onReload} />
-        {onDone && <Button variant="secondary" className="min-h-11" onPress={onDone}>Done</Button>}
+        {onDone && <Button variant="secondary" className="min-h-11" onPress={onDone}>Save and close</Button>}
       </div>
     </header>
   );

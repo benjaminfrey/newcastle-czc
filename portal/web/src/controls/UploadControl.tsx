@@ -66,7 +66,7 @@ export default function UploadControl({ field, itemId }: { field: FormField; ite
             <li key={a.id} className="flex min-h-12 items-center gap-3 px-4">
               {a.content_type.startsWith("image/") && a.content_type !== "image/heic"
                 ? <img src={`/api/attachments/${a.id}`} alt="" className="size-10 rounded object-cover" />
-                : <span aria-hidden="true" className="flex size-10 items-center justify-center rounded bg-[var(--app-ground)] text-[11px]">PDF</span>}
+                : <span aria-hidden="true" className="flex size-10 items-center justify-center rounded bg-[var(--app-ground)] text-[13px]">PDF</span>}
               <a className="flex-1 truncate underline" href={`/api/attachments/${a.id}`}>{a.filename}</a>
               <span className="text-[13px] text-[var(--app-secondary-label)]">{size(a.size_bytes)}</span>
               <Button variant="ghost" className="min-h-11 text-[var(--app-destructive)]" onPress={() => void remove(a)}

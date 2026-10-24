@@ -1,7 +1,9 @@
-import { Button, Card } from "@heroui/react";
+import { Button } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import SignInForm from "../components/SignInForm";
+import WhyWeAsk from "../components/WhyWeAsk";
+import InsetGroup from "../shell/InsetGroup";
 import { savePendingStart } from "../pendingStart";
 import Sheet from "../shell/Sheet";
 import { getMe, runScreener, type Outcome, type ScreenerResult } from "../api";
@@ -15,6 +17,11 @@ function days(o: Outcome): string | null {
   if (o.days.length === 0) return null;
   return o.days.map((d) => `${d.label}: ${d.days} ${d.basis === "business" ? "business days" : "days"}` +
     `${d.when ? `, ${d.when}` : ""} (${citeLabel(d.cite)})`).join("; ");
+}
+
+// "a Use Permit", "an Entrance Permit".
+function article(name: string): string {
+  return /^[aeiou]/i.test(name) ? "an" : "a";
 }
 
 // One Start link per application, on its first card, when a lot in two districts
@@ -60,43 +67,42 @@ export default function Results() {
   if (!result) return <p>Working it out…</p>;
   if (result.town_only) return <p>{CIVIC}</p>;
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-8">
       {result.outcomes.length === 0 && result.not_listed.length === 0 && result.notes.length === 0 && (
-        <p>From your answers, the Code doesn't call for any of the applications this site covers.</p>
+        <p className="text-[17px]">From your answers, the Code doesn't call for any of the applications this site covers.</p>
       )}
       {result.outcomes.map((o) => (
-        <Card key={`${o.application}-${o.district ?? ""}`}>
-          <Card.Header>
-            <Card.Title>{o.code_name}</Card.Title>
-            <Card.Description>{o.plain}</Card.Description>
-            <p className="text-sm font-semibold">{o.certainty === "needed" ? "The Code calls for this." : "You may need this."}</p>
-          </Card.Header>
-          <Card.Content className="flex flex-col gap-1">
-            {o.district && <p>For the part of your lot in the {o.district_name ?? o.district} district.</p>}
-            <p>Reviewed by: {o.reviewer}.</p>
-            {days(o) && <p>Time the Code gives the reviewer: {days(o)}.</p>}
-            <details>
-              <summary>Why: {citeLabel(o.why.cite)}</summary>
-              <p className="text-sm whitespace-pre-line">{o.why.text}</p>
-              {o.why.ruling && <p className="text-sm">{o.why.ruling}</p>}
-            </details>
-            <p className="font-semibold">{o.in_portal ? "You can apply here." : "Apply through the Town Office."}</p>
-            {o.in_portal && firstOf(result.outcomes, o) && (
-              <div className="pt-2">
-                <Button variant="primary" className="min-h-11" aria-label={`Start this application: ${o.code_name}`}
-                        onPress={() => void start(o.application)}>
-                  Start this application
-                </Button>
-              </div>
-            )}
-          </Card.Content>
-        </Card>
+        // The answer first, as a title; what it means in a sentence; the facts as rows; why behind a
+        // disclosure; Start as the one primary action.
+        <section key={`${o.application}-${o.district ?? ""}`} aria-label={o.code_name} className="flex flex-col gap-3">
+          <p className="text-[15px] font-semibold text-[var(--app-secondary-label)]">
+            {o.certainty === "needed" ? "The Code calls for this." : "You may need this."}
+          </p>
+          <h2 className="text-[30px] font-bold leading-tight">
+            {o.certainty === "needed" ? "You'll need " : "You may need "}{article(o.code_name)} <span>{o.code_name}</span>
+          </h2>
+          <p className="text-[17px]">{o.plain}</p>
+          <InsetGroup>
+            {o.district && <InsetGroup.Row label="Where">For the part of your lot in the {o.district_name ?? o.district} district.</InsetGroup.Row>}
+            <InsetGroup.Row label="Reviewed by">{o.reviewer}</InsetGroup.Row>
+            {days(o) && <InsetGroup.Row label="Time the Code gives">{days(o)}</InsetGroup.Row>}
+            <InsetGroup.Row label="How to apply">{o.in_portal ? "You can apply here." : "Apply through the Town Office."}</InsetGroup.Row>
+          </InsetGroup>
+          <WhyWeAsk why={o.why} label="Why the Code calls for it" extra={o.why.ruling} />
+          {o.in_portal && firstOf(result.outcomes, o) && (
+            <Button variant="primary" className="min-h-12 self-start px-6 text-[17px]" aria-label={`Start this application: ${o.code_name}`}
+                    onPress={() => void start(o.application)}>
+              Start this application
+            </Button>
+          )}
+        </section>
       ))}
-      {result.not_listed.map((n) => <p key={n.district}>{n.text}</p>)}
-      {result.notes.map((n) => <p key={n.text}>{n.text}</p>)}
-      <p>Fees: Set by the Town's fee schedule — the Town Office will tell you the amount.</p>
-      <p className="text-sm">The Code Enforcement Officer confirms this when you apply.</p>
-      <Link to="/start" className="min-h-11 text-[var(--app-accent-text)]">Start again</Link>
+      {result.not_listed.map((n) => <p key={n.district} className="text-[17px]">{n.text}</p>)}
+      {result.notes.map((n) => <p key={n.text} className="text-[17px]">{n.text}</p>)}
+      <InsetGroup footer="The Code Enforcement Officer confirms this when you apply.">
+        <InsetGroup.Row label="Fees">Set by the Town's fee schedule — the Town Office will tell you the amount.</InsetGroup.Row>
+      </InsetGroup>
+      <Link to="/start" className="flex min-h-11 items-center self-start text-[15px] text-[var(--app-accent-text)]">Start again</Link>
       <Sheet open={signIn} title="Sign in to apply" onCancel={() => setSignIn(false)}>
         <SignInForm />
       </Sheet>

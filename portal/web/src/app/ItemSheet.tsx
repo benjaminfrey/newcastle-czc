@@ -28,16 +28,10 @@ export default function ItemSheet({ step, itemId, pageId, onPage, onClose }: Pro
   }
 
   return (
-    <Sheet open title={item?.label ?? noun} onCancel={() => void done()} onDone={() => void done()}
+    <Sheet open title={item?.label ?? noun} onDone={() => void done()}
            pages={pages.map((p) => p.title)} pageIndex={index} onPage={(i) => onPage(pages[i].id)}>
-      {page && <h2 className="text-[20px] font-bold">{page.title}</h2>}
+      {page && <h2 className="text-[22px] font-bold">{page.title}</h2>}
       {page && <RowsInLayout rows={rows.filter((r) => r.field.page === page.id)} layout={page.layout} />}
-      <div className="flex justify-between gap-3">
-        {index > 0 ? <Button variant="secondary" className="min-h-11" onPress={() => onPage(pages[index - 1].id)}>Back</Button> : <span />}
-        {index < pages.length - 1 && (
-          <Button variant="primary" className="min-h-11" onPress={() => onPage(pages[index + 1].id)}>Next: {pages[index + 1].title}</Button>
-        )}
-      </div>
       {index === pages.length - 1 && canDelete && (
         <div className="rounded-xl bg-[var(--app-row)]">
           <Button variant="ghost" fullWidth className="min-h-12 text-[var(--app-destructive)]" onPress={() => setConfirm(true)}

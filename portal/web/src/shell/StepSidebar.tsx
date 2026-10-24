@@ -27,7 +27,7 @@ export default function StepSidebar({ steps, currentId, title }: Props) {
         aria-current={s.id === currentId ? "step" : undefined}
         className={`flex min-h-11 items-center gap-3 rounded-lg px-3 text-[15px] outline-none
           focus-visible:ring-2 focus-visible:ring-[var(--app-accent-text)]
-          ${nested ? "pl-9 text-[14px]" : ""}
+          ${nested ? "pl-9 text-[15px]" : ""}
           ${s.id === currentId ? "bg-[var(--app-selection)] font-semibold" : "hover:bg-[var(--app-selection)]/60"}`}
       >
         <StatusGlyph status={s.status} unknowns={s.unknowns} />

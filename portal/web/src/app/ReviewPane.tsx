@@ -44,7 +44,8 @@ export default function ReviewPane({ models, base }: { models: StepModel[]; base
     const field = sec.fields.find((f) => f.id === m.field_id)!;
     const step = field.step ?? sec.step;
     const href = m.item_id ? `${base}/${step}?item=${m.item_id}&page=${field.page ?? ""}` : `${base}/${step}?focus=${m.field_id}`;
-    return { key: `${m.field_id}|${m.item_id ?? ""}`, label: field.official_label, href, item: m.item_id ? itemLabel(form!, cur!, m.item_id) : null };
+    return { key: `${m.field_id}|${m.item_id ?? ""}`, question: field.label ?? field.official_label, official: field.official_label,
+             href, item: m.item_id ? itemLabel(form!, cur!, m.item_id) : null };
   });
   const editModel = models.find((m) => m.id === editing);
   const editRows = editModel ? applicable(form!, cur!).filter((r) => (r.field.step ?? r.section.step) === editModel.id) : [];
@@ -59,11 +60,20 @@ export default function ReviewPane({ models, base }: { models: StepModel[]; base
           <InsetGroup.Row label="Property not verified"><span>You entered it yourself, and staff will check it.</span></InsetGroup.Row>
         )}
       </InsetGroup>
+      {gaps.length === 0 && (
+        <InsetGroup>
+          <InsetGroup.Row label="Answers"><span>Everything is answered.</span></InsetGroup.Row>
+        </InsetGroup>
+      )}
       {gaps.length > 0 && (
         <InsetGroup title="Still to answer" footer="You can come back to these. Staff need them before the application is complete.">
           {gaps.map((g) => (
-            <Link key={g.key} to={g.href} className="flex min-h-11 items-center gap-2 px-4 text-[var(--app-accent-text)]">
-              {g.item && <span className="text-[var(--app-secondary-label)]">{g.item}:</span>}{g.label}
+            // The question as it was asked leads; the form's own term follows, for staff and the printout.
+            <Link key={g.key} to={g.href} className="flex min-h-11 flex-col justify-center px-4 py-2">
+              <span className="text-[15px] text-[var(--app-accent-text)]">
+                {g.item && <span className="text-[var(--app-secondary-label)]">{g.item}: </span>}{g.question}
+              </span>
+              <span className="text-[13px] text-[var(--app-secondary-label)]"> {g.official}</span>
             </Link>
           ))}
         </InsetGroup>
@@ -79,14 +89,17 @@ export default function ReviewPane({ models, base }: { models: StepModel[]; base
                          onAddDetail={() => setDetail({ sectionId: b.section.id, itemId: b.itemId, title, text: note })} />
         );
       })}
-      <InsetGroup>
-        <InsetGroup.Row label="Sign and submit">
-          <span>Your application is saved. Signing it and sending it to the Town arrives soon.</span>
+      {/* The end of the page says where things stand: saved, not yet sent, and how to come back. */}
+      <InsetGroup title="What happens next">
+        <InsetGroup.Row label="Saved">
+          <span>Your application is saved. You can close it and come back any time from My applications.</span>
+        </InsetGroup.Row>
+        <InsetGroup.Row label="Sending it">
+          <span>Signing it and sending it to the Town arrives soon. Nothing has gone to the Town yet.</span>
         </InsetGroup.Row>
       </InsetGroup>
       {editModel && (
-        <Sheet open title={editModel.title} onCancel={() => void flush().then(() => setEditing(null))}
-               onDone={() => void flush().then(() => setEditing(null))}>
+        <Sheet open title={editModel.title} onDone={() => void flush().then(() => setEditing(null))}>
           <StepPane rows={editRows} sections={editModel.sections} />
         </Sheet>
       )}

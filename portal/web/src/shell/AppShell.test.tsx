@@ -33,7 +33,7 @@ describe("AppShell, wide", () => {
     expect(screen.getByRole("heading", { level: 1, name: "About you" })).toBeInTheDocument();
     const buttons = screen.getAllByRole("button").map((b) => b.textContent);
     expect(buttons.slice(-2)).toEqual(["Back", "Continue"]);
-    expect(screen.getByRole("button", { name: "Done" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Save and close" })).toBeInTheDocument();
   });
 
   it("Return in a field triggers Continue", async () => {

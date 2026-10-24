@@ -3,6 +3,7 @@ import { mapLotLabel } from "../format";
 import type { Attachment, FormField } from "../applications";
 import type { Block } from "../forms/applicability";
 import InsetGroup from "../shell/InsetGroup";
+import { useApplication } from "./ApplicationStore";
 
 const isUnknown = (v: unknown) => typeof v === "object" && v !== null && (v as { unknown?: unknown }).unknown === true;
 
@@ -41,6 +42,8 @@ type Props = {
 // the applicant's added detail. Edit opens the step it's asked in.
 export default function OfficialGroup({ block, title, note, attachments, useNames, onEdit, onAddDetail }: Props) {
   const files = (f: FormField) => attachments.filter((a) => a.field_id === f.id && a.item_id === block.itemId);
+  const { cur } = useApplication();
+  const changed = (fieldId: string) => cur!.answers.some((a) => a.field_id === fieldId && a.item_id === block.itemId);
   return (
     <InsetGroup title={title}
                 footer={
@@ -61,7 +64,12 @@ export default function OfficialGroup({ block, title, note, attachments, useName
           ) : (
             <span>
               <span>{field.type === "upload" ? "None added" : display(field, value, useNames)}</span>
-              {fromMaps(field) && value !== null && <span className="text-[13px] text-[var(--app-secondary-label)]"> (from the Town's maps — staff confirm)</span>}
+              {fromMaps(field) && value !== null && (
+                // A map value the applicant corrected is theirs, not the Town's: say which, for staff.
+                <span className="text-[13px] text-[var(--app-secondary-label)]">
+                  {changed(field.id) ? " (you changed the map's value — staff confirm)" : " (from the Town's maps — staff confirm)"}
+                </span>
+              )}
             </span>
           )}
         </InsetGroup.Row>
