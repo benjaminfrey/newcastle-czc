@@ -1,6 +1,9 @@
 import { Button, Modal } from "@heroui/react";
-import type { ReactNode } from "react";
+import { createContext, type ReactNode } from "react";
 import { useWideLayout } from "./useWideLayout";
+
+// Rows inside a sheet always stack their label over the control: a sheet is narrow even on a desktop.
+export const InSheet = createContext(false);
 
 type Props = {
   open: boolean; title: string; onCancel: () => void; onDone: () => void;
@@ -23,7 +26,7 @@ export default function Sheet({ open, title, onCancel, onDone, pages, pageIndex 
               {doneLabel}
             </Button>
           </Modal.Header>
-          <Modal.Body className="flex flex-col gap-6 px-4 py-5">{children}</Modal.Body>
+          <Modal.Body className="flex flex-col gap-6 overflow-x-hidden px-4 py-5"><InSheet.Provider value>{children}</InSheet.Provider></Modal.Body>
           {pages && pages.length > 1 && (
             <Modal.Footer className="justify-center py-3">
               <div role="tablist" aria-label="Pages" className="flex gap-1">

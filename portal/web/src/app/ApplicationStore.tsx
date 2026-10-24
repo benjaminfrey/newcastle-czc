@@ -9,7 +9,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { getMe, UNREACHABLE } from "../api";
 import {
   addItem as apiAddItem, getApplication, getForm, removeItem as apiRemoveItem, saveAnswers, saveNote as apiSaveNote,
-  type AppState, type Change, type FormDef,
+  type AppState, type Attachment, type Change, type FormDef,
 } from "../applications";
 import type { Current } from "../forms/applicability";
 import type { SaveState } from "../shell/types";
@@ -25,6 +25,9 @@ type Store = {
   removeItem: (itemId: string) => Promise<boolean>;
   saveNote: (sectionId: string, itemId: string | null, text: string) => Promise<boolean>;
   reload: () => Promise<void>;
+  // A file the Town kept, or took away: review and the step both list app.attachments.
+  attachmentAdded: (a: Attachment) => void;
+  attachmentRemoved: (attachmentId: string) => void;
   visited: Set<string>;
   markVisited: (stepId: string) => void;
 };
@@ -196,13 +199,20 @@ export function ApplicationProvider({ id, children }: { id: string; children: Re
     });
   }, [id]);
 
+  const attachmentAdded = useCallback((x: Attachment) => {
+    setApp((a) => (a ? { ...a, attachments: [...a.attachments, x] } : a));
+  }, []);
+  const attachmentRemoved = useCallback((attachmentId: string) => {
+    setApp((a) => (a ? { ...a, attachments: a.attachments.filter((x) => x.id !== attachmentId) } : a));
+  }, []);
+
   const cur: Current | null = useMemo(
     () => (app ? { answers: app.answers, items: app.items, property: app.property.facts, account: { email } } : null),
     [app, email]);
 
   const value: Store = {
     app, form, cur, problem, saveState, setAnswer, flush, addItem, removeItem, saveNote,
-    reload: load, visited, markVisited,
+    reload: load, attachmentAdded, attachmentRemoved, visited, markVisited,
   };
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }

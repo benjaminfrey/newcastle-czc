@@ -1,4 +1,5 @@
-import { useId, type ReactNode } from "react";
+import { useContext, useId, type ReactNode } from "react";
+import { InSheet } from "./Sheet";
 import { useWideLayout } from "./useWideLayout";
 
 type GroupProps = { title?: string; footer?: ReactNode; children: ReactNode };
@@ -21,7 +22,8 @@ type RowProps = { label?: ReactNode; htmlFor?: string; stacked?: boolean; field?
 // Label on the left and control on the right on wide screens; stacked on phones or when asked.
 function Row({ label, htmlFor, stacked, field, children }: RowProps) {
   const wide = useWideLayout();
-  const side = wide && !stacked;
+  const inSheet = useContext(InSheet);
+  const side = wide && !stacked && !inSheet;
   return (
     <div data-row data-field={field} className={`min-h-11 px-4 py-2.5 ${side ? "grid grid-cols-[minmax(12rem,1fr)_minmax(0,1.4fr)] items-center gap-6" : "flex flex-col gap-2"}`}>
       {label !== undefined && (

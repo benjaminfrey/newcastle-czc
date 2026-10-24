@@ -66,6 +66,7 @@
   --muted: var(--app-secondary-label);
   --accent: var(--app-accent);
   --accent-foreground: var(--app-on-accent);
+  --accent-soft-foreground: var(--app-accent-text);
   --focus: var(--app-accent-text);
   --link: var(--app-accent-text);
   --danger: var(--app-destructive);

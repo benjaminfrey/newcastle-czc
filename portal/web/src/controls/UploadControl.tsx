@@ -19,7 +19,7 @@ export default function UploadControl({ field, itemId }: { field: FormField; ite
   const inputId = useId();
   const [progress, setProgress] = useState<number | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-  const [mine, setMine] = useState<Attachment[]>(app.attachments.filter((a) => a.field_id === field.id && a.item_id === itemId));
+  const mine = app.attachments.filter((a) => a.field_id === field.id && a.item_id === itemId);
 
   async function onFiles(files: FileList | null) {
     if (!files) return;
@@ -36,12 +36,12 @@ export default function UploadControl({ field, itemId }: { field: FormField; ite
         setMessage(`${file.name}: ${UPLOAD_MESSAGES[r.refused] ?? UPLOAD_MESSAGES.unavailable}`);
         break;
       }
-      setMine((m) => [...m, { ...r, field_id: field.id, item_id: itemId }]);
+      store.attachmentAdded({ ...r, field_id: field.id, item_id: itemId });
     }
   }
 
   async function remove(a: Attachment) {
-    if (await removeAttachment(a.id)) setMine((m) => m.filter((x) => x.id !== a.id));
+    if (await removeAttachment(a.id)) store.attachmentRemoved(a.id);
     else setMessage(UPLOAD_MESSAGES.unavailable);
   }
 

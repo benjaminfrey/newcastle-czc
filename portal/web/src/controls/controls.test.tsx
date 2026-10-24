@@ -110,6 +110,12 @@ describe("SwitchControl", () => {
     await userEvent.click(screen.getByRole("switch", { name: "Do you own this property?" }));
     expect(onValue).toHaveBeenCalledWith(false);
   });
+
+  it("turns over when its track is clicked, which is what a person sees", async () => {
+    const onValue = draw(f({ type: "yesno", control: "switch", label: "Do you own this property?" }), true);
+    await userEvent.click(document.querySelector('[data-slot="switch-control"]')!);
+    expect(onValue).toHaveBeenCalledWith(false);
+  });
 });
 
 describe("SegmentedControl", () => {
@@ -253,6 +259,23 @@ describe("UploadControl", () => {
     await act(() => userEvent.upload(screen.getByLabelText("Take a photo or choose a file"), big));
     expect(await screen.findByRole("alert")).toHaveTextContent(/up to 25 MB/);
     expect(spy).not.toHaveBeenCalled();
+  });
+
+  it("hands a kept file to the application, so review and a return visit both show it", async () => {
+    const apps = await import("../applications");
+    vi.spyOn(apps, "uploadFile").mockResolvedValue({ id: "a1", filename: "sketch.pdf", content_type: "application/pdf", size_bytes: 2048 } as never);
+    const attachmentAdded = vi.fn();
+    fakeStore({ attachmentAdded } as never);
+    draw(f({ id: "sketch", type: "upload", label: "Add a sketch." }));
+    await act(() => userEvent.upload(screen.getByLabelText("Take a photo or choose a file"), new File(["x"], "sketch.pdf", { type: "application/pdf" })));
+    expect(attachmentAdded).toHaveBeenCalledWith(expect.objectContaining({ id: "a1", field_id: "sketch", item_id: null }));
+  });
+
+  it("lists the files the application already holds", () => {
+    fakeStore({ app: { id: "app1", items: [], property: { parcel_id: null }, attachments: [
+      { id: "a1", field_id: "sketch", item_id: null, filename: "sketch.pdf", content_type: "application/pdf", size_bytes: 2048 }] } } as never);
+    draw(f({ id: "sketch", type: "upload", label: "Add a sketch." }));
+    expect(screen.getByRole("list", { name: "Files added" })).toHaveTextContent("sketch.pdf");
   });
 });
 

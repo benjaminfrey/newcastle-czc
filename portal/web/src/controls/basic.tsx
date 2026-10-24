@@ -82,8 +82,11 @@ export function SliderControl({ field, value, onValue }: ControlProps) {
 export function SwitchControl({ field, value, onValue }: ControlProps) {
   return (
     <Switch isSelected={value === true} onChange={(on) => onValue(on)} className="min-h-11">
-      <Switch.Control><Switch.Thumb /></Switch.Control>
-      <Switch.Content className="sr-only">{label(field)}</Switch.Content>
+      {/* Content is the pressable part: the track sits inside it; the label is for screen readers. */}
+      <Switch.Content>
+        <Switch.Control><Switch.Thumb /></Switch.Control>
+        <Label className="sr-only">{label(field)}</Label>
+      </Switch.Content>
     </Switch>
   );
 }

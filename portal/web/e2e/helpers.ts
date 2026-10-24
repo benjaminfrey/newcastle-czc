@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, type Page } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 
 const MAILPIT = process.env.PORTAL_E2E_MAILPIT ?? "http://127.0.0.1:8025";
 // The LAN stack's Mailpit asks for a login ("user:password", as MAILPIT_UI_AUTH in .env).
@@ -10,11 +10,15 @@ const checked = new Set<string>();
 
 // Fails on serious or critical accessibility findings; each kind of page is checked once per run.
 export async function axe(page: Page, name: string) {
-  if (checked.has(name)) return;
-  checked.add(name);
+  const key = `${name}:${await page.evaluate(() => document.documentElement.dataset.theme ?? "light")}`;
+  if (checked.has(key)) return;
+  checked.add(key);
+  // Colours are only true once a sheet or pane has finished fading in.
+  await page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== "running"), null, { timeout: 5000 }).catch(() => {});
   const results = await new AxeBuilder({ page }).exclude(".maplibregl-canvas").analyze();
   const bad = results.violations.filter((v) => v.impact === "serious" || v.impact === "critical");
-  expect(bad.map((v) => `${v.id}: ${v.help} — ${v.nodes.map((n) => `${n.target.join(" ")} ${n.html.slice(0, 120)} ${n.any?.[0]?.message ?? ""}`).join(" | ")}`), `axe on ${name}`).toEqual([]);
+  expect(bad.map((v) => `${v.id}: ${v.help} — ${v.nodes.map((n) => `${n.target.join(" ")} ${n.html.slice(0, 120)} ${n.any?.[0]?.message ?? ""}`).join(" | ")}`),
+         `axe on ${key}`).toEqual([]);
 }
 
 export function newEmail(tag: string): string {
@@ -35,11 +39,12 @@ async function linkFor(email: string): Promise<string> {
   throw new Error(`no sign-in email for ${email}`);
 }
 
-// On the sign-in page: ask for a link, read it from Mailpit, follow it, press the button.
+// Wherever the sign-in form shows (its page, or the sheet on "What you'll need"): ask for a
+// link, read it from Mailpit, follow it, press the button.
 export async function signInHere(page: Page, email: string) {
-  await expect(page).toHaveURL(/\/signin$/);
-  await page.getByLabel(/email/i).fill(email);
-  await page.getByRole("button", { name: /send|link/i }).click();
+  await page.getByLabel("Your email address").fill(email);
+  await page.getByRole("button", { name: "Email me a sign-in link" }).click();
+  await expect(page.getByText("Check your email")).toBeVisible();
   const link = await linkFor(email);
   await page.goto(new URL(link).pathname + new URL(link).hash);
   await page.getByRole("button", { name: "Sign me in" }).click();
@@ -47,8 +52,9 @@ export async function signInHere(page: Page, email: string) {
 
 export type Project = "use" | "build" | "driveway";
 
-// "Do I need a permit?" → "Where is it?" → results → Start.
-export async function screenerToStart(page: Page, project: Project, startName: RegExp) {
+// "Do I need a permit?": Your project, Your property, What you'll need, then Start (signed out:
+// the sign-in sheet).
+export async function screenerToStart(page: Page, project: Project, application: string, email: string) {
   await page.goto("/start");
   const choice = { use: /Start a business/, build: /Build something new/, driveway: /driveway/ }[project];
   await page.getByRole("checkbox", { name: choice }).check({ force: true });
@@ -56,120 +62,165 @@ export async function screenerToStart(page: Page, project: Project, startName: R
     await page.getByRole("radio", { name: "A new building" }).check({ force: true });
     await page.getByRole("textbox", { name: /floor area/i }).first().fill("1200");
   }
-  await page.getByRole("button", { name: "Next" }).click();
+  await page.getByRole("button", { name: "Continue" }).click();
   await page.getByLabel("Street address, or map and lot").fill("4-36");
   await page.getByRole("button", { name: "Search" }).click();
   await page.getByRole("list", { name: "Search results" }).getByRole("button").first().click();
-  await axe(page, "where");
+  await axe(page, "property");
   await page.getByRole("button", { name: "Yes, this is my property" }).click();
   if (project === "use") {
     // Lot 4-36 is in D1, where a Farm/Vendor Market takes a Use Permit.
     await page.getByLabel("Search uses").fill("vendor market");
     await page.getByRole("button", { name: /^Choose Farm/ }).first().click();
   }
-  await expect(page.getByRole("heading", { name: "Here's what you'll need" })).toBeVisible();
-  await axe(page, "results");
-  await page.getByRole("link", { name: startName }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "What you'll need" })).toBeVisible();
+  await axe(page, "needs");
+  await page.getByRole("button", { name: `Start this application: ${application}` }).click();
+  const sheet = page.getByRole("dialog", { name: "Sign in to apply" });
+  await expect(sheet).toBeVisible();
+  await axe(page, "sign-in sheet");
+  await signInHere(page, email);
+  // A desktop opens the first unfinished step; a phone opens the list of steps, so tap it, as a person would.
+  await expect(page).toHaveURL(/\/applications\/[0-9a-f-]+(\/[a-z_]+)?$/);
+  if (/\/applications\/[0-9a-f-]+$/.test(page.url())) {
+    await axe(page, "step list");
+    await page.getByRole("link", { name: /, (Not started|Started)/ }).first().click();
+    await expect(page).toHaveURL(/\/applications\/[0-9a-f-]+\/[a-z_]+/);
+  }
 }
 
-type Plan = { adds: Record<string, number>; unknownOnce: boolean };
-
-const RADIO: [RegExp, string][] = [
-  [/Do you own the property/, "Yes"],
-  [/Should the Town also contact/, "No"],
-  [/neighboring lot share/, "No"],
-  [/only being renovated/, "No"],
-  [/What are you adding or changing/, "A deck"],
-  [/MaineDOT entrance permit/, "Not yet"],
-  [/traffic light/, "No"],
-  [/ditch/, "No"],
+const ANSWERS: [RegExp, string][] = [
+  [/full name|owner's full name|their name/i, "Test Applicant"],
+  [/phone/i, "207-555-0100"],
+  [/email/i, "someone@example.com"],
 ];
 
-// Answer whatever question is on screen; returns false once the review page is reached.
-export async function answerScreen(page: Page, plan: Plan, fixture: string): Promise<boolean> {
-  if (/\/review/.test(page.url())) return false;
-  const h1 = page.getByRole("heading", { level: 1 });
-  try {
-    await h1.waitFor({ timeout: 10_000 });
-  } catch {
-    if (/\/review/.test(page.url())) return false;
-    throw new Error(`no page heading at ${page.url()}: ${(await page.locator("main").textContent())?.slice(0, 400)}`);
-  }
-  if (/\/review/.test(page.url())) return false;
-  const chapter = (await h1.textContent()) ?? "";
-  await axe(page, `wizard:${chapter}`);
-  const add = page.getByRole("button", { name: "Yes, add one" });
-  if (await add.isVisible()) {
-    const title = (await page.locator("text=/\\?$/").first().textContent()) ?? "";
-    const kind = /building/i.test(title) ? "building" : "component";
-    if ((plan.adds[kind] ?? 0) > 0) {
-      plan.adds[kind] -= 1;
-      await add.click();
-    } else {
-      await page.getByRole("button", { name: "No, go on" }).click();
-    }
-    await page.waitForTimeout(150);
-    return true;
-  }
-  const unknown = page.getByRole("button", { name: "I don't know yet" });
-  if (plan.unknownOnce && (await unknown.isVisible())) {
-    plan.unknownOnce = false;
-    await unknown.click();
-    await page.waitForTimeout(150);
-    return true;
-  }
-  const card = page.locator("main");
-  const radios = card.getByRole("radio");
-  const file = card.locator('input[type="file"]');
-  const textarea = card.locator("textarea");
-  const text = card.locator('input:not([type="file"]):not([type="radio"]):not([type="checkbox"])');
-  const checkboxes = card.getByRole("checkbox");
-  if (await card.getByRole("region", { name: "Map of Newcastle" }).isVisible().catch(() => false)) {
-    const box = await card.getByRole("region", { name: "Map of Newcastle" }).boundingBox();
-    await page.mouse.click(box!.x + box!.width / 2, box!.y + box!.height / 2);
-    await expect(card.getByText(/^Marked/)).toBeVisible();
-  } else if (await card.getByLabel("Search uses").isVisible().catch(() => false)) {
-    if (!(await card.getByRole("list", { name: "Uses chosen" }).isVisible().catch(() => false))) {
-      await card.getByLabel("Search uses").fill("office");
-      await card.getByRole("button", { name: /^Add / }).first().click();
-    }
-  } else if (await file.count()) {
-    await file.setInputFiles(fixture);
-    await expect(card.getByRole("list", { name: "Files added" })).toBeVisible({ timeout: 60_000 });
-  } else if (await radios.count()) {
-    const question = (await card.getByRole("radiogroup").textContent()) ?? "";
-    const pick = RADIO.find(([q]) => q.test(question))?.[1];
-    if (pick) await card.getByRole("radio", { name: pick, exact: true }).check({ force: true });
-    else await radios.first().check({ force: true });
-  } else if (await checkboxes.count()) {
-    await checkboxes.first().check({ force: true });
-  } else if (await textarea.count()) {
-    await textarea.first().fill("A short test description.");
-  } else if (await text.count()) {
-    const input = text.first();
-    if ((await input.getAttribute("inputmode")) === "decimal") {
-      const label = (await card.textContent()) ?? "";
-      await input.fill(/percent/.test(label) ? "20" : /stories/.test(label) ? "2" : /angle/.test(label) ? "90" : "12");
-    } else {
-      await input.fill(/full name/.test((await card.textContent()) ?? "") ? "Test Applicant" : "Test answer");
-    }
-  }
-  await page.getByRole("button", { name: "Next" }).click();
+// Fill every unanswered control inside `scope` (a step pane or a sheet page).
+export async function answerPane(page: Page, scope: Locator, fixture: string) {
+  // A page or sheet slides in; answer once it has arrived, not the one leaving.
+  await page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== "running"), null, { timeout: 5000 }).catch(() => {});
   await page.waitForTimeout(150);
-  return true;
+  // Uses first: a chosen use can open a follow-up question below it.
+  for (const row of await scope.locator("[data-field]").filter({ has: page.getByRole("button", { name: "Add a use" }) }).all()) {
+    if (await row.getByRole("row").count()) continue;
+    await row.getByRole("button", { name: "Add a use" }).click();
+    const sheet = page.getByRole("dialog", { name: "Add a use" });
+    await sheet.getByLabel("Search uses").fill("office");
+    await sheet.getByRole("button", { name: /^Add Office/ }).first().click();
+    await expect(sheet).toBeHidden();
+  }
+  for (const box of await scope.locator('input[type="text"]:not([inputmode]), input[type="email"], input[type="tel"], input:not([type])').all()) {
+    if (!(await box.isVisible()) || (await box.inputValue()) || (await box.getAttribute("role")) === "searchbox") continue;
+    const label = (await box.getAttribute("aria-label")) ?? (await box.evaluate((el) => (el as HTMLInputElement).labels?.[0]?.textContent ?? ""));
+    if (/^Search/.test(label)) continue;
+    await box.fill(ANSWERS.find(([r]) => r.test(label))?.[1] ?? "Test answer");
+    await box.blur();
+  }
+  for (const area of await scope.locator("textarea").all()) {
+    if ((await area.isVisible()) && !(await area.inputValue())) { await area.fill("A short test description."); await area.blur(); }
+  }
+  for (const num of await scope.locator('input[inputmode="decimal"], input[inputmode="numeric"]').all()) {
+    if (!(await num.isVisible()) || (await num.inputValue())) continue;
+    await num.fill("12"); await num.blur();
+  }
+  for (const slider of await scope.getByRole("slider").all()) {
+    await slider.focus(); await page.keyboard.press("ArrowRight");
+  }
+  for (const group of await scope.getByRole("radiogroup").all()) {
+    if (!(await group.isVisible()) || (await group.getByRole("radio", { checked: true }).count())) continue;
+    const no = group.getByRole("radio", { name: "No", exact: true });
+    await ((await no.count()) ? no : group.getByRole("radio").first()).check({ force: true });
+    await page.waitForTimeout(100);
+  }
+  for (const grid of await scope.getByRole("grid").all()) {
+    // Only choice chips (selectable rows); chosen uses are a list of removable tags.
+    if (!(await grid.locator("[aria-selected]").count()) || (await grid.locator('[aria-selected="true"]').count())) continue;
+    await grid.getByRole("row").first().click();
+  }
+  for (const picker of await scope.locator('button[aria-haspopup="listbox"]').all()) {
+    if (!(await picker.isVisible()) || !/Choose…/.test((await picker.textContent()) ?? "")) continue;
+    await picker.click();
+    await page.getByRole("option").first().click();
+  }
+  for (const file of await scope.locator('input[type="file"]').all()) {
+    await file.setInputFiles(fixture);
+    await expect(scope.getByRole("list", { name: "Files added" }).first()).toBeVisible({ timeout: 60_000 });
+  }
+  const map = scope.getByRole("region", { name: "Map of Newcastle" });
+  if (await map.count()) {
+    // MapLibre drops clicks until its style has loaded and the lot is framed.
+    for (let tries = 0; tries < 4; tries += 1) {
+      await map.first().scrollIntoViewIfNeeded();
+      await page.waitForTimeout(1500);
+      const box = await map.first().boundingBox();
+      await page.mouse.click(box!.x + box!.width / 2, box!.y + box!.height / 2);
+      if (await scope.getByText(/^Marked\./).isVisible().catch(() => false)) break;
+    }
+    await expect(scope.getByText(/^Marked\./)).toBeVisible();
+  }
 }
 
-export async function answerEverything(page: Page, plan: Plan, fixture: string) {
-  for (let i = 0; i < 200; i += 1) {
-    if (!(await answerScreen(page, plan, fixture))) return;
+// Open an item's sheet and fill every page, then Done.
+export async function fillItemSheet(page: Page, fixture: string) {
+  const sheet = page.getByRole("dialog");
+  await expect(sheet).toBeVisible();
+  for (let i = 0; i < 8; i += 1) {
+    await answerPane(page, sheet, fixture);
+    await axe(page, "item sheet");
+    const next = sheet.getByRole("button", { name: /^Next:/ });
+    if (!(await next.count())) break;
+    await next.click();
   }
-  throw new Error("the wizard did not reach review in 200 screens");
+  await sheet.getByRole("button", { name: "Done" }).click();
+  await expect(sheet).toBeHidden();
+}
+
+type Plan = { extraBuilding?: boolean; component?: boolean };
+
+// Every step of the application, by Continue, until Review and sign.
+export async function completeApplication(page: Page, fixture: string, plan: Plan = {}) {
+  for (let i = 0; i < 15; i += 1) {
+    const title = (await page.getByRole("heading", { level: 1 }).first().textContent()) ?? "";
+    if (/Review and sign/.test(title)) return;
+    await axe(page, `step ${title}`);
+    const pane = page.locator("[data-pane]").first();
+    if (/Buildings/.test(title)) {
+      for (const item of await pane.getByRole("button", { name: /^Building \d/ }).all()) {
+        await item.click(); await fillItemSheet(page, fixture);
+      }
+      if (plan.extraBuilding) {
+        plan.extraBuilding = false;
+        await pane.getByRole("button", { name: "Add a building" }).click();
+        await page.getByRole("menuitem", { name: "A detached garage or shed" }).click();
+        await fillItemSheet(page, fixture);
+      }
+    } else if (/Additions/.test(title)) {
+      if (plan.component) {
+        plan.component = false;
+        await pane.getByRole("button", { name: "Add an addition, porch or deck" }).click();
+        await fillItemSheet(page, fixture);
+      }
+    } else {
+      await answerPane(page, pane, fixture);
+    }
+    await page.getByRole("button", { name: /^(Continue|Review)$/ }).click();
+    await page.waitForTimeout(300);
+  }
+  throw new Error("didn't reach Review and sign in 15 steps");
 }
 
 // On review: every field is filled or marked, and nothing is still to answer.
 export async function expectReviewComplete(page: Page, title: string) {
-  await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Review and sign" })).toBeVisible();
+  await expect(page.getByText(title).first()).toBeVisible();
   await axe(page, "review");
-  await expect(page.getByText("Still to answer")).toHaveCount(0);
+  await expect(page.getByRole("group", { name: "Still to answer" })).toHaveCount(0);
   await expect(page.getByText("Not answered yet")).toHaveCount(0);
+}
+
+// The sidebar's steps (desktop) or the root list (phone), by name.
+export async function stepNames(page: Page): Promise<string[]> {
+  const nav = page.getByRole("navigation", { name: "Steps" });
+  const links = (await nav.count()) ? nav.locator(":scope > ul > li > a") : page.locator("main a, [data-row] a, a").filter({ hasText: /./ });
+  return (await links.allTextContents()).map((t) => t.trim());
 }
