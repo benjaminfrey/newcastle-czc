@@ -100,7 +100,7 @@ sections:
     official_label: Applicant is the Property Owner
     source: question
     label: Do you own this property?
-    help: Turn this off if you're a builder or someone else applying for the owner.
+    help: Choose No if you're a builder or someone else applying for the owner.
     type: yesno
     why: 8.2.a.2
     required: true
@@ -117,7 +117,7 @@ sections:
     status: draft
     control: switch
     default: false
-    help: Turn this on and the Town will also contact them.
+    help: If you choose Yes, the Town will also contact them.
   step: about_you
 - id: owner
   official_title: Property Owner (if different)

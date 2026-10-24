@@ -293,3 +293,10 @@ def test_window_walls_are_sliders(forms):
 def test_changed_entries_are_drafts(forms):
     for form in forms.values():
         assert {f.status for _, f in form.fields()} == {"draft"}
+
+
+def test_yes_no_help_speaks_of_choosing_not_switching(forms):
+    # Yes/no questions are tiles in the wizard (brief 2026-10-24), so help says "choose", not "turn on/off".
+    for form in forms.values():
+        for _, f in form.fields():
+            assert "Turn this" not in (f.help or ""), f.id

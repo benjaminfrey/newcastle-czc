@@ -121,7 +121,7 @@ sections:
     status: draft
     control: switch
     default: false
-    help: Turn this on if the building keeps its size and place.
+    help: Choose Yes if the building keeps its size and place.
   step: buildings
 - id: building_location
   official_title: Building Location (proposed)
@@ -745,7 +745,7 @@ sections:
     status: draft
     control: switch
     default: false
-    help: Turn this on if it keeps its size and place.
+    help: Choose Yes if it keeps its size and place.
   - id: attached_to
     official_label: Building attached to
     source: question

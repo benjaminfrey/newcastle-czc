@@ -115,7 +115,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 - Source: asked in the wizard
 - Applicants read: “Do you own this property?”
-- Help: Turn this off if you're a builder or someone else applying for the owner.
+- Help: Choose No if you're a builder or someone else applying for the owner.
 - Answer: yesno; required
 - Control: switch (starts on)
 - **Draft — awaiting the chair's approval.**
@@ -127,7 +127,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 - Source: asked in the wizard
 - Applicants read: “Is someone else helping with this, like a builder or surveyor?”
-- Help: Turn this on and the Town will also contact them.
+- Help: If you choose Yes, the Town will also contact them.
 - Answer: yesno; required
 - Control: switch (starts off)
 - **Draft — awaiting the chair's approval.**
@@ -548,7 +548,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 - Source: asked in the wizard
 - Applicants read: “Is it only being renovated?”
-- Help: Turn this on if the building keeps its size and place.
+- Help: Choose Yes if the building keeps its size and place.
 - Answer: yesno; required
 - Control: switch (starts off)
 - **Draft — awaiting the chair's approval.**
@@ -949,7 +949,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 - Source: asked in the wizard
 - Applicants read: “Is it only being renovated?”
-- Help: Turn this on if it keeps its size and place.
+- Help: Choose Yes if it keeps its size and place.
 - Answer: yesno; required
 - Control: switch (starts off)
 - **Draft — awaiting the chair's approval.**
