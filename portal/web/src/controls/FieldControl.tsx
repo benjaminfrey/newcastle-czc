@@ -35,10 +35,11 @@ const BESIDE = new Set<ControlKind>(["stepper", "number", "picker", "building-pi
 
 type Props = {
   field: FormField; itemId: string | null; value: unknown; onValue: (v: unknown) => void; error?: string | null;
-  compact?: boolean; // part of a layout that gives the help and "Why we ask" once for the group
+  compact?: boolean; // part of a layout that gives the help once for the group
+  bare?: boolean;    // the wizard's screen: the control alone; the screen shows the question, help and "I don't know yet"
 };
 
-export default function FieldControl({ field, itemId, value, onValue, error, compact }: Props) {
+export default function FieldControl({ field, itemId, value, onValue, error, compact, bare }: Props) {
   const kind = controlFor(field);
   const inputId = useId();
   const labelId = useId();
@@ -63,6 +64,15 @@ export default function FieldControl({ field, itemId, value, onValue, error, com
       default: return <TextControl {...props} />;
     }
   })();
+  if (bare) {
+    return (
+      <div data-field={field.id} className="flex w-full max-w-md flex-col items-center gap-2">
+        {control}
+        {isUnknown(value) && <p className="text-[15px] text-[var(--app-secondary-label)]">Not known yet — staff will follow up.</p>}
+        {error && <p role="alert" className="text-[15px] text-[var(--app-destructive)]">{error}</p>}
+      </div>
+    );
+  }
   const question = field.label ?? field.official_label;
   // A switch sits at the end of its question's line, as in Settings; its help goes underneath.
   const inline = kind === "switch";

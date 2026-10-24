@@ -20,20 +20,29 @@ type Props = {
   onStep?: (id: string) => void; // ⌥⌘↑ / ⌥⌘↓
   actions?: ShellActions;
   backLabel?: string; // the phone's ‹ chevron: "Application", or "Home" for the start steps
+  // The wizard: the answer trail above the pane, one pane per question keyed and slid by direction,
+  // what a screen reader hears on arriving, and the phone's ‹ Back to the previous question.
+  trail?: ReactNode;
+  paneKey?: string;
+  direction?: 1 | -1;
+  announce?: string;
+  phoneBack?: () => void;
   children?: ReactNode;
 };
 
 // The application window: on a desktop, a sidebar of steps beside the content pane (toolbar,
 // content, Back and Continue); on a phone, a list of steps that pushes each step in. The
 // content sits in one form, so Return anywhere in a field means Continue.
-export default function AppShell({ steps, currentId, formTitle, saveState, rootHref, onDone, onReload, onStep, actions = {}, backLabel = "Application", children }: Props) {
+export default function AppShell({ steps, currentId, formTitle, saveState, rootHref, onDone, onReload, onStep, actions = {}, backLabel = "Application",
+  trail, paneKey, direction = 1, announce, phoneBack, children }: Props) {
   const wide = useWideLayout();
   const navigate = useNavigate();
   const flat = steps.flatMap((s) => [s, ...(s.children ?? [])]);
   const current = flat.find((s) => s.id === currentId);
   const reduced = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
   // A step slides in on a phone and cross-fades on a desktop; with reduced motion, a short fade.
-  const motion = reduced ? "pane-fade" : wide ? "pane-cross" : "pane-push";
+  // In the wizard each question slides in sideways on both sizes, back the other way.
+  const motion = reduced ? "pane-fade" : paneKey ? (direction < 0 ? "pane-pull" : "pane-push") : wide ? "pane-cross" : "pane-push";
   const top = steps.findIndex((s) => s.id === currentId || s.children?.some((c) => c.id === currentId));
 
   // The iOS edge swipe: a drag that starts at the left edge and moves right goes back.
@@ -42,6 +51,10 @@ export default function AppShell({ steps, currentId, formTitle, saveState, rootH
   const onPointerUp = (e: PointerEvent) => {
     if (swipe.current !== null && e.clientX - swipe.current >= 80) {
       commitFocused();
+      if (phoneBack) {
+        swipe.current = null;
+        return phoneBack();
+      }
       navigate(rootHref);
     }
     swipe.current = null;
@@ -73,18 +86,18 @@ export default function AppShell({ steps, currentId, formTitle, saveState, rootH
 
   // A pane that brings its own form (the start steps) gets a plain container, never a nested form.
   const cls = `flex flex-col gap-6 ${wide ? "px-8 py-6" : "px-4 pb-32 pt-2"}`;
-  const inner = actions.onContinue || actions.back ? (
+  const inner = actions.onContinue || actions.back || actions.dots ? (
     <form onSubmit={onSubmit} noValidate className={cls}>
       {children}
       <ActionBar actions={actions} wide={wide} />
     </form>
   ) : <div className={cls}>{children}</div>;
   const content = (
-    <div key={currentId ?? "root"} data-pane className={motion} onPointerDown={onPointerDown} onPointerUp={onPointerUp}>
+    <div key={paneKey ?? currentId ?? "root"} data-pane className={motion} onPointerDown={onPointerDown} onPointerUp={onPointerUp}>
       {inner}
       {current && top >= 0 && (
         <p data-testid="step-announcer" aria-live="polite" className="sr-only">
-          Step {top + 1} of {steps.length}: {current.title}
+          {announce ?? `Step ${top + 1} of ${steps.length}: ${current.title}`}
         </p>
       )}
     </div>
@@ -93,7 +106,8 @@ export default function AppShell({ steps, currentId, formTitle, saveState, rootH
   if (!wide) {
     return (
       <div className="min-h-dvh bg-[var(--app-ground)]">
-        <NavBar title={current!.title} backHref={rootHref} backLabel={backLabel} saveState={saveState} onReload={onReload} />
+        <NavBar title={current!.title} backHref={rootHref} backLabel={backLabel} saveState={saveState} onReload={onReload} onBack={phoneBack} />
+        {trail}
         {content}
       </div>
     );
@@ -105,6 +119,7 @@ export default function AppShell({ steps, currentId, formTitle, saveState, rootH
       </aside>
       <main className="flex min-w-0 flex-col">
         <Toolbar title={current?.title ?? formTitle} saveState={saveState} onDone={onDone} onReload={onReload} />
+        {trail}
         <div className="mx-auto w-full max-w-3xl">{content}</div>
       </main>
     </div>

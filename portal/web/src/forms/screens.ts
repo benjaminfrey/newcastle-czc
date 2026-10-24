@@ -98,7 +98,7 @@ export function groupOf(screens: Screen[], s: Screen): Screen[] {
   return screens.filter((x) => x.step === s.step && x.itemId === s.itemId);
 }
 
-const place = (s: Screen): Place => ({ step: s.step, screen: s.id, ...(s.itemId ? { item: s.itemId } : {}) });
+export const place = (s: Screen): Place => ({ step: s.step, screen: s.id, ...(s.itemId ? { item: s.itemId } : {}) });
 
 // Where Continue (or a tap) goes from `at`: the next screen in its step, else the next step's first,
 // else review. A screen that stopped applying (an owner question after "I own it") is placed by the
@@ -127,4 +127,11 @@ export function screenAfter(form: FormDef, cur: Current, models: StepModel[], at
     if (list.length) return place(list[0]);
   }
   return { review: true };
+}
+
+// Where Back goes from `at`: the screen before it, across steps; null on the very first.
+export function screenBefore(form: FormDef, cur: Current, models: StepModel[], at: Place): Place | null {
+  const flat = models.flatMap((m) => screensOf(form, cur, m));
+  const i = flat.findIndex((s) => s.step === at.step && s.id === at.screen && (at.item === undefined || s.itemId === at.item));
+  return i > 0 ? place(flat[i - 1]) : null;
 }
