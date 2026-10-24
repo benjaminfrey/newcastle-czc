@@ -1,7 +1,6 @@
 import { Button } from "@heroui/react";
 import { useId } from "react";
 import type { FormField } from "../applications";
-import WhyWeAsk from "../components/WhyWeAsk";
 import InsetGroup from "../shell/InsetGroup";
 import {
   ChipsControl, isUnknown, NumberControl, PickerControl, SegmentedControl, SliderControl, SwitchControl, TextControl, TileControl,
@@ -86,7 +85,6 @@ export default function FieldControl({ field, itemId, value, onValue, error, com
               I don't know yet
             </Button>
           )}
-          {!compact && <WhyWeAsk why={field.why} />}
         </div>
       </div>
     </InsetGroup.Row>

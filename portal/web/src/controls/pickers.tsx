@@ -4,7 +4,8 @@ import { useApplication } from "../app/ApplicationStore";
 import type { FormDef } from "../applications";
 import type { Current } from "../forms/applicability";
 import { itemLabel } from "../forms/steps";
-import { PickerControl, type ControlProps } from "./basic";
+import { type ControlProps } from "./basic";
+import { ChoiceTiles } from "./Tiles";
 
 const FREE = "Free-standing";
 const ANOTHER = "__another__";
@@ -17,7 +18,8 @@ export function BuildingPicker(p: ControlProps) {
   const items = [...buildings.map((i) => ({ id: i.id, label: itemLabel(form!, cur!, i.id) })), { id: FREE, label: FREE }];
   // An answer from before ids were stored names a building by its words: show it as that building.
   const legacy = typeof p.value === "string" ? items.find((x) => x.label === p.value)?.id : undefined;
-  return <PickerControl {...p} value={legacy ?? p.value} items={items} />;
+  return <ChoiceTiles field={p.field} value={legacy ?? p.value} onPick={p.onValue}
+                      choices={items.map((x) => ({ value: x.id, key: x.id, label: x.label }))} />;
 }
 
 // The words for an "attached to" answer: the building's current name, "Free-standing", an older
@@ -36,11 +38,11 @@ export function StreetPicker(p: ControlProps) {
   const [another, setAnother] = useState(typed);
   const [draft, setDraft] = useState(typed ? (p.value as string) : "");
   useEffect(() => { if (typed) setAnother(true); }, [typed]);
-  const items = [...roads.map((r) => ({ id: r, label: r })), { id: ANOTHER, label: "Another road" }];
+  const choices = [...roads.map((r) => ({ value: r, key: r, label: r })), { value: ANOTHER, key: ANOTHER, label: "Another road" }];
   return (
-    <div className="flex flex-col gap-2">
-      <PickerControl {...p} value={another ? ANOTHER : p.value} items={items}
-                     onValue={(v) => (v === ANOTHER ? setAnother(true) : (setAnother(false), p.onValue(v)))} />
+    <div className="flex w-full flex-col items-center gap-3">
+      <ChoiceTiles field={p.field} value={another ? ANOTHER : p.value} choices={choices}
+                   onPick={(v) => (v === ANOTHER ? setAnother(true) : (setAnother(false), p.onValue(v)))} />
       {another && (
         <TextField value={draft} onChange={setDraft} aria-label="Name of the road"
                    onBlur={() => draft.trim() && p.onValue(draft.trim())}>

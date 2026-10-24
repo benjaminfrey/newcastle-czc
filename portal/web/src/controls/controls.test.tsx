@@ -191,14 +191,21 @@ describe("blank lists", () => {
   });
 });
 
+describe("No Why we ask", () => {
+  it("a question with a Code citation doesn't show it", () => {
+    draw(f({ type: "text", why: { cite: "8.2.a.2", text: "The Code's words." } }));
+    expect(screen.queryByText("Why we ask")).not.toBeInTheDocument();
+    expect(screen.queryByText(/The Code's words/)).not.toBeInTheDocument();
+  });
+});
+
 describe("BuildingPicker", () => {
   it("lists this application's buildings", async () => {
     fakeStore({ cur: { answers: [{ field_id: "building_name", item_id: "b1", value: "House" }],
                        items: [{ id: "b1", kind: "building", position: 0 }], property: {}, account: {} } as never });
     const onValue = draw(f({ id: "attached_to", type: "text", control: "building-picker", label: "Which building is it attached to?" }));
-    await userEvent.click(screen.getByRole("button", { name: /Which building/ }));
-    expect(await screen.findByRole("option", { name: "Free-standing" })).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("option", { name: "Building 1: House" }));
+    expect(screen.getByRole("radio", { name: "Free-standing" })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("radio", { name: "Building 1: House" }));
     expect(onValue).toHaveBeenCalledWith("b1"); // the building itself, so a rename or a deletion can't leave stale words
   });
 
@@ -215,11 +222,9 @@ describe("BuildingPicker", () => {
 describe("StreetPicker", () => {
   it("lists the lot's roads; Another road asks for a name", async () => {
     const onValue = draw(f({ id: "entrance_street", type: "text", control: "street-picker", label: "Which road?" }));
-    await userEvent.click(screen.getByRole("button", { name: /Which road\?/ }));
-    await userEvent.click(await screen.findByRole("option", { name: "Hall Street" }));
+    await userEvent.click(screen.getByRole("radio", { name: "Hall Street" }));
     expect(onValue).toHaveBeenCalledWith("Hall Street");
-    await userEvent.click(screen.getByRole("button", { name: /Which road\?/ }));
-    await userEvent.click(await screen.findByRole("option", { name: "Another road" }));
+    await userEvent.click(screen.getByRole("radio", { name: "Another road" }));
     await userEvent.type(screen.getByRole("textbox", { name: "Name of the road" }), "River Road");
     await userEvent.tab();
     expect(onValue).toHaveBeenLastCalledWith("River Road");
