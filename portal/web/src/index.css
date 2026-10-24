@@ -1,10 +1,91 @@
 @import "tailwindcss";
 @import "@heroui/styles";
 
-/* WCAG 2.1 AA (spec §4). HeroUI's default accent puts white text on #0485f7, a 3.6:1
-   contrast; buttons need 4.5:1. This blue gives about 6.5:1. */
+/* The portal's world: Apple's grouped lists and system type, with the Town seal's teal.
+   Values come from src/theme/tokens.ts (a test keeps the two in step). Light and dark follow
+   the device: main.tsx sets data-theme; the media query covers the first paint. */
 :root {
-  --accent: oklch(0.5 0.17 255);
+  --app-ground: #F2F2F7;
+  --app-grouped-ground: #F2F2F7;
+  --app-row: #FFFFFF;
+  --app-separator: #C6C6C8;
+  --app-label: #1C1C1E;
+  --app-secondary-label: #636366;
+  --app-tertiary-label: #8A8A8E;
+  --app-accent: #0C727E;
+  --app-accent-text: #0C727E;
+  --app-on-accent: #FFFFFF;
+  --app-seal: #1098A8;
+  --app-destructive: #D70015;
+  --app-selection: #DCEFF1;
+}
+
+:root[data-theme="dark"] {
+  --app-ground: #000000;
+  --app-grouped-ground: #000000;
+  --app-row: #1C1C1E;
+  --app-separator: #38383A;
+  --app-label: #F2F2F7;
+  --app-secondary-label: #AEAEB2;
+  --app-tertiary-label: #8A8A8E;
+  --app-accent: #0C727E;
+  --app-accent-text: #4CC9D8;
+  --app-on-accent: #FFFFFF;
+  --app-seal: #1098A8;
+  --app-destructive: #FF6961;
+  --app-selection: #123C42;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --app-ground: #000000;
+    --app-grouped-ground: #000000;
+    --app-row: #1C1C1E;
+    --app-separator: #38383A;
+    --app-label: #F2F2F7;
+    --app-secondary-label: #AEAEB2;
+    --app-tertiary-label: #8A8A8E;
+    --app-accent: #0C727E;
+    --app-accent-text: #4CC9D8;
+    --app-on-accent: #FFFFFF;
+    --app-seal: #1098A8;
+    --app-destructive: #FF6961;
+    --app-selection: #123C42;
+  }
+}
+
+:root {
+  --background: var(--app-ground);
+  --foreground: var(--app-label);
+  --surface: var(--app-row);
+  --surface-foreground: var(--app-label);
+  --overlay: var(--app-row);
+  --overlay-foreground: var(--app-label);
+  --field-background: var(--app-row);
+  --field-foreground: var(--app-label);
+  --muted: var(--app-secondary-label);
+  --accent: var(--app-accent);
+  --accent-foreground: var(--app-on-accent);
+  --focus: var(--app-accent-text);
+  --link: var(--app-accent-text);
+  --danger: var(--app-destructive);
+  --border: var(--app-separator);
+  --separator: var(--app-separator);
+  --segment: var(--app-row);
+  --segment-foreground: var(--app-label);
+}
+
+:root {
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  background: var(--app-ground);
+  color: var(--app-label);
+}
+
+body {
+  background: var(--app-ground);
+  color: var(--app-label);
 }
 
 /* The map's attribution links sit in a line of text, so they need more than colour. */
