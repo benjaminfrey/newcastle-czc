@@ -124,6 +124,33 @@ form is new. `forms/answers.py` decides what applies, what is still missing and 
 `web/src/forms/applicability.ts` is its browser twin, and both are checked against
 `web/src/forms/form-fixtures.json`.
 
+**Steps, pages and controls.** A definition also says how the application is laid out, so each one
+runs in about ten steps (the redesign, `specs/2026-10-23-applicant-portal-redesign.md`):
+
+- `steps` — the form's steps in order (the Cover Sheet's come first); a section or a field names its
+  `step`, and a field's own wins. Every question must be on a step.
+- `pages` on a repeating section (a building, an addition) — the pages of its sheet, each with an
+  optional `layout`: `compass` (window shares around a plan of the walls) or `lot-diagram`
+  (setbacks around a drawing of the lot). Each of its questions names its `page`.
+- `control` — how a question is asked: `stepper`, `slider`, `switch`, `segmented`, `tiles`,
+  `picker`, `chips`, `building-picker`, `street-picker` or `building-type`; `step_size` for
+  sliders and steppers; `autocomplete` for the browser's autofill.
+- `default` — a value set when the application (or item) is created, saved as the form's
+  (`set_by = form-default`), so a switch can start on.
+- `add_options` on a repeat — the choices under "Add a building", each with a `preset` of answers
+  (a detached garage is a building with its class already set).
+
+The loader checks every one of these (unknown steps, pages, controls, layouts; defaults and presets
+that would fail their own field's check), and the forms sheet prints them for the chair.
+
+**The window.** The web app draws an application as a macOS / iOS window (`web/src/shell/`): on a
+desktop, a sidebar of the steps with checkmarks, a toolbar with Saving… / Saved and Done, and Back
+and Continue at the bottom right (⌘↑/↓ or ⌥↑/↓ move between steps); on a phone, a navigation stack
+— the step list, then each step with a ‹ back chevron and a Continue bar. Buildings and additions
+open as sheets with page dots. Answers save as they are given (`app/ApplicationStore.tsx`);
+Continue waits for the saves. Light and dark follow the device. The design system is recorded in
+`web/DESIGN.md`.
+
 **Approval.** Every entry starts as `status: draft`; production refuses a form with any draft in it
 (`503 form_not_approved`), as for the screener. The record for the chair:
 

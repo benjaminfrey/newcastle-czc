@@ -16,7 +16,7 @@ const renderAt = (path = "/apply/use_permit") =>
       <Routes>
         <Route path="/apply/:formKey" element={<ApplyStart />} />
         <Route path="/signin" element={<p>Sign in page</p>} />
-        <Route path="/where" element={<p>Where page</p>} />
+        <Route path="/start/property" element={<p>Where page</p>} />
         <Route path="/applications/:id" element={<p>Wizard page</p>} />
       </Routes>
     </MemoryRouter>,
@@ -68,7 +68,7 @@ describe("ApplyStart", () => {
     vi.spyOn(apps, "createApplication").mockResolvedValue("property_unavailable");
     renderAt();
     const link = await screen.findByRole("link", { name: /Enter your property yourself/ });
-    expect(link).toHaveAttribute("href", "/where?manual=1&next=%2Fapply%2Fuse_permit");
+    expect(link).toHaveAttribute("href", "/start/property?manual=1&next=%2Fapply%2Fuse_permit");
   });
 
   it("says when the form isn't ready", async () => {

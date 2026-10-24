@@ -4,132 +4,139 @@ key: use_permit
 version: 1
 ruleset_key: adopted-v1.0
 official_title: Use Permit Application
-include: [cover-sheet.v1]
+include:
+- cover-sheet.v1
+steps:
+- id: uses_today
+  title: Uses today
+- id: your_plan
+  title: Your plan
+- id: photos
+  title: Photos and plans
 sections:
-  - id: use_header
-    official_title: Proposed Project
-    chapter: Your property
+- id: use_header
+  official_title: Proposed Project
+  chapter: Your property
+  status: draft
+  fields:
+  - id: use_applicant_name
+    official_label: Applicant Name
+    source: derived
+    from: applicant_name
     status: draft
-    fields:
-      - id: use_applicant_name
-        official_label: Applicant Name
-        source: derived
-        from: applicant_name
-        status: draft
-      - id: use_street_address
-        official_label: Street Address
-        source: derived
-        from: street_address
-        status: draft
-      - id: use_map_lot
-        official_label: Map / Lot
-        source: derived
-        from: map_lot
-        status: draft
-
-  - id: existing
-    official_title: Existing
-    chapter: How the property is used now
+  - id: use_street_address
+    official_label: Street Address
+    source: derived
+    from: street_address
     status: draft
-    fields:
-      - id: existing_uses
-        official_label: Existing Use(s)
-        source: question
-        label: What is the property used for now?
-        help: Pick each use from the Code's list. If the land is empty, or nothing fits, leave this blank and say so in the next question.
-        type: uses
-        why: 8.15.b.1
-        status: draft
-      - id: existing_description
-        official_label: Description
-        source: question
-        label: In a sentence or two, how is the property used now?
-        help: For example "Our home, with a two-car garage we use for storage."
-        type: longtext
-        why: 8.15.b.1
-        required: true
-        status: draft
-
-  - id: proposed
-    official_title: Proposed
-    chapter: What you want to do
+  - id: use_map_lot
+    official_label: Map / Lot
+    source: derived
+    from: map_lot
     status: draft
-    fields:
-      - id: proposed_uses
-        official_label: Uses to be Established
-        source: question
-        label: Which use or uses do you want to start?
-        help: If you came here from "Do I need a permit?", we've filled in the use you picked. You can add others.
-        type: uses
-        why: 8.15.b.1
-        required: true
-        status: draft
-      - id: proposed_description
-        official_label: Description
-        source: question
-        label: What do you plan to do there?
-        help: >-
-          Say what will happen there, in which building, and roughly how much: for example "Repair lawn
-          and garden equipment in my 30 by 40 ft garage, by appointment, two or three customers a week."
-        type: longtext
-        why: 8.15.b.1
-        required: true
-        status: draft
-      - id: discontinued_uses
-        official_label: Uses to be Discontinued
-        source: question
-        label: Will any use that's there now stop?
-        help: Pick each use that will stop. Leave this blank if nothing will stop.
-        type: uses
-        why: 8.15.b.1
-        status: draft
-      - id: discontinued_description
-        official_label: Description of Uses to be Discontinued
-        source: question
-        label: What will stop, and when?
-        type: longtext
-        why: 8.15.b.1
-        show_if: {known: answers.discontinued_uses}
-        status: draft
-
-  - id: use_documents_section
-    official_title: Attachments
-    chapter: Plans and photos
+- id: existing
+  official_title: Existing
+  chapter: How the property is used now
+  status: draft
+  fields:
+  - id: existing_uses
+    official_label: Existing Use(s)
+    source: question
+    label: What is the property used for now?
+    help: Pick each use from the Code's list. If the land is empty, or nothing fits, leave this blank and say so
+      in the next question.
+    type: uses
+    why: 8.15.b.1
     status: draft
-    fields:
-      - id: use_documents
-        official_label: Other relevant documentation
-        source: question
-        label: Add anything else that would help, like photos, a floor plan or a business plan.
-        help: PDF, JPEG, PNG or HEIC files up to 25 MB each. This is optional, but staff may ask for more.
-        type: upload
-        why: 8.2.a.2
-        status: draft
-
-  - id: use_certification
-    official_title: Use Form Certification
-    chapter: Sign and submit
+  - id: existing_description
+    official_label: Description
+    source: question
+    label: In a sentence or two, how is the property used now?
+    help: For example "Our home, with a two-car garage we use for storage."
+    type: longtext
+    why: 8.15.b.1
+    required: true
     status: draft
-    fields:
-      - id: use_signature
-        official_label: Applicant Signature
-        source: at_submit
-        status: draft
-      - id: use_signature_date
-        official_label: Date
-        source: at_submit
-        status: draft
-      - id: use_signature_name
-        official_label: Name (print)
-        source: at_submit
-        status: draft
-
-  - id: use_office
-    official_title: Use Form — Official Use Only
-    chapter: Office use
+  step: uses_today
+- id: proposed
+  official_title: Proposed
+  chapter: What you want to do
+  status: draft
+  fields:
+  - id: proposed_uses
+    official_label: Uses to be Established
+    source: question
+    label: Which use or uses do you want to start?
+    help: If you came here from "Do I need a permit?", we've filled in the use you picked. You can add others.
+    type: uses
+    why: 8.15.b.1
+    required: true
     status: draft
-    fields:
-      - id: permit_type_required
-        official_label: Permit Type Required
-        source: staff
-        status: draft
+  - id: proposed_description
+    official_label: Description
+    source: question
+    label: What do you plan to do there?
+    help: 'Say what will happen there, in which building, and roughly how much: for example "Repair lawn and garden
+      equipment in my 30 by 40 ft garage, by appointment, two or three customers a week."'
+    type: longtext
+    why: 8.15.b.1
+    required: true
+    status: draft
+  - id: discontinued_uses
+    official_label: Uses to be Discontinued
+    source: question
+    label: Will any use that's there now stop?
+    help: Pick each use that will stop. Leave this blank if nothing will stop.
+    type: uses
+    why: 8.15.b.1
+    status: draft
+  - id: discontinued_description
+    official_label: Description of Uses to be Discontinued
+    source: question
+    label: What will stop, and when?
+    type: longtext
+    why: 8.15.b.1
+    show_if:
+      known: answers.discontinued_uses
+    status: draft
+  step: your_plan
+- id: use_documents_section
+  official_title: Attachments
+  chapter: Plans and photos
+  status: draft
+  fields:
+  - id: use_documents
+    official_label: Other relevant documentation
+    source: question
+    label: Add anything else that would help, like photos, a floor plan or a business plan.
+    help: PDF, JPEG, PNG or HEIC files up to 25 MB each. This is optional, but staff may ask for more.
+    type: upload
+    why: 8.2.a.2
+    status: draft
+  step: photos
+- id: use_certification
+  official_title: Use Form Certification
+  chapter: Sign and submit
+  status: draft
+  fields:
+  - id: use_signature
+    official_label: Applicant Signature
+    source: at_submit
+    status: draft
+  - id: use_signature_date
+    official_label: Date
+    source: at_submit
+    status: draft
+  - id: use_signature_name
+    official_label: Name (print)
+    source: at_submit
+    status: draft
+- id: use_office
+  official_title: Use Form — Official Use Only
+  chapter: Office use
+  status: draft
+  fields:
+  - id: permit_type_required
+    official_label: Permit Type Required
+    source: staff
+    status: draft

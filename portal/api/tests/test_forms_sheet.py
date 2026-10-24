@@ -34,7 +34,7 @@ def test_sheet_renders_conditions_in_words():
     _, f = sp.field("floor_height_2")
     assert condition_words(sp, f.show_if) == "“Total number of stories” (this building) is 2 or more"
     _, f = sp.field("component_roof_style")
-    assert condition_words(sp, f.show_if) == "“Component” (this component) is Addition or Garage"
+    assert condition_words(sp, f.show_if) == "“Component” (this component) is Addition or Garage (attached)"
     _, f = ep.field("mainedot_permit")
     assert condition_words(ep, f.show_if) == "the lot is not known to be off State roads (on a State road, or unknown)"
     assert condition_words(up, {"between": ["x", 1]}) == "`{'between': ['x', 1]}`"
@@ -53,3 +53,14 @@ def test_sheet_marks_drafts_and_records_the_chairs_rulings():
     building = next(s for s in sp.sections if s.id == "building")
     assert "Printed and asked only when (“Type of project” includes New building or accessory building)" in sheet
     assert building.show_if is not None
+
+
+
+def test_sheet_shows_steps_and_controls():
+    r, fs = forms()
+    sheet = forms_sheet(r, fs)
+    assert "- Step: Your lot" in sheet
+    assert "- Control: switch (starts on)" in sheet
+    assert "- Control: slider" in sheet
+    assert ("Add options: A building; A detached garage or shed (starts with Building type: "
+            "Residential Accessory Building; Building reference (name): Garage or shed)") in sheet

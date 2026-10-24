@@ -1,13 +1,129 @@
 @import "tailwindcss";
 @import "@heroui/styles";
 
-/* WCAG 2.1 AA (spec §4). HeroUI's default accent puts white text on #0485f7, a 3.6:1
-   contrast; buttons need 4.5:1. This blue gives about 6.5:1. */
+/* The portal's world: Apple's grouped lists and system type, with the Town seal's teal.
+   Values come from src/theme/tokens.ts (a test keeps the two in step). Light and dark follow
+   the device: main.tsx sets data-theme; the media query covers the first paint. */
 :root {
-  --accent: oklch(0.5 0.17 255);
+  --app-ground: #F2F2F7;
+  --app-grouped-ground: #F2F2F7;
+  --app-row: #FFFFFF;
+  --app-separator: #C6C6C8;
+  --app-label: #1C1C1E;
+  --app-secondary-label: #636366;
+  --app-tertiary-label: #8A8A8E;
+  --app-accent: #0C727E;
+  --app-accent-text: #0C727E;
+  --app-on-accent: #FFFFFF;
+  --app-seal: #1098A8;
+  --app-destructive: #D70015;
+  --app-selection: #DCEFF1;
+  --app-fill: #EEEEF0;
+  --app-ground-elevated: #F2F2F7;
+  --app-row-elevated: #FFFFFF;
+}
+
+:root[data-theme="dark"] {
+  --app-ground: #000000;
+  --app-grouped-ground: #000000;
+  --app-row: #1C1C1E;
+  --app-separator: #38383A;
+  --app-label: #F2F2F7;
+  --app-secondary-label: #AEAEB2;
+  --app-tertiary-label: #8A8A8E;
+  --app-accent: #0C727E;
+  --app-accent-text: #4CC9D8;
+  --app-on-accent: #FFFFFF;
+  --app-seal: #1098A8;
+  --app-destructive: #FF6961;
+  --app-selection: #123C42;
+  --app-fill: #3A3A3C;
+  --app-ground-elevated: #1C1C1E;
+  --app-row-elevated: #2C2C2E;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --app-ground: #000000;
+    --app-grouped-ground: #000000;
+    --app-row: #1C1C1E;
+    --app-separator: #38383A;
+    --app-label: #F2F2F7;
+    --app-secondary-label: #AEAEB2;
+    --app-tertiary-label: #8A8A8E;
+    --app-accent: #0C727E;
+    --app-accent-text: #4CC9D8;
+    --app-on-accent: #FFFFFF;
+    --app-seal: #1098A8;
+    --app-destructive: #FF6961;
+    --app-selection: #123C42;
+    --app-fill: #3A3A3C;
+    --app-ground-elevated: #1C1C1E;
+    --app-row-elevated: #2C2C2E;
+  }
+}
+
+:root {
+  --background: var(--app-ground);
+  --foreground: var(--app-label);
+  --surface: var(--app-row);
+  --surface-foreground: var(--app-label);
+  --overlay: var(--app-row);
+  --overlay-foreground: var(--app-label);
+  --field-background: var(--app-fill);
+  --field-foreground: var(--app-label);
+  --muted: var(--app-secondary-label);
+  --accent: var(--app-accent);
+  --accent-foreground: var(--app-on-accent);
+  --accent-soft-foreground: var(--app-accent-text);
+  --focus: var(--app-accent-text);
+  --link: var(--app-accent-text);
+  --danger: var(--app-destructive);
+  --border: var(--app-separator);
+  --separator: var(--app-separator);
+  --segment: var(--app-row);
+  --segment-foreground: var(--app-label);
+}
+
+:root {
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  background: var(--app-ground);
+  color: var(--app-label);
+}
+
+body {
+  background: var(--app-ground);
+  color: var(--app-label);
 }
 
 /* The map's attribution links sit in a line of text, so they need more than colour. */
 .maplibregl-ctrl-attrib a {
   text-decoration: underline;
+}
+
+/* Moving between steps: a push on a phone, a cross-fade on a desktop, a short fade when the
+   device asks for reduced motion. */
+@keyframes pane-push { from { transform: translateX(24%); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes pane-fade { from { opacity: 0; } to { opacity: 1; } }
+.pane-push { animation: pane-push 250ms cubic-bezier(0.32, 0.72, 0, 1); }
+.pane-cross { animation: pane-fade 150ms ease-out; }
+.pane-fade { animation: pane-fade 120ms ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .pane-push, .pane-cross { animation: pane-fade 120ms ease-out; }
+}
+
+/* A sheet sits above the window: its ground and rows take the raised colours. */
+.app-sheet {
+  --app-ground: var(--app-ground-elevated);
+  --app-row: var(--app-row-elevated);
+}
+
+/* An empty checkbox or radio circle needs an edge (3:1 against its row), not just the field fill. */
+.checkbox__control, .radio__control {
+  border: 1.5px solid var(--app-tertiary-label);
+}
+:where([data-selected]) > .checkbox__control, :where([data-selected]) .radio__control {
+  border-color: var(--app-accent);
 }

@@ -21,6 +21,16 @@ DECISIONS = [
     "**Buildings and components repeat**: the form prints one Building Form per building and one "
     "Components Section per addition, porch, deck or other component.",
     "**Signatures, dates and \"Name (print)\"** are filled when the applicant signs and submits (Milestone 6).",
+    "**Redesign (brief approved 2026-10-23): steps, pages and controls.** Each form is grouped into a few steps "
+    "(\"Step:\" below) and each building or addition into sheet pages (\"Page:\"); \"Control:\" names the "
+    "control drawn (switch, stepper, slider, chips, picker, tiles). A switch's starting position is written as "
+    "an answer marked as the form's, and the applicant sees it set.",
+    "**Proposed with the redesign, for approval:** (1) a detached garage or shed can be added as a building, "
+    "starting as a Residential Accessory Building; an attached garage stays an addition, and the \"garage "
+    "attached or detached\" question is gone; (2) the four window walls are sliders on a compass, still "
+    "percentages; (3) roof slope is picked (Flat, 2/12 to 12/12, Steeper), exterior finish is chips with an "
+    "Other field, \"attached to\" picks one of the application's buildings, and the entrance's road picks one "
+    "along the lot; (4) the four setbacks are entered around a not-to-scale drawing of the lot.",
 ]
 
 # The six questions from drafting, as the chair answered them on 2026-10-23.
@@ -113,9 +123,25 @@ def _status(e) -> str:
     return "- **Draft — awaiting the chair's approval.**"
 
 
+def _preset_words(form: FormDef, preset: dict) -> str:
+    """A preset as the chair reads it: "Building type: Residential Accessory Building; Name: Garage"."""
+    out = []
+    for fid, value in preset.items():
+        f = form.field(fid)[1]
+        shown = next((o.official for o in f.options if o.value == value), value)
+        out.append(f"{f.official_label}: {shown}")
+    return "; ".join(out)
+
+
 def _section(ruleset: Ruleset, form: FormDef, s) -> list[str]:
+    steps = {st.id: st.title for st in form.steps}
+    pages = {p.id: p for p in s.pages}
     out = [f"### {s.official_title} (`{s.id}`)", "",
-           f"- Wizard chapter: {s.chapter}",
+           *([f"- Step: {steps[s.step]}"] if s.step in steps else []),
+           *([f"- Pages: " + "; ".join(p.title + (f" ({p.layout} layout)" if p.layout else "") for p in s.pages)]
+             if s.pages else []),
+           *([f"- Add options: " + "; ".join(o.label + (f" (starts with {_preset_words(form, o.preset)})" if o.preset else "")
+                                            for o in s.add_options)] if s.add_options else []),
            *([f"- Repeats: one per {s.repeat.kind} ({s.repeat.min} to {s.repeat.max}); "
               f"the wizard offers “{s.repeat.add_label}”"] if s.repeat else []),
            *([f"- Printed and asked only when {condition_words(form, s.show_if)}"] if s.show_if else []),
@@ -134,6 +160,16 @@ def _section(ruleset: Ruleset, form: FormDef, s) -> list[str]:
                        + ("; “I don't know yet” allowed" if f.allow_unknown else ""))
             for o in f.options:
                 out.append(f"  - {o.official} — applicants read “{o.label}”")
+        if f.step and f.step != s.step and f.step in steps:
+            out.append(f"- Step: {steps[f.step]}")
+        if f.page in pages:
+            out.append(f"- Page: {pages[f.page].title}")
+        if f.control:
+            starts = "" if f.default is None else (
+                " (starts on)" if f.default is True else " (starts off)" if f.default is False else f" (starts at {f.default})")
+            out.append(f"- Control: {f.control}{starts}")
+        elif f.default is not None:
+            out.append(f"- Starts as: {f.default}")
         if f.show_if:
             out.append(f"- Asked only when {condition_words(form, f.show_if)}")
         out.append(_status(f))

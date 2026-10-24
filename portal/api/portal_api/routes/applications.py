@@ -55,15 +55,19 @@ def form_json(form: FormDef, ruleset) -> dict:
     return {
         "key": form.key, "version": form.version, "ruleset_key": form.ruleset_key,
         "official_title": form.official_title,
+        "steps": [{"id": st.id, "title": st.title} for st in form.steps],
         "sections": [{
             "id": s.id, "official_title": s.official_title, "chapter": s.chapter, "show_if": s.show_if,
-            "repeat": None if s.repeat is None else {"kind": s.repeat.kind, "add_label": s.repeat.add_label,
-                                                     "min": s.repeat.min, "max": s.repeat.max},
+            "step": s.step, "pages": [{"id": p.id, "title": p.title, "layout": p.layout} for p in s.pages],
+            "repeat": None if s.repeat is None else {
+                "kind": s.repeat.kind, "add_label": s.repeat.add_label, "min": s.repeat.min, "max": s.repeat.max,
+                "add_options": [{"label": o.label, "preset": o.preset} for o in s.repeat.add_options]},
             "fields": [{
                 "id": f.id, "official_label": f.official_label, "source": f.source, "from": f.from_,
                 "may_correct": f.may_correct, "label": f.label, "help": f.help, "why": why(f.why), "type": f.type,
                 "unit": f.unit, "min": f.min, "max": f.max, "required": f.required, "allow_unknown": f.allow_unknown,
-                "show_if": f.show_if,
+                "show_if": f.show_if, "step": f.step or s.step, "page": f.page, "control": f.control,
+                "step_size": f.step_size, "default": f.default, "autocomplete": f.autocomplete,
                 "options": [{"value": o.value, "label": o.label, "official": o.official} for o in f.options],
             } for f in s.fields],
         } for s in form.sections],
@@ -259,6 +263,7 @@ def save_answers(app_id: str, body: AnswersBody, applicant: auth.Applicant = aut
 class ItemBody(BaseModel):
     kind: str = PField(max_length=40)
     base_revision: int
+    preset: int | None = None
 
 
 class RevisionBody(BaseModel):
@@ -274,17 +279,22 @@ def add_item(app_id: str, body: ItemBody, applicant: auth.Applicant = auth.requi
     row = apps.owned(conn, app_id, applicant.id)
     if row is None:
         return _NOT_FOUND()
-    repeat = _repeat(_form_for(row), body.kind)
+    form = _form_for(row)
+    repeat = _repeat(form, body.kind)
     if repeat is None:
         return _json(422, "unknown_kind")
+    if body.preset is not None and not 0 <= body.preset < len(repeat.add_options):
+        return _json(422, "unknown_preset")
     if sum(1 for i in apps.items(conn, row.id) if i["kind"] == body.kind) >= repeat.max:
         return _json(422, "too_many")
     rev = apps.bump(conn, row.id, body.base_revision)
     if rev is None:
         return _conflict(conn, row.id)
-    item_id = apps.add_item(conn, row.id, body.kind)
+    preset = repeat.add_options[body.preset].preset if body.preset is not None else None
+    item_id = apps.new_item(conn, row.id, form, body.kind, preset, by=_actor(applicant))
     append_event(conn, actor=_actor(applicant), kind="application.item_added",
-                 payload={"application_id": row.id, "item_id": item_id, "kind": body.kind})
+                 payload={"application_id": row.id, "item_id": item_id, "kind": body.kind,
+                          "preset": body.preset, "fields": sorted(preset or {})})
     return {"id": item_id, "revision": rev}
 
 
