@@ -52,22 +52,32 @@ export async function signInHere(page: Page, email: string) {
 
 export type Project = "use" | "build" | "driveway";
 
-// "Do I need a permit?": Your project, Your property, What you'll need, then Start (signed out:
-// the sign-in sheet).
+const settle = (page: Page) =>
+  page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== "running"), null, { timeout: 5000 }).catch(() => {});
+const next = (page: Page) => page.getByRole("button", { name: /^(Continue|Skip for now)$/ });
+
+// "Do I need a permit?", one question at a time: what you're planning, the kind of building work
+// and its size, the property, what you'll need, then Start and the sign-in screen.
 export async function screenerToStart(page: Page, project: Project, application: string, email: string) {
   await page.goto("/start");
   const choice = { use: /Start a business/, build: /Build something new/, driveway: /driveway/ }[project];
-  await page.getByRole("checkbox", { name: choice }).check({ force: true });
+  await page.getByRole("checkbox", { name: choice }).click();
+  await axe(page, "start: choose several");
+  await next(page).click();
   if (project === "build") {
-    await page.getByRole("radio", { name: "A new building" }).check({ force: true });
-    await page.getByRole("textbox", { name: /floor area/i }).first().fill("1200");
+    await page.getByRole("radio", { name: "A new building" }).click();
+    await page.getByRole("textbox", { name: /floor area/i }).fill("1200");
+    await axe(page, "start: a number");
+    await next(page).click();
+    await next(page).click(); // new homes: skip for now
+    await next(page).click(); // homes in the last five years: skip for now
   }
-  await page.getByRole("button", { name: "Continue" }).click();
   await page.getByLabel("Street address, or map and lot").fill("4-36");
   await page.getByRole("button", { name: "Search" }).click();
   await page.getByRole("list", { name: "Search results" }).getByRole("button").first().click();
+  await expect(page.getByRole("heading", { name: "Is this your property?" })).toBeVisible();
   await axe(page, "property");
-  await page.getByRole("button", { name: "Yes, this is my property" }).click();
+  await page.getByRole("radio", { name: "Yes, this is my property" }).click();
   if (project === "use") {
     // Lot 4-36 is in D1, where a Farm/Vendor Market takes a Use Permit.
     await page.getByLabel("Search uses").fill("vendor market");
@@ -76,9 +86,8 @@ export async function screenerToStart(page: Page, project: Project, application:
   await expect(page.getByRole("heading", { level: 1, name: "What you'll need" })).toBeVisible();
   await axe(page, "needs");
   await page.getByRole("button", { name: `Start this application: ${application}` }).click();
-  const sheet = page.getByRole("dialog", { name: "Sign in to apply" });
-  await expect(sheet).toBeVisible();
-  await axe(page, "sign-in sheet");
+  await expect(page.getByRole("heading", { name: "Sign in to apply" })).toBeVisible();
+  await axe(page, "sign-in screen");
   await signInHere(page, email);
   // A desktop opens the first unfinished step; a phone opens the list of steps, so tap it, as a person would.
   // Decided by the window, not the address: a desktop passes the bare address on its way to a step.
@@ -98,11 +107,9 @@ const ANSWERS: [RegExp, string][] = [
   [/email/i, "someone@example.com"],
 ];
 
-// Fill every unanswered control inside `scope` (a step pane or a sheet page).
-export async function answerPane(page: Page, scope: Locator, fixture: string) {
-  // A page or sheet slides in; answer once it has arrived, not the one leaving.
-  await page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== "running"), null, { timeout: 5000 }).catch(() => {});
-  await page.waitForTimeout(150);
+// Fill every unanswered typed control inside `scope`: text, long text, numbers, sliders, the roof
+// slope picker, uses, uploads and the map pin.
+export async function fillControls(page: Page, scope: Locator, fixture: string) {
   // Uses first: a chosen use can open a follow-up question below it.
   for (const row of await scope.locator("[data-field]").filter({ has: page.getByRole("button", { name: "Add a use" }) }).all()) {
     if (await row.getByRole("row").count()) continue;
@@ -129,17 +136,6 @@ export async function answerPane(page: Page, scope: Locator, fixture: string) {
   for (const slider of await scope.getByRole("slider").all()) {
     await slider.focus(); await page.keyboard.press("ArrowRight");
   }
-  for (const group of await scope.getByRole("radiogroup").all()) {
-    if (!(await group.isVisible()) || (await group.getByRole("radio", { checked: true }).count())) continue;
-    const no = group.getByRole("radio", { name: "No", exact: true });
-    await ((await no.count()) ? no : group.getByRole("radio").first()).check({ force: true });
-    await page.waitForTimeout(100);
-  }
-  for (const grid of await scope.getByRole("grid").all()) {
-    // Only choice chips (selectable rows); chosen uses are a list of removable tags.
-    if (!(await grid.locator("[aria-selected]").count()) || (await grid.locator('[aria-selected="true"]').count())) continue;
-    await grid.getByRole("row").first().click();
-  }
   for (const picker of await scope.locator('button[aria-haspopup="listbox"]').all()) {
     if (!(await picker.isVisible()) || !/Choose…/.test((await picker.textContent()) ?? "")) continue;
     await picker.click();
@@ -163,53 +159,58 @@ export async function answerPane(page: Page, scope: Locator, fixture: string) {
   }
 }
 
-// Open an item's sheet and fill every page, then Done.
-export async function fillItemSheet(page: Page, fixture: string) {
-  const sheet = page.getByRole("dialog");
-  await expect(sheet).toBeVisible();
-  for (let i = 0; i < 8; i += 1) {
-    await answerPane(page, sheet, fixture);
-    await axe(page, "item sheet");
-    const next = sheet.getByRole("button", { name: /^Next:/ });
-    if (!(await next.count())) break;
-    await next.click();
-  }
-  await sheet.getByRole("button", { name: "Done" }).click();
-  await expect(sheet).toBeHidden();
-}
-
 type Plan = { extraBuilding?: boolean; component?: boolean };
 
-// Every step of the application, by Continue, until Review and sign.
-export async function completeApplication(page: Page, fixture: string, plan: Plan = {}) {
-  for (let i = 0; i < 15; i += 1) {
-    const title = (await page.getByRole("heading", { level: 1 }).first().textContent()) ?? "";
-    if (/Review and sign/.test(title)) return;
-    await axe(page, `step ${title}`);
-    const pane = page.locator("[data-pane]").first();
-    if (/Buildings/.test(title)) {
-      for (const item of await pane.getByRole("button", { name: /^Building \d/ }).all()) {
-        await item.click(); await fillItemSheet(page, fixture);
-      }
-      if (plan.extraBuilding) {
-        plan.extraBuilding = false;
-        await pane.getByRole("button", { name: "Add a building" }).click();
-        await page.getByRole("menuitem", { name: "A detached garage or shed" }).click();
-        await fillItemSheet(page, fixture);
-      }
-    } else if (/Additions/.test(title)) {
-      if (plan.component) {
-        plan.component = false;
-        await pane.getByRole("button", { name: "Add an addition, porch or deck" }).click();
-        await fillItemSheet(page, fixture);
-      }
-    } else {
-      await answerPane(page, pane, fixture);
+// Answer the screen that is showing, the way a person would: a tap for a single choice, "Yes,
+// that's right" for a map value, the first choice for choose-several, values for typed questions
+// (then Continue). Loops say no, unless the plan asks for one more building or an addition.
+export async function answerScreen(page: Page, fixture: string, plan: Plan = {}) {
+  await settle(page);
+  const pane = page.locator("[data-pane]").first();
+  const heading = ((await pane.getByRole("heading", { level: 2 }).first().textContent()) ?? "").trim();
+  if (/^Is there another/.test(heading)) {
+    await axe(page, "screen: another");
+    if (plan.extraBuilding && /building/.test(heading)) {
+      plan.extraBuilding = false;
+      return pane.getByRole("radio", { name: /^Yes, add another/ }).click();
     }
-    await page.getByRole("button", { name: /^(Continue|Review)$/ }).click();
-    await page.waitForTimeout(300);
+    return pane.getByRole("radio", { name: "No, that's all" }).click();
   }
-  throw new Error("didn't reach Review and sign in 15 steps");
+  if (/^Are you adding/.test(heading)) {
+    const yes = !!plan.component;
+    plan.component = false;
+    return pane.getByRole("radio", { name: yes ? "Yes" : "No", exact: true }).click();
+  }
+  const right = pane.getByRole("radio", { name: "Yes, that's right" });
+  if (await right.count()) {
+    await axe(page, "screen: is this right");
+    return right.click();
+  }
+  const tiles = pane.getByRole("radiogroup");
+  if (await tiles.count()) {
+    await axe(page, "screen: one choice");
+    const no = tiles.getByRole("radio", { name: "No", exact: true });
+    return ((await no.count()) ? no : tiles.getByRole("radio").first()).click();
+  }
+  const several = pane.getByRole("checkbox");
+  if ((await several.count()) && !(await pane.locator('[role="checkbox"][aria-checked="true"]').count())) {
+    await axe(page, "screen: choose several");
+    await several.first().click();
+  }
+  await fillControls(page, pane, fixture);
+  await axe(page, `screen: ${(await pane.getByRole("slider").count()) ? "sliders" : (await pane.locator('input[type="file"]').count()) ? "upload" : "typed"}`);
+  await next(page).click();
+}
+
+// Every screen of the application, until Review and sign.
+export async function completeApplication(page: Page, fixture: string, plan: Plan = {}) {
+  for (let i = 0; i < 200; i += 1) {
+    if (/\/review$/.test(new URL(page.url()).pathname)) return;
+    const before = page.url();
+    await answerScreen(page, fixture, plan);
+    await expect(page, `stuck on ${before}`).not.toHaveURL(before, { timeout: 10_000 });
+  }
+  throw new Error("didn't reach Review and sign in 200 screens");
 }
 
 // On review: every field is filled or marked, and nothing is still to answer.
@@ -218,7 +219,7 @@ export async function expectReviewComplete(page: Page, title: string) {
   await expect(page.getByText(title).first()).toBeVisible();
   await axe(page, "review");
   await expect(page.getByRole("group", { name: "Still to answer" })).toHaveCount(0);
-  await expect(page.getByText("Not answered yet")).toHaveCount(0);
+  await expect(page.getByText("Still to answer")).toHaveCount(0);
 }
 
 // The sidebar's steps (desktop) or the root list (phone), by name.

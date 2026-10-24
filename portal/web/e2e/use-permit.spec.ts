@@ -10,17 +10,17 @@ test("a resident applies for a Use Permit, edits on review, and adds detail", as
   await expectReviewComplete(page, "Use Permit Application");
   await expect(page.getByRole("link", { name: "sketch.pdf" })).toBeVisible();
 
-  // Edit opens the step in a sheet; the owner's details appear in place when the switch turns off.
-  await page.getByRole("button", { name: "Edit Applicant" }).click();
-  const sheet = page.getByRole("dialog", { name: "About you" });
-  // Click the switch's track, as a person would: its label text is for screen readers only.
-  const owns = sheet.getByRole("switch", { name: "Do you own this property?" });
-  await sheet.locator('[data-field="applicant_is_owner"] [data-slot="switch-control"]').click();
-  await expect(owns).not.toBeChecked();
-  const owner = sheet.getByRole("group", { name: "Property Owner (if different)" });
-  await expect(owner).toBeVisible();
-  for (const box of await owner.getByRole("textbox").all()) { await box.fill("Owner Example"); await box.blur(); }
-  await sheet.getByRole("button", { name: "Done" }).click();
+  // Change opens the question's screen and comes back. (The journey answered "No, I don't own it",
+  // so the owner's details are already there; Yes hides them, No brings them back, kept.)
+  await expect(page.getByRole("group", { name: "Property Owner (if different)" })).toBeVisible();
+  await page.getByRole("link", { name: "Change Do you own this property?" }).click();
+  await expect(page).toHaveURL(/screen=applicant_is_owner&return=review/);
+  await page.getByRole("radio", { name: "Yes", exact: true }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Review and sign" })).toBeVisible();
+  await expect(page.getByRole("group", { name: "Property Owner (if different)" })).toHaveCount(0);
+  await page.getByRole("link", { name: "Change Do you own this property?" }).click();
+  await page.getByRole("radio", { name: "No", exact: true }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Review and sign" })).toBeVisible();
   await expect(page.getByRole("group", { name: "Property Owner (if different)" })).toBeVisible();
 
   // Add more detail, then reload: everything is still there.

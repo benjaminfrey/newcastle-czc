@@ -200,6 +200,18 @@ describe("the wizard", () => {
     await waitFor(() => expect(where()).toHaveTextContent("/applications/abc/review"));
   });
 
+  it("Change from review finds new questions even past an answered one", async () => {
+    // As on the real cover sheet: "Is someone helping?" (answered) sits between the owner question and the owner's details.
+    const helper = { ...FORM, sections: FORM.sections.map((sec) => sec.id === "applicant"
+      ? { ...sec, fields: [...sec.fields, { ...sec.fields[0], id: "has_agent", label: "Is someone helping?", type: "yesno" as const, control: "switch" as const }] }
+      : sec) };
+    vi.spyOn(apps, "getForm").mockResolvedValue(helper);
+    withApp({ answers: [a("applicant_name", "Ada"), a("applicant_phone", "207"), a("applicant_is_owner", true), a("has_agent", false)] });
+    open("/applications/abc/you?screen=applicant_is_owner&return=review");
+    await userEvent.click(await screen.findByRole("radio", { name: "No" }));
+    await waitFor(() => expect(where()).toHaveTextContent("?screen=owner_name&return=review"));
+  });
+
   it("the walls name the front", async () => {
     withApp({ answers: [a("front_facing", "north", "b1")] });
     open("/applications/abc/buildings?screen=windows_north&item=b1");

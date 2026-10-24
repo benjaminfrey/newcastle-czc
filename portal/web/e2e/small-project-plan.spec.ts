@@ -4,7 +4,7 @@ import { completeApplication, expectReviewComplete, newEmail, screenerToStart } 
 
 const SKETCH = path.join(import.meta.dirname, "fixtures/sketch.pdf");
 
-test("a Small Project Plan in nine steps, with a house, a detached garage and a deck", async ({ page }, info) => {
+test("a Small Project Plan in nine steps, with two buildings and an addition", async ({ page }, info) => {
   await screenerToStart(page, "build", "Small Project Plan", newEmail(`spp-${info.project.name}`));
   if (info.project.name === "desktop") {
     const nav = page.getByRole("navigation", { name: "Steps" });
@@ -12,7 +12,7 @@ test("a Small Project Plan in nine steps, with a house, a detached garage and a 
   }
   await completeApplication(page, SKETCH, { extraBuilding: true, component: true });
   await expectReviewComplete(page, "Small Project Plan Application");
-  await expect(page.getByRole("group", { name: /^Building Form — Building 2: Garage or shed/ })).toBeVisible();
+  await expect(page.getByRole("group", { name: /^Building Form — Building 2/ })).toBeVisible();
   await expect(page.getByRole("group", { name: /^Components Section — Addition 1/ })).toBeVisible();
   if (info.project.name === "desktop") {
     // Steps finish with checkmarks.

@@ -10,7 +10,7 @@ export default function ActionBar({ actions, wide }: { actions: ShellActions; wi
     return (
       <div data-action-bar className="flex items-center justify-end gap-3 border-t border-[var(--app-separator)] px-8 py-4">
         {actions.dots && <div className="mr-auto">{actions.dots}</div>}
-        {actions.back && <Button variant="secondary" className="min-h-11 min-w-24" onPress={actions.back}>Back</Button>}
+        {actions.back && <Button variant="secondary" className="min-h-11 min-w-24 text-[var(--app-label)]" onPress={actions.back}>Back</Button>}
         {actions.onContinue && (
           <Button type="submit" variant="primary" className="min-h-11 min-w-28">{actions.continueLabel ?? "Continue"}</Button>
         )}

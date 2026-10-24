@@ -9,7 +9,7 @@ test("uploads that must be refused, and a second tab's save", async ({ page, con
   await screenerToStart(page, "driveway", "Driveway and Entrance Permit", newEmail(`refuse-${info.project.name}`));
   const base = new URL(page.url()).pathname.replace(/\/[a-z_]+$/, "");
 
-  await page.goto(`${base}/state_permit`);
+  await page.goto(`${base}/state_permit?screen=entrance_sketch`);
   const input = page.getByLabel("Take a photo or choose a file").first();
   await input.setInputFiles({ name: "eicar.pdf", mimeType: "application/pdf", buffer: EICAR });
   await expect(page.getByRole("alert")).toContainText("virus check flagged");

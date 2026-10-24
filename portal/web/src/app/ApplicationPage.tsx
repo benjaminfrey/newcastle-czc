@@ -106,13 +106,13 @@ function Steps({ id }: { id: string }) {
     const leaving = "review" in after || after.step !== pending.from.step;
     if (leaving) markVisited(pending.from.step);
     if (returning) {
-      // From review's Change: back to review, unless the answer opened a question still to answer.
-      if ("review" in after) return go(after);
-      const to = after;
-      const next = models.find((m) => m.id === to.step);
-      const s = next && screensOf(form, cur, next).find((x) => x.id === to.screen && (to.item === undefined || x.itemId === to.item));
-      const open = s && s.step === pending.from.step && s.rows.length > 0 && s.rows.every((r) => empty(valueOf(form, r.field, r.itemId, cur)));
-      return open ? go(after, 1, true) : go({ review: true });
+      // From review's Change: back to review, unless the answer opened questions still to answer in
+      // this step (the owner's details after "No, I don't own it"), even past ones already answered.
+      const step = models.find((m) => m.id === pending.from.step);
+      const list = step ? screensOf(form, cur, step) : [];
+      const from = list.findIndex((x) => x.id === pending.from.screen && (pending.from.item === undefined || x.itemId === pending.from.item));
+      const open = list.slice(from + 1).find((x) => x.rows.length > 0 && x.rows.every((r) => empty(valueOf(form, r.field, r.itemId, cur))));
+      return open ? go(place(open), 1, true) : go({ review: true });
     }
     go(after);
   }, [pending, form, cur, models]); // eslint-disable-line react-hooks/exhaustive-deps

@@ -6,7 +6,7 @@ export default function AnswerTrail({ chips, onGo }: { chips: Chip[]; onGo: (id:
   return (
     <div aria-label="Your answers" role="group"
          className="flex min-h-11 flex-wrap items-center gap-1.5 border-b border-[var(--app-separator)] px-5 py-2.5">
-      {chips.length === 0 && <span className="text-[13px] text-[var(--app-tertiary-label)]">Your answers appear here as you go</span>}
+      {chips.length === 0 && <span className="text-[13px] text-[var(--app-secondary-label)]">Your answers appear here as you go</span>}
       {chips.map((c) => (
         <button key={c.id} type="button" onClick={() => onGo(c.id)} data-carried={c.carried ? "true" : undefined}
                 aria-label={`${c.text}${c.carried ? ", from your answers at the start" : ""}. Change it`}
