@@ -256,3 +256,88 @@ def test_no_streets_layer_means_the_road_is_unknown(alice, engine):
     body = get(alice, app_id)
     assert body["property"]["facts"]["on_state_highway"] is None
     assert "mainedot_permit" in {m["field_id"] for m in body["missing"]}
+
+
+# ---- Defaults and presets (redesign) ----
+
+@pytest.fixture
+def stepped_forms(tmp_path, monkeypatch):
+    """The real forms, with a default on applicant_is_owner and a building preset."""
+    forms_dir = tmp_path / "forms"
+    shutil.copytree(formdefs.DIR, forms_dir)
+    cover = yaml.safe_load((forms_dir / "cover-sheet.v1.yaml").read_text())
+    for s in cover["sections"]:
+        for f in s["fields"]:
+            if f["id"] == "applicant_is_owner":
+                f["default"] = True
+    (forms_dir / "cover-sheet.v1.yaml").write_text(yaml.safe_dump(cover))
+    spp = yaml.safe_load((forms_dir / "small-project-plan.v1.yaml").read_text())
+    for s in spp["sections"]:
+        if s["id"] == "building":
+            s["repeat"]["add_options"] = [{"label": "A building"},
+                                          {"label": "A detached garage or shed",
+                                           "preset": {"building_class": "residential_accessory"}}]
+        if s["id"] == "building_details":
+            for f in s["fields"]:
+                if f["id"] == "dwelling_units":
+                    f["default"] = 0
+    (forms_dir / "small-project-plan.v1.yaml").write_text(yaml.safe_dump(spp))
+    monkeypatch.setattr(formdefs, "DIR", forms_dir)
+
+
+def test_defaults_are_seeded_and_marked(alice, engine, stepped_forms):
+    app_id = create(alice, form_key="small_project_plan")
+    body = get(alice, app_id)
+    values = current_values(body)
+    assert values[("applicant_is_owner", None)] is True
+    (building,) = body["items"]
+    assert values[("dwelling_units", building["id"])] == 0
+    with engine.begin() as conn:
+        assert conn.execute(text("SELECT set_by FROM answer WHERE field_id = 'applicant_is_owner'")).scalar() \
+            == "form-default"
+
+
+def test_item_preset_saves_its_answers(alice, stepped_forms):
+    app_id = create(alice, form_key="small_project_plan")
+    rev = get(alice, app_id)["revision"]
+    r = alice.post(f"/api/applications/{app_id}/items", json={"kind": "building", "base_revision": rev, "preset": 1})
+    assert r.status_code == 201
+    item = r.json()["id"]
+    values = current_values(get(alice, app_id))
+    assert values[("building_class", item)] == "residential_accessory"
+    assert values[("dwelling_units", item)] == 0  # the item's defaults are seeded too
+
+
+def test_bad_preset_index_is_422(alice, stepped_forms):
+    app_id = create(alice, form_key="small_project_plan")
+    rev = get(alice, app_id)["revision"]
+    r = alice.post(f"/api/applications/{app_id}/items", json={"kind": "building", "base_revision": rev, "preset": 7})
+    assert r.status_code == 422 and r.json()["detail"] == "unknown_preset"
+
+
+def test_form_json_carries_steps_pages_and_controls(alice, tmp_path, monkeypatch):
+    forms_dir = tmp_path / "forms2"
+    shutil.copytree(formdefs.DIR, forms_dir)
+    cover = yaml.safe_load((forms_dir / "cover-sheet.v1.yaml").read_text())
+    cover["steps"] = [{"id": "your_lot", "title": "Your lot"}, {"id": "about_you", "title": "About you"}]
+    for s in cover["sections"]:
+        s["step"] = "your_lot" if s["id"] in ("location", "site", "certification", "office") else "about_you"
+        for f in s["fields"]:
+            if f["id"] == "existing_dwelling_units":
+                f["control"] = "stepper"
+            if f["id"] == "applicant_phone":
+                f["autocomplete"] = "tel"
+    (forms_dir / "cover-sheet.v1.yaml").write_text(yaml.safe_dump(cover))
+    up = yaml.safe_load((forms_dir / "use-permit.v1.yaml").read_text())
+    up["steps"] = [{"id": "uses", "title": "Uses"}]
+    for s in up["sections"]:
+        s["step"] = "uses"
+    (forms_dir / "use-permit.v1.yaml").write_text(yaml.safe_dump(up))
+    monkeypatch.setattr(formdefs, "DIR", forms_dir)
+    form = alice.get("/api/forms/use_permit").json()
+    assert [s["id"] for s in form["steps"]] == ["your_lot", "about_you", "uses"]
+    fields = {f["id"]: f for s in form["sections"] for f in s["fields"]}
+    assert fields["existing_dwelling_units"]["control"] == "stepper"
+    assert fields["applicant_phone"]["autocomplete"] == "tel"
+    assert fields["applicant_phone"]["step"] == "about_you"
+    assert {s["id"]: s["step"] for s in form["sections"]}["existing"] == "uses"

@@ -60,10 +60,29 @@ def create(conn: Connection, *, applicant_id: str, form: FormDef, snapshot: dict
     for s in form.sections:
         if s.repeat is not None:
             kinds.setdefault(s.repeat.kind, s.repeat.min)
+    # A question's default is written as an answer, marked as the form's, so the applicant
+    # sees it set (a switch already on) and the record shows nobody typed it.
+    defaults = [(f.id, f.default) for sec, f in form.fields() if sec.repeat is None and f.default is not None]
+    save_answers(conn, app_id, [(fid, None, v) for fid, v in defaults], FORM_DEFAULT)
     for kind, n in kinds.items():
         for _ in range(n):
-            add_item(conn, app_id, kind)
+            new_item(conn, app_id, form, kind)
     return app_id
+
+
+FORM_DEFAULT = "form-default"
+
+
+def new_item(conn: Connection, app_id: str, form: FormDef, kind: str, preset: dict | None = None,
+             by: str = FORM_DEFAULT) -> str:
+    """Add an item with its fields' defaults (by the form) and an add option's preset."""
+    item_id = add_item(conn, app_id, kind)
+    defaults = [(f.id, item_id, f.default) for sec, f in form.fields()
+                if sec.repeat and sec.repeat.kind == kind and f.default is not None]
+    save_answers(conn, app_id, defaults, FORM_DEFAULT)
+    if preset:
+        save_answers(conn, app_id, [(fid, item_id, v) for fid, v in preset.items()], by)
+    return item_id
 
 
 def bump(conn: Connection, app_id: str, base_revision: int) -> int | None:

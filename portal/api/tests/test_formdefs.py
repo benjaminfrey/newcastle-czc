@@ -164,3 +164,97 @@ def test_drafts_lists_sections_and_fields(tmp_path, ruleset):
     drafts = form_drafts(load_form("test_permit", 1, ruleset, root=tmp_path))
     assert {(d.file, d.id) for d in drafts} == {
         ("test-permit.v1.yaml", "building"), ("test-permit.v1.yaml", "roof"), ("cover-sheet.v1.yaml", "deed_book")}
+
+
+# ---- Steps, pages, controls, defaults and presets (redesign) ----
+
+def stepped():
+    cover = copy.deepcopy(COVER)
+    cover["steps"] = [{"id": "your_lot", "title": "Your lot"}]
+    cover["sections"][0]["step"] = "your_lot"
+    form = copy.deepcopy(FORM)
+    form["steps"] = [{"id": "buildings", "title": "Buildings"}, {"id": "extra", "title": "Extra"}]
+    b = form["sections"][0]
+    b["step"] = "buildings"
+    b["pages"] = [{"id": "basics", "title": "Basics"}, {"id": "roof", "title": "Roof", "layout": "compass"}]
+    b["fields"][0].update(page="basics", control="stepper")
+    b["fields"][1].update(page="roof", control="tiles")
+    b["repeat"]["add_options"] = [{"label": "A building"},
+                                  {"label": "A tall building", "preset": {"stories": 3}}]
+    return cover, form
+
+
+def broken_stepped(tmp_path, ruleset, change):
+    cover, form = stepped()
+    change(cover, form)
+    write(tmp_path, cover=cover, form=form)
+    with pytest.raises(DefinitionError) as exc:
+        load_form("test_permit", 1, ruleset, root=tmp_path)
+    return str(exc.value)
+
+
+def test_steps_load_in_order_with_the_cover_first(tmp_path, ruleset):
+    cover, form = stepped()
+    write(tmp_path, cover=cover, form=form)
+    f = load_form("test_permit", 1, ruleset, root=tmp_path)
+    assert [s.id for s in f.steps] == ["your_lot", "buildings", "extra"]
+    assert f.step_of("deed_book") == "your_lot" and f.step_of("stories") == "buildings"
+    b = f.sections[1]
+    assert [p.id for p in b.pages] == ["basics", "roof"] and b.pages[1].layout == "compass"
+    assert b.fields[0].page == "basics" and b.fields[0].control == "stepper"
+    assert b.add_options[1].preset == {"stories": 3}
+
+
+def test_field_step_overrides_section_step(tmp_path, ruleset):
+    cover, form = stepped()
+    form["sections"][0]["fields"][3]["step"] = "extra"  # the at_submit field; not a question
+    cover["sections"][0]["fields"][1]["step"] = "your_lot"
+    write(tmp_path, cover=cover, form=form)
+    f = load_form("test_permit", 1, ruleset, root=tmp_path)
+    assert f.step_of("signature") == "extra"
+
+
+def test_rejects_question_without_a_step(tmp_path, ruleset):
+    assert "step" in broken_stepped(tmp_path, ruleset, lambda c, f: c["sections"][0].pop("step"))
+
+
+def test_rejects_unknown_step(tmp_path, ruleset):
+    assert "nowhere" in broken_stepped(tmp_path, ruleset, lambda c, f: f["sections"][0].update(step="nowhere"))
+
+
+def test_rejects_repeat_question_without_a_page(tmp_path, ruleset):
+    assert "page" in broken_stepped(tmp_path, ruleset, lambda c, f: f["sections"][0]["fields"][0].pop("page"))
+
+
+def test_rejects_unknown_control(tmp_path, ruleset):
+    msg = broken_stepped(tmp_path, ruleset, lambda c, f: f["sections"][0]["fields"][0].update(control="knob"))
+    assert "control" in msg
+
+
+def test_rejects_bad_default(tmp_path, ruleset):
+    def bad(c, f):
+        f["sections"][0]["fields"][0].update(default="maybe")
+    assert "default" in broken_stepped(tmp_path, ruleset, bad)
+
+
+def test_rejects_preset_for_unknown_field(tmp_path, ruleset):
+    def bad(c, f):
+        f["sections"][0]["repeat"]["add_options"][1]["preset"] = {"moat": 1}
+    assert "moat" in broken_stepped(tmp_path, ruleset, bad)
+
+
+def test_rejects_bad_preset_value(tmp_path, ruleset):
+    def bad(c, f):
+        f["sections"][0]["repeat"]["add_options"][1]["preset"] = {"stories": 99}
+    assert "preset" in broken_stepped(tmp_path, ruleset, bad)
+
+
+def test_rejects_bad_layout(tmp_path, ruleset):
+    def bad(c, f):
+        f["sections"][0]["pages"][1]["layout"] = "spiral"
+    assert "layout" in broken_stepped(tmp_path, ruleset, bad)
+
+
+def test_a_form_without_steps_still_loads(tmp_path, ruleset):
+    write(tmp_path)
+    assert load_form("test_permit", 1, ruleset, root=tmp_path).steps == ()
