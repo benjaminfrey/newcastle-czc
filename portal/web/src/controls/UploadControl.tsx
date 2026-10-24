@@ -53,7 +53,7 @@ export default function UploadControl({ field, itemId }: { field: FormField; ite
         <input id={inputId} type="file" multiple accept={ACCEPT} className="sr-only" disabled={progress !== null}
                onChange={(e) => { void onFiles(e.target.files); e.target.value = ""; }} />
       </label>
-      <p className="text-[13px] text-[var(--app-secondary-label)]">PDF, JPEG, PNG or HEIC · up to 25 MB</p>
+      <p className="text-[15px] text-[var(--app-secondary-label)]">PDF, JPEG, PNG or HEIC · up to 25 MB</p>
       {progress !== null && (
         <ProgressBar aria-label="Uploading" value={Math.round(progress * 100)}>
           <ProgressBar.Track><ProgressBar.Fill /></ProgressBar.Track>

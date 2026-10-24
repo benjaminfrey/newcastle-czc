@@ -55,12 +55,14 @@ describe("AppShell, wide", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Saved");
   });
 
-  it("⌥⌘↓ goes to the next step and ⌥⌘↑ back", () => {
+  it("⌘↓ goes to the next step and ⌥↑ back; an arrow alone does nothing", () => {
     const onStep = vi.fn();
     renderShell({ onStep });
-    fireEvent.keyDown(window, { key: "ArrowDown", altKey: true, metaKey: true });
+    fireEvent.keyDown(window, { key: "ArrowDown" });
+    expect(onStep).not.toHaveBeenCalled();
+    fireEvent.keyDown(window, { key: "ArrowDown", metaKey: true });
     expect(onStep).toHaveBeenLastCalledWith("buildings");
-    fireEvent.keyDown(window, { key: "ArrowUp", altKey: true, metaKey: true });
+    fireEvent.keyDown(window, { key: "ArrowUp", altKey: true });
     expect(onStep).toHaveBeenLastCalledWith("project");
   });
 

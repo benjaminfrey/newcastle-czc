@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-23T22:00:00Z",
+  "title": "Design System: Town of Newcastle Applicant Portal",
+  "extensions": {
+    "colorMeta": {
+      "accent": { "role": "primary", "displayName": "Harbour Teal", "canonical": "var(--app-accent)" },
+      "accent-text": { "role": "primary", "displayName": "Harbour Teal Text", "canonical": "var(--app-accent-text)" },
+      "seal": { "role": "secondary", "displayName": "Seal Teal", "canonical": "var(--app-seal)" },
+      "selection": { "role": "secondary", "displayName": "Selection Wash", "canonical": "var(--app-selection)" },
+      "destructive": { "role": "tertiary", "displayName": "System Red", "canonical": "var(--app-destructive)" },
+      "ground": { "role": "neutral", "displayName": "Grouped Ground", "canonical": "var(--app-ground)" },
+      "row": { "role": "neutral", "displayName": "Row", "canonical": "var(--app-row)" },
+      "fill": { "role": "neutral", "displayName": "Field Fill", "canonical": "var(--app-fill)" },
+      "separator": { "role": "neutral", "displayName": "Separator", "canonical": "var(--app-separator)" },
+      "label": { "role": "neutral", "displayName": "Label", "canonical": "var(--app-label)" },
+      "secondary-label": { "role": "neutral", "displayName": "Secondary Label", "canonical": "var(--app-secondary-label)" },
+      "tertiary-label": { "role": "neutral", "displayName": "Tertiary Label", "canonical": "var(--app-tertiary-label)" }
+    },
+    "typographyMeta": {
+      "large-title": { "displayName": "Large Title", "purpose": "Phone step titles, the phone root list, the home heading." },
+      "title": { "displayName": "Title", "purpose": "Desktop toolbar step title." },
+      "headline": { "displayName": "Headline", "purpose": "Sheet titles, primary button labels on phone." },
+      "body": { "displayName": "Body", "purpose": "Phone list rows and links." },
+      "body-compact": { "displayName": "Body Compact", "purpose": "Question labels, desktop sidebar rows, chips." },
+      "footnote": { "displayName": "Footnote", "purpose": "Group footers, save status, captions." },
+      "group-header": { "displayName": "Group Header", "purpose": "Uppercase heading above an inset group, as in iOS Settings." }
+    },
+    "shadows": [
+      { "name": "slider-knob", "value": "0 1px 4px rgba(0,0,0,0.3)", "purpose": "The iOS slider knob only; containers take no shadow." }
+    ],
+    "motion": [
+      { "name": "pane-push", "value": "250ms cubic-bezier(0.32, 0.72, 0, 1), translateX(24%) and opacity 0 to rest", "purpose": "A step pushing in on a phone." },
+      { "name": "pane-cross", "value": "150ms ease-out opacity", "purpose": "Changing step on a desktop." },
+      { "name": "pane-fade", "value": "120ms ease-out opacity", "purpose": "Any step change under prefers-reduced-motion." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "wide", "value": "1024px" },
+      { "name": "container-2xl", "value": "42rem" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button", "kind": "button", "refersTo": "button-primary",
+      "description": "Continue and Start: the only solid teal control.",
+      "html": "<button class=\"ds-btn-primary\">Continue</button>",
+      "css": ".ds-btn-primary { background: var(--app-accent, #0C727E); color: var(--app-on-accent, #FFFFFF); min-height: 44px; min-width: 112px; padding: 0 20px; border: none; border-radius: 9999px; font: 600 15px -apple-system, BlinkMacSystemFont, system-ui, sans-serif; } .ds-btn-primary:hover { filter: brightness(1.08); } .ds-btn-primary:focus-visible { outline: 2px solid var(--app-accent-text, #0C727E); outline-offset: 2px; }"
+    },
+    {
+      "name": "Ghost Button", "kind": "button", "refersTo": "button-ghost",
+      "description": "Done in a sheet, Edit, Add: teal text, no fill.",
+      "html": "<button class=\"ds-btn-ghost\">Done</button>",
+      "css": ".ds-btn-ghost { background: transparent; color: var(--app-accent-text, #0C727E); min-height: 44px; padding: 0 12px; border: none; border-radius: 9999px; font: 600 17px -apple-system, BlinkMacSystemFont, system-ui, sans-serif; } .ds-btn-ghost:hover { background: var(--app-fill, #EEEEF0); } .ds-btn-ghost:focus-visible { outline: 2px solid var(--app-accent-text, #0C727E); }"
+    },
+    {
+      "name": "Inset Group", "kind": "card", "refersTo": "inset-group",
+      "description": "Grouped inset list with header, hairline rows and footnote.",
+      "html": "<section class=\"ds-group\"><h2 class=\"ds-group-h\">Your project</h2><div class=\"ds-group-rows\"><div class=\"ds-row\">What kind of work is this?</div><div class=\"ds-row\">In a few sentences, what will you build?</div></div><p class=\"ds-group-f\">Choose all that apply.</p></section>",
+      "css": ".ds-group { display: flex; flex-direction: column; gap: 6px; background: var(--app-ground, #F2F2F7); padding: 16px; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; } .ds-group-h { margin: 0; padding: 0 16px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.025em; color: var(--app-secondary-label, #636366); } .ds-group-rows { background: var(--app-row, #FFFFFF); border-radius: 12px; overflow: hidden; } .ds-row { min-height: 44px; padding: 10px 16px; font-size: 15px; color: var(--app-label, #1C1C1E); box-sizing: border-box; } .ds-row + .ds-row { border-top: 1px solid var(--app-separator, #C6C6C8); } .ds-group-f { margin: 0; padding: 0 16px; font-size: 13px; color: var(--app-secondary-label, #636366); }"
+    },
+    {
+      "name": "Sidebar Step", "kind": "nav", "refersTo": "sidebar-row-current",
+      "description": "Source-list step row with status glyph; current on the selection wash.",
+      "html": "<nav class=\"ds-side\"><a class=\"ds-step\" href=\"#\"><svg viewBox=\"0 0 20 20\" width=\"20\" height=\"20\"><circle cx=\"10\" cy=\"10\" r=\"9\" fill=\"#0C727E\"/><path d=\"M6 10.4l2.6 2.6L14 7.6\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>Your lot</a><a class=\"ds-step ds-current\" href=\"#\" aria-current=\"step\"><svg viewBox=\"0 0 20 20\" width=\"20\" height=\"20\"><circle cx=\"10\" cy=\"10\" r=\"8.25\" fill=\"none\" stroke=\"#8A8A8E\" stroke-width=\"1.5\"/><path d=\"M10 1.75a8.25 8.25 0 0 1 0 16.5z\" fill=\"#0C727E\"/></svg>The work</a></nav>",
+      "css": ".ds-side { display: flex; flex-direction: column; gap: 2px; padding: 16px 12px; width: 17rem; background: var(--app-grouped-ground, #F2F2F7); font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; } .ds-step { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 12px; border-radius: 8px; font-size: 15px; color: var(--app-label, #1C1C1E); text-decoration: none; } .ds-step:hover { background: color-mix(in srgb, var(--app-selection, #DCEFF1) 60%, transparent); } .ds-step:focus-visible { outline: 2px solid var(--app-accent-text, #0C727E); } .ds-current { background: var(--app-selection, #DCEFF1); font-weight: 600; }"
+    },
+    {
+      "name": "Segmented Choice", "kind": "chip", "refersTo": "segment-selected",
+      "description": "Two to four options side by side; selection is a wash and an accent border.",
+      "html": "<div class=\"ds-seg\"><button class=\"ds-seg-o ds-sel\">Yes</button><button class=\"ds-seg-o\">No</button></div>",
+      "css": ".ds-seg { display: flex; gap: 8px; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; } .ds-seg-o { min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid var(--app-separator, #C6C6C8); background: transparent; color: var(--app-label, #1C1C1E); font-size: 15px; } .ds-seg-o:hover { background: var(--app-fill, #EEEEF0); } .ds-seg-o:focus-visible { outline: 2px solid var(--app-accent-text, #0C727E); } .ds-sel { border-color: var(--app-accent, #0C727E); background: var(--app-selection, #DCEFF1); }"
+    },
+    {
+      "name": "Choice Tile", "kind": "custom", "refersTo": "tile-selected",
+      "description": "Larger choices as 12px-radius tiles on the row colour.",
+      "html": "<div class=\"ds-tiles\"><button class=\"ds-tile ds-sel\">A home: a house, duplex or apartment building</button><button class=\"ds-tile\">A farm building</button></div>",
+      "css": ".ds-tiles { display: grid; gap: 8px; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; } .ds-tile { min-height: 56px; padding: 12px 16px; text-align: left; border-radius: 12px; border: 1px solid var(--app-separator, #C6C6C8); background: var(--app-row, #FFFFFF); color: var(--app-label, #1C1C1E); font-size: 17px; } .ds-tile:focus-visible { outline: 2px solid var(--app-accent-text, #0C727E); } .ds-tile.ds-sel { border-color: var(--app-accent, #0C727E); background: var(--app-selection, #DCEFF1); }"
+    },
+    {
+      "name": "Text Field", "kind": "input", "refersTo": "field",
+      "description": "Filled field on the opaque tertiary fill.",
+      "html": "<input class=\"ds-input\" placeholder=\"Your name\">",
+      "css": ".ds-input { min-height: 44px; padding: 0 12px; border: none; border-radius: 12px; background: var(--app-fill, #EEEEF0); color: var(--app-label, #1C1C1E); font: 15px -apple-system, BlinkMacSystemFont, system-ui, sans-serif; } .ds-input:focus-visible { outline: 2px solid var(--app-accent-text, #0C727E); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Settings Pane",
+    "overview": "Apple's System Settings and iOS Settings applied to a Town permit: a source-list sidebar beside a content pane on desktop, a large-title list that pushes steps in on a phone, grouped inset rows and sheets. System type, system greys, and the Town seal's teal in two depths; light and dark follow the device.",
+    "keyCharacteristics": ["Grouped inset lists on a grouped ground", "Two panes at 1024px and up, push stack below", "One accent hue in two depths", "44px minimum targets", "Depth by tone, not shadow"],
+    "rules": [
+      { "name": "The Two Teals Rule", "body": "Text and control teal is the deep accent (lifted accent-text in dark); the seal teal marks identity and never carries text.", "section": "colors" },
+      { "name": "The Wash Rule", "body": "Selection is the selection wash plus an accent border; solid teal is reserved for the primary button and done glyphs.", "section": "colors" },
+      { "name": "The System Face Rule", "body": "Text is the device's system face at 30/22/17/15/13; no other family is loaded.", "section": "typography" },
+      { "name": "The Tone Not Shadow Rule", "body": "Containers never take a drop shadow; depth comes from ground, row and elevated row.", "section": "elevation" }
+    ],
+    "dos": ["Do put every question of a section in grouped inset rows on one pane.", "Do give every interactive element at least 44px of height.", "Do use the --app-* variables, never literal hex.", "Do show selection with the selection wash and an accent border.", "Do keep two panes at 1024px and up, the push stack below."],
+    "donts": ["Don't imitate native window chrome: no traffic lights or fake status bars.", "Don't drop-shadow a container; raise a sheet by tone.", "Don't set text in the seal teal.", "Don't load a web font or display face."]
+  }
+}

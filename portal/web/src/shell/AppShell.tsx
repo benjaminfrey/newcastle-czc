@@ -46,7 +46,7 @@ export default function AppShell({ steps, currentId, formTitle, saveState, rootH
   useEffect(() => {
     if (!onStep || !currentId) return;
     const onKey = (e: KeyboardEvent) => {
-      if (!(e.altKey && e.metaKey) || (e.key !== "ArrowDown" && e.key !== "ArrowUp")) return;
+      if (!(e.altKey || e.metaKey) || (e.key !== "ArrowDown" && e.key !== "ArrowUp")) return;
       const at = steps.findIndex((s) => s.id === currentId);
       const next = steps[at + (e.key === "ArrowDown" ? 1 : -1)];
       if (next) {

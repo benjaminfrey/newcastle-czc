@@ -31,7 +31,7 @@ export default function StepSidebar({ steps, currentId, title }: Props) {
           ${s.id === currentId ? "bg-[var(--app-selection)] font-semibold" : "hover:bg-[var(--app-selection)]/60"}`}
       >
         <StatusGlyph status={s.status} unknowns={s.unknowns} />
-        <span className="truncate">{s.title}</span>
+        <span className="min-w-0 py-2 leading-snug">{s.title}</span>
       </Link>
       {s.children && s.children.length > 0 && <ul>{s.children.map((c) => row(c, true))}</ul>}
     </li>

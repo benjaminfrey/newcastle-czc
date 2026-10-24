@@ -37,7 +37,8 @@ export function itemLabel(form: FormDef, cur: Current, itemId: string): string {
       if (typeof v === "string" && v && f.type === "text" && f.id.endsWith("_name")) return `${base}: ${v}`;
       if (typeof v === "string" && f.type === "choice" && (f.id.endsWith("_kind") || f.id.endsWith("_class"))) {
         const o = f.options.find((x) => x.value === v);
-        if (o) return `${base}: ${o.official.toLowerCase()}`;
+        // "Addition 1: Deck", but "Addition 1" rather than "Addition 1: addition".
+        if (o) return o.official.toLowerCase() === (NOUNS[item.kind] ?? "").toLowerCase() ? base : `${base}: ${o.official}`;
       }
     }
   }

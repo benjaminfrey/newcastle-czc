@@ -52,7 +52,7 @@ Street Type inventory). Every question can show the Code text it rests on ("Why 
 ## Brand Commitments
 
 - The Town of Newcastle's seal may be used in the portal (chair, 2026-10-23); it appears on the
-  paper application forms. A clean digital copy is still to be supplied (none is in the repo).
+  paper application forms. The chair supplied a clean copy; it is `public/town-seal.png`.
 - The chair's binding direction for the interface (2026-10-23): it should look and feel as close
   to a macOS / iOS app as possible, including how navigation (back / forward / continue) works.
 - Voice: plain, calm, about an 8th-grade reading level; the Code's terms only on the official form.

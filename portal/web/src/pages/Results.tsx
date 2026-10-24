@@ -97,7 +97,7 @@ export default function Results() {
       <p>Fees: Set by the Town's fee schedule — the Town Office will tell you the amount.</p>
       <p className="text-sm">The Code Enforcement Officer confirms this when you apply.</p>
       <Link to="/start" className="min-h-11 text-[var(--app-accent-text)]">Start again</Link>
-      <Sheet open={signIn} title="Sign in to apply" doneLabel="Close" onCancel={() => setSignIn(false)} onDone={() => setSignIn(false)}>
+      <Sheet open={signIn} title="Sign in to apply" onCancel={() => setSignIn(false)}>
         <SignInForm />
       </Sheet>
     </div>

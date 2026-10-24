@@ -1,6 +1,6 @@
 import { TextArea, TextField } from "@heroui/react";
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { getUseGroups } from "../api";
 import { applicable, printed } from "../forms/applicability";
 import { itemLabel, type StepModel } from "../forms/steps";
@@ -18,6 +18,7 @@ const isClosing = (fields: { source: string }[]) => fields.length > 0 && fields.
 // (the step it's asked in, in a sheet) and Add more detail. Sending it arrives in Milestone 6.
 export default function ReviewPane({ models, base }: { models: StepModel[]; base: string }) {
   const { app, form, cur, saveNote, flush } = useApplication();
+  const navigate = useNavigate();
   const [useNames, setUseNames] = useState<Record<string, string>>({});
   const [editing, setEditing] = useState<string | null>(null); // a step id
   const [detail, setDetail] = useState<{ sectionId: string; itemId: string | null; title: string; text: string } | null>(null);
@@ -30,6 +31,14 @@ export default function ReviewPane({ models, base }: { models: StepModel[]; base
     return [...all.filter((b) => !isClosing(b.section.fields)), ...all.filter((b) => isClosing(b.section.fields))];
   }, [form, cur]);
   const stepOfSection = (id: string) => form!.sections.find((s) => s.id === id)?.step ?? null;
+  // A plain step's section opens that step in a sheet here; a building's or an addition's opens
+  // its own sheet on its hub, at the page that section's questions are on.
+  const editOf = (sectionId: string, itemId: string | null, step: string | null) => {
+    if (!step || !models.some((m) => m.id === step)) return undefined;
+    if (!itemId) return models.some((m) => m.id === step && m.kind === "fields") ? () => setEditing(step) : undefined;
+    const page = form!.sections.find((s) => s.id === sectionId)?.fields.find((f) => f.page)?.page ?? "";
+    return () => void flush().then(() => navigate(`${base}/${step}?item=${itemId}&page=${page}`));
+  };
   const gaps = app!.missing.map((m) => {
     const sec = form!.sections.find((s) => s.fields.some((f) => f.id === m.field_id))!;
     const field = sec.fields.find((f) => f.id === m.field_id)!;
@@ -66,7 +75,7 @@ export default function ReviewPane({ models, base }: { models: StepModel[]; base
         return (
           <OfficialGroup key={`${b.section.id}|${b.itemId ?? ""}`} block={b} title={title} note={note}
                          attachments={app!.attachments} useNames={useNames}
-                         onEdit={step && !b.itemId && models.some((m) => m.id === step && m.kind === "fields") ? () => setEditing(step) : undefined}
+                         onEdit={editOf(b.section.id, b.itemId, step)}
                          onAddDetail={() => setDetail({ sectionId: b.section.id, itemId: b.itemId, title, text: note })} />
         );
       })}

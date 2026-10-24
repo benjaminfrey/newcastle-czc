@@ -37,7 +37,7 @@ describe("MyApplications", () => {
     expect(screen.queryByText("Sign in page")).not.toBeInTheDocument();
   });
 
-  it("lists drafts with Continue", async () => {
+  it("lists drafts as rows that continue the application", async () => {
     vi.spyOn(api, "getMe").mockResolvedValue({ email: "a@example.com", role: "applicant" });
     vi.spyOn(apps, "listApplications").mockResolvedValue([
       { id: "abc", form_key: "use_permit", official_title: "Use Permit Application", map_lot: "004-036",
@@ -46,7 +46,7 @@ describe("MyApplications", () => {
     renderPage();
     expect(await screen.findByText("Use Permit Application")).toBeInTheDocument();
     expect(screen.getByText(/Map 4, Lot 36/)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Continue" })).toHaveAttribute("href", "/applications/abc");
+    expect(screen.getByRole("link", { name: /Use Permit Application/ })).toHaveAttribute("href", "/applications/abc");
   });
 
   it("empty state offers Start an application", async () => {
@@ -54,5 +54,13 @@ describe("MyApplications", () => {
     vi.spyOn(apps, "listApplications").mockResolvedValue([]);
     renderPage();
     expect(await screen.findByRole("link", { name: "Start an application" })).toHaveAttribute("href", "/start");
+  });
+
+  it("has a Sign out button in the toolbar area", async () => {
+    vi.spyOn(api, "getMe").mockResolvedValue({ email: "a@example.com", role: "applicant" });
+    vi.spyOn(apps, "listApplications").mockResolvedValue([]);
+    renderPage();
+    expect(await screen.findByRole("button", { name: "Sign out" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "My applications" })).toBeInTheDocument();
   });
 });

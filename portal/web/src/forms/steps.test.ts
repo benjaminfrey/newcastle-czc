@@ -71,4 +71,15 @@ describe("steps model", () => {
   it("items are labelled by type when unnamed", () => {
     expect(itemLabel(form, cur([], [B1]), "x1")).toBe("Building 1");
   });
+
+  it("an item's kind is added in its own words, and not when it only repeats the noun", () => {
+    const kinds = { ...form, sections: [{ ...form.sections[0], id: "component", repeat: { kind: "component" }, fields: [{
+      ...form.sections[0].fields[0], id: "component_kind", type: "choice", show_if: null,
+      options: [{ value: "addition", label: "An addition", official: "Addition" }, { value: "deck", label: "A deck", official: "Deck" }],
+    }] }] } as unknown as FormDef;
+    const C1 = { id: "c1", kind: "component", position: 0 };
+    const kind = (v: string) => cur([{ field_id: "component_kind", item_id: "c1", value: v }], [C1]);
+    expect(itemLabel(kinds, kind("addition"), "c1")).toBe("Addition 1");
+    expect(itemLabel(kinds, kind("deck"), "c1")).toBe("Addition 1: Deck");
+  });
 });

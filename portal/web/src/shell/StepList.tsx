@@ -15,9 +15,9 @@ export default function StepList({ steps, title, subtitle }: { steps: ShellStep[
         </div>
       </div>
       <InsetGroup>
-        {steps.flatMap((s) => [s, ...(s.children ?? [])]).map((s) => (
+        {steps.flatMap((s) => [{ s, nested: false }, ...(s.children ?? []).map((c) => ({ s: c, nested: true }))]).map(({ s, nested }) => (
           <Link key={s.id} to={s.href} aria-label={`${s.title}, ${statusName(s.status, s.unknowns)}`}
-                className="flex min-h-12 items-center gap-3 px-4 text-[17px]">
+                className={`flex min-h-12 items-center gap-3 px-4 text-[17px] ${nested ? "pl-12" : ""}`}>
             <StatusGlyph status={s.status} unknowns={s.unknowns} />
             <span className="flex-1">{s.title}</span>
             <span aria-hidden="true" className="text-[var(--app-tertiary-label)]">›</span>

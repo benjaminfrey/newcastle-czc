@@ -40,16 +40,17 @@ export default function LotDiagramLayout({ parcelId, street, sides }: { parcelId
     getProperty(parcelId).then((f) => { if (f && typeof f === "object") setGeometry(f.geometry); });
   }, [parcelId]);
   return (
-    <div className="flex flex-col gap-3">
+    // Laid out by the space it has (a sheet is narrow even on a desktop), not by the window.
+    <div className="@container flex flex-col gap-3">
       <p className="text-center text-[15px] text-[var(--app-secondary-label)]">
         The front is the side along {street ?? "the road"}.
       </p>
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
-        <div className="sm:col-span-3">{sides.front}</div>
+      <div className="grid grid-cols-1 gap-2 @2xl:grid-cols-[1fr_auto_1fr] @2xl:items-center">
+        <div className="@2xl:col-span-3">{sides.front}</div>
         <div>{sides.side1}</div>
-        <div className="order-first sm:order-none"><LotOutline geometry={geometry} /></div>
+        <div className="order-first @2xl:order-none"><LotOutline geometry={geometry} /></div>
         <div>{sides.side2}</div>
-        <div className="sm:col-span-3">{sides.rear}</div>
+        <div className="@2xl:col-span-3">{sides.rear}</div>
       </div>
     </div>
   );

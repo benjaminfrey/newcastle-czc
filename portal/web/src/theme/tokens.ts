@@ -8,6 +8,9 @@ export type Tokens = {
   label: string; secondaryLabel: string; tertiaryLabel: string;
   accent: string; accentText: string; onAccent: string;
   seal: string; destructive: string; selection: string;
+  // A field's fill (iOS tertiary fill, made opaque), and a sheet's raised ground and rows: in dark
+  // mode a sheet is lighter than the window under it, as on iOS.
+  fill: string; groundElevated: string; rowElevated: string;
 };
 
 export const LIGHT: Tokens = {
@@ -15,6 +18,7 @@ export const LIGHT: Tokens = {
   label: "#1C1C1E", secondaryLabel: "#636366", tertiaryLabel: "#8A8A8E",
   accent: "#0C727E", accentText: "#0C727E", onAccent: "#FFFFFF",
   seal: "#1098A8", destructive: "#D70015", selection: "#DCEFF1",
+  fill: "#EEEEF0", groundElevated: "#F2F2F7", rowElevated: "#FFFFFF",
 };
 
 export const DARK: Tokens = {
@@ -22,6 +26,7 @@ export const DARK: Tokens = {
   label: "#F2F2F7", secondaryLabel: "#AEAEB2", tertiaryLabel: "#8A8A8E",
   accent: "#0C727E", accentText: "#4CC9D8", onAccent: "#FFFFFF",
   seal: "#1098A8", destructive: "#FF6961", selection: "#123C42",
+  fill: "#3A3A3C", groundElevated: "#1C1C1E", rowElevated: "#2C2C2E",
 };
 
 function luminance(hex: string): number {

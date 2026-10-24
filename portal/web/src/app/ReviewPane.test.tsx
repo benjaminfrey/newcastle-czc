@@ -113,6 +113,19 @@ describe("ReviewPane", () => {
     expect(screen.getByRole("group", { name: "Property Owner (if different)" })).toBeInTheDocument();
   });
 
+  it("Edit on a building's section opens that building's sheet at the section's page", async () => {
+    const building = sec("main_mass", "Main Building Mass Details", "buildings",
+      [q("width", "Width of Main Building Mass", { page: "size" })],
+      { repeat: { kind: "building", add_label: "Add a building", min: 1, max: 20, add_options: [] },
+        pages: [{ id: "basics", title: "Basics", layout: null }, { id: "size", title: "Size", layout: null }] });
+    vi.spyOn(apps, "getForm").mockResolvedValue({ ...FORM, steps: [...(FORM.steps ?? []), { id: "buildings", title: "Buildings" }],
+                                                  sections: [...FORM.sections, building] });
+    vi.spyOn(apps, "getApplication").mockResolvedValue({ ...APP, items: [{ id: "b1", kind: "building", position: 0 }] });
+    open();
+    await userEvent.click(await screen.findByRole("button", { name: "Edit Main Building Mass Details — Building 1" }));
+    await waitFor(() => expect(screen.getByTestId("where")).toHaveTextContent("/applications/abc/buildings?item=b1&page=size"));
+  });
+
   it("Add more detail saves a note printed under its section", async () => {
     const note = vi.spyOn(apps, "saveNote").mockResolvedValue({ revision: 4, missing: [] });
     open();

@@ -74,14 +74,18 @@ export function SliderControl({ field, value, onValue }: ControlProps) {
       className="w-full"
     >
       <div className="flex justify-end"><Slider.Output className="text-[15px] tabular-nums" /></div>
-      <Slider.Track className="min-h-11"><Slider.Fill /><Slider.Thumb /></Slider.Track>
+      <Slider.Track className="min-h-11">
+        <Slider.Fill />
+        {/* The iOS knob: a white circle with a soft shadow, not a pill. */}
+        <Slider.Thumb className="size-7 rounded-full bg-white shadow-[0_1px_4px_rgba(0,0,0,0.3)]" />
+      </Slider.Track>
     </Slider>
   );
 }
 
 export function SwitchControl({ field, value, onValue }: ControlProps) {
   return (
-    <Switch isSelected={value === true} onChange={(on) => onValue(on)} className="min-h-11">
+    <Switch isSelected={value === true} onChange={(on) => onValue(on)} size="lg" className="min-h-11 justify-center">
       {/* Content is the pressable part: the track sits inside it; the label is for screen readers. */}
       <Switch.Content>
         <Switch.Control><Switch.Thumb /></Switch.Control>
@@ -156,7 +160,7 @@ export function ChipsControl({ field, value, onValue }: ControlProps) {
       <TagGroup.List className="flex flex-wrap gap-2">
         {field.options.map((o) => (
           <Tag key={o.value} id={o.value} textValue={o.label}
-               className="min-h-11 rounded-full border border-[var(--app-separator)] px-4 data-[selected]:border-[var(--app-accent)] data-[selected]:bg-[var(--app-selection)]">
+               className="min-h-11 rounded-full border border-[var(--app-separator)] px-4 text-[15px] data-[selected]:border-[var(--app-accent)] data-[selected]:bg-[var(--app-selection)]">
             {o.label}
           </Tag>
         ))}

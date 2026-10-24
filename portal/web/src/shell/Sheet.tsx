@@ -6,7 +6,8 @@ import { useWideLayout } from "./useWideLayout";
 export const InSheet = createContext(false);
 
 type Props = {
-  open: boolean; title: string; onCancel: () => void; onDone: () => void;
+  // No onDone: a sheet that only closes (sign-in) shows Cancel alone.
+  open: boolean; title: string; onCancel: () => void; onDone?: () => void;
   pages?: string[]; pageIndex?: number; onPage?: (i: number) => void; doneLabel?: string;
   children: ReactNode;
 };
@@ -18,13 +19,15 @@ export default function Sheet({ open, title, onCancel, onDone, pages, pageIndex 
   return (
     <Modal.Backdrop isOpen={open} onOpenChange={(o) => !o && onCancel()} isDismissable={false}>
       <Modal.Container size={wide ? "lg" : "full"} scroll="inside">
-        <Modal.Dialog className="bg-[var(--app-ground)] p-0" aria-label={title}>
+        <Modal.Dialog className="app-sheet bg-[var(--app-ground)] p-0" aria-label={title}>
           <Modal.Header className="grid grid-cols-[1fr_auto_1fr] items-center border-b border-[var(--app-separator)] bg-[var(--app-row)] px-2 py-1.5">
             <Button variant="ghost" className="min-h-11 justify-self-start" onPress={onCancel}>Cancel</Button>
             <Modal.Heading className="text-[17px] font-semibold">{title}</Modal.Heading>
-            <Button variant="ghost" className="min-h-11 justify-self-end font-semibold text-[var(--app-accent-text)]" onPress={onDone}>
-              {doneLabel}
-            </Button>
+            {onDone ? (
+              <Button variant="ghost" className="min-h-11 justify-self-end font-semibold text-[var(--app-accent-text)]" onPress={onDone}>
+                {doneLabel}
+              </Button>
+            ) : <span />}
           </Modal.Header>
           <Modal.Body className="flex flex-col gap-6 overflow-x-hidden px-4 py-5"><InSheet.Provider value>{children}</InSheet.Provider></Modal.Body>
           {pages && pages.length > 1 && (

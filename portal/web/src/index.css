@@ -18,6 +18,9 @@
   --app-seal: #1098A8;
   --app-destructive: #D70015;
   --app-selection: #DCEFF1;
+  --app-fill: #EEEEF0;
+  --app-ground-elevated: #F2F2F7;
+  --app-row-elevated: #FFFFFF;
 }
 
 :root[data-theme="dark"] {
@@ -34,6 +37,9 @@
   --app-seal: #1098A8;
   --app-destructive: #FF6961;
   --app-selection: #123C42;
+  --app-fill: #3A3A3C;
+  --app-ground-elevated: #1C1C1E;
+  --app-row-elevated: #2C2C2E;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -51,6 +57,9 @@
     --app-seal: #1098A8;
     --app-destructive: #FF6961;
     --app-selection: #123C42;
+    --app-fill: #3A3A3C;
+    --app-ground-elevated: #1C1C1E;
+    --app-row-elevated: #2C2C2E;
   }
 }
 
@@ -61,7 +70,7 @@
   --surface-foreground: var(--app-label);
   --overlay: var(--app-row);
   --overlay-foreground: var(--app-label);
-  --field-background: var(--app-row);
+  --field-background: var(--app-fill);
   --field-foreground: var(--app-label);
   --muted: var(--app-secondary-label);
   --accent: var(--app-accent);
@@ -103,4 +112,18 @@ body {
 .pane-fade { animation: pane-fade 120ms ease-out; }
 @media (prefers-reduced-motion: reduce) {
   .pane-push, .pane-cross { animation: pane-fade 120ms ease-out; }
+}
+
+/* A sheet sits above the window: its ground and rows take the raised colours. */
+.app-sheet {
+  --app-ground: var(--app-ground-elevated);
+  --app-row: var(--app-row-elevated);
+}
+
+/* An empty checkbox or radio circle needs an edge (3:1 against its row), not just the field fill. */
+.checkbox__control, .radio__control {
+  border: 1.5px solid var(--app-tertiary-label);
+}
+:where([data-selected]) > .checkbox__control, :where([data-selected]) .radio__control {
+  border-color: var(--app-accent);
 }

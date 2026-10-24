@@ -1,8 +1,9 @@
-import { Button, Card } from "@heroui/react";
+import { Button } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { getMe, signOut, UNREACHABLE, type Me } from "../api";
 import { listApplications, type AppSummary } from "../applications";
+import InsetGroup from "../shell/InsetGroup";
 import { longDate, mapLotLabel } from "../format";
 
 export default function MyApplications() {
@@ -24,38 +25,43 @@ export default function MyApplications() {
   if (unreachable) return <p role="alert">{UNREACHABLE}</p>;
   if (!me) return <p>Loading…</p>;
   return (
-    <Card>
-      <Card.Header>
-        <Card.Title>My applications</Card.Title>
-        <Card.Description>Signed in as {me.email}</Card.Description>
-      </Card.Header>
-      <Card.Content>
-        {list === null && <p>Loading…</p>}
-        {list?.length === 0 && (
-          <div className="flex flex-col items-start gap-3">
-            <p>You haven't started any applications yet.</p>
-            <Link to="/start" className="flex min-h-11 items-center rounded-full bg-[var(--app-accent)] px-6 font-semibold text-[var(--app-on-accent)]">
-              Start an application
-            </Link>
-          </div>
-        )}
-        {list && list.length > 0 && (
-          <ul className="flex flex-col gap-3">
-            {list.map((a) => (
-              <li key={a.id} className="flex flex-col gap-1">
-                <span className="font-semibold">{a.official_title}</span>
-                <span>{mapLotLabel(a.map_lot)} · Not sent yet · Last changed {longDate(a.updated_at)}</span>
-                <Link to={`/applications/${a.id}`} className="underline">Continue</Link>
-              </li>
-            ))}
-          </ul>
-        )}
-      </Card.Content>
-      <Card.Footer>
-        <Button variant="secondary" onPress={() => signOut().then(() => navigate("/", { replace: true }))}>
+    <div className="flex flex-col gap-4">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-[30px] font-bold leading-tight">My applications</h1>
+          <p className="text-[15px] text-[var(--app-secondary-label)]">Signed in as {me.email}</p>
+        </div>
+        <Button variant="ghost" className="min-h-11 text-[17px] text-[var(--app-accent-text)]"
+                onPress={() => signOut().then(() => navigate("/", { replace: true }))}>
           Sign out
         </Button>
-      </Card.Footer>
-    </Card>
+      </div>
+      {list === null && <p className="text-[var(--app-secondary-label)]">Loading…</p>}
+      {list?.length === 0 && (
+        <div className="flex flex-col items-center gap-4 py-10 text-center">
+          <p className="text-[17px] text-[var(--app-secondary-label)]">You haven't started any applications yet.</p>
+          <Link to="/start"
+                className="flex min-h-12 items-center rounded-xl bg-[var(--app-accent)] px-8 text-[17px] font-semibold text-[var(--app-on-accent)] no-underline">
+            Start an application
+          </Link>
+        </div>
+      )}
+      {list && list.length > 0 && (
+        <InsetGroup>
+          {list.map((a) => (
+            <Link key={a.id} to={`/applications/${a.id}`}
+                  className="flex min-h-14 items-center gap-3 px-4 py-2 no-underline">
+              <span className="flex min-w-0 flex-1 flex-col">
+                <span className="text-[17px]">{a.official_title}</span>
+                <span className="text-[15px] text-[var(--app-secondary-label)]">
+                  {mapLotLabel(a.map_lot)} · Not sent yet · Last changed {longDate(a.updated_at)}
+                </span>
+              </span>
+              <span aria-hidden="true" className="text-[var(--app-tertiary-label)]">›</span>
+            </Link>
+          ))}
+        </InsetGroup>
+      )}
+    </div>
   );
 }

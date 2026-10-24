@@ -32,7 +32,7 @@ export function controlFor(f: FormField): ControlKind {
 }
 
 // Short controls sit beside their question on a wide screen; the rest go under it.
-const BESIDE = new Set<ControlKind>(["switch", "stepper", "number", "picker", "building-picker", "street-picker", "text", "date"]);
+const BESIDE = new Set<ControlKind>(["stepper", "number", "picker", "building-picker", "street-picker", "text", "date"]);
 
 type Props = {
   field: FormField; itemId: string | null; value: unknown; onValue: (v: unknown) => void; error?: string | null;
@@ -65,14 +65,21 @@ export default function FieldControl({ field, itemId, value, onValue, error, com
     }
   })();
   const question = field.label ?? field.official_label;
+  // A switch sits at the end of its question's line, as in Settings; its help goes underneath.
+  const inline = kind === "switch";
   return (
-    <InsetGroup.Row stacked={!BESIDE.has(kind)} field={field.id}
-                    label={<span id={labelId}>{kind === "text" || kind === "longtext" ? <label htmlFor={inputId}>{question}</label> : question}</span>}>
+    <InsetGroup.Row stacked={inline || !BESIDE.has(kind)} field={field.id}
+                    label={inline ? undefined : <span id={labelId}>{kind === "text" || kind === "longtext" ? <label htmlFor={inputId}>{question}</label> : question}</span>}>
       <div className="flex flex-col gap-1.5">
-        {control}
-        {field.help && !compact && <p className="text-[13px] text-[var(--app-secondary-label)]">{field.help}</p>}
-        {isUnknown(value) && <p className="text-[13px] text-[var(--app-secondary-label)]">Not known yet — staff will follow up.</p>}
-        {error && <p role="alert" className="text-[13px] text-[var(--app-destructive)]">{error}</p>}
+        {inline ? (
+          <div className="flex min-h-11 items-center gap-3">
+            <span id={labelId} aria-hidden="true" className="flex-1 text-[15px]">{question}</span>
+            {control}
+          </div>
+        ) : control}
+        {field.help && !compact && <p className="text-[15px] text-[var(--app-secondary-label)]">{field.help}</p>}
+        {isUnknown(value) && <p className="text-[15px] text-[var(--app-secondary-label)]">Not known yet — staff will follow up.</p>}
+        {error && <p role="alert" className="text-[15px] text-[var(--app-destructive)]">{error}</p>}
         <div className="flex flex-wrap items-center gap-x-4">
           {field.allow_unknown && !isUnknown(value) && (
             <Button variant="ghost" size="sm" className="min-h-11 px-0 text-[var(--app-accent-text)]" onPress={() => onValue({ unknown: true })}>

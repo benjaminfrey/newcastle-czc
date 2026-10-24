@@ -18,7 +18,7 @@ export default function PointControl({ value, onValue }: { value: unknown; onVal
   return (
     <div className="flex flex-col gap-2">
       <div className="overflow-hidden rounded-xl"><ParcelMap selected={lot} focus={null} pin={pin} onPick={(lon, lat) => onValue({ lon, lat })} /></div>
-      <p className="text-[13px] text-[var(--app-secondary-label)]" aria-live="polite">
+      <p className="text-[15px] text-[var(--app-secondary-label)]" aria-live="polite">
         {pin ? "Marked. Tap again to move the mark." : "Nothing marked yet."}
       </p>
     </div>

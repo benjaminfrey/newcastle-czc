@@ -13,11 +13,17 @@ const MODES: [string, Tokens][] = [["light", LIGHT], ["dark", DARK]];
 describe("theme tokens", () => {
   it.each(MODES)("text meets 4.5:1 on its grounds (%s)", (_, t) => {
     for (const fg of [t.label, t.secondaryLabel, t.accentText]) {
-      for (const bg of [t.ground, t.row, t.groupedGround]) {
+      for (const bg of [t.ground, t.row, t.groupedGround, t.fill, t.groundElevated, t.rowElevated]) {
         expect(contrast(fg, bg), `${fg} on ${bg}`).toBeGreaterThanOrEqual(4.5);
       }
     }
     expect(contrast(t.destructive, t.row)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it.each(MODES)("a field's fill stands apart from the row it sits on, in a sheet too (%s)", (_, t) => {
+    expect(contrast(t.fill, t.row)).toBeGreaterThanOrEqual(1.15);
+    expect(contrast(t.fill, t.rowElevated)).toBeGreaterThanOrEqual(1.15);
+    expect(contrast(t.rowElevated, t.groundElevated)).toBeGreaterThanOrEqual(1.05);
   });
 
   it.each(MODES)("buttons meet 4.5:1 (%s)", (_, t) => {
