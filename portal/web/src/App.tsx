@@ -9,14 +9,14 @@ import Results from "./pages/Results";
 import Start from "./pages/Start";
 import UsePicker from "./pages/UsePicker";
 import ApplyStart from "./pages/ApplyStart";
-import Wizard from "./pages/Wizard";
+import ApplicationPage from "./app/ApplicationPage";
 import Review from "./pages/Review";
 
 export default function App() {
   return (
     <BrowserRouter>
-      <Layout>
-        <Routes>
+      <Routes>
+        <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signin/verify" element={<Verify />} />
@@ -26,10 +26,11 @@ export default function App() {
           <Route path="/start/use" element={<UsePicker />} />
           <Route path="/start/results" element={<Results />} />
           <Route path="/apply/:formKey" element={<ApplyStart />} />
-          <Route path="/applications/:id" element={<Wizard />} />
           <Route path="/applications/:id/review" element={<Review />} />
-        </Routes>
-      </Layout>
+        </Route>
+        {/* The application window draws its own chrome. */}
+        <Route path="/applications/:id/:stepId?" element={<ApplicationPage />} />
+      </Routes>
     </BrowserRouter>
   );
 }

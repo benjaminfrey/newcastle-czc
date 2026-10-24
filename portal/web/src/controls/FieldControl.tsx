@@ -34,9 +34,12 @@ export function controlFor(f: FormField): ControlKind {
 // Short controls sit beside their question on a wide screen; the rest go under it.
 const BESIDE = new Set<ControlKind>(["switch", "stepper", "number", "picker", "building-picker", "street-picker", "text", "date"]);
 
-type Props = { field: FormField; itemId: string | null; value: unknown; onValue: (v: unknown) => void; error?: string | null };
+type Props = {
+  field: FormField; itemId: string | null; value: unknown; onValue: (v: unknown) => void; error?: string | null;
+  compact?: boolean; // part of a layout that gives the help and "Why we ask" once for the group
+};
 
-export default function FieldControl({ field, itemId, value, onValue, error }: Props) {
+export default function FieldControl({ field, itemId, value, onValue, error, compact }: Props) {
   const kind = controlFor(field);
   const inputId = useId();
   const labelId = useId();
@@ -67,7 +70,7 @@ export default function FieldControl({ field, itemId, value, onValue, error }: P
                     label={<span id={labelId}>{kind === "text" || kind === "longtext" ? <label htmlFor={inputId}>{question}</label> : question}</span>}>
       <div className="flex flex-col gap-1.5">
         {control}
-        {field.help && <p className="text-[13px] text-[var(--app-secondary-label)]">{field.help}</p>}
+        {field.help && !compact && <p className="text-[13px] text-[var(--app-secondary-label)]">{field.help}</p>}
         {isUnknown(value) && <p className="text-[13px] text-[var(--app-secondary-label)]">Not known yet — staff will follow up.</p>}
         {error && <p role="alert" className="text-[13px] text-[var(--app-destructive)]">{error}</p>}
         <div className="flex flex-wrap items-center gap-x-4">
@@ -76,7 +79,7 @@ export default function FieldControl({ field, itemId, value, onValue, error }: P
               I don't know yet
             </Button>
           )}
-          <WhyWeAsk why={field.why} />
+          {!compact && <WhyWeAsk why={field.why} />}
         </div>
       </div>
     </InsetGroup.Row>

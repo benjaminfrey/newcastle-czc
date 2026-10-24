@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
-import { Link } from "react-router";
+import { Link, Outlet } from "react-router";
 
-export default function Layout({ children }: { children: ReactNode }) {
+// The thin header and centred column for pages outside the application window.
+export default function Layout({ children }: { children?: ReactNode }) {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-separator">
@@ -10,7 +11,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           <Link to="/my-applications" className="text-sm underline">My applications</Link>
         </div>
       </header>
-      <main className="mx-auto max-w-3xl px-4 py-8">{children}</main>
+      <main className="mx-auto max-w-3xl px-4 py-8">{children ?? <Outlet />}</main>
     </div>
   );
 }
