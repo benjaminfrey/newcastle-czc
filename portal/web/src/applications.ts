@@ -1,7 +1,7 @@
 // Applications: the forms (public) and an applicant's drafts (signed in).
 import type { Expr } from "./forms/expr";
 
-export type Option = { value: string; label: string; official: string };
+export type Option = { value: string; label: string; official: string; icon?: string | null }; // icon: an outline icon (controls/Icon)
 export type FormField = {
   id: string; official_label: string;
   source: "question" | "property" | "account" | "derived" | "at_submit" | "staff";
@@ -13,12 +13,13 @@ export type FormField = {
   // The wizard's layer (forms/formdefs.py): the step it's asked in (resolved), the screen it shares
   // with others (deed book and page), whether it's asked before the rest of its item, the control
   // to draw, the slider increment, a starting value, address autofill.
-  step?: string | null; screen?: string | null; ask_first?: boolean;
+  step?: string | null; screen?: string | null; ask_first?: number | boolean;
   /** @deprecated sheet pages, gone from the API; read only by the item sheet until it is removed. */
   page?: string | null;
   control?: "stepper" | "slider" | "switch" | "segmented" | "tiles" | "picker" | "chips"
     | "building-picker" | "street-picker" | "building-type" | null;
   step_size?: number | null; default?: unknown; autocomplete?: "name" | "tel" | "email" | "street-address" | null;
+  copies?: boolean; // "Copy Building 1" brings this answer to the new building
 };
 export type Page = { id: string; title: string; layout: "compass" | "lot-diagram" | null };
 export type AddOption = { label: string; preset: Record<string, unknown> };

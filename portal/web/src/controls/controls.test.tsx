@@ -251,6 +251,13 @@ describe("BuildingTypeControl", () => {
     expect(onValue).toHaveBeenCalledWith("residential");
   });
 
+  it("the first step's kinds each carry an icon", () => {
+    draw(field);
+    for (const name of ["A home", /A building for a business/, /A smaller building/, "A farm building", "Something else"]) {
+      expect(screen.getByRole("radio", { name }).querySelector("svg")).not.toBeNull();
+    }
+  });
+
   it("A smaller building asks which kind", async () => {
     const onValue = draw(field);
     await userEvent.click(screen.getByRole("radio", { name: /A smaller building/ }));

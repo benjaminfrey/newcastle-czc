@@ -1,10 +1,11 @@
-import { Input, Radio, RadioGroup, TextField } from "@heroui/react";
+import { Input, TextField } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { useApplication } from "../app/ApplicationStore";
 import type { FormDef } from "../applications";
 import type { Current } from "../forms/applicability";
 import { itemLabel } from "../forms/steps";
 import { type ControlProps } from "./basic";
+import Icon from "./Icon";
 import { ChoiceTiles } from "./Tiles";
 
 const FREE = "Free-standing";
@@ -56,6 +57,8 @@ export function StreetPicker(p: ControlProps & { onTyped?: (v: string) => void; 
 
 // The building type in two easy steps: what kind of thing it is, then (only where the Code
 // splits it) which exactly. Options come from the field (Art. 5 §1.c).
+// The first step's icons (task-list brief §5): the step is the control's own grouping, not form options.
+const KIND_ICONS: Record<string, string> = { home: "home", business: "building-store", smaller: "building-warehouse", farm: "tractor", other: "building" };
 const GROUPS: { key: string; label: string; values: string[] }[] = [
   { key: "home", label: "A home", values: ["residential"] },
   { key: "business", label: "A building for a business", values: ["single_unit_commercial", "multi_unit_commercial", "mixed_use"] },
@@ -70,32 +73,21 @@ export function BuildingTypeControl({ field, value, onValue }: ControlProps) {
   useEffect(() => { if (groupOf(value)) setGroup(groupOf(value)); }, [value]);
   const g = GROUPS.find((x) => x.key === group);
   const options = g ? field.options.filter((o) => g.values.includes(o.value)) : [];
-  const tile = "min-h-12 rounded-xl border border-[var(--app-separator)] bg-[var(--app-row)] px-4 py-3 data-[selected]:border-[var(--app-accent)] data-[selected]:bg-[var(--app-selection)]";
+  const home = field.options.find((o) => o.value === "residential")?.label;
+  const kinds = GROUPS.map((x) => ({ value: x.key, key: x.key, label: x.key === "home" ? home ?? x.label : x.label,
+                                     icon: <Icon name={KIND_ICONS[x.key]} /> }));
+  // A kind with one building type answers at once; one with several asks which (no icons there).
+  const pickKind = (k: unknown) => {
+    setGroup(k as string);
+    const only = GROUPS.find((x) => x.key === k)!.values;
+    if (only.length === 1) onValue(only[0]);
+  };
   return (
-    <div className="flex flex-col gap-3">
-      <RadioGroup value={group} aria-label={field.label ?? field.official_label} className="grid gap-2"
-                  onChange={(k) => {
-                    setGroup(k);
-                    const only = GROUPS.find((x) => x.key === k)!.values;
-                    if (only.length === 1) onValue(only[0]);
-                  }}>
-        {GROUPS.map((x) => (
-          <Radio key={x.key} value={x.key} className={tile}>
-            <Radio.Content><Radio.Control className="sr-only"><Radio.Indicator /></Radio.Control>
-              {x.key === "home" ? options.length === 1 || !g ? field.options.find((o) => o.value === "residential")?.label ?? x.label : x.label : x.label}
-            </Radio.Content>
-          </Radio>
-        ))}
-      </RadioGroup>
+    <div className="flex w-full flex-col items-center gap-3">
+      <ChoiceTiles field={field} value={group} choices={kinds} onPick={pickKind} />
       {options.length > 1 && (
-        <RadioGroup value={typeof value === "string" && g!.values.includes(value) ? value : null} onChange={onValue}
-                    aria-label="Which kind?" className="grid gap-2 pl-4">
-          {options.map((o) => (
-            <Radio key={o.value} value={o.value} className={tile}>
-              <Radio.Content><Radio.Control className="sr-only"><Radio.Indicator /></Radio.Control>{o.label}</Radio.Content>
-            </Radio>
-          ))}
-        </RadioGroup>
+        <ChoiceTiles field={{ ...field, label: "Which kind?" }} value={typeof value === "string" && g!.values.includes(value) ? value : null}
+                     choices={options.map((o) => ({ value: o.value, key: o.value, label: o.label }))} onPick={onValue} />
       )}
     </div>
   );
