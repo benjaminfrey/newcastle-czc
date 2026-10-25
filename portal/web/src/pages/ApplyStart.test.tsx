@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter, Route, Routes } from "react-router";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as api from "../api";
 import * as apps from "../applications";
@@ -22,6 +22,10 @@ const renderAt = (path = "/apply/use_permit") =>
       </Routes>
     </MemoryRouter>,
   );
+
+function Search() {
+  return <p data-testid="search">{useLocation().search}</p>;
+}
 
 beforeEach(() => {
   localStorage.clear();
@@ -51,6 +55,34 @@ describe("ApplyStart", () => {
     expect(await screen.findByText("Wizard page")).toBeInTheDocument();
     expect(spy).toHaveBeenCalledWith({ form_key: "use_permit", property: { source: "lookup", parcel_id: 229 },
                                        disputed: false, note: "", use_key: null, carry: null });
+  });
+
+  it("opens the first question, on a phone too", async () => {
+    saveProperty(PROPERTY);
+    vi.spyOn(api, "getMe").mockResolvedValue({ email: "a@example.com", role: "applicant" });
+    vi.spyOn(apps, "createApplication").mockResolvedValue({ id: "abc" });
+    render(
+      <MemoryRouter initialEntries={["/apply/use_permit"]}>
+        <Routes>
+          <Route path="/apply/:formKey" element={<ApplyStart />} />
+          <Route path="/applications/:id" element={<Search />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+    expect(await screen.findByTestId("search")).toHaveTextContent("?start=1");
+  });
+
+  it("a screener answer the form can't take starts without it, rather than not at all", async () => {
+    saveProperty(PROPERTY);
+    saveAnswers({ project: ["build"], use_key: null, division: { lots_after: null, divided_last_5_years: null },
+                  building: { kind: "new", gross_floor_area_sf: 1200, total_floor_area_sf: null, parking_spaces: null,
+                              new_dwelling_units: 600, homes_added_last_5_years: null } });
+    vi.spyOn(api, "getMe").mockResolvedValue({ email: "a@example.com", role: "applicant" });
+    const spy = vi.spyOn(apps, "createApplication").mockImplementation(async (b) => (b.carry ? "invalid" : { id: "abc" }));
+    renderAt("/apply/small_project_plan");
+    expect(await screen.findByText("Wizard page")).toBeInTheDocument();
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy.mock.calls[1][0].carry).toBeNull();
   });
 
   it("sends the screener's carry: the kind of work, its floor area and new homes", async () => {

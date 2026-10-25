@@ -83,7 +83,9 @@ export default function OfficialGroup({ block, title, note, attachments, useName
             <span className="flex flex-wrap items-baseline justify-between gap-x-3">
               <span>
               {asked(field) && field.type !== "upload" && unanswered(value)
-                ? <span className="text-[var(--app-destructive)]">Still to answer</span>
+                ? (field.required
+                    ? <span className="text-[var(--app-destructive)]">Still to answer</span>
+                    : <span className="text-[var(--app-secondary-label)]">Not answered</span>)
                 : <span>{field.type === "upload" ? "None added" : display(field, value, useNames)}</span>}
               {fromMaps(field) && value !== null && (mapKnew(field) || !changed(field.id)) && (
                 // A map value the applicant corrected is theirs, not the Town's: say which, for staff.

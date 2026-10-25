@@ -106,6 +106,11 @@ export function valueOf(form: FormDef, f: FormField, itemId: string | null, cur:
   return null;
 }
 
+// What the Town's map says for a question it fills in, whatever the applicant has answered.
+export function mapValueOf(f: FormField, cur: Current): unknown {
+  return f.may_correct ? propertyValue(f.from, cur.property, true) : null;
+}
+
 const empty = (v: unknown) => v === null || v === undefined || v === "" || (Array.isArray(v) && v.length === 0);
 
 export function missing(form: FormDef, cur: Current): [string, string | null][] {

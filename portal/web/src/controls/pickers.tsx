@@ -30,8 +30,9 @@ export function buildingLabel(form: FormDef, cur: Current, value: string): strin
   return /^[0-9a-f]{8}-[0-9a-f]{4}-/.test(value) ? null : value;
 }
 
-// The entrance's road: one along the lot (from the Town's map), or another road, typed.
-export function StreetPicker(p: ControlProps) {
+// The entrance's road: one along the lot (from the Town's map), or another road, typed. A road
+// typed in saves through `onTyped` (it waits for Continue); a road tapped answers through onValue.
+export function StreetPicker(p: ControlProps & { onTyped?: (v: string) => void; onAnother?: () => void }) {
   const { cur } = useApplication();
   const roads = ((cur?.property.streets as { name: string }[] | undefined) ?? []).map((s) => s.name);
   const typed = typeof p.value === "string" && p.value !== "" && !roads.includes(p.value);
@@ -42,10 +43,10 @@ export function StreetPicker(p: ControlProps) {
   return (
     <div className="flex w-full flex-col items-center gap-3">
       <ChoiceTiles field={p.field} value={another ? ANOTHER : p.value} choices={choices}
-                   onPick={(v) => (v === ANOTHER ? setAnother(true) : (setAnother(false), p.onValue(v)))} />
+                   onPick={(v) => (v === ANOTHER ? (setAnother(true), p.onAnother?.()) : (setAnother(false), p.onValue(v)))} />
       {another && (
         <TextField value={draft} onChange={setDraft} aria-label="Name of the road"
-                   onBlur={() => draft.trim() && p.onValue(draft.trim())}>
+                   onBlur={() => draft.trim() && (p.onTyped ?? p.onValue)(draft.trim())}>
           <Input placeholder="Name of the road" className="min-h-11" />
         </TextField>
       )}

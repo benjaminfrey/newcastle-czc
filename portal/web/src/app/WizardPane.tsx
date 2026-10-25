@@ -2,12 +2,13 @@
 // and the control. A single choice is a set of tiles that answers at a tap; a value from the
 // Town's map asks "Is this right?"; fields asked together (deed book and page, the setbacks, the
 // four walls) share the screen.
+import { AlertDialog, Button } from "@heroui/react";
 import { useState, type MutableRefObject } from "react";
 import type { FormField } from "../applications";
 import FieldControl from "../controls/FieldControl";
 import { BuildingPicker, StreetPicker } from "../controls/pickers";
 import { ChoiceTiles, MultiTiles } from "../controls/Tiles";
-import { valueOf, type Row } from "../forms/applicability";
+import { mapValueOf, valueOf, type Row } from "../forms/applicability";
 import type { Screen } from "../forms/screens";
 import { itemLabel } from "../forms/steps";
 import { display } from "./OfficialGroup";
@@ -72,7 +73,7 @@ const NOUNS: Record<string, string> = { building: "building", component: "additi
 // The words a screen asks with, for its heading and the screen reader.
 export function headingOf(s: Screen): string {
   if (s.kind === "another") return `Is there another ${s.id.endsWith("building") ? "building" : "addition, porch or deck"} in this project?`;
-  if (s.kind === "any") return `Are you adding ${s.id.endsWith("component") ? "an addition, porch or deck" : `a ${NOUNS[s.id.split(":")[1]] ?? "building"}`} to a building?`;
+  if (s.kind === "any") return `Are you adding ${s.id.endsWith("component") ? "an addition, porch or deck" : `a ${NOUNS[s.id.split(":")[1]] ?? "building"}`}?`;
   if (s.kind === "setbacks") return "How far will it be from each lot line?";
   if (s.kind === "walls") return "About how much of each wall is windows and doors?";
   const f = s.rows[0].field;
@@ -91,14 +92,16 @@ type Props = {
   editing: boolean;                 // "Is this right?": the applicant chose to correct it
   errorsRef: MutableRefObject<Record<string, string>>;
   onPick: (r: Row, value: unknown) => void;      // a tap that answers and moves on
-  onConfirm: (r: Row) => void;                   // "Yes, that's right"
+  onConfirm: (r: Row, keep: boolean) => void;    // "Yes, that's right" (keep the answer shown) / "Use the map's"
   onCorrect: () => void;                         // "No, I'll correct it"
   onLoop: (yes: boolean) => void;                // "Is there another?" / "Are you adding…?"
   onUnknown: () => void;                         // "I don't know yet"
+  onDelete?: { noun: string; run: () => void };  // a building or addition's first screen, while more than the least remain
 };
 
-export default function WizardPane({ screen, editing, errorsRef, onPick, onConfirm, onCorrect, onLoop, onUnknown }: Props) {
+export default function WizardPane({ screen, editing, errorsRef, onPick, onConfirm, onCorrect, onLoop, onUnknown, onDelete }: Props) {
   const { form, cur, app, setAnswer } = useApplication();
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const control = useRowControls(errorsRef);
   const value = (r: Row) => valueOf(form!, r.field, r.itemId, cur!);
   const street = ((cur?.property.streets as { name: string }[] | undefined) ?? [])[0]?.name ?? null;
@@ -112,7 +115,8 @@ export default function WizardPane({ screen, editing, errorsRef, onPick, onConfi
       case "choice": case "facing": {
         const c = row.field.control;
         if (c === "building-picker") return <BuildingPicker field={row.field} value={value(row)} onValue={(v) => onPick(row, v)} labelId="" inputId="" />;
-        if (c === "street-picker") return <StreetPicker field={row.field} value={value(row)} onValue={(v) => onPick(row, v)} labelId="" inputId="" />;
+        if (c === "street-picker") return <StreetPicker field={row.field} value={value(row)} onValue={(v) => onPick(row, v)} labelId="" inputId=""
+                                                        onAnother={onCorrect} onTyped={(v) => void setAnswer(row.field.id, row.itemId, v)} />;
         return <ChoiceTiles field={row.field} value={value(row)} onPick={(v) => onPick(row, v)} />;
       }
       case "multi":
@@ -126,15 +130,22 @@ export default function WizardPane({ screen, editing, errorsRef, onPick, onConfi
                             value={null} choices={choices} onPick={(v) => onLoop(v === true)} />;
       }
       case "confirm": {
-        const shown = display(row.field, value(row), {});
+        // A value the applicant corrected is theirs, shown as theirs, with the map's beside it.
+        const map = display(row.field, mapValueOf(row.field, cur!), {});
+        const own = cur!.answers.find((x) => x.field_id === row.field.id && x.item_id === row.itemId)?.value;
+        const corrected = own !== undefined && own !== null;
+        const choices = [{ value: "yes", key: "yes", label: "Yes, that's right" },
+          ...(corrected ? [{ value: "map", key: "map", label: `Use the map's ${map}` }] : []),
+          { value: "no", key: "no", label: "No, I'll correct it" }];
         return (
           <div className="flex w-full flex-col items-center gap-4">
-            <p className="text-[30px] font-semibold tabular-nums">{shown}</p>
-            <p className="-mt-3 text-[13px] text-[var(--app-secondary-label)]">From the Town's map</p>
+            <p className="text-[30px] font-semibold tabular-nums">{display(row.field, value(row), {})}</p>
+            <p className="-mt-3 text-[13px] text-[var(--app-secondary-label)]">
+              {corrected ? `You entered this. The Town's map says ${map}.` : "From the Town's map"}
+            </p>
             {editing ? control(row, { bare: true }) : (
-              <ChoiceTiles field={row.field} value={null}
-                           choices={[{ value: "yes", key: "yes", label: "Yes, that's right" }, { value: "no", key: "no", label: "No, I'll correct it" }]}
-                           onPick={(v) => (v === "yes" ? onConfirm(row) : onCorrect())} />
+              <ChoiceTiles field={row.field} value={null} choices={choices}
+                           onPick={(v) => (v === "no" ? onCorrect() : onConfirm(row, v === "yes"))} />
             )}
           </div>
         );
@@ -199,6 +210,27 @@ export default function WizardPane({ screen, editing, errorsRef, onPick, onConfi
                 className="mt-3 min-h-11 px-2 text-[15px] text-[var(--app-accent-text)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--app-accent-text)]">
           I don't know yet
         </button>
+      )}
+      {onDelete && (
+        // A building or addition added by mistake goes, behind a confirmation (redesign brief §147).
+        <button type="button" onClick={() => setConfirmDelete(true)}
+                className="mt-6 min-h-11 px-2 text-[15px] text-[var(--app-destructive)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--app-accent-text)]">
+          Delete {onDelete.noun}
+        </button>
+      )}
+      {onDelete && (
+        <AlertDialog.Backdrop isOpen={confirmDelete} onOpenChange={setConfirmDelete}>
+          <AlertDialog.Container>
+            <AlertDialog.Dialog>
+              <AlertDialog.Header><AlertDialog.Heading>Delete {onDelete.noun}?</AlertDialog.Heading></AlertDialog.Header>
+              <AlertDialog.Body>Its answers and files leave the application. This can't be undone here.</AlertDialog.Body>
+              <AlertDialog.Footer>
+                <Button variant="secondary" onPress={() => setConfirmDelete(false)}>Cancel</Button>
+                <Button variant="danger" onPress={() => { setConfirmDelete(false); onDelete.run(); }}>Delete</Button>
+              </AlertDialog.Footer>
+            </AlertDialog.Dialog>
+          </AlertDialog.Container>
+        </AlertDialog.Backdrop>
       )}
     </section>
   );

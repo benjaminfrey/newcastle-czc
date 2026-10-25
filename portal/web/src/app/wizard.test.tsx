@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -190,6 +190,11 @@ describe("the wizard", () => {
     expect(JSON.parse(localStorage.getItem("portal.visited.abc")!)).toContain("additions");
   });
 
+  it("the empty additions step asks in the brief's words", async () => {
+    open("/applications/abc/additions?screen=any:component");
+    expect(await screen.findByRole("heading", { level: 2, name: "Are you adding an addition, porch or deck?" })).toBeInTheDocument();
+  });
+
   it("Change from review returns to review, unless new screens now apply", async () => {
     withApp({ answers: [a("applicant_name", "Ada"), a("applicant_phone", "207"), a("applicant_is_owner", true)] });
     open("/applications/abc/you?screen=applicant_is_owner&return=review");
@@ -218,10 +223,10 @@ describe("the wizard", () => {
     expect(await screen.findByText("Filled in from your answers at the start. Change it if you need to.")).toBeInTheDocument();
   });
 
-  it("chips say what a yes, a no or a number answers", async () => {
+  it("chips say what a yes, a no or a number answers, in the question's words", async () => {
     withApp({ answers: [a("applicant_name", "Ada"), a("applicant_phone", "207"), a("applicant_is_owner", false)] });
     open("/applications/abc/you?screen=owner_name");
-    expect(await screen.findByRole("button", { name: /^applicant_is_owner: No\./ })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: /^Do you own this property\? No\./ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /^Ada\./ })).toBeInTheDocument(); // typed words speak for themselves
   });
 
@@ -269,5 +274,103 @@ describe("the wizard", () => {
     open("/applications/abc/work?screen=sketch");
     const nav = await screen.findByRole("navigation", { name: "Steps" });
     expect(within(nav).queryByRole("link", { name: /^Buildings/ })).not.toBeInTheDocument();
+  });
+
+  it("a corrected map value shows as the applicant's; Yes keeps it", async () => {
+    withApp({ answers: [a("lot_area", 2.5)] });
+    open("/applications/abc/lot?screen=lot_area");
+    expect(await screen.findByText(/^2\.5 acres$/)).toBeInTheDocument();
+    expect(screen.getByText("You entered this. The Town's map says 2.73 acres.")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("radio", { name: "Yes, that's right" }));
+    await waitFor(() => expect(where()).toHaveTextContent("?screen=lot_width"));
+    expect(saved()).toEqual([]);
+  });
+
+  it("a corrected map value can go back to the map's", async () => {
+    withApp({ answers: [a("lot_area", 2.5)] });
+    open("/applications/abc/lot?screen=lot_area");
+    await userEvent.click(await screen.findByRole("radio", { name: "Use the map's 2.73 acres" }));
+    await waitFor(() => expect(where()).toHaveTextContent("?screen=lot_width"));
+    expect(saved()).toContainEqual(a("lot_area", null));
+  });
+
+  it("Change from review goes back to review past questions left blank before", async () => {
+    withApp({ answers: [a("applicant_name", "Ada"), a("applicant_is_owner", true)] });
+    open("/applications/abc/you?screen=applicant_name&return=review");
+    const box = await screen.findByRole("textbox", { name: "What is your full name?" });
+    await userEvent.type(box, " Lovelace");
+    await userEvent.click(screen.getByRole("button", { name: "Continue" }));
+    await waitFor(() => expect(where()).toHaveTextContent("/applications/abc/review"));
+  });
+
+  it("a building added by mistake can be deleted, after a confirmation", async () => {
+    withApp({ items: [B1, B2] });
+    const remove = vi.spyOn(apps, "removeItem").mockResolvedValue({ revision: 4 } as never);
+    open("/applications/abc/buildings?screen=building_class&item=b2");
+    await userEvent.click(await screen.findByRole("button", { name: "Delete Building 2" }));
+    withApp({ items: [B1] });
+    await userEvent.click(await screen.findByRole("button", { name: "Delete" }));
+    await waitFor(() => expect(remove).toHaveBeenCalledWith("abc", 3, "b2"));
+    await waitFor(() => expect(where()).toHaveTextContent("/applications/abc/buildings?screen=another:building"));
+  });
+
+  it("the only building can't be deleted", async () => {
+    open("/applications/abc/buildings?screen=building_class&item=b1");
+    await screen.findByRole("heading", { level: 2, name: "Which best describes this building?" });
+    expect(screen.queryByRole("button", { name: /^Delete/ })).not.toBeInTheDocument();
+  });
+
+  it("a typed number is saved when a chip is clicked without leaving the field", async () => {
+    open("/applications/abc/lot?screen=lot_width");
+    const box = await screen.findByRole("textbox", { name: "How wide is your lot, in feet?" });
+    await userEvent.type(box, "120");
+    const chip = within(screen.getByRole("group", { name: "Your answers" })).getAllByRole("button")[0];
+    fireEvent.click(chip); // a tap on a phone: focus stays in the field
+    await waitFor(() => expect(saved()).toContainEqual(a("lot_width", 120)));
+  });
+
+  it("an answered tap question offers Continue", async () => {
+    withApp({ answers: [a("applicant_name", "Ada"), a("applicant_phone", "207"), a("applicant_is_owner", true)] });
+    open("/applications/abc/you?screen=applicant_is_owner");
+    await userEvent.click(await screen.findByRole("button", { name: "Continue" }));
+    await waitFor(() => expect(where()).toHaveTextContent("/applications/abc/work?screen=sketch"));
+  });
+
+  it("a tap question holding only the form's default has no Continue", async () => {
+    vi.spyOn(apps, "getForm").mockResolvedValue({ ...FORM, sections: FORM.sections.map((s) => ({
+      ...s, fields: s.fields.map((f) => (f.id === "applicant_is_owner" ? { ...f, default: false } : f)) })) });
+    withApp({ answers: [a("applicant_name", "Ada"), a("applicant_phone", "207"), a("applicant_is_owner", false)] });
+    open("/applications/abc/you?screen=applicant_is_owner");
+    await screen.findByRole("heading", { level: 2, name: "Do you own this property?" });
+    await new Promise((r) => setTimeout(r, 50));
+    expect(screen.queryByRole("button", { name: "Continue" })).not.toBeInTheDocument();
+  });
+
+  it("Another road is typed, then Continue", async () => {
+    vi.spyOn(apps, "getForm").mockResolvedValue({ ...FORM, sections: FORM.sections.map((s) => s.id === "project"
+      ? { ...s, fields: [q("entrance_road", "Which road will the entrance be on?", { control: "street-picker", step: "work" }), ...s.fields] } : s) });
+    open("/applications/abc/work?screen=entrance_road");
+    await userEvent.click(await screen.findByRole("radio", { name: "Another road" }));
+    await userEvent.type(screen.getByRole("textbox", { name: "Name of the road" }), "Main Street");
+    await new Promise((r) => setTimeout(r, 300));
+    expect(where()).toHaveTextContent("?screen=entrance_road");
+    await userEvent.click(screen.getByRole("button", { name: "Continue" }));
+    await waitFor(() => expect(where()).toHaveTextContent("?screen=sketch"));
+    expect(saved()).toContainEqual(a("entrance_road", "Main Street"));
+  });
+
+  it("a tap's move on gives way when the applicant goes elsewhere first", async () => {
+    withApp({ answers: [a("applicant_name", "Ada"), a("applicant_phone", "207")] });
+    open("/applications/abc/you?screen=applicant_is_owner");
+    await userEvent.click(await screen.findByRole("radio", { name: "Yes" }));
+    fireEvent.click(within(screen.getByRole("group", { name: "Your answers" })).getByRole("button", { name: /^Ada/ }));
+    await new Promise((r) => setTimeout(r, 400));
+    expect(where()).toHaveTextContent("?screen=applicant_name");
+  });
+
+  it("on a phone, a new application opens at its first question", async () => {
+    vi.spyOn(layout, "useWideLayout").mockReturnValue(false);
+    open("/applications/abc?start=1");
+    await waitFor(() => expect(where()).toHaveTextContent("/applications/abc/lot"));
   });
 });

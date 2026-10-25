@@ -1,5 +1,6 @@
 import { useRef, type KeyboardEvent } from "react";
 import { Link } from "react-router";
+import { commitFocused } from "./commitFocused";
 import StatusGlyph, { statusName } from "./StatusGlyph";
 import type { ShellStep } from "./types";
 
@@ -23,6 +24,7 @@ export default function StepSidebar({ steps, currentId, title }: Props) {
     <li key={s.id}>
       <Link
         to={s.href}
+        onClick={commitFocused} // a typed answer saves before the step changes, even where a tap doesn't blur (iOS)
         aria-label={`${s.title}, ${statusName(s.status, s.unknowns)}`}
         aria-current={s.id === currentId ? "step" : undefined}
         className={`flex min-h-11 items-center gap-3 rounded-lg px-3 text-[15px] outline-none

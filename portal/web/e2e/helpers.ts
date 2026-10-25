@@ -89,11 +89,12 @@ export async function screenerToStart(page: Page, project: Project, application:
   await expect(page.getByRole("heading", { name: "Sign in to apply" })).toBeVisible();
   await axe(page, "sign-in screen");
   await signInHere(page, email);
-  // A desktop opens the first unfinished step; a phone opens the list of steps, so tap it, as a person would.
-  // Decided by the window, not the address: a desktop passes the bare address on its way to a step.
-  if ((page.viewportSize()?.width ?? 1280) >= 1024) {
-    await expect(page).toHaveURL(/\/applications\/[0-9a-f-]+\/[a-z_]+/);
-  } else {
+  // A new application opens at its first question, on a desktop and a phone alike. On a phone, the
+  // list of steps is a tap away (‹ Application on the first question, Steps after it); open it and
+  // come back, as a person checking would.
+  await expect(page).toHaveURL(/\/applications\/[0-9a-f-]+\/[a-z_]+/);
+  if ((page.viewportSize()?.width ?? 1280) < 1024) {
+    await page.getByRole("link", { name: /^(Steps|Application)$/ }).click();
     await expect(page).toHaveURL(/\/applications\/[0-9a-f-]+$/);
     await axe(page, "step list");
     await page.getByRole("link", { name: /, (Not started|Started)/ }).first().click();

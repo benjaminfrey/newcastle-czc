@@ -181,6 +181,17 @@ describe("ReviewPane", () => {
     expect(within(applicant).getByText("Name?").closest("[data-row]")).toHaveTextContent("Still to answer");
   });
 
+  it("an optional question left blank says Not answered, not Still to answer", async () => {
+    vi.spyOn(apps, "getForm").mockResolvedValue({ ...FORM, sections: FORM.sections.map((s) => ({
+      ...s, fields: s.fields.map((f) => (f.id === "applicant_name" ? { ...f, required: false } : f)) })) });
+    vi.spyOn(apps, "getApplication").mockResolvedValue({ ...APP, answers: APP.answers.filter((x) => x.field_id !== "applicant_name") });
+    open();
+    const applicant = await screen.findByRole("group", { name: "Applicant" });
+    const row = within(applicant).getByText("Name?").closest("[data-row]")!;
+    expect(row).toHaveTextContent("Not answered");
+    expect(row).not.toHaveTextContent("Still to answer");
+  });
+
   it("says when everything is answered, and ends with what happens next", async () => {
     open();
     expect(await screen.findByText("Everything is answered.")).toBeInTheDocument();

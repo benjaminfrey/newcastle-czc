@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { commitFocused } from "./commitFocused";
 import { SaveStatus } from "./Toolbar";
 import type { SaveState } from "./types";
 
@@ -17,10 +18,10 @@ export default function NavBar({ title, backHref, backLabel, saveState, onReload
       <div className="sticky top-0 z-10 flex min-h-11 items-center justify-between border-b border-[var(--app-separator)] bg-[var(--app-ground)]/95 px-2 backdrop-blur">
         {onBack
           ? <button type="button" onClick={onBack} className={look}>{chevron}Back</button>
-          : <Link to={backHref} aria-label={backLabel} className={look}>{chevron}{backLabel}</Link>}
+          : <Link to={backHref} onClick={commitFocused} aria-label={backLabel} className={look}>{chevron}{backLabel}</Link>}
         <div className="flex items-center gap-1 px-2">
           <SaveStatus state={saveState} onReload={onReload} />
-          {onBack && <Link to={backHref} className="flex min-h-11 items-center px-2 text-[17px] text-[var(--app-accent-text)]">Steps</Link>}
+          {onBack && <Link to={backHref} onClick={commitFocused} className="flex min-h-11 items-center px-2 text-[17px] text-[var(--app-accent-text)]">Steps</Link>}
         </div>
       </div>
       <h1 tabIndex={-1} data-step-title className="px-4 pb-2 pt-3 text-[30px] font-bold leading-tight outline-none">{title}</h1>
