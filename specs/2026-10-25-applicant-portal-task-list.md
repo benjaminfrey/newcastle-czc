@@ -98,7 +98,7 @@ it shows on the forms sheet and the chair approves it with the forms. The cards 
 8. **The front and the windows** — which way the front faces (four compass tiles), then the four
    walls' window shares around the compass once a direction is chosen.
 
-**Small Project Plan — each addition, porch or deck** (6 cards): what it is (tap, with its name when
+**Small Project Plan — each addition, porch or deck** (7 cards): what it is (tap, with its name when
 Other) · only being renovated? (tap) · which building it is attached to (tap) · **its size** (width,
 depth, height) · **its roof** (shape, slope) and **its outside** (materials) as two cards · **its
 front and windows**.
@@ -303,7 +303,7 @@ you'll need" is a card with the result as its question line (20 px) and the rows
 - The comp and the build side by side, desktop and phone, light and dark: the task list, a tap card,
   a set card, a check page and the buildings list. The finish review compares them value by value
   with section 4.
-- A building takes 8 cards and an addition 6, counted by a test against the form definitions.
+- A building takes 8 cards and an addition 7, counted by a test against the form definitions.
 - Every tile question has icons on every option or on none (a form-content test).
 - The progress total doesn't change while the applicant moves forward without changing an answer
   (a unit test).
