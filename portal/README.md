@@ -124,18 +124,24 @@ form is new. `forms/answers.py` decides what applies, what is still missing and 
 `web/src/forms/applicability.ts` is its browser twin, and both are checked against
 `web/src/forms/form-fixtures.json`.
 
-**Steps, screens and controls.** A definition also says how the application is asked: a few steps
-(the sidebar's sections), then one question per screen (the redesign and the wizard,
-`specs/2026-10-23-applicant-portal-redesign.md` and `specs/2026-10-24-applicant-portal-wizard.md`):
+**Tasks, cards and controls.** A definition also says how the application is asked: a few tasks
+(its `steps`), each a short run of cards (`specs/2026-10-25-applicant-portal-task-list.md`, which
+revises the redesign and wizard briefs):
 
 - `steps` — the form's steps in order (the Cover Sheet's come first); a section or a field names its
   `step`, and a field's own wins. Every question must be on a step.
-- `screens` on a section and `screen` on its fields — fields asked together on one screen (deed
-  book and page; width and depth), each screen with an optional `layout`: `lot-diagram` (setbacks
-  around a drawing of the lot) or `compass` (window shares, the walls named from the way the front
-  faces). Every other question has a screen of its own.
-- `ask_first` — asked before the rest of its building or addition (a building's type), without
-  changing the printed form's order.
+- `screens` on a section and `screen` on its fields — a card: questions asked together (deed book
+  and page; a building's size; the four setbacks), declared once per repeat by any of its sections,
+  all on one step. A card may carry its own `title` and `help` (its question, "How big is the
+  building?") and an optional `layout`: `lot-diagram` (setbacks around a drawing of the lot) or
+  `compass` (the front's direction, then the window shares, walls named from it). Every other
+  question is a card of its own. Each question on a shared card has a `short` name ("Width").
+- `ask_first` — a rank (1, 2, …): asked before the rest of its building or addition (its type, then
+  whether it is only being renovated), without changing the printed form's order.
+- `icon` on an option — an outline icon beside the tile's words (`portal_api/forms/icons.txt`, which
+  the web's `controls/Icon.tsx` draws); a question's options have icons on all or none.
+- `copies` — "Copy Building 1" brings this answer to the new building (`POST …/items` with
+  `copy_from`); unknowns copy, blanks don't.
 - `control` — how a question is asked: `stepper`, `slider`, `switch`, `segmented`, `tiles`,
   `picker`, `chips`, `building-picker`, `street-picker` or `building-type`, each only for the
   question types it suits; `step_size` for sliders and steppers; `autocomplete` for the browser's
@@ -148,15 +154,16 @@ wrong type; defaults that would fail their own field's check), and the forms she
 the chair. What "Do I need a permit?" already asked (the kind of work, a new building's floor area
 and homes) is saved into a new application as `set_by = screener`, and shows as carried over.
 
-**The window.** The web app draws an application as a macOS / iOS window (`web/src/shell/`), one
-question at a time (`web/src/forms/screens.ts`, `web/src/app/WizardPane.tsx`): a single choice
-answers at a tap and moves on; typed answers have Continue (Return presses it). Answers stack as
-chips above the question (a tap goes back to it), and plain dots below show where you are in the
-section, or in a building. Buildings and additions run inline, ending with "Is there another?". On a
-desktop a sidebar lists the sections with checkmarks; on a phone ‹ Back goes to the last question and
-Steps to the list. Review shows each question as asked with Change, which comes back to review.
-Answers save as they are given (`app/ApplicationStore.tsx`); Continue waits for the saves. Light and
-dark follow the device. The design system is recorded in `web/DESIGN.md`.
+**The window.** The web app draws an application as a task list (`web/src/shell/TaskList.tsx`; the
+sidebar on a desktop, the home screen on a phone), each task a short run of contained cards
+(`shell/Card.tsx`; `forms/tasks.ts`, `forms/screens.ts`, `app/WizardPane.tsx`): a header with the
+task's name and a bar counting its cards, the question, and a footer with Back and Continue. A single
+choice answers at a tap and moves on; typed answers have Continue (Return presses it). A task ends on
+its check page (Change comes back to it); buildings and additions have their own list
+(`app/ItemsPane.tsx`: add, Copy Building 1, delete) and each building its check page. "Check and send"
+opens when every task is done. Answers save as they are given (`app/ApplicationStore.tsx`); Continue
+waits for the saves. Light and dark follow the device. The design system is recorded in
+`web/DESIGN.md`; the approved comp is `specs/assets/2026-10-25-task-list-comp.html`.
 
 **Approval.** Every entry starts as `status: draft`; production refuses a form with any draft in it
 (`503 form_not_approved`), as for the screener. The record for the chair:

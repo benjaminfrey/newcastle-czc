@@ -113,6 +113,12 @@ describe("Where", () => {
     expect(await screen.findByLabelText("Street address, or map and lot")).toBeInTheDocument();
   });
 
+  it("asks in the card's voice: a 20 px question, and the near-black button", async () => {
+    renderPage();
+    expect(screen.getByRole("heading", { name: "Where is the property?" })).toHaveClass("text-[20px]");
+    expect(screen.getByRole("button", { name: "Search" })).toHaveClass("btn-filled");
+  });
+
   it("says so when nothing is at the tapped spot", async () => {
     vi.spyOn(api, "parcelAt").mockResolvedValue(null);
     renderPage();

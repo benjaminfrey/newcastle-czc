@@ -1,307 +1,174 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-24T18:00:00Z",
+  "generatedAt": "2026-10-25T18:00:00Z",
   "title": "Design System: Town of Newcastle Applicant Portal",
   "extensions": {
     "colorMeta": {
-      "accent": {
-        "role": "primary",
-        "displayName": "Harbour Teal",
-        "canonical": "var(--app-accent)"
-      },
-      "accent-text": {
-        "role": "primary",
-        "displayName": "Harbour Teal Text",
-        "canonical": "var(--app-accent-text)"
-      },
-      "seal": {
-        "role": "secondary",
-        "displayName": "Seal Teal",
-        "canonical": "var(--app-seal)"
-      },
-      "selection": {
-        "role": "secondary",
-        "displayName": "Selection Wash",
-        "canonical": "var(--app-selection)"
-      },
-      "destructive": {
-        "role": "tertiary",
-        "displayName": "System Red",
-        "canonical": "var(--app-destructive)"
-      },
-      "ground": {
-        "role": "neutral",
-        "displayName": "Grouped Ground",
-        "canonical": "var(--app-ground)"
-      },
-      "row": {
-        "role": "neutral",
-        "displayName": "Row",
-        "canonical": "var(--app-row)"
-      },
-      "fill": {
-        "role": "neutral",
-        "displayName": "Field Fill",
-        "canonical": "var(--app-fill)"
-      },
-      "separator": {
-        "role": "neutral",
-        "displayName": "Separator",
-        "canonical": "var(--app-separator)"
-      },
-      "label": {
-        "role": "neutral",
-        "displayName": "Label",
-        "canonical": "var(--app-label)"
-      },
-      "secondary-label": {
-        "role": "neutral",
-        "displayName": "Secondary Label",
-        "canonical": "var(--app-secondary-label)"
-      },
-      "tertiary-label": {
-        "role": "neutral",
-        "displayName": "Tertiary Label",
-        "canonical": "var(--app-tertiary-label)"
-      }
+      "accent": { "role": "primary", "displayName": "Harbour Teal", "canonical": "var(--app-accent)" },
+      "accent-text": { "role": "primary", "displayName": "Harbour Teal Text", "canonical": "var(--app-accent-text)" },
+      "seal": { "role": "secondary", "displayName": "Seal Teal", "canonical": "var(--app-seal)" },
+      "selection": { "role": "secondary", "displayName": "Selection Wash", "canonical": "var(--app-selection)" },
+      "done-bg": { "role": "secondary", "displayName": "Done Green", "canonical": "var(--app-done-bg)" },
+      "done-text": { "role": "secondary", "displayName": "Done Green Text", "canonical": "var(--app-done-text)" },
+      "destructive": { "role": "tertiary", "displayName": "System Red", "canonical": "var(--app-destructive)" },
+      "ground": { "role": "neutral", "displayName": "Grouped Ground", "canonical": "var(--app-ground)" },
+      "row": { "role": "neutral", "displayName": "Row", "canonical": "var(--app-row)" },
+      "fill": { "role": "neutral", "displayName": "Field Fill", "canonical": "var(--app-fill)" },
+      "separator": { "role": "neutral", "displayName": "Separator", "canonical": "var(--app-separator)" },
+      "edge": { "role": "neutral", "displayName": "Edge", "canonical": "var(--app-edge)" },
+      "label": { "role": "neutral", "displayName": "Label", "canonical": "var(--app-label)" },
+      "secondary-label": { "role": "neutral", "displayName": "Secondary Label", "canonical": "var(--app-secondary-label)" },
+      "tertiary-label": { "role": "neutral", "displayName": "Tertiary Label", "canonical": "var(--app-tertiary-label)" }
     },
     "typographyMeta": {
-      "large-title": {
-        "displayName": "Large Title",
-        "purpose": "Phone section titles, the phone step list, the home heading, result titles."
-      },
-      "title": {
-        "displayName": "Title",
-        "purpose": "Desktop toolbar section title."
-      },
-      "headline": {
-        "displayName": "Headline",
-        "purpose": "Sheet titles, the outer header's \"Town of Newcastle\"."
-      },
-      "body": {
-        "displayName": "Body",
-        "purpose": "Tile labels, phone list rows, results prose, the phone's Continue, Back and Steps."
-      },
-      "body-compact": {
-        "displayName": "Body Compact",
-        "purpose": "The help line under a question, \"I don't know yet\", sidebar rows, errors."
-      },
-      "footnote": {
-        "displayName": "Footnote",
-        "purpose": "Trail chips, save status, \"13 of 20\", the item line, the carried-answer line, captions."
-      },
-      "group-header": {
-        "displayName": "Group Header",
-        "purpose": "Uppercase heading above an inset group, as in iOS Settings."
-      },
-      "question": {
-        "displayName": "Question",
-        "purpose": "The centred question on every wizard and start screen; at most 30ch, balanced."
-      },
-      "confirm-value": {
-        "displayName": "Confirm Value",
-        "purpose": "The value from the Town's map on an \"Is this right?\" screen; tabular numerals."
-      }
+      "large-title": { "displayName": "Large Title", "purpose": "Home heading, My applications, Sign in." },
+      "confirm-value": { "displayName": "Confirm Value", "purpose": "The Town's map value on an \"Is this right?\" card; tabular numerals." },
+      "title": { "displayName": "Title", "purpose": "Outer-page headings: Where, Is this your property?, the use picker, Check your email." },
+      "question": { "displayName": "Question", "purpose": "The question in every card body and on \"Do I need a permit?\"; result lines; at most 30ch, balanced." },
+      "headline": { "displayName": "Headline", "purpose": "Sheet titles." },
+      "body": { "displayName": "Body", "purpose": "Phone bar links (Tasks, Home, Save and close), results prose, start-screen number inputs." },
+      "body-compact": { "displayName": "Body Compact", "purpose": "Card buttons, fields, inset rows, the task-list card's form name (500), errors." },
+      "row": { "displayName": "Row", "purpose": "Tile labels, task names, item rows, set short names, check-page questions and answers." },
+      "footnote": { "displayName": "Footnote", "purpose": "Card header, help line, Change/Finish/Delete, I don't know yet, A tap moves on, save status." },
+      "group-header": { "displayName": "Group Header", "purpose": "Uppercase heading above an outer-page inset group, as in iOS Settings." },
+      "caption": { "displayName": "Caption", "purpose": "Status pills, task hints, item summaries, the form's term on Check and send." }
     },
     "shadows": [
-      {
-        "name": "slider-knob",
-        "value": "0 1px 4px rgba(0,0,0,0.3)",
-        "purpose": "The iOS slider knob only; containers take no shadow."
-      }
+      { "name": "slider-knob", "value": "0 1px 4px rgba(0,0,0,0.3)", "purpose": "The iOS slider knob only; containers take no shadow." },
+      { "name": "button-focus-ring", "value": "0 0 0 2px var(--app-row), 0 0 0 4px var(--app-accent-text)", "purpose": "Focus ring on card buttons; a ring, not elevation." }
     ],
     "motion": [
-      {
-        "name": "pane-push",
-        "value": "300ms cubic-bezier(0.32, 0.72, 0, 1), translateX(24%) and opacity 0 to rest",
-        "purpose": "The next question sliding in (desktop and phone); a section pushing in on a phone."
-      },
-      {
-        "name": "pane-pull",
-        "value": "300ms cubic-bezier(0.32, 0.72, 0, 1), translateX(-24%) and opacity 0 to rest",
-        "purpose": "Back, or a chip, returning to an earlier question."
-      },
-      {
-        "name": "pane-cross",
-        "value": "150ms ease-out opacity",
-        "purpose": "Changing section on a desktop."
-      },
-      {
-        "name": "pane-fade",
-        "value": "120ms ease-out opacity",
-        "purpose": "Any change under prefers-reduced-motion."
-      },
-      {
-        "name": "tile-answer-delay",
-        "value": "200ms",
-        "purpose": "Pause after a tile tap so the choice is seen before the next question."
-      }
+      { "name": "pane-push", "value": "300ms cubic-bezier(0.32, 0.72, 0, 1), translateX(24%) and opacity 0 to rest", "purpose": "The next card's body sliding in; the card's edge, header and footer stay still." },
+      { "name": "pane-pull", "value": "300ms cubic-bezier(0.32, 0.72, 0, 1), translateX(-24%) and opacity 0 to rest", "purpose": "Back: the previous card's body sliding in from the left." },
+      { "name": "pane-fade", "value": "120ms ease-out opacity", "purpose": "Any body change under prefers-reduced-motion." },
+      { "name": "tile-answer-delay", "value": "200ms", "purpose": "Pause after a tile tap so the choice is seen before the next card." }
     ],
     "breakpoints": [
-      {
-        "name": "sm",
-        "value": "640px"
-      },
-      {
-        "name": "wide",
-        "value": "1024px"
-      },
-      {
-        "name": "container-2xl",
-        "value": "42rem"
-      }
+      { "name": "wide", "value": "1024px" },
+      { "name": "tiles-two-columns", "value": "25rem (card container)" },
+      { "name": "container-2xl", "value": "42rem" }
     ],
     "blur": [
-      {
-        "name": "phone-bars",
-        "value": "95% opacity + backdrop-blur",
-        "purpose": "The phone navigation bar (ground) and footer (row) over scrolling content."
-      }
+      { "name": "phone-bar", "value": "95% grouped ground + backdrop-blur", "purpose": "The phone's 44px bar over scrolling content." }
     ],
+    "icons": { "set": "@tabler/icons-react 3.49.0, outline", "size": "18px (16px inside card buttons)", "stroke": 1.75 },
     "notes": {
-      "contractDivergence": [
-        "Contract gives the seal teal to selection; the build selects with the deep accent and keeps the seal teal for the follow-up dot and lot outline.",
-        "Wizard spec asks a 300 ms slide; the build slides in 250 ms.",
-        "Wizard spec puts Back in the phone bottom bar; the build puts Back only in the phone navigation bar (as the direction contract's FIRST VIEWPORT says).",
-        "Wizard spec's source line reads \"Measured from the Town's map\"; the build reads \"From the Town's map\"."
+      "rulings": [
+        "--app-edge is #8E8E93 light / #6C6C70 dark (3:1 on the row); the brief's §4.8 gave #AEAEB2 / #545458.",
+        "Fields are 44px tall for touch; the brief's §4.5 gave 36px.",
+        "No check mark on a chosen multi-choice tile; the 1.5px label edge alone shows it.",
+        "Save and close sits at the foot of the desktop sidebar beside the save status.",
+        "The roof's slope appears under its own small footnote question once the roof style is chosen."
+      ],
+      "codeBriefDisagreements": [
+        "Where.tsx ('Where is the property?', 'Is this your property?') still sets its question at 22px/600 and uses HeroUI's Card and teal primary buttons; brief §9 puts these in the same card as 'Do I need a permit?' at 20px.",
+        "Card buttons (Back, Continue, stepper) are 36px tall per brief §4.6, under the 44px touch minimum the fields were raised to."
       ]
     }
   },
   "components": [
     {
-      "name": "Primary Button",
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "The unit of the application: header with progress bar and count, a centred question body, a footer with Back and one filled button.",
+      "html": "<section class=\"ds-card\"><div class=\"ds-card-h\"><span>The work</span><div class=\"ds-bar\" role=\"img\" aria-label=\"Question 3 of 6\"><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i></i><i></i><i></i></div><span class=\"ds-n\">3 of 6</span></div><div class=\"ds-card-b\"><h2 class=\"ds-q\">How many floors above ground?</h2><p class=\"ds-help\">Count the floors you can stand on.</p></div><div class=\"ds-card-f\"><button class=\"ds-btn\">Back</button><button class=\"ds-btn ds-btn-filled\">Continue</button></div></section>",
+      "css": ".ds-card { max-width: 640px; display: flex; flex-direction: column; overflow: hidden; border-radius: 12px; border: 0.5px solid var(--app-separator, #C6C6C8); background: var(--app-row, #FFFFFF); color: var(--app-label, #1C1C1E); font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; } .ds-card-h { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 0.5px solid var(--app-separator, #C6C6C8); font-size: 13px; color: var(--app-secondary-label, #636366); } .ds-bar { display: flex; flex: 1; gap: 3px; } .ds-bar i { flex: 1; height: 3px; border-radius: 2px; background: var(--app-edge, #8E8E93); } .ds-bar i.on { background: var(--app-label, #1C1C1E); } .ds-n { font-variant-numeric: tabular-nums; } .ds-card-b { display: flex; flex-direction: column; align-items: center; padding: 22px 24px 18px; text-align: center; } .ds-q { margin: 0; max-width: 30ch; font-size: 20px; font-weight: 500; line-height: 1.3; text-wrap: balance; } .ds-help { margin: 4px 0 16px; font-size: 13px; color: var(--app-secondary-label, #636366); } .ds-card-f { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-top: 0.5px solid var(--app-separator, #C6C6C8); } .ds-card-f .ds-btn-filled { margin-left: auto; } .ds-btn { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 7px 14px; border-radius: 8px; border: 0.5px solid var(--app-edge, #8E8E93); background: transparent; color: var(--app-label, #1C1C1E); font: 15px/1.2 inherit; cursor: pointer; } .ds-btn:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--app-row, #FFFFFF), 0 0 0 4px var(--app-accent-text, #0C727E); } .ds-btn-filled { background: var(--app-label, #1C1C1E); border-color: var(--app-label, #1C1C1E); color: var(--app-row, #FFFFFF); }"
+    },
+    {
+      "name": "Card Button",
       "kind": "button",
-      "refersTo": "button-primary",
-      "description": "Continue and Start: the only solid teal control.",
-      "html": "<button class=\"ds-btn-primary\">Continue</button>",
-      "css": ".ds-btn-primary { background: var(--app-accent, #0C727E); color: var(--app-on-accent, #FFFFFF); min-height: 44px; min-width: 112px; padding: 0 20px; border: none; border-radius: 9999px; font: 600 15px -apple-system, BlinkMacSystemFont, system-ui, sans-serif; } .ds-btn-primary:hover { filter: brightness(1.08); } .ds-btn-primary:focus-visible { outline: 2px solid var(--app-accent-text, #0C727E); outline-offset: 2px; }"
+      "refersTo": "button",
+      "description": "Back, Save and close, Add, Copy, the stepper: plain with a 0.5px edge.",
+      "html": "<button class=\"ds-btn\">Back</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 7px 14px; border-radius: 8px; border: 0.5px solid var(--app-edge, #8E8E93); background: transparent; color: var(--app-label, #1C1C1E); font: 15px/1.2 -apple-system, BlinkMacSystemFont, system-ui, sans-serif; cursor: pointer; } .ds-btn:hover { border-color: var(--app-secondary-label, #636366); } .ds-btn:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--app-row, #FFFFFF), 0 0 0 4px var(--app-accent-text, #0C727E); }"
     },
     {
-      "name": "Ghost Button",
+      "name": "Filled Button",
       "kind": "button",
-      "refersTo": "button-ghost",
-      "description": "Sheet Cancel and Done, \"I can't find my property\", Edit, Add: teal text, no fill.",
-      "html": "<button class=\"ds-btn-ghost\">Done</button>",
-      "css": ".ds-btn-ghost { background: transparent; color: var(--app-accent-text, #0C727E); min-height: 44px; padding: 0 12px; border: none; border-radius: 9999px; font: 600 17px -apple-system, BlinkMacSystemFont, system-ui, sans-serif; } .ds-btn-ghost:hover { background: var(--app-fill, #EEEEF0); } .ds-btn-ghost:focus-visible { outline: 2px solid var(--app-accent-text, #0C727E); }"
+      "refersTo": "button-filled",
+      "description": "The card's one filled button (Continue, Done): label colour, near-black in light and near-white in dark.",
+      "html": "<button class=\"ds-btn-filled\">Continue</button>",
+      "css": ".ds-btn-filled { display: inline-flex; align-items: center; min-height: 36px; padding: 7px 14px; border-radius: 8px; border: 0.5px solid var(--app-label, #1C1C1E); background: var(--app-label, #1C1C1E); color: var(--app-row, #FFFFFF); font: 15px/1.2 -apple-system, BlinkMacSystemFont, system-ui, sans-serif; cursor: pointer; } .ds-btn-filled:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--app-row, #FFFFFF), 0 0 0 4px var(--app-accent-text, #0C727E); }"
     },
     {
-      "name": "Wizard Tile",
+      "name": "Tiles",
       "kind": "custom",
-      "refersTo": "wizard-tile-chosen",
-      "description": "Pick-one radio tile (a tap answers) or pick-several checkbox tile; chosen is a 2px accent edge on the row colour, no wash.",
-      "html": "<div class=\"ds-wt-grid\" role=\"radiogroup\"><button class=\"ds-wt ds-wt-on\" role=\"radio\" aria-checked=\"true\">A home: a house, duplex or apartment building</button><button class=\"ds-wt\" role=\"radio\" aria-checked=\"false\">A farm building, like a barn, stable or greenhouse</button></div>",
-      "css": ".ds-wt-grid { display: grid; grid-template-columns: 1fr; gap: 10px; max-width: 36rem; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; } @media (min-width: 640px) { .ds-wt-grid { grid-template-columns: 1fr 1fr; } } .ds-wt { display: flex; align-items: center; gap: 12px; min-height: 58px; padding: 12px 16px; text-align: left; border-radius: 12px; border: 1px solid var(--app-separator, #C6C6C8); background: var(--app-row, #FFFFFF); color: var(--app-label, #1C1C1E); font-size: 17px; } .ds-wt:hover { border-color: var(--app-tertiary-label, #8A8A8E); } .ds-wt:focus-visible { outline: 2px solid var(--app-accent-text, #0C727E); } .ds-wt-on, .ds-wt-on:hover { border: 2px solid var(--app-accent, #0C727E); padding: 11px 15px; }"
+      "refersTo": "tile-chosen",
+      "description": "Outlined choice tiles with an outline icon; chosen is a 1.5px label edge, no fill.",
+      "html": "<div class=\"ds-tiles\" role=\"radiogroup\"><button class=\"ds-tile ds-on\" role=\"radio\" aria-checked=\"true\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12l-2 0l9 -9l9 9l-2 0\"/><path d=\"M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7\"/><path d=\"M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6\"/></svg><span>A home</span></button><button class=\"ds-tile\" role=\"radio\" aria-checked=\"false\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 21l18 0\"/><path d=\"M3 7v1a3 3 0 0 0 6 0v-1m0 1a3 3 0 0 0 6 0v-1m0 1a3 3 0 0 0 6 0v-1h-18l2 -4h14l2 4\"/><path d=\"M5 21l0 -10.15\"/><path d=\"M19 21l0 -10.15\"/></svg><span>A business</span></button></div>",
+      "css": ".ds-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-width: 500px; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; } .ds-tile { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 10px 12px; text-align: left; border-radius: 8px; border: 0.5px solid var(--app-edge, #8E8E93); background: transparent; color: var(--app-secondary-label, #636366); font-size: 14px; cursor: pointer; } .ds-tile span { color: var(--app-label, #1C1C1E); } @media (hover: hover) { .ds-tile:hover { border-color: var(--app-secondary-label, #636366); } } .ds-tile:focus-visible { outline: 2px solid var(--app-accent-text, #0C727E); outline-offset: 2px; } .ds-on, .ds-on:hover { border: 1.5px solid var(--app-label, #1C1C1E); padding: 9px 11px; color: var(--app-label, #1C1C1E); }"
     },
     {
-      "name": "Question Screen",
-      "kind": "custom",
-      "refersTo": "wizard-tile",
-      "description": "One centred question: item line, 22px semibold question, 15px help, then the control.",
-      "html": "<section class=\"ds-q\"><p class=\"ds-q-item\">Building 1</p><h2 class=\"ds-q-h\">Which best describes this building?</h2><p class=\"ds-q-help\">If you're not sure, choose \"I don't know yet\".</p></section>",
-      "css": ".ds-q { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 24px 0; text-align: center; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; color: var(--app-label, #1C1C1E); } .ds-q-item { margin: 0; font-size: 13px; color: var(--app-secondary-label, #636366); } .ds-q-h { margin: 0; max-width: 30ch; font-size: 22px; font-weight: 600; line-height: 1.25; text-wrap: balance; } .ds-q-help { margin: 0 0 16px; min-height: 1.25rem; max-width: 46ch; font-size: 15px; color: var(--app-secondary-label, #636366); }"
-    },
-    {
-      "name": "Answer Trail",
-      "kind": "chip",
-      "refersTo": "trail-chip",
-      "description": "Answers so far as chips; carried answers dashed; one scrolling row on a phone.",
-      "html": "<div class=\"ds-trail\" role=\"group\" aria-label=\"Your answers\"><button class=\"ds-tc ds-tc-carried\">A new building</button><button class=\"ds-tc\">Homes: 1</button></div>",
-      "css": ".ds-trail { display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 10px 20px; overflow-x: auto; border-bottom: 1px solid var(--app-separator, #C6C6C8); font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; } @media (min-width: 640px) { .ds-trail { flex-wrap: wrap; overflow-x: visible; } } .ds-tc { flex-shrink: 0; max-width: 18rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 4px 12px; border-radius: 9999px; border: 1px solid var(--app-separator, #C6C6C8); background: var(--app-row, #FFFFFF); color: var(--app-label, #1C1C1E); font-size: 13px; } .ds-tc:focus-visible { outline: 2px solid var(--app-accent-text, #0C727E); } .ds-tc-carried { border-style: dashed; border-color: var(--app-tertiary-label, #8A8A8E); }"
-    },
-    {
-      "name": "Footer with Dots",
+      "name": "Task List",
       "kind": "nav",
-      "refersTo": "dot-current",
-      "description": "Desktop footer: 7px dots left, Back and Continue right; sticky.",
-      "html": "<div class=\"ds-foot\"><span class=\"ds-dots\" role=\"img\" aria-label=\"Question 3 of 5\"><i></i><i></i><i class=\"ds-cur\"></i><i></i><i></i></span><button class=\"ds-back\">Back</button><button class=\"ds-cont\">Continue</button></div>",
-      "css": ".ds-foot { position: sticky; bottom: 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 16px 32px; border-top: 1px solid var(--app-separator, #C6C6C8); background: var(--app-ground, #F2F2F7); font: 15px -apple-system, BlinkMacSystemFont, system-ui, sans-serif; } .ds-dots { display: flex; gap: 7px; margin-right: auto; } .ds-dots i { display: block; width: 7px; height: 7px; border-radius: 9999px; background: var(--app-separator, #C6C6C8); } .ds-dots i.ds-cur { background: var(--app-label, #1C1C1E); } .ds-back { min-height: 44px; min-width: 96px; border: none; border-radius: 9999px; background: var(--app-fill, #EEEEF0); color: var(--app-label, #1C1C1E); font: inherit; } .ds-cont { min-height: 44px; min-width: 112px; border: none; border-radius: 9999px; background: var(--app-accent, #0C727E); color: var(--app-on-accent, #FFFFFF); font: 600 15px -apple-system, BlinkMacSystemFont, system-ui, sans-serif; } .ds-back:focus-visible, .ds-cont:focus-visible { outline: 2px solid var(--app-accent-text, #0C727E); outline-offset: 2px; }"
+      "refersTo": "task-row",
+      "description": "The application's tasks as whole-row links with icons, hints and status pills; Check and send last.",
+      "html": "<section class=\"ds-tl\"><div class=\"ds-tl-h\"><h1>Building permit</h1><span>Map 4, Lot 36 · Saved</span></div><a class=\"ds-tr\" href=\"#\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 18.5l-3 -1.5l-6 3v-13l6 -3l6 3l6 -3v7.5\"/><path d=\"M9 4v13\"/><path d=\"M15 7v5.5\"/></svg><span class=\"ds-tw\"><span>Your lot</span><small>Size, frontage and what is there now</small></span><span class=\"ds-pill ds-done\">Done</span></a><a class=\"ds-tr\" href=\"#\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M13 10l7.383 7.418c.823 .82 .823 2.148 0 2.967a2.11 2.11 0 0 1 -2.976 0l-7.407 -7.385\"/><path d=\"M6 9l4 4l3 -3l-4 -4l-.5 -.5a2.121 2.121 0 0 0 -3 3l.5 .5\"/></svg><span class=\"ds-tw\"><span>The work</span></span><span class=\"ds-pill ds-prog\">2 of 4</span></a><a class=\"ds-tr\" href=\"#\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0\"/><path d=\"M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2\"/></svg><span class=\"ds-tw\"><span>About you</span></span><span class=\"ds-pill ds-none\">Not started</span></a></section>",
+      "css": ".ds-tl { max-width: 640px; overflow: hidden; border-radius: 12px; border: 0.5px solid var(--app-separator, #C6C6C8); background: var(--app-row, #FFFFFF); font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; } .ds-tl-h { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 0.5px solid var(--app-separator, #C6C6C8); } .ds-tl-h h1 { margin: 0; font-size: 15px; font-weight: 500; color: var(--app-label, #1C1C1E); } .ds-tl-h span { margin-left: auto; font-size: 13px; color: var(--app-secondary-label, #636366); } .ds-tr { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 11px 16px; font-size: 14px; color: var(--app-label, #1C1C1E); text-decoration: none; } .ds-tr + .ds-tr { border-top: 0.5px solid var(--app-separator, #C6C6C8); } .ds-tr:focus-visible { outline: 2px solid var(--app-accent-text, #0C727E); outline-offset: -2px; } .ds-tw { flex: 1; display: flex; flex-direction: column; } .ds-tw small { font-size: 12px; color: var(--app-secondary-label, #636366); } .ds-pill { flex-shrink: 0; padding: 2px 9px; border-radius: 9999px; font-size: 12px; white-space: nowrap; } .ds-done { background: var(--app-done-bg, #E3F5E6); color: var(--app-done-text, #1B7A31); } .ds-prog { background: var(--app-selection, #DCEFF1); color: var(--app-accent-text, #0C727E); } .ds-none { background: var(--app-fill, #EEEEF0); color: var(--app-secondary-label, #636366); }"
+    },
+    {
+      "name": "Set of Values",
+      "kind": "input",
+      "refersTo": "field-in-set",
+      "description": "Short names beside 110px right-aligned fields on the field fill; units in secondary label.",
+      "html": "<div class=\"ds-set\"><span>Width</span><span class=\"ds-f\"><input class=\"ds-input\" value=\"28\"><em>ft</em></span><span>Depth</span><span class=\"ds-f\"><input class=\"ds-input\" value=\"40\"><em>ft</em></span></div>",
+      "css": ".ds-set { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 10px 14px; max-width: 380px; font: 14px -apple-system, BlinkMacSystemFont, system-ui, sans-serif; color: var(--app-label, #1C1C1E); } .ds-f { display: flex; align-items: center; gap: 6px; } .ds-f em { font-style: normal; color: var(--app-secondary-label, #636366); } .ds-input { width: 110px; min-height: 44px; padding: 0 12px; border: none; border-radius: 12px; background: var(--app-fill, #EEEEF0); color: var(--app-label, #1C1C1E); font-size: 15px; text-align: right; } .ds-input:focus-visible { outline: 2px solid var(--app-accent-text, #0C727E); }"
     },
     {
       "name": "Inset Group",
       "kind": "card",
       "refersTo": "inset-group",
-      "description": "Grouped inset list with header, hairline rows and footnote.",
-      "html": "<section class=\"ds-group\"><h2 class=\"ds-group-h\">Your project</h2><div class=\"ds-group-rows\"><div class=\"ds-row\">What kind of work is this?</div><div class=\"ds-row\">In a few sentences, what will you build?</div></div><p class=\"ds-group-f\">Choose all that apply.</p></section>",
+      "description": "Outer pages: grouped inset list with uppercase header, 1px hairline rows and footnote.",
+      "html": "<section class=\"ds-group\"><h2 class=\"ds-group-h\">My applications</h2><div class=\"ds-group-rows\"><div class=\"ds-row\">Building permit · Map 4, Lot 36</div><div class=\"ds-row\">Driveway entrance · Map 2, Lot 11</div></div><p class=\"ds-group-f\">Saved applications stay here until sent.</p></section>",
       "css": ".ds-group { display: flex; flex-direction: column; gap: 6px; background: var(--app-ground, #F2F2F7); padding: 16px; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; } .ds-group-h { margin: 0; padding: 0 16px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.025em; color: var(--app-secondary-label, #636366); } .ds-group-rows { background: var(--app-row, #FFFFFF); border-radius: 12px; overflow: hidden; } .ds-row { min-height: 44px; padding: 10px 16px; font-size: 15px; color: var(--app-label, #1C1C1E); box-sizing: border-box; } .ds-row + .ds-row { border-top: 1px solid var(--app-separator, #C6C6C8); } .ds-group-f { margin: 0; padding: 0 16px; font-size: 13px; color: var(--app-secondary-label, #636366); }"
     },
     {
-      "name": "Sidebar Step",
-      "kind": "nav",
-      "refersTo": "sidebar-row-current",
-      "description": "Source-list step row with status glyph; current on the selection wash.",
-      "html": "<nav class=\"ds-side\"><a class=\"ds-step\" href=\"#\"><svg viewBox=\"0 0 20 20\" width=\"20\" height=\"20\"><circle cx=\"10\" cy=\"10\" r=\"9\" fill=\"#0C727E\"/><path d=\"M6 10.4l2.6 2.6L14 7.6\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>Your lot</a><a class=\"ds-step ds-current\" href=\"#\" aria-current=\"step\"><svg viewBox=\"0 0 20 20\" width=\"20\" height=\"20\"><circle cx=\"10\" cy=\"10\" r=\"8.25\" fill=\"none\" stroke=\"#8A8A8E\" stroke-width=\"1.5\"/><path d=\"M10 1.75a8.25 8.25 0 0 1 0 16.5z\" fill=\"#0C727E\"/></svg>The work</a></nav>",
-      "css": ".ds-side { display: flex; flex-direction: column; gap: 2px; padding: 16px 12px; width: 17rem; background: var(--app-grouped-ground, #F2F2F7); font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; } .ds-step { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 12px; border-radius: 8px; font-size: 15px; color: var(--app-label, #1C1C1E); text-decoration: none; } .ds-step:hover { background: color-mix(in srgb, var(--app-selection, #DCEFF1) 60%, transparent); } .ds-step:focus-visible { outline: 2px solid var(--app-accent-text, #0C727E); } .ds-current { background: var(--app-selection, #DCEFF1); font-weight: 600; }"
-    },
-    {
-      "name": "Segmented Choice",
-      "kind": "chip",
-      "refersTo": "segment-selected",
-      "description": "Outside the wizard (review edits, sheets): two to four options side by side; selection is a wash and an accent border.",
-      "html": "<div class=\"ds-seg\"><button class=\"ds-seg-o ds-sel\">Yes</button><button class=\"ds-seg-o\">No</button></div>",
-      "css": ".ds-seg { display: flex; gap: 8px; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; } .ds-seg-o { min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid var(--app-separator, #C6C6C8); background: transparent; color: var(--app-label, #1C1C1E); font-size: 15px; } .ds-seg-o:hover { background: var(--app-fill, #EEEEF0); } .ds-seg-o:focus-visible { outline: 2px solid var(--app-accent-text, #0C727E); } .ds-sel { border-color: var(--app-accent, #0C727E); background: var(--app-selection, #DCEFF1); }"
-    },
-    {
-      "name": "Text Field",
-      "kind": "input",
-      "refersTo": "field",
-      "description": "Filled field on the opaque tertiary fill.",
-      "html": "<input class=\"ds-input\" placeholder=\"Your name\">",
-      "css": ".ds-input { min-height: 44px; padding: 0 12px; border: none; border-radius: 12px; background: var(--app-fill, #EEEEF0); color: var(--app-label, #1C1C1E); font: 15px -apple-system, BlinkMacSystemFont, system-ui, sans-serif; } .ds-input:focus-visible { outline: 2px solid var(--app-accent-text, #0C727E); }"
+      "name": "Link Action",
+      "kind": "button",
+      "refersTo": "link-action",
+      "description": "Change, Finish, I don't know yet: 13px accent-text with a 44px hit area; Delete in destructive.",
+      "html": "<span class=\"ds-links\"><button class=\"ds-link\">Change</button><button class=\"ds-link ds-del\">Delete</button></span>",
+      "css": ".ds-links { display: inline-flex; gap: 12px; } .ds-link { min-height: 44px; padding: 0 4px; border: none; background: transparent; color: var(--app-accent-text, #0C727E); font: 13px -apple-system, BlinkMacSystemFont, system-ui, sans-serif; cursor: pointer; } .ds-link:focus-visible { outline: 2px solid var(--app-accent-text, #0C727E); } .ds-del { color: var(--app-destructive, #D70015); }"
     }
   ],
   "narrative": {
-    "northStar": "The Settings Pane, One Question at a Time",
-    "overview": "Apple's Settings grammar applied to a Town permit, asked as Setup Assistant asks: one centred question per screen sliding sideways, an answer trail of chips above, 7px dots below, a tap on a single choice answers. Sections stay in a source-list sidebar on a desktop and behind Steps on a phone. System type, system greys, the Town seal's teal in two depths; light and dark follow the device.",
+    "northStar": "The Settings Pane, a Task at a Time",
+    "overview": "The portal is Apple's System Settings and iOS Settings applied to a Town permit. The application is a short list of tasks, each row carrying a status pill. Opening a task opens a card: a contained white panel on the grouped ground with a header (task name, segmented progress bar, count), a body asking one question, and a footer with Back and the card's one filled button. Only the body moves. On a desktop the task list stays in a 250px sidebar; on a phone the task list is home and a task's card fills the screen under a 44px bar. System type, system greys, the Town seal's teal for links, the in-progress pill, focus and the seal; the filled button is near-black (near-white in dark); Done is a soft green pill. Icons are Tabler outline at 18px, stroke 1.75.",
     "keyCharacteristics": [
-      "One centred question per screen; a tap answers a single choice",
-      "Answer trail above, 7px dots below",
-      "Two panes at 1024px and up; navigation bar and fixed footer below",
-      "One accent hue in two depths; chosen tile is a 2px accent edge",
-      "44px minimum targets; tiles 58px",
-      "Depth by tone, not shadow"
+      "The application is a task list; each task is a run of cards; Check and send opens when every task is done.",
+      "One contained card at a time: 640 px (760 px for the lot drawing and compass), 12 px corners, a 0.5 px hairline, no shadow.",
+      "Progress is a 3 px segmented bar in the card header with \"3 of 6\"; status is a pill on the task row.",
+      "Tiles are outlined, not filled; chosen is a 1.5 px label-coloured edge.",
+      "One filled button per card, in the label colour; teal is for links, the in-progress pill and focus.",
+      "Depth by tone and hairline, not shadow."
     ],
     "rules": [
-      {
-        "name": "The Two Teals Rule",
-        "body": "Text and control teal is the deep accent (lifted accent-text in dark); the seal teal marks identity and never carries text.",
-        "section": "colors"
-      },
-      {
-        "name": "The Edge Not Block Rule",
-        "body": "Choice is an accent edge, never a solid teal block: 2px on a wizard tile; wash plus 1px edge on segments, chips, picker tiles and the current sidebar row.",
-        "section": "colors"
-      },
-      {
-        "name": "The System Face Rule",
-        "body": "Text is the device's system face at 30/22/17/15/13; no other family is loaded.",
-        "section": "typography"
-      },
-      {
-        "name": "The One Question Rule",
-        "body": "One 22px semibold question per screen, one 15px help line beneath, its slot held when empty.",
-        "section": "typography"
-      },
-      {
-        "name": "The Tone Not Shadow Rule",
-        "body": "Containers never take a drop shadow; depth comes from ground, row and elevated row.",
-        "section": "elevation"
-      }
+      { "name": "The Teal Is for Words Rule", "body": "On a card, teal appears only as text (links, Change, \"I don't know yet\"), the in-progress pill and the focus ring. The card's one filled button is the label colour, never teal.", "section": "colors" },
+      { "name": "The Two Teals Rule", "body": "Teal that carries text is accent-text (lifted in dark); the seal's own teal marks identity and never carries text.", "section": "colors" },
+      { "name": "The Edge Not Block Rule", "body": "Choice is shown by an edge, never a solid fill: a chosen tile thickens to a 1.5 px label edge with no fill; the older segments and chips add the selection wash under an accent edge.", "section": "colors" },
+      { "name": "The System Face Rule", "body": "Text is set in the device's system face at the ramp's sizes (30 / 22 / 20 / 17 / 15 / 14 / 13 / 12); no other family is loaded and no other size is used.", "section": "typography" },
+      { "name": "The One Question Rule", "body": "A card body carries one Question line; help is one footnote line 4 px under it and 16 px above the control (its space held when empty so the control does not jump).", "section": "typography" },
+      { "name": "The Tone Not Shadow Rule", "body": "Containers never take a drop shadow; depth comes from ground, row, elevated row and the hairline.", "section": "elevation" }
     ],
     "dos": [
-      "Do ask one question per screen, centred, with at most one line of help.",
-      "Do let a single choice answer at a tap; Continue only where a tap cannot finish.",
-      "Do show progress with the trail above and 7px dots below.",
-      "Do give every interactive target at least 44px; tiles 58px.",
-      "Do use the --app-* variables, never literal hex.",
-      "Do keep the section sidebar at 1024px and up, Steps one tap away below."
+      "Do put every question in a card: header with bar and count, body with one question, footer with Back and at most one filled button.",
+      "Do let a single choice answer at a tap and move on after 200 ms; give Continue only to what a tap cannot finish.",
+      "Do show progress with the card header's segmented bar and a task's status with its pill.",
+      "Do draw icons from the pinned Tabler outline set at 18 px, stroke 1.75; give a question's tiles icons on every option or none.",
+      "Do keep fields and every link action at 44 px; tiles at 48 px.",
+      "Do use the `--app-*` variables (or HeroUI's variables mapped onto them), never literal hex, so light, dark and sheet elevation all follow.",
+      "Do keep the task list in the sidebar at 1024 px and up, and one tap away (‹ Tasks) below."
     ],
     "donts": [
-      "Don't imitate native window chrome.",
+      "Don't bring back the answer trail, page dots, a footer action bar or a large-title navigation bar inside the application.",
+      "Don't fill a card's button with teal; the filled button is the label colour.",
+      "Don't fill a chosen tile; show it with the 1.5 px label edge.",
+      "Don't imitate native window chrome: no traffic lights, fake status bars or title-bar controls.",
       "Don't drop-shadow a container; raise a sheet by tone.",
-      "Don't set text in the seal teal.",
-      "Don't fill a chosen tile with solid teal.",
-      "Don't put a building or addition, or page dots, in a sheet.",
-      "Don't load a web font or display face."
+      "Don't set text in the seal teal; text teal is accent-text.",
+      "Don't use filled icons, emoji or hand-drawn paths for icons (roof silhouettes and the two diagrams excepted).",
+      "Don't load a web font or display face, or set a size off the ramp."
     ]
   }
 }

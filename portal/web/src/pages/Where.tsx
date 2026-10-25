@@ -162,7 +162,7 @@ export default function Where() {
                 </Radio>
               ))}
             </RadioGroup>
-            <Button type="submit" variant="primary">Save</Button>
+            <button type="submit" className="btn btn-filled self-start">Save</button>
           </Form>
         </Card.Content>
       </Card>
@@ -179,7 +179,7 @@ export default function Where() {
     const answers = [facing("Yes, this is my property", true), facing("This doesn't look right", false), facing("No, search again", false)];
     return (
       <section className="pane-push flex flex-col items-center gap-3 py-6 text-center">
-        <h2 tabIndex={-1} data-screen-title className="text-[22px] font-semibold leading-tight outline-none">Is this your property?</h2>
+        <h2 tabIndex={-1} data-screen-title className="text-[20px] font-medium leading-[1.3] outline-none">Is this your property?</h2>
         <div className="h-56 w-full max-w-xl overflow-hidden rounded-xl">
           <ParcelMap selected={facts.geometry ?? null} focus={focus} onPick={onPick} />
         </div>
@@ -194,7 +194,7 @@ export default function Where() {
               <TextArea />
               <Description>Staff will see this. You can still go on with your application.</Description>
             </TextField>
-            <Button variant="primary" className="self-end" onPress={() => confirm(true)}>Save</Button>
+            <button type="button" className="btn btn-filled self-end" onClick={() => confirm(true)}>Save</button>
           </div>
         )}
         <div className="w-full max-w-xl text-left">
@@ -226,14 +226,14 @@ export default function Where() {
 
   return (
     <section className="flex flex-col items-center gap-3 py-6 text-center">
-      <h2 tabIndex={-1} data-screen-title className="text-[22px] font-semibold leading-tight outline-none">Where is the property?</h2>
+      <h2 tabIndex={-1} data-screen-title className="text-[20px] font-medium leading-[1.3] outline-none">Where is the property?</h2>
       <p className="max-w-[46ch] text-[15px] text-[var(--app-secondary-label)]">Search for the address, or the map and lot from your tax bill, or tap your lot on the map.</p>
       <Form onSubmit={onSearch} className="flex w-full max-w-xl flex-col gap-2 text-left sm:flex-row sm:items-end">
         <TextField value={query} onChange={setQuery} className="flex-1">
           <Label>Street address, or map and lot</Label>
           <Input />
         </TextField>
-        <Button type="submit" variant="primary">Search</Button>
+        <button type="submit" className="btn btn-filled">Search</button>
       </Form>
 
       {hits && hits.length > 0 && (

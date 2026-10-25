@@ -31,14 +31,20 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
   sheet's six questions on 2026-10-23, and the forms are drafts awaiting approval
   (`memos/2026-10-21-application-forms-for-approval.md`). The redesign (about ten steps, the macOS /
   iOS window, new controls; `specs/2026-10-23-applicant-portal-redesign.md`) is built on
-  `portal-design-pass` (PR #20), now one question at a time (`specs/2026-10-24-applicant-portal-wizard.md`);
-  it regrouped the forms, added five proposals and the wizard's screens, so the sheet was regenerated
-  and every entry is a draft (130 entries). For M4 and the redesign:
-  - **For the chair:** approve the application forms (130 entries), including the redesign's steps,
-    screens, controls and the five proposals — the fifth is the new "Which way does the front of the
-    building face?" question (and its addition twin), asked before the walls (chair's ruling
-    2026-10-24). Also on the sheet: "Where it joins the road" (was "meets"), and yes/no help
-    reworded for tiles ("Choose No if…").
+  `portal-design-pass` (PR #20), now as tasks and cards (`specs/2026-10-25-applicant-portal-task-list.md`,
+  approved 2026-10-25, after one question at a time, `specs/2026-10-24-applicant-portal-wizard.md`);
+  it regrouped the forms into cards, so the sheet was regenerated and every entry is a draft (130
+  entries). For M4 and the redesign:
+  - **For the chair:** approve the application forms (130 entries), including the steps, the cards
+    (which questions share one, each shared card's own question and help, and each question's
+    short name on it), the controls, the tiles' icons, which answers "Copy Building 1" copies, and
+    the five proposals — the fifth is the new "Which way does the front of the building face?"
+    question (and its addition twin), now asked on the walls' card (chair's ruling 2026-10-24).
+    Also on the sheet: "Where it joins the road" (was "meets"), and yes/no help reworded for tiles
+    ("Choose No if…").
+  - **For the chair (looks, from the cards' finish review):** a desktop's application home shows the
+    task list twice (the sidebar and the main card); fields stay 44 px tall for touch, where the
+    comp drew 36 px; the property card's spacing; "No password" said twice on sign-in.
   - **For the chair (wording, from the wizard's finish review):** "sf" on the Building Form against "sq
     ft" in "Do I need a permit?"; the street-frontage help points to "Add more detail" before the
     applicant has seen it; "storey" against "story"; the work option "A change … that doesn't fit

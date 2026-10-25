@@ -34,7 +34,7 @@ export default function SignInForm() {
   if (result === "sent") {
     return (
       <div className="flex flex-col gap-3 rounded-xl bg-[var(--app-row)] p-5">
-        <h2 className="text-[22px] font-semibold">Check your email</h2>
+        <h2 className="text-[20px] font-medium leading-[1.3]">Check your email</h2>
         <p>We sent a sign-in link to <strong>{email}</strong>. The link works once, for 15 minutes, and brings you back here.</p>
         <p className="text-[15px] text-[var(--app-secondary-label)]">Didn't get it? Check your junk mail, or send another.</p>
         <div><Button variant="secondary" className="min-h-11" isDisabled={busy} onPress={() => void send()}>Send it again</Button></div>
