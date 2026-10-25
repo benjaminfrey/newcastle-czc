@@ -1,4 +1,3 @@
-import { Button } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import InsetGroup from "../shell/InsetGroup";
@@ -87,10 +86,10 @@ export default function Results() {
             <InsetGroup.Row label="How to apply">{o.in_portal ? "You can apply here." : "Apply through the Town Office."}</InsetGroup.Row>
           </InsetGroup>
           {o.in_portal && firstOf(result.outcomes, o) && (
-            <Button variant="primary" className="min-h-12 self-start px-6 text-[17px]" aria-label={`Start this application: ${o.code_name}`}
-                    onPress={() => void start(o.application)}>
+            <button type="button" className="btn btn-filled self-start" aria-label={`Start this application: ${o.code_name}`}
+                    onClick={() => void start(o.application)}>
               Start this application
-            </Button>
+            </button>
           )}
         </section>
       ))}

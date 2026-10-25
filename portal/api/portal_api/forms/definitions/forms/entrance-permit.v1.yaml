@@ -291,7 +291,12 @@ sections:
   screens:
   - id: sight
     layout: null
+    title: How far can you see from the driveway?
+    help: Standing where it meets the road, in feet; then the nearest intersection.
   - id: homes
     layout: null
+    title: How many homes will use this driveway?
   - id: driveway
     layout: null
+    title: What will the driveway be like?
+    help: Its width in feet, its slope and its angle to the road.

@@ -11,12 +11,14 @@ export type TaskRow = { id: string; title: string; href: string; status: TaskSta
 // The pill on a task's row (task-list brief §4.2): Done, "2 of 4", Not started. A row's name is
 // its own words, so what a screen reader says is what the row shows: "Your lot, Size, frontage and
 // what is there now, Done"; "The work, 2 of 4 answered".
-function Pill({ status }: { status: TaskStatus }) {
+function Pill({ status, onSelected }: { status: TaskStatus; onSelected?: boolean }) {
   const [words, look] = status.kind === "done" ? ["Done", "bg-[var(--app-done-bg)] text-[var(--app-done-text)]"]
     : status.kind === "progress" ? [`${status.answered} of ${status.total}`, "bg-[var(--app-selection)] text-[var(--app-accent-text)]"]
     : ["Not started", "bg-[var(--app-fill)] text-[var(--app-secondary-label)]"];
+  // On the open task's highlighted row, "2 of 4" would vanish into the row; it takes the card's ground.
+  const ground = onSelected && status.kind === "progress" ? "!bg-[var(--app-row)]" : "";
   return (
-    <span data-pill={status.kind} className={`shrink-0 whitespace-nowrap rounded-full px-[9px] py-[2px] text-[12px] ${look}`}>
+    <span data-pill={status.kind} className={`shrink-0 whitespace-nowrap rounded-full px-[9px] py-[2px] text-[12px] ${look} ${ground}`}>
       <span className="sr-only">, </span>{words}{status.kind === "progress" && <span className="sr-only"> answered</span>}
     </span>
   );
@@ -52,7 +54,7 @@ export default function TaskList({ formTitle, mapLot, saveState, onReload, tasks
                 aria-current={t.current ? "step" : undefined}
                 className={`${rowCls} ${compact ? "rounded-lg" : ""} ${t.current ? "bg-[var(--app-selection)]" : compact ? "hover:bg-[var(--app-selection)]/60" : ""}`}>
             <Words id={t.id} title={t.title} hint={TASK_HINTS[t.id]} />
-            <Pill status={t.status} />
+            <Pill status={t.status} onSelected={t.current} />
           </Link>
         </li>
       ))}

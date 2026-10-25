@@ -77,6 +77,13 @@ beforeEach(() => {
 });
 
 describe("ReviewPane", () => {
+  it("reads like a check page: headings in their own words, the answer under its question", async () => {
+    open();
+    const applicant = await screen.findByRole("group", { name: "Applicant" });
+    expect(applicant.querySelector("h2")).not.toHaveClass("uppercase");
+    expect(within(applicant).getByText("Name?").closest("[data-row]")).toHaveClass("flex-col");
+  });
+
   it("rows lead with the question as asked, the form's term beneath", async () => {
     open();
     const applicant = await screen.findByRole("group", { name: "Applicant" });

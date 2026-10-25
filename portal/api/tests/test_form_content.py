@@ -380,3 +380,13 @@ def test_every_question_on_a_shared_card_has_a_short_name(forms):
         for s, f in form.fields():
             if f.screen and form.screen_layout(f.id) is None and f.is_question:
                 assert f.short and len(f.short) <= 32, f.id
+
+
+def test_a_card_of_several_questions_asks_its_own_question(forms):
+    # The card asks for the whole card ("How big is the building?"), not its first value (task-list
+    # brief §3, the comp); the lot drawing and the compass ask their own.
+    for form in forms.values():
+        for s in form.sections:
+            for sc in s.screens:
+                if sc.layout is None:
+                    assert sc.title and sc.title.endswith("?"), (form.key, sc.id)

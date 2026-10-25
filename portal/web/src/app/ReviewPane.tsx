@@ -48,7 +48,7 @@ export default function ReviewPane({ models, base }: { models: StepModel[]; base
 
   return (
     <>
-      <InsetGroup>
+      <InsetGroup plain>
         <InsetGroup.Row label={form!.official_title}>
           <span>{mapLotLabel(app!.property.map_lot)}{app!.property.parcels_as_of && ` · Town maps as of ${longDate(app!.property.parcels_as_of)}`}</span>
         </InsetGroup.Row>
@@ -57,12 +57,12 @@ export default function ReviewPane({ models, base }: { models: StepModel[]; base
         )}
       </InsetGroup>
       {gaps.length === 0 && (
-        <InsetGroup>
+        <InsetGroup plain>
           <InsetGroup.Row label="Answers"><span>Everything is answered.</span></InsetGroup.Row>
         </InsetGroup>
       )}
       {gaps.length > 0 && (
-        <InsetGroup title="Still to answer" footer="You can come back to these. Staff need them before the application is complete.">
+        <InsetGroup plain title="Still to answer" footer="You can come back to these. Staff need them before the application is complete.">
           {gaps.map((g) => (
             // The question as it was asked leads; the form's own term follows, for staff and the printout.
             <Link key={g.key} to={g.href} className="flex min-h-11 flex-col justify-center px-4 py-2">
@@ -84,7 +84,7 @@ export default function ReviewPane({ models, base }: { models: StepModel[]; base
         );
       })}
       {/* The end of the page says where things stand: saved, not yet sent, and how to come back. */}
-      <InsetGroup title="What happens next">
+      <InsetGroup plain title="What happens next">
         <InsetGroup.Row label="Saved">
           <span>Your application is saved. You can close it and come back any time from My applications.</span>
         </InsetGroup.Row>

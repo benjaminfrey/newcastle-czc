@@ -63,6 +63,11 @@ describe("the start window", () => {
 });
 
 describe("SignInForm", () => {
+  it("its button is the near-black filled one", () => {
+    render(<MemoryRouter><SignInForm /></MemoryRouter>);
+    expect(screen.getByRole("button", { name: "Email me a sign-in link" })).toHaveClass("btn-filled");
+  });
+
   it("shows Check your email with the address and the expiry, and sends again", async () => {
     const spy = vi.spyOn(api, "requestLink").mockResolvedValue("sent");
     render(<MemoryRouter><SignInForm /></MemoryRouter>);

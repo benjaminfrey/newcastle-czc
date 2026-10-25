@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { getUseGroups } from "../api";
 import { isUnknown } from "../controls/basic";
+import { buildingKind } from "../controls/pickers";
 import { valueOf } from "../forms/applicability";
 import type { Screen } from "../forms/screens";
 import Card from "../shell/Card";
@@ -30,7 +31,13 @@ export default function CheckPane({ title, cards, changeHref, onBack, onDone }: 
     }
     const v = valueOf(form!, r.field, itemId, cur!);
     if (blank(v)) return null;
-    return isUnknown(v) ? "Not known yet" : display(r.field, v, useNames);
+    if (isUnknown(v)) return "Not known yet";
+    // The tile the applicant tapped, in its words; the printout keeps the form's terms.
+    const f = r.field;
+    if (f.id === "building_class" && typeof v === "string") return buildingKind(v)?.label ?? display(f, v, useNames);
+    if (f.type === "choice") return f.options.find((o) => o.value === v)?.label ?? display(f, v, useNames);
+    if (f.type === "multichoice" && Array.isArray(v)) return v.map((x) => f.options.find((o) => o.value === x)?.label ?? x).join(", ");
+    return display(f, v, useNames);
   };
 
   return (

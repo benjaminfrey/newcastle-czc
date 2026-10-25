@@ -153,7 +153,10 @@ def _section(ruleset: Ruleset, form: FormDef, s) -> list[str]:
             out.append(f"- Step: {steps[f.step]}")
         if f.screen:
             lay = form.screen_layout(f.id)
-            out.append(f"- Card: asked with the others on `{f.screen}`" + (f" ({lay} drawing)" if lay else ""))
+            card = next((x for sec in form.sections for x in sec.screens
+                         if x.id == f.screen and (sec.repeat.kind if sec.repeat else None) == (s.repeat.kind if s.repeat else None)), None)
+            out.append(f"- Card: asked with the others on `{f.screen}`" + (f" ({lay} drawing)" if lay else "")
+                       + (f", which asks “{card.title}”" if card and card.title else ""))
         if f.short:
             out.append(f"- Short name on its card: “{f.short}”")
         if f.copies:

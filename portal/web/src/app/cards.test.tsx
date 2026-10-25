@@ -33,7 +33,7 @@ const FORM: apps.FormDef = {
       q("lot_area", "How big is your lot, in acres?", { source: "property", from: "acres", may_correct: true, unit: "acres" }),
       q("lot_width", "How wide is your lot, in feet?", { screen: "lot_size", short: "Width", unit: "ft", allow_unknown: true }),
       q("lot_depth", "How deep is your lot, in feet?", { screen: "lot_size", short: "Depth", unit: "ft", allow_unknown: true })],
-      { screens: [{ id: "lot_size", layout: null }] }),
+      { screens: [{ id: "lot_size", layout: null, title: "How big is your lot?", help: "In feet. Your deed or a survey has these." }] }),
     sec("applicant", "about_you", [
       q("applicant_name", "What is your full name?", { type: "text" }),
       q("applicant_is_owner", "Do you own this property?", { type: "yesno", control: "switch", default: false })]),
@@ -68,8 +68,11 @@ const FORM: apps.FormDef = {
       q("roof_slope", "How steep is the roof?", { type: "choice", control: "picker", screen: "roof", short: "Slope",
         options: opts(["low", "Low"], ["steep", "Steep"]) }),
       q("exterior_finish", "What will the outside be covered with?", { type: "multichoice", control: "chips", screen: "outside",
-        short: "Materials", options: opts(["clapboard", "Clapboard"], ["brick", "Brick"]) })],
-      { repeat: BUILDING, screens: [{ id: "size", layout: null }, { id: "roof", layout: null }, { id: "outside", layout: null }] }),
+        short: "Materials", options: opts(["clapboard", "Clapboard"], ["brick", "Brick"], ["other", "Something else"]) }),
+      q("exterior_finish_other", "What other material?", { type: "text", screen: "outside", short: "Other material", required: false })],
+      { repeat: BUILDING, screens: [{ id: "size", layout: null, title: "How big is the building?", help: "In feet. A builder's plan has these." },
+                                    { id: "roof", layout: null, title: "What shape is the roof?", help: "Choose one." },
+                                    { id: "outside", layout: null, title: "What will the outside walls and roof be covered with?", help: "Choose all that apply." }] }),
     sec("building_windows", "buildings", [
       q("front_facing", "Which way does the front of the building face?", { type: "choice", control: "tiles", screen: "walls",
         options: opts(["north", "North", "arrow-up"], ["east", "East", "arrow-right"], ["south", "South", "arrow-down"], ["west", "West", "arrow-left"]) }),
@@ -176,7 +179,8 @@ describe("cards", () => {
 
   it("a set of values: short names beside their fields; Continue saves them all", async () => {
     open("/applications/abc/your_lot?screen=lot_width");
-    expect(await screen.findByRole("heading", { level: 2, name: "How wide is your lot, in feet?" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 2, name: "How big is your lot?" })).toBeInTheDocument();
+    expect(screen.getByText("In feet. Your deed or a survey has these.")).toBeInTheDocument();
     await userEvent.type(screen.getByRole("textbox", { name: "Width" }), "120");
     await userEvent.type(screen.getByRole("textbox", { name: "Depth" }), "200");
     await userEvent.click(screen.getByRole("button", { name: "Continue" }));
@@ -273,14 +277,49 @@ describe("a building", () => {
     expect(saved()).toContainEqual(a("roof_style", "gable", "b1"));
     await userEvent.click(screen.getByRole("button", { name: "Continue" }));
     await waitFor(() => expect(where()).toHaveTextContent("?screen=exterior_finish"));
+    // (the slope's tiles appear once a shape is chosen)
   });
 
-  it("a floor height for each floor, on the size card", async () => {
+  it("a floor height for each floor entered, and none before", async () => {
     withApp({ answers: [a("stories", 2, "b1")] });
-    open("/applications/abc/buildings?screen=mass_width&item=b1");
-    await screen.findByRole("heading", { level: 2, name: "How wide is it?" });
+    const { unmount } = open("/applications/abc/buildings?screen=mass_width&item=b1");
+    await screen.findByRole("heading", { level: 2, name: "How big is the building?" });
     expect(screen.getByRole("textbox", { name: "First floor height" })).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: "Second floor height" })).toBeInTheDocument();
+    unmount();
+    withApp({ answers: [] });
+    open("/applications/abc/buildings?screen=mass_width&item=b1");
+    await screen.findByRole("heading", { level: 2, name: "How big is the building?" });
+    expect(screen.queryByRole("textbox", { name: "First floor height" })).not.toBeInTheDocument();
+  });
+
+  it("floors are counted with − and + beside the number", async () => {
+    open("/applications/abc/buildings?screen=mass_width&item=b1");
+    await userEvent.click(await screen.findByRole("button", { name: "Floors above ground, one more" }));
+    await waitFor(() => expect(saved()).toContainEqual(a("stories", 1, "b1")));
+    expect(screen.getByRole("button", { name: "Floors above ground, one fewer" })).toBeInTheDocument();
+  });
+
+  it("the roof: its shapes, then its slope once a shape is chosen", async () => {
+    const { unmount } = open("/applications/abc/buildings?screen=roof_style&item=b1");
+    expect(await screen.findByRole("heading", { level: 2, name: "What shape is the roof?" })).toBeInTheDocument();
+    expect(screen.queryByRole("radio", { name: "Steep" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Shape")).not.toBeInTheDocument();
+    unmount();
+    withApp({ answers: [a("roof_style", "gable", "b1")] });
+    open("/applications/abc/buildings?screen=roof_style&item=b1");
+    expect(await screen.findByRole("radio", { name: "Steep" })).toBeInTheDocument();
+  });
+
+  it("the materials: another material is asked only when Something else is chosen", async () => {
+    const { unmount } = open("/applications/abc/buildings?screen=exterior_finish&item=b1");
+    await screen.findByRole("heading", { level: 2, name: "What will the outside walls and roof be covered with?" });
+    expect(screen.queryByRole("textbox", { name: "Other material" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Materials")).not.toBeInTheDocument();
+    unmount();
+    withApp({ answers: [a("exterior_finish", ["other"], "b1")] });
+    open("/applications/abc/buildings?screen=exterior_finish&item=b1");
+    expect(await screen.findByRole("textbox", { name: "Other material" })).toBeInTheDocument();
   });
 
   it("the walls appear once the front's direction is chosen", async () => {
@@ -386,6 +425,13 @@ describe("Check and send", () => {
 });
 
 describe("check pages", () => {
+  it("a check page speaks the applicant's words, not the form's terms", async () => {
+    withApp({ answers: finished("b1") });
+    open("/applications/abc/buildings/check?item=b1");
+    expect(await screen.findByText("A home")).toBeInTheDocument();
+    expect(screen.getByText("Gable")).toBeInTheDocument();
+  });
+
   it("a task's answers with Change; Change comes back to the check page", async () => {
     withApp({ answers: [a("applicant_name", "Ada"), a("applicant_is_owner", true)] });
     open("/applications/abc/about_you/check");

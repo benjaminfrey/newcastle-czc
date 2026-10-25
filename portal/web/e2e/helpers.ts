@@ -135,6 +135,10 @@ export async function fillControls(page: Page, scope: Locator, fixture: string) 
     if (!(await num.isVisible()) || (await num.inputValue())) continue;
     await num.fill("12"); await num.blur();
   }
+  // A count with − and + (floors above ground): one, if it's blank.
+  for (const more of await scope.getByRole("button", { name: /, one more$/ }).all()) {
+    if ((await more.locator("xpath=preceding-sibling::span[1]").textContent())?.trim() === "–") await more.click();
+  }
   for (const slider of await scope.getByRole("slider").all()) {
     await slider.focus(); await page.keyboard.press("ArrowRight");
   }
@@ -185,8 +189,12 @@ export async function answerScreen(page: Page, fixture: string) {
     await axe(page, "card: one choice");
     return pick(groups.first()); // a tap answers and moves on
   }
-  for (const g of await groups.all()) {
-    if (!(await g.locator('[aria-checked="true"]').count())) await pick(g);
+  // A choice can bring the next one (the roof's shape, then its slope): answer until none is left.
+  for (let round = 0; round < 4; round += 1) {
+    const open = [];
+    for (const g of await groups.all()) if (!(await g.locator('[aria-checked="true"]').count())) open.push(g);
+    if (!open.length) break;
+    for (const g of open) await pick(g);
   }
   const several = pane.getByRole("checkbox");
   if ((await several.count()) && !(await pane.locator('[role="checkbox"][aria-checked="true"]').count())) {

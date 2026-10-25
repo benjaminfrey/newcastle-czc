@@ -58,7 +58,7 @@ def form_json(form: FormDef, ruleset) -> dict:
         "steps": [{"id": st.id, "title": st.title} for st in form.steps],
         "sections": [{
             "id": s.id, "official_title": s.official_title, "chapter": s.chapter, "show_if": s.show_if,
-            "step": s.step, "screens": [{"id": x.id, "layout": x.layout} for x in s.screens],
+            "step": s.step, "screens": [{"id": x.id, "layout": x.layout, "title": x.title, "help": x.help} for x in s.screens],
             "repeat": None if s.repeat is None else {
                 "kind": s.repeat.kind, "add_label": s.repeat.add_label, "min": s.repeat.min, "max": s.repeat.max},
             "fields": [{

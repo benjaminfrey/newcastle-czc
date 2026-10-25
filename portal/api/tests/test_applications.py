@@ -320,7 +320,9 @@ def test_form_json_carries_steps_pages_and_controls(alice, tmp_path, monkeypatch
     assert fields["applicant_phone"]["step"] == "about_you"
     assert {s["id"]: s["step"] for s in form["sections"]}["existing"] == "uses"
     location = next(s for s in form["sections"] if s["id"] == "location")
-    assert location["screens"] == [{"id": "deed", "layout": None}] and "pages" not in location
+    assert location["screens"] == [{"id": "deed", "layout": None, "title": "Where is your deed recorded?",
+                                    "help": "The book and page are on your deed. Skip this if you don't know them."}]
+    assert "pages" not in location
     assert fields["deed_book"]["screen"] == fields["deed_page"]["screen"] == "deed"
 
 

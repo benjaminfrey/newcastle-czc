@@ -60,6 +60,8 @@ sections:
   screens:
   - id: deed
     layout: null
+    title: Where is your deed recorded?
+    help: The book and page are on your deed. Skip this if you don't know them.
 - id: applicant
   official_title: Applicant
   chapter: Who's applying
@@ -130,6 +132,7 @@ sections:
   screens:
   - id: contact
     layout: null
+    title: How can the Town reach you?
 - id: owner
   official_title: Property Owner (if different)
   chapter: Who's applying
@@ -190,6 +193,7 @@ sections:
   screens:
   - id: owner
     layout: null
+    title: Who owns the property?
 - id: agent
   official_title: Agent (if applicable)
   chapter: Who's applying
@@ -250,6 +254,8 @@ sections:
   screens:
   - id: agent
     layout: null
+    title: Who is helping?
+    help: A builder, surveyor or anyone else working with you.
 - id: site
   official_title: Site Information (existing)
   chapter: Your property
@@ -337,6 +343,8 @@ sections:
   screens:
   - id: lot_size
     layout: null
+    title: How big is your lot?
+    help: In feet. Your deed or a survey has these.
 - id: certification
   official_title: Certification
   chapter: Sign and submit

@@ -15,6 +15,8 @@ export type Screen = {
   auto: boolean;           // moves on at a tap
   optional: boolean;       // shows "Skip for now"
   unknown: boolean;        // offers "I don't know yet"
+  title?: string | null;   // a card that gathers several asks its own question ("How big is the building?")
+  help?: string | null;
 };
 
 const TAP = new Set(["switch", "segmented", "tiles", "building-type", "building-picker", "street-picker"]);
@@ -51,13 +53,13 @@ function screen(step: string, itemId: string | null, kind: ScreenKind, rows: Row
            unknown: rows.length > 0 && rows.every((r) => r.field.allow_unknown) };
 }
 
-// The drawing a card sits around: its screen may be declared by any section of its repeat.
-function layoutOf(form: FormDef, row: Row, g: string): string | null {
+// A card's declaration (its drawing, its own question): any section of its repeat may declare it.
+function declOf(form: FormDef, row: Row, g: string) {
   const kind = row.section.repeat?.kind ?? null;
   for (const s of form.sections) {
     if ((s.repeat?.kind ?? null) !== kind) continue;
     const found = s.screens?.find((x) => x.id === g);
-    if (found) return found.layout;
+    if (found) return found;
   }
   return null;
 }
@@ -79,8 +81,10 @@ export function buildCards(form: FormDef, cur: Current, rows: Row[], step: strin
         open.unknown &&= r.field.allow_unknown;
         continue;
       }
-      const layout = layoutOf(form, r, g);
-      const s = screen(step, itemId, layout === "lot-diagram" ? "setbacks" : layout === "compass" ? "walls" : "set", [r]);
+      const decl = declOf(form, r, g);
+      const layout = decl?.layout ?? null;
+      const s = { ...screen(step, itemId, layout === "lot-diagram" ? "setbacks" : layout === "compass" ? "walls" : "set", [r]),
+                  title: decl?.title ?? null, help: decl?.help ?? null };
       groups.set(key, s);
       out.push(s);
     } else {

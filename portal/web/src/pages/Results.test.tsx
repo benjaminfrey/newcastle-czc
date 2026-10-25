@@ -147,4 +147,10 @@ describe("Results", () => {
     expect(await screen.findByRole("button", { name: "Start this application: Use Permit" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Start this application: Special Permit/ })).not.toBeInTheDocument();
   });
+
+  it("Start is the card's one filled button, near-black, not the old teal pill", async () => {
+    vi.spyOn(api, "runScreener").mockResolvedValue(RESULT);
+    renderPage();
+    expect(await screen.findByRole("button", { name: "Start this application: Use Permit" })).toHaveClass("btn-filled");
+  });
 });

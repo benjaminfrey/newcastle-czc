@@ -68,6 +68,7 @@ export function wallLabels(facing: unknown, road: string | null): Record<string,
 
 // The words a card asks with, for its heading and the screen reader.
 export function headingOf(s: Screen): string {
+  if (s.title) return s.title;
   if (s.kind === "setbacks") return "How far will it be from each lot line?";
   if (s.kind === "walls") {
     const facing = s.rows.find((r) => r.field.id.endsWith("front_facing"));
@@ -78,6 +79,7 @@ export function headingOf(s: Screen): string {
 }
 
 function helpOf(s: Screen): string | null {
+  if (s.title) return s.help ?? null; // a card's own question brings its own help, or none
   if (s.kind === "setbacks") return "In feet, to the closest part of the building.";
   const f = s.rows[0]?.field;
   if (!f) return null;
@@ -97,6 +99,38 @@ type Props = {
 };
 
 const isChoice = (f: FormField) => f.type === "choice" || f.type === "yesno";
+const controlOf = (f: FormField) => f.control ?? null;
+const blank = (v: unknown) => v === null || v === undefined || v === "" || (Array.isArray(v) && v.length === 0);
+
+// What a card shows now: a floor's height only up to the floors entered (none while blank); another
+// material (or name) only when "Something else" is chosen.
+function visibleRows(rows: Row[], value: (r: Row) => unknown): Row[] {
+  const stories = rows.find((r) => /(^|_)stories$/.test(r.field.id));
+  const floors = stories ? value(stories) : null;
+  const other = rows.some((r) => { const v = value(r); return v === "other" || (Array.isArray(v) && v.includes("other")); });
+  return rows.filter((r) => {
+    const n = r.field.id.match(/^floor_height_(\d+)$/);
+    if (n && stories) return typeof floors === "number" && Number(n[1]) <= floors;
+    if (/_other(_name)?$/.test(r.field.id)) return other;
+    return true;
+  });
+}
+
+// A count, as in the comp: − and + with the number between (floors above ground).
+function Stepper({ r, name, value, onValue }: { r: Row; name: string; value: unknown; onValue: (v: number) => void }) {
+  const n = typeof value === "number" ? value : null;
+  const min = r.field.min ?? 0;
+  const max = r.field.max ?? Infinity;
+  return (
+    <span className="flex items-center justify-end gap-2">
+      <button type="button" className="btn min-w-9 justify-center px-0" aria-label={`${name}, one fewer`}
+              onClick={() => n !== null && n > min && onValue(n - 1)}>−</button>
+      <span aria-live="polite" className="min-w-6 text-center text-[15px] tabular-nums">{n ?? "–"}</span>
+      <button type="button" className="btn min-w-9 justify-center px-0" aria-label={`${name}, one more`}
+              onClick={() => onValue(n === null ? Math.max(min, 1) : Math.min(max, n + 1))}>+</button>
+    </span>
+  );
+}
 
 export default function CardQuestion({ screen, editing, errorsRef, onPick, onConfirm, onCorrect, onUnknown }: Props) {
   const { form, cur, app, setAnswer } = useApplication();
@@ -125,9 +159,17 @@ export default function CardQuestion({ screen, editing, errorsRef, onPick, onCon
     return (
       <div key={r.field.id} className="contents">
         <span className="self-center text-[14px] text-[var(--app-label)]">{short(r)}</span>
-        {control(r, { inSet: true, field: { ...r.field, label: short(r) } })}
+        {controlOf(r.field) === "stepper" ? <Stepper r={r} name={short(r)} value={value(r)} onValue={(v) => answer(r, v)} />
+          : control(r, { inSet: true, field: { ...r.field, label: short(r) } })}
       </div>
     );
+  };
+  // Tiles for a choice inside a card: they answer without moving on; a picker's options too.
+  const tiles = (r: Row, labelled: boolean) => {
+    const field = { ...r.field, label: labelled ? r.field.label ?? short(r) : heading };
+    return r.field.type === "multichoice"
+      ? <MultiTiles field={field} value={value(r)} onValue={(v) => answer(r, v)} />
+      : <ChoiceTiles field={field} value={value(r)} tap={false} onPick={(v) => answer(r, v)} onValue={(v) => answer(r, v)} />;
   };
 
   const body = (() => {
@@ -164,14 +206,38 @@ export default function CardQuestion({ screen, editing, errorsRef, onPick, onCon
         );
       }
       case "set": {
-        // Values asked together; one per floor sits under a hairline, below the rest.
+        // A set of values: short names beside their fields. One per floor sits under a hairline,
+        // for as many floors as are entered. A choice leads the card as tiles, with what depends on
+        // it (the roof's slope, another material) only once it is answered.
+        const rows = visibleRows(screen.rows, value);
+        const choices = rows.filter((r) => isChoice(r.field) || r.field.type === "multichoice" || controlOf(r.field) === "picker");
+        if (choices.length && choices[0] === rows[0]) {
+          const lead = choices[0];
+          const rest = rows.slice(1);
+          return (
+            <div className="flex w-full flex-col items-center gap-5">
+              {tiles(lead, false)}
+              {!blank(value(lead)) && rest.map((r) => (isChoice(r.field) || controlOf(r.field) === "picker") ? (
+                <div key={r.field.id} className="flex w-full flex-col items-center gap-2">
+                  <p className="text-[13px] text-[var(--app-secondary-label)]">{r.field.label ?? short(r)}</p>
+                  {tiles(r, true)}
+                </div>
+              ) : (
+                <div key={r.field.id} className="flex w-full max-w-[380px] flex-col gap-1.5 text-left">
+                  <span className="text-[13px] text-[var(--app-secondary-label)]">{short(r)}</span>
+                  {control(r, { bare: true, field: { ...r.field, label: short(r) } })}
+                </div>
+              ))}
+            </div>
+          );
+        }
         const repeated = (r: Row) => /_\d+$/.test(r.field.id);
         const grid = "grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-[14px] gap-y-[10px] text-left";
-        const wide = screen.rows.some((r) => r.field.type === "text" || r.field.type === "longtext") ? "max-w-[480px]" : "max-w-[380px]";
-        const floors = screen.rows.filter(repeated);
+        const wide = rows.some((r) => r.field.type === "text" || r.field.type === "longtext") ? "max-w-[480px]" : "max-w-[380px]";
+        const floors = rows.filter(repeated);
         return (
           <div className={`flex w-full flex-col items-center ${wide}`}>
-            <div className={grid}>{screen.rows.filter((r) => !repeated(r)).map(member)}</div>
+            <div className={grid}>{rows.filter((r) => !repeated(r)).map(member)}</div>
             {floors.length > 0 && (
               <div className={`${grid} mt-[10px] border-t-[0.5px] border-[var(--app-separator)] pt-[10px]`}>{floors.map(member)}</div>
             )}

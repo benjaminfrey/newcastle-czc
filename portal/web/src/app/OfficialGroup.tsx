@@ -56,7 +56,7 @@ export default function OfficialGroup({ block, title, note, attachments, useName
   };
   const changed = (fieldId: string) => cur!.answers.some((a) => a.field_id === fieldId && a.item_id === block.itemId);
   return (
-    <InsetGroup title={title}
+    <InsetGroup title={title} plain
                 footer={
                   <span className="flex flex-wrap gap-x-4">
                     <Button variant="ghost" className="min-h-11 px-0 text-[var(--app-accent-text)]" onPress={onAddDetail}
@@ -69,18 +69,19 @@ export default function OfficialGroup({ block, title, note, attachments, useName
         // "Attached to" stores the building; print its name as it is now.
         const value = field.control === "building-picker" && typeof stored === "string" ? buildingLabel(form!, cur!, stored) : stored;
         return (
-        <InsetGroup.Row key={field.id} label={asked(field) ? (
-          <span className="flex flex-col">
+        // As on a check page: the question, the form's term (for staff and the printout), then the answer.
+        <InsetGroup.Row key={field.id} stacked label={asked(field) ? (
+          <span className="flex flex-col text-[14px]">
             <span>{field.label}</span>
-            <span className="text-[13px] text-[var(--app-secondary-label)]">{field.official_label}</span>
+            <span className="text-[12px] text-[var(--app-secondary-label)]">{field.official_label}</span>
           </span>
-        ) : <span className="text-[var(--app-secondary-label)]">{field.official_label}</span>}>
+        ) : <span className="text-[14px] text-[var(--app-secondary-label)]">{field.official_label}</span>}>
           {field.type === "upload" && files(field).length > 0 ? (
             <span className="flex flex-col">
               {files(field).map((a) => <a key={a.id} className="underline" href={`/api/attachments/${a.id}`}>{a.filename}</a>)}
             </span>
           ) : (
-            <span className="flex flex-wrap items-baseline justify-between gap-x-3">
+            <span className="flex flex-wrap items-baseline justify-between gap-x-3 text-[14px] text-[var(--app-secondary-label)]">
               <span>
               {asked(field) && field.type !== "upload" && unanswered(value)
                 ? (field.required
@@ -96,7 +97,7 @@ export default function OfficialGroup({ block, title, note, attachments, useName
               </span>
               {asked(field) && changeHref(field.id, block.itemId) && (
                 <Link to={changeHref(field.id, block.itemId)!} aria-label={`Change ${field.label}`}
-                      className="min-h-11 py-2 text-[15px] text-[var(--app-accent-text)]">Change</Link>
+                      className="min-h-11 py-2 text-[13px] text-[var(--app-accent-text)]">Change</Link>
               )}
             </span>
           )}

@@ -348,3 +348,11 @@ def test_short_names_load(tmp_path, ruleset):
     form["sections"][0]["fields"][0]["short"] = "Stories"
     write(tmp_path, cover=cover, form=form)
     assert load_form("test_permit", 1, ruleset, root=tmp_path).field("stories")[1].short == "Stories"
+
+
+def test_a_card_has_its_own_question_and_help(tmp_path, ruleset):
+    cover, form = stepped()
+    form["sections"][0]["screens"] = [{"id": "shape", "layout": None, "title": "How big is it?", "help": "In feet."}]
+    write(tmp_path, cover=cover, form=form)
+    sc = load_form("test_permit", 1, ruleset, root=tmp_path).sections[1].screens[0]
+    assert (sc.title, sc.help) == ("How big is it?", "In feet.")

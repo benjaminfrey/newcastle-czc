@@ -135,6 +135,8 @@ sections:
   screens:
   - id: about
     layout: null
+    title: What is this building?
+    help: A name helps when there's more than one, like “Garage”.
 - id: building_location
   official_title: Building Location (proposed)
   chapter: Your buildings
@@ -623,10 +625,16 @@ sections:
   screens:
   - id: size
     layout: null
+    title: How big is the building?
+    help: In feet. A builder's plan has these.
   - id: roof
     layout: null
+    title: What shape is the roof?
+    help: Choose one.
   - id: outside
     layout: null
+    title: What will the outside walls and roof be covered with?
+    help: Choose all that apply.
 - id: building_windows
   official_title: Windows & Doors - Main Building Mass
   chapter: Your buildings
@@ -1159,11 +1167,19 @@ sections:
   screens:
   - id: size
     layout: null
+    title: How big is it?
+    help: In feet.
   - id: walls
     layout: compass
   - id: kind
     layout: null
+    title: What are you adding or changing?
+    help: Choose one.
   - id: roof
     layout: null
+    title: What shape is its roof?
+    help: Choose one.
   - id: outside
     layout: null
+    title: What will its outside walls and roof be covered with?
+    help: Choose all that apply.

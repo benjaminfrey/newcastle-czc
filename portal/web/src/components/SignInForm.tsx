@@ -49,7 +49,7 @@ export default function SignInForm() {
         <Description>No password needed. We only use it to send you links and updates about your applications.</Description>
       </TextField>
       {result && <p role="alert" className="text-[var(--app-destructive)]">{MESSAGES[result]}</p>}
-      <Button type="submit" variant="primary" className="min-h-11" isDisabled={busy}>Email me a sign-in link</Button>
+      <button type="submit" className="btn btn-filled self-start" disabled={busy}>Email me a sign-in link</button>
     </Form>
   );
 }

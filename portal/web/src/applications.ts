@@ -24,7 +24,7 @@ export type FormField = {
 };
 export type Page = { id: string; title: string; layout: "compass" | "lot-diagram" | null };
 export type AddOption = { label: string; preset: Record<string, unknown> };
-export type ScreenGroup = { id: string; layout: "compass" | "lot-diagram" | null };
+export type ScreenGroup = { id: string; layout: "compass" | "lot-diagram" | null; title?: string | null; help?: string | null }; // a card: its drawing, its own question and help
 export type FormSection = {
   id: string; official_title: string; chapter: string; show_if: Expr | null;
   repeat: { kind: string; add_label: string; min: number; max: number; add_options?: AddOption[] } | null;

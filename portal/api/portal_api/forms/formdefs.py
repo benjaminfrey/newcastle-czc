@@ -65,6 +65,8 @@ class Screen:
     with the drawing they sit around, if any."""
     id: str
     layout: str | None = None
+    title: str | None = None  # the card's own question ("How big is the building?"), when it gathers several
+    help: str | None = None   # and its line of help
 
 
 @dataclass(frozen=True)
@@ -278,7 +280,7 @@ def _sections(file: str, doc: dict, ruleset: Ruleset) -> list[Section]:
                 raise DefinitionError(f"{where}: each screen needs an id")
             if sc.get("layout") is not None and sc["layout"] not in LAYOUTS:
                 raise DefinitionError(f"{where}: unknown layout {sc['layout']!r}")
-            screens.append(Screen(sc["id"], sc.get("layout")))
+            screens.append(Screen(sc["id"], sc.get("layout"), sc.get("title"), sc.get("help")))
         fields = tuple(_field(file, s["id"], f, ruleset) for f in s.get("fields") or ())
         for f in fields:
             if f.copies and repeat is None:
