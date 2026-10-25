@@ -176,16 +176,23 @@ function Steps({ id }: { id: string }) {
 
   // The trail: this group's answers before the current screen, in the words review prints.
   const chips: Chip[] = group.slice(0, Math.max(at, 0)).filter((s) => s.rows.length > 0).flatMap((s) => {
-    const words = s.rows.map((r) => {
-      const v = valueOf(form, r.field, r.itemId, cur);
-      if (empty(v)) return null;
-      if (r.field.control === "building-picker" && typeof v === "string") return buildingLabel(form, cur, v);
-      return display(r.field, v, {});
-    }).filter((x): x is string => !!x);
+    const words = s.rows.map((r) => chipWords(r, valueOf(form, r.field, r.itemId, cur))).filter((x): x is string => !!x);
     if (!words.length) return [];
     const carried = s.rows.some((r) => app.answers.some((x) => x.field_id === r.field.id && x.item_id === r.itemId && x.carried));
     return [{ id: `${s.itemId ?? ""}|${s.id}`, text: words.join(", "), carried }];
   });
+  // A chip in the applicant's words: the tile they tapped ("A home…"), what they typed, and for a
+  // yes, a no or a number the short name of what it answers ("Lot Width (ft): 12 ft").
+  function chipWords(r: Row, v: unknown): string | null {
+    const f = r.field;
+    if (empty(v)) return null;
+    if (typeof v === "object" && v !== null && (v as { unknown?: unknown }).unknown) return `${f.official_label}: not known yet`;
+    if (f.control === "building-picker" && typeof v === "string") return buildingLabel(form!, cur!, v);
+    if (f.type === "choice") return f.options.find((o) => o.value === v)?.label ?? String(v);
+    if (f.type === "multichoice" && Array.isArray(v)) return v.map((x) => f.options.find((o) => o.value === x)?.label ?? x).join(", ");
+    if (f.type === "yesno" || f.type === "number") return `${f.official_label}: ${display(f, v, {})}`;
+    return display(f, v, {});
+  }
   const goChip = (key: string) => {
     const s = group.find((x) => `${x.itemId ?? ""}|${x.id}` === key);
     if (s) go(place(s), -1);

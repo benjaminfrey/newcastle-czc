@@ -8,7 +8,7 @@ export default function ActionBar({ actions, wide }: { actions: ShellActions; wi
   if (!actions.onContinue && !actions.back && !actions.dots) return null;
   if (wide) {
     return (
-      <div data-action-bar className="flex items-center justify-end gap-3 border-t border-[var(--app-separator)] px-8 py-4">
+      <div data-action-bar className="sticky bottom-0 z-10 flex items-center justify-end gap-3 border-t border-[var(--app-separator)] bg-[var(--app-ground)] px-8 py-4">
         {actions.dots && <div className="mr-auto">{actions.dots}</div>}
         {actions.back && <Button variant="secondary" className="min-h-11 min-w-24 text-[var(--app-label)]" onPress={actions.back}>Back</Button>}
         {actions.onContinue && (

@@ -179,16 +179,29 @@ export default function Where() {
     const answers = [facing("Yes, this is my property", true), facing("This doesn't look right", false), facing("No, search again", false)];
     return (
       <section className="pane-push flex flex-col items-center gap-3 py-6 text-center">
-        <p className="text-[13px] text-[var(--app-secondary-label)]">Here's what we found</p>
         <h2 tabIndex={-1} data-screen-title className="text-[22px] font-semibold leading-tight outline-none">Is this your property?</h2>
-        <div className="w-full max-w-xl overflow-hidden rounded-xl">
+        <div className="h-56 w-full max-w-xl overflow-hidden rounded-xl">
           <ParcelMap selected={facts.geometry ?? null} focus={focus} onPick={onPick} />
         </div>
+        {!disputing ? (
+          <ChoiceTiles field={{ id: "this_lot", label: "Is this your property?", official_label: "Is this your property?" } as FormField}
+                       value={null} choices={answers}
+                       onPick={(v) => (v === answers[0].value ? confirm(false) : v === answers[1].value ? setDisputing(true) : setFacts(null))} />
+        ) : (
+          <div className="flex w-full max-w-md flex-col gap-2 text-left">
+            <TextField value={note} onChange={setNote}>
+              <Label>What looks wrong?</Label>
+              <TextArea />
+              <Description>Staff will see this. You can still go on with your application.</Description>
+            </TextField>
+            <Button variant="primary" className="self-end" onPress={() => confirm(true)}>Save</Button>
+          </div>
+        )}
         <div className="w-full max-w-xl text-left">
           <InsetGroup footer={<>Lot lines from the Town's tax maps as of {longDate(facts.as_of.parcels)}. District from a tracing
             of the District Map. The Code Enforcement Officer confirms all of this when you apply.</>}>
             <InsetGroup.Row label="Map and lot"><span className="font-semibold">{mapLotLabel(facts.map_lot)}</span></InsetGroup.Row>
-            <InsetGroup.Row label="District"><span>{district_.text}</span></InsetGroup.Row>
+            <InsetGroup.Row label="District"><span>{district_.text.replace(/^District: /, "")}</span></InsetGroup.Row>
             {district_.staffWillConfirm && <InsetGroup.Row label="Note"><span>Part of this lot is in an area staff will confirm.</span></InsetGroup.Row>}
             {civic && (
               <InsetGroup.Row label="Civic land">
@@ -207,20 +220,6 @@ export default function Where() {
             ))}
           </InsetGroup>
         </div>
-        {!disputing ? (
-          <ChoiceTiles field={{ id: "this_lot", label: "Is this your property?", official_label: "Is this your property?" } as FormField}
-                       value={null} choices={answers}
-                       onPick={(v) => (v === answers[0].value ? confirm(false) : v === answers[1].value ? setDisputing(true) : setFacts(null))} />
-        ) : (
-          <div className="flex w-full max-w-md flex-col gap-2 text-left">
-            <TextField value={note} onChange={setNote}>
-              <Label>What looks wrong?</Label>
-              <TextArea />
-              <Description>Staff will see this. You can still go on with your application.</Description>
-            </TextField>
-            <Button variant="primary" className="self-end" onPress={() => confirm(true)}>Save</Button>
-          </div>
-        )}
       </section>
     );
   }

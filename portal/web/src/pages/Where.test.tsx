@@ -80,7 +80,7 @@ describe("Where", () => {
     });
     renderPage();
     await userEvent.click(screen.getByRole("button", { name: "tap the map" }));
-    expect(await screen.findByText(/District: Civic district \(Town-owned land\)/)).toBeInTheDocument();
+    expect(await screen.findByText(/^Civic district \(Town-owned land\)/)).toBeInTheDocument();
     expect(screen.getByText(/Only the Town builds on Civic land/)).toBeInTheDocument();
     expect(screen.getByText(/Town Meeting/)).toBeInTheDocument();
   });

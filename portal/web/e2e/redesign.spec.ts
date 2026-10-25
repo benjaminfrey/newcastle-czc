@@ -6,6 +6,11 @@ test("the wizard: one question at a time, chips and dots, no Why, the phone's Ba
   const base = new URL(page.url()).pathname.replace(/\/[a-z_]+$/, "");
   const pane = page.locator("[data-pane]").first();
 
+  // What "Do I need a permit?" asked arrives answered, and says so (the kind of work: a new building).
+  await page.goto(`${base}/the_work`);
+  await expect(page.getByText("Filled in from your answers at the start. Change it if you need to.")).toBeVisible();
+  await expect(page.locator('[role="checkbox"][aria-checked="true"]')).toHaveCount(1);
+
   // A typed question has Continue; the dots count the step's questions.
   await page.goto(`${base}/about_you?screen=applicant_name`);
   await expect(page.getByRole("img", { name: /^Question 1 of \d+$/ })).toBeVisible();
@@ -32,7 +37,10 @@ test("the wizard: one question at a time, chips and dots, no Why, the phone's Ba
 
   // Site-only work has no Buildings step (the chair's ruling, 2026-10-23).
   await page.goto(`${base}/the_work`);
-  for (const on of await page.locator('[role="checkbox"][aria-checked="true"]').all()) await on.click();
+  const ticked = page.locator('[role="checkbox"][aria-checked="true"]');
+  await expect(ticked).toHaveCount(1); // the carried "A new building", once the page has loaded
+  await ticked.first().click();
+  await expect(ticked).toHaveCount(0);
   await page.getByRole("checkbox", { name: /Work on the land/ }).click();
   await page.getByRole("button", { name: "Continue" }).click();
   await page.waitForTimeout(500);

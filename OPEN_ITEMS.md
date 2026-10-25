@@ -31,10 +31,14 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
   sheet's six questions on 2026-10-23, and the forms are drafts awaiting approval
   (`memos/2026-10-21-application-forms-for-approval.md`). The redesign (about ten steps, the macOS /
   iOS window, new controls; `specs/2026-10-23-applicant-portal-redesign.md`) is built on
-  `portal-design-pass`; it regrouped the forms and added four proposals, so the sheet was
-  regenerated and every entry is a draft again (128 entries). For M4 and the redesign:
-  - **For the chair:** approve the application forms (128 entries), including the redesign's steps,
-    controls and the four proposals.
+  `portal-design-pass` (PR #20), now one question at a time (`specs/2026-10-24-applicant-portal-wizard.md`);
+  it regrouped the forms, added five proposals and the wizard's screens, so the sheet was regenerated
+  and every entry is a draft (130 entries). For M4 and the redesign:
+  - **For the chair:** approve the application forms (130 entries), including the redesign's steps,
+    screens, controls and the five proposals — the fifth is the new "Which way does the front of the
+    building face?" question (and its addition twin), asked before the walls (chair's ruling
+    2026-10-24). Also on the sheet: "Where it joins the road" (was "meets"), and yes/no help
+    reworded for tiles ("Choose No if…").
   - **For the chair or the CEO:** check the exterior-finish chip list (clapboard, wood shingle,
     vinyl siding, fibre-cement, brick, stone, …, plus "Other") so its terms match what staff expect.
   - **For the chair (forms):** a building may have up to 10 stories, but the Building Form asks a

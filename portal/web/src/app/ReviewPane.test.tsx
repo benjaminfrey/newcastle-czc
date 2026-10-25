@@ -130,6 +130,18 @@ describe("ReviewPane", () => {
     expect(within(site).getByText("Map / Lot").closest("[data-row]")).toHaveTextContent("from the Town's maps");
   });
 
+  it("a typed value the map never had isn't called a change to the map", async () => {
+    const addr = q("street_address", "Street Address", { source: "property", from: "location", may_correct: true });
+    vi.spyOn(apps, "getForm").mockResolvedValue({ ...FORM, sections: FORM.sections.map((s) => s.id === "site" ? { ...s, fields: [...s.fields, { ...addr, step: "your_lot" }] } : s) });
+    vi.spyOn(apps, "getApplication").mockResolvedValue({ ...APP, property: { ...APP.property, facts: { map_lot: "004-036", location: null } },
+                                                         answers: [...APP.answers, { field_id: "street_address", item_id: null, value: "12 Main St" }] });
+    open();
+    const site = await screen.findByRole("group", { name: "Site Information (existing)" });
+    const row = within(site).getByText("Street Address").closest("[data-row]")!;
+    expect(row).toHaveTextContent("12 Main St");
+    expect(row).not.toHaveTextContent(/map/);
+  });
+
   it("Still to answer links open the question's screen and come back", async () => {
     vi.spyOn(apps, "getApplication").mockResolvedValue({ ...APP, missing: [{ field_id: "lot_width", item_id: null }] });
     open();

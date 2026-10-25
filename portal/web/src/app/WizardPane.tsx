@@ -80,7 +80,7 @@ export function headingOf(s: Screen): string {
 }
 
 function helpOf(s: Screen): string | null {
-  if (s.kind === "setbacks") return "In feet, to the closest part of the building. The front is the side along the road. Not to scale.";
+  if (s.kind === "setbacks") return "In feet, to the closest part of the building.";
   if (s.kind === "walls") return "A rough share is fine, in steps of 5%. Most walls are between 10% and 30%.";
   if (s.kind === "another" || s.kind === "any") return null;
   return s.rows[0].field.help;
@@ -104,6 +104,7 @@ export default function WizardPane({ screen, editing, errorsRef, onPick, onConfi
   const street = ((cur?.property.streets as { name: string }[] | undefined) ?? [])[0]?.name ?? null;
   const row = screen.rows[0];
   const heading = headingOf(screen);
+  const carried = screen.rows.some((r) => app?.answers.some((x) => x.field_id === r.field.id && x.item_id === r.itemId && x.carried));
   const help = helpOf(screen);
 
   const body = (() => {
@@ -139,11 +140,12 @@ export default function WizardPane({ screen, editing, errorsRef, onPick, onConfi
         );
       }
       case "set":
+        // Values asked together sit side by side, each under its short name from the form.
         return (
-          <div className="flex w-full max-w-md flex-col gap-5 text-left">
-            {screen.rows.map((r, i) => (
+          <div className="grid w-full max-w-lg grid-cols-1 gap-4 text-left sm:grid-cols-2">
+            {screen.rows.map((r) => (
               <div key={rowKey(r)} className="flex flex-col gap-1.5">
-                {i > 0 && <p className="text-[15px]">{r.field.label ?? r.field.official_label}</p>}
+                <p className="text-[13px] text-[var(--app-secondary-label)]">{r.field.official_label}</p>
                 {control(r, { bare: true })}
               </div>
             ))}
@@ -156,7 +158,7 @@ export default function WizardPane({ screen, editing, errorsRef, onPick, onConfi
             <span>{words}</span>{control(by(s)!, { bare: true })}
           </div>) : null);
         return (
-          <div className="w-full max-w-xl">
+          <div className="w-full max-w-3xl">
             <LotDiagramLayout parcelId={app?.property.parcel_id ?? null} street={street}
                               sides={{ front: side("setback_front", `Front${street ? `, along ${street}` : ""}`), side1: side("setback_side_1", "One side"),
                                        side2: side("setback_side_2", "Other side"), rear: side("setback_rear", "Back") }} />
@@ -173,7 +175,7 @@ export default function WizardPane({ screen, editing, errorsRef, onPick, onConfi
           return <div className="flex flex-col gap-1 text-left"><span className="text-[15px]">{field.label}</span>{control(r, { bare: true, field })}</div>;
         };
         return (
-          <div className="w-full max-w-xl">
+          <div className="w-full max-w-3xl">
             <CompassLayout street={null} walls={{ north: wall("north"), east: wall("east"), south: wall("south"), west: wall("west") }} />
           </div>
         );
@@ -188,6 +190,9 @@ export default function WizardPane({ screen, editing, errorsRef, onPick, onConfi
       {screen.itemId && <p className="text-[13px] text-[var(--app-secondary-label)]">{itemLabel(form!, cur!, screen.itemId)}</p>}
       <h2 tabIndex={-1} data-screen-title className="max-w-[30ch] text-balance text-[22px] font-semibold leading-tight outline-none">{heading}</h2>
       <p className="mb-4 min-h-[1.25rem] max-w-[46ch] text-pretty text-[15px] text-[var(--app-secondary-label)]">{help ?? ""}</p>
+      {carried && (
+        <p className="-mt-2 mb-3 text-[13px] text-[var(--app-secondary-label)]">Filled in from your answers at the start. Change it if you need to.</p>
+      )}
       {body}
       {screen.unknown && screen.kind !== "confirm" && (
         <button type="button" onClick={onUnknown}

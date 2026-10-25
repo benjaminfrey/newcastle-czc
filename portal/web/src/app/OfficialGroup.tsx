@@ -49,6 +49,11 @@ type Props = {
 export default function OfficialGroup({ block, title, note, attachments, useNames, changeHref, onAddDetail }: Props) {
   const files = (f: FormField) => attachments.filter((a) => a.field_id === f.id && a.item_id === block.itemId);
   const { cur, form } = useApplication();
+  // The Town's map had a value for this field (a lot with no address on the map has none to change).
+  const mapKnew = (f: FormField) => {
+    const v = f.from ? (cur!.property as Record<string, unknown>)[f.from] : null;
+    return f.source !== "property" || (Array.isArray(v) ? v.length > 0 : v !== null && v !== undefined && v !== "");
+  };
   const changed = (fieldId: string) => cur!.answers.some((a) => a.field_id === fieldId && a.item_id === block.itemId);
   return (
     <InsetGroup title={title}
@@ -80,7 +85,7 @@ export default function OfficialGroup({ block, title, note, attachments, useName
               {asked(field) && field.type !== "upload" && unanswered(value)
                 ? <span className="text-[var(--app-destructive)]">Still to answer</span>
                 : <span>{field.type === "upload" ? "None added" : display(field, value, useNames)}</span>}
-              {fromMaps(field) && value !== null && (
+              {fromMaps(field) && value !== null && (mapKnew(field) || !changed(field.id)) && (
                 // A map value the applicant corrected is theirs, not the Town's: say which, for staff.
                 <span className="text-[13px] text-[var(--app-secondary-label)]">
                   {changed(field.id) ? " (you changed the map's value — staff confirm)" : " (from the Town's maps — staff confirm)"}

@@ -212,6 +212,19 @@ describe("the wizard", () => {
     await waitFor(() => expect(where()).toHaveTextContent("?screen=owner_name&return=review"));
   });
 
+  it("a carried answer says where it came from", async () => {
+    withApp({ answers: [{ ...a("applicant_name", "Ada"), carried: true }] });
+    open("/applications/abc/you?screen=applicant_name");
+    expect(await screen.findByText("Filled in from your answers at the start. Change it if you need to.")).toBeInTheDocument();
+  });
+
+  it("chips say what a yes, a no or a number answers", async () => {
+    withApp({ answers: [a("applicant_name", "Ada"), a("applicant_phone", "207"), a("applicant_is_owner", false)] });
+    open("/applications/abc/you?screen=owner_name");
+    expect(await screen.findByRole("button", { name: /^applicant_is_owner: No\./ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^Ada\./ })).toBeInTheDocument(); // typed words speak for themselves
+  });
+
   it("the walls name the front", async () => {
     withApp({ answers: [a("front_facing", "north", "b1")] });
     open("/applications/abc/buildings?screen=windows_north&item=b1");

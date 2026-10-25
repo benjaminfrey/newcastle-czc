@@ -124,32 +124,39 @@ form is new. `forms/answers.py` decides what applies, what is still missing and 
 `web/src/forms/applicability.ts` is its browser twin, and both are checked against
 `web/src/forms/form-fixtures.json`.
 
-**Steps, pages and controls.** A definition also says how the application is laid out, so each one
-runs in about ten steps (the redesign, `specs/2026-10-23-applicant-portal-redesign.md`):
+**Steps, screens and controls.** A definition also says how the application is asked: a few steps
+(the sidebar's sections), then one question per screen (the redesign and the wizard,
+`specs/2026-10-23-applicant-portal-redesign.md` and `specs/2026-10-24-applicant-portal-wizard.md`):
 
 - `steps` — the form's steps in order (the Cover Sheet's come first); a section or a field names its
   `step`, and a field's own wins. Every question must be on a step.
-- `pages` on a repeating section (a building, an addition) — the pages of its sheet, each with an
-  optional `layout`: `compass` (window shares around a plan of the walls) or `lot-diagram`
-  (setbacks around a drawing of the lot). Each of its questions names its `page`.
+- `screens` on a section and `screen` on its fields — fields asked together on one screen (deed
+  book and page; width and depth), each screen with an optional `layout`: `lot-diagram` (setbacks
+  around a drawing of the lot) or `compass` (window shares, the walls named from the way the front
+  faces). Every other question has a screen of its own.
+- `ask_first` — asked before the rest of its building or addition (a building's type), without
+  changing the printed form's order.
 - `control` — how a question is asked: `stepper`, `slider`, `switch`, `segmented`, `tiles`,
-  `picker`, `chips`, `building-picker`, `street-picker` or `building-type`; `step_size` for
-  sliders and steppers; `autocomplete` for the browser's autofill.
+  `picker`, `chips`, `building-picker`, `street-picker` or `building-type`, each only for the
+  question types it suits; `step_size` for sliders and steppers; `autocomplete` for the browser's
+  autofill. In the wizard every single choice (switches included) is tiles that answer at a tap.
 - `default` — a value set when the application (or item) is created, saved as the form's
-  (`set_by = form-default`), so a switch can start on.
-- `add_options` on a repeat — the choices under "Add a building", each with a `preset` of answers
-  (a detached garage is a building with its class already set).
+  (`set_by = form-default`).
 
-The loader checks every one of these (unknown steps, pages, controls, layouts; defaults and presets
-that would fail their own field's check), and the forms sheet prints them for the chair.
+The loader checks every one of these (unknown steps, screens, controls, layouts; a control on the
+wrong type; defaults that would fail their own field's check), and the forms sheet prints them for
+the chair. What "Do I need a permit?" already asked (the kind of work, a new building's floor area
+and homes) is saved into a new application as `set_by = screener`, and shows as carried over.
 
-**The window.** The web app draws an application as a macOS / iOS window (`web/src/shell/`): on a
-desktop, a sidebar of the steps with checkmarks, a toolbar with Saving… / Saved and Done, and Back
-and Continue at the bottom right (⌘↑/↓ or ⌥↑/↓ move between steps); on a phone, a navigation stack
-— the step list, then each step with a ‹ back chevron and a Continue bar. Buildings and additions
-open as sheets with page dots. Answers save as they are given (`app/ApplicationStore.tsx`);
-Continue waits for the saves. Light and dark follow the device. The design system is recorded in
-`web/DESIGN.md`.
+**The window.** The web app draws an application as a macOS / iOS window (`web/src/shell/`), one
+question at a time (`web/src/forms/screens.ts`, `web/src/app/WizardPane.tsx`): a single choice
+answers at a tap and moves on; typed answers have Continue (Return presses it). Answers stack as
+chips above the question (a tap goes back to it), and plain dots below show where you are in the
+section, or in a building. Buildings and additions run inline, ending with "Is there another?". On a
+desktop a sidebar lists the sections with checkmarks; on a phone ‹ Back goes to the last question and
+Steps to the list. Review shows each question as asked with Change, which comes back to review.
+Answers save as they are given (`app/ApplicationStore.tsx`); Continue waits for the saves. Light and
+dark follow the device. The design system is recorded in `web/DESIGN.md`.
 
 **Approval.** Every entry starts as `status: draft`; production refuses a form with any draft in it
 (`503 form_not_approved`), as for the screener. The record for the chair:

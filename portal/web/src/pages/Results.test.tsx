@@ -69,7 +69,7 @@ describe("Results", () => {
   it("shows the fee line", async () => {
     vi.spyOn(api, "runScreener").mockResolvedValue(RESULT);
     renderPage();
-    expect(await screen.findByText(/Set by the Town's fee schedule/)).toBeInTheDocument();
+    expect((await screen.findAllByText(/Set by the Town's fee schedule/)).length).toBeGreaterThan(0);
   });
 
   it("says when answers aren't approved yet", async () => {
@@ -96,7 +96,18 @@ describe("Results", () => {
   it("says 'you may need' when the answer isn't certain", async () => {
     vi.spyOn(api, "runScreener").mockResolvedValue({ ...RESULT, outcomes: [{ ...USE_PERMIT, certainty: "may_need" }] });
     renderPage();
-    expect(await screen.findByText("You may need this.")).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: /^You may need a Use Permit/ })).toBeInTheDocument();
+    expect(screen.queryByText("You may need this.")).not.toBeInTheDocument(); // the title says it
+  });
+
+  it("the answer, then reviewer, fees and lot, with no talk of the Code", async () => {
+    vi.spyOn(api, "runScreener").mockResolvedValue({ ...RESULT, outcomes: [USE_PERMIT] });
+    renderPage();
+    const block = await screen.findByRole("region", { name: "Use Permit" });
+    expect(block).toHaveTextContent("Reviewed by");
+    expect(block).toHaveTextContent("Fees");
+    expect(block).toHaveTextContent("Your lot");
+    expect(document.body.textContent).not.toMatch(/The Code calls for this|Time the Code gives/);
   });
 
   it("never says nothing is needed beside a caveat", async () => {

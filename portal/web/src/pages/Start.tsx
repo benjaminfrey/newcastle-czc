@@ -161,7 +161,7 @@ export default function Start() {
     <Form onSubmit={onContinue} className="flex flex-col">
       <AnswerTrail chips={chips} onGo={(id) => { setDir(-1); setError(null); setAt(list.findIndex((s) => s.id === id)); }} />
       <section key={screen.id} className={`flex flex-col items-center gap-2 py-8 text-center ${dir < 0 ? "pane-pull" : "pane-push"}`}>
-        {i === 0 && <p className="mb-2 max-w-[46ch] text-[15px] text-[var(--app-secondary-label)]">Answer a few questions and we'll tell you what the Town's Code calls for. It takes a couple of minutes.</p>}
+        {i === 0 && <p className="mb-2 max-w-[46ch] text-[15px] text-[var(--app-secondary-label)]">Answer a few questions and we'll tell you which permit you need. It takes a couple of minutes.</p>}
         <h2 tabIndex={-1} data-screen-title className="max-w-[30ch] text-balance text-[22px] font-semibold leading-tight outline-none">{heading}</h2>
         <p className="mb-4 min-h-[1.25rem] max-w-[46ch] text-pretty text-[15px] text-[var(--app-secondary-label)]">{ASK[screen.id][1] ?? ""}</p>
         {body}
