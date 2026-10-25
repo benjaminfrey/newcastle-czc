@@ -83,6 +83,18 @@ def new_item(conn: Connection, app_id: str, form: FormDef, kind: str) -> str:
     return item_id
 
 
+COPIED = "copied"
+
+
+def copy_item_answers(conn: Connection, app_id: str, form: FormDef, source_id: str, item_id: str) -> None:
+    """"Copy Building 1": the source item's current answers to the form's `copies` questions,
+    unknowns included, blanks not."""
+    have = answers(conn, app_id)
+    changes = [(f.id, item_id, have[(f.id, source_id)]) for _, f in form.fields()
+               if f.copies and (f.id, source_id) in have]
+    save_answers(conn, app_id, changes, COPIED)
+
+
 def bump(conn: Connection, app_id: str, base_revision: int) -> int | None:
     """Advance the revision if it is still `base_revision`; None if another save got there first."""
     return conn.execute(text(

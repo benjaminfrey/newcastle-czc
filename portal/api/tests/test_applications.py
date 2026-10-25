@@ -367,3 +367,83 @@ def test_an_edited_answer_is_not_carried(alice):
     assert save(alice, app_id, [{"field_id": "floor_area", "item_id": b1["id"], "value": 900}]).status_code == 200
     a = answers_by(get(alice, app_id))[("floor_area", b1["id"])]
     assert a["value"] == 900 and a["carried"] is False
+
+
+# ---- Copy Building 1 (task-list brief, section 6) ----
+
+def spp_fields(client):
+    form = client.get("/api/forms/small_project_plan").json()
+    return {f["id"]: f for s in form["sections"] for f in s["fields"]}
+
+
+def building_one(client):
+    app_id = create(client, form_key="small_project_plan")
+    body = get(client, app_id)
+    (b1,) = [i for i in body["items"] if i["kind"] == "building"]
+    return app_id, b1["id"]
+
+
+def copy_into(client, app_id, kind="building", source=None, base=None):
+    base = get(client, app_id)["revision"] if base is None else base
+    return client.post(f"/api/applications/{app_id}/items", json={"kind": kind, "base_revision": base, "copy_from": source})
+
+
+def test_copy_brings_exactly_the_copies_fields(alice):
+    app_id, b1 = building_one(alice)
+    fields = spp_fields(alice)
+    changes = [{"field_id": "building_class", "item_id": b1, "value": "residential_accessory"},
+               {"field_id": "mass_width", "item_id": b1, "value": 24},
+               {"field_id": "roof_style", "item_id": b1, "value": fields["roof_style"]["options"][0]["value"]},
+               {"field_id": "building_name", "item_id": b1, "value": "Garage"},
+               {"field_id": "setback_front", "item_id": b1, "value": 30}]
+    assert save(alice, app_id, changes).status_code == 200
+    r = copy_into(alice, app_id, source=b1)
+    assert r.status_code == 201, r.text
+    b2 = r.json()["id"]
+    got = answers_by(get(alice, app_id))
+    copied = {f for (f, i), a in got.items() if i == b2 and a["value"] != fields[f].get("default")}
+    assert copied == {"building_class", "mass_width", "roof_style"}
+    assert all(fields[f]["copies"] for f in copied)
+    assert got[("mass_width", b2)]["value"] == 24
+
+
+def test_copy_keeps_unknowns_and_skips_blanks(alice):
+    app_id, b1 = building_one(alice)
+    fields = spp_fields(alice)
+    unknowable = next(fid for fid, f in fields.items() if f.get("copies") and f["allow_unknown"])
+    assert save(alice, app_id, [{"field_id": unknowable, "item_id": b1, "value": {"unknown": True}}]).status_code == 200
+    b2 = copy_into(alice, app_id, source=b1).json()["id"]
+    got = answers_by(get(alice, app_id))
+    assert got[(unknowable, b2)]["value"] == {"unknown": True}
+    assert ("mass_depth", b2) not in got
+
+
+def test_copy_from_another_application_is_404(alice):
+    other_app, other_b1 = building_one(alice)
+    app_id, _ = building_one(alice)
+    assert copy_into(alice, app_id, source=other_b1).status_code == 404
+    assert copy_into(alice, app_id, source="not-a-uuid").status_code == 404
+
+
+def test_copy_from_a_component_into_buildings_is_422(alice):
+    app_id, _ = building_one(alice)
+    r = alice.post(f"/api/applications/{app_id}/items", json={"kind": "component", "base_revision": get(alice, app_id)["revision"]})
+    comp = r.json()["id"]
+    r = copy_into(alice, app_id, source=comp)
+    assert r.status_code == 422 and r.json()["detail"] == "wrong_kind"
+
+
+def test_copy_at_the_maximum_is_422_too_many(alice):
+    app_id, b1 = building_one(alice)
+    for _ in range(19):
+        assert copy_into(alice, app_id).status_code == 201
+    r = copy_into(alice, app_id, source=b1)
+    assert r.status_code == 422 and r.json()["detail"] == "too_many"
+
+
+def test_copy_writes_nothing_when_refused(alice, engine):
+    app_id, b1 = building_one(alice)
+    before = get(alice, app_id)
+    assert copy_into(alice, app_id, source="00000000-0000-0000-0000-000000000000").status_code == 404
+    after = get(alice, app_id)
+    assert after["items"] == before["items"] and after["answers"] == before["answers"] and after["revision"] == before["revision"]

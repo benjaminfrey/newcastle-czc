@@ -150,10 +150,10 @@ export function saveAnswers(id: string, baseRevision: number, changes: Change[])
   return write(`/api/applications/${id}/answers`, "PUT", { base_revision: baseRevision, changes });
 }
 
-// preset: which of the repeat's add options (e.g. "A detached garage or shed") to start from.
-export async function addItem(id: string, baseRevision: number, kind: string, preset?: number): Promise<SaveResult & { id?: string } | SaveResult> {
+// A new building or addition; with `copyFrom`, "Copy Building 1" (that item's copied answers come too).
+export async function addItem(id: string, baseRevision: number, kind: string, copyFrom?: string): Promise<SaveResult & { id?: string } | SaveResult> {
   const r = await call(`/api/applications/${id}/items`, { method: "POST", headers: json,
-    body: JSON.stringify({ kind, base_revision: baseRevision, ...(preset === undefined ? {} : { preset }) }) });
+    body: JSON.stringify({ kind, base_revision: baseRevision, ...(copyFrom === undefined ? {} : { copy_from: copyFrom }) }) });
   const no = await refused(r);
   if (no) return no;
   if (r!.status === 409) return { conflict: ((await r!.json()) as { revision: number }).revision };

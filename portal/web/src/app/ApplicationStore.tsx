@@ -25,7 +25,7 @@ type Store = {
   saveState: SaveState;
   setAnswer: (fieldId: string, itemId: string | null, value: unknown) => Promise<SetOutcome>;
   flush: () => Promise<boolean>; // true when every change has reached the server
-  addItem: (kind: string, preset?: number) => Promise<string | null>;
+  addItem: (kind: string, copyFrom?: string) => Promise<string | null>;
   removeItem: (itemId: string) => Promise<boolean>;
   saveNote: (sectionId: string, itemId: string | null, text: string) => Promise<boolean>;
   reload: () => Promise<void>;
@@ -178,16 +178,16 @@ export function ApplicationProvider({ id, children }: { id: string; children: Re
     return () => window.removeEventListener("beforeunload", warn);
   }, []);
 
-  const addItem = useCallback((kind: string, preset?: number) => enqueue(async () => {
+  const addItem = useCallback((kind: string, copyFrom?: string) => enqueue(async () => {
     if (stopped.current) return null;
-    const r = await apiAddItem(id, revision.current, kind, preset);
+    const r = await apiAddItem(id, revision.current, kind, copyFrom);
     if (typeof r === "object" && "conflict" in r) {
       stopped.current = true;
       setSaveState("conflict");
       return null;
     }
     if (typeof r === "string" || !("revision" in r)) return null;
-    await load(); // the new item arrives with its defaults and preset answers
+    await load(); // the new item arrives with its defaults, and a copy with its copied answers
     return (r as { id?: string }).id ?? null;
   }), [enqueue, id, load]);
 

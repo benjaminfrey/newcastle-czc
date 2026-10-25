@@ -303,6 +303,7 @@ def save_answers(app_id: str, body: AnswersBody, applicant: auth.Applicant = aut
 class ItemBody(BaseModel):
     kind: str = PField(max_length=40)
     base_revision: int
+    copy_from: str | None = PField(default=None, max_length=40)  # "Copy Building 1": the item to copy
 
 
 class RevisionBody(BaseModel):
@@ -322,14 +323,26 @@ def add_item(app_id: str, body: ItemBody, applicant: auth.Applicant = auth.requi
     repeat = _repeat(form, body.kind)
     if repeat is None:
         return _json(422, "unknown_kind")
-    if sum(1 for i in apps.items(conn, row.id) if i["kind"] == body.kind) >= repeat.max:
+    live = apps.items(conn, row.id)
+    source = None
+    if body.copy_from is not None:
+        # Checked before anything is written: a live item of this application, of the same kind.
+        source = next((i for i in live if i["id"] == apps.parse_id(body.copy_from)), None)
+        if source is None:
+            return _NOT_FOUND()
+        if source["kind"] != body.kind:
+            return _json(422, "wrong_kind")
+    if sum(1 for i in live if i["kind"] == body.kind) >= repeat.max:
         return _json(422, "too_many")
     rev = apps.bump(conn, row.id, body.base_revision)
     if rev is None:
         return _conflict(conn, row.id)
     item_id = apps.new_item(conn, row.id, form, body.kind)
+    if source is not None:
+        apps.copy_item_answers(conn, row.id, form, source["id"], item_id)
     append_event(conn, actor=_actor(applicant), kind="application.item_added",
-                 payload={"application_id": row.id, "item_id": item_id, "kind": body.kind})
+                 payload={"application_id": row.id, "item_id": item_id, "kind": body.kind,
+                          **({"copied_from": source["id"]} if source else {})})
     return {"id": item_id, "revision": rev}
 
 
