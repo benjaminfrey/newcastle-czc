@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Task list comp</title>
+<!-- The reference comp for specs/2026-10-25-applicant-portal-task-list.md, as the chair saw it on
+     2026-10-25, with the widget's colours mapped to the portal's own tokens (portal/web/src/index.css). -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+:root{--ground:#F2F2F7;--row:#FFFFFF;--sep:#C6C6C8;--edge:#AEAEB2;--label:#1C1C1E;--label2:#636366;--accent-text:#0C727E;--selection:#DCEFF1;
+  --done-bg:#E3F5E6;--done-text:#1B7A31;--fill:#EEEEF0;--danger:#D70015;--field:#EEEEF0}
+@media (prefers-color-scheme:dark){:root{--ground:#000000;--row:#1C1C1E;--sep:#38383A;--edge:#545458;--label:#F2F2F7;--label2:#AEAEB2;--accent-text:#4CC9D8;--selection:#123C42;
+  --done-bg:#12341B;--done-text:#6FD089;--fill:#3A3A3C;--danger:#FF6961;--field:#2C2C2E}}
+*{box-sizing:border-box}
+body{margin:0;padding:24px 16px;background:var(--ground);color:var(--label);font:15px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
+main{max-width:680px;margin:0 auto}
+button{font:inherit;color:var(--label);background:transparent;border:0.5px solid var(--edge);border-radius:8px;padding:7px 14px;cursor:pointer;min-height:36px}
+input{font:inherit;color:var(--label);background:var(--field);border:0;border-radius:8px;padding:0 10px;height:36px}
+.fr{background:var(--ground);padding:14px 0;margin:0 0 14px}
+.lb{font-size:12px;color:var(--label2);margin:0 0 8px;display:flex;gap:6px;align-items:center}
+.cd{background:var(--row);border:0.5px solid var(--sep);border-radius:12px;overflow:hidden}
+.hd{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:0.5px solid var(--sep);font-size:13px;color:var(--label2)}
+.bar{flex:1;display:flex;gap:3px}.bar i{flex:1;height:3px;border-radius:2px;background:var(--edge)}.bar i.on{background:var(--label)}
+.bd{padding:22px 24px 18px;text-align:center}
+.q{font-size:20px;font-weight:500;margin:0;line-height:1.3}.h{font-size:13px;color:var(--label2);margin:4px 0 16px}
+.tl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-width:500px;margin:0 auto;text-align:left}
+.t{display:flex;gap:10px;align-items:center;padding:10px 12px;border:0.5px solid var(--edge);border-radius:8px;font-size:14px;min-height:48px}
+.t i{font-size:18px;color:var(--label2)}.t.on{border:1.5px solid var(--label);padding:9.5px 11.5px}.t.on i{color:var(--label)}
+.ft{display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:0.5px solid var(--sep)}
+.row{display:flex;align-items:center;gap:12px;padding:11px 16px;border-top:0.5px solid var(--sep);font-size:14px}
+.row:first-child{border-top:0}.row .g{flex:1;min-width:0}.row small{display:block;font-size:12px;color:var(--label2)}
+.row>i{font-size:18px}
+.tag{font-size:12px;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.f{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 14px;align-items:center;max-width:380px;margin:0 auto;text-align:left;font-size:14px}
+.f input{width:110px;text-align:right}
+.lk{color:var(--accent-text);font-size:13px;border:0;padding:4px;min-height:0}
+.pri{background:var(--label);color:var(--row);border-color:var(--label)}
+</style>
+</head>
+<body>
+<main>
+<div class="fr">
+<p class="lb"><i class="ti ti-list-check" aria-hidden="true"></i>1 · The application is a short list of tasks</p>
+<div class="cd">
+<div class="hd"><span style="color:var(--label);font-weight:500">Small Project Plan</span><span style="margin-left:auto">Map 4, Lot 36 · saved</span></div>
+<div>
+<div class="row"><i class="ti ti-map-2" aria-hidden="true"></i><div class="g">Your lot<small>Size, frontage and what is there now</small></div><span class="tag" style="background:var(--done-bg);color:var(--done-text)">Done</span></div>
+<div class="row"><i class="ti ti-user" aria-hidden="true"></i><div class="g">About you and the owner</div><span class="tag" style="background:var(--done-bg);color:var(--done-text)">Done</span></div>
+<div class="row"><i class="ti ti-hammer" aria-hidden="true"></i><div class="g">The work<small>What you are building, and a sketch</small></div><span class="tag" style="background:var(--selection);color:var(--accent-text)">2 of 4</span></div>
+<div class="row"><i class="ti ti-building-cottage" aria-hidden="true"></i><div class="g">Buildings<small>One short set of questions for each</small></div><span class="tag" style="background:var(--fill);color:var(--label2)">Not started</span></div>
+<div class="row"><i class="ti ti-stairs" aria-hidden="true"></i><div class="g">Additions, porches and decks</div><span class="tag" style="background:var(--fill);color:var(--label2)">Not started</span></div>
+<div class="row" style="color:var(--label2)"><i class="ti ti-signature" aria-hidden="true"></i><div class="g">Check and send<small>Opens when the tasks above are done</small></div></div>
+</div>
+</div>
+</div>
+
+<div class="fr">
+<p class="lb"><i class="ti ti-square-rounded-check" aria-hidden="true"></i>2 · One decision per card, contained, with icons</p>
+<div class="cd">
+<div class="hd"><span>The work</span><div class="bar"><i class="on"></i><i class="on"></i><i></i><i></i></div><span>2 of 4</span></div>
+<div class="bd">
+<p class="q">What kind of building work?</p><p class="h">Choose one.</p>
+<div class="tl">
+<button class="t on"><i class="ti ti-building-cottage" aria-hidden="true"></i>A new building</button>
+<button class="t"><i class="ti ti-home-plus" aria-hidden="true"></i>An addition</button>
+<button class="t"><i class="ti ti-paint" aria-hidden="true"></i>Renovating, same size</button>
+<button class="t"><i class="ti ti-shovel" aria-hidden="true"></i>Work on the land only</button>
+</div>
+</div>
+<div class="ft"><button>Back</button><span style="margin-left:auto;font-size:13px;color:var(--label2)">A tap moves on</span></div>
+</div>
+</div>
+
+<div class="fr">
+<p class="lb"><i class="ti ti-layout-rows" aria-hidden="true"></i>3 · Questions that belong together share a card</p>
+<div class="cd">
+<div class="hd"><span>Building 1 · A home</span><div class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div><span>3 of 6</span></div>
+<div class="bd">
+<p class="q">How big is the building?</p><p class="h">In feet. A builder's plan has these.</p>
+<div class="f">
+<span>Width</span><input type="number" value="28" aria-label="Width in feet">
+<span>Depth</span><input type="number" value="40" aria-label="Depth in feet">
+<span>Floors above ground</span><span style="display:flex;align-items:center;gap:8px"><button aria-label="One fewer floor">−</button><span style="min-width:16px;text-align:center">2</span><button aria-label="One more floor">+</button></span>
+</div>
+<div class="f" style="margin-top:10px;padding-top:10px;border-top:0.5px solid var(--sep)">
+<span>First floor height</span><input type="number" value="10" aria-label="First floor height in feet">
+<span>Second floor height</span><input type="number" value="9" aria-label="Second floor height in feet">
+</div>
+<button class="lk" style="margin-top:12px">I don't know some of these yet</button>
+</div>
+<div class="ft"><button>Back</button><button class="pri" style="margin-left:auto">Continue</button></div>
+</div>
+</div>
+
+<div class="fr">
+<p class="lb"><i class="ti ti-copy-check" aria-hidden="true"></i>4 · Each building ends on a check, then add another</p>
+<div class="cd">
+<div class="hd"><span>Buildings</span><span style="margin-left:auto">2 added</span></div>
+<div>
+<div class="row"><i class="ti ti-building-cottage" aria-hidden="true"></i><div class="g">Building 1 · A home<small>28 × 40 ft · 2 floors · 2,240 sq ft · front faces north</small></div><button class="lk">Change</button><button class="lk" style="color:var(--danger)">Delete</button></div>
+<div class="row"><i class="ti ti-building-warehouse" aria-hidden="true"></i><div class="g">Building 2 · Garage<small>24 × 24 ft · 1 floor · 3 answers to go</small></div><button class="lk">Finish</button><button class="lk" style="color:var(--danger)">Delete</button></div>
+</div>
+<div class="ft"><button><i class="ti ti-plus" aria-hidden="true"></i> Add a building</button><button><i class="ti ti-copy" aria-hidden="true"></i> Copy Building 1</button><button style="margin-left:auto">Done with buildings</button></div>
+</div>
+</div>
+</main>
+</body>
+</html>
