@@ -52,13 +52,27 @@ function screen(step: string, itemId: string | null, kind: ScreenKind, rows: Row
            unknown: rows.length > 0 && rows.every((r) => r.field.allow_unknown) };
 }
 
-function build(cur: Current, rows: Row[], step: string, itemId: string | null): Screen[] {
+// The drawing a card sits around: its screen may be declared by any section of its repeat.
+function layoutOf(form: FormDef, row: Row, g: string): string | null {
+  const kind = row.section.repeat?.kind ?? null;
+  for (const s of form.sections) {
+    if ((s.repeat?.kind ?? null) !== kind) continue;
+    const found = s.screens?.find((x) => x.id === g);
+    if (found) return found.layout;
+  }
+  return null;
+}
+
+// A step's (or one item's) questions as cards: a question alone, or the questions that share a
+// `screen` — gathered across sections (a building's name and its homes) — placed where the first
+// of them is asked.
+export function buildCards(form: FormDef, cur: Current, rows: Row[], step: string, itemId: string | null): Screen[] {
   const out: Screen[] = [];
   const groups = new Map<string, Screen>();
   for (const r of rows) {
     const g = r.field.screen;
     if (g) {
-      const key = `${r.section.id}:${g}`;
+      const key = g;
       const open = groups.get(key);
       if (open) {
         open.rows.push(r);
@@ -66,7 +80,7 @@ function build(cur: Current, rows: Row[], step: string, itemId: string | null): 
         open.unknown &&= r.field.allow_unknown;
         continue;
       }
-      const layout = r.section.screens?.find((x) => x.id === g)?.layout ?? null;
+      const layout = layoutOf(form, r, g);
       const s = screen(step, itemId, layout === "lot-diagram" ? "setbacks" : layout === "compass" ? "walls" : "set", [r]);
       groups.set(key, s);
       out.push(s);
@@ -77,18 +91,21 @@ function build(cur: Current, rows: Row[], step: string, itemId: string | null): 
   return out;
 }
 
+// An item's questions in asking order: ask-first ones by rank (the building's type, then whether
+// it's only being renovated), then the rest in the form's order.
+const rank = (r: Row) => Number(r.field.ask_first ?? 0);
+export function itemRows(step: StepModel, itemId: string): Row[] {
+  const rows = step.rows.filter((r) => r.itemId === itemId);
+  return [...rows.filter((r) => rank(r) > 0).sort((x, y) => rank(x) - rank(y)), ...rows.filter((r) => rank(r) === 0)];
+}
+
 export function screensOf(form: FormDef, cur: Current, step: StepModel): Screen[] {
-  void form;
-  if (step.kind !== "hub" || !step.hub) return build(cur, step.rows, step.id, null);
+  if (step.kind !== "hub" || !step.hub) return buildCards(form, cur, step.rows, step.id, null);
   const kind = step.hub.kind;
   const items = step.hub.items;
   if (items.length === 0) return [screen(step.id, null, "any", [], `any:${kind}`)];
   const out: Screen[] = [];
-  for (const item of items) {
-    const rows = step.rows.filter((r) => r.itemId === item.id);
-    const ordered = [...rows.filter((r) => r.field.ask_first), ...rows.filter((r) => !r.field.ask_first)];
-    out.push(...build(cur, ordered, step.id, item.id));
-  }
+  for (const item of items) out.push(...buildCards(form, cur, itemRows(step, item.id), step.id, item.id));
   out.push(screen(step.id, items[items.length - 1].id, "another", [], `another:${kind}`));
   return out;
 }

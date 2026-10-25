@@ -1,7 +1,7 @@
 import {
   IconArmchair, IconArrowDown, IconArrowLeft, IconArrowRight, IconArrowUp, IconBuilding, IconBuildingCottage,
-  IconBuildingStore, IconBuildingWarehouse, IconCarGarage, IconCopy, IconDots, IconFileAlert, IconHammer, IconHelpCircle,
-  IconHome, IconHomePlus, IconLayoutGrid, IconMap2, IconPaint, IconPhoto, IconPlus, IconRoad, IconShovel, IconSignature,
+  IconBuildingStore, IconBuildingWarehouse, IconCarGarage, IconCopy, IconDots, IconEye, IconFileAlert, IconFileCertificate, IconHammer, IconHelpCircle,
+  IconHome, IconHomePlus, IconLayoutGrid, IconMap2, IconMapPin, IconPaint, IconPhoto, IconPlus, IconRoad, IconShovel, IconSignature,
   IconSquare, IconStairs, IconTractor, IconUser, type Icon as TablerIcon,
 } from "@tabler/icons-react";
 
@@ -12,8 +12,8 @@ const ICONS: Record<string, TablerIcon> = {
   "armchair": IconArmchair, "arrow-down": IconArrowDown, "arrow-left": IconArrowLeft, "arrow-right": IconArrowRight,
   "arrow-up": IconArrowUp, "building": IconBuilding, "building-cottage": IconBuildingCottage,
   "building-store": IconBuildingStore, "building-warehouse": IconBuildingWarehouse, "car-garage": IconCarGarage,
-  "copy": IconCopy, "dots": IconDots, "file-alert": IconFileAlert, "hammer": IconHammer, "help-circle": IconHelpCircle,
-  "home": IconHome, "home-plus": IconHomePlus, "layout-grid": IconLayoutGrid, "map-2": IconMap2, "paint": IconPaint,
+  "copy": IconCopy, "dots": IconDots, "eye": IconEye, "file-alert": IconFileAlert, "file-certificate": IconFileCertificate, "hammer": IconHammer, "help-circle": IconHelpCircle,
+  "home": IconHome, "home-plus": IconHomePlus, "layout-grid": IconLayoutGrid, "map-2": IconMap2, "map-pin": IconMapPin, "paint": IconPaint,
   "photo": IconPhoto, "plus": IconPlus, "road": IconRoad, "shovel": IconShovel, "signature": IconSignature,
   "square": IconSquare, "stairs": IconStairs, "tractor": IconTractor, "user": IconUser,
 };
