@@ -5,7 +5,7 @@ import { valueOf, type Row } from "../forms/applicability";
 import { groupOf, place, screenAfter, screenBefore, screensOf, type Place, type Screen } from "../forms/screens";
 import { itemLabel, REVIEW_STEP, START_STEPS, statusOf, stepModels } from "../forms/steps";
 import { buildingLabel } from "../controls/pickers";
-import AppShell from "../shell/AppShell";
+import AppShell from "../shell/LegacyShell";
 import { commitFocused } from "../shell/commitFocused";
 import type { ShellStep } from "../shell/types";
 import { useWideLayout } from "../shell/useWideLayout";

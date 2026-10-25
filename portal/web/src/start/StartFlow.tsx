@@ -3,7 +3,7 @@ import { START_STEPS } from "../forms/steps";
 import { loadProperty } from "../property";
 import { loadAnswers } from "../screener";
 import SignInForm from "../components/SignInForm";
-import AppShell from "../shell/AppShell";
+import AppShell from "../shell/LegacyShell";
 import type { ShellStep } from "../shell/types";
 
 const PATHS: Record<string, string> = { project: "/start", property: "/start/property", needs: "/start/needs" };

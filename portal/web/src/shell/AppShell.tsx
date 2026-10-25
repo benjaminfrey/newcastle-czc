@@ -1,126 +1,79 @@
-import { useEffect, useRef, type FormEvent, type PointerEvent, type ReactNode } from "react";
-import { commitFocused, isLongText } from "./commitFocused";
-import { useNavigate } from "react-router";
-import ActionBar from "./ActionBar";
-import NavBar from "./NavBar";
-import StepList from "./StepList";
-import StepSidebar from "./StepSidebar";
-import Toolbar from "./Toolbar";
-import type { SaveState, ShellActions, ShellStep } from "./types";
+import type { ReactNode } from "react";
+import { Link } from "react-router";
+import { commitFocused } from "./commitFocused";
+import TaskList, { type TaskRow } from "./TaskList";
+import { SaveStatus } from "./Toolbar";
+import type { SaveState } from "./types";
 import { useWideLayout } from "./useWideLayout";
 
 type Props = {
-  steps: ShellStep[];
-  currentId: string | null; // null: the phone's root list (on a desktop, the first step's pane)
-  formTitle: string;
-  saveState: SaveState;
-  rootHref: string;
-  onDone?: () => void;
+  tasks: TaskRow[]; send: { href: string; open: boolean };
+  formTitle: string; mapLot: string | null; saveState: SaveState;
+  home: string;            // the task list's address
+  inTask: boolean;         // a card is showing; otherwise the task list is the page
+  onDone: () => void;      // Save and close
   onReload?: () => void;
-  onStep?: (id: string) => void; // ⌥⌘↑ / ⌥⌘↓
-  actions?: ShellActions;
-  backLabel?: string; // the phone's ‹ chevron: "Application", or "Home" for the start steps
-  // The wizard: the answer trail above the pane, one pane per question keyed and slid by direction,
-  // what a screen reader hears on arriving, and the phone's ‹ Back to the previous question.
-  trail?: ReactNode;
-  paneKey?: string;
-  direction?: 1 | -1;
-  announce?: string;
-  phoneBack?: () => void;
-  children?: ReactNode;
+  children?: ReactNode;    // the card
 };
 
-// The application window: on a desktop, a sidebar of steps beside the content pane (toolbar,
-// content, Back and Continue); on a phone, a list of steps that pushes each step in. The
-// content sits in one form, so Return anywhere in a field means Continue.
-export default function AppShell({ steps, currentId, formTitle, saveState, rootHref, onDone, onReload, onStep, actions = {}, backLabel = "Application",
-  trail, paneKey, direction = 1, announce, phoneBack, children }: Props) {
+// The application window (task-list brief §4.1).
+// - Desktop: the task list in a 250 px sidebar under the Town seal, with Save and close; the
+//   card centred in the main area, 32 px from the top.
+// - Phone: in a task, a 44 px bar (‹ Tasks, the save status) over the card, which fills the screen
+//   in 12 px gutters with its footer at its foot; at home, the task list is the page.
+export default function AppShell({ tasks, send, formTitle, mapLot, saveState, home, inTask, onDone, onReload, children }: Props) {
   const wide = useWideLayout();
-  const navigate = useNavigate();
-  const flat = steps.flatMap((s) => [s, ...(s.children ?? [])]);
-  const current = flat.find((s) => s.id === currentId);
-  const reduced = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  // A step slides in on a phone and cross-fades on a desktop; with reduced motion, a short fade.
-  // In the wizard each question slides in sideways on both sizes, back the other way.
-  const motion = reduced ? "pane-fade" : paneKey ? (direction < 0 ? "pane-pull" : "pane-push") : wide ? "pane-cross" : "pane-push";
-  const top = steps.findIndex((s) => s.id === currentId || s.children?.some((c) => c.id === currentId));
-
-  // The iOS edge swipe: a drag that starts at the left edge and moves right goes back.
-  const swipe = useRef<number | null>(null);
-  const onPointerDown = (e: PointerEvent) => { swipe.current = !wide && e.clientX <= 20 ? e.clientX : null; };
-  const onPointerUp = (e: PointerEvent) => {
-    if (swipe.current !== null && e.clientX - swipe.current >= 80) {
-      commitFocused();
-      if (phoneBack) {
-        swipe.current = null;
-        return phoneBack();
-      }
-      navigate(rootHref);
-    }
-    swipe.current = null;
-  };
-
-  useEffect(() => {
-    if (!onStep || !currentId) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (!(e.altKey || e.metaKey) || (e.key !== "ArrowDown" && e.key !== "ArrowUp") || isLongText(e.target)) return;
-      const at = steps.findIndex((s) => s.id === currentId);
-      const next = steps[at + (e.key === "ArrowDown" ? 1 : -1)];
-      if (next) {
-        e.preventDefault();
-        commitFocused();
-        onStep(next.id);
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [steps, currentId, onStep]);
-
-  function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    commitFocused();
-    actions.onContinue?.();
-  }
-
-  if (!wide && !current) return <StepList steps={steps} title="Your application" subtitle={formTitle} />;
-
-  // A pane that brings its own form (the start steps) gets a plain container, never a nested form.
-  const cls = `flex flex-col gap-6 ${wide ? "px-8 py-6" : "px-4 pb-32 pt-2"}`;
-  const inner = actions.onContinue || actions.back || actions.dots ? (
-    <form onSubmit={onSubmit} noValidate className={cls}>
-      {children}
-      <ActionBar actions={actions} wide={wide} />
-    </form>
-  ) : <div className={cls}>{children}</div>;
-  const content = (
-    <div key={paneKey ?? currentId ?? "root"} data-pane className={motion} onPointerDown={onPointerDown} onPointerUp={onPointerUp}>
-      {inner}
-      {current && top >= 0 && (
-        <p data-testid="step-announcer" aria-live="polite" className="sr-only">
-          {announce ?? `Step ${top + 1} of ${steps.length}: ${current.title}`}
-        </p>
-      )}
-    </div>
+  const list = (compact: boolean) => (
+    <TaskList formTitle={formTitle} mapLot={mapLot} saveState={saveState} onReload={onReload} tasks={tasks} send={send} compact={compact} />
   );
 
-  if (!wide) {
+  if (wide) {
     return (
-      <div className="min-h-dvh bg-[var(--app-ground)]">
-        <NavBar title={current!.title} backHref={rootHref} backLabel={backLabel} saveState={saveState} onReload={onReload} onBack={phoneBack} />
-        {trail}
-        {content}
+      <div className="grid min-h-dvh grid-cols-[250px_minmax(0,1fr)] bg-[var(--app-grouped-ground)]">
+        <aside className="flex flex-col gap-4 border-r-[0.5px] border-[var(--app-separator)] px-[10px] py-4">
+          <div className="flex items-center gap-3 px-3">
+            <img src="/town-seal.png" alt="Town of Newcastle seal" className="size-10" width={40} height={40} />
+            <div className="min-w-0 leading-tight">
+              <p className="text-[13px] font-semibold">Town of Newcastle</p>
+              <p className="truncate text-[13px] text-[var(--app-secondary-label)]">{formTitle}</p>
+            </div>
+          </div>
+          <nav aria-label="Tasks">{list(true)}</nav>
+          <div className="mt-auto flex flex-wrap items-center gap-3 px-3">
+            <SaveStatus state={saveState} onReload={onReload} />
+            <button type="button" className="btn" onClick={() => { commitFocused(); onDone(); }}>Save and close</button>
+          </div>
+        </aside>
+        <main className="min-w-0 px-8 pb-8 pt-8">
+          {inTask ? children : list(false)}
+        </main>
+      </div>
+    );
+  }
+
+  const bar = "sticky top-0 z-10 flex h-11 items-center justify-between border-b-[0.5px] border-[var(--app-separator)] bg-[var(--app-grouped-ground)]/95 px-2 backdrop-blur";
+  if (!inTask) {
+    return (
+      <div className="min-h-dvh bg-[var(--app-grouped-ground)]">
+        <div className={bar}>
+          <button type="button" onClick={onDone} className="flex min-h-11 items-center px-2 text-[17px] text-[var(--app-accent-text)]">Save and close</button>
+        </div>
+        <main className="p-3">{list(false)}</main>
       </div>
     );
   }
   return (
-    <div className="grid min-h-dvh grid-cols-[17rem_1fr] bg-[var(--app-ground)]">
-      <aside className="border-r border-[var(--app-separator)] bg-[var(--app-grouped-ground)]">
-        <StepSidebar steps={steps} currentId={currentId} title={formTitle} />
-      </aside>
-      <main className="flex min-w-0 flex-col">
-        <Toolbar title={current?.title ?? formTitle} saveState={saveState} onDone={onDone} onReload={onReload} />
-        {trail}
-        <div className="mx-auto w-full max-w-3xl">{content}</div>
+    <div className="flex h-dvh flex-col bg-[var(--app-grouped-ground)]">
+      <div className={bar}>
+        <Link to={home} onClick={commitFocused} aria-label="Tasks" className="flex min-h-11 items-center gap-1 px-2 text-[17px] text-[var(--app-accent-text)]">
+          <span aria-hidden="true" className="text-[22px] leading-none">‹</span>Tasks
+        </Link>
+        <span className="px-2"><SaveStatus state={saveState} onReload={onReload} /></span>
+      </div>
+      <h1 className="sr-only">{formTitle}</h1>
+      <main className="flex min-h-0 flex-1 flex-col px-3 pt-3 [&>*]:min-h-0 [&>*]:flex-1"
+            style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}>
+        {children}
       </main>
     </div>
   );

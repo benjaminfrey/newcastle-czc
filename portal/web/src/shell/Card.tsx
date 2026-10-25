@@ -36,7 +36,8 @@ function Body({ motionKey, direction = 1, children, className }: {
 }) {
   const motion = motionKey === undefined ? "" : reduced() ? "pane-fade" : direction < 0 ? "pane-pull" : "pane-push";
   return (
-    <div key={motionKey} data-card-body data-pane className={`flex min-h-0 flex-1 flex-col items-center px-6 pb-[18px] pt-[22px] text-center ${motion} ${className ?? ""}`}>
+    // On a phone the card fills the screen, so a long body scrolls between the header and footer.
+    <div key={motionKey} data-card-body data-pane className={`flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-6 pb-[18px] pt-[22px] text-center ${motion} ${className ?? ""}`}>
       {children}
     </div>
   );

@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import AppShell from "./AppShell";
+import AppShell from "./LegacyShell";
 import type { ShellStep } from "./types";
 import * as layout from "./useWideLayout";
 
