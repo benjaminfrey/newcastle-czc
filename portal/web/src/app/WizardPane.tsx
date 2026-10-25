@@ -1,16 +1,14 @@
-// One screen of the wizard (brief 2026-10-24): a large question, a line of help when it earns one,
-// and the control. A single choice is a set of tiles that answers at a tap; a value from the
-// Town's map asks "Is this right?"; fields asked together (deed book and page, the setbacks, the
-// four walls) share the screen.
-import { AlertDialog, Button } from "@heroui/react";
+// The body of one card (task-list brief §4.5): the question, a line of help when it earns one,
+// and the control. A single choice is tiles that answer at a tap; a value from the Town's map asks
+// "Is this right?"; a set of values sits as short names beside their fields; the setbacks sit
+// around the lot drawing and the walls around the compass, once the front's direction is chosen.
 import { useState, type MutableRefObject } from "react";
 import type { FormField } from "../applications";
 import FieldControl from "../controls/FieldControl";
-import { BuildingPicker, StreetPicker } from "../controls/pickers";
+import { BuildingPicker, BuildingTypeControl, StreetPicker } from "../controls/pickers";
 import { ChoiceTiles, MultiTiles } from "../controls/Tiles";
 import { mapValueOf, valueOf, type Row } from "../forms/applicability";
 import type { Screen } from "../forms/screens";
-import { itemLabel } from "../forms/steps";
 import { display } from "./OfficialGroup";
 import { useApplication } from "./ApplicationStore";
 import CompassLayout from "./layouts/CompassLayout";
@@ -43,11 +41,11 @@ export function useRowControls(errorsRef?: MutableRefObject<Record<string, strin
     if (errorsRef) errorsRef.current = { ...errorsRef.current, [key]: msg };
     setErrors((e) => ({ ...e, [key]: msg }));
   };
-  return (r: Row, opts: { compact?: boolean; bare?: boolean; field?: FormField } = {}) => {
+  return (r: Row, opts: { compact?: boolean; bare?: boolean; inSet?: boolean; field?: FormField } = {}) => {
     const key = rowKey(r);
     return (
       <FieldControl key={key} field={opts.field ?? r.field} itemId={r.itemId} value={valueOf(form!, r.field, r.itemId, cur!)}
-                    error={errors[key]} compact={opts.compact} bare={opts.bare}
+                    error={errors[key]} compact={opts.compact} bare={opts.bare} inSet={opts.inSet}
                     onValue={async (v) => {
                       put(key, "");
                       const out = await setAnswer(r.field.id, r.itemId, v);
@@ -68,67 +66,82 @@ export function wallLabels(facing: unknown, road: string | null): Record<string,
     : w === OPPOSITE[facing] ? `Back (${w})` : `Side (${w})`]));
 }
 
-const NOUNS: Record<string, string> = { building: "building", component: "addition, porch or deck" };
-
-// The words a screen asks with, for its heading and the screen reader.
+// The words a card asks with, for its heading and the screen reader.
 export function headingOf(s: Screen): string {
-  if (s.kind === "another") return `Is there another ${s.id.endsWith("building") ? "building" : "addition, porch or deck"} in this project?`;
-  if (s.kind === "any") return `Are you adding ${s.id.endsWith("component") ? "an addition, porch or deck" : `a ${NOUNS[s.id.split(":")[1]] ?? "building"}`}?`;
   if (s.kind === "setbacks") return "How far will it be from each lot line?";
-  if (s.kind === "walls") return "About how much of each wall is windows and doors?";
+  if (s.kind === "walls") {
+    const facing = s.rows.find((r) => r.field.id.endsWith("front_facing"));
+    return facing ? facing.field.label ?? facing.field.official_label : "About how much of each wall is windows and doors?";
+  }
   const f = s.rows[0].field;
   return f.label ?? f.official_label;
 }
 
 function helpOf(s: Screen): string | null {
   if (s.kind === "setbacks") return "In feet, to the closest part of the building.";
-  if (s.kind === "walls") return "A rough share is fine, in steps of 5%. Most walls are between 10% and 30%.";
-  if (s.kind === "another" || s.kind === "any") return null;
-  return s.rows[0].field.help;
+  const f = s.rows[0]?.field;
+  if (!f) return null;
+  if (s.kind === "choice" || s.kind === "facing") return f.help ?? "Choose one.";
+  if (s.kind === "multi") return f.help ?? "Choose all that apply.";
+  return f.help;
 }
 
 type Props = {
   screen: Screen;
-  editing: boolean;                 // "Is this right?": the applicant chose to correct it
+  editing: boolean;                 // "Is this right?": the applicant chose to correct it; "Another road": typing one
   errorsRef: MutableRefObject<Record<string, string>>;
   onPick: (r: Row, value: unknown) => void;      // a tap that answers and moves on
   onConfirm: (r: Row, keep: boolean) => void;    // "Yes, that's right" (keep the answer shown) / "Use the map's"
-  onCorrect: () => void;                         // "No, I'll correct it"
-  onLoop: (yes: boolean) => void;                // "Is there another?" / "Are you adding…?"
-  onUnknown: () => void;                         // "I don't know yet"
-  onDelete?: { noun: string; run: () => void };  // a building or addition's first screen, while more than the least remain
+  onCorrect: () => void;                         // "No, I'll correct it"; "Another road"
+  onUnknown: () => void;                         // "I don't know yet" / "I don't know some of these yet"
 };
 
-export default function WizardPane({ screen, editing, errorsRef, onPick, onConfirm, onCorrect, onLoop, onUnknown, onDelete }: Props) {
+const isChoice = (f: FormField) => f.type === "choice" || f.type === "yesno";
+
+export default function CardQuestion({ screen, editing, errorsRef, onPick, onConfirm, onCorrect, onUnknown }: Props) {
   const { form, cur, app, setAnswer } = useApplication();
-  const [confirmDelete, setConfirmDelete] = useState(false);
   const control = useRowControls(errorsRef);
   const value = (r: Row) => valueOf(form!, r.field, r.itemId, cur!);
+  const answer = (r: Row, v: unknown) => void setAnswer(r.field.id, r.itemId, v);
   const street = ((cur?.property.streets as { name: string }[] | undefined) ?? [])[0]?.name ?? null;
   const row = screen.rows[0];
   const heading = headingOf(screen);
   const carried = screen.rows.some((r) => app?.answers.some((x) => x.field_id === r.field.id && x.item_id === r.itemId && x.carried));
   const help = helpOf(screen);
+  const short = (r: Row) => r.field.short ?? r.field.label ?? r.field.official_label;
+
+  // One value of a set: its short name on the left, its field on the right; tiles take the width.
+  const member = (r: Row) => {
+    if (isChoice(r.field) || r.field.type === "multichoice") {
+      return (
+        <div key={r.field.id} className="col-span-2 flex flex-col gap-2">
+          <span className="text-[14px] text-[var(--app-label)]">{short(r)}</span>
+          {r.field.type === "multichoice"
+            ? <MultiTiles field={{ ...r.field, label: short(r) }} value={value(r)} onValue={(v) => answer(r, v)} />
+            : <ChoiceTiles field={{ ...r.field, label: short(r) }} value={value(r)} tap={false} onPick={(v) => answer(r, v)} onValue={(v) => answer(r, v)} />}
+        </div>
+      );
+    }
+    return (
+      <div key={r.field.id} className="contents">
+        <span className="self-center text-[14px] text-[var(--app-label)]">{short(r)}</span>
+        {control(r, { inSet: true, field: { ...r.field, label: short(r) } })}
+      </div>
+    );
+  };
 
   const body = (() => {
     switch (screen.kind) {
       case "choice": case "facing": {
         const c = row.field.control;
+        if (c === "building-type") return <BuildingTypeControl field={row.field} value={value(row)} onValue={(v) => onPick(row, v)} labelId="" inputId="" />;
         if (c === "building-picker") return <BuildingPicker field={row.field} value={value(row)} onValue={(v) => onPick(row, v)} labelId="" inputId="" />;
         if (c === "street-picker") return <StreetPicker field={row.field} value={value(row)} onValue={(v) => onPick(row, v)} labelId="" inputId=""
-                                                        onAnother={onCorrect} onTyped={(v) => void setAnswer(row.field.id, row.itemId, v)} />;
+                                                        onAnother={onCorrect} onTyped={(v) => answer(row, v)} />;
         return <ChoiceTiles field={row.field} value={value(row)} onPick={(v) => onPick(row, v)} />;
       }
       case "multi":
-        return <MultiTiles field={row.field} value={value(row)} onValue={(v) => void setAnswer(row.field.id, row.itemId, v)} />;
-      case "another": case "any": {
-        const noun = screen.id.endsWith("building") ? "building" : "one";
-        const choices = screen.kind === "another"
-          ? [{ value: true, key: "yes", label: `Yes, add another ${noun}` }, { value: false, key: "no", label: "No, that's all" }]
-          : [{ value: true, key: "yes", label: "Yes" }, { value: false, key: "no", label: "No" }];
-        return <ChoiceTiles field={{ ...({} as FormField), id: screen.id, label: heading, official_label: heading, type: "choice", options: [] }}
-                            value={null} choices={choices} onPick={(v) => onLoop(v === true)} />;
-      }
+        return <MultiTiles field={row.field} value={value(row)} onValue={(v) => answer(row, v)} />;
       case "confirm": {
         // A value the applicant corrected is theirs, shown as theirs, with the map's beside it.
         const map = display(row.field, mapValueOf(row.field, cur!), {});
@@ -150,18 +163,21 @@ export default function WizardPane({ screen, editing, errorsRef, onPick, onConfi
           </div>
         );
       }
-      case "set":
-        // Values asked together sit side by side, each under its short name from the form.
+      case "set": {
+        // Values asked together; one per floor sits under a hairline, below the rest.
+        const repeated = (r: Row) => /_\d+$/.test(r.field.id);
+        const grid = "grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-[14px] gap-y-[10px] text-left";
+        const wide = screen.rows.some((r) => r.field.type === "text" || r.field.type === "longtext") ? "max-w-[480px]" : "max-w-[380px]";
+        const floors = screen.rows.filter(repeated);
         return (
-          <div className="grid w-full max-w-lg grid-cols-1 gap-4 text-left sm:grid-cols-2">
-            {screen.rows.map((r) => (
-              <div key={rowKey(r)} className="flex flex-col gap-1.5">
-                <p className="text-[13px] text-[var(--app-secondary-label)]">{r.field.official_label}</p>
-                {control(r, { bare: true })}
-              </div>
-            ))}
+          <div className={`flex w-full flex-col items-center ${wide}`}>
+            <div className={grid}>{screen.rows.filter((r) => !repeated(r)).map(member)}</div>
+            {floors.length > 0 && (
+              <div className={`${grid} mt-[10px] border-t-[0.5px] border-[var(--app-separator)] pt-[10px]`}>{floors.map(member)}</div>
+            )}
           </div>
         );
+      }
       case "setbacks": {
         const by = (s: string) => screen.rows.find((r) => r.field.id.endsWith(s));
         const side = (s: string, words: string) => (by(s) ? (
@@ -169,7 +185,7 @@ export default function WizardPane({ screen, editing, errorsRef, onPick, onConfi
             <span>{words}</span>{control(by(s)!, { bare: true })}
           </div>) : null);
         return (
-          <div className="w-full max-w-3xl">
+          <div className="w-full">
             <LotDiagramLayout parcelId={app?.property.parcel_id ?? null} street={street}
                               sides={{ front: side("setback_front", `Front${street ? `, along ${street}` : ""}`), side1: side("setback_side_1", "One side"),
                                        side2: side("setback_side_2", "Other side"), rear: side("setback_rear", "Back") }} />
@@ -177,8 +193,10 @@ export default function WizardPane({ screen, editing, errorsRef, onPick, onConfi
         );
       }
       case "walls": {
-        const facingRow = cur!.answers.find((x) => x.item_id === screen.itemId && x.field_id.endsWith("front_facing"));
-        const labels = wallLabels(facingRow?.value, street);
+        // The front's direction first; the four walls, named from it, once it is chosen.
+        const facing = screen.rows.find((r) => r.field.id.endsWith("front_facing"));
+        const dir = facing ? value(facing) : cur!.answers.find((x) => x.item_id === screen.itemId && x.field_id.endsWith("front_facing"))?.value;
+        const labels = wallLabels(dir, street);
         const wall = (w: string) => {
           const r = screen.rows.find((x) => x.field.id.endsWith(`windows_${w}`));
           if (!r) return null;
@@ -186,8 +204,14 @@ export default function WizardPane({ screen, editing, errorsRef, onPick, onConfi
           return <div className="flex flex-col gap-1 text-left"><span className="text-[15px]">{field.label}</span>{control(r, { bare: true, field })}</div>;
         };
         return (
-          <div className="w-full max-w-3xl">
-            <CompassLayout street={null} walls={{ north: wall("north"), east: wall("east"), south: wall("south"), west: wall("west") }} />
+          <div className="flex w-full flex-col items-center gap-5">
+            {facing && <ChoiceTiles field={facing.field} value={dir} tap={false} onPick={(v) => answer(facing, v)} onValue={(v) => answer(facing, v)} />}
+            {(!facing || labels) && (
+              <div className="w-full">
+                {facing && <p className="mb-3 text-[13px] text-[var(--app-secondary-label)]">About how much of each wall is windows and doors? A rough share is fine.</p>}
+                <CompassLayout street={null} walls={{ north: wall("north"), east: wall("east"), south: wall("south"), west: wall("west") }} />
+              </div>
+            )}
           </div>
         );
       }
@@ -195,44 +219,23 @@ export default function WizardPane({ screen, editing, errorsRef, onPick, onConfi
         return control(row, { bare: true });
     }
   })();
+  const unknownable = screen.kind !== "confirm" && screen.rows.some((r) => r.field.allow_unknown);
+  const several = screen.rows.length > 1;
 
   return (
-    <section className="flex flex-col items-center gap-2 py-6 text-center">
-      {screen.itemId && <p className="text-[13px] text-[var(--app-secondary-label)]">{itemLabel(form!, cur!, screen.itemId)}</p>}
-      <h2 tabIndex={-1} data-screen-title className="max-w-[30ch] text-balance text-[22px] font-semibold leading-tight outline-none">{heading}</h2>
-      <p className="mb-4 min-h-[1.25rem] max-w-[46ch] text-pretty text-[15px] text-[var(--app-secondary-label)]">{help ?? ""}</p>
+    <>
+      <h2 tabIndex={-1} data-screen-title className="max-w-[30ch] text-balance text-[20px] font-medium leading-[1.3] outline-none">{heading}</h2>
+      <p className="mb-4 mt-1 max-w-[46ch] text-pretty text-[13px] text-[var(--app-secondary-label)] empty:mb-3">{help ?? ""}</p>
       {carried && (
         <p className="-mt-2 mb-3 text-[13px] text-[var(--app-secondary-label)]">Filled in from your answers at the start. Change it if you need to.</p>
       )}
       {body}
-      {screen.unknown && screen.kind !== "confirm" && (
+      {unknownable && (
         <button type="button" onClick={onUnknown}
-                className="mt-3 min-h-11 px-2 text-[15px] text-[var(--app-accent-text)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--app-accent-text)]">
-          I don't know yet
+                className="mt-3 min-h-11 px-1 text-[13px] text-[var(--app-accent-text)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--app-accent-text)]">
+          {several ? "I don't know some of these yet" : "I don't know yet"}
         </button>
       )}
-      {onDelete && (
-        // A building or addition added by mistake goes, behind a confirmation (redesign brief §147).
-        <button type="button" onClick={() => setConfirmDelete(true)}
-                className="mt-6 min-h-11 px-2 text-[15px] text-[var(--app-destructive)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--app-accent-text)]">
-          Delete {onDelete.noun}
-        </button>
-      )}
-      {onDelete && (
-        <AlertDialog.Backdrop isOpen={confirmDelete} onOpenChange={setConfirmDelete}>
-          <AlertDialog.Container>
-            <AlertDialog.Dialog>
-              <AlertDialog.Header><AlertDialog.Heading>Delete {onDelete.noun}?</AlertDialog.Heading></AlertDialog.Header>
-              <AlertDialog.Body>Its answers and files leave the application. This can't be undone here.</AlertDialog.Body>
-              <AlertDialog.Footer>
-                <Button variant="secondary" onPress={() => setConfirmDelete(false)}>Cancel</Button>
-                <Button variant="danger" onPress={() => { setConfirmDelete(false); onDelete.run(); }}>Delete</Button>
-              </AlertDialog.Footer>
-            </AlertDialog.Dialog>
-          </AlertDialog.Container>
-        </AlertDialog.Backdrop>
-      )}
-    </section>
+    </>
   );
-
 }

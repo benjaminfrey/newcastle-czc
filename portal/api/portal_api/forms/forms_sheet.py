@@ -154,6 +154,8 @@ def _section(ruleset: Ruleset, form: FormDef, s) -> list[str]:
         if f.screen:
             lay = form.screen_layout(f.id)
             out.append(f"- Card: asked with the others on `{f.screen}`" + (f" ({lay} drawing)" if lay else ""))
+        if f.short:
+            out.append(f"- Short name on its card: “{f.short}”")
         if f.copies:
             out.append("- Copied by “Copy Building 1”")
         if f.control:

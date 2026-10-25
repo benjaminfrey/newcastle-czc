@@ -73,6 +73,7 @@ sections:
     step: driveway
     control: stepper
     screen: homes
+    short: Single-family homes
   - id: homes_two_family
     official_label: Two-family dwellings served
     source: question
@@ -86,6 +87,7 @@ sections:
     step: driveway
     control: stepper
     screen: homes
+    short: Two-family homes
   - id: shared_driveway
     official_label: Shared with an abutting lot
     source: question
@@ -133,6 +135,7 @@ sections:
     status: draft
     step: meets_road
     screen: driveway
+    short: Width
   - id: first_20ft_slope
     official_label: Slope of the first 20 ft (%)
     source: question
@@ -150,6 +153,7 @@ sections:
     control: slider
     step_size: 1
     screen: driveway
+    short: Slope of the first 20 ft
   - id: entrance_angle
     official_label: Angle of intersection with the Street or Road (degrees)
     source: question
@@ -167,6 +171,7 @@ sections:
     control: slider
     step_size: 5
     screen: driveway
+    short: Angle to the road
   - id: sight_distance_left
     official_label: Sight distance, looking left (ft)
     source: question
@@ -182,6 +187,7 @@ sections:
     status: draft
     step: safety
     screen: sight
+    short: Seeing left
   - id: sight_distance_right
     official_label: Sight distance, looking right (ft)
     source: question
@@ -196,6 +202,7 @@ sections:
     status: draft
     step: safety
     screen: sight
+    short: Seeing right
   - id: intersection_distance
     official_label: Distance to the nearest intersection (ft)
     source: question
@@ -210,6 +217,7 @@ sections:
     status: draft
     step: safety
     screen: sight
+    short: To the nearest intersection
   - id: intersection_signal
     official_label: Nearest intersection is signaled
     source: question
@@ -221,6 +229,7 @@ sections:
     status: draft
     step: safety
     screen: sight
+    short: A traffic light there
   - id: roadside_ditch
     official_label: Ditch along the road at the entrance
     source: question

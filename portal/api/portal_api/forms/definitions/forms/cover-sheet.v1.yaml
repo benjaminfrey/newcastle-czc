@@ -44,6 +44,7 @@ sections:
     allow_unknown: true
     status: draft
     screen: deed
+    short: Deed book
   - id: deed_page
     official_label: Page
     source: question
@@ -54,6 +55,7 @@ sections:
     allow_unknown: true
     status: draft
     screen: deed
+    short: Page
   step: your_lot
   screens:
   - id: deed
@@ -73,6 +75,7 @@ sections:
     status: draft
     autocomplete: name
     screen: contact
+    short: Full name
   - id: applicant_email
     official_label: Email
     source: account
@@ -88,6 +91,7 @@ sections:
     status: draft
     autocomplete: tel
     screen: contact
+    short: Phone
   - id: applicant_address
     official_label: Address
     source: question
@@ -99,6 +103,7 @@ sections:
     status: draft
     autocomplete: street-address
     screen: contact
+    short: Mailing address
   - id: applicant_is_owner
     official_label: Applicant is the Property Owner
     source: question
@@ -145,6 +150,7 @@ sections:
     status: draft
     autocomplete: name
     screen: owner
+    short: Owner's name
   - id: owner_email
     official_label: Email
     source: question
@@ -156,6 +162,7 @@ sections:
     status: draft
     autocomplete: email
     screen: owner
+    short: Email
   - id: owner_phone
     official_label: Phone
     source: question
@@ -167,6 +174,7 @@ sections:
     status: draft
     autocomplete: tel
     screen: owner
+    short: Phone
   - id: owner_address
     official_label: Address
     source: question
@@ -177,6 +185,7 @@ sections:
     status: draft
     autocomplete: street-address
     screen: owner
+    short: Mailing address
   step: about_you
   screens:
   - id: owner
@@ -200,6 +209,7 @@ sections:
     status: draft
     autocomplete: name
     screen: agent
+    short: Name or company
   - id: agent_email
     official_label: Email
     source: question
@@ -211,6 +221,7 @@ sections:
     status: draft
     autocomplete: email
     screen: agent
+    short: Email
   - id: agent_phone
     official_label: Phone
     source: question
@@ -222,6 +233,7 @@ sections:
     status: draft
     autocomplete: tel
     screen: agent
+    short: Phone
   - id: agent_address
     official_label: Address
     source: question
@@ -233,6 +245,7 @@ sections:
     status: draft
     autocomplete: street-address
     screen: agent
+    short: Mailing address
   step: about_you
   screens:
   - id: agent
@@ -276,6 +289,7 @@ sections:
     required: true
     status: draft
     screen: lot_size
+    short: Width
   - id: street_frontage
     official_label: Street Frontage (ft)
     source: property
@@ -305,6 +319,7 @@ sections:
     required: true
     status: draft
     screen: lot_size
+    short: Depth
   - id: existing_dwelling_units
     official_label: Number of Existing Dwelling Units
     source: question

@@ -67,6 +67,13 @@ const GROUPS: { key: string; label: string; values: string[] }[] = [
   { key: "other", label: "Something else", values: ["special_use"] },
 ];
 
+// A building type's kind in the applicant's words ("A home") and its icon: the building's line on
+// the buildings list and its cards' header.
+export function buildingKind(value: string): { label: string; icon: string } | null {
+  const g = GROUPS.find((x) => x.values.includes(value));
+  return g ? { label: g.label, icon: KIND_ICONS[g.key] } : null;
+}
+
 export function BuildingTypeControl({ field, value, onValue }: ControlProps) {
   const groupOf = (v: unknown) => GROUPS.find((g) => g.values.includes(v as string))?.key ?? null;
   const [group, setGroup] = useState<string | null>(groupOf(value));

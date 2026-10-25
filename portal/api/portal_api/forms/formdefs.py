@@ -98,6 +98,7 @@ class Field:
     default: object = None
     autocomplete: str | None = None
     copies: bool = False  # "Copy Building 1" brings this answer to the new item
+    short: str | None = None  # its name beside its field on a shared card ("Width")
 
     @property
     def is_question(self) -> bool:
@@ -243,7 +244,7 @@ def _field(file: str, sec_id: str, f: dict, ruleset: Ruleset) -> Field:
         required=bool(f.get("required")), allow_unknown=bool(f.get("allow_unknown")), show_if=f.get("show_if"),
         compare=f.get("compare"), approved_by=f.get("approved_by"), approved_on=f.get("approved_on"),
         step=f.get("step"), screen=f.get("screen"), ask_first=rank, control=f.get("control"), step_size=f.get("step_size"),
-        default=f.get("default"), autocomplete=f.get("autocomplete"), copies=bool(f.get("copies")),
+        default=f.get("default"), autocomplete=f.get("autocomplete"), copies=bool(f.get("copies")), short=f.get("short"),
     )
 
 

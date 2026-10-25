@@ -33,7 +33,7 @@ export default function App() {
           <Route path="/start/needs" element={<Results />} />
           <Route path="/start/signin" element={<StartSignIn />} />
         </Route>
-        <Route path="/applications/:id/:stepId?" element={<ApplicationPage />} />
+        <Route path="/applications/:id/:stepId?/:sub?" element={<ApplicationPage />} />
       </Routes>
     </BrowserRouter>
   );

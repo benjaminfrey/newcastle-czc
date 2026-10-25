@@ -341,3 +341,10 @@ def test_ask_first_is_a_rank(tmp_path, ruleset):
     f = load_form("test_permit", 1, ruleset, root=tmp_path)
     assert (f.field("stories")[1].ask_first, f.field("roof")[1].ask_first) == (2, 1)
     assert "ask_first" in broken_stepped(tmp_path, ruleset, lambda c, f: f["sections"][0]["fields"][0].update(ask_first=-1))
+
+
+def test_short_names_load(tmp_path, ruleset):
+    cover, form = stepped()
+    form["sections"][0]["fields"][0]["short"] = "Stories"
+    write(tmp_path, cover=cover, form=form)
+    assert load_form("test_permit", 1, ruleset, root=tmp_path).field("stories")[1].short == "Stories"

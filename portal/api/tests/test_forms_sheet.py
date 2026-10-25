@@ -77,3 +77,10 @@ def test_sheet_prints_cards_icons_and_copies():
     assert "  - New building or accessory building — applicants read “A new building, such as a house, garage or shed” (icon `building-cottage`)" in work
     roof = sp[sp.index("(`roof_style`)"):]
     assert "- Copied by “Copy Building 1”" in roof[:roof.index("#### ", 5)]
+
+
+def test_sheet_prints_short_names():
+    r, fs = forms()
+    sheet = forms_sheet(r, fs)
+    width = sheet[sheet.index("(`mass_width`)"):]
+    assert "- Short name on its card: “Width”" in width[:width.index("#### ", 5)]

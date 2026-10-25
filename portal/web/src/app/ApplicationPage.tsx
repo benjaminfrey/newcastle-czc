@@ -1,35 +1,38 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Navigate, useNavigate, useParams, useSearchParams } from "react-router";
-import Dots from "../shell/Dots";
 import { valueOf, type Row } from "../forms/applicability";
-import { groupOf, place, screenAfter, screenBefore, screensOf, type Place, type Screen } from "../forms/screens";
-import { itemLabel, REVIEW_STEP, START_STEPS, statusOf, stepModels } from "../forms/steps";
-import { buildingLabel } from "../controls/pickers";
-import AppShell from "../shell/LegacyShell";
+import type { Screen } from "../forms/screens";
+import { REVIEW_STEP, stepModels } from "../forms/steps";
+import { canSend, cardsOf, progressOf, taskStatus } from "../forms/tasks";
+import AppShell from "../shell/AppShell";
+import Card from "../shell/Card";
 import { commitFocused } from "../shell/commitFocused";
-import type { ShellStep } from "../shell/types";
-import { useWideLayout } from "../shell/useWideLayout";
-import AnswerTrail, { type Chip } from "./AnswerTrail";
+import type { TaskRow } from "../shell/TaskList";
 import { ApplicationProvider, useApplication } from "./ApplicationStore";
-import { display } from "./OfficialGroup";
+import CheckPane from "./CheckPane";
+import ItemsPane, { itemTitle } from "./ItemsPane";
 import ReviewPane from "./ReviewPane";
-import WizardPane, { headingOf, rowKey } from "./WizardPane";
+import CardQuestion, { headingOf, rowKey } from "./WizardPane";
 
-// /applications/:id/:stepId?screen=&item=&return=review — one application, one question at a time.
+// /applications/:id                          the task list
+// /applications/:id/:task?screen=&item=       a card (a building's, with item)
+// /applications/:id/:task                     a task's first card, or its buildings
+// /applications/:id/:task/check?item=         a task's (or one building's) check page
+// /applications/:id/review                    Check and send
+// (task-list brief, 2026-10-25)
 export default function ApplicationPage() {
   const { id = "" } = useParams();
-  return <ApplicationProvider id={id}><Steps id={id} /></ApplicationProvider>;
+  return <ApplicationProvider id={id}><Tasks id={id} /></ApplicationProvider>;
 }
 
 const empty = (v: unknown) => v === null || v === undefined || v === "" || (Array.isArray(v) && v.length === 0);
-type Pending = { from: Place } | { step: string; item: string } | { removed: string };
 const keyOf = (s: Screen) => `${s.itemId ?? ""}|${s.id}`;
+type Pending = { from: Screen } | { added: string; step: string; check: boolean };
 
-function Steps({ id }: { id: string }) {
-  const { stepId } = useParams();
+function Tasks({ id }: { id: string }) {
+  const { stepId, sub } = useParams();
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const wide = useWideLayout();
   const store = useApplication();
   const { app, form, cur, problem, saveState, flush, markVisited, visited, reload, setAnswer, addItem, removeItem } = store;
   const base = `/applications/${id}`;
@@ -40,131 +43,152 @@ function Steps({ id }: { id: string }) {
   const errorsRef = useRef<Record<string, string>>({});
 
   const models = useMemo(() => (form && cur ? stepModels(form, cur) : []), [form, cur]);
-  const isReview = stepId === REVIEW_STEP.id;
   const current = models.find((m) => m.id === stepId);
-  const list = useMemo(() => (form && cur && current ? screensOf(form, cur, current) : []), [form, cur, current]);
-  const returning = params.get("return") === "review";
+  const hub = current?.hub;
+  const itemParam = params.get("item");
+  const isCheck = sub === "check";
+  const returning = params.get("return"); // "review" or "check": where Continue goes back to
+  const cards = useMemo(() => (form && cur && current && (!hub || itemParam) ? cardsOf(form, cur, current, itemParam ?? undefined) : []),
+    [form, cur, current, hub, itemParam]);
 
-  // The screen the address names; a field from review's "Still to answer" (?focus=) opens its screen;
-  // an item alone opens its first screen.
   const sp = params.get("screen");
-  const ip = params.get("item");
   const focus = params.get("focus");
-  const screen: Screen | undefined =
-    (sp && list.find((s) => s.id === sp && (!ip || s.itemId === ip)))
-    || (focus && list.find((s) => s.rows.some((r) => r.field.id === focus && (!ip || r.itemId === ip))))
-    || (ip && list.find((s) => s.itemId === ip))
-    || list[0];
-  const group = screen ? groupOf(list, screen) : [];
-  const at = screen ? group.indexOf(screen) : -1;
-  const paneKey = screen ? `${screen.step}:${screen.itemId ?? ""}:${screen.id}` : stepId ?? "root";
+  const showItems = !!hub && !itemParam && !isCheck;
+  const screen: Screen | undefined = isCheck || showItems ? undefined
+    : (sp && cards.find((s) => s.id === sp)) || (focus && cards.find((s) => s.rows.some((r) => r.field.id === focus))) || cards[0];
+  const at = screen ? cards.indexOf(screen) : -1;
+  const paneKey = screen ? `${screen.step}:${screen.itemId ?? ""}:${screen.id}` : `${stepId ?? "home"}:${sub ?? ""}:${itemParam ?? ""}`;
   const paneRef = useRef(paneKey);
   paneRef.current = paneKey;
-  // The step's screens as they stood when this one opened: Change from review asks only the ones
-  // an answer adds, not ones skipped earlier.
+  // The task's cards as they stood when this one opened: a Change asks only the cards an answer adds.
   const asked = useRef<Set<string>>(new Set());
-  const [hadAnswer, setHadAnswer] = useState<string | null>(null); // the screen that was answered when it opened
+  const [hadAnswer, setHadAnswer] = useState<string | null>(null); // the card that was answered when it opened
+  // The most cards each run has shown, so the bar never shrinks below what's been answered.
+  const reached = useRef<Map<string, number>>(new Map());
+  const [hintFirst] = useState(() => hintUnseen(id));
+  const [hintCard, setHintCard] = useState<string | null>(null);
 
-  const href = (p: Place, ret = returning) => {
-    const q = new URLSearchParams({ screen: p.screen, ...(p.item ? { item: p.item } : {}), ...(ret ? { return: "review" } : {}) });
-    return `${base}/${p.step}?${q.toString().replace(/%3A/g, ":")}`; // "any:component" reads as written
+  const href = (s: Screen, ret: string | null = returning) => {
+    const q = new URLSearchParams({ screen: s.id, ...(s.itemId ? { item: s.itemId } : {}), ...(ret ? { return: ret } : {}) });
+    return `${base}/${s.step}?${q.toString()}`;
   };
-  const go = (p: Place | { review: true }, dir: 1 | -1 = 1, ret = returning) => {
+  const checkHref = (step: string, item?: string | null) => `${base}/${step}/check${item ? `?item=${item}` : ""}`;
+  const go = (to: string, dir: 1 | -1 = 1) => {
     commitFocused(); // a typed answer saves first, even where a tap doesn't leave the field (iOS)
     setDirection(dir);
-    navigate("review" in p ? `${base}/review` : href(p, ret));
+    navigate(to);
   };
 
-  const shellSteps: ShellStep[] = useMemo(() => [
-    // The start steps are behind the applicant by now; they lead to the review of what was found.
-    ...START_STEPS.map((s) => ({ id: s.id, title: s.title, status: "done" as const, unknowns: 0, href: `${base}/review` })),
-    ...models.map((m) => ({
-      id: m.id, title: m.title, href: `${base}/${m.id}`, ...statusOf(m, cur!, visited),
-      children: m.hub?.items.map((i) => ({ id: i.id, title: i.label, status: i.status, unknowns: i.unknowns,
-                                            href: `${base}/${m.id}?item=${i.id}` })),
-    })),
-    { id: REVIEW_STEP.id, title: REVIEW_STEP.title, status: "todo" as const, unknowns: 0, href: `${base}/review` },
-  ], [models, cur, visited, base]);
-
-  // A step counts as visited once it is opened, however the person got there.
+  // A task counts as visited once it is opened, however the person got there.
   const currentId = current?.id;
   useEffect(() => { if (currentId) markVisited(currentId); }, [currentId, markVisited]);
   useEffect(() => {
     setEditing(false);
     errorsRef.current = {};
-    asked.current = new Set(list.map(keyOf));
-    // The form's default (saved as an answer when the application starts) isn't the applicant's.
+    asked.current = new Set(cards.map(keyOf));
     setHadAnswer(screen && form && cur && screen.rows.length > 0 && screen.rows.every((r) => {
       const v = valueOf(form, r.field, r.itemId, cur);
-      return !empty(v) && v !== r.field.default;
+      return !empty(v) && v !== r.field.default; // the form's default (saved at the start) isn't the applicant's
     }) ? paneKey : null);
   }, [paneKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const heading = isReview ? REVIEW_STEP.title : screen ? headingOf(screen) : current?.title;
+  const heading = screen ? headingOf(screen) : current?.title;
   useEffect(() => {
-    if (!heading || !form) return;
-    document.title = `${heading} — ${form.official_title}`;
-    (document.querySelector<HTMLElement>("[data-screen-title]") ?? document.querySelector<HTMLElement>("[data-step-title]"))?.focus();
+    if (!form) return;
+    document.title = `${heading ?? "Your application"} — ${form.official_title}`;
+    document.querySelector<HTMLElement>("[data-screen-title]")?.focus();
   }, [heading, form, paneKey]);
 
-  // Moving on is worked out after the answer has landed, so screens that an answer adds or
-  // removes (the owner's questions) are counted, and a new building's first screen exists.
+  // Moving on is worked out after the answer has landed, so cards an answer adds or removes (the
+  // owner's) are counted, and a new building's first card exists.
   useEffect(() => {
     if (!pending || !form || !cur) return;
-    if ("removed" in pending) {
-      // After a delete: the step's "another?" question, where the count shows.
-      const m = models.find((x) => x.id === pending.removed);
-      const all = m ? screensOf(form, cur, m) : [];
-      const to = all.find((s) => s.kind === "another" || s.kind === "any") ?? all[0];
-      setPending(null);
-      return to ? go(place(to), -1) : go({ review: true });
-    }
-    if ("item" in pending) {
+    if ("added" in pending) {
       const m = models.find((x) => x.id === pending.step);
-      const first = m && screensOf(form, cur, m).find((s) => s.itemId === pending.item);
+      const first = m && cardsOf(form, cur, m, pending.added)[0];
       if (!first) return; // the new item hasn't arrived yet
       setPending(null);
-      return go(place(first));
+      return go(pending.check ? checkHref(pending.step, pending.added) : href(first, null));
     }
     setPending(null);
-    const after = screenAfter(form, cur, models, pending.from);
-    const leaving = "review" in after || after.step !== pending.from.step;
-    if (leaving) markVisited(pending.from.step);
+    const from = pending.from;
+    const m = models.find((x) => x.id === from.step);
+    const list = m ? cardsOf(form, cur, m, from.itemId ?? undefined) : [];
+    const i = list.findIndex((x) => x.id === from.id);
     if (returning) {
-      // From review's Change: back to review, unless the answer opened new questions in this step
-      // (the owner's details after "No, I don't own it"), even past ones already answered. Questions
-      // skipped before stay for review's "Still to answer".
-      const step = models.find((m) => m.id === pending.from.step);
-      const list = step ? screensOf(form, cur, step) : [];
-      const from = list.findIndex((x) => x.id === pending.from.screen && (pending.from.item === undefined || x.itemId === pending.from.item));
-      const open = list.slice(from + 1).find((x) => !asked.current.has(keyOf(x)) && x.rows.length > 0
+      // Back to where the Change came from, unless the answer opened new cards in this task (the
+      // owner's details after "No, I don't own it"). Cards skipped before stay where they are.
+      const open = list.slice(i + 1).find((x) => !asked.current.has(keyOf(x)) && x.rows.length > 0
         && x.rows.every((r) => empty(valueOf(form, r.field, r.itemId, cur))));
-      return open ? go(place(open), 1, true) : go({ review: true });
+      if (open) return go(href(open));
+      return go(returning === "review" ? `${base}/review` : checkHref(from.step, from.itemId));
     }
-    go(after);
+    if (i >= 0 && i < list.length - 1) return go(href(list[i + 1]));
+    go(checkHref(from.step, from.itemId));
   }, [pending, form, cur, models]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (problem === "signed_out") return <Navigate to="/signin" replace />;
   if (problem) return <p role="alert" className="p-8">{problem}</p>;
   if (!app || !form || !cur) return <p className="p-8">Loading…</p>;
-  if (stepId && !current && !isReview) return <Navigate to={base} replace />;
-  if (!stepId && (wide || params.get("start"))) { // a new application opens at its first question
-    const first = models.find((m) => statusOf(m, cur, visited).status !== "done") ?? models[0];
-    return <Navigate to={first ? `${base}/${first.id}` : `${base}/review`} replace />;
+  if (stepId && stepId !== REVIEW_STEP.id && !current) return <Navigate to={base} replace />;
+
+  const statuses = models.map((m) => taskStatus(form, cur, m, visited));
+  const tasks: TaskRow[] = models.map((m, i) => ({ id: m.id, title: m.title, href: `${base}/${m.id}`, status: statuses[i], current: m.id === currentId }));
+  const send = { href: `${base}/review`, open: canSend(statuses) };
+  // A new application (the emailed link, a start from "Do I need a permit?") opens at its first unfinished task.
+  if (!stepId && params.get("start")) {
+    const first = models.find((_, i) => statuses[i].kind !== "done") ?? models[0];
+    return <Navigate to={first ? `${base}/${first.id}` : base} replace />;
+  }
+  const shell = (inTask: boolean, children?: React.ReactNode) => (
+    <AppShell tasks={tasks} send={send} formTitle={form.official_title} mapLot={app.property.map_lot} saveState={saveState}
+              home={base} inTask={inTask} onReload={() => void reload()}
+              onDone={() => void flush().then((ok) => ok && navigate("/my-applications"))}>
+      {children}
+    </AppShell>
+  );
+  if (!stepId) return shell(false);
+  if (stepId === REVIEW_STEP.id) return shell(true, <div className="mx-auto flex max-w-[640px] flex-col gap-6"><ReviewPane models={models} base={base} /></div>);
+  const step = current!;
+
+  // The buildings (or additions) list.
+  if (showItems) {
+    return shell(true, (
+      <ItemsPane form={form} cur={cur} step={step}
+                 onOpen={(item, finish) => {
+                   if (!finish) return go(checkHref(step.id, item));
+                   const list = cardsOf(form, cur, step, item);
+                   const todo = list.find((s) => s.rows.some((r) => r.field.required && empty(valueOf(form, r.field, r.itemId, cur)))) ?? list[0];
+                   go(href(todo, null));
+                 }}
+                 onAdd={() => void addItem(step.hub!.kind).then((made) => made && setPending({ added: made, step: step.id, check: false }))}
+                 onCopy={(src) => void addItem(step.hub!.kind, src).then((made) => made && setPending({ added: made, step: step.id, check: true }))}
+                 onDelete={(item) => void removeItem(item)}
+                 onDone={() => { markVisited(step.id); go(base); }} />
+    ));
   }
 
-  const moveOn = (s: Screen) => setPending({ from: place(s) });
-  const back = (() => {
-    if (isReview) {
-      const last = models.length ? screensOf(form, cur, models[models.length - 1]).at(-1) : undefined;
-      return last ? () => go(place(last), -1, false) : undefined;
-    }
-    const before = screen && screenBefore(form, cur, models, place(screen));
-    return before ? () => { commitFocused(); go(before, -1); } : undefined;
-  })();
+  // A task's (or a building's) check page.
+  if (isCheck) {
+    const title = itemParam ? itemTitle(form, cur, itemParam).title.split(" · ")[0] : step.title;
+    const done = () => { markVisited(step.id); go(itemParam ? `${base}/${step.id}` : base); };
+    const last = cards[cards.length - 1];
+    return shell(true, (
+      <CheckPane title={title} cards={cards} changeHref={(s) => href(s, "check")}
+                 onBack={() => (last ? go(href(last, null), -1) : go(base, -1))} onDone={done} />
+    ));
+  }
+
+  if (!screen) return <Navigate to={hub ? `${base}/${step.id}` : base} replace />;
+  const moveOn = (s: Screen) => setPending({ from: s });
+  const back = at > 0
+    ? { label: "Back", onPress: () => go(href(cards[at - 1]), -1) }
+    : screen.itemId ? { label: "Back", onPress: () => go(`${base}/${step.id}`, -1) }
+    : { label: "Tasks", onPress: () => go(base, -1) };
 
   async function onContinue() {
     if (!screen) return;
+    commitFocused();
     await flush();
     await Promise.resolve();
     if (screen.rows.some((r) => errorsRef.current[rowKey(r)])) return; // a refused answer stays on screen
@@ -175,9 +199,9 @@ function Steps({ id }: { id: string }) {
     busy.current = true;
     void setAnswer(r.field.id, r.itemId, v);
     const s = screen;
-    // Long enough to see the tile chosen; then the next question slides in, unless the applicant
-    // has gone elsewhere (a chip, a step) in the meantime.
     const from = paneKey;
+    // Long enough to see the tile chosen; then the next card slides in, unless the applicant has
+    // gone elsewhere in the meantime.
     setTimeout(() => { busy.current = false; if (paneRef.current === from) moveOn(s); }, 200);
   }
   function onConfirm(r: Row, keep: boolean) {
@@ -189,90 +213,53 @@ function Steps({ id }: { id: string }) {
   }
   function onUnknown() {
     if (!screen) return;
-    for (const r of screen.rows) void setAnswer(r.field.id, r.itemId, { unknown: true });
+    commitFocused();
+    // Only the blank values that may be unknown; what was typed stays.
+    for (const r of screen.rows) {
+      if (r.field.allow_unknown && empty(valueOf(form!, r.field, r.itemId, cur!))) void setAnswer(r.field.id, r.itemId, { unknown: true });
+    }
     moveOn(screen);
   }
-  async function onLoop(yes: boolean) {
-    if (busy.current || !screen || !current?.hub) return;
-    if (!yes) {
-      markVisited(current.id);
-      return moveOn(screen);
-    }
-    busy.current = true;
-    const newId = await addItem(current.hub.kind);
-    busy.current = false;
-    if (newId) setPending({ step: current.id, item: newId });
-  }
 
-  // The trail: this group's answers before the current screen, in the words review prints.
-  const chips: Chip[] = group.slice(0, Math.max(at, 0)).filter((s) => s.rows.length > 0).flatMap((s) => {
-    const words = s.rows.map((r) => chipWords(r, valueOf(form, r.field, r.itemId, cur))).filter((x): x is string => !!x);
-    if (!words.length) return [];
-    const carried = s.rows.some((r) => app.answers.some((x) => x.field_id === r.field.id && x.item_id === r.itemId && x.carried));
-    return [{ id: `${s.itemId ?? ""}|${s.id}`, text: words.join(", "), carried }];
-  });
-  // A chip in the applicant's words: the tile they tapped ("A home…"), what they typed, and for a
-  // yes, a no or a number the question it answers ("How wide is your lot, in feet? 12 ft").
-  function chipWords(r: Row, v: unknown): string | null {
-    const f = r.field;
-    const q = f.label ?? f.official_label;
-    const ask = (text: string) => `${q}${/[?:]$/.test(q) ? "" : ":"} ${text}`;
-    if (empty(v)) return null;
-    if (typeof v === "object" && v !== null && (v as { unknown?: unknown }).unknown) return ask("not known yet");
-    if (f.control === "building-picker" && typeof v === "string") return buildingLabel(form!, cur!, v);
-    if (f.type === "choice") return f.options.find((o) => o.value === v)?.label ?? String(v);
-    if (f.type === "multichoice" && Array.isArray(v)) return v.map((x) => f.options.find((o) => o.value === x)?.label ?? x).join(", ");
-    if (f.type === "yesno" || f.type === "number") return ask(display(f, v, {}));
-    return display(f, v, {});
-  }
-  const goChip = (key: string) => {
-    const s = group.find((x) => `${x.itemId ?? ""}|${x.id}` === key);
-    if (s) go(place(s), -1);
-  };
+  // The bar: this run's cards, never fewer than it has shown.
+  const run = `${step.id}:${screen.itemId ?? ""}`;
+  const progress = progressOf(cards, screen, reached.current.get(run) ?? 0);
+  reached.current.set(run, Math.max(reached.current.get(run) ?? 0, at + 1));
+  const title = screen.itemId ? itemTitle(form, cur, screen.itemId).title : step.title;
 
-  const blank = screen && screen.rows.every((r) => r.field.type === "upload"
+  // Continue for what is typed; a tap card has none, unless it was answered before (coming back to
+  // it) or a road is being typed in; "Is this right?" has it while correcting.
+  const needsContinue = editing || (screen.kind === "confirm" ? false : !screen.auto || hadAnswer === paneKey);
+  const blank = screen.rows.every((r) => r.field.type === "upload"
     ? !app.attachments.some((x) => x.field_id === r.field.id && x.item_id === r.itemId)
     : empty(valueOf(form, r.field, r.itemId, cur)));
-  // Continue for what is typed; a tap question has none, unless it was answered before (coming
-  // back to it) or a road is being typed in; "Is this right?" has it while correcting.
-  const needsContinue = screen && (editing || (screen.kind === "confirm" ? false : !screen.auto || hadAnswer === paneKey));
-  // A building or addition's first screen offers Delete, while more than the least remain.
-  const hub = current?.hub;
-  const stepOf = current?.id;
-  const onDelete = hub && stepOf && screen?.itemId && list.find((x) => x.itemId === screen.itemId) === screen
-    && hub.items.length > hub.repeat.min
-    ? { noun: itemLabel(form, cur, screen.itemId),
-        run: () => void removeItem(screen.itemId!).then((ok) => { if (ok) setPending({ removed: stepOf }); }) }
-    : undefined;
-  const dots = screen && group.length > 0 ? <Dots count={group.length} index={at} /> : undefined;
+  const hint = !needsContinue && hintFirst && (hintCard === null || hintCard === paneKey);
+  if (hint && hintCard === null) {
+    setHintCard(paneKey);
+    markHintSeen(id);
+  }
+  const wide = screen.kind === "setbacks" || screen.kind === "walls";
 
-  return (
-    <AppShell
-      steps={shellSteps}
-      currentId={isReview ? REVIEW_STEP.id : current?.id ?? null}
-      formTitle={form.official_title}
-      saveState={saveState}
-      rootHref={base}
-      onDone={() => void flush().then((ok) => ok && navigate("/my-applications"))}
-      onReload={() => void reload()}
-      onStep={(sid) => navigate(shellSteps.find((s) => s.id === sid)?.href ?? base)}
-      trail={!isReview && screen ? <AnswerTrail chips={chips} onGo={goChip} at={paneKey} /> : undefined}
-      paneKey={isReview ? "review" : paneKey}
-      direction={direction}
-      announce={screen && !isReview ? `Question ${at + 1} of ${group.length}: ${heading}` : undefined}
-      phoneBack={back}
-      actions={isReview ? { back } : screen ? {
-        back,
-        dots,
-        onContinue: needsContinue ? () => void onContinue() : undefined,
-        continueLabel: screen.optional && blank ? "Skip for now" : "Continue",
-      } : {}}
-    >
-      {isReview && <ReviewPane models={models} base={base} />}
-      {!isReview && screen && (
-        <WizardPane screen={screen} editing={editing} errorsRef={errorsRef} onPick={onPick} onConfirm={onConfirm}
-                    onCorrect={() => setEditing(true)} onLoop={(y) => void onLoop(y)} onUnknown={onUnknown} onDelete={onDelete} />
-      )}
-    </AppShell>
-  );
+  return shell(true, (
+    <Card wide={wide} onSubmit={() => void onContinue()}>
+      <Card.Header title={title} count={progress.count} at={progress.at} />
+      <Card.Body motionKey={paneKey} direction={direction}>
+        <CardQuestion screen={screen} editing={editing} errorsRef={errorsRef} onPick={onPick} onConfirm={onConfirm}
+                      onCorrect={() => setEditing(true)} onUnknown={onUnknown} />
+      </Card.Body>
+      <Card.Footer back={back}
+                   next={needsContinue ? { label: screen.optional && blank ? "Skip for now" : "Continue", onPress: () => void onContinue() }
+                     : hint ? { hint: "A tap moves on" } : null} />
+      <p className="sr-only" aria-live="polite">Question {progress.at + 1} of {progress.count}: {heading}</p>
+    </Card>
+  ));
+}
+
+// "A tap moves on" is said on the first tap card of an application only: decided once per visit,
+// and remembered in browser storage (read in a try, as storage can be blocked).
+function hintUnseen(appId: string): boolean {
+  try { return localStorage.getItem(`portal.taphint.${appId}`) !== "1"; } catch { return true; }
+}
+function markHintSeen(appId: string): void {
+  try { localStorage.setItem(`portal.taphint.${appId}`, "1"); } catch { /* fine */ }
 }

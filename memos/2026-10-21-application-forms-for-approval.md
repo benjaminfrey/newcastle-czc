@@ -53,6 +53,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Help: It's printed on your deed from the Lincoln County Registry of Deeds. Staff can look it up if you don't have it.
 - Answer: text; optional; “I don't know yet” allowed
 - Card: asked with the others on `deed`
+- Short name on its card: “Deed book”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §2.a.2:
 
@@ -65,6 +66,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Help: It's printed next to the book number.
 - Answer: text; optional; “I don't know yet” allowed
 - Card: asked with the others on `deed`
+- Short name on its card: “Page”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §2.a.2:
 
@@ -81,6 +83,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “What is your full name?”
 - Answer: text; required
 - Card: asked with the others on `contact`
+- Short name on its card: “Full name”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §2.a.2:
 
@@ -97,6 +100,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “What phone number should the Town use to reach you?”
 - Answer: text; required
 - Card: asked with the others on `contact`
+- Short name on its card: “Phone”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §2.a.2:
 
@@ -109,6 +113,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Help: Street or PO box, town, state and ZIP code.
 - Answer: text; required
 - Card: asked with the others on `contact`
+- Short name on its card: “Mailing address”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §2.a.2:
 
@@ -151,6 +156,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Help: If a company or trust owns it, give its name.
 - Answer: text; required
 - Card: asked with the others on `owner`
+- Short name on its card: “Owner's name”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §2.a.2:
 
@@ -162,6 +168,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “What is the owner's email address?”
 - Answer: text; required; “I don't know yet” allowed
 - Card: asked with the others on `owner`
+- Short name on its card: “Email”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §2.a.2:
 
@@ -173,6 +180,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “What is the owner's phone number?”
 - Answer: text; required; “I don't know yet” allowed
 - Card: asked with the others on `owner`
+- Short name on its card: “Phone”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §2.a.2:
 
@@ -184,6 +192,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “What is the owner's mailing address?”
 - Answer: text; required
 - Card: asked with the others on `owner`
+- Short name on its card: “Mailing address”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §2.a.2:
 
@@ -201,6 +210,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “What is their name, or their company's name?”
 - Answer: text; required
 - Card: asked with the others on `agent`
+- Short name on its card: “Name or company”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §2.a.2:
 
@@ -212,6 +222,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “What is their email address?”
 - Answer: text; required; “I don't know yet” allowed
 - Card: asked with the others on `agent`
+- Short name on its card: “Email”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §2.a.2:
 
@@ -223,6 +234,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “What is their phone number?”
 - Answer: text; required; “I don't know yet” allowed
 - Card: asked with the others on `agent`
+- Short name on its card: “Phone”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §2.a.2:
 
@@ -234,6 +246,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “What is their mailing address?”
 - Answer: text; required; “I don't know yet” allowed
 - Card: asked with the others on `agent`
+- Short name on its card: “Mailing address”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §2.a.2:
 
@@ -267,6 +280,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Help: Measure at the widest point between the side lot lines, anywhere from the front lot line back to the farthest a building may sit from the road (the district's maximum front setback).
 - Answer: number (ft), 0–50000; required; “I don't know yet” allowed
 - Card: asked with the others on `lot_size`
+- Short name on its card: “Width”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §2.a.2:
 
@@ -289,6 +303,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “How deep is your lot, from the road to the back lot line, in feet?”
 - Answer: number (ft), 0–50000; required; “I don't know yet” allowed
 - Card: asked with the others on `lot_size`
+- Short name on its card: “Depth”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §2.a.2:
 
@@ -553,6 +568,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Help: For example "house", "barn" or "new garage".
 - Answer: text; required
 - Card: asked with the others on `about`
+- Short name on its card: “What you call it”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §2.a.2:
 
@@ -663,6 +679,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Help: Count each separate home with its own kitchen. Enter 0 if none.
 - Answer: number, 0–500; required
 - Card: asked with the others on `about`
+- Short name on its card: “Homes in it”
 - Control: stepper
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §2.a.2:
@@ -683,6 +700,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Help: The "main building mass" is the main rectangular part of the building, not counting additions, porches or decks. Width is measured along the side facing the road.
 - Answer: number (ft), 0–2000; required; “I don't know yet” allowed
 - Card: asked with the others on `size`
+- Short name on its card: “Width”
 - Copied by “Copy Building 1”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 5 §3.c.2:
@@ -695,6 +713,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “How deep is the main part of the building, front to back, in feet?”
 - Answer: number (ft), 0–2000; required; “I don't know yet” allowed
 - Card: asked with the others on `size`
+- Short name on its card: “Depth”
 - Copied by “Copy Building 1”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 5 §3.c.2:
@@ -708,6 +727,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Help: Don't count a basement or living space inside the roof.
 - Answer: number, 1–10; required; “I don't know yet” allowed
 - Card: asked with the others on `size`
+- Short name on its card: “Floors above ground”
 - Copied by “Copy Building 1”
 - Control: stepper
 - **Draft — awaiting the chair's approval.**
@@ -722,6 +742,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Help: Add up every story of the main part. Space inside the roof doesn't count.
 - Answer: number (sf), 0–1000000; required; “I don't know yet” allowed
 - Card: asked with the others on `size`
+- Short name on its card: “Floor area”
 - Copied by “Copy Building 1”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 5 §3.c.4:
@@ -735,6 +756,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Help: Measure from the average ground level at the front to the top of the first floor.
 - Answer: number (ft), 0–30; required; “I don't know yet” allowed
 - Card: asked with the others on `size`
+- Short name on its card: “First floor above the ground”
 - Copied by “Copy Building 1”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 5 §4.c.4:
@@ -748,6 +770,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Help: From the surface of the floor to the surface of the floor above (or to the top of the wall if there's no floor above).
 - Answer: number (ft), 0–50; required; “I don't know yet” allowed
 - Card: asked with the others on `size`
+- Short name on its card: “First floor height”
 - Copied by “Copy Building 1”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 5 §7.c.2:
@@ -760,6 +783,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “How tall is the second story, in feet?”
 - Answer: number (ft), 0–50; required; “I don't know yet” allowed
 - Card: asked with the others on `size`
+- Short name on its card: “Second floor height”
 - Copied by “Copy Building 1”
 - Asked only when “Total number of stories” (this building) is 2 or more
 - **Draft — awaiting the chair's approval.**
@@ -773,6 +797,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “How tall is the third story, in feet?”
 - Answer: number (ft), 0–50; required; “I don't know yet” allowed
 - Card: asked with the others on `size`
+- Short name on its card: “Third floor height”
 - Copied by “Copy Building 1”
 - Asked only when “Total number of stories” (this building) is 3 or more
 - **Draft — awaiting the chair's approval.**
@@ -786,6 +811,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “How tall is the fourth story, in feet?”
 - Answer: number (ft), 0–50; required; “I don't know yet” allowed
 - Card: asked with the others on `size`
+- Short name on its card: “Fourth floor height”
 - Copied by “Copy Building 1”
 - Asked only when “Total number of stories” (this building) is 4 or more
 - **Draft — awaiting the chair's approval.**
@@ -804,6 +830,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
   - Hipped — applicants read “Hipped: slopes on all four sides”
   - Shed — applicants read “Shed: a single slope”
 - Card: asked with the others on `roof`
+- Short name on its card: “Shape”
 - Copied by “Copy Building 1”
 - Control: tiles
 - **Draft — awaiting the chair's approval.**
@@ -831,6 +858,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
   - 12/12 — applicants read “12/12”
   - Steeper than 12/12 — applicants read “Steeper than 12/12”
 - Card: asked with the others on `roof`
+- Short name on its card: “Slope”
 - Copied by “Copy Building 1”
 - Control: picker
 - **Draft — awaiting the chair's approval.**
@@ -857,6 +885,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
   - Slate roof — applicants read “Slate roof”
   - Other — applicants read “Something else”
 - Card: asked with the others on `outside`
+- Short name on its card: “Materials”
 - Copied by “Copy Building 1”
 - Control: chips
 - **Draft — awaiting the chair's approval.**
@@ -870,6 +899,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “What other material?”
 - Answer: text; required
 - Card: asked with the others on `outside`
+- Short name on its card: “Other material”
 - Copied by “Copy Building 1”
 - Asked only when “Exterior finish material” (this building) includes Other
 - **Draft — awaiting the chair's approval.**
@@ -971,6 +1001,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
   - Patio — applicants read “A patio” (icon `square`)
   - Other Architectural Component — applicants read “Something else, like a dormer, bay window or cupola” (icon `dots`)
 - Card: asked with the others on `kind`
+- Short name on its card: “What it is”
 - Control: tiles
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 6 §2.a.1:
@@ -983,6 +1014,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “What is it called?”
 - Answer: text; required
 - Card: asked with the others on `kind`
+- Short name on its card: “What it's called”
 - Asked only when “Component” (this component) is Other Architectural Component
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 6 §2.a.1:
@@ -1019,6 +1051,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “How wide is it, in feet?”
 - Answer: number (ft), 0–2000; required; “I don't know yet” allowed
 - Card: asked with the others on `size`
+- Short name on its card: “Width”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 6 §2.a.1:
 
@@ -1030,6 +1063,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “How deep is it, or how long for a patio, in feet?”
 - Answer: number (ft), 0–2000; required; “I don't know yet” allowed
 - Card: asked with the others on `size`
+- Short name on its card: “Depth”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 6 §2.a.1:
 
@@ -1041,6 +1075,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “How tall is it, from the ground to its highest point, in feet?”
 - Answer: number (ft), 0–200; required; “I don't know yet” allowed
 - Card: asked with the others on `size`
+- Short name on its card: “Height”
 - Asked only when “Component” (this component) is not Patio
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 6 §2.a.1:
@@ -1058,6 +1093,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
   - Hipped — applicants read “Hipped: slopes on all four sides”
   - Shed — applicants read “Shed: a single slope”
 - Card: asked with the others on `roof`
+- Short name on its card: “Shape”
 - Control: tiles
 - Asked only when “Component” (this component) is Addition or Garage (attached)
 - **Draft — awaiting the chair's approval.**
@@ -1085,6 +1121,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
   - 12/12 — applicants read “12/12”
   - Steeper than 12/12 — applicants read “Steeper than 12/12”
 - Card: asked with the others on `roof`
+- Short name on its card: “Slope”
 - Control: picker
 - Asked only when “Component” (this component) is Addition or Garage (attached)
 - **Draft — awaiting the chair's approval.**
@@ -1111,6 +1148,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
   - Slate roof — applicants read “Slate roof”
   - Other — applicants read “Something else”
 - Card: asked with the others on `outside`
+- Short name on its card: “Materials”
 - Control: chips
 - Asked only when “Component” (this component) is Addition or Garage (attached)
 - **Draft — awaiting the chair's approval.**
@@ -1124,6 +1162,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “What other material?”
 - Answer: text; required
 - Card: asked with the others on `outside`
+- Short name on its card: “Other material”
 - Asked only when (“Component” (this component) is Addition or Garage (attached)) and (“Exterior finish material” (this component) includes Other)
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 6 §5.c.5:
@@ -1254,6 +1293,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: number, 0–500; required
 - Step: The driveway
 - Card: asked with the others on `homes`
+- Short name on its card: “Single-family homes”
 - Control: stepper
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §7.c.7:
@@ -1267,6 +1307,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: number, 0–500; required
 - Step: The driveway
 - Card: asked with the others on `homes`
+- Short name on its card: “Two-family homes”
 - Control: stepper
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §7.c.7:
@@ -1316,6 +1357,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: number (ft), 0–200; required; “I don't know yet” allowed
 - Step: Where it joins the road
 - Card: asked with the others on `driveway`
+- Short name on its card: “Width”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §7.e.1:
 
@@ -1333,6 +1375,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: number (%), 0–25; required; “I don't know yet” allowed
 - Step: Where it joins the road
 - Card: asked with the others on `driveway`
+- Short name on its card: “Slope of the first 20 ft”
 - Control: slider
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §7.d.2:
@@ -1347,6 +1390,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: number (degrees), 0–90; required; “I don't know yet” allowed
 - Step: Where it joins the road
 - Card: asked with the others on `driveway`
+- Short name on its card: “Angle to the road”
 - Control: slider
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §8.e.1:
@@ -1361,6 +1405,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: number (ft), 0–5000; required; “I don't know yet” allowed
 - Step: Safety at the road
 - Card: asked with the others on `sight`
+- Short name on its card: “Seeing left”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §8.f.1:
 
@@ -1375,6 +1420,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: number (ft), 0–5000; required; “I don't know yet” allowed
 - Step: Safety at the road
 - Card: asked with the others on `sight`
+- Short name on its card: “Seeing right”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §8.f.1:
 
@@ -1389,6 +1435,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: number (ft), 0–50000; required; “I don't know yet” allowed
 - Step: Safety at the road
 - Card: asked with the others on `sight`
+- Short name on its card: “To the nearest intersection”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §8.f.2:
 
@@ -1403,6 +1450,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: yesno; required; “I don't know yet” allowed
 - Step: Safety at the road
 - Card: asked with the others on `sight`
+- Short name on its card: “A traffic light there”
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §8.f.2:
 

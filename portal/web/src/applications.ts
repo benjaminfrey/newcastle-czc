@@ -20,6 +20,7 @@ export type FormField = {
     | "building-picker" | "street-picker" | "building-type" | null;
   step_size?: number | null; default?: unknown; autocomplete?: "name" | "tel" | "email" | "street-address" | null;
   copies?: boolean; // "Copy Building 1" brings this answer to the new building
+  short?: string | null; // its name beside its field on a shared card ("Width")
 };
 export type Page = { id: string; title: string; layout: "compass" | "lot-diagram" | null };
 export type AddOption = { label: string; preset: Record<string, unknown> };

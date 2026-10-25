@@ -117,6 +117,7 @@ sections:
     required: true
     status: draft
     screen: about
+    short: What you call it
   - id: renovation_only
     official_label: Only being renovated, not changing size or location
     source: question
@@ -292,6 +293,7 @@ sections:
     status: draft
     control: stepper
     screen: about
+    short: Homes in it
   step: buildings
 - id: building_mass
   official_title: Main Building Mass Details
@@ -330,6 +332,7 @@ sections:
     status: draft
     screen: size
     copies: true
+    short: Width
   - id: mass_depth
     official_label: Depth of Main Building Mass
     source: question
@@ -344,6 +347,7 @@ sections:
     status: draft
     screen: size
     copies: true
+    short: Depth
   - id: stories
     official_label: Total number of stories
     source: question
@@ -359,6 +363,7 @@ sections:
     control: stepper
     screen: size
     copies: true
+    short: Floors above ground
   - id: floor_area
     official_label: Floor Area of Main Building Mass
     source: question
@@ -374,6 +379,7 @@ sections:
     status: draft
     screen: size
     copies: true
+    short: Floor area
   - id: first_floor_elevation
     official_label: Elevation of first (ground) floor
     source: question
@@ -389,6 +395,7 @@ sections:
     status: draft
     screen: size
     copies: true
+    short: First floor above the ground
   - id: floor_height_1
     official_label: First floor height
     source: question
@@ -405,6 +412,7 @@ sections:
     status: draft
     screen: size
     copies: true
+    short: First floor height
   - id: floor_height_2
     official_label: Second floor height
     source: question
@@ -423,6 +431,7 @@ sections:
     status: draft
     screen: size
     copies: true
+    short: Second floor height
   - id: floor_height_3
     official_label: Third floor height
     source: question
@@ -441,6 +450,7 @@ sections:
     status: draft
     screen: size
     copies: true
+    short: Third floor height
   - id: floor_height_4
     official_label: Fourth floor height
     source: question
@@ -459,6 +469,7 @@ sections:
     status: draft
     screen: size
     copies: true
+    short: Fourth floor height
   - id: roof_style
     official_label: Roof Style
     source: question
@@ -487,6 +498,7 @@ sections:
     control: tiles
     screen: roof
     copies: true
+    short: Shape
   - id: roof_slope
     official_label: Roof Slope on Main Building Mass
     source: question
@@ -540,6 +552,7 @@ sections:
       official: Steeper than 12/12
     screen: roof
     copies: true
+    short: Slope
   - id: exterior_finish
     official_label: Exterior finish material
     source: question
@@ -590,6 +603,7 @@ sections:
       official: Other
     screen: outside
     copies: true
+    short: Materials
   - id: exterior_finish_other
     official_label: Other exterior finish
     source: question
@@ -604,6 +618,7 @@ sections:
     status: draft
     screen: outside
     copies: true
+    short: Other material
   step: buildings
   screens:
   - id: size
@@ -775,6 +790,7 @@ sections:
     status: draft
     control: tiles
     screen: kind
+    short: What it is
   - id: component_other_name
     official_label: Name of other architectural component
     source: question
@@ -788,6 +804,7 @@ sections:
       - other
     status: draft
     screen: kind
+    short: What it's called
   - id: component_renovation_only
     official_label: Only being renovated, not changing size or location
     source: question
@@ -822,6 +839,7 @@ sections:
     required: true
     status: draft
     screen: size
+    short: Width
   - id: component_depth
     official_label: Depth (Length for a Patio)
     source: question
@@ -835,6 +853,7 @@ sections:
     required: true
     status: draft
     screen: size
+    short: Depth
   - id: component_height
     official_label: Height
     source: question
@@ -852,6 +871,7 @@ sections:
       - patio
     status: draft
     screen: size
+    short: Height
   - id: component_roof_style
     official_label: Roof Style on Component
     source: question
@@ -884,6 +904,7 @@ sections:
     status: draft
     control: tiles
     screen: roof
+    short: Shape
   - id: component_roof_slope
     official_label: Roof Slope
     source: question
@@ -941,6 +962,7 @@ sections:
       label: Steeper than 12/12
       official: Steeper than 12/12
     screen: roof
+    short: Slope
   - id: component_finish
     official_label: Exterior finish material
     source: question
@@ -995,6 +1017,7 @@ sections:
       official: Other
     help: Choose all that apply.
     screen: outside
+    short: Materials
   - id: component_finish_other
     official_label: Other exterior finish
     source: question
@@ -1013,6 +1036,7 @@ sections:
         - other
     status: draft
     screen: outside
+    short: Other material
   - id: component_front_facing
     official_label: Direction the front faces
     source: question

@@ -33,7 +33,7 @@ export function TextControl({ field, value, onValue, inputId, long }: ControlPro
 }
 
 // Numbers: a field with a unit after it; with `stepper`, − and + buttons as well.
-export function NumberControl({ field, value, onValue, stepper }: ControlProps & { stepper?: boolean }) {
+export function NumberControl({ field, value, onValue, stepper, narrow }: ControlProps & { stepper?: boolean; narrow?: boolean }) {
   const n = typeof value === "number" ? value : NaN;
   return (
     <div className="flex items-center gap-2">
@@ -47,7 +47,7 @@ export function NumberControl({ field, value, onValue, stepper }: ControlProps &
         step={field.step_size ?? (stepper ? 1 : undefined)}
         formatOptions={{ maximumFractionDigits: 2, useGrouping: false }}
         aria-label={label(field)}
-        className={stepper ? "w-40" : "w-36"}
+        className={stepper ? "w-40" : narrow ? "w-[110px]" : "w-36"}
       >
         <NumberField.Group className="min-h-11">
           {stepper && <NumberField.DecrementButton className="min-h-11 min-w-11" />}

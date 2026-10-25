@@ -371,3 +371,12 @@ def test_icons_on_all_options_or_none(forms):
         for _, f in form.fields():
             if f.options:
                 assert len({o.icon is None for o in f.options}) == 1, f.id
+
+
+def test_every_question_on_a_shared_card_has_a_short_name(forms):
+    # A set of values reads as a short name beside each field (task-list brief §4.5); the lot drawing
+    # and the compass name their own sides and walls.
+    for form in forms.values():
+        for s, f in form.fields():
+            if f.screen and form.screen_layout(f.id) is None and f.is_question:
+                assert f.short and len(f.short) <= 32, f.id
