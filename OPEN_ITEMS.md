@@ -39,6 +39,11 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
     building face?" question (and its addition twin), asked before the walls (chair's ruling
     2026-10-24). Also on the sheet: "Where it joins the road" (was "meets"), and yes/no help
     reworded for tiles ("Choose No if…").
+  - **For the chair (wording, from the wizard's finish review):** "sf" on the Building Form against "sq
+    ft" in "Do I need a permit?"; the street-frontage help points to "Add more detail" before the
+    applicant has seen it; "storey" against "story"; the work option "A change … that doesn't fit
+    today's Code"; the building-type help mentions the CEO deciding; the lot-size help repeats the
+    line under the value ("Measured from the Town's map").
   - **For the chair or the CEO:** check the exterior-finish chip list (clapboard, wood shingle,
     vinyl siding, fibre-cement, brick, stone, …, plus "Other") so its terms match what staff expect.
   - **For the chair (forms):** a building may have up to 10 stories, but the Building Form asks a
