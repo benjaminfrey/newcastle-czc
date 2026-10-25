@@ -137,7 +137,7 @@ export async function fillControls(page: Page, scope: Locator, fixture: string) 
   }
   // A count with − and + (floors above ground): one, if it's blank.
   for (const more of await scope.getByRole("button", { name: /, one more$/ }).all()) {
-    if ((await more.locator("xpath=preceding-sibling::span[1]").textContent())?.trim() === "–") await more.click();
+    if (!(await more.locator("xpath=preceding-sibling::span[1]").textContent())?.trim()) await more.click();
   }
   for (const slider of await scope.getByRole("slider").all()) {
     await slider.focus(); await page.keyboard.press("ArrowRight");
