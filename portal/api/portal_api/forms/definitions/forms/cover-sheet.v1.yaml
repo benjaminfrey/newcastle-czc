@@ -72,6 +72,7 @@ sections:
     required: true
     status: draft
     autocomplete: name
+    screen: contact
   - id: applicant_email
     official_label: Email
     source: account
@@ -86,6 +87,7 @@ sections:
     required: true
     status: draft
     autocomplete: tel
+    screen: contact
   - id: applicant_address
     official_label: Address
     source: question
@@ -96,6 +98,7 @@ sections:
     required: true
     status: draft
     autocomplete: street-address
+    screen: contact
   - id: applicant_is_owner
     official_label: Applicant is the Property Owner
     source: question
@@ -119,6 +122,9 @@ sections:
     default: false
     help: If you choose Yes, the Town will also contact them.
   step: about_you
+  screens:
+  - id: contact
+    layout: null
 - id: owner
   official_title: Property Owner (if different)
   chapter: Who's applying
@@ -138,6 +144,7 @@ sections:
     required: true
     status: draft
     autocomplete: name
+    screen: owner
   - id: owner_email
     official_label: Email
     source: question
@@ -148,6 +155,7 @@ sections:
     required: true
     status: draft
     autocomplete: email
+    screen: owner
   - id: owner_phone
     official_label: Phone
     source: question
@@ -158,6 +166,7 @@ sections:
     required: true
     status: draft
     autocomplete: tel
+    screen: owner
   - id: owner_address
     official_label: Address
     source: question
@@ -167,7 +176,11 @@ sections:
     required: true
     status: draft
     autocomplete: street-address
+    screen: owner
   step: about_you
+  screens:
+  - id: owner
+    layout: null
 - id: agent
   official_title: Agent (if applicable)
   chapter: Who's applying
@@ -186,6 +199,7 @@ sections:
     required: true
     status: draft
     autocomplete: name
+    screen: agent
   - id: agent_email
     official_label: Email
     source: question
@@ -196,6 +210,7 @@ sections:
     required: true
     status: draft
     autocomplete: email
+    screen: agent
   - id: agent_phone
     official_label: Phone
     source: question
@@ -206,6 +221,7 @@ sections:
     required: true
     status: draft
     autocomplete: tel
+    screen: agent
   - id: agent_address
     official_label: Address
     source: question
@@ -216,7 +232,11 @@ sections:
     required: true
     status: draft
     autocomplete: street-address
+    screen: agent
   step: about_you
+  screens:
+  - id: agent
+    layout: null
 - id: site
   official_title: Site Information (existing)
   chapter: Your property
@@ -255,6 +275,7 @@ sections:
     allow_unknown: true
     required: true
     status: draft
+    screen: lot_size
   - id: street_frontage
     official_label: Street Frontage (ft)
     source: property
@@ -283,6 +304,7 @@ sections:
     allow_unknown: true
     required: true
     status: draft
+    screen: lot_size
   - id: existing_dwelling_units
     official_label: Number of Existing Dwelling Units
     source: question
@@ -297,6 +319,9 @@ sections:
     status: draft
     control: stepper
   step: your_lot
+  screens:
+  - id: lot_size
+    layout: null
 - id: certification
   official_title: Certification
   chapter: Sign and submit

@@ -129,7 +129,6 @@ def _status(e) -> str:
 
 def _section(ruleset: Ruleset, form: FormDef, s) -> list[str]:
     steps = {st.id: st.title for st in form.steps}
-    screens = {x.id: x for x in s.screens}
     out = [f"### {s.official_title} (`{s.id}`)", "",
            *([f"- Step: {steps[s.step]}"] if s.step in steps else []),
            *([f"- Repeats: one per {s.repeat.kind} ({s.repeat.min} to {s.repeat.max}); "
@@ -149,12 +148,14 @@ def _section(ruleset: Ruleset, form: FormDef, s) -> list[str]:
             out.append(f"- Answer: {kind}" + ("; required" if f.required else "; optional")
                        + ("; “I don't know yet” allowed" if f.allow_unknown else ""))
             for o in f.options:
-                out.append(f"  - {o.official} — applicants read “{o.label}”")
+                out.append(f"  - {o.official} — applicants read “{o.label}”" + (f" (icon `{o.icon}`)" if o.icon else ""))
         if f.step and f.step != s.step and f.step in steps:
             out.append(f"- Step: {steps[f.step]}")
-        if f.screen in screens:
-            lay = screens[f.screen].layout
-            out.append(f"- Screen: asked with the others on `{f.screen}`" + (f" ({lay} drawing)" if lay else ""))
+        if f.screen:
+            lay = form.screen_layout(f.id)
+            out.append(f"- Card: asked with the others on `{f.screen}`" + (f" ({lay} drawing)" if lay else ""))
+        if f.copies:
+            out.append("- Copied by “Copy Building 1”")
         if f.control:
             starts = "" if f.default is None else (
                 " (starts on)" if f.default is True else " (starts off)" if f.default is False else f" (starts at {f.default})")

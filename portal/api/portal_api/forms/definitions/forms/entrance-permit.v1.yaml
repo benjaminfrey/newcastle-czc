@@ -132,6 +132,7 @@ sections:
     required: true
     status: draft
     step: meets_road
+    screen: driveway
   - id: first_20ft_slope
     official_label: Slope of the first 20 ft (%)
     source: question
@@ -148,6 +149,7 @@ sections:
     step: meets_road
     control: slider
     step_size: 1
+    screen: driveway
   - id: entrance_angle
     official_label: Angle of intersection with the Street or Road (degrees)
     source: question
@@ -164,6 +166,7 @@ sections:
     step: meets_road
     control: slider
     step_size: 5
+    screen: driveway
   - id: sight_distance_left
     official_label: Sight distance, looking left (ft)
     source: question
@@ -206,6 +209,7 @@ sections:
     required: true
     status: draft
     step: safety
+    screen: sight
   - id: intersection_signal
     official_label: Nearest intersection is signaled
     source: question
@@ -216,6 +220,7 @@ sections:
     required: true
     status: draft
     step: safety
+    screen: sight
   - id: roadside_ditch
     official_label: Ditch along the road at the entrance
     source: question
@@ -278,4 +283,6 @@ sections:
   - id: sight
     layout: null
   - id: homes
+    layout: null
+  - id: driveway
     layout: null

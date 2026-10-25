@@ -67,7 +67,8 @@ def form_json(form: FormDef, ruleset) -> dict:
                 "unit": f.unit, "min": f.min, "max": f.max, "required": f.required, "allow_unknown": f.allow_unknown,
                 "show_if": f.show_if, "step": f.step or s.step, "screen": f.screen, "ask_first": f.ask_first, "control": f.control,
                 "step_size": f.step_size, "default": f.default, "autocomplete": f.autocomplete,
-                "options": [{"value": o.value, "label": o.label, "official": o.official} for o in f.options],
+                "options": [{"value": o.value, "label": o.label, "official": o.official, "icon": o.icon} for o in f.options],
+                "copies": f.copies,
             } for f in s.fields],
         } for s in form.sections],
     }

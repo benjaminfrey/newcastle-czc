@@ -62,6 +62,18 @@ def test_sheet_shows_steps_and_controls():
     assert "- Step: Your lot" in sheet
     assert "- Control: switch (starts on)" in sheet
     assert "- Control: slider" in sheet
-    assert "- Screen: asked with the others on `walls` (compass drawing)" in sheet
-    assert "- Screen: asked with the others on `deed`" in sheet
+    assert "- Card: asked with the others on `walls` (compass drawing)" in sheet
+    assert "- Card: asked with the others on `deed`" in sheet
     assert "Add options" not in sheet and "- Pages:" not in sheet
+
+
+def test_sheet_prints_cards_icons_and_copies():
+    r, fs = forms()
+    sheet = forms_sheet(r, fs)
+    sp = sheet[sheet.index("## Small Project Plan"):]
+    name = sp[sp.index("(`building_name`)"):]
+    assert "- Card: asked with the others on `about`" in name[:name.index("#### ", 5)]
+    work = sp[sp.index("(`work_kinds`)"):]
+    assert "  - New building or accessory building — applicants read “A new building, such as a house, garage or shed” (icon `building-cottage`)" in work
+    roof = sp[sp.index("(`roof_style`)"):]
+    assert "- Copied by “Copy Building 1”" in roof[:roof.index("#### ", 5)]
