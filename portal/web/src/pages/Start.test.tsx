@@ -146,11 +146,36 @@ describe("Start, one question at a time", () => {
     expect(loadAnswers()?.division.divided_last_5_years).toBeNull();
   });
 
-  it("answers stack up as chips that go back, with dots below", async () => {
+  it("the card's bar counts the questions that apply, and Back goes back", async () => {
     await newBuilding();
-    await screen.findByRole("textbox", { name: /How much floor area/ });
     expect(screen.getByRole("img", { name: /^Question 3 of / })).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: /^A new building/ }));
+    expect(screen.getByText("Your project")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Back" }));
     expect(await screen.findByRole("radio", { name: "A new building" })).toHaveAttribute("aria-checked", "true");
+  });
+
+  it("every plan tile has its icon, and there's no line of intro", () => {
+    renderPage();
+    for (const name of [BUILD, /Start a business/, /driveway/, "Divide land", /Something else/]) {
+      expect(screen.getByRole("checkbox", { name }).querySelector("svg")).not.toBeNull();
+    }
+    expect(screen.queryByText(/Answer a few questions/)).not.toBeInTheDocument();
+  });
+
+  it("the kinds of building work have icons too", async () => {
+    renderPage();
+    await userEvent.click(screen.getByRole("checkbox", { name: BUILD }));
+    await cont();
+    expect((await screen.findByRole("radio", { name: "A new building" })).querySelector("svg")).not.toBeNull();
+  });
+
+  it("the bar doesn't shrink when a later answer removes questions", async () => {
+    await newBuilding();
+    const before = screen.getByRole("img", { name: /^Question 3 of / }).getAttribute("aria-label")!;
+    const total = Number(before.split(" of ")[1]);
+    await userEvent.click(screen.getByRole("button", { name: "Back" }));
+    await userEvent.click(await screen.findByRole("radio", { name: "Work on the site only (parking, grading, landscaping)" }));
+    const after = await screen.findByRole("img", { name: /^Question 3 of / });
+    expect(Number(after.getAttribute("aria-label")!.split(" of ")[1])).toBeGreaterThanOrEqual(total);
   });
 });

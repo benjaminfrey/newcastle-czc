@@ -5,7 +5,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as api from "../api";
 import * as apps from "../applications";
 import * as layout from "../shell/useWideLayout";
-import ApplicationPage from "./ApplicationPage";
+import { ApplicationProvider, useApplication } from "./ApplicationStore";
+import { stepModels } from "../forms/steps";
+import ReviewPane from "./ReviewPane";
 
 vi.mock("../components/ParcelMap", () => ({ default: () => <div>map</div> }));
 
@@ -49,9 +51,18 @@ function Where() {
   const l = useLocation();
   return <p data-testid="where">{l.pathname}{l.search}</p>;
 }
+// Check and send opens only once every task is done (the page's gate is tested in cards.test.tsx);
+// here the review itself is drawn, whatever is still to answer.
+function Review() {
+  const { form, cur } = useApplication();
+  return form && cur ? <ReviewPane models={stepModels(form, cur)} base="/applications/abc" /> : null;
+}
 const open = () => render(
   <MemoryRouter initialEntries={["/applications/abc/review"]}>
-    <Routes><Route path="/applications/:id/:stepId?" element={<><ApplicationPage /><Where /></>} /></Routes>
+    <Routes>
+      <Route path="/applications/abc/review" element={<><ApplicationProvider id="abc"><Review /></ApplicationProvider><Where /></>} />
+      <Route path="*" element={<Where />} />
+    </Routes>
   </MemoryRouter>,
 );
 const block = (name: string) => screen.getByRole("group", { name });

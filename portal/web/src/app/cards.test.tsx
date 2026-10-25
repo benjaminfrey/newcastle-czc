@@ -368,6 +368,23 @@ describe("the buildings list", () => {
   });
 });
 
+describe("Check and send", () => {
+  it("is closed until every task is done: its address leads to the task list", async () => {
+    open("/applications/abc/review");
+    await waitFor(() => expect(where()).toHaveTextContent(/^\/applications\/abc$/));
+  });
+
+  it("opens, headed Check and send, once they are", async () => {
+    localStorage.setItem("portal.visited.abc", JSON.stringify(["your_lot", "about_you", "the_work", "buildings", "additions"]));
+    withApp({ answers: [a("lot_width", 120), a("lot_depth", 200), a("applicant_name", "Ada"), a("applicant_is_owner", true),
+                        a("work_kinds", ["new_building"]), ...finished("b1")] });
+    open("/applications/abc/review");
+    const main = await screen.findByRole("main");
+    expect(await within(main).findByText("Check and send")).toBeInTheDocument();
+    expect(where()).toHaveTextContent("/applications/abc/review");
+  });
+});
+
 describe("check pages", () => {
   it("a task's answers with Change; Change comes back to the check page", async () => {
     withApp({ answers: [a("applicant_name", "Ada"), a("applicant_is_owner", true)] });
@@ -396,6 +413,11 @@ describe("check pages", () => {
   });
 });
 
+// Everything answered and every task opened: Check and send is open.
+const COMPLETE = [a("lot_width", 120), a("lot_depth", 200), a("applicant_name", "Ada"), a("applicant_is_owner", true),
+                  a("work_kinds", ["new_building"]), ...finished("b1")];
+const visitAll = () => localStorage.setItem("portal.visited.abc", JSON.stringify(["your_lot", "about_you", "the_work", "buildings", "additions"]));
+
 // Kept from the wizard's tests (wizard.test.tsx, 2026-10-24), as cards.
 describe("kept from the wizard", () => {
   it("Skip for now leaves an optional upload empty and moves on", async () => {
@@ -412,7 +434,8 @@ describe("kept from the wizard", () => {
   });
 
   it("Change from review returns to review, unless new cards now apply", async () => {
-    withApp({ answers: [a("applicant_name", "Ada"), a("applicant_is_owner", true)] });
+    visitAll();
+    withApp({ answers: COMPLETE });
     open("/applications/abc/about_you?screen=applicant_is_owner&return=review");
     await userEvent.click(await screen.findByRole("radio", { name: "No" }));
     await waitFor(() => expect(where()).toHaveTextContent("?screen=owner_name&return=review"));
@@ -422,7 +445,8 @@ describe("kept from the wizard", () => {
   });
 
   it("Change from review goes back to review past cards left blank before", async () => {
-    withApp({ answers: [a("lot_width", 120)] });
+    visitAll();
+    withApp({ answers: COMPLETE.filter((x) => x.field_id !== "lot_depth").concat(a("lot_depth", { unknown: true })) });
     open("/applications/abc/your_lot?screen=lot_area&return=review");
     await userEvent.click(await screen.findByRole("radio", { name: "Yes, that's right" }));
     await waitFor(() => expect(where()).toHaveTextContent("/applications/abc/review"));

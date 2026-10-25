@@ -74,7 +74,7 @@ export default function Results() {
         // The answer first, as a title; what it means in a sentence; reviewer, time, fees and lot as
         // rows; Start as the one primary action.
         <section key={`${o.application}-${o.district ?? ""}`} aria-label={o.code_name} className="flex flex-col gap-3">
-          <h2 className="text-[30px] font-bold leading-tight">
+          <h2 className="text-[20px] font-medium leading-[1.3]">
             {o.certainty === "needed" ? "You'll need " : "You may need "}{article(o.code_name)} <span>{o.code_name}</span>
           </h2>
           <p className="text-[17px]">{o.plain}</p>

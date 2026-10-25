@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -36,14 +36,13 @@ const at = (path: string) => {
 };
 
 describe("the start window", () => {
-  it("shows the three start steps in the sidebar, with the ones done checked", async () => {
+  it("sits in a card headed by its step, with Home above", async () => {
     vi.spyOn(api, "getMe").mockResolvedValue(null);
     at("/start/needs");
-    const nav = await screen.findByRole("navigation", { name: "Steps" });
-    expect(within(nav).getByRole("link", { name: "Your project, Done" })).toBeInTheDocument();
-    expect(within(nav).getByRole("link", { name: "Your property, Done" })).toBeInTheDocument();
-    expect(within(nav).getByRole("link", { name: "What you'll need, Not started" })).toHaveAttribute("aria-current", "step");
-    expect(screen.getByRole("heading", { level: 1, name: "What you'll need" })).toBeInTheDocument();
+    expect(await screen.findByText("What you'll need")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute("href", "/");
+    expect(screen.queryByRole("navigation", { name: "Steps" })).not.toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 2, name: /^You'll need a Small Project Plan/ })).toHaveClass("text-[20px]");
   });
 
   it("Start this application goes to the sign-in screen when signed out", async () => {
@@ -59,7 +58,7 @@ describe("the start window", () => {
   it("old addresses lead to the new steps", async () => {
     vi.spyOn(api, "getMe").mockResolvedValue(null);
     at("/start/results");
-    expect(await screen.findByRole("heading", { level: 1, name: "What you'll need" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 2, name: /^You'll need a Small Project Plan/ })).toBeInTheDocument();
   });
 });
 

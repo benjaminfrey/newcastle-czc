@@ -148,7 +148,17 @@ function Tasks({ id }: { id: string }) {
     </AppShell>
   );
   if (!stepId) return shell(false);
-  if (stepId === REVIEW_STEP.id) return shell(true, <div className="mx-auto flex max-w-[640px] flex-col gap-6"><ReviewPane models={models} base={base} /></div>);
+  if (stepId === REVIEW_STEP.id) {
+    // Check and send opens once every task is done (task-list brief §2).
+    if (!send.open) return <Navigate to={base} replace />;
+    return shell(true, (
+      <Card>
+        <Card.Header title={REVIEW_STEP.title} />
+        <Card.Body className="items-stretch gap-6 text-left"><ReviewPane models={models} base={base} /></Card.Body>
+        <Card.Footer back={{ label: "Tasks", onPress: () => go(base, -1) }} />
+      </Card>
+    ));
+  }
   const step = current!;
 
   // The buildings (or additions) list.

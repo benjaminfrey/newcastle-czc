@@ -3,7 +3,7 @@ import Icon from "../controls/Icon";
 import { mapLotLabel } from "../format";
 import { TASK_HINTS, TASK_ICONS, type TaskStatus } from "../forms/tasks";
 import { commitFocused } from "./commitFocused";
-import { SaveStatus } from "./Toolbar";
+import { SaveStatus } from "./SaveStatus";
 import type { SaveState } from "./types";
 
 export type TaskRow = { id: string; title: string; href: string; status: TaskStatus; current?: boolean };

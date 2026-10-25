@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { FormDef, FormField, FormSection } from "../applications";
 import type { Current } from "./applicability";
-import { groupOf, screenAfter, screensOf } from "./screens";
+import { cardsOf } from "./tasks";
 import { stepModels } from "./steps";
 
 const q = (id: string, extra: Partial<FormField> = {}): FormField => ({
@@ -51,11 +51,10 @@ const FORM: FormDef = {
   ],
 };
 const B1 = { id: "b1", kind: "building", position: 0 };
-const B2 = { id: "b2", kind: "building", position: 1 };
 const cur = (answers: Current["answers"] = [], items: Current["items"] = [B1], property: Record<string, unknown> = {}): Current =>
   ({ answers, items, property: { location: "461 SHEEPSCOT RD", acres: 2.73, ...property }, account: {} });
 const a = (field_id: string, value: unknown, item_id: string | null = null) => ({ field_id, item_id, value });
-const screens = (c: Current, step: string) => screensOf(FORM, c, stepModels(FORM, c).find((m) => m.id === step)!);
+const screens = (c: Current, step: string) => cardsOf(FORM, c, stepModels(FORM, c).find((m) => m.id === step)!);
 
 describe("screens", () => {
   it("one screen per question", () => {
@@ -101,34 +100,7 @@ describe("screens", () => {
     expect(screens(cur(), "lot").find((s) => s.id === "deed_book")!.unknown).toBe(true);
   });
 
-  it("buildings loop: each building's screens, then Is there another?", () => {
-    const b = screens(cur([], [B1, B2]), "buildings");
-    const ids = b.map((s) => `${s.itemId}:${s.id}`);
-    expect(ids.indexOf("b2:building_class")).toBeGreaterThan(ids.indexOf("b1:windows_north"));
-    const last = b[b.length - 1];
-    expect(last).toMatchObject({ id: "another:building", kind: "another", auto: true });
-    expect(groupOf(b, last).every((s) => s.itemId === "b2")).toBe(true);
-    expect(groupOf(b, last)).toContain(last);
-  });
 
-  it("an empty additions step asks first", () => {
-    const add = screens(cur(), "additions");
-    expect(add.map((s) => [s.id, s.kind])).toEqual([["any:component", "any"]]);
-    const one = screens(cur([], [B1, { id: "c1", kind: "component", position: 0 }]), "additions");
-    expect(one.map((s) => s.id)).toEqual(["component_kind", "another:component"]);
-  });
 
-  it("screenAfter crosses steps and ends at review", () => {
-    const c = cur([a("applicant_is_owner", true)]);
-    const models = stepModels(FORM, c);
-    expect(screenAfter(FORM, c, models, { step: "you", screen: "has_agent" })).toEqual({ step: "work", screen: "work_kinds" });
-    expect(screenAfter(FORM, c, models, { step: "additions", screen: "any:component" })).toEqual({ review: true });
-    expect(screenAfter(FORM, c, models, { step: "lot", screen: "street_address" })).toEqual({ step: "lot", screen: "deed_book" });
-  });
 
-  it("screenAfter skips screens that stopped applying", () => {
-    // On the owner's name when the owner question was just turned to Yes: the next screen still asked.
-    const c = cur([a("applicant_is_owner", true)]);
-    expect(screenAfter(FORM, c, stepModels(FORM, c), { step: "you", screen: "owner_name" })).toEqual({ step: "work", screen: "work_kinds" });
-  });
 });

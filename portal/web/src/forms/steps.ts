@@ -1,5 +1,5 @@
 // The application's steps (the redesign): the three shared start steps, the form's own steps
-// (declared in its YAML), and Review and sign. A step is a list of rows (questions that apply)
+// (declared in its YAML), and Check and send. A step is a list of rows (questions that apply)
 // or a hub of items (buildings, additions) whose questions sit on sheet pages.
 import type { FormDef, FormSection, Page } from "../applications";
 import type { StepStatus } from "../shell/types";
@@ -10,7 +10,7 @@ export const START_STEPS = [
   { id: "property", title: "Your property" },
   { id: "needs", title: "What you'll need" },
 ] as const;
-export const REVIEW_STEP = { id: "review", title: "Review and sign" } as const;
+export const REVIEW_STEP = { id: "review", title: "Check and send" } as const;
 
 export type HubItem = { id: string; label: string; status: StepStatus; unknowns: number };
 export type StepModel = {

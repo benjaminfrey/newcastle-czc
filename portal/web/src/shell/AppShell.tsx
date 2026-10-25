@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { commitFocused } from "./commitFocused";
 import TaskList, { type TaskRow } from "./TaskList";
-import { SaveStatus } from "./Toolbar";
+import { SaveStatus } from "./SaveStatus";
 import type { SaveState } from "./types";
 import { useWideLayout } from "./useWideLayout";
 

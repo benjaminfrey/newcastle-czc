@@ -1,34 +1,32 @@
-import { Form, NumberField } from "@heroui/react";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { NumberField } from "@heroui/react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import type { FormField } from "../applications";
-import AnswerTrail, { type Chip } from "../app/AnswerTrail";
+import Icon from "../controls/Icon";
 import { ChoiceTiles, MultiTiles } from "../controls/Tiles";
-import ActionBar from "../shell/ActionBar";
-import Dots from "../shell/Dots";
-import { useWideLayout } from "../shell/useWideLayout";
+import Card from "../shell/Card";
 import { saveAnswers, type ProjectKind } from "../screener";
 import { startScreens, type Kind, type StartScreenId } from "../start/startScreens";
 
-const CHOICES: { value: ProjectKind; label: string }[] = [
-  { value: "build", label: "Build something new or add on" },
-  { value: "use", label: "Start a business or change how a building is used" },
-  { value: "driveway", label: "Put in or move a driveway" },
-  { value: "divide", label: "Divide land" },
-  { value: "other", label: "Something else / not sure" },
+const CHOICES: { value: ProjectKind; label: string; icon: string }[] = [
+  { value: "build", label: "Build something new or add on", icon: "home-plus" },
+  { value: "use", label: "Start a business or change how a building is used", icon: "building-store" },
+  { value: "driveway", label: "Put in or move a driveway", icon: "road" },
+  { value: "divide", label: "Divide land", icon: "layout-grid" },
+  { value: "other", label: "Something else / not sure", icon: "help-circle" },
 ];
-const KINDS: { value: Kind; label: string }[] = [
-  { value: "new", label: "A new building" },
-  { value: "addition", label: "An addition to a building" },
-  { value: "renovation", label: "Renovating a building" },
-  { value: "site", label: "Work on the site only (parking, grading, landscaping)" },
+const KINDS: { value: Kind; label: string; icon: string }[] = [
+  { value: "new", label: "A new building", icon: "building-cottage" },
+  { value: "addition", label: "An addition to a building", icon: "home-plus" },
+  { value: "renovation", label: "Renovating a building", icon: "paint" },
+  { value: "site", label: "Work on the site only (parking, grading, landscaping)", icon: "shovel" },
 ];
 const DIVIDED = [{ value: "yes", label: "Yes" }, { value: "no", label: "No" }, { value: "unsure", label: "I don't know" }];
 
 // Each screen's question and its line of help.
 const ASK: Record<StartScreenId, [string, string | null]> = {
   plan: ["What are you planning?", "Choose all that apply."],
-  kind: ["What kind of building work?", null],
+  kind: ["What kind of building work?", "Choose one."],
   area: ["", "Count every storey. Leave it blank if you don't know yet."],
   total: ["What is the floor area of the whole building, in square feet?", "Count every storey. Leave it blank if you don't know yet."],
   parking: ["How many parking spaces will there be?", "Leave it blank if there's no parking, or you don't know yet."],
@@ -49,17 +47,18 @@ function parseNumber(s: string): number | null {
 const toControl = (s: string) => { const n = parseNumber(s); return n === null ? NaN : n; };
 const fromControl = (v: number) => (Number.isNaN(v) ? "" : String(v));
 // The tiles want a field; the screener's questions aren't form fields, so each gets a small one.
-const field = (id: string, label: string, options: { value: string; label: string }[]): FormField => ({
+const field = (id: string, label: string, options: { value: string; label: string; icon?: string }[]): FormField => ({
   id, label, official_label: label, source: "question", from: null, may_correct: false, help: null, why: null, type: "choice",
   unit: null, min: null, max: null, required: true, allow_unknown: false, show_if: null,
   options: options.map((o) => ({ ...o, official: o.label })),
 });
 
-// "Do I need a permit?", Your project, one question at a time: a tap answers a single choice and
-// moves on; the rest have Continue. The answers are saved when the last one is given.
+// "Do I need a permit?", Your project, one question to a card (task-list brief §9): a tap answers
+// a single choice and moves on; the rest have Continue. The bar counts the questions that apply to
+// what has been chosen so far, and never fewer than already answered. The answers are saved when
+// the last one is given.
 export default function Start() {
   const navigate = useNavigate();
-  const wide = useWideLayout();
   const [project, setProject] = useState<ProjectKind[]>([]);
   const [kind, setKind] = useState<Kind | "">("");
   const [nums, setNums] = useState<Record<string, string>>({});
@@ -67,6 +66,7 @@ export default function Start() {
   const [at, setAt] = useState(0);
   const [dir, setDir] = useState<1 | -1>(1);
   const [error, setError] = useState<string | null>(null);
+  const [reached, setReached] = useState(1);
   const busy = useRef(false);
   const list = startScreens({ project, kind });
   const i = Math.min(at, list.length - 1);
@@ -74,6 +74,7 @@ export default function Start() {
   const heading = asked(screen.id, kind);
   const num = (id: string) => nums[id] ?? "";
   useEffect(() => { document.querySelector<HTMLElement>("[data-screen-title]")?.focus(); }, [screen.id]);
+  useEffect(() => setReached((r) => Math.max(r, i + 1)), [i]);
 
   function finish(divOverride?: "yes" | "no" | "unsure") {
     const build = project.includes("build");
@@ -97,8 +98,7 @@ export default function Start() {
   }
   const forward = () => { setError(null); setDir(1); if (i >= list.length - 1) finish(); else setAt(i + 1); };
 
-  function onContinue(e: FormEvent) {
-    e.preventDefault();
+  function onContinue() {
     if (screen.id === "plan" && project.length === 0) return setError("Choose at least one thing you're planning.");
     if (screen.kind === "number" || screen.kind === "stepper") {
       const v = parseNumber(num(screen.id));
@@ -116,23 +116,15 @@ export default function Start() {
     setTimeout(() => { busy.current = false; if (last) last(); else { setDir(1); setAt(i + 1); } }, 200);
   }
 
-  const chips: Chip[] = list.slice(0, i).flatMap((s): Chip[] => {
-    const text = s.id === "plan" ? CHOICES.filter((c) => project.includes(c.value)).map((c) => c.label).join(", ")
-      : s.id === "kind" ? KINDS.find((k) => k.value === kind)?.label ?? ""
-      : s.id === "divided" ? ""
-      : num(s.id) ? (s.id === "area" || s.id === "total" ? `${Number(parseNumber(num(s.id))).toLocaleString("en-US")} sq ft`
-        : `${({ parking: "Parking spaces", homes: "New homes", earlier: "Homes in the last five years", lots: "Lots after" } as Record<string, string>)[s.id]}: ${num(s.id)}`)
-      : "";
-    return text ? [{ id: s.id, text, carried: false }] : [];
-  });
-
   const body = (() => {
     switch (screen.id) {
       case "plan":
         return <MultiTiles field={field("plan", heading, CHOICES)} value={project}
                            onValue={(v) => { setProject((v as ProjectKind[] | null) ?? []); setError(null); }} />;
       case "kind":
-        return <ChoiceTiles field={field("kind", heading, KINDS)} value={kind} onPick={(v) => tap(() => setKind(v as Kind))} />;
+        return <ChoiceTiles field={field("kind", heading, KINDS)} value={kind}
+                            choices={KINDS.map((k) => ({ value: k.value, key: k.value, label: k.label, icon: <Icon name={k.icon} /> }))}
+                            onPick={(v) => tap(() => setKind(v as Kind))} />;
       case "divided":
         return <ChoiceTiles field={field("divided", heading, DIVIDED)} value={null}
                             onPick={(v) => tap(() => setDivided(v as "yes" | "no" | "unsure"), () => finish(v as "yes" | "no" | "unsure"))} />;
@@ -156,24 +148,21 @@ export default function Start() {
     }
   })();
   const blank = screen.kind !== "multi" && !num(screen.id);
+  const count = Math.max(list.length, reached);
 
   return (
-    <Form onSubmit={onContinue} className="flex flex-col">
-      <AnswerTrail chips={chips} onGo={(id) => { setDir(-1); setError(null); setAt(list.findIndex((s) => s.id === id)); }} />
-      <section key={screen.id} className={`flex flex-col items-center gap-2 py-8 text-center ${dir < 0 ? "pane-pull" : "pane-push"}`}>
-        {i === 0 && <p className="mb-2 max-w-[46ch] text-[15px] text-[var(--app-secondary-label)]">Answer a few questions and we'll tell you which permit you need. It takes a couple of minutes.</p>}
-        <h2 tabIndex={-1} data-screen-title className="max-w-[30ch] text-balance text-[22px] font-semibold leading-tight outline-none">{heading}</h2>
-        <p className="mb-4 min-h-[1.25rem] max-w-[46ch] text-pretty text-[15px] text-[var(--app-secondary-label)]">{ASK[screen.id][1] ?? ""}</p>
+    <Card onSubmit={onContinue}>
+      <Card.Header title="Your project" count={count} at={i} />
+      <Card.Body motionKey={screen.id} direction={dir}>
+        <h2 tabIndex={-1} data-screen-title className="max-w-[30ch] text-balance text-[20px] font-medium leading-[1.3] outline-none">{heading}</h2>
+        <p className="mb-4 mt-1 max-w-[46ch] text-pretty text-[13px] text-[var(--app-secondary-label)]">{ASK[screen.id][1] ?? ""}</p>
         {body}
         {error && <p role="alert" className="mt-3 text-[15px] text-[var(--app-destructive)]">{error}</p>}
-      </section>
-      <p className="sr-only" aria-live="polite">Question {i + 1} of {list.length}: {heading}</p>
-      <ActionBar wide={wide} actions={{
-        dots: <Dots count={list.length} index={i} />,
-        back: i > 0 ? () => { setDir(-1); setError(null); setAt(i - 1); } : undefined,
-        onContinue: screen.auto ? undefined : () => {},
-        continueLabel: screen.optional && blank ? "Skip for now" : "Continue",
-      }} />
-    </Form>
+      </Card.Body>
+      <Card.Footer
+        back={i > 0 ? { label: "Back", onPress: () => { setDir(-1); setError(null); setAt(i - 1); } } : undefined}
+        next={screen.auto ? null : { label: screen.optional && blank ? "Skip for now" : "Continue", onPress: onContinue }} />
+      <p className="sr-only" aria-live="polite">Question {i + 1} of {count}: {heading}</p>
+    </Card>
   );
 }

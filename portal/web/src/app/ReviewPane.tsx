@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { getUseGroups } from "../api";
 import { printed } from "../forms/applicability";
-import { screensOf } from "../forms/screens";
+import { cardsOf } from "../forms/tasks";
 import { itemLabel, type StepModel } from "../forms/steps";
 import { longDate, mapLotLabel } from "../format";
 import InsetGroup from "../shell/InsetGroup";
@@ -14,7 +14,7 @@ import OfficialGroup from "./OfficialGroup";
 // Sections the paper form ends with: the signatures and the office's box.
 const isClosing = (fields: { source: string }[]) => fields.length > 0 && fields.every((f) => f.source === "at_submit" || f.source === "staff");
 
-// Review and sign: the official form section by section, each answer under the question as it was
+// Check and send: the official form section by section, each answer under the question as it was
 // asked (the form's term beneath), with Change to that question's screen, which comes back here.
 // Add more detail sits on each section. Sending it arrives in Milestone 6.
 export default function ReviewPane({ models, base }: { models: StepModel[]; base: string }) {
@@ -29,8 +29,8 @@ export default function ReviewPane({ models, base }: { models: StepModel[]; base
     const all = printed(form!, cur!);
     return [...all.filter((b) => !isClosing(b.section.fields)), ...all.filter((b) => isClosing(b.section.fields))];
   }, [form, cur]);
-  // The wizard screen a question is asked on (a grouped field opens its group), coming back here.
-  const screens = useMemo(() => models.flatMap((m) => screensOf(form!, cur!, m)), [models, form, cur]);
+  // The card a question is asked on (a grouped field opens its card), coming back here.
+  const screens = useMemo(() => models.flatMap((m) => cardsOf(form!, cur!, m)), [models, form, cur]);
   const changeHref = (fieldId: string, itemId: string | null): string | null => {
     const s = screens.find((x) => x.rows.some((r) => r.field.id === fieldId && r.itemId === itemId));
     if (!s) return null;
