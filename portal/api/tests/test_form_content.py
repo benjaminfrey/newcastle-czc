@@ -390,3 +390,14 @@ def test_a_card_of_several_questions_asks_its_own_question(forms):
             for sc in s.screens:
                 if sc.layout is None:
                     assert sc.title and sc.title.endswith("?"), (form.key, sc.id)
+
+
+def test_about_you_asks_the_owner_right_after_the_owner_question(forms):
+    # The owner's card follows "Do you own this property?", before "Is someone else helping?"
+    # (task-list brief §3), by rank; the printed Cover Sheet keeps its order.
+    cover = forms["use_permit"]
+    ranked = sorted(((f.ask_first, f.id) for _, f in cover.fields() if f.ask_first and cover.step_of(f.id) == "about_you"),
+                    key=lambda x: x[0])  # by rank; the form's order among equals
+    assert [fid for _, fid in ranked] == ["applicant_name", "applicant_phone", "applicant_address", "applicant_is_owner",
+                                         "owner_name", "owner_email", "owner_phone", "owner_address"]
+    assert [r for r, f in ranked][:4] == [1, 1, 1, 2] and {r for r, f in ranked[4:]} == {3}

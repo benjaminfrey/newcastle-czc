@@ -39,6 +39,7 @@ function Tasks({ id }: { id: string }) {
   const [direction, setDirection] = useState<1 | -1>(1);
   const [editing, setEditing] = useState(false);
   const [pending, setPending] = useState<Pending | null>(null);
+  const [unknownFor, setUnknownFor] = useState<Screen | null>(null); // "I don't know…": mark the blanks, then move on
   const busy = useRef(false);
   const errorsRef = useRef<Record<string, string>>({});
 
@@ -63,8 +64,6 @@ function Tasks({ id }: { id: string }) {
   // The task's cards as they stood when this one opened: a Change asks only the cards an answer adds.
   const asked = useRef<Set<string>>(new Set());
   const [hadAnswer, setHadAnswer] = useState<string | null>(null); // the card that was answered when it opened
-  // The most cards each run has shown, so the bar never shrinks below what's been answered.
-  const reached = useRef<Map<string, number>>(new Map());
   const [hintFirst] = useState(() => hintUnseen(id));
   const [hintCard, setHintCard] = useState<string | null>(null);
 
@@ -98,6 +97,16 @@ function Tasks({ id }: { id: string }) {
     document.title = `${heading ?? "Your application"} — ${form.official_title}`;
     document.querySelector<HTMLElement>("[data-screen-title]")?.focus();
   }, [heading, form, paneKey]);
+
+  useEffect(() => {
+    if (!unknownFor || !form || !cur) return;
+    setUnknownFor(null);
+    // Only the values left blank that may be unknown.
+    for (const r of unknownFor.rows) {
+      if (r.field.allow_unknown && empty(valueOf(form, r.field, r.itemId, cur))) void setAnswer(r.field.id, r.itemId, { unknown: true });
+    }
+    setPending({ from: unknownFor });
+  }, [unknownFor, form, cur]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Moving on is worked out after the answer has landed, so cards an answer adds or removes (the
   // owner's) are counted, and a new building's first card exists.
@@ -221,20 +230,17 @@ function Tasks({ id }: { id: string }) {
     if (!keep && cur!.answers.some((x) => x.field_id === r.field.id && x.item_id === r.itemId)) void setAnswer(r.field.id, r.itemId, null);
     moveOn(screen);
   }
-  function onUnknown() {
+  async function onUnknown() {
     if (!screen) return;
+    // A value typed but not yet left saves first; which values are blank is decided once it has
+    // landed (the effect above), so what was typed stays.
     commitFocused();
-    // Only the blank values that may be unknown; what was typed stays.
-    for (const r of screen.rows) {
-      if (r.field.allow_unknown && empty(valueOf(form!, r.field, r.itemId, cur!))) void setAnswer(r.field.id, r.itemId, { unknown: true });
-    }
-    moveOn(screen);
+    await flush();
+    setUnknownFor(screen);
   }
 
-  // The bar: this run's cards, never fewer than it has shown.
-  const run = `${step.id}:${screen.itemId ?? ""}`;
-  const progress = progressOf(cards, screen, reached.current.get(run) ?? 0);
-  reached.current.set(run, Math.max(reached.current.get(run) ?? 0, at + 1));
+  // The bar: the cards that apply now (they change only when an answer adds or removes one).
+  const progress = progressOf(cards, screen, 0);
   const title = screen.itemId ? itemTitle(form, cur, screen.itemId).title : step.title;
 
   // Continue for what is typed; a tap card has none, unless it was answered before (coming back to
@@ -255,10 +261,10 @@ function Tasks({ id }: { id: string }) {
       <Card.Header title={title} count={progress.count} at={progress.at} />
       <Card.Body motionKey={paneKey} direction={direction}>
         <CardQuestion screen={screen} editing={editing} errorsRef={errorsRef} onPick={onPick} onConfirm={onConfirm}
-                      onCorrect={() => setEditing(true)} onUnknown={onUnknown} />
+                      onCorrect={() => setEditing(true)} onUnknown={() => void onUnknown()} />
       </Card.Body>
       <Card.Footer back={back}
-                   next={needsContinue ? { label: screen.optional && blank ? "Skip for now" : "Continue", onPress: () => void onContinue() }
+                   next={needsContinue ? { label: screen.optional && blank ? "Skip for now" : "Continue", plain: screen.optional && blank, onPress: () => void onContinue() }
                      : hint ? { hint: "A tap moves on" } : null} />
       <p className="sr-only" aria-live="polite">Question {progress.at + 1} of {progress.count}: {heading}</p>
     </Card>

@@ -42,6 +42,12 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
     question (and its addition twin), now asked on the walls' card (chair's ruling 2026-10-24).
     Also on the sheet: "Where it joins the road" (was "meets"), and yes/no help reworded for tiles
     ("Choose No if…").
+  - **For the chair (forms, from the cards' review):** a building's "What do you call this building?"
+    is required and "How many homes will this building have?" is asked of every type (a garage
+    too), where the cards brief said "optional" and "homes only" — say which; Your lot's cards
+    follow the official form's order (address, deed, then the lot's size), not the brief's.
+  - **To check on an iPhone:** with the keyboard up on a long card (materials, walls), the card's
+    footer may sit behind the keyboard until it is dismissed.
   - **For the chair (looks, from the cards' finish review):** a desktop's application home shows the
     task list twice (the sidebar and the main card); fields stay 44 px tall for touch, where the
     comp drew 36 px; the property card's spacing; "No password" said twice on sign-in.

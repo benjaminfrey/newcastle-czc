@@ -10,9 +10,10 @@ import { itemLabel, type StepModel } from "../forms/steps";
 import { firstCopySource, itemSummary } from "../forms/tasks";
 import Card from "../shell/Card";
 
-const NOUNS: Record<string, { add: string; done: string; none: string; plural: string }> = {
-  building: { add: "Add a building", done: "Done with buildings", none: "No buildings", plural: "buildings" },
-  component: { add: "Add an addition, porch or deck", done: "Done with additions", none: "No additions", plural: "additions" },
+const NOUNS: Record<string, { add: string; done: string; none: string; ask: string }> = {
+  building: { add: "Add a building", done: "Done with buildings", none: "No buildings", ask: "Are you adding a building?" },
+  component: { add: "Add an addition, porch or deck", done: "Done with additions", none: "No additions",
+               ask: "Are you adding an addition, a porch or a deck?" },
 };
 
 // "Building 1 · A home", "Addition 2 · A deck": the item's number and, once known, its type in the
@@ -45,15 +46,18 @@ export default function ItemsPane({ form, cur, step, onOpen, onAdd, onCopy, onDe
   const words = NOUNS[hub.kind] ?? NOUNS.building;
   const [confirm, setConfirm] = useState<{ id: string; title: string } | null>(null);
   const canDelete = hub.items.length > hub.repeat.min;
-  const copy = firstCopySource(form, cur, hub.kind);
+  // Copy only where the form copies something (buildings; an addition copies nothing).
+  const copyable = form.sections.some((s) => s.repeat?.kind === hub.kind && s.fields.some((f) => f.copies));
+  const copy = copyable ? firstCopySource(form, cur, hub.kind) : null;
   const full = hub.items.length >= hub.repeat.max;
   const empty = hub.items.length === 0;
 
   return (
     <Card>
       <Card.Header title={step.title} aside={empty ? undefined : `${hub.items.length} added`} />
+      <Card.Scroll>
       <div className="flex flex-col">
-        {empty && <p className="px-6 py-6 text-center text-[15px] text-[var(--app-secondary-label)]">Are you adding any {words.plural}?</p>}
+        {empty && <p className="px-6 py-6 text-center text-[15px] text-[var(--app-secondary-label)]">{words.ask}</p>}
         {hub.items.map((i, k) => {
           const t = itemTitle(form, cur, i.id);
           const summary = itemSummary(form, cur, i.id);
@@ -79,6 +83,7 @@ export default function ItemsPane({ form, cur, step, onOpen, onAdd, onCopy, onDe
           );
         })}
       </div>
+      </Card.Scroll>
       <Card.Footer
         extra={<>
           {!full && <button type="button" className="btn" onClick={onAdd}><Icon name="plus" size={16} />{words.add}</button>}

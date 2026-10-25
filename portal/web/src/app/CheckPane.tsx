@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { getUseGroups } from "../api";
 import { isUnknown } from "../controls/basic";
-import { buildingKind } from "../controls/pickers";
+import { buildingKind, buildingLabel } from "../controls/pickers";
 import { valueOf } from "../forms/applicability";
 import type { Screen } from "../forms/screens";
 import Card from "../shell/Card";
 import { useApplication } from "./ApplicationStore";
+import { itemTitle } from "./ItemsPane";
 import { display } from "./OfficialGroup";
 
 const blank = (v: unknown) => v === null || v === undefined || v === "" || (Array.isArray(v) && v.length === 0);
@@ -35,6 +36,10 @@ export default function CheckPane({ title, cards, changeHref, onBack, onDone }: 
     // The tile the applicant tapped, in its words; the printout keeps the form's terms.
     const f = r.field;
     if (f.id === "building_class" && typeof v === "string") return buildingKind(v)?.label ?? display(f, v, useNames);
+    // "Attached to" stores the building; it reads as the building, as it is named now.
+    if (f.control === "building-picker" && typeof v === "string") {
+      return cur!.items.some((i) => i.id === v) ? itemTitle(form!, cur!, v).title : buildingLabel(form!, cur!, v) ?? "A building since deleted";
+    }
     if (f.type === "choice") return f.options.find((o) => o.value === v)?.label ?? display(f, v, useNames);
     if (f.type === "multichoice" && Array.isArray(v)) return v.map((x) => f.options.find((o) => o.value === x)?.label ?? x).join(", ");
     return display(f, v, useNames);
@@ -43,6 +48,7 @@ export default function CheckPane({ title, cards, changeHref, onBack, onDone }: 
   return (
     <Card>
       <Card.Header title={`Check ${title}`} count={cards.length || 1} at={(cards.length || 1) - 1} />
+      <Card.Scroll>
       <ul className="flex flex-col text-left">
         {rows.map(({ s, r }, k) => {
           const words = shown(s, r.field.id, r.itemId);
@@ -61,6 +67,7 @@ export default function CheckPane({ title, cards, changeHref, onBack, onDone }: 
           );
         })}
       </ul>
+      </Card.Scroll>
       <Card.Footer back={{ label: "Back", onPress: onBack }} next={{ label: "Done", onPress: onDone }} />
     </Card>
   );

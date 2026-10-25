@@ -97,7 +97,10 @@ export function buildCards(form: FormDef, cur: Current, rows: Row[], step: strin
 // An item's questions in asking order: ask-first ones by rank (the building's type, then whether
 // it's only being renovated), then the rest in the form's order.
 const rank = (r: Row) => Number(r.field.ask_first ?? 0);
-export function itemRows(step: StepModel, itemId: string): Row[] {
-  const rows = step.rows.filter((r) => r.itemId === itemId);
+// Ranked questions first, by rank (the form's order among equals), then the rest in the form's order.
+export function ranked(rows: Row[]): Row[] {
   return [...rows.filter((r) => rank(r) > 0).sort((x, y) => rank(x) - rank(y)), ...rows.filter((r) => rank(r) === 0)];
+}
+export function itemRows(step: StepModel, itemId: string): Row[] {
+  return ranked(step.rows.filter((r) => r.itemId === itemId));
 }

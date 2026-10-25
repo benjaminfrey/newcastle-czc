@@ -163,3 +163,16 @@ describe("the task list's words", () => {
     expect(TASK_HINTS.buildings).toBe("One short set of questions for each");
   });
 });
+
+describe("asking order outside a building", () => {
+  it("ranked questions lead a task: the owner's card follows its question, before \"Is someone helping?\"", () => {
+    const form: FormDef = { ...FORM, sections: [
+      sec("applicant", "about_you", [q("applicant_name", { type: "text", ask_first: 1 }), q("applicant_is_owner", { type: "yesno", ask_first: 2 }),
+                                     q("has_agent", { type: "yesno" })]),
+      sec("owner", "about_you", [q("owner_name", { type: "text", ask_first: 3 })], { show_if: { eq: ["answers.applicant_is_owner", false] } }),
+      ...FORM.sections.filter((s) => s.step !== "about_you")] };
+    const c = cur([a("applicant_is_owner", false)]);
+    expect(cardsOf(form, c, stepModels(form, c).find((m) => m.id === "about_you")!).map((s) => s.id))
+      .toEqual(["applicant_name", "applicant_is_owner", "owner_name", "has_agent"]);
+  });
+});

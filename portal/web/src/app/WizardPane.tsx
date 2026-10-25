@@ -124,7 +124,7 @@ function Stepper({ r, name, value, onValue }: { r: Row; name: string; value: unk
   return (
     <span className="flex items-center justify-end gap-2">
       <button type="button" className="btn min-w-9 justify-center px-0" aria-label={`${name}, one fewer`}
-              onClick={() => n !== null && n > min && onValue(n - 1)}>−</button>
+              onClick={() => (n === null ? onValue(min) : n > min && onValue(n - 1))}>−</button>
       <span aria-live="polite" className="min-w-6 text-center text-[15px] tabular-nums">{n ?? ""}</span>
       <button type="button" className="btn min-w-9 justify-center px-0" aria-label={`${name}, one more`}
               onClick={() => onValue(n === null ? Math.max(min, 1) : Math.min(max, n + 1))}>+</button>

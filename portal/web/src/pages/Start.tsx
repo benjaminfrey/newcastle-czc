@@ -161,7 +161,7 @@ export default function Start() {
       </Card.Body>
       <Card.Footer
         back={i > 0 ? { label: "Back", onPress: () => { setDir(-1); setError(null); setAt(i - 1); } } : undefined}
-        next={screen.auto ? null : { label: screen.optional && blank ? "Skip for now" : "Continue", onPress: onContinue }} />
+        next={screen.auto ? null : { label: screen.optional && blank ? "Skip for now" : "Continue", plain: screen.optional && blank, onPress: onContinue }} />
       <p className="sr-only" aria-live="polite">Question {i + 1} of {count}: {heading}</p>
     </Card>
   );

@@ -80,7 +80,8 @@ const FORM: apps.FormDef = {
         { control: "slider", screen: "walls", min: 0, max: 100, step_size: 5, unit: "%" }))],
       { repeat: BUILDING, screens: [{ id: "walls", layout: "compass" }] }),
     sec("component", "additions", [q("component_kind", "What are you adding?", { type: "choice", control: "tiles",
-      options: opts(["addition", "An addition"], ["deck", "A deck"]) })], { repeat: COMPONENT }),
+      options: opts(["addition", "An addition"], ["deck", "A deck"]) }),
+      q("attached_to", "Which building is it attached to?", { type: "text", control: "building-picker", required: false })], { repeat: COMPONENT }),
   ],
 };
 const B1 = { id: "b1", kind: "building", position: 0 };
@@ -509,5 +510,83 @@ describe("kept from the wizard", () => {
     await userEvent.click(screen.getByRole("button", { name: "Continue" }));
     await waitFor(() => expect(where()).toHaveTextContent("?screen=work_kinds"));
     expect(saved()).toContainEqual(a("entrance_road", "Main Street"));
+  });
+});
+
+// The whole-branch review's fixes (task-list Task 9).
+describe("review fixes", () => {
+  it("a check page and the buildings list scroll between their header and footer", async () => {
+    withApp({ answers: finished("b1") });
+    const { unmount } = open("/applications/abc/buildings/check?item=b1");
+    await screen.findByText("Check Building 1");
+    expect(document.querySelector("[data-card-scroll]")!.className).toContain("overflow-y-auto");
+    expect(document.querySelector("[data-card-scroll]")).toContainElement(screen.getAllByRole("link", { name: /^Change / })[0]);
+    unmount();
+    open("/applications/abc/buildings");
+    await screen.findByText("Building 1 · A home");
+    expect(document.querySelector("[data-card-scroll]")).toContainElement(screen.getByText("Building 1 · A home"));
+  });
+
+  it("I don't know some of these yet keeps a value just typed", async () => {
+    open("/applications/abc/your_lot?screen=lot_width");
+    await userEvent.type(await screen.findByRole("textbox", { name: "Width" }), "120");
+    fireEvent.click(screen.getByRole("button", { name: "I don't know some of these yet" }));
+    await waitFor(() => expect(saved()).toContainEqual(a("lot_depth", { unknown: true })));
+    expect(saved()).toContainEqual(a("lot_width", 120));
+    expect(saved()).not.toContainEqual(a("lot_width", { unknown: true }));
+  });
+
+  it("a check page names the building an addition is attached to", async () => {
+    const C1 = { id: "c1", kind: "component", position: 0 };
+    withApp({ items: [B1, C1], answers: [...finished("b1"), a("component_kind", "deck", "c1"), a("attached_to", "b1", "c1")] });
+    open("/applications/abc/additions/check?item=c1");
+    await screen.findByText("Check Addition 1");
+    expect(screen.getByText("Building 1 · A home")).toBeInTheDocument(); // as on the buildings list
+    expect(screen.queryByText("b1")).not.toBeInTheDocument();
+  });
+
+  it("no Copy on the additions list: additions copy nothing", async () => {
+    const C1 = { id: "c1", kind: "component", position: 0 };
+    withApp({ items: [B1, C1], answers: [...finished("b1"), a("component_kind", "deck", "c1")] });
+    open("/applications/abc/additions");
+    await screen.findByRole("button", { name: "Add an addition, porch or deck" });
+    expect(screen.queryByRole("button", { name: /^Copy/ })).not.toBeInTheDocument();
+  });
+
+  it("the bar counts the cards that apply now, even after an answer removes one", async () => {
+    // In one visit: the owner's card seen (3 of 3), then "Yes, I own it" removes it.
+    withApp({ answers: [a("applicant_name", "Ada"), a("applicant_is_owner", false)] });
+    open("/applications/abc/about_you?screen=owner_name");
+    expect(await screen.findByRole("img", { name: "Question 3 of 3" })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Back" }));
+    await userEvent.click(await screen.findByRole("radio", { name: "Yes" }));
+    await waitFor(() => expect(where()).toHaveTextContent("/applications/abc/about_you/check"));
+    await userEvent.click(await screen.findByRole("link", { name: "Change What is your full name?" }));
+    expect(await screen.findByRole("img", { name: "Question 1 of 2" })).toBeInTheDocument();
+  });
+
+  it("a form's default alone doesn't count as an answered card on the task list", async () => {
+    // A carried homes count starts the task; the renovation question's default isn't an answer.
+    withApp({ answers: [a("renovation_only", false, "b1"), { ...a("dwelling_units", 1, "b1"), carried: true }] });
+    open("/applications/abc");
+    const main = await screen.findByRole("main");
+    expect(within(main).getByRole("link", { name: /^Buildings,.*0 of 8 ?answered$/ })).toBeInTheDocument();
+  });
+
+  it("Skip for now is a plain button; only Continue is filled", async () => {
+    withApp({ answers: [a("work_kinds", ["site"])] });
+    open("/applications/abc/the_work?screen=sketch");
+    expect(await screen.findByRole("button", { name: "Skip for now" })).not.toHaveAttribute("data-filled");
+  });
+
+  it("a count reaches its least from blank with −", async () => {
+    open("/applications/abc/buildings?screen=building_name&item=b1");
+    await userEvent.click(await screen.findByRole("button", { name: "Homes in it, one fewer" }));
+    await waitFor(() => expect(saved()).toContainEqual(a("dwelling_units", 0, "b1")));
+  });
+
+  it("an empty additions list asks in its own words", async () => {
+    open("/applications/abc/additions");
+    expect(await screen.findByText("Are you adding an addition, a porch or a deck?")).toBeInTheDocument();
   });
 });

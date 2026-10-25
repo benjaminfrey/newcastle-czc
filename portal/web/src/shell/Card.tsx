@@ -43,7 +43,13 @@ function Body({ motionKey, direction = 1, children, className }: {
   );
 }
 
-type Press = { label: ReactNode; onPress: () => void; aria?: string };
+// A card's rows that may run long (a check page, the buildings list): on a phone they scroll between
+// the header and the footer, which stays the card's bottom band.
+function Scroll({ children }: { children: ReactNode }) {
+  return <div data-card-scroll className="min-h-0 flex-1 overflow-y-auto">{children}</div>;
+}
+
+type Press = { label: ReactNode; onPress: () => void; aria?: string; plain?: boolean };
 
 // Back on the left; Continue on the right (filled), or a quiet hint where a tap moves on.
 function Footer({ back, next, extra }: { back?: Press; next?: Press | { hint: string } | null; extra?: ReactNode }) {
@@ -53,7 +59,8 @@ function Footer({ back, next, extra }: { back?: Press; next?: Press | { hint: st
       {extra}
       {next && "hint" in next && <span className="ml-auto text-[13px] text-[var(--app-secondary-label)]">{next.hint}</span>}
       {next && "onPress" in next && (
-        <button type="button" data-filled="" className="btn btn-filled ml-auto" aria-label={next.aria}
+        // Continue is the card's one filled button; a skip is plain.
+        <button type="button" data-filled={next.plain ? undefined : ""} className={`btn ml-auto ${next.plain ? "" : "btn-filled"}`} aria-label={next.aria}
                 onClick={() => { commitFocused(); next.onPress(); }}>{next.label}</button>
       )}
     </div>
@@ -63,4 +70,5 @@ function Footer({ back, next, extra }: { back?: Press; next?: Press | { hint: st
 Card.Header = Header;
 Card.Body = Body;
 Card.Footer = Footer;
+Card.Scroll = Scroll;
 export default Card;

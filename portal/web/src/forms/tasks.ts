@@ -3,7 +3,7 @@
 // shows as a pill on the task list, and "Check and send" opens once every task is done.
 import type { FormDef } from "../applications";
 import { answerOf, missing, type Current } from "./applicability";
-import { buildCards, itemRows, type Screen } from "./screens";
+import { buildCards, itemRows, ranked, type Screen } from "./screens";
 import { itemLabel, statusOf, type StepModel } from "./steps";
 
 export type TaskStatus = { kind: "done" } | { kind: "progress"; answered: number; total: number } | { kind: "todo" };
@@ -12,15 +12,17 @@ const empty = (v: unknown) => v === null || v === undefined || v === "" || (Arra
 
 // A task's cards (a building's, when `itemId` is given; a whole hub's otherwise).
 export function cardsOf(form: FormDef, cur: Current, step: StepModel, itemId?: string): Screen[] {
-  if (step.kind !== "hub" || !step.hub) return buildCards(form, cur, step.rows, step.id, null);
+  if (step.kind !== "hub" || !step.hub) return buildCards(form, cur, ranked(step.rows), step.id, null);
   const items = itemId ? step.hub.items.filter((i) => i.id === itemId) : step.hub.items;
   return items.flatMap((i) => buildCards(form, cur, itemRows(step, i.id), step.id, i.id));
 }
 
-// A card is answered when each of its questions has a value (a form's default counts: it is shown
-// chosen); a task has started once any answer differs from the form's default.
+// A card is answered when each of its questions has a value and not every one is just the form's
+// default (a switch set by the form isn't an answer the applicant gave); a task has started once
+// any answer differs from the form's default.
 const answered = (cur: Current, s: Screen) =>
-  s.rows.length > 0 && s.rows.every((r) => !empty(answerOf(cur, r.field.id, r.itemId)));
+  s.rows.length > 0 && s.rows.every((r) => !empty(answerOf(cur, r.field.id, r.itemId)))
+  && !s.rows.every((r) => answerOf(cur, r.field.id, r.itemId) === r.field.default);
 const touched = (cur: Current, step: StepModel) => step.rows.some((r) => {
   const v = answerOf(cur, r.field.id, r.itemId);
   return !empty(v) && v !== r.field.default;

@@ -78,6 +78,7 @@ sections:
     autocomplete: name
     screen: contact
     short: Full name
+    ask_first: 1
   - id: applicant_email
     official_label: Email
     source: account
@@ -94,6 +95,7 @@ sections:
     autocomplete: tel
     screen: contact
     short: Phone
+    ask_first: 1
   - id: applicant_address
     official_label: Address
     source: question
@@ -106,6 +108,7 @@ sections:
     autocomplete: street-address
     screen: contact
     short: Mailing address
+    ask_first: 1
   - id: applicant_is_owner
     official_label: Applicant is the Property Owner
     source: question
@@ -117,6 +120,7 @@ sections:
     status: draft
     control: switch
     default: true
+    ask_first: 2
   - id: has_agent
     official_label: Agent
     source: question
@@ -154,6 +158,7 @@ sections:
     autocomplete: name
     screen: owner
     short: Owner's name
+    ask_first: 3
   - id: owner_email
     official_label: Email
     source: question
@@ -166,6 +171,7 @@ sections:
     autocomplete: email
     screen: owner
     short: Email
+    ask_first: 3
   - id: owner_phone
     official_label: Phone
     source: question
@@ -178,6 +184,7 @@ sections:
     autocomplete: tel
     screen: owner
     short: Phone
+    ask_first: 3
   - id: owner_address
     official_label: Address
     source: question
@@ -189,6 +196,7 @@ sections:
     autocomplete: street-address
     screen: owner
     short: Mailing address
+    ask_first: 3
   step: about_you
   screens:
   - id: owner

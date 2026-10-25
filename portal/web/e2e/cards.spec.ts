@@ -45,6 +45,10 @@ test("tasks and cards: the list, the bar, icons, a tap, the phone's footer, and 
     const box = await page.getByRole("button", { name: "Continue" }).boundingBox();
     const view = page.viewportSize()!;
     expect(box && box.y >= 0 && box.y + box.height <= view.height).toBe(true);
+    // A building's long check page: its rows scroll, and Done stays on screen without a scroll.
+    await page.goto(`${base}/buildings/check?item=${await firstItem(page, base)}`);
+    const done = await page.getByRole("button", { name: "Done" }).boundingBox();
+    expect(done && done.y >= 0 && done.y + done.height <= view.height).toBe(true);
   }
 
   // Dark mode follows the device and passes the accessibility checks.
