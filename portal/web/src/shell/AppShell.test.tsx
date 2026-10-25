@@ -32,7 +32,7 @@ describe("AppShell", () => {
     vi.spyOn(layout, "useWideLayout").mockReturnValue(true);
     draw(true);
     expect(screen.getByRole("navigation", { name: "Tasks" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "The work, Not started" })).toHaveAttribute("aria-current", "step");
+    expect(screen.getByRole("link", { name: /^The work,.*Not started$/ })).toHaveAttribute("aria-current", "step");
     expect(screen.getByText("What kind of work?")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Save and close" })).toBeInTheDocument();
   });
@@ -51,7 +51,7 @@ describe("AppShell", () => {
     vi.spyOn(layout, "useWideLayout").mockReturnValue(false);
     const onDone = vi.fn();
     draw(false, onDone);
-    expect(screen.getByRole("link", { name: "Your lot, Done" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /^Your lot,.*Done$/ })).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Save and close" }));
     expect(onDone).toHaveBeenCalled();
   });

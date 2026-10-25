@@ -83,21 +83,22 @@ export async function screenerToStart(page: Page, project: Project, application:
     await page.getByLabel("Search uses").fill("vendor market");
     await page.getByRole("button", { name: /^Choose Farm/ }).first().click();
   }
-  await expect(page.getByRole("heading", { level: 1, name: "What you'll need" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: /^You('ll| may) need/ }).first()).toBeVisible();
   await axe(page, "needs");
   await page.getByRole("button", { name: `Start this application: ${application}` }).click();
   await expect(page.getByRole("heading", { name: "Sign in to apply" })).toBeVisible();
   await axe(page, "sign-in screen");
   await signInHere(page, email);
-  // A new application opens at its first question, on a desktop and a phone alike. On a phone, the
-  // list of steps is a tap away (‹ Application on the first question, Steps after it); open it and
-  // come back, as a person checking would.
+  // A new application opens at its first card, on a desktop and a phone alike; the task list is
+  // a tap away (‹ Tasks on a phone, the sidebar on a desktop). Open it and come back, as a person
+  // checking would.
   await expect(page).toHaveURL(/\/applications\/[0-9a-f-]+\/[a-z_]+/);
+  await axe(page, "first card");
   if ((page.viewportSize()?.width ?? 1280) < 1024) {
-    await page.getByRole("link", { name: /^(Steps|Application)$/ }).click();
+    await page.getByRole("link", { name: "Tasks" }).click();
     await expect(page).toHaveURL(/\/applications\/[0-9a-f-]+$/);
-    await axe(page, "step list");
-    await page.getByRole("link", { name: /, (Not started|Started)/ }).first().click();
+    await axe(page, "task list");
+    await page.getByRole("link", { name: /, Not started$/ }).first().click();
     await expect(page).toHaveURL(/\/applications\/[0-9a-f-]+\/[a-z_]+/);
   }
 }
@@ -160,72 +161,94 @@ export async function fillControls(page: Page, scope: Locator, fixture: string) 
   }
 }
 
-type Plan = { extraBuilding?: boolean; component?: boolean };
+type Plan = { extraBuilding?: boolean; copyBuilding?: boolean; component?: boolean };
 
-// Answer the screen that is showing, the way a person would: a tap for a single choice, "Yes,
-// that's right" for a map value, the first choice for choose-several, values for typed questions
-// (then Continue). Loops say no, unless the plan asks for one more building or an addition.
-export async function answerScreen(page: Page, fixture: string, plan: Plan = {}) {
+const appPath = /^\/applications\/[0-9a-f-]+$/;
+
+// Answer the card that is showing, the way a person would: "Yes, that's right" for a map value;
+// a tap on a card with no Continue; else the first choice in each group (No, where a group has
+// one), values for typed questions, then Continue.
+export async function answerScreen(page: Page, fixture: string) {
   await settle(page);
-  const pane = page.locator("[data-pane]").first();
-  const heading = ((await pane.getByRole("heading", { level: 2 }).first().textContent()) ?? "").trim();
-  if (/^Is there another/.test(heading)) {
-    await axe(page, "screen: another");
-    if (plan.extraBuilding && /building/.test(heading)) {
-      plan.extraBuilding = false;
-      return pane.getByRole("radio", { name: /^Yes, add another/ }).click();
-    }
-    return pane.getByRole("radio", { name: "No, that's all" }).click();
-  }
-  if (/^Are you adding/.test(heading)) {
-    const yes = !!plan.component;
-    plan.component = false;
-    return pane.getByRole("radio", { name: yes ? "Yes" : "No", exact: true }).click();
-  }
+  const pane = page.locator("[data-card-body]").first();
   const right = pane.getByRole("radio", { name: "Yes, that's right" });
   if (await right.count()) {
-    await axe(page, "screen: is this right");
+    await axe(page, "card: is this right");
     return right.click();
   }
-  const tiles = pane.getByRole("radiogroup");
-  if (await tiles.count()) {
-    await axe(page, "screen: one choice");
-    const no = tiles.getByRole("radio", { name: "No", exact: true });
-    return ((await no.count()) ? no : tiles.getByRole("radio").first()).click();
+  const pick = async (group: Locator) => {
+    const no = group.getByRole("radio", { name: "No", exact: true });
+    await ((await no.count()) ? no : group.getByRole("radio").first()).click();
+  };
+  const groups = pane.getByRole("radiogroup");
+  if ((await groups.count()) && !(await next(page).count())) {
+    await axe(page, "card: one choice");
+    return pick(groups.first()); // a tap answers and moves on
+  }
+  for (const g of await groups.all()) {
+    if (!(await g.locator('[aria-checked="true"]').count())) await pick(g);
   }
   const several = pane.getByRole("checkbox");
   if ((await several.count()) && !(await pane.locator('[role="checkbox"][aria-checked="true"]').count())) {
-    await axe(page, "screen: choose several");
+    await axe(page, "card: choose several");
     await several.first().click();
   }
   await fillControls(page, pane, fixture);
-  await axe(page, `screen: ${(await pane.getByRole("slider").count()) ? "sliders" : (await pane.locator('input[type="file"]').count()) ? "upload" : "typed"}`);
+  await axe(page, `card: ${(await pane.getByRole("slider").count()) ? "walls" : (await pane.locator('input[type="file"]').count()) ? "upload" : "typed"}`);
   await next(page).click();
 }
 
-// Every screen of the application, until Review and sign.
+// Every task of the application, from the task list, until Check and send: each task's cards, its
+// check page, and for buildings and additions the list (one more building, a copy, or an
+// addition, when the plan asks).
 export async function completeApplication(page: Page, fixture: string, plan: Plan = {}) {
   for (let i = 0; i < 200; i += 1) {
-    if (/\/review$/.test(new URL(page.url()).pathname)) return;
+    await settle(page);
+    const path = new URL(page.url()).pathname;
+    if (/\/review$/.test(path)) return;
     const before = page.url();
-    await answerScreen(page, fixture, plan);
+    const main = page.getByRole("main");
+    if (appPath.test(path)) {
+      await axe(page, "task list");
+      const send = main.getByRole("link", { name: "Check and send" });
+      await ((await send.count()) ? send : main.getByRole("link", { name: /, (Not started|\d+ of \d+ answered)$/ }).first()).click();
+    } else if (/\/check$/.test(path)) {
+      await axe(page, "check page");
+      await page.getByRole("button", { name: "Done" }).click();
+    } else if (await page.getByRole("button", { name: /^(Done with|No) (buildings|additions)$/ }).count()) {
+      await axe(page, "items list");
+      const finish = page.getByRole("button", { name: /^Finish / });
+      if (await finish.count()) await finish.first().click();
+      else if (plan.copyBuilding && (await page.getByRole("button", { name: /^Copy Building/ }).count())) {
+        plan.copyBuilding = false;
+        await page.getByRole("button", { name: /^Copy Building/ }).click();
+      } else if (plan.extraBuilding && (await page.getByRole("button", { name: "Add a building" }).count())) {
+        plan.extraBuilding = false;
+        await page.getByRole("button", { name: "Add a building" }).click();
+      } else if (plan.component && (await page.getByRole("button", { name: "Add an addition, porch or deck" }).count())) {
+        plan.component = false;
+        await page.getByRole("button", { name: "Add an addition, porch or deck" }).click();
+      } else await page.getByRole("button", { name: /^(Done with|No) (buildings|additions)$/ }).click();
+    } else {
+      await answerScreen(page, fixture);
+    }
     await expect(page, `stuck on ${before}`).not.toHaveURL(before, { timeout: 10_000 });
   }
-  throw new Error("didn't reach Review and sign in 200 screens");
+  throw new Error("didn't reach Check and send in 200 screens");
 }
 
-// On review: every field is filled or marked, and nothing is still to answer.
+// On Check and send: every field is filled or marked, and nothing is still to answer.
 export async function expectReviewComplete(page: Page, title: string) {
-  await expect(page.getByRole("heading", { level: 1, name: "Review and sign" })).toBeVisible();
+  await expect(page.getByRole("main").getByText("Check and send").first()).toBeVisible();
   await expect(page.getByText(title).first()).toBeVisible();
   await axe(page, "review");
   await expect(page.getByRole("group", { name: "Still to answer" })).toHaveCount(0);
   await expect(page.getByText("Still to answer")).toHaveCount(0);
 }
 
-// The sidebar's steps (desktop) or the root list (phone), by name.
-export async function stepNames(page: Page): Promise<string[]> {
-  const nav = page.getByRole("navigation", { name: "Steps" });
-  const links = (await nav.count()) ? nav.locator(":scope > ul > li > a") : page.locator("main a, [data-row] a, a").filter({ hasText: /./ });
-  return (await links.allTextContents()).map((t) => t.trim());
+// The task list's tasks, by name (the sidebar on a desktop, the home screen on a phone).
+export async function taskNames(page: Page): Promise<string[]> {
+  const nav = page.getByRole("navigation", { name: "Tasks" });
+  const scope = (await nav.count()) ? nav : page.getByRole("main");
+  return (await scope.getByRole("link").allTextContents()).map((t) => t.trim());
 }

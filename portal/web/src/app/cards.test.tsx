@@ -131,8 +131,8 @@ describe("the task list", () => {
     withApp({ answers: [a("lot_width", 120), a("lot_depth", 200)] });
     open("/applications/abc");
     const main = await screen.findByRole("main");
-    expect(within(main).getByRole("link", { name: "Your lot, 1 of 2 answered" })).toBeInTheDocument();
-    expect(within(main).getByRole("link", { name: "The work, Not started" })).toBeInTheDocument();
+    expect(within(main).getByRole("link", { name: /^Your lot,.*1 of 2 ?answered$/ })).toBeInTheDocument();
+    expect(within(main).getByRole("link", { name: /^The work,.*Not started$/ })).toBeInTheDocument();
     expect(within(main).getByText("Opens when the tasks above are done")).toBeInTheDocument();
   });
 

@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router";
 import { describe, expect, it } from "vitest";
@@ -24,15 +24,16 @@ const draw = (open: boolean, compact = false) => render(
 describe("TaskList", () => {
   it("each task is one row, a link, with its pill", () => {
     draw(false);
-    const lot = screen.getByRole("link", { name: "Your lot, Done" });
-    expect(within(lot).getByText("Done")).toHaveAttribute("data-pill", "done");
-    expect(within(screen.getByRole("link", { name: "The work, 2 of 4 answered" })).getByText("2 of 4")).toHaveAttribute("data-pill", "progress");
-    expect(within(screen.getByRole("link", { name: "Buildings, Not started" })).getByText("Not started")).toHaveAttribute("data-pill", "todo");
+    const pill = (name: RegExp) => screen.getByRole("link", { name }).querySelector("[data-pill]")!;
+    expect(pill(/^Your lot,.*Done$/)).toHaveAttribute("data-pill", "done");
+    expect(pill(/^The work,.*2 of 4 ?answered$/)).toHaveAttribute("data-pill", "progress");
+    expect(pill(/^The work,.*2 of 4 ?answered$/)).toHaveTextContent("2 of 4");
+    expect(pill(/^Buildings,.*Not started$/)).toHaveAttribute("data-pill", "todo");
   });
 
   it("the hints and icons come with the task", () => {
     draw(false);
-    const lot = screen.getByRole("link", { name: "Your lot, Done" });
+    const lot = screen.getByRole("link", { name: /^Your lot,.*Done$/ });
     expect(lot).toHaveTextContent("Size, frontage and what is there now");
     expect(lot.querySelector("svg")).not.toBeNull();
   });
@@ -60,6 +61,6 @@ describe("TaskList", () => {
 
   it("the task you're in is marked", () => {
     draw(false, true);
-    expect(screen.getByRole("link", { name: "Buildings, Not started" })).toHaveAttribute("aria-current", "step");
+    expect(screen.getByRole("link", { name: /^Buildings,.*Not started$/ })).toHaveAttribute("aria-current", "step");
   });
 });

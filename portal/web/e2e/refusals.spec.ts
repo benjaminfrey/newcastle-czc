@@ -17,16 +17,16 @@ test("uploads that must be refused, and a second tab's save", async ({ page, con
   await expect(page.getByRole("alert")).toContainText("PDF, JPEG, PNG or HEIC");
   await expect(page.getByRole("list", { name: "Files added" })).toHaveCount(0);
 
-  // Two tabs: the later save is refused, and the toolbar offers to load the latest.
+  // Two tabs: the later save is refused, and the save status offers to load the latest.
   const other = await context.newPage();
   await other.goto(`${base}/about_you`);
   await page.goto(`${base}/about_you`);
-  const otherName = other.getByRole("textbox", { name: "What is your full name?" });
+  const otherName = other.getByRole("textbox", { name: "Full name" });
   await otherName.fill("From the other tab"); await otherName.blur();
   await expect(other.getByRole("status").first()).toHaveText("Saved");
-  const name = page.getByRole("textbox", { name: "What is your full name?" });
+  const name = page.getByRole("textbox", { name: "Full name" });
   await name.fill("From this tab"); await name.blur();
   await expect(page.getByText("Changed in another tab").first()).toBeVisible();
   await page.getByRole("button", { name: "Load the latest" }).first().click();
-  await expect(page.getByRole("textbox", { name: "What is your full name?" })).toHaveValue("From the other tab");
+  await expect(page.getByRole("textbox", { name: "Full name" })).toHaveValue("From the other tab");
 });

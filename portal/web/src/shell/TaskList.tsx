@@ -8,15 +8,19 @@ import type { SaveState } from "./types";
 
 export type TaskRow = { id: string; title: string; href: string; status: TaskStatus; current?: boolean };
 
-// The pill on a task's row (task-list brief §4.2): Done, "2 of 4", Not started.
+// The pill on a task's row (task-list brief §4.2): Done, "2 of 4", Not started. A row's name is
+// its own words, so what a screen reader says is what the row shows: "Your lot, Size, frontage and
+// what is there now, Done"; "The work, 2 of 4 answered".
 function Pill({ status }: { status: TaskStatus }) {
   const [words, look] = status.kind === "done" ? ["Done", "bg-[var(--app-done-bg)] text-[var(--app-done-text)]"]
     : status.kind === "progress" ? [`${status.answered} of ${status.total}`, "bg-[var(--app-selection)] text-[var(--app-accent-text)]"]
     : ["Not started", "bg-[var(--app-fill)] text-[var(--app-secondary-label)]"];
-  return <span data-pill={status.kind} className={`shrink-0 whitespace-nowrap rounded-full px-[9px] py-[2px] text-[12px] ${look}`}>{words}</span>;
+  return (
+    <span data-pill={status.kind} className={`shrink-0 whitespace-nowrap rounded-full px-[9px] py-[2px] text-[12px] ${look}`}>
+      <span className="sr-only">, </span>{words}{status.kind === "progress" && <span className="sr-only"> answered</span>}
+    </span>
+  );
 }
-
-const spoken = (s: TaskStatus) => s.kind === "done" ? "Done" : s.kind === "progress" ? `${s.answered} of ${s.total} answered` : "Not started";
 
 const rowCls = "flex min-h-11 items-center gap-3 px-4 py-[11px] text-[14px] outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--app-accent-text)]";
 
@@ -26,7 +30,7 @@ function Words({ id, title, hint, muted }: { id: string; title: string; hint?: s
       <Icon name={TASK_ICONS[id] ?? "dots"} className={muted ? "text-[var(--app-secondary-label)]" : "text-[var(--app-label)]"} />
       <span className="min-w-0 flex-1">
         <span className={`block ${muted ? "text-[var(--app-secondary-label)]" : "text-[var(--app-label)]"}`}>{title}</span>
-        {hint && <span className="block text-[12px] text-[var(--app-secondary-label)]">{hint}</span>}
+        {hint && <span className="block text-[12px] text-[var(--app-secondary-label)]"><span className="sr-only">, </span>{hint}</span>}
       </span>
     </>
   );
@@ -44,7 +48,7 @@ export default function TaskList({ formTitle, mapLot, saveState, onReload, tasks
     <ul className={compact ? "flex flex-col gap-0.5" : ""}>
       {tasks.map((t) => (
         <li key={t.id} className={sep}>
-          <Link to={t.href} onClick={commitFocused} aria-label={`${t.title}, ${spoken(t.status)}`}
+          <Link to={t.href} onClick={commitFocused}
                 aria-current={t.current ? "step" : undefined}
                 className={`${rowCls} ${compact ? "rounded-lg" : ""} ${t.current ? "bg-[var(--app-selection)]" : compact ? "hover:bg-[var(--app-selection)]/60" : ""}`}>
             <Words id={t.id} title={t.title} hint={TASK_HINTS[t.id]} />
