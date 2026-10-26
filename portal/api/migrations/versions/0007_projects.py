@@ -78,8 +78,8 @@ def upgrade() -> None:
         review_key     text NOT NULL,
         use_key        text,
         permit_key     text NOT NULL,
-        reviewer       text NOT NULL,
-        status         text NOT NULL DEFAULT 'pending',
+        reviewer       text,  -- none for a fee line such as Structure
+        status         text NOT NULL DEFAULT 'waiting' CHECK (status IN ('waiting', 'in_review', 'decided')),
         submitted_at   timestamptz NOT NULL,
         decision_at    timestamptz
     );

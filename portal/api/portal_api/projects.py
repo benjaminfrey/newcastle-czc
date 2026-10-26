@@ -215,3 +215,13 @@ def lock(conn: Connection, project_id: str, base_revision: int, staff_id: str | 
         " RETURNING seq"
     ), {"p": project_id, "at": r.locked_at, "s": staff_id, "b": body,
         "h": hashlib.sha256(body.encode()).hexdigest()}).scalar()
+
+
+def record_reviews(conn: Connection, project_id: str, seq: int, reviews: list[dict]) -> None:
+    """One row per review the project needs at the lock; each review's clocks start at the lock."""
+    for r in reviews:
+        conn.execute(text(
+            "INSERT INTO review (submission_id, review_key, use_key, permit_key, reviewer, submitted_at)"
+            " SELECT s.id, :k, :u, :pk, :who, s.locked_at FROM submission s WHERE s.project_id = :p AND s.seq = :seq"
+        ), {"k": r["review_key"], "u": r["use_key"], "pk": r["permit_key"], "who": r["reviewer"], "p": project_id,
+            "seq": seq})

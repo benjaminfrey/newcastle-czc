@@ -491,3 +491,47 @@ def test_the_lock_seam_is_off_by_default(engine, settings, outbox, layers):  # n
 
 def test_the_screener_route_is_gone(alice):
     assert alice.post("/api/screener", json={"project": ["use"]}).status_code in (404, 405)
+
+
+# ---- Needs on the project (Task 4) ----
+
+def test_the_project_carries_its_needs(alice):
+    body = get(alice, create(alice, ("building", "driveway")))
+    building = next(p for p in body["needs"]["permits"] if p["key"] == "building_permit")
+    # The building's size isn't given yet, so it may need either plan (the rules' size-unknown case).
+    assert [r["name"] for r in building["reviews"]] == ["Small Project Plan", "Large Project Plan", "Structure", "Entrances"]
+    assert body["needs"]["application_fees_total"] >= 30
+
+
+def test_needs_are_withheld_while_any_rule_is_a_draft(alice, app, monkeypatch):
+    import dataclasses
+
+    from portal_api.forms import definitions as d
+    from portal_api.routes import projects as routes
+    pid = create(alice, ("driveway",))
+    real = d.load_definitions
+
+    def with_a_draft(ruleset):
+        defs = real(ruleset)
+        return dataclasses.replace(defs, rules=[dataclasses.replace(defs.rules[0], status="draft"), *defs.rules[1:]])
+
+    monkeypatch.setattr(routes, "load_definitions", with_a_draft)
+    app.state.settings.allow_draft_rules = False
+    assert get(alice, pid)["needs"] == {"refused": "not_approved"}
+
+
+def test_the_lock_records_each_review_and_starts_its_clock(alice, engine):
+    pid = finish_use_project(alice)
+    rev = get(alice, pid)["revision"]
+    alice.post(f"/api/projects/{pid}/submit", json={"base_revision": rev})
+    assert alice.post(f"/api/projects/{pid}/lock", json={"base_revision": rev + 1}).status_code == 200
+    with engine.begin() as conn:
+        rows = conn.execute(text(
+            "SELECT r.review_key, r.use_key, r.permit_key, r.reviewer, r.status, r.submitted_at = s.locked_at AS at_lock"
+            " FROM review r JOIN submission s ON s.id = r.submission_id WHERE s.project_id = :p"), {"p": pid}).all()
+        snap = conn.execute(text("SELECT snapshot FROM submission WHERE project_id = :p"), {"p": pid}).scalar()
+    assert [(r.review_key, r.use_key, r.permit_key, r.status, r.at_lock) for r in rows] == \
+        [("residential_companion", "health_fitness_studio", "use_permit", "waiting", True)]  # on this lot's district
+    assert snap["needs"]["permits"][0]["key"] == "use_permit"
+    clock = get(alice, pid)["needs"]["permits"][0]["reviews"][0]["clocks"][0]
+    assert clock["due_words"].startswith("Decision due by ")

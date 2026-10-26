@@ -37,6 +37,7 @@ class Application:
     approved_on: str | None = None
     clock_when: dict = field(default_factory=dict)
     ruling: dict | None = None
+    clock_plain: dict = field(default_factory=dict)  # clock key -> {text, status, approved_by?, approved_on?}
 
 
 @dataclass(frozen=True)
@@ -151,6 +152,12 @@ def validate_entries(file: str, entries: list, ruleset: Ruleset) -> None:
             for k in e.get("clock_when", {}):
                 if k not in e.get("clock_keys", []):
                     raise DefinitionError(f"{where}: clock_when names {k!r}, which is not in clock_keys")
+            for k, plain in (e.get("clock_plain") or {}).items():
+                if k not in e.get("clock_keys", []):
+                    raise DefinitionError(f"{where}: clock_plain names {k!r}, which is not in clock_keys")
+                if not plain.get("text"):
+                    raise DefinitionError(f"{where}: clock_plain {k!r} needs text")
+                _check_status(f"{where}: clock_plain {k}", plain)
 
 
 def _read(name: str) -> list:

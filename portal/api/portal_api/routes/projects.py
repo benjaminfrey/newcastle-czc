@@ -7,6 +7,7 @@ parts, never the values: the answer table holds those, and the hash chain is per
 """
 
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
@@ -19,7 +20,10 @@ from portal_api import property as prop
 from portal_api.db import transaction
 from portal_api.events import append_event
 from portal_api.forms.answers import AnswerError, Current, check_value, missing
+from portal_api.forms.definitions import load_definitions
+from portal_api.forms.fees import load_fees
 from portal_api.forms.formdefs import FormDef, form_drafts, load_form
+from portal_api.forms.needs import drafts as needs_drafts, needs
 from portal_api.forms.parts import derived, load_parts, project_form, wanted_forms
 from portal_api.routes.forms import LookupProperty, _snapshot, form_json
 from portal_api.ruleset import load_ruleset
@@ -27,6 +31,7 @@ from portal_api.ruleset import load_ruleset
 router = APIRouter()
 NOTE_MAX = 10_000
 FORM_DEFAULT = "form-default"
+TOWN_TZ = ZoneInfo("America/New_York")  # a clock's day is the Town's day
 
 
 def _json(status: int, detail) -> JSONResponse:
@@ -72,6 +77,16 @@ class Loaded:
 
     def missing(self) -> list[dict]:
         return [{"field_id": f, "part_id": i} for f, i in missing(self.form, self.cur)]
+
+    def needs(self, conn: Connection, allow_drafts: bool, locked_at=None) -> dict:
+        """The reviews, fees and clocks (brief §6–§8); withheld while anything they rest on is a draft."""
+        defs, fees = load_definitions(self.ruleset), load_fees()
+        if needs_drafts(defs, fees) and not allow_drafts:
+            return {"refused": "not_approved"}
+        if locked_at is None:
+            locked_at = conn.execute(text("SELECT locked_at FROM project WHERE id = :p"), {"p": self.row.id}).scalar()
+        return needs(self.parts, self.cur.answers, self.snapshot["facts"], self.ruleset, defs, fees, load_parts(),
+                     locked_on=locked_at.astimezone(TOWN_TZ).date() if locked_at else None)
 
 
 def _seed_defaults(conn: Connection, loaded: Loaded) -> None:
@@ -160,7 +175,7 @@ def list_projects(applicant: auth.Applicant = auth.require, conn: Connection = t
     return out
 
 
-def state(conn: Connection, loaded: Loaded) -> dict:
+def state(conn: Connection, loaded: Loaded, allow_drafts: bool, locked_at=None) -> dict:
     row = loaded.row
     status, revision = pj.state(conn, row.id)
     submitted_at = conn.execute(text("SELECT submitted_at FROM project WHERE id = :p"), {"p": row.id}).scalar()
@@ -174,6 +189,7 @@ def state(conn: Connection, loaded: Loaded) -> dict:
         "notes": pj.notes(conn, row.id), "attachments": pj.attachments(conn, row.id),
         "missing": loaded.missing(),
         "form": form_json(loaded.form, loaded.ruleset),
+        "needs": loaded.needs(conn, allow_drafts, locked_at),
     }
 
 
@@ -182,9 +198,10 @@ def _owned(conn: Connection, project_id: str, applicant: auth.Applicant) -> pj.P
 
 
 @router.get("/api/projects/{project_id}")
-def get_project(project_id: str, applicant: auth.Applicant = auth.require, conn: Connection = transaction):
+def get_project(project_id: str, request: Request, applicant: auth.Applicant = auth.require,
+                conn: Connection = transaction):
     row = _owned(conn, project_id, applicant)
-    return state(conn, Loaded(conn, row)) if row else _NOT_FOUND()
+    return state(conn, Loaded(conn, row), request.app.state.settings.allow_draft_rules) if row else _NOT_FOUND()
 
 
 def _refuse_stale(conn: Connection, project_id: str) -> JSONResponse:
@@ -413,10 +430,11 @@ def submit(project_id: str, body: RevisionBody, applicant: auth.Applicant = auth
     return {"revision": rev, "status": "submitted"}
 
 
-def lock_snapshot(conn: Connection, loaded: Loaded) -> dict:
-    """What a submission freezes (brief §5.1): exactly the project as it stands at the lock."""
-    s = state(conn, loaded)
-    return {k: s[k] for k in ("title", "ruleset_key", "property", "parts", "forms", "answers", "notes")} | {
+def lock_snapshot(conn: Connection, loaded: Loaded, allow_drafts: bool, locked_at) -> dict:
+    """What a submission freezes (brief §5.1): exactly the project as it stands at the lock,
+    with its reviews, fees and clocks (started at the lock)."""
+    s = state(conn, loaded, allow_drafts, locked_at)
+    return {k: s[k] for k in ("title", "ruleset_key", "property", "parts", "forms", "answers", "notes", "needs")} | {
         "attachments": [dict(a, sha256=conn.execute(text("SELECT sha256 FROM attachment WHERE id = :i"),
                                                      {"i": a["id"]}).scalar()) for a in s["attachments"]]}
 
@@ -432,10 +450,16 @@ def lock(project_id: str, body: RevisionBody, request: Request, applicant: auth.
     if row is None:
         return _NOT_FOUND()
     loaded = Loaded(conn, row)
-    seq = pj.lock(conn, row.id, body.base_revision, None, lock_snapshot(conn, loaded))
+    at = conn.execute(text("SELECT now()")).scalar()  # the transaction's time: the lock's locked_at
+    snapshot = lock_snapshot(conn, loaded, request.app.state.settings.allow_draft_rules, at)
+    seq = pj.lock(conn, row.id, body.base_revision, None, snapshot)
     if seq is None:
         status, revision = pj.state(conn, row.id)
         return JSONResponse({"detail": "not_sent" if status == "draft" else "changed_elsewhere",
                              "revision": revision}, status_code=409)
+    pj.record_reviews(conn, row.id, seq, [
+        {"review_key": r["review_key"], "use_key": r["use_key"], "permit_key": p["key"],
+         "reviewer": r["reviewer"]}
+        for p in snapshot["needs"].get("permits", []) for r in p["reviews"]])
     append_event(conn, actor=_actor(applicant), kind="project.locked", payload={"project_id": row.id, "seq": seq})
     return {"seq": seq, "revision": pj.state(conn, row.id)[1]}

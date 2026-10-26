@@ -72,6 +72,9 @@ def review_sheet(ruleset: Ruleset, defs: Definitions) -> str:
         out += [f"### `{a.key}` — {a.code_name}", "", f"- Applicants read: {a.plain}",
                 f"- Reviewer: {a.reviewer}", f"- Time limits shown: {clocks}",
                 f"- Apply on this site: {'yes' if a.in_portal else 'no (Town Office)'}",
+                *[f"- Applicants read, for `{k}`: “{p['text']}” — "
+                  + (f"approved by {p['approved_by']}, on {p['approved_on']}." if p.get("status") == "approved"
+                     else "**Draft — awaiting the chair's approval.**") for k, p in a.clock_plain.items()],
                 *_ruling_line(a), *_status_line(a),
                 f"- Rests on Art. {a.cite.split('.')[0]} §{'.'.join(a.cite.split('.')[1:])}:", "",
                 *[f"  > {line}" for line in ruleset.cite(a.cite).splitlines()], ""]
