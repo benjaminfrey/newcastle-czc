@@ -80,7 +80,7 @@ describe("the dashboard", () => {
   it("shows the title, the parcel, a row per part and the parts still to add", async () => {
     open();
     expect(await screen.findByRole("heading", { level: 2, name: "A new building and a driveway at Sheepscot Road" })).toBeInTheDocument();
-    const lot = screen.getByRole("link", { name: /^Your lot, Map 4, Lot 36.*(Not started|answered|Done)$/ });
+    const lot = screen.getByRole("link", { name: /^Your lot,\s*Map 4, Lot 36.*(Not started|answered|Done)$/ });
     expect(lot).toHaveTextContent("Sheepscot Road · Rural (D1)");
     expect(lot).toHaveTextContent("2.73 acres · 675 ft on Sheepscot Road");
     const parts = screen.getByRole("list", { name: "Your project" });

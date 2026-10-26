@@ -66,6 +66,8 @@ describe("Check and send", () => {
     open();
     const todo = await screen.findByRole("region", { name: "1 thing to finish first" });
     expect(within(todo).getByRole("link", { name: /Driveway/ })).toHaveAttribute("href", "/projects/p1/driveway?screen=first_20ft_slope");
+    // It looks unavailable (plain, not filled) but answers with the first thing to finish.
+    expect(screen.getByRole("button", { name: "Send to the Town" })).not.toHaveAttribute("data-filled");
     await userEvent.click(screen.getByRole("button", { name: "Send to the Town" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("First, finish Driveway.");
     expect(submit).not.toHaveBeenCalled();

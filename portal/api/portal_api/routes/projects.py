@@ -171,7 +171,8 @@ def list_projects(applicant: auth.Applicant = auth.require, conn: Connection = t
                     "updated_at": r.updated_at.isoformat(),
                     "submitted_at": r.submitted_at.isoformat() if r.submitted_at else None,
                     "first_part": loaded.parts[0]["kind"] if loaded.parts else None,
-                    "left": len(loaded.missing())})
+                    # Rows with something required still blank, as the dashboard counts them.
+                    "left": len({loaded.form.step_of(m["field_id"]) for m in loaded.missing()})})
     return out
 
 

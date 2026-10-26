@@ -140,7 +140,7 @@ export default function SendPane({ project, form, cur, models, base, onBack, onS
         </div>
       </Card.Scroll>
       <Card.Footer back={{ label: "Back", onPress: onBack }}
-                   next={sent ? null : { label: "Send to the Town", onPress: onPressSend }} />
+                   next={sent ? null : { label: "Send to the Town", onPress: onPressSend, plain: todo.length > 0 }} />
 
       {confirming && (
         <AlertDialog.Backdrop isOpen onOpenChange={(o) => !o && setConfirming(false)}>

@@ -248,6 +248,8 @@ def test_list_shows_only_mine(alice, bob):
     (row,) = alice.get("/api/projects").json()
     assert row["id"] == pid and row["map_lot"] == "004-036" and row["status"] == "draft"
     assert row["first_part"] == "building" and row["left"] > 0
+    # "2 things left" counts rows (Your lot, About you, the parts), as the dashboard does, not answers.
+    assert row["left"] <= len(get(alice, pid)["form"]["steps"])
     assert bob.get("/api/projects").json() == []
 
 

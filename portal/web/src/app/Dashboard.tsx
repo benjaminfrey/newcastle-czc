@@ -187,7 +187,7 @@ export default function Dashboard({ project, form, cur, models, statuses, base, 
             <Icon name="user" className="text-[var(--app-secondary-label)]" />
             <span className="min-w-0 flex-1">
               <span className="block text-[15px] text-[var(--app-label)]">{(cur.account.name as string | null) ?? "Your details"}</span>
-              <span className="block text-[13px] text-[var(--app-secondary-label)]">
+              <span className="block truncate text-[13px] text-[var(--app-secondary-label)]">
                 {owner === true ? "The owner" : owner === false ? "Helping the owner" : "Owner or helper?"}{cur.account.email ? ` · ${cur.account.email}` : ""}
               </span>
             </span>
