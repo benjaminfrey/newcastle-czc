@@ -2,18 +2,14 @@ import { Button, Card } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { getMe, UNREACHABLE, verifyToken } from "../api";
-import { peekPendingStart } from "../pendingStart";
 
 // Pure, so React may call it twice in development (StrictMode) and get the same answer.
 function tokenFromUrl(): string | null {
   return new URLSearchParams(window.location.hash.slice(1)).get("token");
 }
 
-// After signing in, go back to the application the person was starting, if any.
-function afterSignIn(): string {
-  const pending = peekPendingStart();
-  return pending ? `/apply/${pending.formKey}` : "/my-applications";
-}
+// After signing in, Home: Start a new application, or carry on with one.
+const afterSignIn = () => "/";
 
 export default function Verify() {
   const navigate = useNavigate();
@@ -60,7 +56,7 @@ export default function Verify() {
           <Card.Description>The link has expired or was already used. Sign-in links work once, for 15 minutes.</Card.Description>
         </Card.Header>
         <Card.Content>
-          <Link to="/signin" className="underline">Get a new link</Link>
+          <Link to="/" className="underline">Get a new link</Link>
         </Card.Content>
       </Card>
     );

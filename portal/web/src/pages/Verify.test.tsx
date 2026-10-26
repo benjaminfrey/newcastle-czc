@@ -11,8 +11,7 @@ const renderAt = (hash: string) => {
     <MemoryRouter initialEntries={["/signin/verify"]}>
       <Routes>
         <Route path="/signin/verify" element={<Verify />} />
-        <Route path="/my-applications" element={<p>My applications page</p>} />
-        <Route path="/apply/:formKey" element={<p>Apply page</p>} />
+        <Route path="/" element={<p>Home page</p>} />
       </Routes>
     </MemoryRouter>,
   );
@@ -27,7 +26,7 @@ describe("Verify", () => {
     expect(spy).not.toHaveBeenCalled();
     expect(window.location.hash).toBe("");
     await userEvent.click(screen.getByRole("button", { name: "Sign me in" }));
-    expect(await screen.findByText("My applications page")).toBeInTheDocument();
+    expect(await screen.findByText("Home page")).toBeInTheDocument();
     expect(spy).toHaveBeenCalledWith("abc123");
   });
 
@@ -37,7 +36,7 @@ describe("Verify", () => {
     renderAt("#token=old");
     await userEvent.click(await screen.findByRole("button", { name: "Sign me in" }));
     expect(await screen.findByText(/expired or was already used/)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Get a new link" })).toHaveAttribute("href", "/signin");
+    expect(screen.getByRole("link", { name: "Get a new link" })).toHaveAttribute("href", "/");
   });
 
   it("handles a missing token without calling the API", async () => {
@@ -56,7 +55,7 @@ describe("Verify", () => {
     expect(screen.getByRole("button", { name: "Sign me in" })).toBeEnabled();
     spy.mockResolvedValue({ email: "a@example.com", role: "applicant" });
     await userEvent.click(screen.getByRole("button", { name: "Sign me in" }));
-    expect(await screen.findByText("My applications page")).toBeInTheDocument();
+    expect(await screen.findByText("Home page")).toBeInTheDocument();
     expect(spy).toHaveBeenLastCalledWith("abc123");
   });
 
@@ -65,15 +64,6 @@ describe("Verify", () => {
     vi.spyOn(api, "getMe").mockResolvedValue({ email: "a@example.com", role: "applicant" });
     renderAt("#token=used");
     await userEvent.click(await screen.findByRole("button", { name: "Sign me in" }));
-    expect(await screen.findByText("My applications page")).toBeInTheDocument();
-  });
-
-  it("resumes a pending start", async () => {
-    localStorage.setItem("portal.pendingStart", JSON.stringify({ formKey: "entrance_permit", property: null, useKey: null }));
-    vi.spyOn(api, "verifyToken").mockResolvedValue({ email: "a@example.com", role: "applicant" });
-    renderAt("#token=abc123");
-    await userEvent.click(await screen.findByRole("button", { name: "Sign me in" }));
-    expect(await screen.findByText("Apply page")).toBeInTheDocument();
-    localStorage.clear();
+    expect(await screen.findByText("Home page")).toBeInTheDocument();
   });
 });

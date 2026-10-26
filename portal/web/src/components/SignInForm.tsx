@@ -12,7 +12,7 @@ const MESSAGES: Record<Exclude<LinkResult, "sent">, string> = {
 
 // Ask for an email address, send a sign-in link, then say where it went and for how long it
 // works. Used by the sign-in page and the sheet on "What you'll need".
-export default function SignInForm() {
+export default function SignInForm({ hint }: { hint?: string }) {
   const [email, setEmail] = useState("");
   const [result, setResult] = useState<LinkResult | null>(null);
   const [busy, setBusy] = useState(false);
@@ -46,10 +46,10 @@ export default function SignInForm() {
       <TextField type="email" isRequired value={email} onChange={setEmail} autoComplete="email">
         <Label>Your email address</Label>
         <Input className="min-h-11" />
-        <Description>No password needed. We only use it to send you links and updates about your applications.</Description>
+        <Description>{hint ?? "No password needed. We only use it to send you links and updates about your applications."}</Description>
       </TextField>
       {result && <p role="alert" className="text-[var(--app-destructive)]">{MESSAGES[result]}</p>}
-      <button type="submit" className="btn btn-filled self-start" disabled={busy}>Email me a sign-in link</button>
+      <button type="submit" data-filled="" className="btn btn-filled w-full" disabled={busy}>Email me a sign-in link</button>
     </Form>
   );
 }

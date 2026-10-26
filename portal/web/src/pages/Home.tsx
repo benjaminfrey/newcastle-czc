@@ -1,37 +1,102 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
-import { getMe } from "../api";
-import InsetGroup from "../shell/InsetGroup";
+import { Link, useNavigate } from "react-router";
+import { getMe, UNREACHABLE } from "../api";
+import SignInForm from "../components/SignInForm";
+import Icon from "../controls/Icon";
+import { longDate, mapLotLabel } from "../format";
+import { listProjects, type ProjectSummary, type Status } from "../projects";
+import Pill, { type Tone } from "../shell/Pill";
 
-// One screen, one action: find out what you need. Signed in, a way back to your applications.
-export default function Home() {
-  const [signedIn, setSignedIn] = useState(false);
-  useEffect(() => {
-    getMe().then((m) => setSignedIn(!!m && m !== "unavailable"));
-  }, []);
+// The pill words for a project's status (projects brief §5.2).
+export const STATUS_WORDS: Record<Status, string> = { draft: "Draft", submitted: "Sent", locked: "With the Town", decided: "Decided" };
+export const STATUS_TONE: Record<Status, Tone> = { draft: "todo", submitted: "progress", locked: "progress", decided: "done" };
+// A part's tile icon, for a project's row: its first part's.
+const PART_ICONS: Record<string, string> = {
+  building: "building-cottage", addition: "home-plus", renovation: "paint", site: "shovel", use: "building-store",
+  driveway: "road", divide: "layout-grid", other: "help-circle",
+};
+
+function Seal() {
   return (
-    <div className="mx-auto flex max-w-lg flex-col gap-6 py-6">
-      <div className="flex flex-col items-center gap-4 text-center">
-        <img src="/town-seal.png" alt="Town of Newcastle seal" className="size-20" width={80} height={80} />
-        <div className="flex flex-col gap-2">
-          <h1 className="text-[30px] font-bold leading-tight">Planning a project in Newcastle?</h1>
-          <p className="text-[17px] text-[var(--app-secondary-label)]">
-            Answer a few questions to find out which permit you need, then apply here, in about ten steps.
-          </p>
-        </div>
-        <Link to="/start"
-              className="flex min-h-12 w-full items-center justify-center rounded-xl bg-[var(--app-accent)] px-8 text-[17px] font-semibold text-[var(--app-on-accent)] no-underline">
-          Find out what you need
-        </Link>
+    <div className="flex flex-col items-center gap-3 text-center">
+      <img src="/town-seal.png" alt="Town of Newcastle seal" className="size-20" width={80} height={80} />
+      <h1 className="text-[22px] font-semibold leading-tight">Town of Newcastle — Permits</h1>
+    </div>
+  );
+}
+
+// Signed out (projects brief §3.1): the seal and the sign-in card, nothing else.
+export function SignedOut() {
+  return (
+    <div className="min-h-dvh bg-[var(--app-grouped-ground)] px-4 py-10">
+      <div className="mx-auto flex max-w-md flex-col gap-6">
+        <Seal />
+        <SignInForm hint="No password. We'll email you a link." />
       </div>
-      {signedIn && (
-        <InsetGroup>
-          <Link to="/my-applications" className="flex min-h-12 items-center gap-3 px-4 text-[17px] no-underline">
-            <span className="flex-1">Continue an application</span>
-            <span aria-hidden="true" className="text-[var(--app-tertiary-label)]">›</span>
-          </Link>
-        </InsetGroup>
+    </div>
+  );
+}
+
+function Row({ p }: { p: ProjectSummary }) {
+  const where = mapLotLabel(p.map_lot);
+  const how = p.status === "draft"
+    ? (p.left ? `${p.left} ${p.left === 1 ? "thing" : "things"} left` : "ready to send")
+    : p.submitted_at ? `sent ${longDate(p.submitted_at).replace(/, \d{4}$/, "")}` : "";
+  return (
+    <Link to={`/projects/${p.id}`} className="flex min-h-14 items-center gap-3 px-4 py-[11px] text-[14px] no-underline">
+      <Icon name={PART_ICONS[p.first_part ?? ""] ?? "clipboard-list"} className="text-[var(--app-secondary-label)]" />
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-[15px] font-medium text-[var(--app-label)]">{p.title}</span>
+        <span className="block text-[13px] text-[var(--app-secondary-label)]">{where}{how && ` · ${how}`}</span>
+      </span>
+      <Pill tone={STATUS_TONE[p.status]}>{STATUS_WORDS[p.status]}</Pill>
+      <Icon name="chevron-right" className="text-[var(--app-tertiary-label)]" />
+    </Link>
+  );
+}
+
+// Signed in (projects brief §3.2): Start a new application, Continue an application, and every
+// project, newest change first.
+function SignedIn() {
+  const navigate = useNavigate();
+  const [rows, setRows] = useState<ProjectSummary[] | null>(null);
+  const [note, setNote] = useState<string | null>(null);
+  useEffect(() => {
+    listProjects().then((r) => (typeof r === "string" ? setNote(UNREACHABLE) : setRows(r)));
+  }, []);
+  function carryOn() {
+    const open = (rows ?? []).find((p) => p.status === "draft" || p.status === "submitted");
+    if (open) navigate(`/projects/${open.id}`);
+    else setNote("You have no application in progress.");
+  }
+  return (
+    <div className="mx-auto flex max-w-lg flex-col gap-6 px-4 py-8">
+      <Seal />
+      <div className="flex flex-col gap-3">
+        <Link to="/new" data-filled="" className="btn btn-filled w-full no-underline">Start a new application</Link>
+        <button type="button" className="btn w-full" onClick={carryOn}>Continue an application</button>
+        {note && <p role="status" className="text-center text-[15px] text-[var(--app-secondary-label)]">{note}</p>}
+      </div>
+      {rows && rows.length > 0 && (
+        <section className="flex flex-col gap-2">
+          <h2 className="px-4 text-[13px] text-[var(--app-secondary-label)]">Your applications</h2>
+          <ul aria-label="Your applications"
+              className="overflow-hidden rounded-[12px] border-[0.5px] border-[var(--app-separator)] bg-[var(--app-row)]">
+            {rows.map((p, i) => (
+              <li key={p.id} className={i ? "border-t-[0.5px] border-[var(--app-separator)]" : ""}><Row p={p} /></li>
+            ))}
+          </ul>
+        </section>
       )}
     </div>
   );
+}
+
+export default function Home() {
+  const [state, setState] = useState<"checking" | "in" | "out">("checking");
+  useEffect(() => {
+    getMe().then((m) => setState(m && m !== "unavailable" ? "in" : "out"));
+  }, []);
+  if (state === "checking") return null;
+  return state === "in" ? <SignedIn /> : <SignedOut />;
 }

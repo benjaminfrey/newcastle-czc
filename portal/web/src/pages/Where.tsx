@@ -1,13 +1,12 @@
-import { Button, Card, Description, Form, Input, Label, Radio, RadioGroup, TextArea, TextField } from "@heroui/react";
+import { Button, Description, Form, Input, Label, Radio, RadioGroup, TextArea, TextField } from "@heroui/react";
 import { useEffect, useState, type FormEvent } from "react";
 import { ChoiceTiles } from "../controls/Tiles";
 import InsetGroup from "../shell/InsetGroup";
 import type { FormField } from "../projects";
 import ParcelMap from "../components/ParcelMap";
 import { getDistricts, getProperty, parcelAt, searchProperty, type Facts, type Hit } from "../api";
-import { saveProperty } from "../property";
-import { loadAnswers } from "../screener";
-import { useNavigate, useSearchParams } from "react-router";
+import { saveProperty, type ChosenProperty } from "../property";
+import { useSearchParams } from "react-router";
 import { longDate, mapLotLabel } from "../format";
 
 function districtLine(f: Facts): { text: string; staffWillConfirm: boolean } {
@@ -22,15 +21,15 @@ function districtLine(f: Facts): { text: string; staffWillConfirm: boolean } {
   };
 }
 
-type Mode = "lookup" | "manual" | "saved";
+type Mode = "lookup" | "manual";
 
 const BUSY = "You've looked up a lot of places in the last minute. Please wait a minute and try again.";
 
-export default function Where() {
-  const navigate = useNavigate();
+// "Where is the work?" (projects brief §3.3, card 2): search, the map, "Is this your property?"
+// and its three tiles, or the manual fallback (marked "not verified"). The choice is kept in this
+// tab and handed to onDone, with the lot's facts when it was looked up.
+export default function Where({ onDone }: { onDone: (p: ChosenProperty, facts: Facts | null) => void }) {
   const [params] = useSearchParams();
-  // Starting an application sends people here first, then back (only to an /apply/ page).
-  const next = params.get("next")?.startsWith("/apply/") ? params.get("next") : null;
   const [mode, setMode] = useState<Mode>(params.get("manual") === "1" ? "manual" : "lookup");
   const [query, setQuery] = useState("");
   const [hits, setHits] = useState<Hit[] | null>(null);
@@ -91,58 +90,39 @@ export default function Where() {
   function confirm(disputed: boolean) {
     if (!facts) return;
     const main = facts.districts[0];
-    saveProperty({
+    const p: ChosenProperty = {
       source: "lookup", parcel_id: facts.parcel_id, map_lot: facts.map_lot,
       district_code: main && main.in_ruleset ? main.code : null,
       district_codes: facts.districts.map((d) => d.code), on_state_highway: facts.on_state_highway,
       disputed, note: disputed ? note.trim() : "", as_of: facts.as_of.parcels,
-    });
-    afterSave();
-  }
-
-  // In the middle of "Do I need a permit?", go on to the next question.
-  function afterSave() {
-    if (next) return navigate(next);
-    const answers = loadAnswers();
-    if (!answers) return setMode("saved");
-    navigate(answers.project.includes("use") && !answers.use_key ? "/start/use" : "/start/needs");
+    };
+    saveProperty(p);
+    onDone(p, facts);
   }
 
   function saveManual(e: FormEvent) {
     e.preventDefault();
-    saveProperty({
+    const p: ChosenProperty = {
       source: "manual", parcel_id: null, map_lot: mapLot.trim(),
       district_code: district === "unsure" ? null : district,
       district_codes: district === "unsure" ? [] : [district], on_state_highway: null,
       disputed: false, note: "", as_of: null,
-    });
-    afterSave();
-  }
-
-  if (mode === "saved") {
-    return (
-      <Card>
-        <Card.Header>
-          <Card.Title>Saved.</Card.Title>
-          <Card.Description>The next steps are coming soon.</Card.Description>
-        </Card.Header>
-      </Card>
-    );
+    };
+    saveProperty(p);
+    onDone(p, null);
   }
 
   if (mode === "manual") {
     return (
-      <Card>
-        <Card.Header>
-          <Card.Title>Your property</Card.Title>
-          <Card.Description>
+      <section className="flex w-full flex-col items-center gap-3 py-6 text-center">
+        <h2 tabIndex={-1} data-screen-title className="text-[20px] font-medium leading-[1.3] outline-none">Your property</h2>
+        <p className="max-w-[46ch] text-[15px] text-[var(--app-secondary-label)]">
             {unavailable
               ? "We can't look up properties right now. You can enter your property's details yourself."
               : "Enter your property's details yourself."}{" "}
             The Code Enforcement Officer will check them.
-          </Card.Description>
-        </Card.Header>
-        <Card.Content>
+        </p>
+        <div className="w-full max-w-md text-left">
           <Form onSubmit={saveManual} className="flex flex-col gap-4">
             <TextField isRequired value={mapLot} onChange={setMapLot}>
               <Label>Map and lot</Label>
@@ -164,8 +144,8 @@ export default function Where() {
             </RadioGroup>
             <button type="submit" className="btn btn-filled self-start">Save</button>
           </Form>
-        </Card.Content>
-      </Card>
+        </div>
+      </section>
     );
   }
 
