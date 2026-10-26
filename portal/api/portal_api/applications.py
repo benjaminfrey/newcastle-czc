@@ -189,9 +189,12 @@ def attachments(conn: Connection, app_id: str) -> list[dict]:
 
 def current(conn: Connection, app_id: str, email: str) -> Current:
     snap = snapshot(conn, app_id)
+    who = conn.execute(text("SELECT p.name, p.phone, p.mailing_address FROM application a"
+                            " JOIN applicant p ON p.id = a.applicant_id WHERE a.id = :a"), {"a": app_id}).one()
     return Current(answers=answers(conn, app_id),
                    items=[(i["id"], i["kind"], i["position"]) for i in items(conn, app_id)],
-                   property=snap["facts"], account={"email": email})
+                   property=snap["facts"], account={"email": email, "name": who.name, "phone": who.phone,
+                                                    "mailing_address": who.mailing_address})
 
 
 def mine(conn: Connection, applicant_id: str) -> list:

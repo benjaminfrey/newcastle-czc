@@ -121,30 +121,30 @@ def test_create_refused_while_form_has_drafts(engine, settings, outbox, layers, 
 
 def test_answers_round_trip_and_history_is_kept(alice, engine):
     app_id = create(alice)
-    assert save(alice, app_id, [{"field_id": "applicant_name", "item_id": None, "value": "Ada"}]).status_code == 200
-    r = save(alice, app_id, [{"field_id": "applicant_name", "item_id": None, "value": "Ada Lovelace"}])
+    assert save(alice, app_id, [{"field_id": "owner_name", "item_id": None, "value": "Ada"}]).status_code == 200
+    r = save(alice, app_id, [{"field_id": "owner_name", "item_id": None, "value": "Ada Lovelace"}])
     assert r.status_code == 200 and r.json()["revision"] == 2
-    assert current_values(get(alice, app_id))[("applicant_name", None)] == "Ada Lovelace"
+    assert current_values(get(alice, app_id))[("owner_name", None)] == "Ada Lovelace"
     with engine.begin() as conn:
-        assert conn.execute(text("SELECT count(*) FROM answer WHERE field_id = 'applicant_name'")).scalar() == 2
+        assert conn.execute(text("SELECT count(*) FROM answer WHERE field_id = 'owner_name'")).scalar() == 2
 
 
 def test_bad_change_saves_nothing(alice):
     app_id = create(alice)
-    r = save(alice, app_id, [{"field_id": "applicant_name", "item_id": None, "value": "Ada"},
+    r = save(alice, app_id, [{"field_id": "owner_name", "item_id": None, "value": "Ada"},
                              {"field_id": "existing_dwelling_units", "item_id": None, "value": -3}])
     assert r.status_code == 422
     assert r.json()["detail"] == [{"field_id": "existing_dwelling_units", "item_id": None, "reason": "out_of_range"}]
     body = get(alice, app_id)
-    assert ("applicant_name", None) not in current_values(body) and body["revision"] == 0
+    assert ("owner_name", None) not in current_values(body) and body["revision"] == 0
 
 
 def test_stale_revision_is_refused(alice):
     app_id = create(alice)
-    assert save(alice, app_id, [{"field_id": "applicant_name", "item_id": None, "value": "Tab one"}], base=0).status_code == 200
-    r = save(alice, app_id, [{"field_id": "applicant_name", "item_id": None, "value": "Tab two"}], base=0)
+    assert save(alice, app_id, [{"field_id": "owner_name", "item_id": None, "value": "Tab one"}], base=0).status_code == 200
+    r = save(alice, app_id, [{"field_id": "owner_name", "item_id": None, "value": "Tab two"}], base=0)
     assert r.status_code == 409 and r.json() == {"detail": "changed_elsewhere", "revision": 1}
-    assert current_values(get(alice, app_id))[("applicant_name", None)] == "Tab one"
+    assert current_values(get(alice, app_id))[("owner_name", None)] == "Tab one"
 
 
 def test_item_answers_need_a_live_item(alice):
@@ -155,7 +155,7 @@ def test_item_answers_need_a_live_item(alice):
     assert ok.status_code == 200
     bad = save(alice, app_id, [{"field_id": "stories", "item_id": None, "value": 2}])
     assert bad.json()["detail"][0]["reason"] == "wrong_item"
-    bad = save(alice, app_id, [{"field_id": "applicant_name", "item_id": building["id"], "value": "x"}])
+    bad = save(alice, app_id, [{"field_id": "owner_name", "item_id": building["id"], "value": "x"}])
     assert bad.json()["detail"][0]["reason"] == "wrong_item"
 
 
@@ -208,11 +208,11 @@ def test_other_applicant_gets_404_everywhere(alice, bob):
 
 def test_events_name_fields_not_values(alice, engine):
     app_id = create(alice)
-    save(alice, app_id, [{"field_id": "applicant_phone", "item_id": None, "value": "207-555-0199"}])
+    save(alice, app_id, [{"field_id": "owner_phone", "item_id": None, "value": "207-555-0199"}])
     with engine.begin() as conn:
         rows = conn.execute(text("SELECT kind, payload_json FROM event WHERE kind LIKE 'application.%' ORDER BY seq")).all()
     assert [r.kind for r in rows] == ["application.created", "application.answers_saved"]
-    assert "applicant_phone" in rows[1].payload_json and "555" not in rows[1].payload_json
+    assert "owner_phone" in rows[1].payload_json and "555" not in rows[1].payload_json
 
 
 def test_use_key_prefills_uses_to_be_established(alice):
@@ -303,7 +303,7 @@ def test_form_json_carries_steps_pages_and_controls(alice, tmp_path, monkeypatch
         for f in s["fields"]:
             if f["id"] == "existing_dwelling_units":
                 f["control"] = "stepper"
-            if f["id"] == "applicant_phone":
+            if f["id"] == "owner_phone":
                 f["autocomplete"] = "tel"
     (forms_dir / "cover-sheet.v1.yaml").write_text(yaml.safe_dump(cover))
     up = yaml.safe_load((forms_dir / "use-permit.v1.yaml").read_text())
@@ -316,8 +316,8 @@ def test_form_json_carries_steps_pages_and_controls(alice, tmp_path, monkeypatch
     assert [s["id"] for s in form["steps"]] == ["your_lot", "about_you", "uses"]
     fields = {f["id"]: f for s in form["sections"] for f in s["fields"]}
     assert fields["existing_dwelling_units"]["control"] == "stepper"
-    assert fields["applicant_phone"]["autocomplete"] == "tel"
-    assert fields["applicant_phone"]["step"] == "about_you"
+    assert fields["owner_phone"]["autocomplete"] == "tel"
+    assert fields["owner_phone"]["step"] == "about_you"
     assert {s["id"]: s["step"] for s in form["sections"]}["existing"] == "uses"
     location = next(s for s in form["sections"] if s["id"] == "location")
     assert location["screens"] == [{"id": "deed", "layout": None, "title": "Where is your deed recorded?",

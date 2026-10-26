@@ -155,7 +155,7 @@ def test_upload_limit_per_hour(alice, settings):
 
 def test_not_an_upload_field(alice):
     app_id = create(alice)
-    assert upload(alice, app_id, PDF, field_id="applicant_name").json()["detail"] == "not_an_upload_field"
+    assert upload(alice, app_id, PDF, field_id="owner_name").json()["detail"] == "not_an_upload_field"
     assert upload(alice, app_id, PDF, field_id="nope").status_code == 422
 
 

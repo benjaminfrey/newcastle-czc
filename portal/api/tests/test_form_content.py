@@ -340,7 +340,7 @@ def test_card_members(forms):
     assert members(sp, "kind", "component") == ["component_kind", "component_other_name"]
     assert members(sp, "size", "component") == ["component_width", "component_depth", "component_height"]
     assert members(cover, "lot_size") == ["lot_width", "lot_depth"]
-    assert members(cover, "contact") == ["applicant_name", "applicant_phone", "applicant_address"]
+    assert members(cover, "contact") == []  # the applicant comes from the account (projects brief §5.1)
     assert members(cover, "owner") == ["owner_name", "owner_email", "owner_phone", "owner_address"]
     assert members(cover, "agent") == ["agent_name", "agent_email", "agent_phone", "agent_address"]
     assert members(ep, "driveway") == ["driveway_width", "first_20ft_slope", "entrance_angle"]
@@ -398,6 +398,11 @@ def test_about_you_asks_the_owner_right_after_the_owner_question(forms):
     cover = forms["use_permit"]
     ranked = sorted(((f.ask_first, f.id) for _, f in cover.fields() if f.ask_first and cover.step_of(f.id) == "about_you"),
                     key=lambda x: x[0])  # by rank; the form's order among equals
-    assert [fid for _, fid in ranked] == ["applicant_name", "applicant_phone", "applicant_address", "applicant_is_owner",
-                                         "owner_name", "owner_email", "owner_phone", "owner_address"]
-    assert [r for r, f in ranked][:4] == [1, 1, 1, 2] and {r for r, f in ranked[4:]} == {3}
+    assert [fid for _, fid in ranked] == ["applicant_is_owner", "owner_name", "owner_email", "owner_phone", "owner_address"]
+    assert ranked[0][0] == 2 and {r for r, f in ranked[1:]} == {3}
+
+
+def test_cover_sheet_takes_the_applicant_from_the_account(forms):
+    got = {f.id: (f.source, f.from_) for _, f in forms["small_project_plan"].fields() if f.id.startswith("applicant_") and f.id != "applicant_is_owner"}
+    assert got == {"applicant_name": ("account", "name"), "applicant_email": ("account", "email"),
+                   "applicant_phone": ("account", "phone"), "applicant_address": ("account", "mailing_address")}

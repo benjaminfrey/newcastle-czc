@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request, Response
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from sqlalchemy import Connection
 
 from portal_api import auth
@@ -68,9 +68,34 @@ def verify(body: VerifyRequest, request: Request, response: Response,
     return {"email": applicant.email, "role": applicant.role}
 
 
+class Details(BaseModel):
+    """The applicant's details, trimmed; a blank one is None."""
+    name: str | None = Field(default=None, max_length=200)
+    phone: str | None = Field(default=None, max_length=40)
+    mailing_address: str | None = Field(default=None, max_length=400)
+
+    @field_validator("name", "phone", "mailing_address", mode="after")
+    @classmethod
+    def _trim(cls, v: str | None) -> str | None:
+        return (v.strip() or None) if v is not None else None
+
+
+def _me(conn: Connection, applicant: auth.Applicant) -> dict:
+    return {"email": applicant.email, "role": applicant.role, **auth.details(conn, applicant.id)}
+
+
 @router.get("/api/me")
-def me(applicant: auth.Applicant = auth.require):
-    return {"email": applicant.email, "role": applicant.role}
+def me(applicant: auth.Applicant = auth.require, conn: Connection = transaction):
+    return _me(conn, applicant)
+
+
+@router.put("/api/me")
+def save_me(body: Details, applicant: auth.Applicant = auth.require, conn: Connection = transaction):
+    changed = auth.save_details(conn, applicant.id, body.model_dump())
+    if changed:
+        append_event(conn, actor=f"applicant:{applicant.id}", kind="account.details_changed",
+                     payload={"applicant_id": applicant.id, "fields": changed})
+    return _me(conn, applicant)
 
 
 @router.post("/api/auth/sign-out", status_code=204)

@@ -24,7 +24,8 @@ def test_full_sign_in_flow(client, outbox):
     r = _sign_in(client, outbox)
     assert r.status_code == 200
     assert r.json() == {"email": "a@example.com", "role": "applicant"}
-    assert client.get("/api/me").json() == {"email": "a@example.com", "role": "applicant"}
+    assert client.get("/api/me").json() == {"email": "a@example.com", "role": "applicant",
+                                            "name": None, "phone": None, "mailing_address": None}
 
 
 def test_link_points_at_the_web_app_with_token_in_fragment(client, outbox):
@@ -165,3 +166,40 @@ def test_events_are_logged_without_personal_details(client, outbox, engine):
         assert verify_chain(conn) == (True, None)
     assert [r.kind for r in rows] == ["signin.requested", "signin.verified", "signin.signed_out"]
     assert all("@" not in r.payload_json for r in rows)
+
+
+DETAILS = {"name": "  Ada Lovelace ", "phone": "207-555-0100", "mailing_address": "PO Box 7, Newcastle ME 04553"}
+
+
+def test_me_saves_the_details_once(client, outbox):
+    _sign_in(client, outbox)
+    r = client.put("/api/me", json=DETAILS)
+    assert r.status_code == 200
+    want = {"email": "a@example.com", "role": "applicant", "name": "Ada Lovelace", "phone": "207-555-0100",
+            "mailing_address": "PO Box 7, Newcastle ME 04553"}
+    assert r.json() == want
+    assert client.get("/api/me").json() == want
+    assert client.put("/api/me", json={**DETAILS, "phone": "  "}).json()["phone"] is None
+
+
+def test_me_refuses_overlong_details(client, outbox):
+    _sign_in(client, outbox)
+    for k, n in (("name", 201), ("phone", 41), ("mailing_address", 401)):
+        assert client.put("/api/me", json={**DETAILS, k: "x" * n}).status_code == 422
+
+
+def test_me_details_need_a_session(client):
+    assert client.put("/api/me", json=DETAILS).status_code == 401
+
+
+def test_details_change_event_names_fields_not_values(client, outbox, engine):
+    _sign_in(client, outbox)
+    client.put("/api/me", json=DETAILS)
+    client.put("/api/me", json={**DETAILS, "phone": "207-555-0199"})
+    with engine.connect() as conn:
+        rows = conn.execute(text(
+            "SELECT payload_json FROM event WHERE kind = 'account.details_changed' ORDER BY seq")).scalars().all()
+        assert verify_chain(conn) == (True, None)
+    assert len(rows) == 2
+    assert '"phone"' in rows[1] and '"name"' not in rows[1]
+    assert not any(v in r for r in rows for v in ("Ada", "0100", "0199", "PO Box"))

@@ -69,16 +69,9 @@ sections:
   fields:
   - id: applicant_name
     official_label: Name
-    source: question
-    label: What is your full name?
-    type: text
-    why: 8.2.a.2
-    required: true
+    source: account
+    from: name
     status: draft
-    autocomplete: name
-    screen: contact
-    short: Full name
-    ask_first: 1
   - id: applicant_email
     official_label: Email
     source: account
@@ -86,29 +79,14 @@ sections:
     status: draft
   - id: applicant_phone
     official_label: Phone
-    source: question
-    label: What phone number should the Town use to reach you?
-    type: text
-    why: 8.2.a.2
-    required: true
+    source: account
+    from: phone
     status: draft
-    autocomplete: tel
-    screen: contact
-    short: Phone
-    ask_first: 1
   - id: applicant_address
     official_label: Address
-    source: question
-    label: What is your mailing address?
-    help: Street or PO box, town, state and ZIP code.
-    type: text
-    why: 8.2.a.2
-    required: true
+    source: account
+    from: mailing_address
     status: draft
-    autocomplete: street-address
-    screen: contact
-    short: Mailing address
-    ask_first: 1
   - id: applicant_is_owner
     official_label: Applicant is the Property Owner
     source: question

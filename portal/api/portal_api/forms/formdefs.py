@@ -22,7 +22,7 @@ FORM_KEYS = ("use_permit", "small_project_plan", "entrance_permit")
 FIELD_TYPES = {"text", "longtext", "number", "choice", "multichoice", "yesno", "date", "uses", "point", "upload"}
 SOURCES = {"question", "property", "account", "derived", "at_submit", "staff"}
 PROPERTY_KEYS = {"map_lot", "location", "acres", "districts", "streets", "on_state_highway"}
-ACCOUNT_KEYS = {"email"}
+ACCOUNT_KEYS = {"email", "name", "phone", "mailing_address"}
 SCOPES = ("answers.", "item.", "property.")
 # How a question is drawn (the browser picks a default by type when none is named).
 # Each control and the field types it can answer: a switch on a number would be refused at every save.
