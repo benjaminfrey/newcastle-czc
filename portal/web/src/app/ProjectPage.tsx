@@ -11,7 +11,7 @@ import { ProjectProvider, useProject } from "./ProjectStore";
 import CheckPane from "./CheckPane";
 import Dashboard from "./Dashboard";
 import ItemsPane, { itemTitle } from "./ItemsPane";
-import ReviewPane from "./ReviewPane";
+import SendPane from "./SendPane";
 import CardQuestion, { headingOf, rowKey } from "./WizardPane";
 
 // /projects/:id                          the dashboard
@@ -36,7 +36,7 @@ function Tasks({ id }: { id: string }) {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const store = useProject();
-  const { project: app, form, cur, problem, saveState, flush, markVisited, visited, reload, setAnswer, addPart: addItem, removePart: removeItem, setTitle, locked } = store;
+  const { project: app, form, cur, problem, saveState, flush, markVisited, visited, reload, setAnswer, addPart: addItem, removePart: removeItem, setTitle, locked, submit } = store;
   const base = `/projects/${id}`;
   const [direction, setDirection] = useState<1 | -1>(1);
   const [editing, setEditing] = useState(false);
@@ -161,12 +161,10 @@ function Tasks({ id }: { id: string }) {
     ));
   }
   if (stepId === SEND) {
+    if (locked) return <Navigate to={base} replace />;
     return shell(true, (
-      <Card>
-        <Card.Header title="Check and send" />
-        <Card.Body className="items-stretch gap-6 text-left"><ReviewPane models={models} base={base} /></Card.Body>
-        <Card.Footer back={{ label: "Back", onPress: () => go(base, -1) }} />
-      </Card>
+      <SendPane project={app} form={form} cur={cur} models={models} base={base} onBack={() => go(base, -1)}
+                onSend={submit} onSent={() => go(base)} />
     ));
   }
   const step = current!;
@@ -261,8 +259,15 @@ function Tasks({ id }: { id: string }) {
     <Card wide={wide} onSubmit={() => void onContinue()}>
       <Card.Header title={title} count={progress.count} at={progress.at} />
       <Card.Body motionKey={paneKey} direction={direction}>
-        <CardQuestion screen={screen} editing={editing} errorsRef={errorsRef} onPick={onPick} onConfirm={onConfirm}
-                      onCorrect={() => setEditing(true)} onUnknown={() => void onUnknown()} />
+        {locked && (
+          <p className="mb-3 max-w-[46ch] text-[13px] text-[var(--app-secondary-label)]">
+            The Town is reviewing this project; changes go through the Code Enforcement Officer.</p>
+        )}
+        {/* Locked: the controls show the answers, and take no changes. */}
+        <fieldset disabled={locked} className="contents">
+          <CardQuestion screen={screen} editing={editing} errorsRef={errorsRef} onPick={onPick} onConfirm={onConfirm}
+                        onCorrect={() => setEditing(true)} onUnknown={() => void onUnknown()} />
+        </fieldset>
       </Card.Body>
       <Card.Footer back={back}
                    next={needsContinue ? { label: screen.optional && blank ? "Skip for now" : "Continue", plain: screen.optional && blank, onPress: () => void onContinue() }

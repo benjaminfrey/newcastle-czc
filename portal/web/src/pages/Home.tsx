@@ -5,6 +5,7 @@ import SignInForm from "../components/SignInForm";
 import Icon from "../controls/Icon";
 import { longDate, mapLotLabel } from "../format";
 import { listProjects, type ProjectSummary, type Status } from "../projects";
+import AppShell from "../shell/AppShell";
 import Pill, { type Tone } from "../shell/Pill";
 
 // The pill words for a project's status (projects brief §5.2).
@@ -70,6 +71,7 @@ function SignedIn() {
     else setNote("You have no application in progress.");
   }
   return (
+    <AppShell title="Home">
     <div className="mx-auto flex max-w-lg flex-col gap-6 px-4 py-8">
       <Seal />
       <div className="flex flex-col gap-3">
@@ -89,6 +91,7 @@ function SignedIn() {
         </section>
       )}
     </div>
+    </AppShell>
   );
 }
 

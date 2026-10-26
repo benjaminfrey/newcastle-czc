@@ -9,7 +9,7 @@ import { BuildingPicker, BuildingTypeControl, StreetPicker } from "../controls/p
 import { ChoiceTiles, MultiTiles } from "../controls/Tiles";
 import { mapValueOf, valueOf, type Row } from "../forms/applicability";
 import type { Screen } from "../forms/screens";
-import { display } from "./OfficialGroup";
+import { display } from "./format";
 import { useProject } from "./ProjectStore";
 import CompassLayout from "./layouts/CompassLayout";
 import LotDiagramLayout from "./layouts/LotDiagramLayout";

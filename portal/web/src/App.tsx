@@ -1,6 +1,8 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import ProjectPage from "./app/ProjectPage";
 import Home from "./pages/Home";
+import Messages from "./pages/Messages";
+import You from "./pages/You";
 import Verify from "./pages/Verify";
 import RequireSignIn from "./shell/RequireSignIn";
 import NewProject from "./start/NewProject";
@@ -18,8 +20,8 @@ export function AppRoutes() {
       <Route element={<RequireSignIn />}>
         <Route path="/new" element={<NewProject />} />
         <Route path="/projects/:id/:stepId?/:sub?" element={<ProjectPage />} />
-        <Route path="/messages" element={HOME} />
-        <Route path="/you" element={HOME} />
+        <Route path="/messages" element={<Messages />} />
+        <Route path="/you" element={<You />} />
       </Route>
       {["/signin", "/where", "/start/*", "/my-applications", "/apply/*", "/applications/*"].map((p) => (
         <Route key={p} path={p} element={HOME} />

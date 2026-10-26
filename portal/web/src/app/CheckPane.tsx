@@ -10,7 +10,7 @@ import type { Screen } from "../forms/screens";
 import Card from "../shell/Card";
 import { useProject } from "./ProjectStore";
 import { itemTitle } from "./ItemsPane";
-import { display } from "./OfficialGroup";
+import { display } from "./format";
 
 const blank = (v: unknown) => v === null || v === undefined || v === "" || (Array.isArray(v) && v.length === 0);
 
