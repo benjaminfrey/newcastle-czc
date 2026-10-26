@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as api from "../api";
 import * as apps from "../projects";
 import * as layout from "../shell/useWideLayout";
-import ApplicationPage from "./ApplicationPage";
+import ProjectPage from "./ProjectPage";
 
 vi.mock("../components/ParcelMap", () => ({ default: () => <div>map</div> }));
 
@@ -86,12 +86,13 @@ const FORM: apps.FormDef = {
 };
 const B1 = { id: "b1", kind: "building", position: 0 };
 const B2 = { id: "b2", kind: "building", position: 1 };
-const APP: apps.AppState = {
-  id: "abc", form_key: "small_project_plan", form_version: 1, ruleset_key: "adopted-v1.0", status: "draft", revision: 3,
+const APP: apps.ProjectState = {
+  id: "abc", title: "A new building at Sheepscot Road", ruleset_key: "adopted-v1.0", status: "draft", revision: 3,
+  submitted_at: null, forms: { small_project_plan: 1 }, form: FORM, needs: null,
   property: { source: "lookup", parcel_id: null, map_lot: "004-036",
               facts: { acres: 2.73, streets: [{ name: "Sheepscot Road" }], location: "461 SHEEPSCOT RD" },
               parcels_as_of: null, verified: true, disputed: false, note: "" },
-  items: [B1], answers: [], notes: [], attachments: [], missing: [], newer_version: false,
+  items: [B1], answers: [], notes: [], attachments: [], missing: [],
 };
 const a = (field_id: string, value: unknown, item_id: string | null = null) => ({ field_id, item_id, value });
 const finished = (item: string) => [
@@ -109,13 +110,13 @@ function Where() {
 const open = (path: string) => render(
   <MemoryRouter initialEntries={[path]}>
     <Routes>
-      <Route path="/applications/:id/:stepId?/:sub?" element={<><ApplicationPage /><Where /></>} />
+      <Route path="/projects/:id/:stepId?/:sub?" element={<><ProjectPage /><Where /></>} />
       <Route path="*" element={<Where />} />
     </Routes>
   </MemoryRouter>,
 );
 const where = () => screen.getByTestId("where");
-const withApp = (over: Partial<apps.AppState>) => vi.spyOn(apps, "getApplication").mockResolvedValue({ ...APP, ...over });
+const withApp = (over: Partial<apps.ProjectState>) => vi.spyOn(apps, "getProject").mockResolvedValue({ ...APP, ...over });
 let save: ReturnType<typeof vi.spyOn>;
 const saved = () => save.mock.calls.flatMap((c: unknown[]) => c[2] as apps.Change[]);
 
@@ -123,42 +124,36 @@ beforeEach(() => {
   localStorage.clear();
   vi.restoreAllMocks();
   vi.spyOn(layout, "useWideLayout").mockReturnValue(true);
-  vi.spyOn(apps, "getApplication").mockResolvedValue(APP);
-  vi.spyOn(apps, "getForm").mockResolvedValue(FORM);
+  vi.spyOn(apps, "getProject").mockResolvedValue(APP);
+  vi.spyOn(apps, "getParts").mockResolvedValue([]);
   vi.spyOn(api, "getMe").mockResolvedValue({ email: "a@example.com", role: "applicant" });
   vi.spyOn(api, "getUseGroups").mockResolvedValue([]);
   save = vi.spyOn(apps, "saveAnswers").mockResolvedValue({ revision: 4, missing: [] });
 });
 
-describe("the task list", () => {
-  it("is the application's home, with a pill per task", async () => {
+describe("the project's home", () => {
+  it("is the dashboard: the parcel, a row per part with its pill", async () => {
     withApp({ answers: [a("lot_width", 120), a("lot_depth", 200)] });
-    open("/applications/abc");
+    open("/projects/abc");
     const main = await screen.findByRole("main");
-    expect(within(main).getByRole("link", { name: /^Your lot,.*1 of 2 ?answered$/ })).toBeInTheDocument();
-    expect(within(main).getByRole("link", { name: /^The work,.*Not started$/ })).toBeInTheDocument();
-    expect(within(main).getByText("Opens when the tasks above are done")).toBeInTheDocument();
-  });
-
-  it("a new application opens at the first card, on a phone too", async () => {
-    vi.spyOn(layout, "useWideLayout").mockReturnValue(false);
-    open("/applications/abc?start=1");
-    await waitFor(() => expect(where()).toHaveTextContent("/applications/abc/your_lot"));
+    expect(within(main).getByRole("link", { name: /^Your lot, Map 4, Lot 36/ })).toBeInTheDocument();
+    expect(within(main).getByRole("link", { name: /^The work.*answered$/ })).toBeInTheDocument();
+    expect(within(main).getByRole("link", { name: "Check and send" })).toHaveAttribute("href", "/projects/abc/send");
   });
 });
 
 describe("cards", () => {
   it("a tap answers and moves on, with no Continue", async () => {
     withApp({ answers: [a("applicant_name", "Ada")] });
-    open("/applications/abc/about_you?screen=applicant_is_owner");
+    open("/projects/abc/about_you?screen=applicant_is_owner");
     await userEvent.click(await screen.findByRole("radio", { name: "Yes" }));
     expect(screen.queryByRole("button", { name: "Continue" })).not.toBeInTheDocument();
-    await waitFor(() => expect(where()).toHaveTextContent("/applications/abc/about_you/check"));
+    await waitFor(() => expect(where()).toHaveTextContent("/projects/abc/about_you/check"));
     expect(saved()).toContainEqual(a("applicant_is_owner", true));
   });
 
   it("Continue saves a typed answer; Return does the same", async () => {
-    open("/applications/abc/about_you?screen=applicant_name");
+    open("/projects/abc/about_you?screen=applicant_name");
     await userEvent.type(await screen.findByRole("textbox", { name: "What is your full name?" }), "Ada{Enter}");
     await waitFor(() => expect(where()).toHaveTextContent("?screen=applicant_is_owner"));
     expect(saved()).toContainEqual(a("applicant_name", "Ada"));
@@ -166,20 +161,20 @@ describe("cards", () => {
 
   it("the card's header names the task and counts its cards", async () => {
     withApp({ answers: [a("applicant_is_owner", false)] }); // the owner's card applies
-    open("/applications/abc/about_you?screen=applicant_is_owner");
+    open("/projects/abc/about_you?screen=applicant_is_owner");
     await screen.findByRole("heading", { level: 2, name: "Do you own this property?" });
     expect(screen.getByRole("img", { name: "Question 2 of 3" })).toBeInTheDocument();
     expect(screen.getByText("2 of 3")).toBeInTheDocument();
   });
 
-  it("Back on a task's first card says Tasks and goes to the list", async () => {
-    open("/applications/abc/about_you?screen=applicant_name");
-    await userEvent.click(await screen.findByRole("button", { name: "Tasks" }));
-    await waitFor(() => expect(where()).toHaveTextContent(/^\/applications\/abc$/));
+  it("Back on a part's first card goes to the dashboard", async () => {
+    open("/projects/abc/about_you?screen=applicant_name");
+    await userEvent.click(await screen.findByRole("button", { name: "Back" }));
+    await waitFor(() => expect(where()).toHaveTextContent(/^\/projects\/abc$/));
   });
 
   it("a set of values: short names beside their fields; Continue saves them all", async () => {
-    open("/applications/abc/your_lot?screen=lot_width");
+    open("/projects/abc/your_lot?screen=lot_width");
     expect(await screen.findByRole("heading", { level: 2, name: "How big is your lot?" })).toBeInTheDocument();
     expect(screen.getByText("In feet. Your deed or a survey has these.")).toBeInTheDocument();
     await userEvent.type(screen.getByRole("textbox", { name: "Width" }), "120");
@@ -190,21 +185,21 @@ describe("cards", () => {
 
   it("I don't know some of these yet marks only the blank ones", async () => {
     withApp({ answers: [a("lot_width", 120)] });
-    open("/applications/abc/your_lot?screen=lot_width");
+    open("/projects/abc/your_lot?screen=lot_width");
     await userEvent.click(await screen.findByRole("button", { name: "I don't know some of these yet" }));
     await waitFor(() => expect(saved()).toContainEqual(a("lot_depth", { unknown: true })));
     expect(saved()).not.toContainEqual(a("lot_width", { unknown: true }));
   });
 
   it("a typed number saves when Back is pressed without leaving the field", async () => {
-    open("/applications/abc/your_lot?screen=lot_width");
+    open("/projects/abc/your_lot?screen=lot_width");
     await userEvent.type(await screen.findByRole("textbox", { name: "Width" }), "120");
     fireEvent.click(screen.getByRole("button", { name: "Back" })); // a tap on a phone: focus stays in the field
     await waitFor(() => expect(saved()).toContainEqual(a("lot_width", 120)));
   });
 
   it("Is this right? keeps the map's value; a correction shows as the applicant's", async () => {
-    open("/applications/abc/your_lot?screen=lot_area");
+    open("/projects/abc/your_lot?screen=lot_area");
     await userEvent.click(await screen.findByRole("radio", { name: "Yes, that's right" }));
     await waitFor(() => expect(where()).toHaveTextContent("?screen=lot_width"));
     expect(saved()).toEqual([]);
@@ -212,7 +207,7 @@ describe("cards", () => {
 
   it("a corrected value can go back to the map's", async () => {
     withApp({ answers: [a("lot_area", 2.5)] });
-    open("/applications/abc/your_lot?screen=lot_area");
+    open("/projects/abc/your_lot?screen=lot_area");
     expect(await screen.findByText("You entered this. The Town's map says 2.73 acres.")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("radio", { name: "Use the map's 2.73 acres" }));
     await waitFor(() => expect(saved()).toContainEqual(a("lot_area", null)));
@@ -220,30 +215,30 @@ describe("cards", () => {
 
   it("an answered tap card offers Continue; a form default alone doesn't", async () => {
     withApp({ answers: [a("applicant_name", "Ada"), a("applicant_is_owner", false)] });
-    const { unmount } = open("/applications/abc/about_you?screen=applicant_is_owner");
+    const { unmount } = open("/projects/abc/about_you?screen=applicant_is_owner");
     await screen.findByRole("heading", { level: 2, name: "Do you own this property?" });
     await new Promise((r) => setTimeout(r, 50));
     expect(screen.queryByRole("button", { name: "Continue" })).not.toBeInTheDocument();
     unmount();
     withApp({ answers: [a("applicant_name", "Ada"), a("applicant_is_owner", true)] });
-    open("/applications/abc/about_you?screen=applicant_is_owner");
+    open("/projects/abc/about_you?screen=applicant_is_owner");
     await userEvent.click(await screen.findByRole("button", { name: "Continue" }));
-    await waitFor(() => expect(where()).toHaveTextContent("/applications/abc/about_you/check"));
+    await waitFor(() => expect(where()).toHaveTextContent("/projects/abc/about_you/check"));
   });
 
   it("A tap moves on is said once in an application", async () => {
     withApp({ answers: [a("applicant_name", "Ada")] });
-    const { unmount } = open("/applications/abc/about_you?screen=applicant_is_owner");
+    const { unmount } = open("/projects/abc/about_you?screen=applicant_is_owner");
     expect(await screen.findByText("A tap moves on")).toBeInTheDocument();
     unmount();
-    open("/applications/abc/about_you?screen=applicant_is_owner");
+    open("/projects/abc/about_you?screen=applicant_is_owner");
     await screen.findByRole("heading", { level: 2, name: "Do you own this property?" });
     expect(screen.queryByText("A tap moves on")).not.toBeInTheDocument();
   });
 
   it("a tap's move-on gives way when the applicant goes elsewhere first", async () => {
     withApp({ answers: [a("applicant_name", "Ada")] });
-    open("/applications/abc/about_you?screen=applicant_is_owner");
+    open("/projects/abc/about_you?screen=applicant_is_owner");
     await userEvent.click(await screen.findByRole("radio", { name: "Yes" }));
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
     await new Promise((r) => setTimeout(r, 400));
@@ -254,7 +249,7 @@ describe("cards", () => {
 describe("a building", () => {
   it("runs eight cards, headed by its number and type, then its check page, then the list", async () => {
     withApp({ answers: [a("building_class", "residential", "b1")] });
-    open("/applications/abc/buildings?screen=building_class&item=b1");
+    open("/projects/abc/buildings?screen=building_class&item=b1");
     await screen.findByRole("heading", { level: 2, name: "Which best describes this building?" });
     expect(screen.getByText("Building 1 · A home")).toBeInTheDocument();
     expect(screen.getByRole("img", { name: "Question 1 of 8" })).toBeInTheDocument();
@@ -262,16 +257,16 @@ describe("a building", () => {
 
   it("the last card goes to the building's check page, and Done there to the list", async () => {
     withApp({ answers: finished("b1") });
-    open("/applications/abc/buildings?screen=front_facing&item=b1");
+    open("/projects/abc/buildings?screen=front_facing&item=b1");
     await userEvent.click(await screen.findByRole("button", { name: "Continue" }));
-    await waitFor(() => expect(where()).toHaveTextContent("/applications/abc/buildings/check?item=b1"));
+    await waitFor(() => expect(where()).toHaveTextContent("/projects/abc/buildings/check?item=b1"));
     expect(await screen.findByText("Check Building 1")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Done" }));
-    await waitFor(() => expect(where()).toHaveTextContent(/^\/applications\/abc\/buildings$/));
+    await waitFor(() => expect(where()).toHaveTextContent(/^\/projects\/abc\/buildings$/));
   });
 
   it("the roof's shape tiles answer without moving on; Continue moves on", async () => {
-    open("/applications/abc/buildings?screen=roof_style&item=b1");
+    open("/projects/abc/buildings?screen=roof_style&item=b1");
     await userEvent.click(await screen.findByRole("radio", { name: "Gable" }));
     await new Promise((r) => setTimeout(r, 300));
     expect(where()).toHaveTextContent("?screen=roof_style");
@@ -283,60 +278,60 @@ describe("a building", () => {
 
   it("a floor height for each floor entered, and none before", async () => {
     withApp({ answers: [a("stories", 2, "b1")] });
-    const { unmount } = open("/applications/abc/buildings?screen=mass_width&item=b1");
+    const { unmount } = open("/projects/abc/buildings?screen=mass_width&item=b1");
     await screen.findByRole("heading", { level: 2, name: "How big is the building?" });
     expect(screen.getByRole("textbox", { name: "First floor height" })).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: "Second floor height" })).toBeInTheDocument();
     unmount();
     withApp({ answers: [] });
-    open("/applications/abc/buildings?screen=mass_width&item=b1");
+    open("/projects/abc/buildings?screen=mass_width&item=b1");
     await screen.findByRole("heading", { level: 2, name: "How big is the building?" });
     expect(screen.queryByRole("textbox", { name: "First floor height" })).not.toBeInTheDocument();
   });
 
   it("floors are counted with − and + beside the number", async () => {
-    open("/applications/abc/buildings?screen=mass_width&item=b1");
+    open("/projects/abc/buildings?screen=mass_width&item=b1");
     await userEvent.click(await screen.findByRole("button", { name: "Floors above ground, one more" }));
     await waitFor(() => expect(saved()).toContainEqual(a("stories", 1, "b1")));
     expect(screen.getByRole("button", { name: "Floors above ground, one fewer" })).toBeInTheDocument();
   });
 
   it("the roof: its shapes, then its slope once a shape is chosen", async () => {
-    const { unmount } = open("/applications/abc/buildings?screen=roof_style&item=b1");
+    const { unmount } = open("/projects/abc/buildings?screen=roof_style&item=b1");
     expect(await screen.findByRole("heading", { level: 2, name: "What shape is the roof?" })).toBeInTheDocument();
     expect(screen.queryByRole("radio", { name: "Steep" })).not.toBeInTheDocument();
     expect(screen.queryByText("Shape")).not.toBeInTheDocument();
     unmount();
     withApp({ answers: [a("roof_style", "gable", "b1")] });
-    open("/applications/abc/buildings?screen=roof_style&item=b1");
+    open("/projects/abc/buildings?screen=roof_style&item=b1");
     expect(await screen.findByRole("radio", { name: "Steep" })).toBeInTheDocument();
   });
 
   it("the materials: another material is asked only when Something else is chosen", async () => {
-    const { unmount } = open("/applications/abc/buildings?screen=exterior_finish&item=b1");
+    const { unmount } = open("/projects/abc/buildings?screen=exterior_finish&item=b1");
     await screen.findByRole("heading", { level: 2, name: "What will the outside walls and roof be covered with?" });
     expect(screen.queryByRole("textbox", { name: "Other material" })).not.toBeInTheDocument();
     expect(screen.queryByText("Materials")).not.toBeInTheDocument();
     unmount();
     withApp({ answers: [a("exterior_finish", ["other"], "b1")] });
-    open("/applications/abc/buildings?screen=exterior_finish&item=b1");
+    open("/projects/abc/buildings?screen=exterior_finish&item=b1");
     expect(await screen.findByRole("textbox", { name: "Other material" })).toBeInTheDocument();
   });
 
   it("the walls appear once the front's direction is chosen", async () => {
-    const { unmount } = open("/applications/abc/buildings?screen=front_facing&item=b1");
+    const { unmount } = open("/projects/abc/buildings?screen=front_facing&item=b1");
     await screen.findByRole("radio", { name: "North" });
     expect(screen.queryByRole("slider")).not.toBeInTheDocument();
     unmount();
     withApp({ answers: [a("front_facing", "north", "b1")] });
-    open("/applications/abc/buildings?screen=front_facing&item=b1");
+    open("/projects/abc/buildings?screen=front_facing&item=b1");
     expect(await screen.findByRole("slider", { name: "Front (north, faces Sheepscot Road)" })).toBeInTheDocument();
   });
 
   it("the bar never shows fewer cards than are already answered", async () => {
     // Floors above ground cleared after the size card was reached: the card count stays put.
     withApp({ answers: finished("b1") });
-    open("/applications/abc/buildings?screen=front_facing&item=b1");
+    open("/projects/abc/buildings?screen=front_facing&item=b1");
     expect(await screen.findByRole("img", { name: "Question 8 of 8" })).toBeInTheDocument();
   });
 });
@@ -344,7 +339,7 @@ describe("a building", () => {
 describe("the buildings list", () => {
   it("one row per building with its summary; Change, Finish and Delete", async () => {
     withApp({ items: [B1, B2], answers: [...finished("b1"), a("building_class", "residential_accessory", "b2")] });
-    open("/applications/abc/buildings");
+    open("/projects/abc/buildings");
     expect(await screen.findByText("28 × 40 ft · 1 floor · front faces north")).toBeInTheDocument();
     expect(screen.getByText(/answers to go/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Change Building 1" })).toBeInTheDocument();
@@ -354,15 +349,15 @@ describe("the buildings list", () => {
 
   it("the only building can't be deleted", async () => {
     withApp({ answers: finished("b1") });
-    open("/applications/abc/buildings");
+    open("/projects/abc/buildings");
     await screen.findByText("Building 1 · A home");
     expect(screen.queryByRole("button", { name: /^Delete/ })).not.toBeInTheDocument();
   });
 
   it("Delete asks first, then removes it", async () => {
     withApp({ items: [B1, B2], answers: finished("b1") });
-    const remove = vi.spyOn(apps, "removeItem").mockResolvedValue({ revision: 4 } as never);
-    open("/applications/abc/buildings");
+    const remove = vi.spyOn(apps, "removePart").mockResolvedValue({ revision: 4 } as never);
+    open("/projects/abc/buildings");
     await userEvent.click(await screen.findByRole("button", { name: "Delete Building 2" }));
     withApp({ items: [B1], answers: finished("b1") });
     await userEvent.click(await screen.findByRole("button", { name: "Delete" }));
@@ -371,92 +366,87 @@ describe("the buildings list", () => {
 
   it("Add a building opens its first card", async () => {
     withApp({ answers: finished("b1") });
-    const add = vi.spyOn(apps, "addItem").mockImplementation(async () => {
+    const add = vi.spyOn(apps, "addPart").mockImplementation(async () => {
       withApp({ items: [B1, B2], answers: finished("b1") });
       return { revision: 4, missing: [], id: "b2" };
     });
-    open("/applications/abc/buildings");
+    open("/projects/abc/buildings");
     await userEvent.click(await screen.findByRole("button", { name: "Add a building" }));
     expect(add).toHaveBeenCalledWith("abc", 3, "building", undefined);
-    await waitFor(() => expect(where()).toHaveTextContent("/applications/abc/buildings?screen=building_class&item=b2"));
+    await waitFor(() => expect(where()).toHaveTextContent("/projects/abc/buildings?screen=building_class&item=b2"));
   });
 
   it("Copy Building 1 copies it and opens the copy's check page", async () => {
     withApp({ answers: finished("b1") });
-    const add = vi.spyOn(apps, "addItem").mockImplementation(async () => {
+    const add = vi.spyOn(apps, "addPart").mockImplementation(async () => {
       withApp({ items: [B1, B2], answers: [...finished("b1"), a("building_class", "residential", "b2")] });
       return { revision: 4, missing: [], id: "b2" };
     });
-    open("/applications/abc/buildings");
+    open("/projects/abc/buildings");
     await userEvent.click(await screen.findByRole("button", { name: "Copy Building 1" }));
     expect(add).toHaveBeenCalledWith("abc", 3, "building", "b1");
-    await waitFor(() => expect(where()).toHaveTextContent("/applications/abc/buildings/check?item=b2"));
+    await waitFor(() => expect(where()).toHaveTextContent("/projects/abc/buildings/check?item=b2"));
   });
 
   it("no Copy until a building is finished", async () => {
-    open("/applications/abc/buildings");
+    open("/projects/abc/buildings");
     await screen.findByRole("button", { name: "Add a building" });
     expect(screen.queryByRole("button", { name: /^Copy/ })).not.toBeInTheDocument();
   });
 
   it("an empty additions task: add one, or none", async () => {
-    open("/applications/abc/additions");
+    open("/projects/abc/additions");
     expect(await screen.findByRole("button", { name: "Add an addition, porch or deck" })).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "No additions" }));
-    await waitFor(() => expect(where()).toHaveTextContent(/^\/applications\/abc$/));
+    await waitFor(() => expect(where()).toHaveTextContent(/^\/projects\/abc$/));
     expect(JSON.parse(localStorage.getItem("portal.visited.abc")!)).toContain("additions");
   });
 });
 
 describe("Check and send", () => {
-  it("is closed until every task is done: its address leads to the task list", async () => {
-    open("/applications/abc/review");
-    await waitFor(() => expect(where()).toHaveTextContent(/^\/applications\/abc$/));
-  });
-
   it("opens, headed Check and send, once they are", async () => {
     localStorage.setItem("portal.visited.abc", JSON.stringify(["your_lot", "about_you", "the_work", "buildings", "additions"]));
     withApp({ answers: [a("lot_width", 120), a("lot_depth", 200), a("applicant_name", "Ada"), a("applicant_is_owner", true),
                         a("work_kinds", ["new_building"]), ...finished("b1")] });
-    open("/applications/abc/review");
+    open("/projects/abc/send");
     const main = await screen.findByRole("main");
     expect(await within(main).findByText("Check and send")).toBeInTheDocument();
-    expect(where()).toHaveTextContent("/applications/abc/review");
+    expect(where()).toHaveTextContent("/projects/abc/send");
   });
 });
 
 describe("check pages", () => {
   it("a check page speaks the applicant's words, not the form's terms", async () => {
     withApp({ answers: finished("b1") });
-    open("/applications/abc/buildings/check?item=b1");
+    open("/projects/abc/buildings/check?item=b1");
     expect(await screen.findByText("A home")).toBeInTheDocument();
     expect(screen.getByText("Gable")).toBeInTheDocument();
   });
 
   it("a task's answers with Change; Change comes back to the check page", async () => {
     withApp({ answers: [a("applicant_name", "Ada"), a("applicant_is_owner", true)] });
-    open("/applications/abc/about_you/check");
+    open("/projects/abc/about_you/check");
     expect(await screen.findByText("Check About you")).toBeInTheDocument();
     expect(screen.getByText("Ada")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("link", { name: "Change What is your full name?" }));
     await waitFor(() => expect(where()).toHaveTextContent("?screen=applicant_name&return=check"));
     await userEvent.type(screen.getByRole("textbox", { name: "What is your full name?" }), " Lovelace");
     await userEvent.click(screen.getByRole("button", { name: "Continue" }));
-    await waitFor(() => expect(where()).toHaveTextContent("/applications/abc/about_you/check"));
+    await waitFor(() => expect(where()).toHaveTextContent("/projects/abc/about_you/check"));
   });
 
   it("a change that adds a card asks it first, then comes back", async () => {
     withApp({ answers: [a("applicant_name", "Ada"), a("applicant_is_owner", true)] });
-    open("/applications/abc/about_you?screen=applicant_is_owner&return=check");
+    open("/projects/abc/about_you?screen=applicant_is_owner&return=check");
     await userEvent.click(await screen.findByRole("radio", { name: "No" }));
     await waitFor(() => expect(where()).toHaveTextContent("?screen=owner_name&return=check"));
   });
 
   it("Done on a task's check page goes to the task list", async () => {
     withApp({ answers: [a("applicant_name", "Ada"), a("applicant_is_owner", true)] });
-    open("/applications/abc/about_you/check");
+    open("/projects/abc/about_you/check");
     await userEvent.click(await screen.findByRole("button", { name: "Done" }));
-    await waitFor(() => expect(where()).toHaveTextContent(/^\/applications\/abc$/));
+    await waitFor(() => expect(where()).toHaveTextContent(/^\/projects\/abc$/));
   });
 });
 
@@ -469,40 +459,34 @@ const visitAll = () => localStorage.setItem("portal.visited.abc", JSON.stringify
 describe("kept from the wizard", () => {
   it("Skip for now leaves an optional upload empty and moves on", async () => {
     withApp({ answers: [a("work_kinds", ["site"])] });
-    open("/applications/abc/the_work?screen=sketch");
+    open("/projects/abc/the_work?screen=sketch");
     await userEvent.click(await screen.findByRole("button", { name: "Skip for now" }));
-    await waitFor(() => expect(where()).toHaveTextContent("/applications/abc/the_work/check"));
-  });
-
-  it("a carried answer says where it came from", async () => {
-    withApp({ answers: [{ ...a("applicant_name", "Ada"), carried: true }] });
-    open("/applications/abc/about_you?screen=applicant_name");
-    expect(await screen.findByText("Filled in from your answers at the start. Change it if you need to.")).toBeInTheDocument();
+    await waitFor(() => expect(where()).toHaveTextContent("/projects/abc/the_work/check"));
   });
 
   it("Change from review returns to review, unless new cards now apply", async () => {
     visitAll();
     withApp({ answers: COMPLETE });
-    open("/applications/abc/about_you?screen=applicant_is_owner&return=review");
+    open("/projects/abc/about_you?screen=applicant_is_owner&return=review");
     await userEvent.click(await screen.findByRole("radio", { name: "No" }));
     await waitFor(() => expect(where()).toHaveTextContent("?screen=owner_name&return=review"));
     await userEvent.type(await screen.findByRole("textbox", { name: "What is the property owner's full name?" }), "Bob");
     await userEvent.click(screen.getByRole("button", { name: "Continue" }));
-    await waitFor(() => expect(where()).toHaveTextContent("/applications/abc/review"));
+    await waitFor(() => expect(where()).toHaveTextContent("/projects/abc/send"));
   });
 
   it("Change from review goes back to review past cards left blank before", async () => {
     visitAll();
     withApp({ answers: COMPLETE.filter((x) => x.field_id !== "lot_depth").concat(a("lot_depth", { unknown: true })) });
-    open("/applications/abc/your_lot?screen=lot_area&return=review");
+    open("/projects/abc/your_lot?screen=lot_area&return=review");
     await userEvent.click(await screen.findByRole("radio", { name: "Yes, that's right" }));
-    await waitFor(() => expect(where()).toHaveTextContent("/applications/abc/review"));
+    await waitFor(() => expect(where()).toHaveTextContent("/projects/abc/send"));
   });
 
   it("Another road is typed, then Continue", async () => {
-    vi.spyOn(apps, "getForm").mockResolvedValue({ ...FORM, sections: FORM.sections.map((s) => s.id === "project"
-      ? { ...s, fields: [q("entrance_road", "Which road will the entrance be on?", { type: "text", control: "street-picker", step: "the_work" }), ...s.fields] } : s) });
-    open("/applications/abc/the_work?screen=entrance_road");
+    withApp({ form: { ...FORM, sections: FORM.sections.map((s) => s.id === "project"
+      ? { ...s, fields: [q("entrance_road", "Which road will the entrance be on?", { type: "text", control: "street-picker", step: "the_work" }), ...s.fields] } : s) } });
+    open("/projects/abc/the_work?screen=entrance_road");
     await userEvent.click(await screen.findByRole("radio", { name: "Another road" }));
     await userEvent.type(screen.getByRole("textbox", { name: "Name of the road" }), "Main Street");
     await new Promise((r) => setTimeout(r, 300));
@@ -517,18 +501,18 @@ describe("kept from the wizard", () => {
 describe("review fixes", () => {
   it("a check page and the buildings list scroll between their header and footer", async () => {
     withApp({ answers: finished("b1") });
-    const { unmount } = open("/applications/abc/buildings/check?item=b1");
+    const { unmount } = open("/projects/abc/buildings/check?item=b1");
     await screen.findByText("Check Building 1");
     expect(document.querySelector("[data-card-scroll]")!.className).toContain("overflow-y-auto");
     expect(document.querySelector("[data-card-scroll]")).toContainElement(screen.getAllByRole("link", { name: /^Change / })[0]);
     unmount();
-    open("/applications/abc/buildings");
+    open("/projects/abc/buildings");
     await screen.findByText("Building 1 · A home");
     expect(document.querySelector("[data-card-scroll]")).toContainElement(screen.getByText("Building 1 · A home"));
   });
 
   it("I don't know some of these yet keeps a value just typed", async () => {
-    open("/applications/abc/your_lot?screen=lot_width");
+    open("/projects/abc/your_lot?screen=lot_width");
     await userEvent.type(await screen.findByRole("textbox", { name: "Width" }), "120");
     fireEvent.click(screen.getByRole("button", { name: "I don't know some of these yet" }));
     await waitFor(() => expect(saved()).toContainEqual(a("lot_depth", { unknown: true })));
@@ -539,7 +523,7 @@ describe("review fixes", () => {
   it("a check page names the building an addition is attached to", async () => {
     const C1 = { id: "c1", kind: "component", position: 0 };
     withApp({ items: [B1, C1], answers: [...finished("b1"), a("component_kind", "deck", "c1"), a("attached_to", "b1", "c1")] });
-    open("/applications/abc/additions/check?item=c1");
+    open("/projects/abc/additions/check?item=c1");
     await screen.findByText("Check Addition 1");
     expect(screen.getByText("Building 1 · A home")).toBeInTheDocument(); // as on the buildings list
     expect(screen.queryByText("b1")).not.toBeInTheDocument();
@@ -548,7 +532,7 @@ describe("review fixes", () => {
   it("no Copy on the additions list: additions copy nothing", async () => {
     const C1 = { id: "c1", kind: "component", position: 0 };
     withApp({ items: [B1, C1], answers: [...finished("b1"), a("component_kind", "deck", "c1")] });
-    open("/applications/abc/additions");
+    open("/projects/abc/additions");
     await screen.findByRole("button", { name: "Add an addition, porch or deck" });
     expect(screen.queryByRole("button", { name: /^Copy/ })).not.toBeInTheDocument();
   });
@@ -556,37 +540,37 @@ describe("review fixes", () => {
   it("the bar counts the cards that apply now, even after an answer removes one", async () => {
     // In one visit: the owner's card seen (3 of 3), then "Yes, I own it" removes it.
     withApp({ answers: [a("applicant_name", "Ada"), a("applicant_is_owner", false)] });
-    open("/applications/abc/about_you?screen=owner_name");
+    open("/projects/abc/about_you?screen=owner_name");
     expect(await screen.findByRole("img", { name: "Question 3 of 3" })).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Back" }));
     await userEvent.click(await screen.findByRole("radio", { name: "Yes" }));
-    await waitFor(() => expect(where()).toHaveTextContent("/applications/abc/about_you/check"));
+    await waitFor(() => expect(where()).toHaveTextContent("/projects/abc/about_you/check"));
     await userEvent.click(await screen.findByRole("link", { name: "Change What is your full name?" }));
     expect(await screen.findByRole("img", { name: "Question 1 of 2" })).toBeInTheDocument();
   });
 
-  it("a form's default alone doesn't count as an answered card on the task list", async () => {
-    // A carried homes count starts the task; the renovation question's default isn't an answer.
-    withApp({ answers: [a("renovation_only", false, "b1"), { ...a("dwelling_units", 1, "b1"), carried: true }] });
-    open("/applications/abc");
+  it("a form's default alone doesn't count as an answered card on the dashboard", async () => {
+    // A homes count starts the task; the renovation question's default isn't an answer.
+    withApp({ answers: [a("renovation_only", false, "b1"), a("dwelling_units", 1, "b1")] });
+    open("/projects/abc");
     const main = await screen.findByRole("main");
-    expect(within(main).getByRole("link", { name: /^Buildings,.*0 of 8 ?answered$/ })).toBeInTheDocument();
+    expect(within(main).getByRole("link", { name: /^Buildings.*0 of 8 ?answered$/ })).toBeInTheDocument();
   });
 
   it("Skip for now is a plain button; only Continue is filled", async () => {
     withApp({ answers: [a("work_kinds", ["site"])] });
-    open("/applications/abc/the_work?screen=sketch");
+    open("/projects/abc/the_work?screen=sketch");
     expect(await screen.findByRole("button", { name: "Skip for now" })).not.toHaveAttribute("data-filled");
   });
 
   it("a count reaches its least from blank with −", async () => {
-    open("/applications/abc/buildings?screen=building_name&item=b1");
+    open("/projects/abc/buildings?screen=building_name&item=b1");
     await userEvent.click(await screen.findByRole("button", { name: "Homes in it, one fewer" }));
     await waitFor(() => expect(saved()).toContainEqual(a("dwelling_units", 0, "b1")));
   });
 
   it("an empty additions list asks in its own words", async () => {
-    open("/applications/abc/additions");
+    open("/projects/abc/additions");
     expect(await screen.findByText("Are you adding an addition, a porch or a deck?")).toBeInTheDocument();
   });
 });

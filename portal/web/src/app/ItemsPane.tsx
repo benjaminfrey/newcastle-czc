@@ -14,6 +14,8 @@ const NOUNS: Record<string, { add: string; done: string; none: string; ask: stri
   building: { add: "Add a building", done: "Done with buildings", none: "No buildings", ask: "Are you adding a building?" },
   component: { add: "Add an addition, porch or deck", done: "Done with additions", none: "No additions",
                ask: "Are you adding an addition, a porch or a deck?" },
+  addition: { add: "Add an addition, porch or deck", done: "Done with additions", none: "No additions",
+               ask: "Are you adding an addition, a porch or a deck?" },
 };
 
 // "Building 1 · A home", "Addition 2 · A deck": the item's number and, once known, its type in the

@@ -13,6 +13,8 @@ export type Tokens = {
   fill: string; groundElevated: string; rowElevated: string;
   // The task-list brief (§4.8): tile and button edges (3:1 on a card), and the Done pill.
   edge: string; doneBg: string; doneText: string;
+  // The projects brief (§3.4): the "2 things left" pill.
+  warnBg: string; warnText: string;
 };
 
 export const LIGHT: Tokens = {
@@ -22,6 +24,7 @@ export const LIGHT: Tokens = {
   seal: "#1098A8", destructive: "#D70015", selection: "#DCEFF1",
   fill: "#EEEEF0", groundElevated: "#F2F2F7", rowElevated: "#FFFFFF",
   edge: "#8E8E93", doneBg: "#E3F5E6", doneText: "#1B7A31",
+  warnBg: "#FFF1D6", warnText: "#8A4B00",
 };
 
 export const DARK: Tokens = {
@@ -31,6 +34,7 @@ export const DARK: Tokens = {
   seal: "#1098A8", destructive: "#FF6961", selection: "#123C42",
   fill: "#3A3A3C", groundElevated: "#1C1C1E", rowElevated: "#2C2C2E",
   edge: "#6C6C70", doneBg: "#12341B", doneText: "#6FD089",
+  warnBg: "#3D2A08", warnText: "#FFC266",
 };
 
 function luminance(hex: string): number {

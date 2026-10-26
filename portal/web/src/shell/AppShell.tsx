@@ -1,80 +1,96 @@
 import type { ReactNode } from "react";
-import { Link } from "react-router";
+import { Link, NavLink } from "react-router";
+import Icon from "../controls/Icon";
 import { commitFocused } from "./commitFocused";
-import TaskList, { type TaskRow } from "./TaskList";
 import { SaveStatus } from "./SaveStatus";
 import type { SaveState } from "./types";
 import { useWideLayout } from "./useWideLayout";
 
+// The project last opened, so the Project tab goes back to it from Home, Messages and You.
+const LAST = "portal.lastProject";
+export function rememberProject(id: string): void {
+  try { localStorage.setItem(LAST, id); } catch { /* blocked storage: the tab goes Home */ }
+}
+function lastProject(): string | null {
+  try { return localStorage.getItem(LAST); } catch { return null; }
+}
+
 type Props = {
-  tasks: TaskRow[]; send: { href: string; open: boolean };
-  formTitle: string; mapLot: string | null; saveState: SaveState;
-  home: string;            // the task list's address
-  inTask: boolean;         // a card is showing; otherwise the task list is the page
-  onDone: () => void;      // Save and close
-  onReload?: () => void;
-  children?: ReactNode;    // the card
+  title: string;              // the page's name, for its heading (shown on a phone's bar in a card)
+  project?: string | null;    // the open project's id
+  saveState?: SaveState; onReload?: () => void;
+  back?: { href: string; label: string }; // a phone's bar in a card: ‹ Project
+  card?: boolean;             // a card fills a phone's screen
+  children: ReactNode;
 };
 
-// The application window (task-list brief §4.1).
-// - Desktop: the task list in a 250 px sidebar under the Town seal, with Save and close; the
-//   card centred in the main area, 32 px from the top.
-// - Phone: in a task, a 44 px bar (‹ Tasks, the save status) over the card, which fills the screen
-//   in 12 px gutters with its footer at its foot; at home, the task list is the page.
-export default function AppShell({ tasks, send, formTitle, mapLot, saveState, home, inTask, onDone, onReload, children }: Props) {
+const TABS = [
+  { to: "/", label: "Home", icon: "home", end: true },
+  { to: "project", label: "Project", icon: "clipboard-list", end: false },
+  { to: "/messages", label: "Messages", icon: "message", end: true },
+  { to: "/you", label: "You", icon: "user", end: true },
+] as const;
+
+// The app's window (projects brief §3.4): a desktop sidebar under the Town seal (Home, Project,
+// Messages, You); a phone's bottom tab bar with the same four. In a card, a phone's 44 px bar
+// carries ‹ Project and the save status, and the card fills the screen above the tab bar.
+export default function AppShell({ title, project, saveState, onReload, back, card, children }: Props) {
   const wide = useWideLayout();
-  const list = (compact: boolean) => (
-    <TaskList formTitle={formTitle} mapLot={mapLot} saveState={saveState} onReload={onReload} tasks={tasks} send={send} compact={compact} />
+  const projectHref = project ? `/projects/${project}` : lastProject() ? `/projects/${lastProject()}` : "/";
+  const tabs = TABS.map((t) => ({ ...t, to: t.to === "project" ? projectHref : t.to }));
+  const item = (t: (typeof tabs)[number], phone: boolean) => (
+    <NavLink key={t.label} to={t.to} end={t.end} onClick={commitFocused}
+             className={({ isActive }) => {
+               const on = isActive || (t.label === "Project" && !!project);
+               return phone
+                 ? `flex min-h-12 flex-1 flex-col items-center justify-center gap-0.5 text-[11px] no-underline ${on ? "text-[var(--app-accent-text)]" : "text-[var(--app-secondary-label)]"}`
+                 : `flex min-h-11 items-center gap-3 rounded-[8px] px-3 text-[15px] no-underline ${on ? "bg-[var(--app-selection)] font-medium text-[var(--app-label)]" : "text-[var(--app-label)]"}`;
+             }}>
+      <Icon name={t.icon} size={phone ? 22 : 18} />{t.label}
+    </NavLink>
   );
 
   if (wide) {
     return (
       <div className="grid min-h-dvh grid-cols-[250px_minmax(0,1fr)] bg-[var(--app-grouped-ground)]">
-        <aside className="flex flex-col gap-4 border-r-[0.5px] border-[var(--app-separator)] px-[10px] py-4">
-          <div className="flex items-center gap-3 px-3">
+        <aside className="sticky top-0 flex h-dvh flex-col gap-4 border-r-[0.5px] border-[var(--app-separator)] px-[10px] py-4">
+          <Link to="/" className="flex items-center gap-3 px-3 no-underline">
             <img src="/town-seal.png" alt="Town of Newcastle seal" className="size-10" width={40} height={40} />
-            <div className="min-w-0 leading-tight">
-              <p className="text-[13px] font-semibold">Town of Newcastle</p>
-              <p className="truncate text-[13px] text-[var(--app-secondary-label)]">{formTitle}</p>
-            </div>
-          </div>
-          <nav aria-label="Tasks">{list(true)}</nav>
-          <div className="mt-auto flex flex-wrap items-center gap-3 px-3">
-            <SaveStatus state={saveState} onReload={onReload} />
-            <button type="button" className="btn" onClick={() => { commitFocused(); onDone(); }}>Save and close</button>
-          </div>
+            <span className="min-w-0 leading-tight">
+              <span className="block text-[13px] font-semibold text-[var(--app-label)]">Town of Newcastle</span>
+              <span className="block text-[13px] text-[var(--app-secondary-label)]">Permits</span>
+            </span>
+          </Link>
+          <nav aria-label="The app" className="flex flex-col gap-0.5">{tabs.map((t) => item(t, false))}</nav>
+          {saveState && <div className="mt-auto px-3"><SaveStatus state={saveState} onReload={onReload} /></div>}
         </aside>
         <main className="min-w-0 px-8 pb-8 pt-8">
-          {inTask ? children : list(false)}
+          <h1 className="sr-only">{title}</h1>
+          {children}
         </main>
       </div>
     );
   }
 
   const bar = "sticky top-0 z-10 flex h-11 items-center justify-between border-b-[0.5px] border-[var(--app-separator)] bg-[var(--app-grouped-ground)]/95 px-2 backdrop-blur";
-  if (!inTask) {
-    return (
-      <div className="min-h-dvh bg-[var(--app-grouped-ground)]">
-        <div className={bar}>
-          <button type="button" onClick={onDone} className="flex min-h-11 items-center px-2 text-[17px] text-[var(--app-accent-text)]">Save and close</button>
-        </div>
-        <main className="p-3">{list(false)}</main>
-      </div>
-    );
-  }
   return (
     <div className="flex h-dvh flex-col bg-[var(--app-grouped-ground)]">
-      <div className={bar}>
-        <Link to={home} onClick={commitFocused} aria-label="Tasks" className="flex min-h-11 items-center gap-1 px-2 text-[17px] text-[var(--app-accent-text)]">
-          <span aria-hidden="true" className="text-[22px] leading-none">‹</span>Tasks
-        </Link>
-        <span className="px-2"><SaveStatus state={saveState} onReload={onReload} /></span>
-      </div>
-      <h1 className="sr-only">{formTitle}</h1>
-      <main className="flex min-h-0 flex-1 flex-col px-3 pt-3 [&>*]:min-h-0 [&>*]:flex-1"
-            style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}>
+      {back && (
+        <div className={bar}>
+          <Link to={back.href} onClick={commitFocused} className="flex min-h-11 items-center gap-1 px-2 text-[17px] text-[var(--app-accent-text)] no-underline">
+            <span aria-hidden="true" className="text-[22px] leading-none">‹</span>{back.label}
+          </Link>
+          {saveState && <span className="px-2"><SaveStatus state={saveState} onReload={onReload} /></span>}
+        </div>
+      )}
+      <h1 className="sr-only">{title}</h1>
+      <main className={card ? "flex min-h-0 flex-1 flex-col px-3 pb-3 pt-3 [&>*]:min-h-0 [&>*]:flex-1" : "min-h-0 flex-1 overflow-y-auto px-3 py-3"}>
         {children}
       </main>
+      <nav aria-label="The app" className="flex border-t-[0.5px] border-[var(--app-separator)] bg-[var(--app-grouped-ground)]/95 backdrop-blur"
+           style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
+        {tabs.map((t) => item(t, true))}
+      </nav>
     </div>
   );
 }

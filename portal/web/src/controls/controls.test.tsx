@@ -21,7 +21,7 @@ const opts = (...v: string[]) => v.map((x) => ({ value: x, label: x.toUpperCase(
 
 function fakeStore(over: Partial<ReturnType<typeof storeModule.useProject>> = {}) {
   const store = {
-    app: { id: "app1", attachments: [], items: [], property: { parcel_id: null } },
+    project: { id: "app1", attachments: [], items: [], property: { parcel_id: null } },
     form: { sections: [{ id: "building", repeat: { kind: "building" }, fields: [f({ id: "building_name" })] }] },
     cur: { answers: [], items: [], property: { streets: [{ name: "Sheepscot Road" }, { name: "Hall Street" }] }, account: {} },
     ...over,
@@ -310,7 +310,7 @@ describe("UploadControl", () => {
   });
 
   it("lists the files the application already holds", () => {
-    fakeStore({ app: { id: "app1", items: [], property: { parcel_id: null }, attachments: [
+    fakeStore({ project: { id: "app1", items: [], property: { parcel_id: null }, attachments: [
       { id: "a1", field_id: "sketch", item_id: null, filename: "sketch.pdf", content_type: "application/pdf", size_bytes: 2048 }] } } as never);
     draw(f({ id: "sketch", type: "upload", label: "Add a sketch." }));
     expect(screen.getByRole("list", { name: "Files added" })).toHaveTextContent("sketch.pdf");

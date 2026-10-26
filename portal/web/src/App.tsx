@@ -1,5 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
-import ApplicationPage from "./app/ApplicationPage";
+import ProjectPage from "./app/ProjectPage";
 import Home from "./pages/Home";
 import Verify from "./pages/Verify";
 import RequireSignIn from "./shell/RequireSignIn";
@@ -17,7 +17,7 @@ export function AppRoutes() {
       <Route path="/signin/verify" element={<div className="mx-auto max-w-md px-4 py-10"><Verify /></div>} />
       <Route element={<RequireSignIn />}>
         <Route path="/new" element={<NewProject />} />
-        <Route path="/projects/:id/:stepId?/:sub?" element={<ApplicationPage />} />
+        <Route path="/projects/:id/:stepId?/:sub?" element={<ProjectPage />} />
         <Route path="/messages" element={HOME} />
         <Route path="/you" element={HOME} />
       </Route>

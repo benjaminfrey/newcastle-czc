@@ -1,29 +1,31 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Navigate, useNavigate, useParams, useSearchParams } from "react-router";
-import { valueOf, type Row } from "../forms/applicability";
+import { missing, valueOf, type Row } from "../forms/applicability";
 import type { Screen } from "../forms/screens";
-import { REVIEW_STEP, stepModels } from "../forms/steps";
-import { canSend, cardsOf, progressOf, taskStatus } from "../forms/tasks";
-import AppShell from "../shell/AppShell";
+import { stepModels } from "../forms/steps";
+import { cardsOf, progressOf, taskStatus } from "../forms/tasks";
+import AppShell, { rememberProject } from "../shell/AppShell";
 import Card from "../shell/Card";
 import { commitFocused } from "../shell/commitFocused";
-import type { TaskRow } from "../shell/TaskList";
 import { ProjectProvider, useProject } from "./ProjectStore";
 import CheckPane from "./CheckPane";
+import Dashboard from "./Dashboard";
 import ItemsPane, { itemTitle } from "./ItemsPane";
 import ReviewPane from "./ReviewPane";
 import CardQuestion, { headingOf, rowKey } from "./WizardPane";
 
-// /applications/:id                          the task list
-// /applications/:id/:task?screen=&item=       a card (a building's, with item)
-// /applications/:id/:task                     a task's first card, or its buildings
-// /applications/:id/:task/check?item=         a task's (or one building's) check page
-// /applications/:id/review                    Check and send
-// (task-list brief, 2026-10-25)
-export default function ApplicationPage() {
+// /projects/:id                          the dashboard
+// /projects/:id/:part?screen=&item=       a card (a building's, with item)
+// /projects/:id/:part                     a part's first card, or its buildings
+// /projects/:id/:part/check?item=         a part's (or one building's) check page
+// /projects/:id/send                      Check and send
+// (projects brief §3.4; the cards are the task-list brief's)
+export default function ProjectPage() {
   const { id = "" } = useParams();
+  useEffect(() => rememberProject(id), [id]);
   return <ProjectProvider id={id}><Tasks id={id} /></ProjectProvider>;
 }
+const SEND = "send";
 
 const empty = (v: unknown) => v === null || v === undefined || v === "" || (Array.isArray(v) && v.length === 0);
 const keyOf = (s: Screen) => `${s.itemId ?? ""}|${s.id}`;
@@ -34,8 +36,8 @@ function Tasks({ id }: { id: string }) {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const store = useProject();
-  const { project: app, form, cur, problem, saveState, flush, markVisited, visited, reload, setAnswer, addPart: addItem, removePart: removeItem } = store;
-  const base = `/applications/${id}`;
+  const { project: app, form, cur, problem, saveState, flush, markVisited, visited, reload, setAnswer, addPart: addItem, removePart: removeItem, setTitle, locked } = store;
+  const base = `/projects/${id}`;
   const [direction, setDirection] = useState<1 | -1>(1);
   const [editing, setEditing] = useState(false);
   const [pending, setPending] = useState<Pending | null>(null);
@@ -94,7 +96,7 @@ function Tasks({ id }: { id: string }) {
   const heading = screen ? headingOf(screen) : current?.title;
   useEffect(() => {
     if (!form) return;
-    document.title = `${heading ?? "Your application"} — ${form.official_title}`;
+    document.title = `${heading ?? app?.title ?? "Your project"} — Newcastle permits`;
     document.querySelector<HTMLElement>("[data-screen-title]")?.focus();
   }, [heading, form, paneKey]);
 
@@ -130,41 +132,40 @@ function Tasks({ id }: { id: string }) {
       const open = list.slice(i + 1).find((x) => !asked.current.has(keyOf(x)) && x.rows.length > 0
         && x.rows.every((r) => empty(valueOf(form, r.field, r.itemId, cur))));
       if (open) return go(href(open));
-      return go(returning === "review" ? `${base}/review` : checkHref(from.step, from.itemId));
+      return go(returning === "review" ? `${base}/${SEND}` : checkHref(from.step, from.itemId));
     }
     if (i >= 0 && i < list.length - 1) return go(href(list[i + 1]));
     go(checkHref(from.step, from.itemId));
   }, [pending, form, cur, models]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (problem === "signed_out") return <Navigate to="/signin" replace />;
+  if (problem === "signed_out") return <Navigate to="/" replace />;
   if (problem) return <p role="alert" className="p-8">{problem}</p>;
   if (!app || !form || !cur) return <p className="p-8">Loading…</p>;
-  if (stepId && stepId !== REVIEW_STEP.id && !current) return <Navigate to={base} replace />;
+  if (stepId && stepId !== SEND && !current) return <Navigate to={base} replace />;
 
   const statuses = models.map((m) => taskStatus(form, cur, m, visited));
-  const tasks: TaskRow[] = models.map((m, i) => ({ id: m.id, title: m.title, href: `${base}/${m.id}`, status: statuses[i], current: m.id === currentId }));
-  const send = { href: `${base}/review`, open: canSend(statuses) };
-  // A new application (the emailed link, a start from "Do I need a permit?") opens at its first unfinished task.
-  if (!stepId && params.get("start")) {
-    const first = models.find((_, i) => statuses[i].kind !== "done") ?? models[0];
-    return <Navigate to={first ? `${base}/${first.id}` : base} replace />;
-  }
-  const shell = (inTask: boolean, children?: React.ReactNode) => (
-    <AppShell tasks={tasks} send={send} formTitle={form.official_title} mapLot={app.property.map_lot} saveState={saveState}
-              home={base} inTask={inTask} onReload={() => void reload()}
-              onDone={() => void flush().then((ok) => ok && navigate("/my-applications"))}>
+  // "2 things left": the rows (a part, About you, Your lot) with something required still blank.
+  const stepOfRow = new Map(models.flatMap((m) => m.rows.map((r) => [`${r.field.id}|${r.itemId ?? ""}`, m.id] as const)));
+  const left = new Set(missing(form, cur).map(([f, i]) => stepOfRow.get(`${f}|${i ?? ""}`)).filter(Boolean)).size;
+  const shell = (inCard: boolean, children: React.ReactNode) => (
+    <AppShell title={app.title} project={id} saveState={saveState} onReload={() => void reload()}
+              back={inCard ? { href: base, label: "Project" } : undefined} card={inCard}>
       {children}
     </AppShell>
   );
-  if (!stepId) return shell(false);
-  if (stepId === REVIEW_STEP.id) {
-    // Check and send opens once every task is done (task-list brief §2).
-    if (!send.open) return <Navigate to={base} replace />;
+  if (!stepId) {
+    return shell(false, (
+      <Dashboard project={app} form={form} cur={cur} models={models} statuses={statuses} base={base} left={left} locked={locked}
+                 onAdd={(kind) => void addItem(kind).then((made) => made && setPending({ added: made, step: kind, check: false }))}
+                 onRemove={(part) => void removeItem(part)} onRename={setTitle} />
+    ));
+  }
+  if (stepId === SEND) {
     return shell(true, (
       <Card>
-        <Card.Header title={REVIEW_STEP.title} />
+        <Card.Header title="Check and send" />
         <Card.Body className="items-stretch gap-6 text-left"><ReviewPane models={models} base={base} /></Card.Body>
-        <Card.Footer back={{ label: "Tasks", onPress: () => go(base, -1) }} />
+        <Card.Footer back={{ label: "Back", onPress: () => go(base, -1) }} />
       </Card>
     ));
   }
@@ -203,7 +204,7 @@ function Tasks({ id }: { id: string }) {
   const back = at > 0
     ? { label: "Back", onPress: () => go(href(cards[at - 1]), -1) }
     : screen.itemId ? { label: "Back", onPress: () => go(`${base}/${step.id}`, -1) }
-    : { label: "Tasks", onPress: () => go(base, -1) };
+    : { label: "Back", onPress: () => go(base, -1) };
 
   async function onContinue() {
     if (!screen) return;

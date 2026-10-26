@@ -24,6 +24,8 @@
   --app-edge: #8E8E93;
   --app-done-bg: #E3F5E6;
   --app-done-text: #1B7A31;
+  --app-warn-bg: #FFF1D6;
+  --app-warn-text: #8A4B00;
 }
 
 :root[data-theme="dark"] {
@@ -46,6 +48,8 @@
   --app-edge: #6C6C70;
   --app-done-bg: #12341B;
   --app-done-text: #6FD089;
+  --app-warn-bg: #3D2A08;
+  --app-warn-text: #FFC266;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -69,6 +73,8 @@
     --app-edge: #6C6C70;
     --app-done-bg: #12341B;
     --app-done-text: #6FD089;
+    --app-warn-bg: #3D2A08;
+    --app-warn-text: #FFC266;
   }
 }
 

@@ -19,7 +19,8 @@ export type StepModel = {
   hub?: { kind: string; repeat: NonNullable<FormSection["repeat"]>; pages: Page[]; items: HubItem[] };
 };
 
-const NOUNS: Record<string, string> = { building: "Building", component: "Addition" };
+// A project's additions are parts of kind "addition"; a form's own repeat kind is "component".
+const NOUNS: Record<string, string> = { building: "Building", component: "Addition", addition: "Addition" };
 
 const stepOf = (r: Row) => r.field.step ?? r.section.step ?? null;
 const isUnknown = (v: unknown) => typeof v === "object" && v !== null && (v as { unknown?: unknown }).unknown === true;

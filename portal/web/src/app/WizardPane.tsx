@@ -140,7 +140,6 @@ export default function CardQuestion({ screen, editing, errorsRef, onPick, onCon
   const street = ((cur?.property.streets as { name: string }[] | undefined) ?? [])[0]?.name ?? null;
   const row = screen.rows[0];
   const heading = headingOf(screen);
-  const carried = screen.rows.some((r) => app?.answers.some((x) => x.field_id === r.field.id && x.item_id === r.itemId && (x as { carried?: boolean }).carried));
   const help = helpOf(screen);
   const short = (r: Row) => r.field.short ?? r.field.label ?? r.field.official_label;
 
@@ -292,9 +291,6 @@ export default function CardQuestion({ screen, editing, errorsRef, onPick, onCon
     <>
       <h2 tabIndex={-1} data-screen-title className="max-w-[30ch] text-balance text-[20px] font-medium leading-[1.3] outline-none">{heading}</h2>
       <p className="mb-4 mt-1 max-w-[46ch] text-pretty text-[13px] text-[var(--app-secondary-label)] empty:mb-3">{help ?? ""}</p>
-      {carried && (
-        <p className="-mt-2 mb-3 text-[13px] text-[var(--app-secondary-label)]">Filled in from your answers at the start. Change it if you need to.</p>
-      )}
       {body}
       {unknownable && (
         <button type="button" onClick={onUnknown}
