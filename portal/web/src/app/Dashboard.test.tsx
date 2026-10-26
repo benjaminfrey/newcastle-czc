@@ -116,6 +116,16 @@ describe("the dashboard", () => {
     expect(screen.getByText("Permit fees are due before a permit is issued.")).toBeInTheDocument();
   });
 
+  it("says when a use isn't listed in the district, and a fee that may not apply isn't due", async () => {
+    vi.spyOn(apps, "getProject").mockResolvedValue({ ...PROJECT, needs: { ...NEEDS,
+      permits: [{ ...NEEDS.permits[0], due_at_send: false }], application_fees_total: 0,
+      not_listed: [{ district: "D1", use: "x", text: "The Code doesn't list this use in the Rural (D1) district." }] } as apps.Needs });
+    open();
+    expect(await screen.findByText("The Code doesn't list this use in the Rural (D1) district.")).toBeInTheDocument();
+    const needs = screen.getByRole("region", { name: "Building Permit" });
+    expect(within(needs).getByRole("heading", { level: 3 })).toHaveTextContent("$30 if it applies");
+  });
+
   it("adding a part opens its first card", async () => {
     const add = vi.spyOn(apps, "addPart").mockResolvedValue({ revision: 4, missing: [], id: "u1" });
     vi.spyOn(apps, "getProject").mockResolvedValueOnce(PROJECT).mockResolvedValue({ ...PROJECT,

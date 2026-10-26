@@ -117,7 +117,12 @@ async def upload(project_id: str, request: Request, applicant: auth.Applicant = 
     digest = hashlib.sha256(data).hexdigest()
     name = safe_filename(file.filename or "")
 
-    def record():
+    def record() -> bool:
+        # The project may have been locked while the file was read and scanned: check again, holding
+        # the row so a lock waits for this insert (or this sees the lock).
+        if conn.execute(text("SELECT id FROM project WHERE id = :p AND status IN ('draft', 'submitted') FOR UPDATE"),
+                        {"p": row.id}).one_or_none() is None:
+            return False
         conn.execute(text(
             "INSERT INTO attachment (id, project_id, field_id, part_id, filename, content_type, size_bytes,"
             " sha256, storage_key) VALUES (:id, :a, :f, :i, :n, :t, :s, :h, :k)"
@@ -127,8 +132,10 @@ async def upload(project_id: str, request: Request, applicant: auth.Applicant = 
                      payload={"project_id": row.id, "attachment_id": attachment_id, "field_id": field_id,
                               "part_id": part_id, "sha256": digest, "size_bytes": len(data),
                               "content_type": content_type})
+        return True
 
-    await run_in_threadpool(record)
+    if not await run_in_threadpool(record):
+        return _json(409, "locked")
     return {"id": attachment_id, "filename": name, "size_bytes": len(data), "content_type": content_type,
             "field_id": field_id, "part_id": part_id}
 
@@ -165,7 +172,9 @@ def remove(attachment_id: str, applicant: auth.Applicant = auth.require, conn: C
     r = _owned_attachment(conn, attachment_id, applicant.id)
     if r is None:
         return _json(404, "not_found")
-    if r.status not in pj.EDITABLE:
+    if r.status not in pj.EDITABLE or conn.execute(text(
+            "SELECT id FROM project WHERE id = :p AND status IN ('draft', 'submitted') FOR UPDATE"),
+            {"p": r.project_id}).one_or_none() is None:
         return _json(409, "locked")
     conn.execute(text("UPDATE attachment SET removed_at = now() WHERE id = :id"), {"id": r.id})
     append_event(conn, actor=f"applicant:{applicant.id}", kind="attachment.removed",

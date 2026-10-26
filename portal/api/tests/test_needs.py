@@ -202,3 +202,14 @@ def test_needs_are_refused_while_any_rule_is_a_draft():
     rules = [dataclasses.replace(DEFS.rules[0], status="draft"), *DEFS.rules[1:]]
     with_draft = dataclasses.replace(DEFS, rules=rules)
     assert any("rules.yaml" in d for d in drafts(with_draft, load_fees()))
+
+
+def test_fees_due_at_send_leave_out_what_may_not_apply():
+    # Lots after unknown: Subdivision may be needed, and the Town Office takes it. Its $300 isn't
+    # "payable when you send" (the whole-branch review, finding 5).
+    n = project(("divide", {"lots_after": {"unknown": True}}))
+    (sub,) = n["permits"]
+    assert sub["key"] == "subdivision" and sub["due_at_send"] is False
+    assert n["application_fees_total"] == 0
+    n = project("driveway")
+    assert n["permits"][0]["due_at_send"] is True and n["application_fees_total"] == 30

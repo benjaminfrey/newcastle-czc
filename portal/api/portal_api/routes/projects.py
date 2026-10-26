@@ -19,7 +19,7 @@ from portal_api import projects as pj
 from portal_api import property as prop
 from portal_api.db import transaction
 from portal_api.events import append_event
-from portal_api.forms.answers import AnswerError, Current, check_value, missing
+from portal_api.forms.answers import AnswerError, Current, applicable, check_value, missing
 from portal_api.forms.definitions import load_definitions
 from portal_api.forms.fees import load_fees
 from portal_api.forms.formdefs import FormDef, form_drafts, load_form
@@ -85,7 +85,11 @@ class Loaded:
             return {"refused": "not_approved"}
         if locked_at is None:
             locked_at = conn.execute(text("SELECT locked_at FROM project WHERE id = :p"), {"p": self.row.id}).scalar()
-        return needs(self.parts, self.cur.answers, self.snapshot["facts"], self.ruleset, defs, fees, load_parts(),
+        # Only questions that apply now drive the rules: an answer hidden by a later change (the
+        # five-year homes, once no new building has homes) stays in the record but counts for nothing.
+        shown = {(f.id, item) for _, f, item in applicable(self.form, self.cur)}
+        live = {k: v for k, v in self.cur.answers.items() if k in shown or k in self.derived}
+        return needs(self.parts, live, self.snapshot["facts"], self.ruleset, defs, fees, load_parts(),
                      locked_on=locked_at.astimezone(TOWN_TZ).date() if locked_at else None)
 
 
@@ -176,6 +180,15 @@ def list_projects(applicant: auth.Applicant = auth.require, conn: Connection = t
     return out
 
 
+def attachments(conn: Connection, loaded: Loaded) -> list[dict]:
+    """The project's files, as its answers: a removed part's, or a question no part asks any more,
+    stay in the record but leave the project."""
+    asked = {f.id for _, f in loaded.form.fields()}
+    live = {p["id"] for p in loaded.parts}
+    return [a for a in pj.attachments(conn, loaded.row.id)
+            if a["field_id"] in asked and (a["part_id"] is None or a["part_id"] in live)]
+
+
 def state(conn: Connection, loaded: Loaded, allow_drafts: bool, locked_at=None) -> dict:
     row = loaded.row
     status, revision = pj.state(conn, row.id)
@@ -187,7 +200,7 @@ def state(conn: Connection, loaded: Loaded, allow_drafts: bool, locked_at=None) 
         "property": loaded.snapshot, "parts": loaded.parts, "forms": loaded.pinned,
         "answers": [{"field_id": f, "part_id": i, "value": v, "derived": (f, i) in loaded.derived}
                     for (f, i), v in loaded.cur.answers.items()],
-        "notes": pj.notes(conn, row.id), "attachments": pj.attachments(conn, row.id),
+        "notes": pj.notes(conn, row.id), "attachments": attachments(conn, loaded),
         "missing": loaded.missing(),
         "form": form_json(loaded.form, loaded.ruleset),
         "needs": loaded.needs(conn, allow_drafts, locked_at),
@@ -235,7 +248,7 @@ class AnswersBody(BaseModel):
 
 
 @router.put("/api/projects/{project_id}/answers")
-def save_answers(project_id: str, body: AnswersBody, applicant: auth.Applicant = auth.require,
+def save_answers(project_id: str, body: AnswersBody, request: Request, applicant: auth.Applicant = auth.require,
                  conn: Connection = transaction):
     row = _owned(conn, project_id, applicant)
     if row is None:
@@ -268,7 +281,10 @@ def save_answers(project_id: str, body: AnswersBody, applicant: auth.Applicant =
     pj.save_answers(conn, row.id, checked, _actor(applicant))
     append_event(conn, actor=_actor(applicant), kind="project.answers_saved",
                  payload={"project_id": row.id, "fields": [[f, i] for f, i, _ in checked]})
-    return {"revision": rev, "missing": Loaded(conn, row).missing()}
+    after = Loaded(conn, row)
+    # What it needs can change with any answer (a floor area, a use): it comes back with the save.
+    return {"revision": rev, "missing": after.missing(),
+            "needs": after.needs(conn, request.app.state.settings.allow_draft_rules)}
 
 
 class PartBody(BaseModel):
@@ -436,6 +452,7 @@ def lock_snapshot(conn: Connection, loaded: Loaded, allow_drafts: bool, locked_a
     with its reviews, fees and clocks (started at the lock)."""
     s = state(conn, loaded, allow_drafts, locked_at)
     return {k: s[k] for k in ("title", "ruleset_key", "property", "parts", "forms", "answers", "notes", "needs")} | {
+        "account": loaded.cur.account,  # the applicant prints from the account, which can change later
         "attachments": [dict(a, sha256=conn.execute(text("SELECT sha256 FROM attachment WHERE id = :i"),
                                                      {"i": a["id"]}).scalar()) for a in s["attachments"]]}
 
@@ -450,6 +467,8 @@ def lock(project_id: str, body: RevisionBody, request: Request, applicant: auth.
     row = _owned(conn, project_id, applicant)
     if row is None:
         return _NOT_FOUND()
+    # Hold the project while its copy is made: an upload finishing now waits, then sees the lock.
+    conn.execute(text("SELECT id FROM project WHERE id = :p FOR UPDATE"), {"p": row.id})
     loaded = Loaded(conn, row)
     at = conn.execute(text("SELECT now()")).scalar()  # the transaction's time: the lock's locked_at
     snapshot = lock_snapshot(conn, loaded, request.app.state.settings.allow_draft_rules, at)

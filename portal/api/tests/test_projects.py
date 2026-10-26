@@ -537,3 +537,35 @@ def test_the_lock_records_each_review_and_starts_its_clock(alice, engine):
     assert snap["needs"]["permits"][0]["key"] == "use_permit"
     clock = get(alice, pid)["needs"]["permits"][0]["reviews"][0]["clocks"][0]
     assert clock["due_words"].startswith("Decision due by ")
+
+
+# ---- The whole-branch review's fixes ----
+
+def test_saving_answers_returns_the_needs(alice):
+    pid = create(alice, ("building",))
+    (b1,) = part_ids(get(alice, pid), "building")
+    r = save(alice, pid, [{"field_id": "floor_area", "part_id": b1, "value": 12000}])
+    keys = {rv["review_key"] for p in r.json()["needs"]["permits"] for rv in p["reviews"]}
+    assert "large_project_plan" in keys and "small_project_plan" not in keys
+
+
+def test_the_locked_copy_keeps_the_applicant(alice, engine):
+    pid = finish_use_project(alice)
+    rev = get(alice, pid)["revision"]
+    alice.post(f"/api/projects/{pid}/submit", json={"base_revision": rev})
+    alice.post(f"/api/projects/{pid}/lock", json={"base_revision": rev + 1})
+    with engine.begin() as conn:
+        snap = conn.execute(text("SELECT snapshot FROM submission WHERE project_id = :p"), {"p": pid}).scalar()
+    assert snap["account"]["name"] == "Alice Abbott" and snap["account"]["email"] == "alice@example.com"
+
+
+def test_a_hidden_answer_no_longer_drives_the_rules(alice):
+    pid = create(alice, ("building",))
+    (b1,) = part_ids(get(alice, pid), "building")
+    save(alice, pid, [{"field_id": "dwelling_units", "part_id": b1, "value": 1},
+                      {"field_id": "floor_area", "part_id": b1, "value": 900}])
+    save(alice, pid, [{"field_id": "homes_last_5_years", "part_id": None, "value": 4}])
+    needs = lambda: {rv["review_key"] for p in get(alice, pid)["needs"]["permits"] for rv in p["reviews"]}  # noqa: E731
+    assert "subdivision" in needs()
+    save(alice, pid, [{"field_id": "dwelling_units", "part_id": b1, "value": 0}])  # the homes question hides
+    assert "subdivision" not in needs()

@@ -178,10 +178,14 @@ def needs(part_rows: list[dict], answers: dict, facts: dict, ruleset: Ruleset, d
                                  use_order.index(r["use_key"]) if r["use_key"] in use_order else -1))
         permits.append({"key": permit.key, "name": permit.name, "application_fee": permit.application_fee,
                         "application_fee_words": None if permit.application_fee is None
-                        else fee_words(permit.application_fee), "reviews": mine})
+                        else fee_words(permit.application_fee), "reviews": mine,
+                        # Due when you send only for a permit the project needs and the portal takes;
+                        # one that may not apply, or that the Town Office takes, isn't counted.
+                        "due_at_send": any(r["certainty"] == "needed" and r["in_portal"] for r in mine)})
     for r in reviews:
         del r["_permit"], r["_line"]
-    numeric = [p["application_fee"] for p in permits if isinstance(p["application_fee"], (int, float))]
+    numeric = [p["application_fee"] for p in permits
+               if p["due_at_send"] and isinstance(p["application_fee"], (int, float))]
     return {"permits": permits, "application_fees_total": sum(numeric),
-            "application_fees_vary": any(p["application_fee"] == "varies" for p in permits),
+            "application_fees_vary": any(p["due_at_send"] and p["application_fee"] == "varies" for p in permits),
             "notes": notes, "not_listed": not_listed, "town_only": False}

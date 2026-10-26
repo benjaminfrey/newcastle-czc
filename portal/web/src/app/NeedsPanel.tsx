@@ -41,7 +41,8 @@ export default function NeedsPanel({ needs, useNames }: { needs: Needs | null; u
           <span>{p.name}</span>
           {p.application_fee_words && p.application_fee !== 0 && (
             <span className="shrink-0 text-[13px] font-normal text-[var(--app-secondary-label)]">
-              {p.application_fee === "varies" ? p.application_fee_words : `${p.application_fee_words} when you send`}</span>
+              {p.application_fee === "varies" ? p.application_fee_words
+                : p.due_at_send === false ? `${p.application_fee_words} if it applies` : `${p.application_fee_words} when you send`}</span>
           )}
         </h3>
         <ul>{p.reviews.map((r, i) => (
@@ -56,6 +57,9 @@ export default function NeedsPanel({ needs, useNames }: { needs: Needs | null; u
       <h2 id="needs-heading" className="px-4 text-[13px] text-[var(--app-secondary-label)]">What you'll need</h2>
       {needs && !("refused" in needs) && needs.notes.map((n) => (
         <p key={n.text} className="px-4 text-[13px] text-[var(--app-secondary-label)]">{n.text}</p>
+      ))}
+      {needs && !("refused" in needs) && needs.not_listed.map((n) => (
+        <p key={`${n.district}|${n.use}`} className="px-4 text-[14px] text-[var(--app-label)]">{n.text}</p>
       ))}
       <div className={box}>{body}</div>
       {needs && !("refused" in needs) && !needs.town_only && needs.permits.length > 0 && (

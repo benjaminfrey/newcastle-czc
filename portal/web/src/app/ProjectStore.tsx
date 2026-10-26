@@ -166,7 +166,8 @@ export function ProjectProvider({ id, children }: { id: string; children: ReactN
     if (retry.current) clearTimeout(retry.current);
     revision.current = r.revision;
     for (const c of changes) lastGood.current = withChange(lastGood.current, c);
-    setApp((a) => (a ? { ...a, revision: r.revision, missing: r.missing } : a));
+    // What it needs can change with any answer (a floor area, a use); it comes back with the save.
+    setApp((a) => (a ? { ...a, revision: r.revision, missing: r.missing, ...(r.needs ? { needs: r.needs } : {}) } : a));
     setSaveState("saved");
     return { ok: true };
   };

@@ -212,4 +212,12 @@ describe("ProjectStore", () => {
     await waitFor(() => expect(store.cur!.account).toEqual(
       { email: "a@example.com", name: "Ada", phone: "207", mailing_address: "PO Box 1" }));
   });
+
+  it("what the project needs comes back with each save", async () => {
+    const needs = { permits: [], application_fees_total: 0, application_fees_vary: false, notes: [], not_listed: [], town_only: false };
+    vi.spyOn(apps, "saveAnswers").mockResolvedValue({ revision: 4, missing: [], needs });
+    await mount();
+    await act(async () => { await store.setAnswer("a", null, "one"); });
+    expect(store.project!.needs).toEqual(needs);
+  });
 });

@@ -218,3 +218,32 @@ def test_no_uploads_after_the_lock(make_client, parts, settings):
     assert c.post(f"/api/projects/{pid}/lock", json={"base_revision": rev + 1}).status_code == 200
     assert upload(c, pid, PDF).json() == {"detail": "locked"}
     assert c.request("DELETE", f"/api/attachments/{att['id']}").status_code == 409
+
+
+def test_files_of_a_removed_part_leave_the_project(make_client, parts):
+    c = make_client(**parts)
+    pid = create(c, ("use", "driveway"))
+    upload(c, pid, PDF, field_id="entrance_sketch")
+    body = get(c, pid)
+    assert [a["field_id"] for a in body["attachments"]] == ["entrance_sketch"]
+    driveway = next(p["id"] for p in body["parts"] if p["kind"] == "driveway")
+    c.request("DELETE", f"/api/projects/{pid}/parts/{driveway}", json={"base_revision": body["revision"]})
+    assert get(c, pid)["attachments"] == []
+
+
+def test_an_upload_finishing_after_the_lock_is_refused(make_client, parts, settings, engine):
+    settings.allow_test_lock = True
+    c = make_client(**parts)
+    c.put("/api/me", json={"name": "Alice", "phone": "207", "mailing_address": "PO Box 1"})
+    pid = finish_use_project(c)
+    rev = get(c, pid)["revision"]
+    c.post(f"/api/projects/{pid}/submit", json={"base_revision": rev})
+
+    real = parts["scanner"].scan
+    def lock_during_scan(data):  # staff lock the project while the file is being scanned
+        with engine.begin() as conn:
+            conn.execute(text("UPDATE project SET status = 'locked' WHERE id = :p"), {"p": pid})
+        return real(data)
+    parts["scanner"].scan = lock_during_scan
+    assert upload(c, pid, PDF).json() == {"detail": "locked"}
+    assert stored_rows(engine) == 0

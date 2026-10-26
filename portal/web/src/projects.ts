@@ -56,7 +56,8 @@ export type ReviewNeed = {
   reviewer: string | null; certainty: "needed" | "may_need"; in_portal: boolean; districts: string[];
   fee: Fee; fee_words: string; clocks: Clock[];
 };
-export type Permit = { key: string; name: string; application_fee: Fee | null; application_fee_words: string | null; reviews: ReviewNeed[] };
+export type Permit = { key: string; name: string; application_fee: Fee | null; application_fee_words: string | null; reviews: ReviewNeed[];
+  due_at_send?: boolean }; // its application fee counts at Send only if a review is needed and taken here
 export type Needs = {
   permits: Permit[]; application_fees_total: number; application_fees_vary: boolean;
   notes: { kind: string; text: string; cite: string }[]; not_listed: { district: string; use: string; text: string }[];
@@ -84,7 +85,7 @@ export type Problem = { field_id: string; item_id: string | null; reason: string
 // "unavailable": the server or the connection failed; "locked": the Town has locked the project
 // for review, so the applicant can't change it.
 export type Refusal = "signed_out" | "not_approved" | "busy" | "unavailable" | "not_found" | "locked";
-export type SaveResult = { revision: number; missing: Missing } | { conflict: number } | { invalid: Problem[] }
+export type SaveResult = { revision: number; missing: Missing; needs?: Needs } | { conflict: number } | { invalid: Problem[] }
   | { incomplete: Missing } | Refusal;
 
 const json = { "Content-Type": "application/json" };
@@ -189,8 +190,8 @@ async function write(url: string, method: string, body: unknown): Promise<SaveRe
     return { invalid: Array.isArray(d) ? (d as WithPart[]).map(fromPart) as Problem[]
       : [{ field_id: "", item_id: null, reason: String(d) }] };
   }
-  const out = (await r!.json()) as { revision: number; missing?: WithPart[] };
-  return { revision: out.revision, missing: (out.missing ?? []).map(fromPart) as Missing };
+  const out = (await r!.json()) as { revision: number; missing?: WithPart[]; needs?: Needs };
+  return { revision: out.revision, missing: (out.missing ?? []).map(fromPart) as Missing, ...(out.needs ? { needs: out.needs } : {}) };
 }
 
 export function saveAnswers(id: string, baseRevision: number, changes: Change[]): Promise<SaveResult> {

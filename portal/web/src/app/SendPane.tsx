@@ -47,7 +47,7 @@ export default function SendPane({ project, form, cur, models, base, onBack, onS
     return [{ id: m.id, title: m.title, href: `${base}/${m.id}?${q.toString()}` }];
   });
   const needs = project.needs && !("refused" in project.needs) ? project.needs : null;
-  const due = needs?.permits.filter((p) => p.application_fee !== null && p.application_fee !== 0) ?? [];
+  const due = needs?.permits.filter((p) => p.application_fee !== null && p.application_fee !== 0 && p.due_at_send !== false) ?? [];
   const printed = Object.keys(project.forms).filter((k) => k in FORM_NAMES);
   // While a building's size isn't known, either plan may apply (the needs say "May be needed").
   const eitherPlan = !!needs?.permits.some((p) => p.reviews.some((r) => r.review_key === "large_project_plan" && r.certainty === "may_need"));
