@@ -42,7 +42,7 @@ compliant, meets or fails. Only a reviewing authority decides, and only in Phase
 | P2 | Submission | A hosted app with a database; real digital submission. |
 | P3 | Hosting | A VM the chair controls for development; every component chosen so production can move to a managed platform by configuration, not rewrite. |
 | P4 | Applicant sign-in | Email sign-in links; no passwords. |
-| P5 | Fees | Shown from the Town's fee schedule, paid offline; staff mark paid. No online payment in Phase 1. |
+| P5 | Fees | Shown from the Town's fee schedule, paid offline; staff mark paid. No online payment in Phase 1. (Per project, 2026-10-25: an application fee once per permit; see the projects brief §7.) |
 | P6 | Official forms | A new form set in CZC house style (cover sheet + one form per type), not a copy of the current paper forms. |
 | P7 | Property facts | Address lookup and map, from the **Maine GeoLibrary parcel layer** (kept current by the assessor) joined to our district and Street Type data. |
 | P8 | Standards check | An **admin setting per application type**: *Off* (collect only), *Staff only* (default), *Show applicants*. Flags, never verdicts, in every mode. Each change is logged. |
@@ -53,6 +53,9 @@ compliant, meets or fails. Only a reviewing authority decides, and only in Phase
 | P13 | Civic district (added 2026-10-15) | SD-Civic (Art. 2 §5: municipally owned land, "not subject to the standards of this Ordinance") is an adopted district and is named as such. **Chair's ruling:** only the Town builds on SD-Civic land, on the Select Board's recommendation and a Town Meeting vote; the Town does not follow the CZC there and does not apply for permits. The portal tells applicants so; no application is made for Civic land. |
 
 ## 3. Architecture
+
+> Storage revised by `specs/2026-10-25-applicant-portal-projects.md` §5 (2026-10-25): `application` became
+> `project` with parts, pinned forms, submissions and reviews.
 
 ```
 portal/
@@ -93,6 +96,9 @@ component may depend on a feature only one vendor offers.
 **CI.** Portal tests run as their own job, independent of the 15–20 minute document-build suite.
 
 ## 4. The applicant journey
+
+> Superseded for the journey by `specs/2026-10-25-applicant-portal-projects.md` (2026-10-25): sign in
+> first, a project of parts, a dashboard; "Do I need a permit?" folds into the project.
 
 1. **"What are you planning?"** — no sign-in. Plain choices: build something new or add on · start a
    business or change how a building is used · put in or move a driveway · divide land · something
@@ -169,6 +175,8 @@ There is **no pass/fail field**, so nothing downstream, Phase 2 included, can re
 Phase 1.
 
 **Fees.** Read from `portal/forms/fees.yaml`, transcribed from the Town's adopted fee schedule.
+(Superseded 2026-10-25: the 2025.08.25 schedule is in force and transcribed in
+`portal/api/portal_api/forms/definitions/fees.yaml`; O1 is closed. The text below is the original plan.)
 The schedule is not in the repository (open decision O1). Until it is, every fee reads "Set by the
 Town's fee schedule — the Town Office will tell you the amount." The app never shows a guessed
 amount.
@@ -242,7 +250,7 @@ Recorded for the chair, the Board or counsel; none is guessed in the build.
 
 | # | Decision | Who |
 |---|---|---|
-| O1 | The Town's adopted **fee schedule** for the three types | Chair / Town Office |
+| O1 | The Town's adopted **fee schedule** for the three types — closed 2026-10-25 (the 2025.08.25 schedule, `fees.yaml`) | Chair / Town Office |
 | O2 | **Freedom of Access Act** notice wording at submit | Counsel |
 | O3 | **Retention** periods for drafts, abandoned applications, submissions | Counsel / State Archives schedule |
 | O4 | **Who adopts the new forms** — Planning Board, Select Board, or administrative | Chair / counsel |

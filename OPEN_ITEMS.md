@@ -35,6 +35,18 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
   approved 2026-10-25, after one question at a time, `specs/2026-10-24-applicant-portal-wizard.md`);
   it regrouped the forms into cards, so the sheet was regenerated and every entry is a draft (130
   entries). For M4 and the redesign:
+  - **Projects** (`specs/2026-10-25-applicant-portal-projects.md`, approved 2026-10-25; built on
+    `portal-projects`, not pushed): sign in first, a project of parts, the dashboard, Check and send.
+    The fee schedule question (the portal design's O1) is closed: the 2025.08.25 Planning Fee
+    Schedule is in force (§12.5, `fees.yaml`). **For the chair, as drafts:** the parts
+    (`parts.yaml`: their tile words, which sections each asks, the rule inputs), the project-only
+    questions (`project-questions.v1.yaml`: the renovation's building and size, parking spaces, lots
+    after and recent division, "Tell us what you have in mind", homes added in the last five years),
+    the addition's new "How much floor area will the addition add?", "Type of project" now printing
+    from the parts, and each clock's plain sentence (`clock_plain` in `applications.yaml`, listed in
+    the rules memo). **Follow-ups:** the parcel card has no lot drawing (the snapshot drops the
+    parcel's outline); the staff lock is a test seam until Milestone 6; the printouts (View) wait for
+    Milestone 5.
   - **For the chair:** approve the application forms (130 entries), including the steps, the cards
     (which questions share one, each shared card's own question and help, and each question's
     short name on it), the controls, the tiles' icons, which answers "Copy Building 1" copies, and
