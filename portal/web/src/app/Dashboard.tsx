@@ -120,7 +120,8 @@ export default function Dashboard({ project, form, cur, models, statuses, base, 
           </div>
         </header>
 
-        <Link to={`${base}/your_lot`} aria-label={`Your lot, ${mapLotLabel(project.property.map_lot)}`} className={`${box} ${rowCls}`}>
+        <Link to={`${base}/your_lot`} className={`${box} ${rowCls}`}>
+          <span className="sr-only">Your lot, </span>
           <Icon name="map-2" className="text-[var(--app-secondary-label)]" />
           <span className="min-w-0 flex-1">
             <span className="block text-[15px] font-semibold text-[var(--app-label)]">{mapLotLabel(project.property.map_lot)}</span>

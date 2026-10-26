@@ -50,57 +50,40 @@ export async function signInHere(page: Page, email: string) {
   await page.getByRole("button", { name: "Sign me in" }).click();
 }
 
-export type Project = "use" | "build" | "driveway";
 
 const settle = (page: Page) =>
   page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== "running"), null, { timeout: 5000 }).catch(() => {});
 const next = (page: Page) => page.getByRole("button", { name: /^(Continue|Skip for now)$/ });
 
-// "Do I need a permit?", one question at a time: what you're planning, the kind of building work
-// and its size, the property, what you'll need, then Start and the sign-in screen.
-export async function screenerToStart(page: Page, project: Project, application: string, email: string) {
-  await page.goto("/start");
-  const choice = { use: /Start a business/, build: /Build something new/, driveway: /driveway/ }[project];
-  await page.getByRole("checkbox", { name: choice }).click();
-  await axe(page, "start: choose several");
+// Sign in first (projects brief §3): Home's sign-in card, the emailed link; then Start a new
+// application and its three cards — how to reach you, the lot (4-36), the parts — and Go to my
+// project, which opens the dashboard.
+export async function startProject(page: Page, parts: RegExp[], email: string) {
+  await page.goto("/");
+  await axe(page, "home signed out");
+  await signInHere(page, email);
+  await expect(page.getByRole("link", { name: "Start a new application" })).toBeVisible();
+  await axe(page, "home");
+  await page.getByRole("link", { name: "Start a new application" }).click();
+  await expect(page.getByRole("heading", { name: "How can the Town reach you?" })).toBeVisible();
+  await axe(page, "start: reach you");
+  await page.getByLabel("Full name").fill("Test Applicant");
+  await page.getByLabel("Phone").fill("207-555-0100");
+  await page.getByLabel("Mailing address").fill("PO Box 1, Newcastle ME 04553");
   await next(page).click();
-  if (project === "build") {
-    await page.getByRole("radio", { name: "A new building" }).click();
-    await page.getByRole("textbox", { name: /floor area/i }).fill("1200");
-    await axe(page, "start: a number");
-    await next(page).click();
-    await next(page).click(); // new homes: skip for now
-    await next(page).click(); // homes in the last five years: skip for now
-  }
   await page.getByLabel("Street address, or map and lot").fill("4-36");
   await page.getByRole("button", { name: "Search" }).click();
   await page.getByRole("list", { name: "Search results" }).getByRole("button").first().click();
   await expect(page.getByRole("heading", { name: "Is this your property?" })).toBeVisible();
-  await axe(page, "property");
+  await axe(page, "start: property");
   await page.getByRole("radio", { name: "Yes, this is my property" }).click();
-  if (project === "use") {
-    // Lot 4-36 is in D1, where a Farm/Vendor Market takes a Use Permit.
-    await page.getByLabel("Search uses").fill("vendor market");
-    await page.getByRole("button", { name: /^Choose Farm/ }).first().click();
-  }
-  await expect(page.getByRole("heading", { level: 2, name: /^You('ll| may) need/ }).first()).toBeVisible();
-  await axe(page, "needs");
-  await page.getByRole("button", { name: `Start this application: ${application}` }).click();
-  await expect(page.getByRole("heading", { name: "Sign in to apply" })).toBeVisible();
-  await axe(page, "sign-in screen");
-  await signInHere(page, email);
-  // A new application opens at its first card, on a desktop and a phone alike; the task list is
-  // a tap away (‹ Tasks on a phone, the sidebar on a desktop). Open it and come back, as a person
-  // checking would.
-  await expect(page).toHaveURL(/\/applications\/[0-9a-f-]+\/[a-z_]+/);
-  await axe(page, "first card");
-  if ((page.viewportSize()?.width ?? 1280) < 1024) {
-    await page.getByRole("link", { name: "Tasks" }).click();
-    await expect(page).toHaveURL(/\/applications\/[0-9a-f-]+$/);
-    await axe(page, "task list");
-    await page.getByRole("link", { name: /, Not started$/ }).first().click();
-    await expect(page).toHaveURL(/\/applications\/[0-9a-f-]+\/[a-z_]+/);
-  }
+  await expect(page.getByRole("heading", { name: "What are you doing here?" })).toBeVisible();
+  for (const p of parts) await page.getByRole("checkbox", { name: p }).click();
+  await axe(page, "start: parts");
+  await page.getByRole("button", { name: "Go to my project" }).click();
+  await expect(page).toHaveURL(projectPath);
+  await expect(page.getByRole("list", { name: "Your project" })).toBeVisible();
+  await axe(page, "dashboard");
 }
 
 const ANSWERS: [RegExp, string][] = [
@@ -167,7 +150,7 @@ export async function fillControls(page: Page, scope: Locator, fixture: string) 
 
 type Plan = { extraBuilding?: boolean; copyBuilding?: boolean; component?: boolean };
 
-const appPath = /^\/applications\/[0-9a-f-]+$/;
+const projectPath = /\/projects\/[0-9a-f-]+$/;
 
 // Answer the card that is showing, the way a person would: "Yes, that's right" for a map value;
 // a tap on a card with no Continue; else the first choice in each group (No, where a group has
@@ -206,20 +189,18 @@ export async function answerScreen(page: Page, fixture: string) {
   await next(page).click();
 }
 
-// Every task of the application, from the task list, until Check and send: each task's cards, its
-// check page, and for buildings and additions the list (one more building, a copy, or an
-// addition, when the plan asks).
-export async function completeApplication(page: Page, fixture: string, plan: Plan = {}) {
+// Every row of the project, from the dashboard, until Check and send: each row's cards, its check
+// page, and for buildings and additions the list (one more building or a copy, when the plan asks).
+export async function completeProject(page: Page, fixture: string, plan: Plan = {}) {
   for (let i = 0; i < 200; i += 1) {
     await settle(page);
     const path = new URL(page.url()).pathname;
-    if (/\/review$/.test(path)) return;
+    if (/\/send$/.test(path)) return;
     const before = page.url();
     const main = page.getByRole("main");
-    if (appPath.test(path)) {
-      await axe(page, "task list");
-      const send = main.getByRole("link", { name: "Check and send" });
-      await ((await send.count()) ? send : main.getByRole("link", { name: /, (Not started|\d+ of \d+ answered)$/ }).first()).click();
+    if (projectPath.test(path)) {
+      const open = main.getByRole("link", { name: /,\s*(Not started|\d+ of \d+\s*answered)$/ });
+      await ((await open.count()) ? open.first() : main.getByRole("link", { name: "Check and send" })).click();
     } else if (/\/check$/.test(path)) {
       await axe(page, "check page");
       await page.getByRole("button", { name: "Done" }).click();
@@ -233,9 +214,6 @@ export async function completeApplication(page: Page, fixture: string, plan: Pla
       } else if (plan.extraBuilding && (await page.getByRole("button", { name: "Add a building" }).count())) {
         plan.extraBuilding = false;
         await page.getByRole("button", { name: "Add a building" }).click();
-      } else if (plan.component && (await page.getByRole("button", { name: "Add an addition, porch or deck" }).count())) {
-        plan.component = false;
-        await page.getByRole("button", { name: "Add an addition, porch or deck" }).click();
       } else await page.getByRole("button", { name: /^(Done with|No) (buildings|additions)$/ }).click();
     } else {
       await answerScreen(page, fixture);
@@ -245,18 +223,17 @@ export async function completeApplication(page: Page, fixture: string, plan: Pla
   throw new Error("didn't reach Check and send in 200 screens");
 }
 
-// On Check and send: every field is filled or marked, and nothing is still to answer.
-export async function expectReviewComplete(page: Page, title: string) {
-  await expect(page.getByRole("main").getByText("Check and send").first()).toBeVisible();
-  await expect(page.getByText(title).first()).toBeVisible();
-  await axe(page, "review");
-  await expect(page.getByRole("group", { name: "Still to answer" })).toHaveCount(0);
-  await expect(page.getByText("Still to answer")).toHaveCount(0);
-}
-
-// The task list's tasks, by name (the sidebar on a desktop, the home screen on a phone).
-export async function taskNames(page: Page): Promise<string[]> {
-  const nav = page.getByRole("navigation", { name: "Tasks" });
-  const scope = (await nav.count()) ? nav : page.getByRole("main");
-  return (await scope.getByRole("link").allTextContents()).map((t) => t.trim());
+// On Check and send with nothing left: the project at a glance, the fees, the forms; then Send,
+// its confirmation, and the dashboard's Sent.
+export async function sendProject(page: Page, forms: string[]) {
+  await expect(page.getByRole("region", { name: /to finish first$/ })).toHaveCount(0);
+  for (const f of forms) await expect(page.getByRole("region", { name: "The official forms" })).toContainText(f);
+  await axe(page, "check and send");
+  await page.getByRole("button", { name: "Send to the Town" }).click();
+  const sheet = page.getByRole("alertdialog");
+  await expect(sheet.getByRole("heading", { name: "Send your project to the Town?" })).toBeVisible();
+  await axe(page, "send: confirm");
+  await sheet.getByRole("button", { name: "Send" }).click();
+  await expect(page).toHaveURL(projectPath);
+  await expect(page.getByText(/You can still add to your project until the Town locks it for review\./)).toBeVisible();
 }

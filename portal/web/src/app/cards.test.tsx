@@ -136,7 +136,7 @@ describe("the project's home", () => {
     withApp({ answers: [a("lot_width", 120), a("lot_depth", 200)] });
     open("/projects/abc");
     const main = await screen.findByRole("main");
-    expect(within(main).getByRole("link", { name: /^Your lot, Map 4, Lot 36/ })).toBeInTheDocument();
+    expect(within(main).getByRole("link", { name: /^Your lot, Map 4, Lot 36.*(Not started|answered|Done)$/ })).toBeInTheDocument();
     expect(within(main).getByRole("link", { name: /^The work.*answered$/ })).toBeInTheDocument();
     expect(within(main).getByRole("link", { name: "Check and send" })).toHaveAttribute("href", "/projects/abc/send");
   });
