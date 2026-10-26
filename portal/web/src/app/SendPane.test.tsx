@@ -30,7 +30,7 @@ const NEEDS: apps.Needs = {
   permits: [{ key: "building_permit", name: "Building Permit", application_fee: 30, application_fee_words: "$30", reviews: [
     { review_key: "entrance_permit", use_key: null, name: "Entrances", code_name: "Driveway and Entrance Permit", plain: null,
       reviewer: "Code Enforcement Officer", certainty: "needed", in_portal: true, districts: [], fee: 0, fee_words: "No permit fee", clocks: [] }] }],
-  application_fees_total: 30, application_fees_vary: false, notes: [], not_listed: [], town_only: false,
+  application_fees_total: 30, permit_fees_total: 0, application_fees_vary: false, notes: [], not_listed: [], town_only: false,
 };
 const DONE = [{ field_id: "applicant_is_owner", item_id: null, value: true }, { field_id: "driveway_width", item_id: null, value: 12 },
               { field_id: "first_20ft_slope", item_id: null, value: 5 }];
@@ -79,10 +79,9 @@ describe("Check and send", () => {
     expect(glance).toHaveTextContent("Map 4, Lot 36");
     expect(glance).toHaveTextContent("Ada Lovelace");
     expect(within(glance).getByRole("link", { name: /Change.*Driveway|Driveway.*Change/ })).toHaveAttribute("href", "/projects/p1/driveway/check");
-    const due = screen.getByRole("region", { name: "What's due when you send" });
-    expect(due).toHaveTextContent("Building Permit application fee$30");
-    expect(due).toHaveTextContent("Total, payable when you send$30");
-    expect(due).toHaveTextContent("Permit fees are due before a permit is issued.");
+    const fees = screen.getByRole("region", { name: "Fees" });
+    expect(within(fees).getByRole("group", { name: "Due when you send" })).toHaveTextContent("Building Permitapplication fee$30");
+    expect(within(fees).getByText("Total").parentElement).toHaveTextContent("Total$30");
     const forms = screen.getByRole("region", { name: "The official forms" });
     expect(forms).toHaveTextContent("Driveway and Entrance Permit Application");
     expect(within(forms).getByRole("button", { name: /View/ })).toBeDisabled();

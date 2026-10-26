@@ -157,3 +157,8 @@ body {
 .btn.w-full { justify-content: center; }
 .btn:disabled { color: var(--app-secondary-label); cursor: default; }
 .btn-filled { background: var(--app-label); border-color: var(--app-label); color: var(--app-row); }
+
+/* A total that changes as answers are saved fades to its new value (the fee receipt). */
+.fee-fade { animation: fee-fade 300ms ease-out; }
+@keyframes fee-fade { from { opacity: 0.35; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .fee-fade { animation: none; } }

@@ -9,6 +9,7 @@ import { mapLotLabel } from "../format";
 import type { FormDef, ProjectState } from "../projects";
 import Card from "../shell/Card";
 import { partSummary } from "./Dashboard";
+import NeedsPanel from "./NeedsPanel";
 import type { SendOutcome } from "./ProjectStore";
 
 // The official forms a project fills, by key (the cover sheet prints with each).
@@ -47,7 +48,6 @@ export default function SendPane({ project, form, cur, models, base, onBack, onS
     return [{ id: m.id, title: m.title, href: `${base}/${m.id}?${q.toString()}` }];
   });
   const needs = project.needs && !("refused" in project.needs) ? project.needs : null;
-  const due = needs?.permits.filter((p) => p.application_fee !== null && p.application_fee !== 0 && p.due_at_send !== false) ?? [];
   const printed = Object.keys(project.forms).filter((k) => k in FORM_NAMES);
   // While a building's size isn't known, either plan may apply (the needs say "May be needed").
   const eitherPlan = !!needs?.permits.some((p) => p.reviews.some((r) => r.review_key === "large_project_plan" && r.certainty === "may_need"));
@@ -122,20 +122,7 @@ export default function SendPane({ project, form, cur, models, base, onBack, onS
             </ul>
           ))}
 
-          {section("What's due when you send", (
-            <ul>
-              {due.map((p, k) => (
-                <li key={p.key} className={`${row} ${line(k)} justify-between`}>
-                  <span className="text-[var(--app-label)]">{p.name} application fee</span>
-                  <span className="text-[var(--app-label)]">{p.application_fee_words}</span>
-                </li>
-              ))}
-              <li className={`${row} ${line(due.length)} justify-between font-semibold`}>
-                <span>Total, payable when you send</span>
-                <span>{money(needs?.application_fees_total ?? 0)}{needs?.application_fees_vary ? " + set by the Town Office" : ""}</span>
-              </li>
-            </ul>
-          ), "Permit fees are due before a permit is issued.")}
+          <NeedsPanel needs={project.needs} base={base} />
 
           {printed.length > 0 && section("The official forms", (
             <ul>{printed.map((k, i) => (

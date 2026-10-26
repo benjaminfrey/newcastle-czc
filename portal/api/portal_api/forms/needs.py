@@ -35,8 +35,9 @@ def _set(d: dict, path: str, value) -> None:
         d[head] = value
 
 
-def _runs(part_rows: list[dict], answers: dict, facts: dict, parts: PartsDef) -> list[tuple[dict, str | None]]:
-    """The screener answers to run, with the part each came from."""
+def _runs(part_rows: list[dict], answers: dict, facts: dict, parts: PartsDef) -> list[tuple[dict, str | None, dict | None]]:
+    """The screener answers to run, with the part each came from and the first answer it still
+    lacks (what settles a review that only may apply)."""
     prop = {"district_codes": [d["code"] for d in facts.get("districts") or [] if d.get("code")],
             "on_state_highway": facts.get("on_state_highway"), "civic": False}
     homes = sum(_num(answers.get(("dwelling_units", r["id"]))) or 0 for r in part_rows if r["kind"] == "building")
@@ -59,7 +60,11 @@ def _runs(part_rows: list[dict], answers: dict, facts: dict, parts: PartsDef) ->
             base["building"]["new_dwelling_units"] = homes if any_homes_known else None
             base["building"].update(project_level.get("building", {}))
         uses = None
+        settle = None
         for path, field in p.inputs.items():
+            v = own(field)
+            if settle is None and path != "use_key" and (_num(v) is None and (DIVIDED.get(v) if isinstance(v, str) else None) is None):
+                settle = {"field_id": field, "part_id": r["id"] if p.repeats else None, "step": r["kind"]}
             if path == "use_key":
                 uses = [u for u in (own(field) or []) if isinstance(u, str)]
             elif path == "division.divided_last_5_years":
@@ -69,10 +74,15 @@ def _runs(part_rows: list[dict], answers: dict, facts: dict, parts: PartsDef) ->
             else:
                 v = _num(own(field))
                 _set(base, path, int(v) if v is not None and path in ("building.parking_spaces", "division.lots_after") else v)
+        if settle is None and r["kind"] in BUILD:
+            for path, field in parts.project_inputs.items():
+                if _num(answers.get((field, None))) is None and any(x["kind"] == "building" for x in part_rows):
+                    settle = {"field_id": field, "part_id": None, "step": parts.project_step.id}
+                    break
         if uses:
-            out += [({**base, "use_key": u}, r["kind"]) for u in uses]
+            out += [({**base, "use_key": u}, r["kind"], settle) for u in uses]
         else:
-            out.append((base, r["kind"]))
+            out.append((base, r["kind"], settle))
     return out
 
 
@@ -131,7 +141,7 @@ def needs(part_rows: list[dict], answers: dict, facts: dict, ruleset: Ruleset, d
           parts: PartsDef, locked_on: date | None = None) -> dict:
     merged: dict[tuple, dict] = {}
     notes, not_listed, town_only = [], [], False
-    for screener_answers, _kind in _runs(part_rows, answers, facts, parts):
+    for screener_answers, _kind, settle in _runs(part_rows, answers, facts, parts):
         result = run(screener_answers, ruleset, defs)
         town_only = town_only or result["town_only"]
         for n in result["notes"]:
@@ -142,14 +152,16 @@ def needs(part_rows: list[dict], answers: dict, facts: dict, ruleset: Ruleset, d
             key = (o["application"], o["use_key"])
             have = merged.get(key)
             if have is None:
-                merged[key] = {**o, "districts": [o["district_name"]] if o["district_name"] else []}
+                merged[key] = {**o, "districts": [o["district_name"]] if o["district_name"] else [],
+                               "settled_by": settle if o["certainty"] == "may_need" else None}
             else:
                 if o["certainty"] == "needed":
                     have["certainty"] = "needed"
+                    have["settled_by"] = None
                 if o["district_name"] and o["district_name"] not in have["districts"]:
                     have["districts"].append(o["district_name"])
     if town_only:
-        return {"permits": [], "application_fees_total": 0, "application_fees_vary": False, "notes": [],
+        return {"permits": [], "application_fees_total": 0, "permit_fees_total": 0, "application_fees_vary": False, "notes": [],
                 "not_listed": [], "town_only": True}
     reviews = []
     for (app_key, use_key), o in merged.items():
@@ -159,6 +171,7 @@ def needs(part_rows: list[dict], answers: dict, facts: dict, ruleset: Ruleset, d
                         "plain": app.plain, "reviewer": app.reviewer, "certainty": o["certainty"],
                         "in_portal": app.in_portal, "districts": o["districts"], "fee": line.fee,
                         "fee_words": fee_words(line.fee), "clocks": _clocks(app, ruleset, locked_on),
+                        "settled_by": o["settled_by"],
                         "_permit": permit, "_line": line})
     for r in part_rows:
         if r["kind"] == "building":
@@ -166,8 +179,8 @@ def needs(part_rows: list[dict], answers: dict, facts: dict, ruleset: Ruleset, d
             reviews.append({"review_key": "structure", "use_key": None, "part_id": r["id"], "name": line.name,
                             "code_name": line.name, "plain": None, "reviewer": None, "certainty": "needed",
                             "in_portal": True, "districts": [], "fee": line.fee, "fee_words": fee_words(line.fee),
-                            "clocks": [], "_permit": permit, "_line": line})
-    use_order = [u for s, _ in _runs(part_rows, answers, facts, parts) if (u := s.get("use_key"))]
+                            "clocks": [], "settled_by": None, "_permit": permit, "_line": line})
+    use_order = [u for s, _, _ in _runs(part_rows, answers, facts, parts) if (u := s.get("use_key"))]
     permits = []
     for permit in fees.permits:
         mine = [r for r in reviews if r["_permit"] is permit]
@@ -186,6 +199,10 @@ def needs(part_rows: list[dict], answers: dict, facts: dict, ruleset: Ruleset, d
         del r["_permit"], r["_line"]
     numeric = [p["application_fee"] for p in permits
                if p["due_at_send"] and isinstance(p["application_fee"], (int, float))]
-    return {"permits": permits, "application_fees_total": sum(numeric),
+    # Permit fees count only for reviews the project needs; one that may apply stays $0 until the
+    # answers settle it (the chair's ruling, 2026-10-26: never a range).
+    permit_fees = sum(r["fee"] for p in permits for r in p["reviews"]
+                      if r["certainty"] == "needed" and isinstance(r["fee"], (int, float)))
+    return {"permits": permits, "application_fees_total": sum(numeric), "permit_fees_total": permit_fees,
             "application_fees_vary": any(p["due_at_send"] and p["application_fee"] == "varies" for p in permits),
             "notes": notes, "not_listed": not_listed, "town_only": False}

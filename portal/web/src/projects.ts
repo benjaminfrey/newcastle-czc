@@ -55,11 +55,12 @@ export type ReviewNeed = {
   review_key: string; use_key: string | null; part_id?: string; name: string; code_name: string; plain: string | null;
   reviewer: string | null; certainty: "needed" | "may_need"; in_portal: boolean; districts: string[];
   fee: Fee; fee_words: string; clocks: Clock[];
+  settled_by?: { field_id: string; part_id: string | null; step: string } | null; // the answer that settles a fee that may apply
 };
 export type Permit = { key: string; name: string; application_fee: Fee | null; application_fee_words: string | null; reviews: ReviewNeed[];
   due_at_send?: boolean }; // its application fee counts at Send only if a review is needed and taken here
 export type Needs = {
-  permits: Permit[]; application_fees_total: number; application_fees_vary: boolean;
+  permits: Permit[]; application_fees_total: number; permit_fees_total: number; application_fees_vary: boolean;
   notes: { kind: string; text: string; cite: string }[]; not_listed: { district: string; use: string; text: string }[];
   town_only: boolean;
 } | { refused: string };

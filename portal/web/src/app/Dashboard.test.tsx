@@ -36,13 +36,14 @@ const NEEDS: apps.Needs = {
       clocks: [{ key: "small_project_decision", label: "x", plain: "The Code Enforcement Officer decides within 10 days of accepting your project.",
                  days: 10, basis: "calendar", when: null }] },
     { review_key: "large_project_plan", use_key: null, name: "Large Project Plan", code_name: "Large Project Plan", plain: null,
-      reviewer: "Code Enforcement Officer", certainty: "may_need", in_portal: false, districts: [], fee: 240, fee_words: "$240", clocks: [] },
+      reviewer: "Code Enforcement Officer", certainty: "may_need", in_portal: false, districts: [], fee: 240, fee_words: "$240", clocks: [],
+      settled_by: { field_id: "floor_area", part_id: "b1", step: "building" } },
     { review_key: "structure", use_key: null, part_id: "b1", name: "Structure", code_name: "Structure", plain: null, reviewer: null,
       certainty: "needed", in_portal: true, districts: [], fee: 30, fee_words: "$30", clocks: [] },
     { review_key: "entrance_permit", use_key: null, name: "Entrances", code_name: "Driveway and Entrance Permit", plain: null,
       reviewer: "Code Enforcement Officer", certainty: "needed", in_portal: true, districts: [], fee: 0, fee_words: "No permit fee", clocks: [] },
   ] }],
-  application_fees_total: 30, application_fees_vary: false, notes: [], not_listed: [], town_only: false,
+  application_fees_total: 30, permit_fees_total: 30, application_fees_vary: false, notes: [], not_listed: [], town_only: false,
 };
 const PROJECT: apps.ProjectState = {
   id: "p1", title: "A new building and a driveway at Sheepscot Road", status: "draft", revision: 3, ruleset_key: "adopted-v1.0",
@@ -103,27 +104,35 @@ describe("the dashboard", () => {
     expect(await screen.findByText("Ready to send")).toBeInTheDocument();
   });
 
-  it("reads what the project needs in words", async () => {
+  it("reads its fees as a receipt, with a total", async () => {
     open();
-    const needs = await screen.findByRole("region", { name: "Building Permit" });
-    expect(within(needs).getByRole("heading", { level: 3 })).toHaveTextContent("Building Permit$30 when you send");
-    expect(needs).toHaveTextContent("Small Project PlanNo permit fee");
-    expect(needs).toHaveTextContent("The Code Enforcement Officer decides within 10 days of accepting your project.");
-    expect(needs).toHaveTextContent("May be needed — the Code Enforcement Officer confirms");
-    expect(needs).toHaveTextContent("Not in the portal yet — the Town Office takes this one");
-    expect(needs).toHaveTextContent("Structure (each new building)$30");
-    expect(needs).toHaveTextContent("EntrancesNo permit fee");
-    expect(screen.getByText("Permit fees are due before a permit is issued.")).toBeInTheDocument();
+    const fees = await screen.findByRole("region", { name: "Fees" });
+    expect(within(fees).getByRole("group", { name: "Due when you send" })).toHaveTextContent("Building Permitapplication fee$30Subtotal$30");
+    const later = within(fees).getByRole("group", { name: "Before the permit is issued" });
+    expect(later).toHaveTextContent("Structure1 new building$30");
+    expect(later).toHaveTextContent("Small Project Plan$0");
+    expect(later).toHaveTextContent("Entrancesdriveway$0");
+    expect(later).toHaveTextContent("Subtotal$30");
+    // A fee that may apply stays $0, with the answer that settles it; never a range.
+    expect(later).toHaveTextContent("Large Project Plan");
+    expect(within(later).getByRole("link", { name: "Add the floor area to see this fee" }))
+      .toHaveAttribute("href", "/projects/p1/building?focus=floor_area&item=b1");
+    expect(fees).not.toHaveTextContent("$240");
+    expect(within(fees).getByText("Total").parentElement).toHaveTextContent("Total$60");
+    expect(fees).toHaveTextContent("The Code Enforcement Officer confirms the fees when the Town locks your project.");
+    // Who reviews it and how long sits behind one link.
+    const more = within(fees).getByText("Who reviews it, and how long");
+    expect(more.closest("details")).not.toHaveAttribute("open");
+    expect(more.closest("details")).toHaveTextContent("The Code Enforcement Officer decides within 10 days of accepting your project.");
   });
 
-  it("says when a use isn't listed in the district, and a fee that may not apply isn't due", async () => {
+  it("says when a use isn't listed in the district, and leaves out a fee that may not apply", async () => {
     vi.spyOn(apps, "getProject").mockResolvedValue({ ...PROJECT, needs: { ...NEEDS,
       permits: [{ ...NEEDS.permits[0], due_at_send: false }], application_fees_total: 0,
       not_listed: [{ district: "D1", use: "x", text: "The Code doesn't list this use in the Rural (D1) district." }] } as apps.Needs });
     open();
     expect(await screen.findByText("The Code doesn't list this use in the Rural (D1) district.")).toBeInTheDocument();
-    const needs = screen.getByRole("region", { name: "Building Permit" });
-    expect(within(needs).getByRole("heading", { level: 3 })).toHaveTextContent("$30 if it applies");
+    expect(screen.queryByRole("group", { name: "Due when you send" })).not.toBeInTheDocument();
   });
 
   it("adding a part opens its first card", async () => {

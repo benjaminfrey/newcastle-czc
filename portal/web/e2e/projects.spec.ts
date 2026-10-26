@@ -23,10 +23,10 @@ test("a new building and a driveway, sent to the Town", async ({ page }, info) =
   await expect(main.getByRole("link", { name: /^New buildings/ })).toBeVisible();
   await expect(main.getByRole("link", { name: /^Driveway/ })).toBeVisible();
   await expect(main.getByRole("region", { name: "Add to your project" })).toContainText("Start or change a use");
-  const building = main.getByRole("region", { name: "Building Permit" });
+  const building = main.getByRole("region", { name: "Fees" });
   await expect(building).toContainText("Structure");
   await expect(building).toContainText("Entrances");
-  await expect(building.getByRole("heading", { level: 3 })).toHaveText(/^Building Permit\s*\$30 when you send$/);
+  await expect(main.getByRole("region", { name: "Fees" }).getByRole("group", { name: "Due when you send" })).toContainText("Building Permit");
 
   // Nothing scrolls sideways, on a phone too.
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
@@ -82,10 +82,11 @@ test("a use project with two uses", async ({ page }, info) => {
   await sheet.getByRole("button", { name: /^Add Farm/ }).first().click();
   await expect(sheet).toBeHidden();
   await page.getByRole("button", { name: "Continue" }).click();
-  await page.goto(base);
-  const use = page.getByRole("main").getByRole("region", { name: "Use Permit" });
-  await expect(use.getByRole("listitem")).toHaveCount(2);
-  await expect(use.getByRole("heading", { level: 3 })).toHaveText(/^Use Permit\s*\$30 when you send$/);
+  // Back to the dashboard in the app (no reload): the fees follow the saved answers.
+  await page.getByRole("navigation", { name: "The app" }).getByRole("link", { name: "Project" }).click();
+  const fees = page.getByRole("main").getByRole("region", { name: "Fees" });
+  await expect(fees.getByRole("group", { name: "Due when you send" }).getByRole("listitem")).toHaveText([/^Use Permit/]);
+  await expect(fees.getByRole("group", { name: "Before the permit is issued" }).getByRole("listitem")).toHaveCount(2);
   await page.goto(`${base}/send`);
   await sendProject(page, ["Use Permit Application"]);
 });

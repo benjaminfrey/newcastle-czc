@@ -213,3 +213,23 @@ def test_fees_due_at_send_leave_out_what_may_not_apply():
     assert n["application_fees_total"] == 0
     n = project("driveway")
     assert n["permits"][0]["due_at_send"] is True and n["application_fees_total"] == 30
+
+
+# ---- The fee receipt (the chair's ruling, 2026-10-26): no ranges; an unsettled fee is $0 until known ----
+
+def test_permit_fees_total_counts_only_what_is_needed():
+    known = project(("building", {"floor_area": 12000, "dwelling_units": 0}), "driveway")
+    assert known["application_fees_total"] == 30 and known["permit_fees_total"] == 270  # Structure + Large Project Plan
+    unknown = project(("building", {"floor_area": {"unknown": True}, "dwelling_units": 0}), "driveway")
+    assert unknown["permit_fees_total"] == 30  # Structure only; the plan stays $0 until the size is known
+
+
+def test_a_review_that_may_apply_says_which_answer_settles_it():
+    n = project(("building", {"floor_area": {"unknown": True}, "dwelling_units": 0}))
+    large = next(r for p in n["permits"] for r in p["reviews"] if r["review_key"] == "large_project_plan")
+    assert large["settled_by"] == {"field_id": "floor_area", "part_id": "building-0", "step": "building"}
+    small = next(r for p in n["permits"] for r in p["reviews"] if r["review_key"] == "small_project_plan")
+    assert small["settled_by"] == large["settled_by"]
+    n = project(("divide", {"lots_after": {"unknown": True}}))
+    (sub,) = n["permits"][0]["reviews"]
+    assert sub["settled_by"] == {"field_id": "lots_after", "part_id": None, "step": "divide"}

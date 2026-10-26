@@ -181,7 +181,7 @@ export default function Dashboard({ project, form, cur, models, statuses, base, 
       </div>
 
       <aside className="flex min-w-0 flex-col gap-6">
-        <NeedsPanel needs={project.needs} useNames={useNames} />
+        <NeedsPanel needs={project.needs} base={base} locked={locked} useNames={useNames} />
         <section aria-labelledby="you-heading" className="flex flex-col gap-2">
           <h2 id="you-heading" className="px-4 text-[13px] text-[var(--app-secondary-label)]">You</h2>
           <Link to={`${base}/about_you`} className={`${box} ${rowCls}`}>
