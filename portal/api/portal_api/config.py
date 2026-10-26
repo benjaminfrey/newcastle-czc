@@ -30,6 +30,9 @@ class Settings(BaseSettings):
     # The screener's rules start as drafts the chair approves one by one. Production
     # refuses answers that rest on a draft; only development sets this.
     allow_draft_rules: bool = False
+    # A stand-in for the staff lock (Milestone 6 builds the staff side), for tests and the
+    # journeys only: an applicant may lock their own sent project. Never set in production.
+    allow_test_lock: bool = False
     # Public property lookups per address per minute (spec §6). The map asks for many
     # tiles at once, so tiles have their own, larger allowance.
     lookup_limit_per_minute: int = 60

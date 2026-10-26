@@ -12,6 +12,7 @@ SOURCES = {
     "derived": "copied from another field",
     "at_submit": "filled when the applicant signs and submits (M6)",
     "staff": "staff fill this in",
+    "parts": "worked out from the project's parts (never asked)",
 }
 
 DECISIONS = [
@@ -176,7 +177,7 @@ def _section(ruleset: Ruleset, form: FormDef, s) -> list[str]:
     return out
 
 
-def forms_sheet(ruleset: Ruleset, forms: list[FormDef]) -> str:
+def forms_sheet(ruleset: Ruleset, forms: list[FormDef], parts=None) -> str:
     drafts = sum((s.status == "draft") + sum(f.status == "draft" for f in s.fields)
                  for form in forms for s in form.sections
                  if not (form is not forms[0] and s.file == "cover-sheet.v1.yaml"))
@@ -202,4 +203,37 @@ def forms_sheet(ruleset: Ruleset, forms: list[FormDef]) -> str:
         for s in form.sections:
             if s.file != "cover-sheet.v1.yaml":
                 out += _section(ruleset, form, s)
+    if parts is not None:
+        out += _parts(forms, parts)
     return "\n".join(out)
+
+
+def _parts(forms: list[FormDef], parts) -> list[str]:
+    """The parts a project is made of (projects brief §4): the questions each asks and what it
+    sets for the rules."""
+    titles = {f.key: f.official_title for f in forms}
+    out = ["## Parts (`parts.yaml`)", "",
+           "A project is made of parts; each asks the form sections listed and sets the rules' inputs "
+           "(projects brief §6.1). \"Type of project\" prints from the parts.", ""]
+
+    def asks(refs) -> str:
+        by_form: dict[str, list[str]] = {}
+        for fk, sid in refs:
+            by_form.setdefault(fk, []).append(f"`{sid}`")
+        return "; ".join(f"{titles.get(fk, fk)} — {', '.join(ids)}" for fk, ids in by_form.items())
+
+    for p in parts.parts:
+        out += [f"### {p.label} (`{p.id}`)", "", f"- Dashboard row: {p.step}; icon `{p.icon}`"
+                + ("; repeats (one per building or addition)" if p.repeats else ""),
+                f"- Asks: {asks(p.sections)}",
+                f"- Rule input: {', '.join(f'`{k}` = `{v}`' for k, v in p.rule.items())}",
+                *[f"- Sets for the rules: `{k}` from `{v}`" for k, v in p.inputs.items()],
+                *([f"- Prints as Type of project: `{p.work_kind}`"] if p.work_kind else []),
+                _status(p), ""]
+    out += [f"### {parts.project_step.title} (`{parts.project_step.id}`)", "",
+            *[f"- Asks: {asks([(s.form_key, s.section_id)])} when the project has any of "
+              f"{', '.join(s.when_any)}" for s in parts.project_sections],
+            *[f"- Sets for the rules: `{k}` from `{v}`" for k, v in parts.project_inputs.items()],
+            "- **Draft — awaiting the chair's approval.**" if parts.project_status == "draft"
+            else "- Approved.", ""]
+    return out

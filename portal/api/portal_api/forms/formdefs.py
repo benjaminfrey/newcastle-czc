@@ -20,9 +20,11 @@ from portal_api.ruleset import PINNED_KEY, Ruleset
 DIR = Path(__file__).resolve().parent / "definitions" / "forms"
 FORM_KEYS = ("use_permit", "small_project_plan", "entrance_permit")
 FIELD_TYPES = {"text", "longtext", "number", "choice", "multichoice", "yesno", "date", "uses", "point", "upload"}
-SOURCES = {"question", "property", "account", "derived", "at_submit", "staff"}
+SOURCES = {"question", "property", "account", "derived", "at_submit", "staff", "parts"}
 PROPERTY_KEYS = {"map_lot", "location", "acres", "districts", "streets", "on_state_highway"}
 ACCOUNT_KEYS = {"email", "name", "phone", "mailing_address"}
+# Worked out from the project's parts (forms/parts.py `derived`), never typed.
+PARTS_KEYS = {"work_kinds"}
 SCOPES = ("answers.", "item.", "property.")
 # How a question is drawn (the browser picks a default by type when none is named).
 # Each control and the field types it can answer: a switch on a number would be refused at every save.
@@ -191,12 +193,14 @@ def _field(file: str, sec_id: str, f: dict, ruleset: Ruleset) -> Field:
     _check_status(where, f)
     if f.get("source") not in SOURCES:
         raise DefinitionError(f"{where}: unknown source {f.get('source')!r}")
-    if f["source"] in ("property", "derived", "account") and not f.get("from"):
+    if f["source"] in ("property", "derived", "account", "parts") and not f.get("from"):
         raise DefinitionError(f"{where}: a {f['source']} field needs from")
     if f["source"] == "property" and f["from"] not in PROPERTY_KEYS:
         raise DefinitionError(f"{where}: from {f['from']!r} is not a property fact")
     if f["source"] == "account" and f["from"] not in ACCOUNT_KEYS:
         raise DefinitionError(f"{where}: from {f['from']!r} is not an account fact")
+    if f["source"] == "parts" and f["from"] not in PARTS_KEYS:
+        raise DefinitionError(f"{where}: from {f['from']!r} is not worked out from the parts")
     asked = f["source"] == "question" or f.get("may_correct")
     if asked:
         if not f.get("label"):

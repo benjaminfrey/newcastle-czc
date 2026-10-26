@@ -25,9 +25,8 @@ sections:
   fields:
   - id: work_kinds
     official_label: Type of project
-    source: question
-    label: What kind of work is this?
-    help: Choose all that apply.
+    source: parts
+    from: work_kinds
     type: multichoice
     options:
     - value: new_building
@@ -51,9 +50,7 @@ sections:
       official: Change to a nonconforming lot, use, structure or site improvement
       icon: file-alert
     why: 8.10.b.1
-    required: true
     status: draft
-    control: chips
   - id: project_description
     official_label: Project description
     source: question
@@ -880,6 +877,25 @@ sections:
     status: draft
     screen: size
     short: Height
+  - id: added_floor_area
+    official_label: Floor area added
+    source: question
+    label: How much floor area will the addition add, in square feet?
+    help: Count every storey. Choose "I don't know yet" if you aren't sure.
+    type: number
+    unit: sf
+    min: 0
+    max: 1000000
+    why: 8.10.b.3
+    allow_unknown: true
+    required: true
+    show_if:
+      ne:
+      - item.component_kind
+      - patio
+    status: draft
+    screen: size
+    short: Floor area added
   - id: component_roof_style
     official_label: Roof Style on Component
     source: question

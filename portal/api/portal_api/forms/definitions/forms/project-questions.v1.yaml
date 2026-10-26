@@ -1,0 +1,123 @@
+# Questions a project asks that no official form prints (projects brief §6.2): the screener's
+# questions, asked once, in the parts they belong to. Their answers feed the rules (§6.1);
+# they never print. Wording as the screener's. Drafts until the chair approves them.
+key: project_questions
+version: 1
+ruleset_key: adopted-v1.0
+official_title: Project questions
+sections:
+- id: renovation
+  official_title: Renovation
+  chapter: Renovating a building
+  status: draft
+  fields:
+  - id: renovation_building
+    official_label: Building to be renovated
+    source: question
+    label: Which building are you renovating?
+    help: For example, the house or the barn.
+    type: text
+    why: 8.10.b.2
+    required: true
+    status: draft
+  - id: renovation_total_floor_area
+    official_label: Floor area of the whole building
+    source: question
+    label: What is the floor area of the whole building, in square feet?
+    help: Count every storey. Choose "I don't know yet" if you aren't sure.
+    type: number
+    unit: sf
+    min: 0
+    max: 1000000
+    why: 8.10.b.2
+    allow_unknown: true
+    required: true
+    status: draft
+- id: site_work
+  official_title: Site work
+  chapter: Site work
+  status: draft
+  fields:
+  - id: parking_spaces
+    official_label: Parking spaces
+    source: question
+    label: How many parking spaces will there be?
+    help: Enter 0 if there's no parking.
+    type: number
+    min: 0
+    max: 2000
+    why: 8.10.b.4
+    allow_unknown: true
+    required: true
+    status: draft
+    control: stepper
+- id: division
+  official_title: Dividing land
+  chapter: Divide land
+  status: draft
+  fields:
+  - id: lots_after
+    official_label: Lots after the division
+    source: question
+    label: How many lots will there be afterwards?
+    type: number
+    min: 1
+    max: 500
+    why: 8.12.b.1
+    allow_unknown: true
+    required: true
+    status: draft
+    control: stepper
+  - id: divided_last_5_years
+    official_label: Divided in the last five years
+    source: question
+    label: Has this land been divided in the last five years?
+    help: Lots made within five years count together.
+    type: choice
+    options:
+    - value: "yes"
+      label: "Yes"
+      official: "Yes"
+    - value: "no"
+      label: "No"
+      official: "No"
+    - value: unsure
+      label: I don't know
+      official: Not known
+    why: 8.12.b.1
+    required: true
+    status: draft
+    control: tiles
+- id: other
+  official_title: Something else
+  chapter: Something else
+  status: draft
+  fields:
+  - id: other_description
+    official_label: What the applicant has in mind
+    source: question
+    label: Tell us what you have in mind.
+    help: A few sentences is enough. The Code Enforcement Officer will tell you what it needs.
+    type: longtext
+    why: 8.2.a.2
+    required: true
+    status: draft
+- id: project_homes
+  official_title: Homes added before this project
+  chapter: About the work
+  status: draft
+  show_if: {gte: [answers.new_homes_total, 1]}
+  fields:
+  - id: homes_last_5_years
+    official_label: Homes added on this lot in the last five years
+    source: question
+    label: How many homes were added on this lot in the last five years, before this project?
+    help: Homes added within five years count together. Enter 0 if none.
+    type: number
+    min: 0
+    max: 500
+    why: 8.12.b.3
+    allow_unknown: true
+    required: true
+    status: draft
+    control: stepper

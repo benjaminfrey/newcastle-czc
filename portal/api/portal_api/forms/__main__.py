@@ -104,7 +104,8 @@ def main(argv: list[str] | None = None) -> None:
     if args.command == "forms-sheet":
         from portal_api.forms.formdefs import FORM_KEYS, latest_version, load_form
         from portal_api.forms.forms_sheet import forms_sheet
-        print(forms_sheet(r, [load_form(k, latest_version(k), r) for k in FORM_KEYS]))
+        from portal_api.forms.parts import QUESTIONS, load_parts
+        print(forms_sheet(r, [load_form(k, latest_version(k), r) for k in (*FORM_KEYS, QUESTIONS)], load_parts()))
     else:
         print(review_sheet(r, load_definitions(r)))
 

@@ -74,7 +74,7 @@ def test_sheet_prints_cards_icons_and_copies():
     name = sp[sp.index("(`building_name`)"):]
     assert "- Card: asked with the others on `about`" in name[:name.index("#### ", 5)]
     work = sp[sp.index("(`work_kinds`)"):]
-    assert "  - New building or accessory building — applicants read “A new building, such as a house, garage or shed” (icon `building-cottage`)" in work
+    assert "- Source: worked out from the project's parts (never asked) — `work_kinds`" in work  # projects brief §4
     roof = sp[sp.index("(`roof_style`)"):]
     assert "- Copied by “Copy Building 1”" in roof[:roof.index("#### ", 5)]
 
@@ -84,3 +84,16 @@ def test_sheet_prints_short_names():
     sheet = forms_sheet(r, fs)
     width = sheet[sheet.index("(`mass_width`)"):]
     assert "- Short name on its card: “Width”" in width[:width.index("#### ", 5)]
+
+
+def test_sheet_lists_the_parts_and_the_project_questions():
+    from portal_api.forms.parts import load_parts
+    r = load_ruleset()
+    fs = [load_form(k, latest_version(k), r) for k in (*FORM_KEYS, "project_questions")]
+    sheet = forms_sheet(r, fs, load_parts())
+    assert "## Project questions" in sheet and "`homes_last_5_years`" in sheet
+    parts = sheet[sheet.index("## Parts (`parts.yaml`)"):]
+    assert "### A new building (`building`)" in parts
+    assert "- Asks: Small Project Plan Application — `building`, `building_location`" in parts
+    assert "- Sets for the rules: `building.gross_floor_area_sf` from `floor_area`" in parts
+    assert "- **Draft" in parts

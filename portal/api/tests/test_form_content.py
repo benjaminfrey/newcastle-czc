@@ -88,7 +88,7 @@ def test_every_packet_field_is_present(forms, key, expected):
 def test_every_field_has_a_source(forms):
     for form in forms.values():
         for _, f in form.fields():
-            assert f.source in {"question", "property", "account", "derived", "at_submit", "staff"}
+            assert f.source in {"question", "property", "account", "derived", "at_submit", "staff", "parts"}
 
 
 def test_building_classes_follow_article_5(forms, ruleset):
@@ -338,7 +338,7 @@ def test_card_members(forms):
     assert members(sp, "outside", "building") == ["exterior_finish", "exterior_finish_other"]
     assert members(sp, "walls", "building") == ["front_facing", "windows_north", "windows_east", "windows_south", "windows_west"]
     assert members(sp, "kind", "component") == ["component_kind", "component_other_name"]
-    assert members(sp, "size", "component") == ["component_width", "component_depth", "component_height"]
+    assert members(sp, "size", "component") == ["component_width", "component_depth", "component_height", "added_floor_area"]
     assert members(cover, "lot_size") == ["lot_width", "lot_depth"]
     assert members(cover, "contact") == []  # the applicant comes from the account (projects brief §5.1)
     assert members(cover, "owner") == ["owner_name", "owner_email", "owner_phone", "owner_address"]

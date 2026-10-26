@@ -2,7 +2,7 @@
 
 Every section and field of the three application forms, with what applicants read, when each question is asked, the Code text it rests on, and its approval. Production refuses a form while any of its entries is a draft.
 
-**130 entries await approval.**
+**143 entries await approval.**
 
 To approve an entry, change `status: draft` to `status: approved` with `approved_by` and `approved_on` in its YAML file (`portal/api/portal_api/forms/definitions/forms/`).
 
@@ -79,15 +79,8 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 #### Name (`applicant_name`)
 
-- Source: asked in the wizard
-- Applicants read: “What is your full name?”
-- Answer: text; required
-- Card: asked with the others on `contact`, which asks “How can the Town reach you?”
-- Short name on its card: “Full name”
+- Source: from the applicant's sign-in — `name`
 - **Draft — awaiting the chair's approval.**
-- Rests on Art. 8 §2.a.2:
-
-  > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
 
 #### Email (`applicant_email`)
 
@@ -96,28 +89,13 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 #### Phone (`applicant_phone`)
 
-- Source: asked in the wizard
-- Applicants read: “What phone number should the Town use to reach you?”
-- Answer: text; required
-- Card: asked with the others on `contact`, which asks “How can the Town reach you?”
-- Short name on its card: “Phone”
+- Source: from the applicant's sign-in — `phone`
 - **Draft — awaiting the chair's approval.**
-- Rests on Art. 8 §2.a.2:
-
-  > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
 
 #### Address (`applicant_address`)
 
-- Source: asked in the wizard
-- Applicants read: “What is your mailing address?”
-- Help: Street or PO box, town, state and ZIP code.
-- Answer: text; required
-- Card: asked with the others on `contact`, which asks “How can the Town reach you?”
-- Short name on its card: “Mailing address”
+- Source: from the applicant's sign-in — `mailing_address`
 - **Draft — awaiting the chair's approval.**
-- Rests on Art. 8 §2.a.2:
-
-  > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
 
 #### Applicant is the Property Owner (`applicant_is_owner`)
 
@@ -503,16 +481,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 #### Type of project (`work_kinds`)
 
-- Source: asked in the wizard
-- Applicants read: “What kind of work is this?”
-- Help: Choose all that apply.
-- Answer: multichoice; required
-  - New building or accessory building — applicants read “A new building, such as a house, garage or shed” (icon `building-cottage`)
-  - Addition of building components — applicants read “An addition, porch, deck or other part added to a building” (icon `home-plus`)
-  - Building renovation — applicants read “Renovating a building, inside or out” (icon `paint`)
-  - Site improvements — applicants read “Work on the land, such as a parking area, walls or grading” (icon `shovel`)
-  - Change to a nonconforming lot, use, structure or site improvement — applicants read “A change to a lot, use or building that doesn't fit today's Code” (icon `file-alert`)
-- Control: chips
+- Source: worked out from the project's parts (never asked) — `work_kinds`
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §10.b.1:
 
@@ -1082,6 +1051,20 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
   > To provide a clear and flexible system for enabling the construction of new buildings and the expansion and modification of existing buildings.
 
+#### Floor area added (`added_floor_area`)
+
+- Source: asked in the wizard
+- Applicants read: “How much floor area will the addition add, in square feet?”
+- Help: Count every storey. Choose "I don't know yet" if you aren't sure.
+- Answer: number (sf), 0–1000000; required; “I don't know yet” allowed
+- Card: asked with the others on `size`, which asks “How big is it?”
+- Short name on its card: “Floor area added”
+- Asked only when “Component” (this component) is not Patio
+- **Draft — awaiting the chair's approval.**
+- Rests on Art. 8 §10.b.3:
+
+  > Additions of building components.
+
 #### Roof Style on Component (`component_roof_style`)
 
 - Source: asked in the wizard
@@ -1510,4 +1493,191 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
+
+## Project questions
+
+`project_questions` version 1; the Cover Sheet comes first.
+
+### Renovation (`renovation`)
+
+- **Draft — awaiting the chair's approval.**
+
+#### Building to be renovated (`renovation_building`)
+
+- Source: asked in the wizard
+- Applicants read: “Which building are you renovating?”
+- Help: For example, the house or the barn.
+- Answer: text; required
+- **Draft — awaiting the chair's approval.**
+- Rests on Art. 8 §10.b.2:
+
+  > Building renovations up to 10,000 sf in gross floor area.
+
+#### Floor area of the whole building (`renovation_total_floor_area`)
+
+- Source: asked in the wizard
+- Applicants read: “What is the floor area of the whole building, in square feet?”
+- Help: Count every storey. Choose "I don't know yet" if you aren't sure.
+- Answer: number (sf), 0–1000000; required; “I don't know yet” allowed
+- **Draft — awaiting the chair's approval.**
+- Rests on Art. 8 §10.b.2:
+
+  > Building renovations up to 10,000 sf in gross floor area.
+
+### Site work (`site_work`)
+
+- **Draft — awaiting the chair's approval.**
+
+#### Parking spaces (`parking_spaces`)
+
+- Source: asked in the wizard
+- Applicants read: “How many parking spaces will there be?”
+- Help: Enter 0 if there's no parking.
+- Answer: number, 0–2000; required; “I don't know yet” allowed
+- Control: stepper
+- **Draft — awaiting the chair's approval.**
+- Rests on Art. 8 §10.b.4:
+
+  > Site improvements.
+
+### Dividing land (`division`)
+
+- **Draft — awaiting the chair's approval.**
+
+#### Lots after the division (`lots_after`)
+
+- Source: asked in the wizard
+- Applicants read: “How many lots will there be afterwards?”
+- Answer: number, 1–500; required; “I don't know yet” allowed
+- Control: stepper
+- **Draft — awaiting the chair's approval.**
+- Rests on Art. 8 §12.b.1:
+
+  > The division of a parcel of land into 3 or more lots within any 5 year period that begins on or after September 23, 1971.
+
+#### Divided in the last five years (`divided_last_5_years`)
+
+- Source: asked in the wizard
+- Applicants read: “Has this land been divided in the last five years?”
+- Help: Lots made within five years count together.
+- Answer: choice; required
+  - Yes — applicants read “Yes”
+  - No — applicants read “No”
+  - Not known — applicants read “I don't know”
+- Control: tiles
+- **Draft — awaiting the chair's approval.**
+- Rests on Art. 8 §12.b.1:
+
+  > The division of a parcel of land into 3 or more lots within any 5 year period that begins on or after September 23, 1971.
+
+### Something else (`other`)
+
+- **Draft — awaiting the chair's approval.**
+
+#### What the applicant has in mind (`other_description`)
+
+- Source: asked in the wizard
+- Applicants read: “Tell us what you have in mind.”
+- Help: A few sentences is enough. The Code Enforcement Officer will tell you what it needs.
+- Answer: longtext; required
+- **Draft — awaiting the chair's approval.**
+- Rests on Art. 8 §2.a.2:
+
+  > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
+
+### Homes added before this project (`project_homes`)
+
+- Printed and asked only when `new_homes_total` is 1 or more
+- **Draft — awaiting the chair's approval.**
+
+#### Homes added on this lot in the last five years (`homes_last_5_years`)
+
+- Source: asked in the wizard
+- Applicants read: “How many homes were added on this lot in the last five years, before this project?”
+- Help: Homes added within five years count together. Enter 0 if none.
+- Answer: number, 0–500; required; “I don't know yet” allowed
+- Control: stepper
+- **Draft — awaiting the chair's approval.**
+- Rests on Art. 8 §12.b.3:
+
+  > The construction or placement of 3 or more dwelling units.
+
+## Parts (`parts.yaml`)
+
+A project is made of parts; each asks the form sections listed and sets the rules' inputs (projects brief §6.1). "Type of project" prints from the parts.
+
+### A new building (`building`)
+
+- Dashboard row: New buildings; icon `building-cottage`; repeats (one per building or addition)
+- Asks: Small Project Plan Application — `building`, `building_location`, `building_details`, `building_mass`, `building_windows`
+- Rule input: `project` = `build`, `building.kind` = `new`
+- Sets for the rules: `building.gross_floor_area_sf` from `floor_area`
+- Sets for the rules: `building.new_dwelling_units` from `dwelling_units`
+- Prints as Type of project: `new_building`
+- **Draft — awaiting the chair's approval.**
+
+### An addition, porch or deck (`addition`)
+
+- Dashboard row: Additions; icon `home-plus`; repeats (one per building or addition)
+- Asks: Small Project Plan Application — `component`
+- Rule input: `project` = `build`, `building.kind` = `addition`
+- Sets for the rules: `building.gross_floor_area_sf` from `added_floor_area`
+- Prints as Type of project: `addition`
+- **Draft — awaiting the chair's approval.**
+
+### Renovating a building (`renovation`)
+
+- Dashboard row: Renovation; icon `paint`
+- Asks: Project questions — `renovation`
+- Rule input: `project` = `build`, `building.kind` = `renovation`
+- Sets for the rules: `building.total_floor_area_sf` from `renovation_total_floor_area`
+- Prints as Type of project: `renovation`
+- **Draft — awaiting the chair's approval.**
+
+### Site work (parking, grading, landscaping) (`site`)
+
+- Dashboard row: Site work; icon `shovel`
+- Asks: Project questions — `site_work`
+- Rule input: `project` = `build`, `building.kind` = `site`
+- Sets for the rules: `building.parking_spaces` from `parking_spaces`
+- Prints as Type of project: `site`
+- **Draft — awaiting the chair's approval.**
+
+### Start or change a use (`use`)
+
+- Dashboard row: Uses; icon `building-store`
+- Asks: Use Permit Application — `existing`, `proposed`, `use_documents_section`
+- Rule input: `project` = `use`
+- Sets for the rules: `use_key` from `proposed_uses`
+- **Draft — awaiting the chair's approval.**
+
+### A driveway (`driveway`)
+
+- Dashboard row: Driveway; icon `road`
+- Asks: Entrance / Driveway Permit Application — `entrance`
+- Rule input: `project` = `driveway`
+- **Draft — awaiting the chair's approval.**
+
+### Divide land (`divide`)
+
+- Dashboard row: Dividing land; icon `layout-grid`
+- Asks: Project questions — `division`
+- Rule input: `project` = `divide`
+- Sets for the rules: `division.lots_after` from `lots_after`
+- Sets for the rules: `division.divided_last_5_years` from `divided_last_5_years`
+- **Draft — awaiting the chair's approval.**
+
+### Something else (`other`)
+
+- Dashboard row: Something else; icon `help-circle`
+- Asks: Project questions — `other`
+- Rule input: `project` = `other`
+- **Draft — awaiting the chair's approval.**
+
+### About the work (`the_work`)
+
+- Asks: Small Project Plan Application — `project` when the project has any of building, addition, renovation, site
+- Asks: Project questions — `project_homes` when the project has any of building
+- Sets for the rules: `building.homes_added_last_5_years` from `homes_last_5_years`
+- **Draft — awaiting the chair's approval.**
 

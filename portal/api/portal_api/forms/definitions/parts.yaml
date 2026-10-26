@@ -1,0 +1,84 @@
+# The parts a project is made of (projects brief §4), in tile order. Each part brings the form
+# sections it asks (form_key:section_id), the rule input it sets (§6.1) and where its answers go
+# in the rules. `step` is its row's name on the dashboard. Drafts until the chair approves them.
+parts:
+- id: building
+  label: A new building
+  step: New buildings
+  icon: building-cottage
+  repeats: true
+  repeat_of: building
+  sections: [small_project_plan:building, small_project_plan:building_location, small_project_plan:building_details,
+             small_project_plan:building_mass, small_project_plan:building_windows]
+  rule: {project: build, building.kind: new}
+  inputs: {building.gross_floor_area_sf: floor_area, building.new_dwelling_units: dwelling_units}
+  work_kind: new_building
+  status: draft
+- id: addition
+  label: An addition, porch or deck
+  step: Additions
+  icon: home-plus
+  repeats: true
+  repeat_of: component
+  sections: [small_project_plan:component]
+  rule: {project: build, building.kind: addition}
+  inputs: {building.gross_floor_area_sf: added_floor_area}
+  work_kind: addition
+  status: draft
+- id: renovation
+  label: Renovating a building
+  step: Renovation
+  icon: paint
+  sections: [project_questions:renovation]
+  rule: {project: build, building.kind: renovation}
+  inputs: {building.total_floor_area_sf: renovation_total_floor_area}
+  work_kind: renovation
+  status: draft
+- id: site
+  label: Site work (parking, grading, landscaping)
+  step: Site work
+  icon: shovel
+  sections: [project_questions:site_work]
+  rule: {project: build, building.kind: site}
+  inputs: {building.parking_spaces: parking_spaces}
+  work_kind: site
+  status: draft
+- id: use
+  label: Start or change a use
+  step: Uses
+  icon: building-store
+  sections: [use_permit:existing, use_permit:proposed, use_permit:use_documents_section]
+  rule: {project: use}
+  inputs: {use_key: proposed_uses}
+  status: draft
+- id: driveway
+  label: A driveway
+  step: Driveway
+  icon: road
+  sections: [entrance_permit:entrance]
+  rule: {project: driveway}
+  status: draft
+- id: divide
+  label: Divide land
+  step: Dividing land
+  icon: layout-grid
+  sections: [project_questions:division]
+  rule: {project: divide}
+  inputs: {division.lots_after: lots_after, division.divided_last_5_years: divided_last_5_years}
+  status: draft
+- id: other
+  label: Something else
+  step: Something else
+  icon: help-circle
+  sections: [project_questions:other]
+  rule: {project: other}
+  status: draft
+# Asked once for the project whatever its parts, when any of `when_any` is present, on the
+# dashboard row "About the work".
+project:
+  step: {id: the_work, title: About the work}
+  sections:
+  - {section: small_project_plan:project, when_any: [building, addition, renovation, site]}
+  - {section: project_questions:project_homes, when_any: [building]}
+  inputs: {building.homes_added_last_5_years: homes_last_5_years}
+  status: draft

@@ -9,7 +9,7 @@ from portal_api.routes.attachments import bounded_body
 from portal_api.storage import MemoryStore, StoreUnavailable
 from portal_api.uploads import safe_filename, sniff
 from tests.fakes import EICAR, FakeScanner
-from tests.test_applications import create, get, lookup_property
+from tests.test_projects import create, finish_use_project, get, lookup_property  # noqa: F401
 from tests.test_auth import _sign_in
 from tests.test_property import layers  # noqa: F401  (fixture)
 
@@ -53,11 +53,11 @@ def alice(make_client, parts):
     return make_client(**parts)
 
 
-def upload(client, app_id, data, name="plan.pdf", ctype="application/pdf", field_id="use_documents", item_id=None):
+def upload(client, app_id, data, name="plan.pdf", ctype="application/pdf", field_id="use_documents", part_id=None):
     form = {"field_id": field_id}
-    if item_id:
-        form["item_id"] = item_id
-    return client.post(f"/api/applications/{app_id}/attachments", data=form, files={"file": (name, data, ctype)})
+    if part_id:
+        form["part_id"] = part_id
+    return client.post(f"/api/projects/{app_id}/attachments", data=form, files={"file": (name, data, ctype)})
 
 
 def stored_rows(engine):
@@ -161,9 +161,9 @@ def test_not_an_upload_field(alice):
 
 def test_upload_field_in_a_hidden_section_needs_its_item(make_client, parts):
     c = make_client(**parts)
-    app_id = create(c, form_key="entrance_permit")
+    app_id = create(c, ("driveway",))
     assert upload(c, app_id, PDF, field_id="entrance_sketch").status_code == 201
-    assert upload(c, app_id, PDF, field_id="entrance_sketch", item_id="x").json()["detail"] == "wrong_item"
+    assert upload(c, app_id, PDF, field_id="entrance_sketch", part_id="x").json()["detail"] == "wrong_part"
 
 
 def test_download_is_owner_only_and_not_sniffable(alice, make_client, parts):
@@ -177,7 +177,7 @@ def test_download_is_owner_only_and_not_sniffable(alice, make_client, parts):
     bob = make_client("bob@example.com", **parts)
     assert bob.get(f"/api/attachments/{att['id']}").status_code == 404
     assert bob.request("DELETE", f"/api/attachments/{att['id']}").status_code == 404
-    assert bob.post(f"/api/applications/{app_id}/attachments", data={"field_id": "use_documents"},
+    assert bob.post(f"/api/projects/{app_id}/attachments", data={"field_id": "use_documents"},
                     files={"file": ("a.pdf", PDF, "application/pdf")}).status_code == 404
     assert alice.get("/api/attachments/not-a-uuid").status_code == 404
 
@@ -205,3 +205,16 @@ def test_removed_attachment_not_listed_but_kept(alice, parts, engine):
         payload = conn.execute(text("SELECT payload_json FROM event WHERE kind = 'attachment.added'")).scalar()
     assert kinds == ["attachment.added", "attachment.removed"]
     assert "plan.pdf" not in payload and "sha256" in payload
+
+
+def test_no_uploads_after_the_lock(make_client, parts, settings):
+    settings.allow_test_lock = True
+    c = make_client(**parts)
+    c.put("/api/me", json={"name": "Alice", "phone": "207", "mailing_address": "PO Box 1"})
+    pid = finish_use_project(c)
+    att = upload(c, pid, PDF).json()
+    rev = get(c, pid)["revision"]
+    assert c.post(f"/api/projects/{pid}/submit", json={"base_revision": rev}).status_code == 200
+    assert c.post(f"/api/projects/{pid}/lock", json={"base_revision": rev + 1}).status_code == 200
+    assert upload(c, pid, PDF).json() == {"detail": "locked"}
+    assert c.request("DELETE", f"/api/attachments/{att['id']}").status_code == 409

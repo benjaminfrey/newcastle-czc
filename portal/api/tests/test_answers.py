@@ -41,7 +41,7 @@ def test_check_value_happy_paths(forms):
     assert check_value(field(forms, "use_permit", "existing_dwelling_units"), 2) == 2.0
     assert check_value(field(forms, "use_permit", "applicant_is_owner"), False) is False
     assert check_value(field(forms, "small_project_plan", "roof_style"), "gable") == "gable"
-    assert check_value(field(forms, "small_project_plan", "work_kinds"), ["addition", "renovation", "addition"]) == ["addition", "renovation"]
+    assert check_value(field(forms, "small_project_plan", "exterior_finish"), ["clapboard", "wood_shingle", "clapboard"]) == ["clapboard", "wood_shingle"]
     assert check_value(field(forms, "use_permit", "proposed_uses"), ["residence"]) == ["residence"]
     assert check_value(field(forms, "entrance_permit", "entrance_location"), {"lon": -69.55, "lat": 44.05}, bounds=BOUNDS) \
         == {"lon": -69.55, "lat": 44.05}
@@ -67,7 +67,7 @@ def test_check_value_wrong_type(forms):
 
 def test_check_value_not_an_option(forms):
     assert reason(forms, "small_project_plan", "roof_style", "dome") == "not_an_option"
-    assert reason(forms, "small_project_plan", "work_kinds", ["addition", "moat"]) == "not_an_option"
+    assert reason(forms, "small_project_plan", "exterior_finish", ["clapboard", "moat"]) == "not_an_option"
     assert reason(forms, "use_permit", "proposed_uses", ["castle"]) == "not_an_option"
 
 

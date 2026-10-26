@@ -42,6 +42,21 @@ def test_submission_is_insert_only(engine):
                 conn.execute(text(stmt))
 
 
+def test_answers_and_notes_are_insert_only(engine):
+    with engine.begin() as conn:
+        pid, _ = _project(conn)
+        projects.save_answers(conn, pid, [("deed_book", None, "12")], "t")
+        projects.save_note(conn, pid, "location", None, "n", "t")
+    for stmt in ("UPDATE answer SET field_id = 'x'", "DELETE FROM answer", "UPDATE section_note SET text = 'x'"):
+        with pytest.raises(ProgrammingError, match="append-only"):
+            with engine.begin() as conn:
+                conn.execute(text(stmt))
+
+
+def test_old_application_tables_are_gone(engine):
+    assert not {"application", "application_item"} & set(inspect(engine).get_table_names())
+
+
 def test_pin_forms_pins_and_unpins(engine):
     with engine.begin() as conn:
         pid, _ = _project(conn)
@@ -133,6 +148,10 @@ def test_the_migration_turns_each_application_into_a_project():
             assert sorted(conn.execute(text("SELECT field_id, part_id::text FROM answer WHERE project_id = :s"),
                                        {"s": sp}).all()) == [("deed_book", None), ("floor_area", items[1])]
             assert conn.execute(text("SELECT count(*) FROM property_snapshot WHERE project_id IS NOT NULL")).scalar() == 2
+        command.downgrade(cfg, "0006")
+        command.upgrade(cfg, "head")
+        with eng.begin() as conn:
+            assert conn.execute(text("SELECT count(*) FROM answer WHERE project_id = :s"), {"s": sp}).scalar() == 2
         command.downgrade(cfg, "0006")
         command.upgrade(cfg, "head")
     finally:
