@@ -2,7 +2,7 @@ import { Button } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { getMe, signOut, UNREACHABLE, type Me } from "../api";
-import { listApplications, type AppSummary } from "../applications";
+import { listApplications, type AppSummary } from "../projects";
 import InsetGroup from "../shell/InsetGroup";
 import { longDate, mapLotLabel } from "../format";
 

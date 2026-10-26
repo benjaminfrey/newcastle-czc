@@ -3,14 +3,14 @@
 // "Is this right?"; a set of values sits as short names beside their fields; the setbacks sit
 // around the lot drawing and the walls around the compass, once the front's direction is chosen.
 import { useState, type MutableRefObject } from "react";
-import type { FormField } from "../applications";
+import type { FormField } from "../projects";
 import FieldControl from "../controls/FieldControl";
 import { BuildingPicker, BuildingTypeControl, StreetPicker } from "../controls/pickers";
 import { ChoiceTiles, MultiTiles } from "../controls/Tiles";
 import { mapValueOf, valueOf, type Row } from "../forms/applicability";
 import type { Screen } from "../forms/screens";
 import { display } from "./OfficialGroup";
-import { useApplication } from "./ApplicationStore";
+import { useProject } from "./ProjectStore";
 import CompassLayout from "./layouts/CompassLayout";
 import LotDiagramLayout from "./layouts/LotDiagramLayout";
 
@@ -35,7 +35,7 @@ export const rowKey = (r: Row) => `${r.field.id}|${r.itemId ?? ""}`;
 // The controls for some rows, wired to the store: each answer saves as it is given. A refused
 // answer's message is kept in `errors` (a ref too, so Continue can see it at once).
 export function useRowControls(errorsRef?: MutableRefObject<Record<string, string>>) {
-  const { form, cur, setAnswer } = useApplication();
+  const { form, cur, setAnswer } = useProject();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const put = (key: string, msg: string) => {
     if (errorsRef) errorsRef.current = { ...errorsRef.current, [key]: msg };
@@ -133,14 +133,14 @@ function Stepper({ r, name, value, onValue }: { r: Row; name: string; value: unk
 }
 
 export default function CardQuestion({ screen, editing, errorsRef, onPick, onConfirm, onCorrect, onUnknown }: Props) {
-  const { form, cur, app, setAnswer } = useApplication();
+  const { form, cur, project: app, setAnswer } = useProject();
   const control = useRowControls(errorsRef);
   const value = (r: Row) => valueOf(form!, r.field, r.itemId, cur!);
   const answer = (r: Row, v: unknown) => void setAnswer(r.field.id, r.itemId, v);
   const street = ((cur?.property.streets as { name: string }[] | undefined) ?? [])[0]?.name ?? null;
   const row = screen.rows[0];
   const heading = headingOf(screen);
-  const carried = screen.rows.some((r) => app?.answers.some((x) => x.field_id === r.field.id && x.item_id === r.itemId && x.carried));
+  const carried = screen.rows.some((r) => app?.answers.some((x) => x.field_id === r.field.id && x.item_id === r.itemId && (x as { carried?: boolean }).carried));
   const help = helpOf(screen);
   const short = (r: Row) => r.field.short ?? r.field.label ?? r.field.official_label;
 

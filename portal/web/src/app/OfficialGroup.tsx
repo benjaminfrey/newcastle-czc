@@ -1,11 +1,11 @@
 import { Link } from "react-router";
 import { Button } from "@heroui/react";
 import { mapLotLabel } from "../format";
-import type { Attachment, FormField } from "../applications";
+import type { Attachment, FormField } from "../projects";
 import type { Block } from "../forms/applicability";
 import InsetGroup from "../shell/InsetGroup";
 import { buildingLabel } from "../controls/pickers";
-import { useApplication } from "./ApplicationStore";
+import { useProject } from "./ProjectStore";
 
 const isUnknown = (v: unknown) => typeof v === "object" && v !== null && (v as { unknown?: unknown }).unknown === true;
 
@@ -48,7 +48,7 @@ type Props = {
 // added detail. Change opens that question's screen.
 export default function OfficialGroup({ block, title, note, attachments, useNames, changeHref, onAddDetail }: Props) {
   const files = (f: FormField) => attachments.filter((a) => a.field_id === f.id && a.item_id === block.itemId);
-  const { cur, form } = useApplication();
+  const { cur, form } = useProject();
   // The Town's map had a value for this field (a lot with no address on the map has none to change).
   const mapKnew = (f: FormField) => {
     const v = f.from ? (cur!.property as Record<string, unknown>)[f.from] : null;

@@ -1,35 +1,45 @@
-// One open application: its pinned form, its answers, and every save, in order.
+// One open project: its form (the cover sheet, its parts' questions; built by the API from the
+// forms it has pinned), its answers, what it needs, and every save, in order.
 //
 // Answers save as they are given. Each change shows at once (cur), then goes to the API in a
 // single queue, so saves never overtake each other and each carries the revision the last
 // one returned. A save from a tab that fell behind (409) stops the queue: the shell offers
 // "Load the latest", and nothing more is sent until then. A failed save keeps the value and
 // is sent again: after a pause, with the next change, and by flush(). Continue waits on flush(),
-// which says whether everything reached the server; Save and close stays put until it has.
-// A refused answer (422) is put back and told to its own field; the rest still go.
+// which says whether everything reached the server.
+// A refused answer (422) is put back and told to its own field; the rest still go. Once the Town
+// has locked the project (409 locked, or a project that opens locked), nothing more is sent or
+// changed: the save state says "With the Town".
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { getMe, UNREACHABLE } from "../api";
+import { getMe, UNREACHABLE, type Me } from "../api";
 import {
-  addItem as apiAddItem, getApplication, getForm, removeItem as apiRemoveItem, saveAnswers, saveNote as apiSaveNote,
-  type AppState, type Attachment, type Change, type FormDef,
-} from "../applications";
+  addPart as apiAddPart, getProject, removePart as apiRemovePart, saveAnswers, saveNote as apiSaveNote,
+  setTitle as apiSetTitle, submitProject, type Attachment, type Change, type FormDef, type Missing, type ProjectState,
+} from "../projects";
 import type { Current } from "../forms/applicability";
+import { withDerived } from "../forms/derived";
 import type { SaveState } from "../shell/types";
 
 const RETRY_MS = 5000;
 
 export type SetOutcome = { ok: true } | { error: string };
 
+type AppState = ProjectState;
+export type SendOutcome = "sent" | { missing: Missing } | "failed";
+
 type Store = {
-  app: AppState | null; form: FormDef | null; cur: Current | null; problem: string | null;
+  project: ProjectState | null; form: FormDef | null; cur: Current | null; problem: string | null;
   saveState: SaveState;
+  locked: boolean; // the Town has locked it for review: nothing can change
   setAnswer: (fieldId: string, itemId: string | null, value: unknown) => Promise<SetOutcome>;
   flush: () => Promise<boolean>; // true when every change has reached the server
-  addItem: (kind: string, copyFrom?: string) => Promise<string | null>;
-  removeItem: (itemId: string) => Promise<boolean>;
+  addPart: (kind: string, copyFrom?: string) => Promise<string | null>;
+  removePart: (partId: string) => Promise<boolean>;
   saveNote: (sectionId: string, itemId: string | null, text: string) => Promise<boolean>;
+  setTitle: (title: string) => Promise<boolean>;
+  submit: () => Promise<SendOutcome>; // Send to the Town
   reload: () => Promise<void>;
-  // A file the Town kept, or took away: review and the step both list app.attachments.
+  // A file the Town kept, or took away: the check pages and the step both list project.attachments.
   attachmentAdded: (a: Attachment) => void;
   attachmentRemoved: (attachmentId: string) => void;
   visited: Set<string>;
@@ -38,9 +48,9 @@ type Store = {
 
 const Context = createContext<Store | null>(null);
 
-export function useApplication(): Store {
+export function useProject(): Store {
   const s = useContext(Context);
-  if (!s) throw new Error("useApplication outside ApplicationProvider");
+  if (!s) throw new Error("useProject outside ProjectProvider");
   return s;
 }
 
@@ -57,40 +67,40 @@ function withChange(answers: AppState["answers"], c: Change): AppState["answers"
   return c.value === null ? rest : [...rest, { field_id: c.field_id, item_id: c.item_id, value: c.value }];
 }
 
-export function ApplicationProvider({ id, children }: { id: string; children: ReactNode }) {
+export function ProjectProvider({ id, children }: { id: string; children: ReactNode }) {
   const [app, setApp] = useState<AppState | null>(null);
-  const [form, setForm] = useState<FormDef | null>(null);
-  const [email, setEmail] = useState<string | null>(null);
+  const [me, setMe] = useState<Me | null>(null);
   const [problem, setProblem] = useState<string | null>(null);
   const [saveState, setSaveState] = useState<SaveState>("idle");
+  const saveStateRef = useRef<SaveState>("idle");
+  saveStateRef.current = saveState;
   const [visited, setVisited] = useState<Set<string>>(() => readVisited(id));
   const chain = useRef<Promise<unknown>>(Promise.resolve());
   const revision = useRef(0);
-  const stopped = useRef(false); // after a conflict
+  const stopped = useRef(false); // after a conflict, or once the Town has locked it
   const failed = useRef<Change[]>([]);
   const lastGood = useRef<AppState["answers"]>([]);
 
   const load = useCallback(async () => {
-    const a = await getApplication(id);
+    const a = await getProject(id);
     if (a === "signed_out") return setProblem("signed_out");
-    if (a === "not_found") return setProblem("We couldn't find that application.");
+    if (a === "not_found") return setProblem("We couldn't find that project.");
+    if (a === "not_approved") return setProblem("This project isn't ready yet. Please contact the Town Office.");
     if (typeof a === "string") return setProblem(a === "busy" ? "The Town's server is busy. Please wait a minute." : UNREACHABLE);
-    const f = await getForm(a.form_key, a.form_version);
-    if (f === "not_approved") return setProblem("This application isn't ready yet. Please contact the Town Office.");
-    if (typeof f === "string") return setProblem(UNREACHABLE);
     revision.current = a.revision;
     lastGood.current = a.answers;
-    stopped.current = false;
+    const locked = a.status === "locked" || a.status === "decided";
+    stopped.current = locked;
     // Changes that haven't reached the server yet stay shown, and go with the next save.
-    const pending = failed.current;
+    const pending = locked ? [] : failed.current;
+    if (locked) failed.current = [];
     setApp({ ...a, answers: pending.reduce(withChange, a.answers) });
-    setForm(f);
-    setSaveState(pending.length ? "error" : "idle");
+    setSaveState(locked ? "locked" : pending.length ? "error" : "idle");
   }, [id]);
 
   useEffect(() => {
     void load();
-    getMe().then((m) => m && m !== "unavailable" && setEmail(m.email));
+    getMe().then((m) => m && m !== "unavailable" && setMe(m));
   }, [load]);
 
   const enqueue = useCallback(<T,>(job: () => Promise<T>): Promise<T> => {
@@ -115,6 +125,13 @@ export function ApplicationProvider({ id, children }: { id: string; children: Re
       setProblem("signed_out");
       return { ok: true };
     }
+    if (r === "locked") {
+      stopped.current = true;
+      failed.current = [];
+      setApp((a) => (a ? { ...a, status: "locked", answers: lastGood.current } : a));
+      setSaveState("locked");
+      return { ok: true };
+    }
     if (typeof r === "string") {
       failed.current = changes;
       setSaveState("error");
@@ -127,6 +144,7 @@ export function ApplicationProvider({ id, children }: { id: string; children: Re
       setSaveState("conflict");
       return { ok: true };
     }
+    if ("incomplete" in r) return { ok: true }; // only Send answers this
     if ("invalid" in r) {
       const same = (a: { field_id: string; item_id: string | null }, b: { field_id: string; item_id: string | null }) =>
         a.field_id === b.field_id && a.item_id === b.item_id;
@@ -155,6 +173,7 @@ export function ApplicationProvider({ id, children }: { id: string; children: Re
 
   const setAnswer = useCallback((fieldId: string, itemId: string | null, value: unknown): Promise<SetOutcome> => {
     const change: Change = { field_id: fieldId, item_id: itemId, value };
+    if (stopped.current && saveStateRef.current === "locked") return Promise.resolve({ ok: true });
     setApp((a) => (a ? { ...a, answers: withChange(a.answers, change) } : a));
     if (stopped.current) return Promise.resolve({ ok: true });
     setSaveState("saving");
@@ -178,22 +197,22 @@ export function ApplicationProvider({ id, children }: { id: string; children: Re
     return () => window.removeEventListener("beforeunload", warn);
   }, []);
 
-  const addItem = useCallback((kind: string, copyFrom?: string) => enqueue(async () => {
+  const addPart = useCallback((kind: string, copyFrom?: string) => enqueue(async () => {
     if (stopped.current) return null;
-    const r = await apiAddItem(id, revision.current, kind, copyFrom);
+    const r = await apiAddPart(id, revision.current, kind, copyFrom);
     if (typeof r === "object" && "conflict" in r) {
       stopped.current = true;
       setSaveState("conflict");
       return null;
     }
     if (typeof r === "string" || !("revision" in r)) return null;
-    await load(); // the new item arrives with its defaults, and a copy with its copied answers
+    await load(); // the new part arrives with its defaults and its questions, and a copy with its copied answers
     return (r as { id?: string }).id ?? null;
   }), [enqueue, id, load]);
 
-  const removeItem = useCallback((itemId: string) => enqueue(async () => {
+  const removePart = useCallback((partId: string) => enqueue(async () => {
     if (stopped.current) return false;
-    const r = await apiRemoveItem(id, revision.current, itemId);
+    const r = await apiRemovePart(id, revision.current, partId);
     if (typeof r === "object" && "conflict" in r) {
       stopped.current = true;
       setSaveState("conflict");
@@ -227,6 +246,26 @@ export function ApplicationProvider({ id, children }: { id: string; children: Re
     return true;
   }), [enqueue, id]);
 
+  const setTitle = useCallback((title: string) => enqueue(async () => {
+    if (stopped.current) return false;
+    const r = await apiSetTitle(id, revision.current, title);
+    if (typeof r !== "object" || !("revision" in r)) return false;
+    revision.current = r.revision;
+    setApp((a) => (a ? { ...a, title: title.trim(), revision: r.revision } : a));
+    return true;
+  }), [enqueue, id]);
+
+  const submit = useCallback(async (): Promise<SendOutcome> => {
+    if (!(await flush())) return "failed";
+    return enqueue(async (): Promise<SendOutcome> => {
+      const r = await submitProject(id, revision.current);
+      if (typeof r === "object" && "incomplete" in r) return { missing: r.incomplete };
+      if (typeof r !== "object" || !("revision" in r)) return "failed";
+      await load();
+      return "sent";
+    });
+  }, [enqueue, flush, id, load]);
+
   const markVisited = useCallback((stepId: string) => {
     setVisited((v) => {
       if (v.has(stepId)) return v;
@@ -248,11 +287,14 @@ export function ApplicationProvider({ id, children }: { id: string; children: Re
   }, []);
 
   const cur: Current | null = useMemo(
-    () => (app ? { answers: app.answers, items: app.items, property: app.property.facts, account: { email } } : null),
-    [app, email]);
+    () => (app ? { answers: withDerived(app.items, app.answers), items: app.items, property: app.property.facts,
+                   account: { email: me?.email ?? null, name: me?.name ?? null, phone: me?.phone ?? null,
+                              mailing_address: me?.mailing_address ?? null } } : null),
+    [app, me]);
 
   const value: Store = {
-    app, form, cur, problem, saveState, setAnswer, flush, addItem, removeItem, saveNote,
+    project: app, form: app?.form ?? null, cur, problem, saveState, locked: saveState === "locked",
+    setAnswer, flush, addPart, removePart, saveNote, setTitle, submit,
     reload: load, attachmentAdded, attachmentRemoved, visited, markVisited,
   };
   return <Context.Provider value={value}>{children}</Context.Provider>;

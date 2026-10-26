@@ -3,7 +3,7 @@ import {
   TextField, ToggleButton, ToggleButtonGroup,
 } from "@heroui/react";
 import { useEffect, useRef, useState } from "react";
-import type { FormField } from "../applications";
+import type { FormField } from "../projects";
 import RoofGlyph from "./RoofGlyph";
 
 export type ControlProps = { field: FormField; value: unknown; onValue: (v: unknown) => void; labelId: string; inputId: string };

@@ -8,7 +8,7 @@ import { itemLabel, type StepModel } from "../forms/steps";
 import { longDate, mapLotLabel } from "../format";
 import InsetGroup from "../shell/InsetGroup";
 import Sheet from "../shell/Sheet";
-import { useApplication } from "./ApplicationStore";
+import { useProject } from "./ProjectStore";
 import OfficialGroup from "./OfficialGroup";
 
 // Sections the paper form ends with: the signatures and the office's box.
@@ -18,7 +18,7 @@ const isClosing = (fields: { source: string }[]) => fields.length > 0 && fields.
 // asked (the form's term beneath), with Change to that question's screen, which comes back here.
 // Add more detail sits on each section. Sending it arrives in Milestone 6.
 export default function ReviewPane({ models, base }: { models: StepModel[]; base: string }) {
-  const { app, form, cur, saveNote } = useApplication();
+  const { project: app, form, cur, saveNote } = useProject();
   const [useNames, setUseNames] = useState<Record<string, string>>({});
   const [detail, setDetail] = useState<{ sectionId: string; itemId: string | null; title: string; text: string } | null>(null);
   useEffect(() => {

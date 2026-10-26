@@ -8,7 +8,7 @@ import AppShell from "../shell/AppShell";
 import Card from "../shell/Card";
 import { commitFocused } from "../shell/commitFocused";
 import type { TaskRow } from "../shell/TaskList";
-import { ApplicationProvider, useApplication } from "./ApplicationStore";
+import { ProjectProvider, useProject } from "./ProjectStore";
 import CheckPane from "./CheckPane";
 import ItemsPane, { itemTitle } from "./ItemsPane";
 import ReviewPane from "./ReviewPane";
@@ -22,7 +22,7 @@ import CardQuestion, { headingOf, rowKey } from "./WizardPane";
 // (task-list brief, 2026-10-25)
 export default function ApplicationPage() {
   const { id = "" } = useParams();
-  return <ApplicationProvider id={id}><Tasks id={id} /></ApplicationProvider>;
+  return <ProjectProvider id={id}><Tasks id={id} /></ProjectProvider>;
 }
 
 const empty = (v: unknown) => v === null || v === undefined || v === "" || (Array.isArray(v) && v.length === 0);
@@ -33,8 +33,8 @@ function Tasks({ id }: { id: string }) {
   const { stepId, sub } = useParams();
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const store = useApplication();
-  const { app, form, cur, problem, saveState, flush, markVisited, visited, reload, setAnswer, addItem, removeItem } = store;
+  const store = useProject();
+  const { project: app, form, cur, problem, saveState, flush, markVisited, visited, reload, setAnswer, addPart: addItem, removePart: removeItem } = store;
   const base = `/applications/${id}`;
   const [direction, setDirection] = useState<1 | -1>(1);
   const [editing, setEditing] = useState(false);

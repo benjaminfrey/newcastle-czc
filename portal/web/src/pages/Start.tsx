@@ -1,7 +1,7 @@
 import { NumberField } from "@heroui/react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import type { FormField } from "../applications";
+import type { FormField } from "../projects";
 import Icon from "../controls/Icon";
 import { ChoiceTiles, MultiTiles } from "../controls/Tiles";
 import Card from "../shell/Card";

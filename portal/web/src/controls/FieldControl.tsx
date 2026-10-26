@@ -1,6 +1,6 @@
 import { Button } from "@heroui/react";
 import { useId } from "react";
-import type { FormField } from "../applications";
+import type { FormField } from "../projects";
 import InsetGroup from "../shell/InsetGroup";
 import {
   ChipsControl, isUnknown, NumberControl, PickerControl, SegmentedControl, SliderControl, SwitchControl, TextControl, TileControl,

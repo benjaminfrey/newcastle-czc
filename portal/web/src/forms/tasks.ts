@@ -1,7 +1,7 @@
 // The application as a short list of tasks (task-list brief, 2026-10-25): each task is today's
 // step, run as a few cards; a building or an addition is its own run of cards. A task's status
 // shows as a pill on the task list, and "Check and send" opens once every task is done.
-import type { FormDef } from "../applications";
+import type { FormDef } from "../projects";
 import { answerOf, missing, type Current } from "./applicability";
 import { buildCards, itemRows, ranked, type Screen } from "./screens";
 import { itemLabel, statusOf, type StepModel } from "./steps";

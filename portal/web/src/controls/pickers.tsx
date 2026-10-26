@@ -1,7 +1,7 @@
 import { Input, TextField } from "@heroui/react";
 import { useEffect, useState } from "react";
-import { useApplication } from "../app/ApplicationStore";
-import type { FormDef } from "../applications";
+import { useProject } from "../app/ProjectStore";
+import type { FormDef } from "../projects";
 import type { Current } from "../forms/applicability";
 import { itemLabel } from "../forms/steps";
 import { type ControlProps } from "./basic";
@@ -14,7 +14,7 @@ const ANOTHER = "__another__";
 // "Attached to": one of this application's buildings, or free-standing. Stores the building's id,
 // so renaming or deleting a building can't leave stale words; review shows its name as it is now.
 export function BuildingPicker(p: ControlProps) {
-  const { form, cur } = useApplication();
+  const { form, cur } = useProject();
   const buildings = (cur?.items ?? []).filter((i) => i.kind === "building").sort((a, b) => a.position - b.position);
   const items = [...buildings.map((i) => ({ id: i.id, label: itemLabel(form!, cur!, i.id) })), { id: FREE, label: FREE }];
   // An answer from before ids were stored names a building by its words: show it as that building.
@@ -34,7 +34,7 @@ export function buildingLabel(form: FormDef, cur: Current, value: string): strin
 // The entrance's road: one along the lot (from the Town's map), or another road, typed. A road
 // typed in saves through `onTyped` (it waits for Continue); a road tapped answers through onValue.
 export function StreetPicker(p: ControlProps & { onTyped?: (v: string) => void; onAnother?: () => void }) {
-  const { cur } = useApplication();
+  const { cur } = useProject();
   const roads = ((cur?.property.streets as { name: string }[] | undefined) ?? []).map((s) => s.name);
   const typed = typeof p.value === "string" && p.value !== "" && !roads.includes(p.value);
   const [another, setAnother] = useState(typed);

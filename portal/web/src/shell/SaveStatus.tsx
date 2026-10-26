@@ -3,7 +3,7 @@ import type { SaveState } from "./types";
 
 const WORDS: Record<SaveState, string> = {
   idle: "", saving: "Saving…", saved: "Saved", error: "Couldn't save — retrying",
-  conflict: "Changed in another tab",
+  conflict: "Changed in another tab", locked: "With the Town",
 };
 
 // What the app is doing with your answers, said quietly beside Save and close or ‹ Tasks.

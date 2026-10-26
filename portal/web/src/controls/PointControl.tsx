@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { getProperty, type Facts } from "../api";
-import { useApplication } from "../app/ApplicationStore";
+import { useProject } from "../app/ProjectStore";
 import ParcelMap from "../components/ParcelMap";
 
 type Point = { lon: number; lat: number };
 
 // A tap on the map of your lot (outlined when the Town's map knows it) marks the spot.
 export default function PointControl({ value, onValue }: { value: unknown; onValue: (p: Point) => void }) {
-  const { app } = useApplication();
+  const { project: app } = useProject();
   const parcelId = app?.property.parcel_id ?? null;
   const [lot, setLot] = useState<Facts["geometry"] | null>(null);
   useEffect(() => {

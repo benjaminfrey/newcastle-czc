@@ -1,4 +1,5 @@
-export type Me = { email: string; role: string };
+export type Me = { email: string; role: string; name?: string | null; phone?: string | null; mailing_address?: string | null };
+export type Details = { name: string | null; phone: string | null; mailing_address: string | null };
 export type LinkResult = "sent" | "too_many_requests" | "email_unavailable" | "invalid_email" | "unreachable";
 // "invalid": the link itself is no good. "unavailable": the server or the connection
 // failed, so the link may still work and must not be thrown away.
@@ -35,6 +36,15 @@ export async function getMe(): Promise<Me | null | "unavailable"> {
   const r = await attempt("/api/me");
   if (!r || r.status >= 500) return "unavailable";
   return r.ok ? ((await r.json()) as Me) : null;
+}
+
+// The applicant's details, saved once on the account (projects brief §3.3, decision 1).
+export async function putMe(details: Details): Promise<Me | "invalid" | "signed_out" | "unavailable"> {
+  const r = await attempt("/api/me", { method: "PUT", headers: json, body: JSON.stringify(details) });
+  if (!r || r.status >= 500) return "unavailable";
+  if (r.status === 401) return "signed_out";
+  if (r.status === 422) return "invalid";
+  return (await r.json()) as Me;
 }
 
 export async function signOut(): Promise<void> {

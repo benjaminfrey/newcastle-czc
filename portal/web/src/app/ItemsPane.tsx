@@ -2,7 +2,7 @@
 // (or Finish while unfinished) and Delete; then Add, Copy Building 1, and Done.
 import { AlertDialog, Button } from "@heroui/react";
 import { useState } from "react";
-import type { FormDef } from "../applications";
+import type { FormDef } from "../projects";
 import Icon from "../controls/Icon";
 import { buildingKind } from "../controls/pickers";
 import type { Current } from "../forms/applicability";

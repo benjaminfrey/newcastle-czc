@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { FormDef } from "../applications";
+import type { FormDef } from "../projects";
 import type { Current } from "./applicability";
 import fixtures from "./form-fixtures.json";
 import { itemLabel, REVIEW_STEP, START_STEPS, statusOf, stepModels } from "./steps";

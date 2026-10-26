@@ -1,7 +1,7 @@
 // The application's steps (the redesign): the three shared start steps, the form's own steps
 // (declared in its YAML), and Check and send. A step is a list of rows (questions that apply)
 // or a hub of items (buildings, additions) whose questions sit on sheet pages.
-import type { FormDef, FormSection, Page } from "../applications";
+import type { FormDef, FormSection, Page } from "../projects";
 import type { StepStatus } from "../shell/types";
 import { answerOf, applicable, missing, scope, shown, type Current, type Row } from "./applicability";
 

@@ -2,7 +2,7 @@ import { Card } from "@heroui/react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { getMe, UNREACHABLE } from "../api";
-import { createApplication, type NewApplication } from "../applications";
+import { createApplication, type NewApplication } from "../projects";
 import { carryFrom, savePendingStart, takePendingStart } from "../pendingStart";
 import { loadProperty, type ChosenProperty } from "../property";
 import { loadAnswers } from "../screener";

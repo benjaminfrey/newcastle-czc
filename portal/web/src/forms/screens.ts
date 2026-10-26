@@ -2,7 +2,7 @@
 // questions a form gathers with `screen:` share one (deed book and page; a building's size; the
 // four setbacks). A building's or an addition's cards run with its ask-first questions leading.
 // Which cards a task has, and where its run goes, is forms/tasks.ts.
-import type { FormDef, FormField } from "../applications";
+import type { FormDef, FormField } from "../projects";
 import { controlFor } from "../controls/FieldControl";
 import type { Current, Row } from "./applicability";
 import type { StepModel } from "./steps";

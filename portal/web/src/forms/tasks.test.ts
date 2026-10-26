@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { FormDef, FormField, FormSection } from "../applications";
+import type { FormDef, FormField, FormSection } from "../projects";
 import type { Current } from "./applicability";
 import { stepModels } from "./steps";
 import { canSend, cardsOf, firstCopySource, itemSummary, progressOf, TASK_HINTS, TASK_ICONS, taskStatus } from "./tasks";

@@ -1,5 +1,5 @@
 import { useRef, type KeyboardEvent, type ReactNode } from "react";
-import type { FormField } from "../applications";
+import type { FormField } from "../projects";
 import Icon from "./Icon";
 import RoofGlyph from "./RoofGlyph";
 

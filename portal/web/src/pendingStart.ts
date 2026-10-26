@@ -2,7 +2,7 @@
 // new tab, whose session storage is empty, so this one lives in local storage until
 // it is used (once). Blocked or full storage means nothing is pending: the page then
 // asks for the property again.
-import type { Carry } from "./applications";
+import type { Carry } from "./projects";
 import type { ChosenProperty } from "./property";
 import type { ScreenerAnswers } from "./screener";
 

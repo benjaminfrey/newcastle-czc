@@ -3,9 +3,9 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as api from "../api";
-import * as apps from "../applications";
+import * as apps from "../projects";
 import * as layout from "../shell/useWideLayout";
-import { ApplicationProvider, useApplication } from "./ApplicationStore";
+import { ProjectProvider, useProject } from "./ProjectStore";
 import { stepModels } from "../forms/steps";
 import ReviewPane from "./ReviewPane";
 
@@ -54,13 +54,13 @@ function Where() {
 // Check and send opens only once every task is done (the page's gate is tested in cards.test.tsx);
 // here the review itself is drawn, whatever is still to answer.
 function Review() {
-  const { form, cur } = useApplication();
+  const { form, cur } = useProject();
   return form && cur ? <ReviewPane models={stepModels(form, cur)} base="/applications/abc" /> : null;
 }
 const open = () => render(
   <MemoryRouter initialEntries={["/applications/abc/review"]}>
     <Routes>
-      <Route path="/applications/abc/review" element={<><ApplicationProvider id="abc"><Review /></ApplicationProvider><Where /></>} />
+      <Route path="/applications/abc/review" element={<><ProjectProvider id="abc"><Review /></ProjectProvider><Where /></>} />
       <Route path="*" element={<Where />} />
     </Routes>
   </MemoryRouter>,

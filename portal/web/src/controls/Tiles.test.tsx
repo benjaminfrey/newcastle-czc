@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import type { FormField } from "../applications";
+import type { FormField } from "../projects";
 import { ChoiceTiles, MultiTiles } from "./Tiles";
 
 const f = (extra: Partial<FormField>): FormField => ({

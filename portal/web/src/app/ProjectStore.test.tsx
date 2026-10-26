@@ -1,26 +1,27 @@
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as api from "../api";
-import * as apps from "../applications";
-import { ApplicationProvider, useApplication } from "./ApplicationStore";
+import * as apps from "../projects";
+import { ProjectProvider, useProject } from "./ProjectStore";
 
-const FORM: apps.FormDef = { key: "use_permit", version: 1, ruleset_key: "adopted-v1.0", official_title: "Use Permit Application",
+const FORM: apps.FormDef = { key: "project", version: 1, ruleset_key: "adopted-v1.0", official_title: "Project",
   sections: [], steps: [] };
-const APP: apps.AppState = {
-  id: "abc", form_key: "use_permit", form_version: 1, ruleset_key: "adopted-v1.0", status: "draft", revision: 3,
+const PROJECT: apps.ProjectState = {
+  id: "abc", title: "A new building at Sheepscot Road", status: "draft", revision: 3, ruleset_key: "adopted-v1.0",
+  submitted_at: null, forms: { cover_sheet: 1 }, form: FORM, needs: null,
   property: { source: "lookup", parcel_id: 1, map_lot: "004-036", facts: {}, parcels_as_of: null, verified: true, disputed: false, note: "" },
-  items: [], answers: [], notes: [], attachments: [], missing: [], newer_version: false,
+  items: [], answers: [], notes: [], attachments: [], missing: [],
 };
 
-let store: ReturnType<typeof useApplication>;
+let store: ReturnType<typeof useProject>;
 function Probe() {
-  store = useApplication();
+  store = useProject();
   return <p>{store.saveState}|{JSON.stringify(store.cur?.answers ?? [])}</p>;
 }
 
 async function mount() {
-  render(<ApplicationProvider id="abc"><Probe /></ApplicationProvider>);
-  await waitFor(() => expect(store.app).not.toBeNull());
+  render(<ProjectProvider id="abc"><Probe /></ProjectProvider>);
+  await waitFor(() => expect(store.project).not.toBeNull());
 }
 
 function deferred<T>() {
@@ -31,12 +32,11 @@ function deferred<T>() {
 
 beforeEach(() => {
   localStorage.clear();
-  vi.spyOn(apps, "getApplication").mockResolvedValue(APP);
-  vi.spyOn(apps, "getForm").mockResolvedValue(FORM);
-  vi.spyOn(api, "getMe").mockResolvedValue({ email: "a@example.com", role: "applicant" });
+  vi.spyOn(apps, "getProject").mockResolvedValue(PROJECT);
+  vi.spyOn(api, "getMe").mockResolvedValue({ email: "a@example.com", role: "applicant", name: "Ada", phone: "207", mailing_address: "PO Box 1" });
 });
 
-describe("ApplicationStore", () => {
+describe("ProjectStore", () => {
   it("saves stay in order", async () => {
     const save = vi.spyOn(apps, "saveAnswers")
       .mockResolvedValueOnce({ revision: 4, missing: [] })
@@ -72,10 +72,10 @@ describe("ApplicationStore", () => {
     expect(store.saveState).toBe("conflict");
     await act(async () => { await store.setAnswer("b", null, "two"); });
     expect(save).toHaveBeenCalledTimes(1); // nothing more is sent until the latest is loaded
-    vi.spyOn(apps, "getApplication").mockResolvedValue({ ...APP, revision: 9 });
+    vi.spyOn(apps, "getProject").mockResolvedValue({ ...PROJECT, revision: 9 });
     await act(() => store.reload());
     expect(store.saveState).toBe("idle");
-    expect(store.app!.revision).toBe(9);
+    expect(store.project!.revision).toBe(9);
   });
 
   it("a failed save keeps the value and retries with the next change", async () => {
@@ -108,12 +108,12 @@ describe("ApplicationStore", () => {
     expect(store.saveState).toBe("saved");
   });
 
-  it("adding an item keeps a change that hasn't been sent yet", async () => {
+  it("adding a part keeps a change that hasn't been sent yet", async () => {
     vi.spyOn(apps, "saveAnswers").mockResolvedValueOnce("unavailable").mockResolvedValue({ revision: 5, missing: [] });
-    vi.spyOn(apps, "addItem").mockResolvedValue({ revision: 4, id: "b1" } as never);
+    vi.spyOn(apps, "addPart").mockResolvedValue({ revision: 4, id: "b1" } as never);
     await mount();
     await act(async () => { await store.setAnswer("a", null, "one"); });
-    await act(async () => { await store.addItem("building"); });
+    await act(async () => { await store.addPart("building"); });
     expect(store.cur!.answers).toContainEqual({ field_id: "a", item_id: null, value: "one" });
     let ok: boolean | undefined;
     await act(async () => { ok = await store.flush(); });
@@ -159,5 +159,57 @@ describe("ApplicationStore", () => {
     act(() => store.markVisited("about_you"));
     expect(store.visited.has("about_you")).toBe(true);
     expect(JSON.parse(localStorage.getItem("portal.visited.abc")!)).toEqual(["about_you"]);
+  });
+
+  it("saves and part changes go through one queue, in order", async () => {
+    const order: string[] = [];
+    vi.spyOn(apps, "saveAnswers").mockImplementation(async () => { order.push("save"); return { revision: 4, missing: [] }; });
+    vi.spyOn(apps, "addPart").mockImplementation(async (_id, base) => { order.push(`add@${base}`); return { revision: 5, missing: [], id: "b1" }; });
+    await mount();
+    await act(async () => {
+      void store.setAnswer("a", null, "one");
+      await store.addPart("building");
+    });
+    expect(order).toEqual(["save", "add@4"]);
+  });
+
+  it("a locked project takes no more changes and doesn't retry", async () => {
+    const save = vi.spyOn(apps, "saveAnswers").mockResolvedValue("locked");
+    await mount();
+    await act(async () => { await store.setAnswer("a", null, "one"); });
+    expect(store.saveState).toBe("locked");
+    await act(async () => { await store.setAnswer("b", null, "two"); });
+    expect(save).toHaveBeenCalledTimes(1);
+    let ok: boolean | undefined;
+    await act(async () => { ok = await store.flush(); });
+    expect(ok).toBe(false);
+  });
+
+  it("a project the Town has locked opens read-only", async () => {
+    const save = vi.spyOn(apps, "saveAnswers");
+    vi.spyOn(apps, "getProject").mockResolvedValue({ ...PROJECT, status: "locked" });
+    await mount();
+    expect(store.saveState).toBe("locked");
+    await act(async () => { await store.setAnswer("a", null, "one"); });
+    expect(save).not.toHaveBeenCalled();
+    expect(store.cur!.answers.some((x) => x.field_id === "a")).toBe(false);
+  });
+
+  it("works out the parts' answers as the applicant types", async () => {
+    vi.spyOn(apps, "saveAnswers").mockReturnValue(new Promise(() => {}));
+    vi.spyOn(apps, "getProject").mockResolvedValue({ ...PROJECT,
+      items: [{ id: "b1", kind: "building", position: 0 }, { id: "s", kind: "site", position: 0 }],
+      answers: [{ field_id: "work_kinds", item_id: null, value: ["new_building", "site"], derived: true },
+                { field_id: "new_homes_total", item_id: null, value: 0, derived: true }] });
+    await mount();
+    act(() => { void store.setAnswer("dwelling_units", "b1", 2); });
+    expect(store.cur!.answers).toContainEqual({ field_id: "new_homes_total", item_id: null, value: 2 });
+    expect(store.cur!.answers).toContainEqual({ field_id: "work_kinds", item_id: null, value: ["new_building", "site"] });
+  });
+
+  it("the account's details fill the applicant", async () => {
+    await mount();
+    await waitFor(() => expect(store.cur!.account).toEqual(
+      { email: "a@example.com", name: "Ada", phone: "207", mailing_address: "PO Box 1" }));
   });
 });

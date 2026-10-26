@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 import * as api from "../api";
-import * as apps from "../applications";
+import * as apps from "../projects";
 import MyApplications from "./MyApplications";
 
 const renderPage = () =>

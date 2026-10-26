@@ -8,7 +8,7 @@ import { buildingKind, buildingLabel } from "../controls/pickers";
 import { valueOf } from "../forms/applicability";
 import type { Screen } from "../forms/screens";
 import Card from "../shell/Card";
-import { useApplication } from "./ApplicationStore";
+import { useProject } from "./ProjectStore";
 import { itemTitle } from "./ItemsPane";
 import { display } from "./OfficialGroup";
 
@@ -17,7 +17,7 @@ const blank = (v: unknown) => v === null || v === undefined || v === "" || (Arra
 export default function CheckPane({ title, cards, changeHref, onBack, onDone }: {
   title: string; cards: Screen[]; changeHref: (s: Screen) => string; onBack: () => void; onDone: () => void;
 }) {
-  const { form, cur, app } = useApplication();
+  const { form, cur, project: app } = useProject();
   const [useNames, setUseNames] = useState<Record<string, string>>({});
   useEffect(() => {
     if (!cards.some((s) => s.rows.some((r) => r.field.type === "uses"))) return;

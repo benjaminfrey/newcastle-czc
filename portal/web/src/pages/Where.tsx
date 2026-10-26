@@ -2,7 +2,7 @@ import { Button, Card, Description, Form, Input, Label, Radio, RadioGroup, TextA
 import { useEffect, useState, type FormEvent } from "react";
 import { ChoiceTiles } from "../controls/Tiles";
 import InsetGroup from "../shell/InsetGroup";
-import type { FormField } from "../applications";
+import type { FormField } from "../projects";
 import ParcelMap from "../components/ParcelMap";
 import { getDistricts, getProperty, parcelAt, searchProperty, type Facts, type Hit } from "../api";
 import { saveProperty } from "../property";

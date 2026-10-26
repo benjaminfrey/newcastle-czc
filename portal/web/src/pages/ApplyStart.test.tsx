@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as api from "../api";
-import * as apps from "../applications";
+import * as apps from "../projects";
 import { peekPendingStart } from "../pendingStart";
 import { saveProperty } from "../property";
 import { saveAnswers } from "../screener";

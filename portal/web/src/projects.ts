@@ -1,10 +1,13 @@
-// Applications: the forms (public) and an applicant's drafts (signed in).
+// Projects (projects brief §5.4): the forms and parts (public) and an applicant's projects (signed in).
+//
+// The cards speak of items: a building, an addition. The API speaks of parts, and every part
+// is an item here (part_id ↔ item_id), so the card code reads a project as it read an application.
 import type { Expr } from "./forms/expr";
 
 export type Option = { value: string; label: string; official: string; icon?: string | null }; // icon: an outline icon (controls/Icon)
 export type FormField = {
   id: string; official_label: string;
-  source: "question" | "property" | "account" | "derived" | "at_submit" | "staff";
+  source: "question" | "property" | "account" | "derived" | "at_submit" | "staff" | "parts";
   from: string | null; may_correct: boolean; label: string | null; help: string | null;
   why: { cite: string; text: string } | null;
   type: "text" | "longtext" | "number" | "choice" | "multichoice" | "yesno" | "date" | "uses" | "point" | "upload" | null;
@@ -38,38 +41,51 @@ export type FormDef = {
   steps?: { id: string; title: string }[];
 };
 
-export type Item = { id: string; kind: string; position: number };
+export type Item = { id: string; kind: string; position: number }; // a part of the project
 export type Attachment = { id: string; field_id: string; item_id: string | null; filename: string; content_type: string; size_bytes: number };
 export type Snapshot = {
   source: "lookup" | "manual"; parcel_id: number | null; map_lot: string; facts: Record<string, unknown>;
   parcels_as_of: string | null; verified: boolean; disputed: boolean; note: string;
 };
-export type AppState = {
-  id: string; form_key: string; form_version: number; ruleset_key: string; status: string; revision: number;
-  property: Snapshot; items: Item[];
-  answers: { field_id: string; item_id: string | null; value: unknown; carried?: boolean }[];
+export type Status = "draft" | "submitted" | "locked" | "decided";
+export type Clock = { key: string; label: string; plain: string | null; days: number; basis: string; when: string | null;
+  due?: string; approximate?: boolean; due_words?: string };
+export type Fee = number | "varies" | { per_sf: number };
+export type ReviewNeed = {
+  review_key: string; use_key: string | null; part_id?: string; name: string; code_name: string; plain: string | null;
+  reviewer: string | null; certainty: "needed" | "may_need"; in_portal: boolean; districts: string[];
+  fee: Fee; fee_words: string; clocks: Clock[];
+};
+export type Permit = { key: string; name: string; application_fee: Fee | null; application_fee_words: string | null; reviews: ReviewNeed[] };
+export type Needs = {
+  permits: Permit[]; application_fees_total: number; application_fees_vary: boolean;
+  notes: { kind: string; text: string; cite: string }[]; not_listed: { district: string; use: string; text: string }[];
+  town_only: boolean;
+} | { refused: string };
+export type Missing = { field_id: string; item_id: string | null }[];
+export type ProjectState = {
+  id: string; title: string; status: Status; revision: number; ruleset_key: string; submitted_at: string | null;
+  property: Snapshot; items: Item[]; forms: Record<string, number>; form: FormDef; needs: Needs | null;
+  answers: { field_id: string; item_id: string | null; value: unknown; derived?: boolean }[];
   notes: { section_id: string; item_id: string | null; text: string }[];
   attachments: Attachment[];
-  missing: { field_id: string; item_id: string | null }[];
-  newer_version: boolean;
+  missing: Missing;
 };
-export type AppSummary = { id: string; form_key: string; official_title: string; map_lot: string; status: string; updated_at: string };
-export type NewApplication = {
-  form_key: string;
-  property: { source: "lookup"; parcel_id: number } | { source: "manual"; map_lot: string; district_code: string | null };
-  disputed: boolean; note: string; use_key: string | null;
-  carry: Carry | null;
-};
-// What "Do I need a permit?" already asked, so the application doesn't ask again.
-export type Carry = { work_kind: "new" | "addition" | "renovation" | "site"; floor_area: number | null; new_homes: number | null };
+export type ProjectSummary = { id: string; title: string; status: Status; map_lot: string; updated_at: string;
+  submitted_at: string | null; first_part: string | null; left: number };
+export type PartDef = { id: string; label: string; step: string; icon: string; repeats: boolean };
+export type PropertyChoice = { source: "lookup"; parcel_id: number } | { source: "manual"; map_lot: string; district_code: string | null };
+export type NewProject = { property: PropertyChoice; disputed: boolean; note: string; parts: string[]; title: string | null };
 export type Change = { field_id: string; item_id: string | null; value: unknown };
 export type Problem = { field_id: string; item_id: string | null; reason: string };
 
 // "signed_out": the session ended; "not_approved": the form still has entries the chair
 // hasn't approved; "busy": too many requests from this address in the last minute;
-// "unavailable": the server or the connection failed.
-export type Refusal = "signed_out" | "not_approved" | "busy" | "unavailable" | "not_found";
-export type SaveResult = { revision: number; missing: AppState["missing"] } | { conflict: number } | { invalid: Problem[] } | Refusal;
+// "unavailable": the server or the connection failed; "locked": the Town has locked the project
+// for review, so the applicant can't change it.
+export type Refusal = "signed_out" | "not_approved" | "busy" | "unavailable" | "not_found" | "locked";
+export type SaveResult = { revision: number; missing: Missing } | { conflict: number } | { invalid: Problem[] }
+  | { incomplete: Missing } | Refusal;
 
 const json = { "Content-Type": "application/json" };
 
@@ -93,11 +109,18 @@ async function refused(r: Response | null): Promise<Refusal | null> {
   if (r.status === 429) return "busy";
   if (r.status === 401) return "signed_out";
   if (r.status === 404) return "not_found";
+  if (r.status === 409 && (await detail(r.clone())) === "locked") return "locked";
   return null;
 }
 
-// A form version never changes, so each is fetched once per page session (the wizard and
-// review pages ask for it on every load). Refusals are not kept.
+type WithPart = { part_id?: string | null };
+function fromPart<T extends WithPart>(x: T): Omit<T, "part_id"> & { item_id: string | null } {
+  const { part_id, ...rest } = x;
+  return { ...rest, item_id: part_id ?? null };
+}
+const toPart = (c: Change) => ({ field_id: c.field_id, part_id: c.item_id, value: c.value });
+
+// A form version never changes, so each is fetched once per page session. Refusals are not kept.
 const formCache = new Map<string, FormDef>();
 
 export function clearFormCache(): void {
@@ -116,8 +139,13 @@ export async function getForm(key: string, version?: number): Promise<FormDef | 
   return form;
 }
 
-export async function createApplication(body: NewApplication): Promise<{ id: string } | Refusal | "property_unavailable" | "invalid"> {
-  const r = await call("/api/applications", { method: "POST", headers: json, body: JSON.stringify(body) });
+export async function getParts(): Promise<PartDef[] | Refusal> {
+  const r = await call("/api/parts");
+  return (await refused(r)) ?? ((await r!.json()) as PartDef[]);
+}
+
+export async function createProject(body: NewProject): Promise<{ id: string } | Refusal | "property_unavailable" | "invalid"> {
+  const r = await call("/api/projects", { method: "POST", headers: json, body: JSON.stringify(body) });
   if (r && r.status === 503 && (await detail(r.clone())) === "property_unavailable") return "property_unavailable";
   const no = await refused(r);
   if (no) return no;
@@ -125,14 +153,28 @@ export async function createApplication(body: NewApplication): Promise<{ id: str
   return (await r!.json()) as { id: string };
 }
 
-export async function listApplications(): Promise<AppSummary[] | Refusal> {
-  const r = await call("/api/applications");
-  return (await refused(r)) ?? ((await r!.json()) as AppSummary[]);
+export async function listProjects(): Promise<ProjectSummary[] | Refusal> {
+  const r = await call("/api/projects");
+  return (await refused(r)) ?? ((await r!.json()) as ProjectSummary[]);
 }
 
-export async function getApplication(id: string): Promise<AppState | Refusal> {
-  const r = await call(`/api/applications/${id}`);
-  return (await refused(r)) ?? ((await r!.json()) as AppState);
+type ProjectBody = Omit<ProjectState, "items" | "answers" | "notes" | "attachments" | "missing"> & {
+  parts: Item[]; answers: (ProjectState["answers"][number] & WithPart)[]; notes: WithPart[]; attachments: WithPart[];
+  missing: WithPart[];
+};
+
+export async function getProject(id: string): Promise<ProjectState | Refusal> {
+  const r = await call(`/api/projects/${id}`);
+  const no = await refused(r);
+  if (no) return no;
+  const { parts, answers, notes, attachments, missing, ...rest } = (await r!.json()) as ProjectBody;
+  return {
+    ...rest, items: parts,
+    answers: answers.map(fromPart) as ProjectState["answers"],
+    notes: notes.map(fromPart) as ProjectState["notes"],
+    attachments: attachments.map(fromPart) as Attachment[],
+    missing: missing.map(fromPart) as Missing,
+  };
 }
 
 async function write(url: string, method: string, body: unknown): Promise<SaveResult> {
@@ -141,20 +183,23 @@ async function write(url: string, method: string, body: unknown): Promise<SaveRe
   if (no) return no;
   if (r!.status === 409) return { conflict: ((await r!.json()) as { revision: number }).revision };
   if (r!.status === 422) {
-    const d = await detail(r!);
-    return { invalid: Array.isArray(d) ? (d as Problem[]) : [{ field_id: "", item_id: null, reason: String(d) }] };
+    const body422 = (await r!.json().catch(() => ({}))) as { detail?: unknown; missing?: WithPart[] };
+    if (body422.detail === "incomplete") return { incomplete: (body422.missing ?? []).map(fromPart) as Missing };
+    const d = body422.detail;
+    return { invalid: Array.isArray(d) ? (d as WithPart[]).map(fromPart) as Problem[]
+      : [{ field_id: "", item_id: null, reason: String(d) }] };
   }
-  const out = (await r!.json()) as { revision: number; missing?: AppState["missing"] };
-  return { revision: out.revision, missing: out.missing ?? [] };
+  const out = (await r!.json()) as { revision: number; missing?: WithPart[] };
+  return { revision: out.revision, missing: (out.missing ?? []).map(fromPart) as Missing };
 }
 
 export function saveAnswers(id: string, baseRevision: number, changes: Change[]): Promise<SaveResult> {
-  return write(`/api/applications/${id}/answers`, "PUT", { base_revision: baseRevision, changes });
+  return write(`/api/projects/${id}/answers`, "PUT", { base_revision: baseRevision, changes: changes.map(toPart) });
 }
 
-// A new building or addition; with `copyFrom`, "Copy Building 1" (that item's copied answers come too).
-export async function addItem(id: string, baseRevision: number, kind: string, copyFrom?: string): Promise<SaveResult & { id?: string } | SaveResult> {
-  const r = await call(`/api/applications/${id}/items`, { method: "POST", headers: json,
+// A new part; for a building or an addition with `copyFrom`, "Copy Building 1" (that part's copied answers come too).
+export async function addPart(id: string, baseRevision: number, kind: string, copyFrom?: string): Promise<SaveResult & { id?: string } | SaveResult> {
+  const r = await call(`/api/projects/${id}/parts`, { method: "POST", headers: json,
     body: JSON.stringify({ kind, base_revision: baseRevision, ...(copyFrom === undefined ? {} : { copy_from: copyFrom }) }) });
   const no = await refused(r);
   if (no) return no;
@@ -164,12 +209,20 @@ export async function addItem(id: string, baseRevision: number, kind: string, co
   return { revision: out.revision, missing: [], id: out.id };
 }
 
-export function removeItem(id: string, baseRevision: number, itemId: string): Promise<SaveResult> {
-  return write(`/api/applications/${id}/items/${itemId}`, "DELETE", { base_revision: baseRevision });
+export function removePart(id: string, baseRevision: number, partId: string): Promise<SaveResult> {
+  return write(`/api/projects/${id}/parts/${partId}`, "DELETE", { base_revision: baseRevision });
 }
 
 export function saveNote(id: string, baseRevision: number, sectionId: string, itemId: string | null, text: string): Promise<SaveResult> {
-  return write(`/api/applications/${id}/notes`, "PUT", { base_revision: baseRevision, section_id: sectionId, item_id: itemId, text });
+  return write(`/api/projects/${id}/notes`, "PUT", { base_revision: baseRevision, section_id: sectionId, part_id: itemId, text });
+}
+
+export function setTitle(id: string, baseRevision: number, title: string): Promise<SaveResult> {
+  return write(`/api/projects/${id}/title`, "PUT", { base_revision: baseRevision, title });
+}
+
+export function submitProject(id: string, baseRevision: number): Promise<SaveResult> {
+  return write(`/api/projects/${id}/submit`, "POST", { base_revision: baseRevision });
 }
 
 export const UPLOAD_MESSAGES: Record<string, string> = {
@@ -180,6 +233,7 @@ export const UPLOAD_MESSAGES: Record<string, string> = {
   store_unavailable: "We couldn't save the file just now. Please try again in a few minutes.",
   too_many_uploads: "You've uploaded a lot of files in the last hour. Please wait a while and try again.",
   unavailable: "We couldn't reach the Town's server. Please check your connection and try again.",
+  locked: "The Town is reviewing this project, so files can't be added or removed now.",
 };
 
 export function uploadFile(id: string, fieldId: string, itemId: string | null, file: File,
@@ -187,10 +241,10 @@ export function uploadFile(id: string, fieldId: string, itemId: string | null, f
   return new Promise((resolve) => {
     const body = new FormData();
     body.append("field_id", fieldId);
-    if (itemId) body.append("item_id", itemId);
+    if (itemId) body.append("part_id", itemId);
     body.append("file", file);
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", `/api/applications/${id}/attachments`);
+    xhr.open("POST", `/api/projects/${id}/attachments`);
     xhr.upload.onprogress = (e) => e.lengthComputable && onProgress?.(e.loaded / e.total);
     xhr.onerror = () => resolve({ refused: "unavailable" });
     xhr.onload = () => {
@@ -200,7 +254,7 @@ export function uploadFile(id: string, fieldId: string, itemId: string | null, f
       } catch {
         // A proxy's HTML error page: fall through to the status.
       }
-      if (xhr.status === 201) return resolve(parsed as Attachment);
+      if (xhr.status === 201) return resolve(fromPart(parsed as Attachment & { part_id: string | null }));
       if (xhr.status === 413) return resolve({ refused: "too_large" });
       if (xhr.status === 415) return resolve({ refused: "unsupported_type" });
       if (xhr.status === 429) return resolve({ refused: "too_many_uploads" });
