@@ -4,10 +4,11 @@ import { Link } from "react-router";
 import Icon from "../controls/Icon";
 import { valueOf, type Current } from "../forms/applicability";
 import type { StepModel } from "../forms/steps";
-import { cardsOf, itemSummary } from "../forms/tasks";
+import { cardsOf } from "../forms/tasks";
 import { mapLotLabel } from "../format";
 import type { FormDef, ProjectState } from "../projects";
 import Card from "../shell/Card";
+import { partSummary } from "./Dashboard";
 import type { SendOutcome } from "./ProjectStore";
 
 // The official forms a project fills, by key (the cover sheet prints with each).
@@ -15,6 +16,11 @@ const FORM_NAMES: Record<string, string> = {
   small_project_plan: "Small Project Plan Application",
   entrance_permit: "Driveway and Entrance Permit Application",
   use_permit: "Use Permit Application",
+};
+// Each row's tile icon (parts.yaml), and About the work's.
+const icons: Record<string, string> = {
+  the_work: "hammer", building: "building-cottage", addition: "home-plus", renovation: "paint", site: "shovel",
+  use: "building-store", driveway: "road", divide: "layout-grid", other: "help-circle",
 };
 const money = (n: number) => `$${n.toLocaleString("en-US")}`;
 const empty = (v: unknown) => v === null || v === undefined || v === "" || (Array.isArray(v) && v.length === 0);
@@ -43,6 +49,9 @@ export default function SendPane({ project, form, cur, models, base, onBack, onS
   const needs = project.needs && !("refused" in project.needs) ? project.needs : null;
   const due = needs?.permits.filter((p) => p.application_fee !== null && p.application_fee !== 0) ?? [];
   const printed = Object.keys(project.forms).filter((k) => k in FORM_NAMES);
+  // While a building's size isn't known, either plan may apply (the needs say "May be needed").
+  const eitherPlan = !!needs?.permits.some((p) => p.reviews.some((r) => r.review_key === "large_project_plan" && r.certainty === "may_need"));
+  const formName = (k: string) => (k === "small_project_plan" && eitherPlan ? "Small or Large Project Plan Application" : FORM_NAMES[k]);
   const parts = models.filter((m) => m.id !== "your_lot" && m.id !== "about_you");
   const sent = project.status !== "draft";
   const box = "overflow-hidden rounded-[12px] border-[0.5px] border-[var(--app-separator)] bg-[var(--app-row)]";
@@ -90,23 +99,24 @@ export default function SendPane({ project, form, cur, models, base, onBack, onS
               <li className={row}>
                 <Icon name="map-2" className="text-[var(--app-secondary-label)]" />
                 <span className="flex-1 text-[var(--app-label)]">{mapLotLabel(project.property.map_lot)}</span>
-                <Link to={`${base}/your_lot/check`} className="min-h-11 px-1 pt-3 text-[13px] text-[var(--app-accent-text)]">Change</Link>
+                <Link to={`${base}/your_lot/check`} className="flex min-h-11 items-center self-center px-1 text-[13px] text-[var(--app-accent-text)]">Change</Link>
               </li>
               <li className={`${row} ${line(1)}`}>
                 <Icon name="user" className="text-[var(--app-secondary-label)]" />
                 <span className="flex-1 text-[var(--app-label)]">{(cur.account.name as string | null) ?? cur.account.email as string}</span>
-                <Link to={`${base}/about_you/check`} className="min-h-11 px-1 pt-3 text-[13px] text-[var(--app-accent-text)]">Change</Link>
+                <Link to={`${base}/about_you/check`} className="flex min-h-11 items-center self-center px-1 text-[13px] text-[var(--app-accent-text)]">Change</Link>
               </li>
               {parts.map((m) => (
                 <li key={m.id} className={`${row} ${line(1)}`}>
+                  <Icon name={icons[m.id] ?? "clipboard-list"} className="text-[var(--app-secondary-label)]" />
                   <span className="min-w-0 flex-1">
                     <span className="block text-[var(--app-label)]">{m.title}</span>
-                    {m.hub && m.hub.items.length === 1 && (
-                      <span className="block truncate text-[12px] text-[var(--app-secondary-label)]">{itemSummary(form, cur, m.hub.items[0].id)}</span>
+                    {partSummary(form, cur, m) && (
+                      <span className="block truncate text-[12px] text-[var(--app-secondary-label)]">{partSummary(form, cur, m)}</span>
                     )}
                   </span>
                   <Link to={m.hub ? `${base}/${m.id}` : `${base}/${m.id}/check`} aria-label={`Change ${m.title}`}
-                        className="min-h-11 px-1 pt-3 text-[13px] text-[var(--app-accent-text)]">Change</Link>
+                        className="flex min-h-11 items-center self-center px-1 text-[13px] text-[var(--app-accent-text)]">Change</Link>
                 </li>
               ))}
             </ul>
@@ -130,7 +140,12 @@ export default function SendPane({ project, form, cur, models, base, onBack, onS
           {printed.length > 0 && section("The official forms", (
             <ul>{printed.map((k, i) => (
               <li key={k} className={`${row} ${line(i)}`}>
-                <span className="flex-1 text-[var(--app-label)]">{FORM_NAMES[k]}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[var(--app-label)]">{formName(k)}</span>
+                  {formName(k) !== FORM_NAMES[k] && (
+                    <span className="block text-[12px] text-[var(--app-secondary-label)]">Depends on the building's size</span>
+                  )}
+                </span>
                 <button type="button" disabled className="btn" aria-describedby="printing-note">View</button>
               </li>
             ))}</ul>

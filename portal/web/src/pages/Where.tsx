@@ -163,6 +163,30 @@ export default function Where({ onDone }: { onDone: (p: ChosenProperty, facts: F
         <div className="h-56 w-full max-w-xl overflow-hidden rounded-xl">
           <ParcelMap selected={facts.geometry ?? null} focus={focus} onPick={onPick} />
         </div>
+        <div className="w-full max-w-xl text-left">
+          <InsetGroup footer={<>Lot lines from the Town's tax maps as of {longDate(facts.as_of.parcels)}. District from a tracing
+            of the District Map. The Code Enforcement Officer confirms all of this when you apply.</>}>
+            <InsetGroup.Row label="Map and lot"><span className="font-semibold">{mapLotLabel(facts.map_lot)}</span></InsetGroup.Row>
+            <InsetGroup.Row label="District"><span>{district_.text.replace(/^District: /, "").replace(/\.$/, "")}</span></InsetGroup.Row>
+            {district_.staffWillConfirm && <InsetGroup.Row label="Note"><span>Part of this lot is in an area staff will confirm.</span></InsetGroup.Row>}
+            {civic && (
+              <InsetGroup.Row label="Civic land">
+                <span>
+                  {civic.share >= 0.99 ? "This lot is" : "Part of this lot is"} Town-owned land in the Civic district.
+                  Only the Town builds on Civic land: Town Meeting votes on it, on the Select Board's
+                  recommendation, and no permit application is made through this site.
+                </span>
+              </InsetGroup.Row>
+            )}
+            <InsetGroup.Row label="Size"><span>About {facts.acres} acres (measured from the map)</span></InsetGroup.Row>
+            {facts.streets.map((st) => (
+              <InsetGroup.Row key={`${st.name}-${st.type}`} label="Road">
+                <span>About {st.frontage_ft} ft along {st.name}{st.type_name ? `, a ${st.type_name}` : ""}</span>
+              </InsetGroup.Row>
+            ))}
+          </InsetGroup>
+        </div>
+        <div className="w-full max-w-xl">
         {!disputing ? (
           <ChoiceTiles field={{ id: "this_lot", label: "Is this your property?", official_label: "Is this your property?" } as FormField}
                        value={null} choices={answers}
@@ -177,28 +201,6 @@ export default function Where({ onDone }: { onDone: (p: ChosenProperty, facts: F
             <button type="button" className="btn btn-filled self-end" onClick={() => confirm(true)}>Save</button>
           </div>
         )}
-        <div className="w-full max-w-xl text-left">
-          <InsetGroup footer={<>Lot lines from the Town's tax maps as of {longDate(facts.as_of.parcels)}. District from a tracing
-            of the District Map. The Code Enforcement Officer confirms all of this when you apply.</>}>
-            <InsetGroup.Row label="Map and lot"><span className="font-semibold">{mapLotLabel(facts.map_lot)}</span></InsetGroup.Row>
-            <InsetGroup.Row label="District"><span>{district_.text.replace(/^District: /, "")}</span></InsetGroup.Row>
-            {district_.staffWillConfirm && <InsetGroup.Row label="Note"><span>Part of this lot is in an area staff will confirm.</span></InsetGroup.Row>}
-            {civic && (
-              <InsetGroup.Row label="Civic land">
-                <span>
-                  {civic.share >= 0.99 ? "This lot is" : "Part of this lot is"} Town-owned land in the Civic district.
-                  Only the Town builds on Civic land: Town Meeting votes on it, on the Select Board's
-                  recommendation, and no permit application is made through this site.
-                </span>
-              </InsetGroup.Row>
-            )}
-            <InsetGroup.Row label="Size"><span>About {facts.acres} acres (measured from the map).</span></InsetGroup.Row>
-            {facts.streets.map((st) => (
-              <InsetGroup.Row key={`${st.name}-${st.type}`} label="Road">
-                <span>About {st.frontage_ft} ft along {st.name}{st.type_name ? `, a ${st.type_name}` : ""}.</span>
-              </InsetGroup.Row>
-            ))}
-          </InsetGroup>
         </div>
       </section>
     );

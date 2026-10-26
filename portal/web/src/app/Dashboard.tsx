@@ -15,6 +15,18 @@ import NeedsPanel from "./NeedsPanel";
 export const PART_STEPS = ["building", "addition", "renovation", "site", "use", "driveway", "divide", "other"];
 const ICONS: Record<string, string> = { the_work: "hammer" };
 
+// A row's one-line summary: a building's size and facing; "2 buildings"; "3 answers to go".
+export function partSummary(form: FormDef, cur: Current, m: StepModel): string {
+  if (m.hub) {
+    const n = m.hub.items.length;
+    if (n === 0) return "";
+    if (n === 1) return itemSummary(form, cur, m.hub.items[0].id);
+    return `${n} ${m.id === "building" ? "buildings" : "additions"}`;
+  }
+  const gaps = m.rows.filter((r) => r.field.required && [null, undefined, ""].includes(answerOf(cur, r.field.id, r.itemId) as never)).length;
+  return gaps ? `${gaps} ${gaps === 1 ? "answer" : "answers"} to go` : "";
+}
+
 function StatusPill({ status }: { status: TaskStatus }) {
   if (status.kind === "done") return <Pill tone="done">Done</Pill>;
   if (status.kind === "progress") return <Pill tone="progress">{status.answered} of {status.total}<span className="sr-only"> answered</span></Pill>;
@@ -65,17 +77,6 @@ export default function Dashboard({ project, form, cur, models, statuses, base, 
     : sent ? <Pill tone={STATUS_TONE[project.status]}>{STATUS_WORDS[project.status]}</Pill>
     : <Pill tone="done">Ready to send</Pill>;
 
-  function summary(m: StepModel): string {
-    if (m.hub) {
-      const n = m.hub.items.length;
-      if (n === 0) return "";
-      if (n === 1) return itemSummary(form, cur, m.hub.items[0].id);
-      return `${n} ${m.id === "building" ? "buildings" : "additions"}`;
-    }
-    const gaps = m.rows.filter((r) => r.field.required && [null, undefined, ""].includes(answerOf(cur, r.field.id, r.itemId) as never)).length;
-    return gaps ? `${gaps} ${gaps === 1 ? "answer" : "answers"} to go` : "";
-  }
-
   async function rename(e: FormEvent) {
     e.preventDefault();
     if (renaming !== null && renaming.trim() && (await onRename(renaming))) setRenaming(null);
@@ -87,7 +88,7 @@ export default function Dashboard({ project, form, cur, models, statuses, base, 
   const rowCls = "flex min-h-14 w-full items-center gap-3 px-4 py-[11px] text-left text-[14px] no-underline";
 
   return (
-    <div className="mx-auto grid w-full max-w-[1040px] gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
+    <div className="mx-auto grid w-full max-w-[1040px] grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
       <div className="flex min-w-0 flex-col gap-6">
         <header className="flex flex-col gap-2">
           {renaming === null ? (
@@ -137,7 +138,7 @@ export default function Dashboard({ project, form, cur, models, statuses, base, 
             {rows.map((m, k) => {
               const part = project.items.find((i) => i.kind === m.id);
               const single = part && !m.hub;
-              const line = summary(m);
+              const line = partSummary(form, cur, m);
               return (
                 <li key={m.id} className={`flex items-center ${k ? "border-t-[0.5px] border-[var(--app-separator)]" : ""}`}>
                   <Link to={`${base}/${m.id}`} className={`${rowCls} min-w-0 flex-1`}>
@@ -179,7 +180,7 @@ export default function Dashboard({ project, form, cur, models, statuses, base, 
         )}
       </div>
 
-      <aside className="flex flex-col gap-6">
+      <aside className="flex min-w-0 flex-col gap-6">
         <NeedsPanel needs={project.needs} useNames={useNames} />
         <section aria-labelledby="you-heading" className="flex flex-col gap-2">
           <h2 id="you-heading" className="px-4 text-[13px] text-[var(--app-secondary-label)]">You</h2>

@@ -106,14 +106,14 @@ describe("the dashboard", () => {
   it("reads what the project needs in words", async () => {
     open();
     const needs = await screen.findByRole("region", { name: "Building Permit" });
-    expect(within(needs).getByRole("heading", { level: 3 })).toHaveTextContent("Building Permit · $30 when you send");
+    expect(within(needs).getByRole("heading", { level: 3 })).toHaveTextContent("Building Permit$30 when you send");
     expect(needs).toHaveTextContent("Small Project PlanNo permit fee");
     expect(needs).toHaveTextContent("The Code Enforcement Officer decides within 10 days of accepting your project.");
     expect(needs).toHaveTextContent("May be needed — the Code Enforcement Officer confirms");
     expect(needs).toHaveTextContent("Not in the portal yet — the Town Office takes this one");
-    expect(needs).toHaveTextContent("Structure$30");
+    expect(needs).toHaveTextContent("Structure (each new building)$30");
     expect(needs).toHaveTextContent("EntrancesNo permit fee");
-    expect(screen.getByText(/\$30 in application fees when you send/)).toBeInTheDocument();
+    expect(screen.getByText("Permit fees are due before a permit is issued.")).toBeInTheDocument();
   });
 
   it("adding a part opens its first card", async () => {

@@ -26,7 +26,10 @@ test("a new building and a driveway, sent to the Town", async ({ page }, info) =
   const building = main.getByRole("region", { name: "Building Permit" });
   await expect(building).toContainText("Structure");
   await expect(building).toContainText("Entrances");
-  await expect(building.getByRole("heading", { level: 3 })).toHaveText("Building Permit · $30 when you send");
+  await expect(building.getByRole("heading", { level: 3 })).toHaveText(/^Building Permit\s*\$30 when you send$/);
+
+  // Nothing scrolls sideways, on a phone too.
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
 
   // The window: a sidebar on a desktop, a tab bar on a phone, with the same four.
   const nav = page.getByRole("navigation", { name: "The app" });
@@ -82,7 +85,7 @@ test("a use project with two uses", async ({ page }, info) => {
   await page.goto(base);
   const use = page.getByRole("main").getByRole("region", { name: "Use Permit" });
   await expect(use.getByRole("listitem")).toHaveCount(2);
-  await expect(use.getByRole("heading", { level: 3 })).toHaveText("Use Permit · $30 when you send");
+  await expect(use.getByRole("heading", { level: 3 })).toHaveText(/^Use Permit\s*\$30 when you send$/);
   await page.goto(`${base}/send`);
   await sendProject(page, ["Use Permit Application"]);
 });
