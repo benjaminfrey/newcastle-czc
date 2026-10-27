@@ -10,6 +10,12 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
   R1–R35 in `plans/2026-10-14-right-to-farm-decisions.md`. Still open as of the v1.2-draft cut:
   counsel's questions in spec §7; the DACF notice (7 M.R.S. §155 — 90 days before the meeting or
   hearing that considers adoption); the permit app refuses `br` cells and 69 uses (D-0035).
+- **Next major amendments, in this order** (Ben, 2026-10-26): more work on Right to Farm (above),
+  then **Civic Buildings, Civic Spaces and Civic Amenities** on branch `civic-buildings-and-spaces`
+  (created 2026-10-06 from `main`; no commits yet), then **Nonconformity** on branch
+  `nonconformity` (one commit so far, `3a728e3`, the nonconformity review memo — the Code, Maine
+  law and proposed language). Right to Farm spec §8 leaves the Article 8 §25 / Article 9
+  nonconformity-definition disagreement to that branch. Keep both branches.
 - **For counsel:** Article 9's Variance definition cites the Massachusetts Zoning Act (Maine's is
   30-A M.R.S. §4353); typos "Atricle" (Article 7), "extentions", "designnee" — fixing "designnee"
   also means updating the residue gate's expected sentence in the same commit.
