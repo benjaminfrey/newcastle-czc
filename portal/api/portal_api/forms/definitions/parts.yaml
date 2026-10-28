@@ -13,7 +13,9 @@ parts:
   rule: {project: build, building.kind: new}
   inputs: {building.gross_floor_area_sf: floor_area, building.new_dwelling_units: dwelling_units}
   work_kind: new_building
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
 - id: addition
   label: An addition, porch or deck
   step: Additions
@@ -24,7 +26,9 @@ parts:
   rule: {project: build, building.kind: addition}
   inputs: {building.gross_floor_area_sf: added_floor_area}
   work_kind: addition
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
 - id: renovation
   label: Renovating a building
   step: Renovation
@@ -33,7 +37,9 @@ parts:
   rule: {project: build, building.kind: renovation}
   inputs: {building.total_floor_area_sf: renovation_total_floor_area}
   work_kind: renovation
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
 - id: site
   label: Site work (parking, grading, landscaping)
   step: Site work
@@ -42,7 +48,9 @@ parts:
   rule: {project: build, building.kind: site}
   inputs: {building.parking_spaces: parking_spaces}
   work_kind: site
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
 - id: use
   label: Start or change a use
   step: Uses
@@ -50,14 +58,18 @@ parts:
   sections: [use_permit:existing, use_permit:proposed, use_permit:use_documents_section]
   rule: {project: use}
   inputs: {use_key: proposed_uses}
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
 - id: driveway
   label: A driveway
   step: Driveway
   icon: road
   sections: [entrance_permit:entrance]
   rule: {project: driveway}
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
 - id: divide
   label: Divide land
   step: Dividing land
@@ -65,14 +77,18 @@ parts:
   sections: [project_questions:division]
   rule: {project: divide}
   inputs: {division.lots_after: lots_after, division.divided_last_5_years: divided_last_5_years}
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
 - id: other
   label: Something else
   step: Something else
   icon: help-circle
   sections: [project_questions:other]
   rule: {project: other}
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
 # Asked once for the project whatever its parts, when any of `when_any` is present, on the
 # dashboard row "About the work".
 project:
@@ -81,4 +97,6 @@ project:
   - {section: small_project_plan:project, when_any: [building, addition, renovation, site]}
   - {section: project_questions:project_homes, when_any: [building]}
   inputs: {building.homes_added_last_5_years: homes_last_5_years}
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"

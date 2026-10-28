@@ -127,11 +127,28 @@ def test_mainedot_question_shows_unless_known_off_highway(forms, on_highway, sho
     assert (result is not False) is shown
 
 
-def test_all_entries_start_as_drafts(forms):
+def test_every_entry_is_approved_by_the_chair(forms):
+    # The chair approved every entry on 2026-10-28; a new or changed entry goes back to draft.
     for form in forms.values():
-        statuses = {s.status for s in form.sections} | {f.status for _, f in form.fields()}
-        assert statuses == {"draft"}
-        assert form_drafts(form)
+        entries = list(form.sections) + [f for _, f in form.fields()]
+        assert {(e.status, e.approved_by, e.approved_on) for e in entries} == {
+            ("approved", "Ben Frey, Planning Board chair", "2026-10-28")}
+        assert not form_drafts(form)
+
+
+def test_the_chairs_decisions_of_2026_10_28(forms, ruleset):
+    forms = {**forms, "project_questions": load_form("project_questions", latest_version("project_questions"), ruleset)}
+    sp = forms["small_project_plan"]
+    assert sp.field("building_name")[1].required is False  # an unnamed building shows as "Building 2"
+    _, stories = sp.field("stories")
+    assert (stories.min, stories.max) == (1, 4) and "more than four" in stories.help
+    assert {f.unit for form in forms.values() for _, f in form.fields() if f.unit} >= {"sq ft"}
+    assert "sf" not in {f.unit for form in forms.values() for _, f in form.fields()}
+    words = " ".join(f"{f.label} {f.help or ''} {' '.join(o.label for o in f.options or [])}"
+                     for form in forms.values() for _, f in form.fields())
+    for old in ("storey", "Fibre", "Add more detail", "decides when it isn't clear", "We've filled in the size",
+                "will tell you what it needs"):
+        assert old not in words, old
 
 
 def test_form_keys_match_applications_yaml():
@@ -211,7 +228,7 @@ def test_front_facing_before_walls(forms):
         assert order[order.index(facing) + 1] == first_wall, facing
         _, f = sp.field(facing)
         assert f.type == "choice" and [o.official for o in f.options] == ["North", "East", "South", "West"]
-        assert f.status == "draft" and f.allow_unknown
+        assert f.allow_unknown
     assert sp.field("component_front_facing")[1].show_if == sp.field("component_windows_north")[1].show_if
 
 
@@ -259,7 +276,7 @@ def test_finish_chips_have_an_other_field(forms):
         _, f = sp.field(fid)
         assert f.type == "multichoice" and f.control == "chips"
         assert [o.official for o in f.options] == [
-            "Clapboard", "Wood shingle", "Vinyl siding", "Fibre-cement siding", "Brick", "Stone",
+            "Clapboard", "Wood shingle", "Vinyl siding", "Fiber-cement siding", "Brick", "Stone",
             "Board-and-batten", "Metal siding", "Asphalt shingle roof", "Metal roof", "Slate roof", "Other"]
         _, o = sp.field(other)
         assert {"has": [f"item.{fid}", "other"]} in [o.show_if, *o.show_if.get("all", [])]
@@ -288,11 +305,6 @@ def test_window_walls_are_sliders(forms):
         _, f = sp.field(f"windows_{wall}")
         assert f.control == "slider" and f.step_size == 5 and (f.min, f.max) == (0, 100)
         assert f.label == f"{wall.capitalize()} wall"
-
-
-def test_changed_entries_are_drafts(forms):
-    for form in forms.values():
-        assert {f.status for _, f in form.fields()} == {"draft"}
 
 
 def test_yes_no_help_speaks_of_choosing_not_switching(forms):

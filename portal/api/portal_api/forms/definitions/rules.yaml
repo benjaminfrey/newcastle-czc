@@ -63,7 +63,7 @@
 - id: new-building-size-unknown-note
   order: 34
   when: {all: [{has: [project, build]}, {eq: [building.kind, new]}, {not: {known: building.gross_floor_area_sf}}]}
-  outcome: {kind: note, text: "A new building of up to 10,000 square feet of floor area is a Small Project Plan; a larger one is a Large Project Plan. Count every storey."}
+  outcome: {kind: note, text: "A new building of up to 10,000 square feet of floor area is a Small Project Plan; a larger one is a Large Project Plan. Count every story."}
   cite: "8.10.b.1"
   status: approved
   approved_by: "Ben Frey, Planning Board chair"

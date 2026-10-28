@@ -16,7 +16,9 @@ def test_parts_load_in_tile_order_with_the_briefs_icons():
         "use": "building-store", "driveway": "road", "divide": "layout-grid", "other": "help-circle"}
     assert all(p.icon in ICONS for p in parts.parts)
     assert [p.id for p in parts.parts if p.repeats] == ["building", "addition"]
-    assert all(p.status == "draft" for p in parts.parts)
+    assert all((p.status, p.approved_by, p.approved_on) == ("approved", "Ben Frey, Planning Board chair", "2026-10-28")
+               for p in parts.parts)
+    assert (parts.project_status, parts.project_approved_by) == ("approved", "Ben Frey, Planning Board chair")
 
 
 def test_every_section_a_part_names_exists():

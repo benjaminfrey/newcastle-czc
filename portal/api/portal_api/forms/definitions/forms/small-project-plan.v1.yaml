@@ -21,7 +21,9 @@ sections:
 - id: project
   official_title: Your Project
   chapter: Your project
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
   fields:
   - id: work_kinds
     official_label: Type of project
@@ -50,7 +52,9 @@ sections:
       official: Change to a nonconforming lot, use, structure or site improvement
       icon: file-alert
     why: 8.10.b.1
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: project_description
     official_label: Project description
     source: question
@@ -58,7 +62,9 @@ sections:
     type: longtext
     why: 8.2.a.2
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: site_plan
     official_label: Site plan or sketch
     source: question
@@ -66,7 +72,9 @@ sections:
     help: A hand drawing is fine. Show the lot lines, the road, the buildings and their distances from the lot lines.
     type: upload
     why: 8.2.a.2
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   step: the_work
 - id: building
   official_title: Building Form
@@ -87,23 +95,31 @@ sections:
     add_label: Add another building
     min: 1
     max: 20
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
   fields:
   - id: building_map_lot
     official_label: Map / Lot
     source: derived
     from: map_lot
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: building_address
     official_label: Street Address
     source: derived
     from: street_address
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: building_district
     official_label: Zoning District
     source: derived
     from: zoning_district
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: building_name
     official_label: Building reference (name)
     source: question
@@ -111,8 +127,10 @@ sections:
     help: For example "house", "barn" or "new garage".
     type: text
     why: 8.2.a.2
-    required: true
-    status: draft
+    required: false
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     screen: about
     short: What you call it
   - id: renovation_only
@@ -122,7 +140,9 @@ sections:
     type: yesno
     why: 8.10.b.2
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: switch
     default: false
     help: Choose Yes if the building keeps its size and place.
@@ -153,7 +173,9 @@ sections:
     add_label: Add another building
     min: 1
     max: 20
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
   fields:
   - id: setback_front
     official_label: Setback from front lot line
@@ -168,7 +190,9 @@ sections:
     allow_unknown: true
     required: true
     compare: primary_building_placement
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     screen: setbacks
   - id: setback_side_1
     official_label: Setback from side lot line
@@ -183,7 +207,9 @@ sections:
     allow_unknown: true
     required: true
     compare: primary_building_placement
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     screen: setbacks
   - id: setback_side_2
     official_label: Setback from other side lot line
@@ -197,7 +223,9 @@ sections:
     allow_unknown: true
     required: true
     compare: primary_building_placement
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     screen: setbacks
   - id: setback_rear
     official_label: Setback from rear lot line
@@ -211,7 +239,9 @@ sections:
     allow_unknown: true
     required: true
     compare: primary_building_placement
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     screen: setbacks
   step: buildings
   screens:
@@ -236,13 +266,15 @@ sections:
     add_label: Add another building
     min: 1
     max: 20
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
   fields:
   - id: building_class
     official_label: Building type
     source: question
     label: Which best describes this building?
-    help: If you're not sure, choose "I don't know yet". The Code Enforcement Officer decides when it isn't clear.
+    help: If you're not sure, choose "I don't know yet". Staff will help you choose.
     type: choice
     options:
     - value: residential
@@ -275,7 +307,9 @@ sections:
     why: 5.1.c.1
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: building-type
     ask_first: 1
     copies: true
@@ -289,7 +323,9 @@ sections:
     max: 500
     why: 8.2.a.2
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: stepper
     screen: about
     short: Homes in it
@@ -313,7 +349,9 @@ sections:
     add_label: Add another building
     min: 1
     max: 20
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
   fields:
   - id: mass_width
     official_label: Width of Main Building Mass
@@ -328,7 +366,9 @@ sections:
     why: 5.3.c.2
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     screen: size
     copies: true
     short: Width
@@ -343,7 +383,9 @@ sections:
     why: 5.3.c.2
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     screen: size
     copies: true
     short: Depth
@@ -351,14 +393,16 @@ sections:
     official_label: Total number of stories
     source: question
     label: How many stories (floors above ground) will it have?
-    help: Don't count a basement or living space inside the roof.
+    help: Don't count a basement or living space inside the roof. If it will have more than four, talk to the Town Office.
     type: number
     min: 1
-    max: 10
+    max: 4
     why: 5.3.c.2
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: stepper
     screen: size
     copies: true
@@ -369,13 +413,15 @@ sections:
     label: What is the floor area of the main part of the building, in square feet?
     help: Add up every story of the main part. Space inside the roof doesn't count.
     type: number
-    unit: sf
+    unit: sq ft
     min: 0
     max: 1000000
     why: 5.3.c.4
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     screen: size
     copies: true
     short: Floor area
@@ -391,7 +437,9 @@ sections:
     why: 5.4.c.4
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     screen: size
     copies: true
     short: First floor above the ground
@@ -408,7 +456,9 @@ sections:
     why: 5.7.c.2
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     screen: size
     copies: true
     short: First floor height
@@ -427,7 +477,9 @@ sections:
       gte:
       - item.stories
       - 2
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     screen: size
     copies: true
     short: Second floor height
@@ -446,7 +498,9 @@ sections:
       gte:
       - item.stories
       - 3
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     screen: size
     copies: true
     short: Third floor height
@@ -465,7 +519,9 @@ sections:
       gte:
       - item.stories
       - 4
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     screen: size
     copies: true
     short: Fourth floor height
@@ -493,7 +549,9 @@ sections:
     why: 6.5.c.2
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: tiles
     screen: roof
     copies: true
@@ -507,7 +565,9 @@ sections:
     why: 6.5.c.2
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: picker
     options:
     - value: flat
@@ -561,7 +621,9 @@ sections:
     why: 6.5.c.5
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: chips
     options:
     - value: clapboard
@@ -574,8 +636,8 @@ sections:
       label: Vinyl siding
       official: Vinyl siding
     - value: fibre_cement_siding
-      label: Fibre-cement siding
-      official: Fibre-cement siding
+      label: Fiber-cement siding
+      official: Fiber-cement siding
     - value: brick
       label: Brick
       official: Brick
@@ -614,7 +676,9 @@ sections:
       has:
       - item.exterior_finish
       - other
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     screen: outside
     copies: true
     short: Other material
@@ -651,7 +715,9 @@ sections:
     add_label: Add another building
     min: 1
     max: 20
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
   fields:
   - id: front_facing
     official_label: Direction the front faces
@@ -679,7 +745,9 @@ sections:
     why: 6.6.c.2
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: tiles
     screen: walls
   - id: windows_north
@@ -693,7 +761,9 @@ sections:
     why: 6.6.c.2
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: slider
     step_size: 5
     help: About what share of this wall is windows and doors?
@@ -709,7 +779,9 @@ sections:
     why: 6.6.c.2
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: slider
     step_size: 5
     help: About what share of this wall is windows and doors?
@@ -725,7 +797,9 @@ sections:
     why: 6.6.c.2
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: slider
     step_size: 5
     help: About what share of this wall is windows and doors?
@@ -741,7 +815,9 @@ sections:
     why: 6.6.c.2
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: slider
     step_size: 5
     help: About what share of this wall is windows and doors?
@@ -758,7 +834,9 @@ sections:
     add_label: Add an addition, porch or deck
     min: 0
     max: 30
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
   fields:
   - id: component_kind
     official_label: Component
@@ -792,7 +870,9 @@ sections:
       icon: dots
     why: 6.2.a.1
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: tiles
     screen: kind
     short: What it is
@@ -807,7 +887,9 @@ sections:
       eq:
       - item.component_kind
       - other
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     screen: kind
     short: What it's called
   - id: component_renovation_only
@@ -817,7 +899,9 @@ sections:
     type: yesno
     why: 8.10.b.2
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: switch
     default: false
     help: Choose Yes if it keeps its size and place.
@@ -829,7 +913,9 @@ sections:
     type: text
     why: 5.3.d.1
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: building-picker
   - id: component_width
     official_label: Width
@@ -842,7 +928,9 @@ sections:
     why: 6.2.a.1
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     screen: size
     short: Width
   - id: component_depth
@@ -856,7 +944,9 @@ sections:
     why: 6.2.a.1
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     screen: size
     short: Depth
   - id: component_height
@@ -874,16 +964,18 @@ sections:
       ne:
       - item.component_kind
       - patio
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     screen: size
     short: Height
   - id: added_floor_area
     official_label: Floor area added
     source: question
     label: How much floor area will the addition add, in square feet?
-    help: Count every storey. Choose "I don't know yet" if you aren't sure.
+    help: Count every story. Choose "I don't know yet" if you aren't sure.
     type: number
-    unit: sf
+    unit: sq ft
     min: 0
     max: 1000000
     why: 8.10.b.3
@@ -893,7 +985,9 @@ sections:
       ne:
       - item.component_kind
       - patio
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     screen: size
     short: Floor area added
   - id: component_roof_style
@@ -925,7 +1019,9 @@ sections:
       - item.component_kind
       - - addition
         - garage
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: tiles
     screen: roof
     short: Shape
@@ -943,7 +1039,9 @@ sections:
       - item.component_kind
       - - addition
         - garage
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: picker
     options:
     - value: flat
@@ -1000,7 +1098,9 @@ sections:
       - item.component_kind
       - - addition
         - garage
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: chips
     options:
     - value: clapboard
@@ -1013,8 +1113,8 @@ sections:
       label: Vinyl siding
       official: Vinyl siding
     - value: fibre_cement_siding
-      label: Fibre-cement siding
-      official: Fibre-cement siding
+      label: Fiber-cement siding
+      official: Fiber-cement siding
     - value: brick
       label: Brick
       official: Brick
@@ -1058,7 +1158,9 @@ sections:
       - has:
         - item.component_finish
         - other
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     screen: outside
     short: Other material
   - id: component_front_facing
@@ -1087,7 +1189,9 @@ sections:
     why: 6.6.c.2
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: tiles
     show_if:
       oneof:
@@ -1111,7 +1215,9 @@ sections:
       - item.component_kind
       - - addition
         - garage
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: slider
     step_size: 5
     help: About what share of this wall is windows and doors?
@@ -1132,7 +1238,9 @@ sections:
       - item.component_kind
       - - addition
         - garage
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: slider
     step_size: 5
     help: About what share of this wall is windows and doors?
@@ -1153,7 +1261,9 @@ sections:
       - item.component_kind
       - - addition
         - garage
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: slider
     step_size: 5
     help: About what share of this wall is windows and doors?
@@ -1174,7 +1284,9 @@ sections:
       - item.component_kind
       - - addition
         - garage
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: slider
     step_size: 5
     help: About what share of this wall is windows and doors?

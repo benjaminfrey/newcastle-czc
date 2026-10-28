@@ -15,7 +15,7 @@ from pathlib import Path
 
 import yaml
 
-from portal_api.forms.definitions import DefinitionError
+from portal_api.forms.definitions import DefinitionError, _check_status
 from portal_api.forms.formdefs import FormDef, Repeat, Section, Step, latest_version, load_form
 from portal_api.ruleset import Ruleset
 
@@ -37,6 +37,8 @@ class PartDef:
     repeats: bool = False
     repeat_of: str | None = None  # the form's repeat kind its sections walk (an addition walks "component")
     work_kind: str | None = None
+    approved_by: str | None = None
+    approved_on: str | None = None
 
 
 @dataclass(frozen=True)
@@ -53,6 +55,8 @@ class PartsDef:
     project_sections: tuple
     project_inputs: dict
     project_status: str
+    project_approved_by: str | None = None
+    project_approved_on: str | None = None
 
     def get(self, kind: str) -> PartDef | None:
         return next((p for p in self.parts if p.id == kind), None)
@@ -74,17 +78,19 @@ def load_parts(path: Path = FILE) -> PartsDef:
     doc = yaml.safe_load(path.read_text())
     parts = []
     for p in doc["parts"]:
-        if p.get("status") not in ("draft", "approved"):
-            raise DefinitionError(f"parts.yaml: {p.get('id')}: status is draft or approved")
+        _check_status(f"parts.yaml: {p.get('id')}", p)
         parts.append(PartDef(
             id=p["id"], label=p["label"], step=p["step"], icon=p["icon"],
             sections=tuple(_ref(s) for s in p["sections"]), rule=dict(p["rule"]), inputs=dict(p.get("inputs") or {}),
-            status=p["status"], repeats=bool(p.get("repeats")), repeat_of=p.get("repeat_of"), work_kind=p.get("work_kind")))
+            status=p["status"], repeats=bool(p.get("repeats")), repeat_of=p.get("repeat_of"), work_kind=p.get("work_kind"),
+            approved_by=p.get("approved_by"), approved_on=p.get("approved_on")))
     proj = doc["project"]
+    _check_status("parts.yaml: project", proj)
     return PartsDef(
         parts=tuple(parts), project_step=Step(proj["step"]["id"], proj["step"]["title"]),
         project_sections=tuple(ProjectSection(*_ref(s["section"]), tuple(s["when_any"])) for s in proj["sections"]),
-        project_inputs=dict(proj.get("inputs") or {}), project_status=proj["status"])
+        project_inputs=dict(proj.get("inputs") or {}), project_status=proj["status"],
+        project_approved_by=proj.get("approved_by"), project_approved_on=proj.get("approved_on"))
 
 
 def wanted_forms(kinds: list[str], parts: PartsDef) -> dict[str, int]:

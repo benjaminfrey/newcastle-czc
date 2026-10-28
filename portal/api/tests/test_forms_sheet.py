@@ -40,10 +40,13 @@ def test_sheet_renders_conditions_in_words():
     assert condition_words(up, {"between": ["x", 1]}) == "`{'between': ['x', 1]}`"
 
 
-def test_sheet_marks_drafts_and_records_the_chairs_rulings():
+def test_sheet_records_the_approvals_and_the_chairs_rulings():
     r, fs = forms()
     sheet = forms_sheet(r, fs)
-    assert "**Draft — awaiting the chair's approval.**" in sheet
+    assert "**Draft — awaiting the chair's approval.**" not in sheet and "**Every entry is approved.**" in sheet
+    assert "- Approved by Ben Frey, Planning Board chair, on 2026-10-28." in sheet
+    decisions = sheet[sheet.index("## The chair's decisions (2026-10-28)"):sheet.index("## Cover Sheet")]
+    assert decisions.count("\n") > 11 and "**A building's name.** Optional" in decisions
     assert "## The chair's rulings (2026-10-23)" in sheet
     assert "## Questions for the chair" not in sheet
     for words in ("Optional", "only when the work includes a building", "Standard Met?", "Special Use Building",
@@ -96,4 +99,5 @@ def test_sheet_lists_the_parts_and_the_project_questions():
     assert "### A new building (`building`)" in parts
     assert "- Asks: Small Project Plan Application — `building`, `building_location`" in parts
     assert "- Sets for the rules: `building.gross_floor_area_sf` from `floor_area`" in parts
-    assert "- **Draft" in parts
+    assert "- **Draft" not in parts
+    assert parts.count("- Approved by Ben Frey, Planning Board chair, on 2026-10-28.") == 9  # eight parts and About the work

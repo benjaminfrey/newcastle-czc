@@ -39,4 +39,4 @@ def test_the_sheet_shows_each_clock_in_plain_words_with_its_approval():
     sheet = review_sheet(r, load_definitions(r))
     spp = sheet[sheet.index("### `small_project_plan`"):]
     assert ("- Applicants read, for `small_project_decision`: “The Code Enforcement Officer decides within 10 days "
-            "of accepting your project.” — **Draft — awaiting the chair's approval.**") in spp
+            "of accepting your project.” — approved by Ben Frey, Planning Board chair, on 2026-10-28.") in spp

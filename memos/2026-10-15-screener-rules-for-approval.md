@@ -9,7 +9,7 @@ To approve a draft, change `status: draft` to
 ```yaml
 status: approved
 approved_by: <name>
-approved_on: 2026-10-26
+approved_on: 2026-10-28
 ```
 
 ## The chair's rulings (2026-10-18)
@@ -34,7 +34,7 @@ Entries that rest on a ruling say so below.
 - Reviewer: Code Enforcement Officer
 - Time limits shown: 30 calendar days
 - Apply on this site: yes
-- Applicants read, for `use_permit_decision`: “The Code Enforcement Officer decides within 30 days of accepting your project.” — **Draft — awaiting the chair's approval.**
+- Applicants read, for `use_permit_decision`: “The Code Enforcement Officer decides within 30 days of accepting your project.” — approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Approved by Ben Frey, Planning Board chair, on 2026-10-20.
 - Rests on Art. 8 §15.b.1:
 
@@ -46,7 +46,7 @@ Entries that rest on a ruling say so below.
 - Reviewer: Code Enforcement Officer
 - Time limits shown: 30 calendar days
 - Apply on this site: no (Town Office)
-- Applicants read, for `use_permit_decision`: “The Code Enforcement Officer decides within 30 days of accepting your project.” — **Draft — awaiting the chair's approval.**
+- Applicants read, for `use_permit_decision`: “The Code Enforcement Officer decides within 30 days of accepting your project.” — approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Ruling (Ben Frey, Planning Board chair, 2026-10-18): §17.c.1 sends the Residential Companion procedure to §15.D, so §15.d.1's 30 days apply.
 - Approved by Ben Frey, Planning Board chair, on 2026-10-20.
 - Rests on Art. 8 §17.b.1:
@@ -59,7 +59,7 @@ Entries that rest on a ruling say so below.
 - Reviewer: Planning Board
 - Time limits shown: 30 calendar days
 - Apply on this site: no (Town Office)
-- Applicants read, for `use_permit_decision`: “The Planning Board decides within 30 days of accepting your project.” — **Draft — awaiting the chair's approval.**
+- Applicants read, for `use_permit_decision`: “The Planning Board decides within 30 days of accepting your project.” — approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Approved by Ben Frey, Planning Board chair, on 2026-10-20.
 - Rests on Art. 8 §16.b.1:
 
@@ -71,8 +71,8 @@ Entries that rest on a ruling say so below.
 - Reviewer: Planning Board
 - Time limits shown: 30 calendar days, 45 calendar days
 - Apply on this site: no (Town Office)
-- Applicants read, for `special_permit_review_hearing`: “The Planning Board reviews it and holds a public hearing within 30 days of accepting your project.” — **Draft — awaiting the chair's approval.**
-- Applicants read, for `special_permit_decision`: “The Planning Board decides within 45 days of closing the hearing.” — **Draft — awaiting the chair's approval.**
+- Applicants read, for `special_permit_review_hearing`: “The Planning Board reviews it and holds a public hearing within 30 days of accepting your project.” — approved by Ben Frey, Planning Board chair, on 2026-10-28.
+- Applicants read, for `special_permit_decision`: “The Planning Board decides within 45 days of closing the hearing.” — approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Approved by Ben Frey, Planning Board chair, on 2026-10-20.
 - Rests on Art. 8 §18.b.1:
 
@@ -84,7 +84,7 @@ Entries that rest on a ruling say so below.
 - Reviewer: Code Enforcement Officer, who may send it to the Planning Board for a public hearing
 - Time limits shown: 10 calendar days
 - Apply on this site: yes
-- Applicants read, for `small_project_decision`: “The Code Enforcement Officer decides within 10 days of accepting your project.” — **Draft — awaiting the chair's approval.**
+- Applicants read, for `small_project_decision`: “The Code Enforcement Officer decides within 10 days of accepting your project.” — approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Ruling (Ben Frey, Planning Board chair, 2026-10-18): Show that §10.c.3 and §11.c.3 let the Code Enforcement Officer send the application to the Planning Board.
 - Approved by Ben Frey, Planning Board chair, on 2026-10-20.
 - Rests on Art. 8 §10.b.1:
@@ -97,9 +97,9 @@ Entries that rest on a ruling say so below.
 - Reviewer: Code Enforcement Officer, who may send it to the Planning Board for a public hearing
 - Time limits shown: 45 calendar days, 30 calendar days, 30 calendar days
 - Apply on this site: no (Town Office)
-- Applicants read, for `large_project_ceo_decision`: “The Code Enforcement Officer decides within 45 days of accepting your project.” — **Draft — awaiting the chair's approval.**
-- Applicants read, for `large_project_pb_completeness_hearing`: “If it goes to the Planning Board, the Board checks it is complete and holds a public hearing within 30 days of receiving it.” — **Draft — awaiting the chair's approval.**
-- Applicants read, for `large_project_pb_decision`: “If it goes to the Planning Board, the Board decides within 30 days of closing the hearing.” — **Draft — awaiting the chair's approval.**
+- Applicants read, for `large_project_ceo_decision`: “The Code Enforcement Officer decides within 45 days of accepting your project.” — approved by Ben Frey, Planning Board chair, on 2026-10-28.
+- Applicants read, for `large_project_pb_completeness_hearing`: “If it goes to the Planning Board, the Board checks it is complete and holds a public hearing within 30 days of receiving it.” — approved by Ben Frey, Planning Board chair, on 2026-10-28.
+- Applicants read, for `large_project_pb_decision`: “If it goes to the Planning Board, the Board decides within 30 days of closing the hearing.” — approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Ruling (Ben Frey, Planning Board chair, 2026-10-18): Show that §10.c.3 and §11.c.3 let the Code Enforcement Officer send the application to the Planning Board.
 - Approved by Ben Frey, Planning Board chair, on 2026-10-20.
 - Rests on Art. 8 §11.b.2:
@@ -209,7 +209,7 @@ Entries that rest on a ruling say so below.
 ### `new-building-size-unknown-note`
 
 - When: `{'all': [{'has': ['project', 'build']}, {'eq': ['building.kind', 'new']}, {'not': {'known': 'building.gross_floor_area_sf'}}]}`
-- Then: A new building of up to 10,000 square feet of floor area is a Small Project Plan; a larger one is a Large Project Plan. Count every storey.
+- Then: A new building of up to 10,000 square feet of floor area is a Small Project Plan; a larger one is a Large Project Plan. Count every story.
 - Approved by Ben Frey, Planning Board chair, on 2026-10-20.
 - Rests on Art. 8 §10.b.1:
 

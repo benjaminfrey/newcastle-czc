@@ -2,7 +2,7 @@
 
 Every section and field of the three application forms, with what applicants read, when each question is asked, the Code text it rests on, and its approval. Production refuses a form while any of its entries is a draft.
 
-**143 entries await approval.**
+**Every entry is approved.**
 
 To approve an entry, change `status: draft` to `status: approved` with `approved_by` and `approved_on` in its YAML file (`portal/api/portal_api/forms/definitions/forms/`).
 
@@ -23,17 +23,33 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 5. **Names on the Cover Sheet.** Kept: the Applicant, Property Owner and Agent blocks each have a Name line.
 6. **The packet.** The scanned 2025 forms are complete: the Cover Sheet, Use Form, Building Form (one page) and Components Section are the whole packet for these applications.
 
+## The chair's decisions (2026-10-28)
+
+The chair approved every entry, taking these eleven decisions:
+
+1. **The five proposals from the redesign.** Approved, all five (listed under Decisions so far).
+2. **A building's name.** Optional; an unnamed building shows as "Building 2".
+3. **Homes in each building.** Asked of every building type, starting at 0: an apartment over a garage or in a barn counts toward subdivision.
+4. **Stories.** Capped at 4, matching the Building Form's four floor heights; a taller building talks to the Town Office.
+5. **Spelling.** "story", "Fiber-cement" and "sq ft" everywhere applicants read.
+6. **Four wording fixes.** The road-frontage, building-type, lot-size and "Something else" help, as proposed.
+7. **Exterior finish choices.** Approved as listed.
+8. **The parts of a project.** Approved.
+9. **The questions only a project asks.** Approved.
+10. **The time limits in plain words.** Approved (listed in the screener rules memo).
+11. **The rest of the four forms.** Approved as written.
+
 ## Cover Sheet (part of every application)
 
 ### Location of Proposed Project (`location`)
 
 - Step: Your lot
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Map / Lot (`map_lot`)
 
 - Source: from the property lookup (staff confirm) — `map_lot`
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Street Address (`street_address`)
 
@@ -41,7 +57,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “What is the street address of the property?”
 - Help: For example "461 Sheepscot Road". If the land has no address yet, write the road it's on.
 - Answer: text; required
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
@@ -54,7 +70,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: text; optional; “I don't know yet” allowed
 - Card: asked with the others on `deed`, which asks “Where is your deed recorded?”
 - Short name on its card: “Deed book”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
@@ -67,7 +83,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: text; optional; “I don't know yet” allowed
 - Card: asked with the others on `deed`, which asks “Where is your deed recorded?”
 - Short name on its card: “Page”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
@@ -75,27 +91,27 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 ### Applicant (`applicant`)
 
 - Step: About you
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Name (`applicant_name`)
 
 - Source: from the applicant's sign-in — `name`
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Email (`applicant_email`)
 
 - Source: from the applicant's sign-in — `email`
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Phone (`applicant_phone`)
 
 - Source: from the applicant's sign-in — `phone`
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Address (`applicant_address`)
 
 - Source: from the applicant's sign-in — `mailing_address`
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Applicant is the Property Owner (`applicant_is_owner`)
 
@@ -104,7 +120,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Help: Choose No if you're a builder or someone else applying for the owner.
 - Answer: yesno; required
 - Control: switch (starts on)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
@@ -116,7 +132,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Help: If you choose Yes, the Town will also contact them.
 - Answer: yesno; required
 - Control: switch (starts off)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
@@ -125,7 +141,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 - Step: About you
 - Printed and asked only when “Applicant is the Property Owner” is No
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Name (`owner_name`)
 
@@ -135,7 +151,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: text; required
 - Card: asked with the others on `owner`, which asks “Who owns the property?”
 - Short name on its card: “Owner's name”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
@@ -147,7 +163,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: text; required; “I don't know yet” allowed
 - Card: asked with the others on `owner`, which asks “Who owns the property?”
 - Short name on its card: “Email”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
@@ -159,7 +175,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: text; required; “I don't know yet” allowed
 - Card: asked with the others on `owner`, which asks “Who owns the property?”
 - Short name on its card: “Phone”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
@@ -171,7 +187,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: text; required
 - Card: asked with the others on `owner`, which asks “Who owns the property?”
 - Short name on its card: “Mailing address”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
@@ -180,7 +196,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 - Step: About you
 - Printed and asked only when “Agent” is Yes
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Name (`agent_name`)
 
@@ -189,7 +205,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: text; required
 - Card: asked with the others on `agent`, which asks “Who is helping?”
 - Short name on its card: “Name or company”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
@@ -201,7 +217,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: text; required; “I don't know yet” allowed
 - Card: asked with the others on `agent`, which asks “Who is helping?”
 - Short name on its card: “Email”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
@@ -213,7 +229,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: text; required; “I don't know yet” allowed
 - Card: asked with the others on `agent`, which asks “Who is helping?”
 - Short name on its card: “Phone”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
@@ -225,7 +241,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: text; required; “I don't know yet” allowed
 - Card: asked with the others on `agent`, which asks “Who is helping?”
 - Short name on its card: “Mailing address”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
@@ -233,20 +249,20 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 ### Site Information (existing) (`site`)
 
 - Step: Your lot
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Zoning District (`zoning_district`)
 
 - Source: from the property lookup (staff confirm) — `districts`
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Lot Area (acres) (`lot_area`)
 
 - Source: from the property lookup (staff confirm) — `acres` (the applicant may correct it)
 - Applicants read: “How big is your lot, in acres?”
-- Help: We've filled in the size measured from the Town's map. Change it if your deed or a survey says otherwise.
+- Help: Change it if your deed or a survey says otherwise.
 - Answer: number (acres), 0–5000; required
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
@@ -259,7 +275,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: number (ft), 0–50000; required; “I don't know yet” allowed
 - Card: asked with the others on `lot_size`, which asks “How big is your lot?”
 - Short name on its card: “Width”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
@@ -268,9 +284,9 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 - Source: from the property lookup (staff confirm) — `streets` (the applicant may correct it)
 - Applicants read: “How many feet of your lot run along the road?”
-- Help: We've filled in what the Town's map shows. If the lot is on more than one road, add them together, or explain in "Add more detail".
+- Help: We've filled in what the Town's map shows. If the lot is on more than one road, add them together.
 - Answer: number (ft), 0–50000; required; “I don't know yet” allowed
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
@@ -282,7 +298,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: number (ft), 0–50000; required; “I don't know yet” allowed
 - Card: asked with the others on `lot_size`, which asks “How big is your lot?”
 - Short name on its card: “Depth”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
@@ -294,38 +310,38 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Help: Count each house, apartment or other separate home (the Code calls each one a dwelling unit). Enter 0 if there are none.
 - Answer: number, 0–500; required
 - Control: stepper
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
 
 ### Certification (`certification`)
 
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Applicant Signature (`signature`)
 
 - Source: filled when the applicant signs and submits (M6)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Date (`signature_date`)
 
 - Source: filled when the applicant signs and submits (M6)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Name (print) (`signature_name`)
 
 - Source: filled when the applicant signs and submits (M6)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 ### Official Use Only (`office`)
 
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Date Received (`date_received`)
 
 - Source: staff fill this in
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 ## Use Permit Application
 
@@ -333,27 +349,27 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Proposed Project (`use_header`)
 
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Applicant Name (`use_applicant_name`)
 
 - Source: copied from another field — `applicant_name`
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Street Address (`use_street_address`)
 
 - Source: copied from another field — `street_address`
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Map / Lot (`use_map_lot`)
 
 - Source: copied from another field — `map_lot`
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 ### Existing (`existing`)
 
 - Step: Uses today
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Existing Use(s) (`existing_uses`)
 
@@ -361,7 +377,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “What is the property used for now?”
 - Help: Pick each use from the Code's list. If the land is empty, or nothing fits, leave this blank and say so in the next question.
 - Answer: uses; optional
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §15.b.1:
 
   > Applies to all applications seeking to engage in a new Use or a change of Use on a parcel of land, in a building, or group of buildings.
@@ -372,7 +388,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “In a sentence or two, how is the property used now?”
 - Help: For example "Our home, with a two-car garage we use for storage."
 - Answer: longtext; required
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §15.b.1:
 
   > Applies to all applications seeking to engage in a new Use or a change of Use on a parcel of land, in a building, or group of buildings.
@@ -380,7 +396,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 ### Proposed (`proposed`)
 
 - Step: Your plan
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Uses to be Established (`proposed_uses`)
 
@@ -388,7 +404,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “Which use or uses do you want to start?”
 - Help: If you came here from "Do I need a permit?", we've filled in the use you picked. You can add others.
 - Answer: uses; required
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §15.b.1:
 
   > Applies to all applications seeking to engage in a new Use or a change of Use on a parcel of land, in a building, or group of buildings.
@@ -399,7 +415,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “What do you plan to do there?”
 - Help: Say what will happen there, in which building, and roughly how much: for example "Repair lawn and garden equipment in my 30 by 40 ft garage, by appointment, two or three customers a week."
 - Answer: longtext; required
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §15.b.1:
 
   > Applies to all applications seeking to engage in a new Use or a change of Use on a parcel of land, in a building, or group of buildings.
@@ -410,7 +426,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “Will any use that's there now stop?”
 - Help: Pick each use that will stop. Leave this blank if nothing will stop.
 - Answer: uses; optional
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §15.b.1:
 
   > Applies to all applications seeking to engage in a new Use or a change of Use on a parcel of land, in a building, or group of buildings.
@@ -421,7 +437,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “What will stop, and when?”
 - Answer: longtext; optional
 - Asked only when “Uses to be Discontinued” has an answer
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §15.b.1:
 
   > Applies to all applications seeking to engage in a new Use or a change of Use on a parcel of land, in a building, or group of buildings.
@@ -429,7 +445,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 ### Attachments (`use_documents_section`)
 
 - Step: Photos and plans
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Other relevant documentation (`use_documents`)
 
@@ -437,38 +453,38 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “Add anything else that would help, like photos, a floor plan or a business plan.”
 - Help: PDF, JPEG, PNG or HEIC files up to 25 MB each. This is optional, but staff may ask for more.
 - Answer: upload; optional
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
 
 ### Use Form Certification (`use_certification`)
 
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Applicant Signature (`use_signature`)
 
 - Source: filled when the applicant signs and submits (M6)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Date (`use_signature_date`)
 
 - Source: filled when the applicant signs and submits (M6)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Name (print) (`use_signature_name`)
 
 - Source: filled when the applicant signs and submits (M6)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 ### Use Form — Official Use Only (`use_office`)
 
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Permit Type Required (`permit_type_required`)
 
 - Source: staff fill this in
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 ## Small Project Plan Application
 
@@ -477,12 +493,12 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 ### Your Project (`project`)
 
 - Step: The work
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Type of project (`work_kinds`)
 
 - Source: worked out from the project's parts (never asked) — `work_kinds`
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §10.b.1:
 
   > All new buildings and accessory buildings up to 10,000 sf in gross floor area.
@@ -492,7 +508,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Source: asked in the wizard
 - Applicants read: “In a few sentences, what will you build or change?”
 - Answer: longtext; required
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
@@ -503,7 +519,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “Add a site plan or a sketch showing where the work is on your lot.”
 - Help: A hand drawing is fine. Show the lot lines, the road, the buildings and their distances from the lot lines.
 - Answer: upload; optional
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
@@ -513,32 +529,32 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Step: Buildings
 - Repeats: one per building (1 to 20); the wizard offers “Add another building”
 - Printed and asked only when (“Type of project” includes New building or accessory building) or (“Type of project” includes Addition of building components) or (“Type of project” includes Building renovation)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Map / Lot (`building_map_lot`)
 
 - Source: copied from another field — `map_lot`
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Street Address (`building_address`)
 
 - Source: copied from another field — `street_address`
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Zoning District (`building_district`)
 
 - Source: copied from another field — `zoning_district`
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Building reference (name) (`building_name`)
 
 - Source: asked in the wizard
 - Applicants read: “What do you call this building?”
 - Help: For example "house", "barn" or "new garage".
-- Answer: text; required
+- Answer: text; optional
 - Card: asked with the others on `about`, which asks “What is this building?”
 - Short name on its card: “What you call it”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
@@ -551,7 +567,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: yesno; required
 - Copied by “Copy Building 1”
 - Control: switch (starts off)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §10.b.2:
 
   > Building renovations up to 10,000 sf in gross floor area.
@@ -561,7 +577,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Step: Buildings
 - Repeats: one per building (1 to 20); the wizard offers “Add another building”
 - Printed and asked only when (“Type of project” includes New building or accessory building) or (“Type of project” includes Addition of building components) or (“Type of project” includes Building renovation)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Setback from front lot line (`setback_front`)
 
@@ -570,7 +586,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Help: Measure in feet from the lot line to the closest part of the building.
 - Answer: number (ft), 0–50000; required; “I don't know yet” allowed
 - Card: asked with the others on `setbacks` (lot-diagram drawing)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 2 §3.c.3:
 
   > All primary buildings must comply with required front, side, and rear setback ranges.
@@ -582,7 +598,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Help: In feet, from the lot line to the closest part of the building.
 - Answer: number (ft), 0–50000; required; “I don't know yet” allowed
 - Card: asked with the others on `setbacks` (lot-diagram drawing)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 2 §3.c.3:
 
   > All primary buildings must comply with required front, side, and rear setback ranges.
@@ -593,7 +609,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “How far will it be from the other side lot line?”
 - Answer: number (ft), 0–50000; required; “I don't know yet” allowed
 - Card: asked with the others on `setbacks` (lot-diagram drawing)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 2 §3.c.3:
 
   > All primary buildings must comply with required front, side, and rear setback ranges.
@@ -604,7 +620,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “How far will it be from the back lot line?”
 - Answer: number (ft), 0–50000; required; “I don't know yet” allowed
 - Card: asked with the others on `setbacks` (lot-diagram drawing)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 2 §3.c.3:
 
   > All primary buildings must comply with required front, side, and rear setback ranges.
@@ -614,13 +630,13 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Step: Buildings
 - Repeats: one per building (1 to 20); the wizard offers “Add another building”
 - Printed and asked only when (“Type of project” includes New building or accessory building) or (“Type of project” includes Addition of building components) or (“Type of project” includes Building renovation)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Building type (`building_class`)
 
 - Source: asked in the wizard
 - Applicants read: “Which best describes this building?”
-- Help: If you're not sure, choose "I don't know yet". The Code Enforcement Officer decides when it isn't clear.
+- Help: If you're not sure, choose "I don't know yet". Staff will help you choose.
 - Answer: choice; required; “I don't know yet” allowed
   - Residential Building — applicants read “A home: a house, duplex or apartment building”
   - Single Unit Commercial Building — applicants read “A building for one business”
@@ -633,7 +649,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
   - Agricultural Building — applicants read “A farm building, like a barn, stable or greenhouse”
 - Copied by “Copy Building 1”
 - Control: building-type
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 5 §1.c.1:
 
   > Buildings shall be classified as Primary or Accessory as follows:
@@ -650,7 +666,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Card: asked with the others on `about`, which asks “What is this building?”
 - Short name on its card: “Homes in it”
 - Control: stepper
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
@@ -660,7 +676,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Step: Buildings
 - Repeats: one per building (1 to 20); the wizard offers “Add another building”
 - Printed and asked only when (“Type of project” includes New building or accessory building) or (“Type of project” includes Addition of building components) or (“Type of project” includes Building renovation)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Width of Main Building Mass (`mass_width`)
 
@@ -671,7 +687,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Card: asked with the others on `size`, which asks “How big is the building?”
 - Short name on its card: “Width”
 - Copied by “Copy Building 1”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 5 §3.c.2:
 
   > Each Primary Building and each Accessory Building must be comprised of a Main Building Mass with a rectangular form and a single allowed roof type.
@@ -684,7 +700,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Card: asked with the others on `size`, which asks “How big is the building?”
 - Short name on its card: “Depth”
 - Copied by “Copy Building 1”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 5 §3.c.2:
 
   > Each Primary Building and each Accessory Building must be comprised of a Main Building Mass with a rectangular form and a single allowed roof type.
@@ -693,13 +709,13 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 - Source: asked in the wizard
 - Applicants read: “How many stories (floors above ground) will it have?”
-- Help: Don't count a basement or living space inside the roof.
-- Answer: number, 1–10; required; “I don't know yet” allowed
+- Help: Don't count a basement or living space inside the roof. If it will have more than four, talk to the Town Office.
+- Answer: number, 1–4; required; “I don't know yet” allowed
 - Card: asked with the others on `size`, which asks “How big is the building?”
 - Short name on its card: “Floors above ground”
 - Copied by “Copy Building 1”
 - Control: stepper
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 5 §3.c.2:
 
   > Each Primary Building and each Accessory Building must be comprised of a Main Building Mass with a rectangular form and a single allowed roof type.
@@ -709,11 +725,11 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Source: asked in the wizard
 - Applicants read: “What is the floor area of the main part of the building, in square feet?”
 - Help: Add up every story of the main part. Space inside the roof doesn't count.
-- Answer: number (sf), 0–1000000; required; “I don't know yet” allowed
+- Answer: number (sq ft), 0–1000000; required; “I don't know yet” allowed
 - Card: asked with the others on `size`, which asks “How big is the building?”
 - Short name on its card: “Floor area”
 - Copied by “Copy Building 1”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 5 §3.c.4:
 
   > The standards set forth in the Permitted Building tables under Article 2 - District Standards for Building Width, Building Depth, and Total Square Feet apply only to the Main Building Mass of Primary Buildings and Accessory Buildings.
@@ -727,7 +743,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Card: asked with the others on `size`, which asks “How big is the building?”
 - Short name on its card: “First floor above the ground”
 - Copied by “Copy Building 1”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 5 §4.c.4:
 
   > First floor elevation is measured from the average ground level at the front of the building to the top of the finished floor of the first story of a building.
@@ -741,7 +757,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Card: asked with the others on `size`, which asks “How big is the building?”
 - Short name on its card: “First floor height”
 - Copied by “Copy Building 1”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 5 §7.c.2:
 
   > Story height is measured from the surface of any floor to the surface of the floor above it or, if there is no floor above, from the surface of the floor to the top of the wall plate.
@@ -755,7 +771,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Short name on its card: “Second floor height”
 - Copied by “Copy Building 1”
 - Asked only when “Total number of stories” (this building) is 2 or more
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 5 §7.c.2:
 
   > Story height is measured from the surface of any floor to the surface of the floor above it or, if there is no floor above, from the surface of the floor to the top of the wall plate.
@@ -769,7 +785,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Short name on its card: “Third floor height”
 - Copied by “Copy Building 1”
 - Asked only when “Total number of stories” (this building) is 3 or more
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 5 §7.c.2:
 
   > Story height is measured from the surface of any floor to the surface of the floor above it or, if there is no floor above, from the surface of the floor to the top of the wall plate.
@@ -783,7 +799,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Short name on its card: “Fourth floor height”
 - Copied by “Copy Building 1”
 - Asked only when “Total number of stories” (this building) is 4 or more
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 5 §7.c.2:
 
   > Story height is measured from the surface of any floor to the surface of the floor above it or, if there is no floor above, from the surface of the floor to the top of the wall plate.
@@ -802,7 +818,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Short name on its card: “Shape”
 - Copied by “Copy Building 1”
 - Control: tiles
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 6 §5.c.2:
 
   > Each primary building, accessory building, or component may only have one roof.
@@ -830,7 +846,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Short name on its card: “Slope”
 - Copied by “Copy Building 1”
 - Control: picker
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 6 §5.c.2:
 
   > Each primary building, accessory building, or component may only have one roof.
@@ -844,7 +860,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
   - Clapboard — applicants read “Clapboard”
   - Wood shingle — applicants read “Wood shingle”
   - Vinyl siding — applicants read “Vinyl siding”
-  - Fibre-cement siding — applicants read “Fibre-cement siding”
+  - Fiber-cement siding — applicants read “Fiber-cement siding”
   - Brick — applicants read “Brick”
   - Stone — applicants read “Stone”
   - Board-and-batten — applicants read “Board-and-batten”
@@ -857,7 +873,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Short name on its card: “Materials”
 - Copied by “Copy Building 1”
 - Control: chips
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 6 §5.c.5:
 
   > Pitched roofs, if provided, must be clad with wood shingles, asphalt shingles, slate tile, metal, or have the appearance of natural materials.
@@ -871,7 +887,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Short name on its card: “Other material”
 - Copied by “Copy Building 1”
 - Asked only when “Exterior finish material” (this building) includes Other
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 6 §5.c.5:
 
   > Pitched roofs, if provided, must be clad with wood shingles, asphalt shingles, slate tile, metal, or have the appearance of natural materials.
@@ -881,7 +897,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Step: Buildings
 - Repeats: one per building (1 to 20); the wizard offers “Add another building”
 - Printed and asked only when (“Type of project” includes New building or accessory building) or (“Type of project” includes Addition of building components) or (“Type of project” includes Building renovation)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Direction the front faces (`front_facing`)
 
@@ -895,7 +911,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
   - West — applicants read “West” (icon `arrow-left`)
 - Card: asked with the others on `walls` (compass drawing)
 - Control: tiles
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 6 §6.c.2:
 
   > The required window and door percentages apply to the total area of each story of each building facade as measured from the surface of the floor of that story, to the surface of the next floor above; or, if there is no floor above, to either the top of the wall plate, or the base of the buildings eaves, whichever is shorter.
@@ -908,7 +924,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: number (%), 0–100; required; “I don't know yet” allowed
 - Card: asked with the others on `walls` (compass drawing)
 - Control: slider
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 6 §6.c.2:
 
   > The required window and door percentages apply to the total area of each story of each building facade as measured from the surface of the floor of that story, to the surface of the next floor above; or, if there is no floor above, to either the top of the wall plate, or the base of the buildings eaves, whichever is shorter.
@@ -921,7 +937,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: number (%), 0–100; required; “I don't know yet” allowed
 - Card: asked with the others on `walls` (compass drawing)
 - Control: slider
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 6 §6.c.2:
 
   > The required window and door percentages apply to the total area of each story of each building facade as measured from the surface of the floor of that story, to the surface of the next floor above; or, if there is no floor above, to either the top of the wall plate, or the base of the buildings eaves, whichever is shorter.
@@ -934,7 +950,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: number (%), 0–100; required; “I don't know yet” allowed
 - Card: asked with the others on `walls` (compass drawing)
 - Control: slider
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 6 §6.c.2:
 
   > The required window and door percentages apply to the total area of each story of each building facade as measured from the surface of the floor of that story, to the surface of the next floor above; or, if there is no floor above, to either the top of the wall plate, or the base of the buildings eaves, whichever is shorter.
@@ -947,7 +963,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: number (%), 0–100; required; “I don't know yet” allowed
 - Card: asked with the others on `walls` (compass drawing)
 - Control: slider
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 6 §6.c.2:
 
   > The required window and door percentages apply to the total area of each story of each building facade as measured from the surface of the floor of that story, to the surface of the next floor above; or, if there is no floor above, to either the top of the wall plate, or the base of the buildings eaves, whichever is shorter.
@@ -956,7 +972,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 - Step: Additions, porches and decks
 - Repeats: one per component (0 to 30); the wizard offers “Add an addition, porch or deck”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Component (`component_kind`)
 
@@ -972,7 +988,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Card: asked with the others on `kind`, which asks “What are you adding or changing?”
 - Short name on its card: “What it is”
 - Control: tiles
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 6 §2.a.1:
 
   > To provide a clear and flexible system for enabling the construction of new buildings and the expansion and modification of existing buildings.
@@ -985,7 +1001,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Card: asked with the others on `kind`, which asks “What are you adding or changing?”
 - Short name on its card: “What it's called”
 - Asked only when “Component” (this component) is Other Architectural Component
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 6 §2.a.1:
 
   > To provide a clear and flexible system for enabling the construction of new buildings and the expansion and modification of existing buildings.
@@ -997,7 +1013,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Help: Choose Yes if it keeps its size and place.
 - Answer: yesno; required
 - Control: switch (starts off)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §10.b.2:
 
   > Building renovations up to 10,000 sf in gross floor area.
@@ -1009,7 +1025,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Help: Choose the building it's attached to, or Free-standing.
 - Answer: text; required
 - Control: building-picker
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 5 §3.d.1:
 
   > Components may attach to primary and accessory buildings.
@@ -1021,7 +1037,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: number (ft), 0–2000; required; “I don't know yet” allowed
 - Card: asked with the others on `size`, which asks “How big is it?”
 - Short name on its card: “Width”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 6 §2.a.1:
 
   > To provide a clear and flexible system for enabling the construction of new buildings and the expansion and modification of existing buildings.
@@ -1033,7 +1049,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: number (ft), 0–2000; required; “I don't know yet” allowed
 - Card: asked with the others on `size`, which asks “How big is it?”
 - Short name on its card: “Depth”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 6 §2.a.1:
 
   > To provide a clear and flexible system for enabling the construction of new buildings and the expansion and modification of existing buildings.
@@ -1046,7 +1062,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Card: asked with the others on `size`, which asks “How big is it?”
 - Short name on its card: “Height”
 - Asked only when “Component” (this component) is not Patio
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 6 §2.a.1:
 
   > To provide a clear and flexible system for enabling the construction of new buildings and the expansion and modification of existing buildings.
@@ -1055,12 +1071,12 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 - Source: asked in the wizard
 - Applicants read: “How much floor area will the addition add, in square feet?”
-- Help: Count every storey. Choose "I don't know yet" if you aren't sure.
-- Answer: number (sf), 0–1000000; required; “I don't know yet” allowed
+- Help: Count every story. Choose "I don't know yet" if you aren't sure.
+- Answer: number (sq ft), 0–1000000; required; “I don't know yet” allowed
 - Card: asked with the others on `size`, which asks “How big is it?”
 - Short name on its card: “Floor area added”
 - Asked only when “Component” (this component) is not Patio
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §10.b.3:
 
   > Additions of building components.
@@ -1079,7 +1095,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Short name on its card: “Shape”
 - Control: tiles
 - Asked only when “Component” (this component) is Addition or Garage (attached)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 6 §5.c.2:
 
   > Each primary building, accessory building, or component may only have one roof.
@@ -1107,7 +1123,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Short name on its card: “Slope”
 - Control: picker
 - Asked only when “Component” (this component) is Addition or Garage (attached)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 6 §5.c.2:
 
   > Each primary building, accessory building, or component may only have one roof.
@@ -1121,7 +1137,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
   - Clapboard — applicants read “Clapboard”
   - Wood shingle — applicants read “Wood shingle”
   - Vinyl siding — applicants read “Vinyl siding”
-  - Fibre-cement siding — applicants read “Fibre-cement siding”
+  - Fiber-cement siding — applicants read “Fiber-cement siding”
   - Brick — applicants read “Brick”
   - Stone — applicants read “Stone”
   - Board-and-batten — applicants read “Board-and-batten”
@@ -1134,7 +1150,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Short name on its card: “Materials”
 - Control: chips
 - Asked only when “Component” (this component) is Addition or Garage (attached)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 6 §5.c.5:
 
   > Pitched roofs, if provided, must be clad with wood shingles, asphalt shingles, slate tile, metal, or have the appearance of natural materials.
@@ -1147,7 +1163,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Card: asked with the others on `outside`, which asks “What will its outside walls and roof be covered with?”
 - Short name on its card: “Other material”
 - Asked only when (“Component” (this component) is Addition or Garage (attached)) and (“Exterior finish material” (this component) includes Other)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 6 §5.c.5:
 
   > Pitched roofs, if provided, must be clad with wood shingles, asphalt shingles, slate tile, metal, or have the appearance of natural materials.
@@ -1165,7 +1181,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Card: asked with the others on `walls` (compass drawing)
 - Control: tiles
 - Asked only when “Component” (this component) is Addition or Garage (attached)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 6 §6.c.2:
 
   > The required window and door percentages apply to the total area of each story of each building facade as measured from the surface of the floor of that story, to the surface of the next floor above; or, if there is no floor above, to either the top of the wall plate, or the base of the buildings eaves, whichever is shorter.
@@ -1179,7 +1195,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Card: asked with the others on `walls` (compass drawing)
 - Control: slider
 - Asked only when “Component” (this component) is Addition or Garage (attached)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 6 §6.c.2:
 
   > The required window and door percentages apply to the total area of each story of each building facade as measured from the surface of the floor of that story, to the surface of the next floor above; or, if there is no floor above, to either the top of the wall plate, or the base of the buildings eaves, whichever is shorter.
@@ -1193,7 +1209,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Card: asked with the others on `walls` (compass drawing)
 - Control: slider
 - Asked only when “Component” (this component) is Addition or Garage (attached)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 6 §6.c.2:
 
   > The required window and door percentages apply to the total area of each story of each building facade as measured from the surface of the floor of that story, to the surface of the next floor above; or, if there is no floor above, to either the top of the wall plate, or the base of the buildings eaves, whichever is shorter.
@@ -1207,7 +1223,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Card: asked with the others on `walls` (compass drawing)
 - Control: slider
 - Asked only when “Component” (this component) is Addition or Garage (attached)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 6 §6.c.2:
 
   > The required window and door percentages apply to the total area of each story of each building facade as measured from the surface of the floor of that story, to the surface of the next floor above; or, if there is no floor above, to either the top of the wall plate, or the base of the buildings eaves, whichever is shorter.
@@ -1221,7 +1237,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Card: asked with the others on `walls` (compass drawing)
 - Control: slider
 - Asked only when “Component” (this component) is Addition or Garage (attached)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 6 §6.c.2:
 
   > The required window and door percentages apply to the total area of each story of each building facade as measured from the surface of the floor of that story, to the surface of the next floor above; or, if there is no floor above, to either the top of the wall plate, or the base of the buildings eaves, whichever is shorter.
@@ -1232,13 +1248,13 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Entrance / Driveway Form (`entrance`)
 
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Streets and Roads along the lot (Town map) (`lot_streets`)
 
 - Source: from the property lookup (staff confirm) — `streets`
 - Step: The driveway
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Street or Road the entrance is on (`entrance_street`)
 
@@ -1248,7 +1264,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: text; required
 - Step: The driveway
 - Control: street-picker
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 3 §8.b.1:
 
   > Applies to any new access to a lot from a Street or Road, whether utilizing a Driveway or a parking lot.
@@ -1263,7 +1279,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
   - New entrance to a parking lot — applicants read “Making a new entrance to a parking lot”
 - Step: The driveway
 - Control: segmented
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 3 §7.b.1:
 
   > Applies to new Driveways and to the relocation of existing Driveways.
@@ -1278,7 +1294,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Card: asked with the others on `homes`, which asks “How many homes will use this driveway?”
 - Short name on its card: “Single-family homes”
 - Control: stepper
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 3 §7.c.7:
 
   > A Driveway that is expanded or altered to serve more than two single-family dwellings, or more than one two-family dwelling, whether on one lot or on several, is no longer a Driveway under this Section. The access way is thereafter a Street or Road and shall be improved to its assigned Thoroughfare Type as provided in Section 7.F.
@@ -1292,7 +1308,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Card: asked with the others on `homes`, which asks “How many homes will use this driveway?”
 - Short name on its card: “Two-family homes”
 - Control: stepper
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 3 §7.c.7:
 
   > A Driveway that is expanded or altered to serve more than two single-family dwellings, or more than one two-family dwelling, whether on one lot or on several, is no longer a Driveway under this Section. The access way is thereafter a Street or Road and shall be improved to its assigned Thoroughfare Type as provided in Section 7.F.
@@ -1304,7 +1320,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: yesno; required
 - Step: The driveway
 - Control: switch (starts off)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 3 §7.c.3:
 
   > Abutting lots may share a Driveway provided that an access easement exists between all owners and the shared Driveway complies with the entrance standards in Section 8.
@@ -1317,7 +1333,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: upload; optional
 - Step: The driveway
 - Asked only when “Shared with an abutting lot” is Yes
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 3 §7.c.3:
 
   > Abutting lots may share a Driveway provided that an access easement exists between all owners and the shared Driveway complies with the entrance standards in Section 8.
@@ -1328,7 +1344,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “Tap the map where the driveway will meet the road.”
 - Answer: point; required
 - Step: Where it joins the road
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 3 §8.d.2:
 
   > No part of the entrance shall extend beyond the property lot frontage.
@@ -1341,7 +1357,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Step: Where it joins the road
 - Card: asked with the others on `driveway`, which asks “What will the driveway be like?”
 - Short name on its card: “Width”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 3 §7.e.1:
 
   > Driveway maximum width is calibrated by District as follows:
@@ -1360,7 +1376,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Card: asked with the others on `driveway`, which asks “What will the driveway be like?”
 - Short name on its card: “Slope of the first 20 ft”
 - Control: slider
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 3 §7.d.2:
 
   > Driveways must be constructed to prevent water run-off onto the adjacent Street or Road.
@@ -1375,7 +1391,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Card: asked with the others on `driveway`, which asks “What will the driveway be like?”
 - Short name on its card: “Angle to the road”
 - Control: slider
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 3 §8.e.1:
 
   > Entrances shall intersect the adjacent Street or Road at a horizontal angle of 90 degrees.
@@ -1389,7 +1405,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Step: Safety at the road
 - Card: asked with the others on `sight`, which asks “How far can you see from the driveway?”
 - Short name on its card: “Seeing left”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 3 §8.f.1:
 
   > All entrances shall be so located that vehicles approaching or using the entrance:
@@ -1404,7 +1420,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Step: Safety at the road
 - Card: asked with the others on `sight`, which asks “How far can you see from the driveway?”
 - Short name on its card: “Seeing right”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 3 §8.f.1:
 
   > All entrances shall be so located that vehicles approaching or using the entrance:
@@ -1419,7 +1435,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Step: Safety at the road
 - Card: asked with the others on `sight`, which asks “How far can you see from the driveway?”
 - Short name on its card: “To the nearest intersection”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 3 §8.f.2:
 
   > Entrances shall not be constructed within the following distances of an intersection:
@@ -1434,7 +1450,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Step: Safety at the road
 - Card: asked with the others on `sight`, which asks “How far can you see from the driveway?”
 - Short name on its card: “A traffic light there”
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 3 §8.f.2:
 
   > Entrances shall not be constructed within the following distances of an intersection:
@@ -1448,7 +1464,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Help: If there is, a culvert may be needed under the driveway.
 - Answer: yesno; required; “I don't know yet” allowed
 - Step: Safety at the road
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 3 §7.d.3:
 
   > Where the Permitting Authority determines that a Driveway culvert is necessary, the applicant shall bear the burden of the cost for the culvert installation, which shall be constructed to the standards of Section 10.
@@ -1465,7 +1481,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Step: State permit and sketch
 - Control: segmented
 - Asked only when the lot is not known to be off State roads (on a State road, or unknown)
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 3 §12.d.1:
 
   > An entrance onto a State Highway requires a MaineDOT entrance permit under 23 MRSA §704 in addition to any permit required by this Article.
@@ -1477,7 +1493,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Answer: upload; optional
 - Step: State permit and sketch
 - Asked only when “MaineDOT entrance permit” is Received
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 3 §12.d.2:
 
   > The applicant shall submit a copy of the MaineDOT entrance permit to the Permitting Authority before the Zoning Permit is issued.
@@ -1489,7 +1505,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Help: A hand drawing is fine. Show the road, the lot lines and the driveway.
 - Answer: upload; optional
 - Step: State permit and sketch
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
@@ -1500,7 +1516,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Renovation (`renovation`)
 
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Building to be renovated (`renovation_building`)
 
@@ -1508,7 +1524,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “Which building are you renovating?”
 - Help: For example, the house or the barn.
 - Answer: text; required
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §10.b.2:
 
   > Building renovations up to 10,000 sf in gross floor area.
@@ -1517,16 +1533,16 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 - Source: asked in the wizard
 - Applicants read: “What is the floor area of the whole building, in square feet?”
-- Help: Count every storey. Choose "I don't know yet" if you aren't sure.
-- Answer: number (sf), 0–1000000; required; “I don't know yet” allowed
-- **Draft — awaiting the chair's approval.**
+- Help: Count every story. Choose "I don't know yet" if you aren't sure.
+- Answer: number (sq ft), 0–1000000; required; “I don't know yet” allowed
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §10.b.2:
 
   > Building renovations up to 10,000 sf in gross floor area.
 
 ### Site work (`site_work`)
 
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Parking spaces (`parking_spaces`)
 
@@ -1535,14 +1551,14 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Help: Enter 0 if there's no parking.
 - Answer: number, 0–2000; required; “I don't know yet” allowed
 - Control: stepper
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §10.b.4:
 
   > Site improvements.
 
 ### Dividing land (`division`)
 
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Lots after the division (`lots_after`)
 
@@ -1550,7 +1566,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “How many lots will there be afterwards?”
 - Answer: number, 1–500; required; “I don't know yet” allowed
 - Control: stepper
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §12.b.1:
 
   > The division of a parcel of land into 3 or more lots within any 5 year period that begins on or after September 23, 1971.
@@ -1565,22 +1581,22 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
   - No — applicants read “No”
   - Not known — applicants read “I don't know”
 - Control: tiles
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §12.b.1:
 
   > The division of a parcel of land into 3 or more lots within any 5 year period that begins on or after September 23, 1971.
 
 ### Something else (`other`)
 
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### What the applicant has in mind (`other_description`)
 
 - Source: asked in the wizard
 - Applicants read: “Tell us what you have in mind.”
-- Help: A few sentences is enough. The Code Enforcement Officer will tell you what it needs.
+- Help: A few sentences is enough. Staff will tell you what else they need.
 - Answer: longtext; required
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §2.a.2:
 
   > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
@@ -1588,7 +1604,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 ### Homes added before this project (`project_homes`)
 
 - Printed and asked only when `new_homes_total` is 1 or more
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 #### Homes added on this lot in the last five years (`homes_last_5_years`)
 
@@ -1597,7 +1613,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Help: Homes added within five years count together. Enter 0 if none.
 - Answer: number, 0–500; required; “I don't know yet” allowed
 - Control: stepper
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 - Rests on Art. 8 §12.b.3:
 
   > The construction or placement of 3 or more dwelling units.
@@ -1614,7 +1630,7 @@ A project is made of parts; each asks the form sections listed and sets the rule
 - Sets for the rules: `building.gross_floor_area_sf` from `floor_area`
 - Sets for the rules: `building.new_dwelling_units` from `dwelling_units`
 - Prints as Type of project: `new_building`
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 ### An addition, porch or deck (`addition`)
 
@@ -1623,7 +1639,7 @@ A project is made of parts; each asks the form sections listed and sets the rule
 - Rule input: `project` = `build`, `building.kind` = `addition`
 - Sets for the rules: `building.gross_floor_area_sf` from `added_floor_area`
 - Prints as Type of project: `addition`
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 ### Renovating a building (`renovation`)
 
@@ -1632,7 +1648,7 @@ A project is made of parts; each asks the form sections listed and sets the rule
 - Rule input: `project` = `build`, `building.kind` = `renovation`
 - Sets for the rules: `building.total_floor_area_sf` from `renovation_total_floor_area`
 - Prints as Type of project: `renovation`
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 ### Site work (parking, grading, landscaping) (`site`)
 
@@ -1641,7 +1657,7 @@ A project is made of parts; each asks the form sections listed and sets the rule
 - Rule input: `project` = `build`, `building.kind` = `site`
 - Sets for the rules: `building.parking_spaces` from `parking_spaces`
 - Prints as Type of project: `site`
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 ### Start or change a use (`use`)
 
@@ -1649,14 +1665,14 @@ A project is made of parts; each asks the form sections listed and sets the rule
 - Asks: Use Permit Application — `existing`, `proposed`, `use_documents_section`
 - Rule input: `project` = `use`
 - Sets for the rules: `use_key` from `proposed_uses`
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 ### A driveway (`driveway`)
 
 - Dashboard row: Driveway; icon `road`
 - Asks: Entrance / Driveway Permit Application — `entrance`
 - Rule input: `project` = `driveway`
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 ### Divide land (`divide`)
 
@@ -1665,19 +1681,19 @@ A project is made of parts; each asks the form sections listed and sets the rule
 - Rule input: `project` = `divide`
 - Sets for the rules: `division.lots_after` from `lots_after`
 - Sets for the rules: `division.divided_last_5_years` from `divided_last_5_years`
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 ### Something else (`other`)
 
 - Dashboard row: Something else; icon `help-circle`
 - Asks: Project questions — `other`
 - Rule input: `project` = `other`
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 
 ### About the work (`the_work`)
 
 - Asks: Small Project Plan Application — `project` when the project has any of building, addition, renovation, site
 - Asks: Project questions — `project_homes` when the project has any of building
 - Sets for the rules: `building.homes_added_last_5_years` from `homes_last_5_years`
-- **Draft — awaiting the chair's approval.**
+- Approved by Ben Frey, Planning Board chair, on 2026-10-28.
 

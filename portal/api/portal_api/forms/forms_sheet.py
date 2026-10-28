@@ -59,6 +59,24 @@ RULINGS = [
      "Section are the whole packet for these applications."),
 ]
 
+APPROVED_ON = "2026-10-28"
+APPROVAL_DECISIONS = [
+    ("The five proposals from the redesign", "Approved, all five (listed under Decisions so far)."),
+    ("A building's name", "Optional; an unnamed building shows as \"Building 2\"."),
+    ("Homes in each building",
+     "Asked of every building type, starting at 0: an apartment over a garage or in a barn counts toward "
+     "subdivision."),
+    ("Stories", "Capped at 4, matching the Building Form's four floor heights; a taller building talks to the "
+     "Town Office."),
+    ("Spelling", "\"story\", \"Fiber-cement\" and \"sq ft\" everywhere applicants read."),
+    ("Four wording fixes", "The road-frontage, building-type, lot-size and \"Something else\" help, as proposed."),
+    ("Exterior finish choices", "Approved as listed."),
+    ("The parts of a project", "Approved."),
+    ("The questions only a project asks", "Approved."),
+    ("The time limits in plain words", "Approved (listed in the screener rules memo)."),
+    ("The rest of the four forms", "Approved as written."),
+]
+
 
 def _cite(ref: str) -> str:
     art, *rest = ref.split(".")
@@ -190,7 +208,10 @@ def forms_sheet(ruleset: Ruleset, forms: list[FormDef], parts=None) -> str:
            "`approved_on` in its YAML file (`portal/api/portal_api/forms/definitions/forms/`).", "",
            "## Decisions so far", "", *[f"- {d}" for d in DECISIONS], "",
            f"## The chair's rulings ({RULINGS_ON})", "",
-           *[f"{i}. **{title}.** {text}" for i, (title, text) in enumerate(RULINGS, 1)], ""]
+           *[f"{i}. **{title}.** {text}" for i, (title, text) in enumerate(RULINGS, 1)], "",
+           f"## The chair's decisions ({APPROVED_ON})", "",
+           "The chair approved every entry, taking these eleven decisions:", "",
+           *[f"{i}. **{title}.** {text}" for i, (title, text) in enumerate(APPROVAL_DECISIONS, 1)], ""]
     cover_done = False
     for form in forms:
         cover = [s for s in form.sections if s.file == "cover-sheet.v1.yaml"]
@@ -235,5 +256,5 @@ def _parts(forms: list[FormDef], parts) -> list[str]:
               f"{', '.join(s.when_any)}" for s in parts.project_sections],
             *[f"- Sets for the rules: `{k}` from `{v}`" for k, v in parts.project_inputs.items()],
             "- **Draft — awaiting the chair's approval.**" if parts.project_status == "draft"
-            else "- Approved.", ""]
+            else f"- Approved by {parts.project_approved_by}, on {parts.project_approved_on}.", ""]
     return out
