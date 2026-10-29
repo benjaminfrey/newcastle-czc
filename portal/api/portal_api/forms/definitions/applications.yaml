@@ -1,13 +1,16 @@
 # The applications the screener can name. Approved in full by the chair on 2026-10-20; a new or
 # changed entry goes back to status: draft until the chair approves it. code_name is the Code's
 # own name; plain is what applicants read. clock_keys name entries in the ruleset's
-# clocks.json; an application no clock covers shows no time limit.
+# clocks.json; an application no clock covers shows no time limit. clock_plain is each clock in
+# plain words for applicants (projects brief §8), with its own approval.
 - key: use_permit
   code_name: Use Permit
   plain: Permission to start a new use of land or a building, or to change from one use to another.
   reviewer: Code Enforcement Officer
   cite: "8.15.b.1"
   clock_keys: [use_permit_decision]
+  clock_plain:
+    use_permit_decision: {text: "The Code Enforcement Officer decides within 30 days of accepting your project.", status: approved, approved_by: "Ben Frey, Planning Board chair", approved_on: "2026-10-28"}
   in_portal: true
   status: approved
   approved_by: "Ben Frey, Planning Board chair"
@@ -18,6 +21,8 @@
   reviewer: Code Enforcement Officer
   cite: "8.17.b.1"
   clock_keys: [use_permit_decision]
+  clock_plain:
+    use_permit_decision: {text: "The Code Enforcement Officer decides within 30 days of accepting your project.", status: approved, approved_by: "Ben Frey, Planning Board chair", approved_on: "2026-10-28"}
   in_portal: false
   ruling: {by: "Ben Frey, Planning Board chair", "on": "2026-10-18", text: "§17.c.1 sends the Residential Companion procedure to §15.D, so §15.d.1's 30 days apply."}
   status: approved
@@ -29,6 +34,8 @@
   reviewer: Planning Board
   cite: "8.16.b.1"
   clock_keys: [use_permit_decision]
+  clock_plain:
+    use_permit_decision: {text: "The Planning Board decides within 30 days of accepting your project.", status: approved, approved_by: "Ben Frey, Planning Board chair", approved_on: "2026-10-28"}
   in_portal: false
   status: approved
   approved_by: "Ben Frey, Planning Board chair"
@@ -39,6 +46,9 @@
   reviewer: Planning Board
   cite: "8.18.b.1"
   clock_keys: [special_permit_review_hearing, special_permit_decision]
+  clock_plain:
+    special_permit_review_hearing: {text: "The Planning Board reviews it and holds a public hearing within 30 days of accepting your project.", status: approved, approved_by: "Ben Frey, Planning Board chair", approved_on: "2026-10-28"}
+    special_permit_decision: {text: "The Planning Board decides within 45 days of closing the hearing.", status: approved, approved_by: "Ben Frey, Planning Board chair", approved_on: "2026-10-28"}
   in_portal: false
   status: approved
   approved_by: "Ben Frey, Planning Board chair"
@@ -49,6 +59,8 @@
   reviewer: Code Enforcement Officer, who may send it to the Planning Board for a public hearing
   cite: "8.10.b.1"
   clock_keys: [small_project_decision]
+  clock_plain:
+    small_project_decision: {text: "The Code Enforcement Officer decides within 10 days of accepting your project.", status: approved, approved_by: "Ben Frey, Planning Board chair", approved_on: "2026-10-28"}
   in_portal: true
   ruling: {by: "Ben Frey, Planning Board chair", "on": "2026-10-18", text: "Show that §10.c.3 and §11.c.3 let the Code Enforcement Officer send the application to the Planning Board."}
   status: approved
@@ -61,6 +73,10 @@
   cite: "8.11.b.2"
   clock_keys: [large_project_ceo_decision, large_project_pb_completeness_hearing, large_project_pb_decision]
   clock_when: {large_project_pb_completeness_hearing: if sent to the Planning Board, large_project_pb_decision: if sent to the Planning Board}
+  clock_plain:
+    large_project_ceo_decision: {text: "The Code Enforcement Officer decides within 45 days of accepting your project.", status: approved, approved_by: "Ben Frey, Planning Board chair", approved_on: "2026-10-28"}
+    large_project_pb_completeness_hearing: {text: "If it goes to the Planning Board, the Board checks it is complete and holds a public hearing within 30 days of receiving it.", status: approved, approved_by: "Ben Frey, Planning Board chair", approved_on: "2026-10-28"}
+    large_project_pb_decision: {text: "If it goes to the Planning Board, the Board decides within 30 days of closing the hearing.", status: approved, approved_by: "Ben Frey, Planning Board chair", approved_on: "2026-10-28"}
   in_portal: false
   ruling: {by: "Ben Frey, Planning Board chair", "on": "2026-10-18", text: "Show that §10.c.3 and §11.c.3 let the Code Enforcement Officer send the application to the Planning Board."}
   status: approved

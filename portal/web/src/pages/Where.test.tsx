@@ -29,7 +29,8 @@ const FACTS: Facts = {
   geometry: { type: "MultiPolygon", coordinates: [[[[-69.6, 44.04], [-69.59, 44.04], [-69.59, 44.05], [-69.6, 44.04]]]] },
 };
 
-const renderPage = () => render(<MemoryRouter><Where /></MemoryRouter>);
+const onDone = vi.fn();
+const renderPage = () => render(<MemoryRouter><Where onDone={onDone} /></MemoryRouter>);
 
 async function search(text: string) {
   await userEvent.type(screen.getByLabelText("Street address, or map and lot"), text);
@@ -38,6 +39,7 @@ async function search(text: string) {
 
 beforeEach(() => {
   sessionStorage.clear();
+  onDone.mockReset();
   vi.spyOn(api, "getDistricts").mockResolvedValue([
     { code: "D1", name: "Rural (D1)" }, { code: "D2", name: "Neighborhood Residential (D2)" }]);
 });
@@ -113,6 +115,12 @@ describe("Where", () => {
     expect(await screen.findByLabelText("Street address, or map and lot")).toBeInTheDocument();
   });
 
+  it("asks in the card's voice: a 20 px question, and the near-black button", async () => {
+    renderPage();
+    expect(screen.getByRole("heading", { name: "Where is the property?" })).toHaveClass("text-[20px]");
+    expect(screen.getByRole("button", { name: "Search" })).toHaveClass("btn-filled");
+  });
+
   it("says so when nothing is at the tapped spot", async () => {
     vi.spyOn(api, "parcelAt").mockResolvedValue(null);
     renderPage();
@@ -126,7 +134,7 @@ describe("Where", () => {
     renderPage();
     await userEvent.click(screen.getByRole("button", { name: "tap the map" }));
     await userEvent.click(await screen.findByRole("radio", { name: "Yes, this is my property" }));
-    expect(await screen.findByText(/Saved/)).toBeInTheDocument();
+    await vi.waitFor(() => expect(onDone).toHaveBeenCalled());
     expect(loadProperty()).toEqual({ source: "lookup", parcel_id: 229, map_lot: "004-036", district_code: "D2",
                                      district_codes: ["D2", "D1"], on_state_highway: false,
                                      disputed: false, note: "", as_of: "2012-04-01" });
@@ -140,7 +148,7 @@ describe("Where", () => {
     await userEvent.click(await screen.findByRole("radio", { name: "This doesn't look right" }));
     await userEvent.type(screen.getByLabelText("What looks wrong?"), "The lot was split in 2019");
     await userEvent.click(screen.getByRole("button", { name: "Save" }));
-    expect(await screen.findByText(/Saved/)).toBeInTheDocument();
+    await vi.waitFor(() => expect(onDone).toHaveBeenCalled());
     expect(loadProperty()).toMatchObject({ source: "lookup", parcel_id: 229, disputed: true, note: "The lot was split in 2019" });
   });
 
@@ -152,7 +160,7 @@ describe("Where", () => {
     await userEvent.type(screen.getByLabelText("Map and lot"), "4-36");
     await userEvent.click(screen.getByRole("radio", { name: "Rural (D1)" }));
     await userEvent.click(screen.getByRole("button", { name: "Save" }));
-    expect(await screen.findByText(/Saved/)).toBeInTheDocument();
+    await vi.waitFor(() => expect(onDone).toHaveBeenCalled());
     expect(loadProperty()).toMatchObject({ source: "manual", parcel_id: null, map_lot: "4-36", district_code: "D1",
                                            district_codes: ["D1"], on_state_highway: null });
   });

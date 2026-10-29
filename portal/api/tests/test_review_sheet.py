@@ -29,3 +29,14 @@ def test_the_sheet_records_the_chairs_rulings():
     rule = next(x for x in defs.rules if x.id == "addition-large")
     assert rule.ruling["text"] in sheet
     assert sheet.count("Ruling (Ben Frey, Planning Board chair, 2026-10-18)") >= 10
+
+
+def test_the_sheet_shows_each_clock_in_plain_words_with_its_approval():
+    from portal_api.forms.__main__ import review_sheet
+    from portal_api.forms.definitions import load_definitions
+    from portal_api.ruleset import load_ruleset
+    r = load_ruleset()
+    sheet = review_sheet(r, load_definitions(r))
+    spp = sheet[sheet.index("### `small_project_plan`"):]
+    assert ("- Applicants read, for `small_project_decision`: “The Code Enforcement Officer decides within 10 days "
+            "of accepting your project.” — approved by Ben Frey, Planning Board chair, on 2026-10-28.") in spp

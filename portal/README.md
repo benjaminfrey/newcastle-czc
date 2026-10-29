@@ -90,18 +90,26 @@ district page; an area the adopted Code does not have would show as "staff will 
 Civic lot the page explains that only the Town builds there (spec P13). The basemap is
 self-hosted: see `portal/basemap/README.md`.
 
-## "Do I need a permit?" (the screener)
+## What a project needs (the rules, fees and clocks)
 
-The screener's answers come from data in `portal/api/portal_api/forms/definitions/`:
+"Do I need a permit?" is gone (`specs/2026-10-25-applicant-portal-projects.md`): its rules now run
+inside each project (`portal_api/forms/needs.py`), once per part and once per chosen use, and the
+dashboard shows the result as permits, reviews, fees and clocks. The rules come from data in
+`portal/api/portal_api/forms/definitions/`:
 `applications.yaml` (what each application is, who reviews it, the Code's time limits),
 `rules.yaml` (when each applies, in the condition language of `forms/expr.py`, mirrored in
-`web/src/forms/expr.ts`), and `use-groups.yaml` (plain groups and examples for the 63 uses). Every
+`web/src/forms/expr.ts`), `use-groups.yaml` (plain groups and examples for the 63 uses) and
+`fees.yaml` (the Town's Planning Fee Schedule as of 2025.08.25, line for line, with which fee line
+each review falls under; approved by the chair on 2026-10-25). Each application's clocks carry a
+plain sentence (`clock_plain` in `applications.yaml`, each with its own approval); clocks start at
+the staff lock, and after it each shows its due date. Every
 entry cites the Code section it rests on, checked against the pinned adopted ruleset
 (`portal_api/rulesets/adopted-v1.0/`, a SHA-verified copy of the Board app's ruleset).
 
 **Drafts and approval.** The chair approved every entry on 2026-10-20; the record is
-`memos/2026-10-15-screener-rules-for-approval.md`. A new or changed entry starts as `status: draft`. Production refuses any answer that
-rests on a draft (`503 screener_not_approved`; the page says the tool isn't ready). Only development
+`memos/2026-10-15-screener-rules-for-approval.md`. A new or changed entry starts as `status: draft`. While any entry
+(or clock sentence) is a draft, production withholds a project's needs (`"needs": {"refused":
+"not_approved"}`) and the uses list (`503 screener_not_approved`). Only development
 sets `PORTAL_ALLOW_DRAFT_RULES=true` — the dev API command and the LAN stack. To approve an entry,
 set `status: approved`, `approved_by` and `approved_on` in its YAML. The review sheet lists every
 draft with the Code text it rests on:
@@ -112,9 +120,23 @@ draft with the Code text it rests on:
 `PINNED_KEY` in `portal_api/ruleset.py`, and run the tests — every citation is re-checked, and the
 819-cell scenario table re-compares the screener with the new use table.
 
-## Applying (the three applications)
+## Projects
 
-Each application is a form definition in `portal_api/forms/definitions/forms/`: the Cover Sheet
+A person signs in first (Home's sign-in card), then starts a **project**: how to reach them (saved
+once on the account, `PUT /api/me`), where the work is, and its **parts** — a new building, an
+addition, renovation, site work, a use, a driveway, dividing land, something else
+(`definitions/parts.yaml`: each part's tile, the form sections it asks and the rule inputs it sets).
+The project pins the official forms its parts need (`project_form`), at the version current when each
+first applied, and the API builds one form for the project from them (`forms/parts.py`), served with
+the project (`GET /api/projects/{id}`). Questions no official form prints (the renovation's size,
+parking spaces, lots after a division) live in `project-questions.v1.yaml`. "Type of project" prints
+from the parts (`source: parts`). The project is sent as one unit (`POST …/submit`) and stays
+editable until staff lock it; the lock (a test seam, `POST …/lock`, behind `PORTAL_ALLOW_TEST_LOCK`,
+until Milestone 6) freezes it as a `submission` with its `review` rows.
+
+## The forms
+
+Each official form is a definition in `portal_api/forms/definitions/forms/`: the Cover Sheet
 (`cover-sheet.v1.yaml`, part of every form) plus `use-permit.v1.yaml`, `small-project-plan.v1.yaml` and
 `entrance-permit.v1.yaml`. A definition lists the official form's sections and fields; each field says
 where its value comes from (a plain question, the property lookup, the account, another field, the
@@ -124,51 +146,60 @@ form is new. `forms/answers.py` decides what applies, what is still missing and 
 `web/src/forms/applicability.ts` is its browser twin, and both are checked against
 `web/src/forms/form-fixtures.json`.
 
-**Steps, screens and controls.** A definition also says how the application is asked: a few steps
-(the sidebar's sections), then one question per screen (the redesign and the wizard,
-`specs/2026-10-23-applicant-portal-redesign.md` and `specs/2026-10-24-applicant-portal-wizard.md`):
+**Tasks, cards and controls.** A definition also says how the application is asked: a few tasks
+(its `steps`), each a short run of cards (`specs/2026-10-25-applicant-portal-task-list.md`, which
+revises the redesign and wizard briefs):
 
 - `steps` — the form's steps in order (the Cover Sheet's come first); a section or a field names its
   `step`, and a field's own wins. Every question must be on a step.
-- `screens` on a section and `screen` on its fields — fields asked together on one screen (deed
-  book and page; width and depth), each screen with an optional `layout`: `lot-diagram` (setbacks
-  around a drawing of the lot) or `compass` (window shares, the walls named from the way the front
-  faces). Every other question has a screen of its own.
-- `ask_first` — asked before the rest of its building or addition (a building's type), without
-  changing the printed form's order.
+- `screens` on a section and `screen` on its fields — a card: questions asked together (deed book
+  and page; a building's size; the four setbacks), declared once per repeat by any of its sections,
+  all on one step. A card may carry its own `title` and `help` (its question, "How big is the
+  building?") and an optional `layout`: `lot-diagram` (setbacks around a drawing of the lot) or
+  `compass` (the front's direction, then the window shares, walls named from it). Every other
+  question is a card of its own. Each question on a shared card has a `short` name ("Width").
+- `ask_first` — a rank (1, 2, …): asked before the rest of its building or addition (its type, then
+  whether it is only being renovated), without changing the printed form's order.
+- `icon` on an option — an outline icon beside the tile's words (`portal_api/forms/icons.txt`, which
+  the web's `controls/Icon.tsx` draws); a question's options have icons on all or none.
+- `copies` — "Copy Building 1" brings this answer to the new building (`POST …/parts` with
+  `copy_from`); unknowns copy, blanks don't.
 - `control` — how a question is asked: `stepper`, `slider`, `switch`, `segmented`, `tiles`,
   `picker`, `chips`, `building-picker`, `street-picker` or `building-type`, each only for the
   question types it suits; `step_size` for sliders and steppers; `autocomplete` for the browser's
   autofill. In the wizard every single choice (switches included) is tiles that answer at a tap.
-- `default` — a value set when the application (or item) is created, saved as the form's
+- `default` — a value set when the question first applies to a project (or part), saved as the form's
   (`set_by = form-default`).
 
 The loader checks every one of these (unknown steps, screens, controls, layouts; a control on the
 wrong type; defaults that would fail their own field's check), and the forms sheet prints them for
-the chair. What "Do I need a permit?" already asked (the kind of work, a new building's floor area
-and homes) is saved into a new application as `set_by = screener`, and shows as carried over.
+the chair.
 
-**The window.** The web app draws an application as a macOS / iOS window (`web/src/shell/`), one
-question at a time (`web/src/forms/screens.ts`, `web/src/app/WizardPane.tsx`): a single choice
-answers at a tap and moves on; typed answers have Continue (Return presses it). Answers stack as
-chips above the question (a tap goes back to it), and plain dots below show where you are in the
-section, or in a building. Buildings and additions run inline, ending with "Is there another?". On a
-desktop a sidebar lists the sections with checkmarks; on a phone ‹ Back goes to the last question and
-Steps to the list. Review shows each question as asked with Change, which comes back to review.
-Answers save as they are given (`app/ApplicationStore.tsx`); Continue waits for the saves. Light and
-dark follow the device. The design system is recorded in `web/DESIGN.md`.
+**The window.** The web app is a window (`web/src/shell/AppShell.tsx`): Home, Project, Messages and
+You in a sidebar on a desktop and a tab bar on a phone. A project's home is its dashboard
+(`app/Dashboard.tsx`): the parcel, a row per part, the parts still to add, and beside them what it
+needs (`app/NeedsPanel.tsx`), who is applying, and Check and send (`app/SendPane.tsx`). Each row is
+a short run of contained cards
+(`shell/Card.tsx`; `forms/tasks.ts`, `forms/screens.ts`, `app/WizardPane.tsx`): a header with the
+task's name and a bar counting its cards, the question, and a footer with Back and Continue. A single
+choice answers at a tap and moves on; typed answers have Continue (Return presses it). A task ends on
+its check page (Change comes back to it); buildings and additions have their own list
+(`app/ItemsPane.tsx`: add, Copy Building 1, delete) and each building its check page. Check and send
+lists what is left first; Send asks before it sends. Answers save as they are given (`app/ProjectStore.tsx`); Continue
+waits for the saves. Light and dark follow the device. The design system is recorded in
+`web/DESIGN.md`; the approved comp is `specs/assets/2026-10-25-task-list-comp.html`.
 
 **Approval.** Every entry starts as `status: draft`; production refuses a form with any draft in it
 (`503 form_not_approved`), as for the screener. The record for the chair:
 
     .venv/bin/python -m portal_api.forms forms-sheet > ../../memos/<date>-application-forms-for-approval.md
 
-**Versions.** An application keeps the form version and ruleset it started on; a new version is a new
+**Versions.** A project keeps each form at the version it was pinned at; a new version is a new
 file (`use-permit.v2.yaml`), never an edit to one in use.
 
 **Records.** Answers and section notes are insert-only (a change appends a row); every change bumps
-the application's revision, so a save from a tab that fell behind is refused (409) and the page offers
-"Load the latest" or "Keep mine". Events name fields, never values.
+the project's revision, so a save from a tab that fell behind is refused (409) and the page offers
+"Load the latest". After the lock every change is refused (409 `locked`). Events name fields, never values.
 
 **Uploads.** PDF, JPEG, PNG and HEIC, decided by the file's first bytes; 25 MB each; 60 a person an
 hour. Each is scanned by ClamAV before anything is stored; if the scanner can't be reached, the upload
@@ -178,7 +209,7 @@ streamed through the API. The store's credentials are `STORE_ACCESS_KEY` / `STOR
 VM's `.env`. Tests use an in-memory store and a fake scanner; two integration tests run against the
 real ones when `PORTAL_TEST_S3_ENDPOINT` and `PORTAL_TEST_CLAMD_HOST` are set (CI sets the first).
 
-**Journeys (Playwright).** `web/e2e/` drives each application end to end, at desktop and phone width,
+**Journeys (Playwright).** `web/e2e/` drives projects end to end (sign in, start, every part, send), at desktop and phone width,
 with an accessibility check (axe; serious and critical findings fail) on every kind of page. They run
 on the VM against the dev stack, not in CI (ClamAV's signature download is refused from CI runners):
 

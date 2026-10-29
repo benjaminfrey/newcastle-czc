@@ -1,7 +1,7 @@
 // The application's steps (the redesign): the three shared start steps, the form's own steps
-// (declared in its YAML), and Review and sign. A step is a list of rows (questions that apply)
+// (declared in its YAML), and Check and send. A step is a list of rows (questions that apply)
 // or a hub of items (buildings, additions) whose questions sit on sheet pages.
-import type { FormDef, FormSection, Page } from "../applications";
+import type { FormDef, FormSection, Page } from "../projects";
 import type { StepStatus } from "../shell/types";
 import { answerOf, applicable, missing, scope, shown, type Current, type Row } from "./applicability";
 
@@ -10,7 +10,7 @@ export const START_STEPS = [
   { id: "property", title: "Your property" },
   { id: "needs", title: "What you'll need" },
 ] as const;
-export const REVIEW_STEP = { id: "review", title: "Review and sign" } as const;
+export const REVIEW_STEP = { id: "review", title: "Check and send" } as const;
 
 export type HubItem = { id: string; label: string; status: StepStatus; unknowns: number };
 export type StepModel = {
@@ -19,7 +19,8 @@ export type StepModel = {
   hub?: { kind: string; repeat: NonNullable<FormSection["repeat"]>; pages: Page[]; items: HubItem[] };
 };
 
-const NOUNS: Record<string, string> = { building: "Building", component: "Addition" };
+// A project's additions are parts of kind "addition"; a form's own repeat kind is "component".
+const NOUNS: Record<string, string> = { building: "Building", component: "Addition", addition: "Addition" };
 
 const stepOf = (r: Row) => r.field.step ?? r.section.step ?? null;
 const isUnknown = (v: unknown) => typeof v === "object" && v !== null && (v as { unknown?: unknown }).unknown === true;

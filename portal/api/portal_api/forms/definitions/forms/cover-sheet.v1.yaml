@@ -15,13 +15,17 @@ sections:
 - id: location
   official_title: Location of Proposed Project
   chapter: Your property
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
   fields:
   - id: map_lot
     official_label: Map / Lot
     source: property
     from: map_lot
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: street_address
     official_label: Street Address
     source: property
@@ -32,7 +36,9 @@ sections:
     type: text
     why: 8.2.a.2
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: deed_book
     official_label: Deed Book
     source: question
@@ -42,8 +48,11 @@ sections:
     type: text
     why: 8.2.a.2
     allow_unknown: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     screen: deed
+    short: Deed book
   - id: deed_page
     official_label: Page
     source: question
@@ -52,50 +61,52 @@ sections:
     type: text
     why: 8.2.a.2
     allow_unknown: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     screen: deed
+    short: Page
   step: your_lot
   screens:
   - id: deed
     layout: null
+    title: Where is your deed recorded?
+    help: The book and page are on your deed. Skip this if you don't know them.
 - id: applicant
   official_title: Applicant
   chapter: Who's applying
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
   fields:
   - id: applicant_name
     official_label: Name
-    source: question
-    label: What is your full name?
-    type: text
-    why: 8.2.a.2
-    required: true
-    status: draft
-    autocomplete: name
+    source: account
+    from: name
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: applicant_email
     official_label: Email
     source: account
     from: email
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: applicant_phone
     official_label: Phone
-    source: question
-    label: What phone number should the Town use to reach you?
-    type: text
-    why: 8.2.a.2
-    required: true
-    status: draft
-    autocomplete: tel
+    source: account
+    from: phone
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: applicant_address
     official_label: Address
-    source: question
-    label: What is your mailing address?
-    help: Street or PO box, town, state and ZIP code.
-    type: text
-    why: 8.2.a.2
-    required: true
-    status: draft
-    autocomplete: street-address
+    source: account
+    from: mailing_address
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: applicant_is_owner
     official_label: Applicant is the Property Owner
     source: question
@@ -104,9 +115,12 @@ sections:
     type: yesno
     why: 8.2.a.2
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: switch
     default: true
+    ask_first: 2
   - id: has_agent
     official_label: Agent
     source: question
@@ -114,11 +128,17 @@ sections:
     type: yesno
     why: 8.2.a.2
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: switch
     default: false
     help: If you choose Yes, the Town will also contact them.
   step: about_you
+  screens:
+  - id: contact
+    layout: null
+    title: How can the Town reach you?
 - id: owner
   official_title: Property Owner (if different)
   chapter: Who's applying
@@ -126,7 +146,9 @@ sections:
     eq:
     - answers.applicant_is_owner
     - false
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
   fields:
   - id: owner_name
     official_label: Name
@@ -136,8 +158,13 @@ sections:
     type: text
     why: 8.2.a.2
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     autocomplete: name
+    screen: owner
+    short: Owner's name
+    ask_first: 3
   - id: owner_email
     official_label: Email
     source: question
@@ -146,8 +173,13 @@ sections:
     why: 8.2.a.2
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     autocomplete: email
+    screen: owner
+    short: Email
+    ask_first: 3
   - id: owner_phone
     official_label: Phone
     source: question
@@ -156,8 +188,13 @@ sections:
     why: 8.2.a.2
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     autocomplete: tel
+    screen: owner
+    short: Phone
+    ask_first: 3
   - id: owner_address
     official_label: Address
     source: question
@@ -165,9 +202,18 @@ sections:
     type: text
     why: 8.2.a.2
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     autocomplete: street-address
+    screen: owner
+    short: Mailing address
+    ask_first: 3
   step: about_you
+  screens:
+  - id: owner
+    layout: null
+    title: Who owns the property?
 - id: agent
   official_title: Agent (if applicable)
   chapter: Who's applying
@@ -175,7 +221,9 @@ sections:
     eq:
     - answers.has_agent
     - true
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
   fields:
   - id: agent_name
     official_label: Name
@@ -184,8 +232,12 @@ sections:
     type: text
     why: 8.2.a.2
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     autocomplete: name
+    screen: agent
+    short: Name or company
   - id: agent_email
     official_label: Email
     source: question
@@ -194,8 +246,12 @@ sections:
     why: 8.2.a.2
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     autocomplete: email
+    screen: agent
+    short: Email
   - id: agent_phone
     official_label: Phone
     source: question
@@ -204,8 +260,12 @@ sections:
     why: 8.2.a.2
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     autocomplete: tel
+    screen: agent
+    short: Phone
   - id: agent_address
     official_label: Address
     source: question
@@ -214,33 +274,48 @@ sections:
     why: 8.2.a.2
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     autocomplete: street-address
+    screen: agent
+    short: Mailing address
   step: about_you
+  screens:
+  - id: agent
+    layout: null
+    title: Who is helping?
+    help: A builder, surveyor or anyone else working with you.
 - id: site
   official_title: Site Information (existing)
   chapter: Your property
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
   fields:
   - id: zoning_district
     official_label: Zoning District
     source: property
     from: districts
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: lot_area
     official_label: Lot Area (acres)
     source: property
     from: acres
     may_correct: true
     label: How big is your lot, in acres?
-    help: We've filled in the size measured from the Town's map. Change it if your deed or a survey says otherwise.
+    help: Change it if your deed or a survey says otherwise.
     type: number
     unit: acres
     min: 0
     max: 5000
     why: 8.2.a.2
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: lot_width
     official_label: Lot Width (ft)
     source: question
@@ -254,15 +329,18 @@ sections:
     why: 8.2.a.2
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
+    screen: lot_size
+    short: Width
   - id: street_frontage
     official_label: Street Frontage (ft)
     source: property
     from: streets
     may_correct: true
     label: How many feet of your lot run along the road?
-    help: We've filled in what the Town's map shows. If the lot is on more than one road, add them together, or
-      explain in "Add more detail".
+    help: We've filled in what the Town's map shows. If the lot is on more than one road, add them together.
     type: number
     unit: ft
     min: 0
@@ -270,7 +348,9 @@ sections:
     why: 8.2.a.2
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: lot_depth
     official_label: Lot Depth (ft)
     source: question
@@ -282,7 +362,11 @@ sections:
     why: 8.2.a.2
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
+    screen: lot_size
+    short: Depth
   - id: existing_dwelling_units
     official_label: Number of Existing Dwelling Units
     source: question
@@ -294,32 +378,51 @@ sections:
     max: 500
     why: 8.2.a.2
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     control: stepper
   step: your_lot
+  screens:
+  - id: lot_size
+    layout: null
+    title: How big is your lot?
+    help: In feet. Your deed or a survey has these.
 - id: certification
   official_title: Certification
   chapter: Sign and submit
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
   fields:
   - id: signature
     official_label: Applicant Signature
     source: at_submit
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: signature_date
     official_label: Date
     source: at_submit
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: signature_name
     official_label: Name (print)
     source: at_submit
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
 - id: office
   official_title: Official Use Only
   chapter: Office use
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
   fields:
   - id: date_received
     official_label: Date Received
     source: staff
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"

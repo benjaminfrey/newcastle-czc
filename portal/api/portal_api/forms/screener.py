@@ -88,7 +88,7 @@ def run(answers: dict, ruleset: Ruleset, defs: Definitions) -> dict:
         if status == "draft" and (file, ident) not in drafts:
             drafts.append((file, ident))
 
-    def add_app(key, district, certainty, cite=None, ruling=None):
+    def add_app(key, district, certainty, cite=None, ruling=None, use_key=None):
         app = defs.applications[key]
         draft("applications.yaml", key, app.status)
         cite = cite or app.cite
@@ -102,7 +102,7 @@ def run(answers: dict, ruleset: Ruleset, defs: Definitions) -> dict:
             "application": key, "code_name": app.code_name, "plain": app.plain, "reviewer": app.reviewer,
             "certainty": certainty, "district": district,
             "district_name": (_district_name(district, ruleset.districts) or district) if district else None,
-            "in_portal": app.in_portal,
+            "in_portal": app.in_portal, "use_key": use_key,
             "days": _days(app, ruleset), "why": {"cite": cite, "text": ruleset.cite(cite), "ruling": ruling},
         })
 
@@ -143,7 +143,7 @@ def run(answers: dict, ruleset: Ruleset, defs: Definitions) -> dict:
                         f"The Code doesn't list this use in the {name} district. A variance can't be granted "
                         "for a use. The Code Enforcement Officer can talk you through your options.")})
                 for p in permits:
-                    add_app(APP_FOR_CODE[p], code, "needed", None, _ruling(rule))
+                    add_app(APP_FOR_CODE[p], code, "needed", None, _ruling(rule), use_key)
         if rule.stop:
             break
 

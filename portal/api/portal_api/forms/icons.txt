@@ -1,0 +1,24 @@
+# The outline icons a form's options may name (Tabler, as pinned in portal/web/package.json).
+# The web's Icon map draws each one (portal/web/src/controls/Icon.tsx); add a name to both.
+armchair
+arrow-down
+arrow-left
+arrow-right
+arrow-up
+building
+building-cottage
+building-store
+building-warehouse
+car-garage
+dots
+file-alert
+help-circle
+home
+home-plus
+layout-grid
+paint
+road
+shovel
+square
+stairs
+tractor

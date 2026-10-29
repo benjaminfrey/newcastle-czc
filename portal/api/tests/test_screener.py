@@ -3,6 +3,7 @@ from fastapi.testclient import TestClient
 
 from portal_api.main import create_app
 from portal_api.ruleset import load_ruleset
+from tests.screener_runner import Runner
 
 APP_FOR = {"u": "use_permit", "rc": "residential_companion", "ex": "expanded_use", "sp": "special_permit"}
 
@@ -11,7 +12,7 @@ APP_FOR = {"u": "use_permit", "rc": "residential_companion", "ex": "expanded_use
 def draft_client(engine, settings, outbox):
     settings.allow_draft_rules = True
     with TestClient(create_app(settings, outbox)) as c:
-        yield c
+        yield Runner(c)
 
 
 def answers(**kw):
@@ -108,9 +109,8 @@ def test_civic_land_is_town_only(draft_client):
 
 def test_draft_rules_are_refused_by_default(engine, settings, outbox, one_draft):
     with TestClient(create_app(settings, outbox)) as c:
-        r = c.post("/api/screener", json=answers(use_key=_first_cell("u")))
-        assert r.status_code == 503 and r.json() == {"detail": "screener_not_approved"}
         assert c.get("/api/screener/uses").status_code == 503
+        assert c.post("/api/screener", json=answers(use_key=_first_cell("u"))).status_code in (404, 405)
 
 
 def test_uses_endpoint_quotes_the_code(draft_client):
@@ -123,7 +123,6 @@ def test_uses_endpoint_quotes_the_code(draft_client):
 def test_approved_screener_is_served_with_production_defaults(engine, settings, outbox):
     assert settings.allow_draft_rules is False
     with TestClient(create_app(settings, outbox)) as c:
-        assert c.post("/api/screener", json=answers(use_key=_first_cell("u"))).status_code == 200
         assert c.get("/api/screener/uses").status_code == 200
 
 

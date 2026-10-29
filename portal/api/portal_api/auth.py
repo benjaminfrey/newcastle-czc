@@ -137,6 +137,26 @@ def _applicant_by_id(conn: Connection, applicant_id: str) -> Applicant:
     return Applicant(id=str(r.id), email=r.email, role=r.role)
 
 
+DETAILS = ("name", "phone", "mailing_address")
+
+
+def details(conn: Connection, applicant_id: str) -> dict:
+    """The account's details: name, phone and mailing address, each None until given."""
+    r = conn.execute(text("SELECT name, phone, mailing_address FROM applicant WHERE id = :a"),
+                     {"a": applicant_id}).one()
+    return {k: getattr(r, k) for k in DETAILS}
+
+
+def save_details(conn: Connection, applicant_id: str, new: dict) -> list[str]:
+    """Saves the details; returns the names of those that changed."""
+    old = details(conn, applicant_id)
+    changed = [k for k in DETAILS if old[k] != new[k]]
+    if changed:
+        conn.execute(text("UPDATE applicant SET name = :name, phone = :phone, mailing_address = :mailing_address"
+                          " WHERE id = :a"), {**new, "a": applicant_id})
+    return changed
+
+
 def current_applicant(request: Request, conn: Connection) -> Applicant | None:
     token = request.cookies.get(SESSION_COOKIE)
     if not token:

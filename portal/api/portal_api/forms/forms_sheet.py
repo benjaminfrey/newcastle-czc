@@ -12,6 +12,7 @@ SOURCES = {
     "derived": "copied from another field",
     "at_submit": "filled when the applicant signs and submits (M6)",
     "staff": "staff fill this in",
+    "parts": "worked out from the project's parts (never asked)",
 }
 
 DECISIONS = [
@@ -56,6 +57,24 @@ RULINGS = [
     ("The packet",
      "The scanned 2025 forms are complete: the Cover Sheet, Use Form, Building Form (one page) and Components "
      "Section are the whole packet for these applications."),
+]
+
+APPROVED_ON = "2026-10-28"
+APPROVAL_DECISIONS = [
+    ("The five proposals from the redesign", "Approved, all five (listed under Decisions so far)."),
+    ("A building's name", "Optional; an unnamed building shows as \"Building 2\"."),
+    ("Homes in each building",
+     "Asked of every building type, starting at 0: an apartment over a garage or in a barn counts toward "
+     "subdivision."),
+    ("Stories", "Capped at 4, matching the Building Form's four floor heights; a taller building talks to the "
+     "Town Office."),
+    ("Spelling", "\"story\", \"Fiber-cement\" and \"sq ft\" everywhere applicants read."),
+    ("Four wording fixes", "The road-frontage, building-type, lot-size and \"Something else\" help, as proposed."),
+    ("Exterior finish choices", "Approved as listed."),
+    ("The parts of a project", "Approved."),
+    ("The questions only a project asks", "Approved."),
+    ("The time limits in plain words", "Approved (listed in the screener rules memo)."),
+    ("The rest of the four forms", "Approved as written."),
 ]
 
 
@@ -129,7 +148,6 @@ def _status(e) -> str:
 
 def _section(ruleset: Ruleset, form: FormDef, s) -> list[str]:
     steps = {st.id: st.title for st in form.steps}
-    screens = {x.id: x for x in s.screens}
     out = [f"### {s.official_title} (`{s.id}`)", "",
            *([f"- Step: {steps[s.step]}"] if s.step in steps else []),
            *([f"- Repeats: one per {s.repeat.kind} ({s.repeat.min} to {s.repeat.max}); "
@@ -149,12 +167,19 @@ def _section(ruleset: Ruleset, form: FormDef, s) -> list[str]:
             out.append(f"- Answer: {kind}" + ("; required" if f.required else "; optional")
                        + ("; “I don't know yet” allowed" if f.allow_unknown else ""))
             for o in f.options:
-                out.append(f"  - {o.official} — applicants read “{o.label}”")
+                out.append(f"  - {o.official} — applicants read “{o.label}”" + (f" (icon `{o.icon}`)" if o.icon else ""))
         if f.step and f.step != s.step and f.step in steps:
             out.append(f"- Step: {steps[f.step]}")
-        if f.screen in screens:
-            lay = screens[f.screen].layout
-            out.append(f"- Screen: asked with the others on `{f.screen}`" + (f" ({lay} drawing)" if lay else ""))
+        if f.screen:
+            lay = form.screen_layout(f.id)
+            card = next((x for sec in form.sections for x in sec.screens
+                         if x.id == f.screen and (sec.repeat.kind if sec.repeat else None) == (s.repeat.kind if s.repeat else None)), None)
+            out.append(f"- Card: asked with the others on `{f.screen}`" + (f" ({lay} drawing)" if lay else "")
+                       + (f", which asks “{card.title}”" if card and card.title else ""))
+        if f.short:
+            out.append(f"- Short name on its card: “{f.short}”")
+        if f.copies:
+            out.append("- Copied by “Copy Building 1”")
         if f.control:
             starts = "" if f.default is None else (
                 " (starts on)" if f.default is True else " (starts off)" if f.default is False else f" (starts at {f.default})")
@@ -170,7 +195,7 @@ def _section(ruleset: Ruleset, form: FormDef, s) -> list[str]:
     return out
 
 
-def forms_sheet(ruleset: Ruleset, forms: list[FormDef]) -> str:
+def forms_sheet(ruleset: Ruleset, forms: list[FormDef], parts=None) -> str:
     drafts = sum((s.status == "draft") + sum(f.status == "draft" for f in s.fields)
                  for form in forms for s in form.sections
                  if not (form is not forms[0] and s.file == "cover-sheet.v1.yaml"))
@@ -183,7 +208,10 @@ def forms_sheet(ruleset: Ruleset, forms: list[FormDef]) -> str:
            "`approved_on` in its YAML file (`portal/api/portal_api/forms/definitions/forms/`).", "",
            "## Decisions so far", "", *[f"- {d}" for d in DECISIONS], "",
            f"## The chair's rulings ({RULINGS_ON})", "",
-           *[f"{i}. **{title}.** {text}" for i, (title, text) in enumerate(RULINGS, 1)], ""]
+           *[f"{i}. **{title}.** {text}" for i, (title, text) in enumerate(RULINGS, 1)], "",
+           f"## The chair's decisions ({APPROVED_ON})", "",
+           "The chair approved every entry, taking these eleven decisions:", "",
+           *[f"{i}. **{title}.** {text}" for i, (title, text) in enumerate(APPROVAL_DECISIONS, 1)], ""]
     cover_done = False
     for form in forms:
         cover = [s for s in form.sections if s.file == "cover-sheet.v1.yaml"]
@@ -196,4 +224,37 @@ def forms_sheet(ruleset: Ruleset, forms: list[FormDef]) -> str:
         for s in form.sections:
             if s.file != "cover-sheet.v1.yaml":
                 out += _section(ruleset, form, s)
+    if parts is not None:
+        out += _parts(forms, parts)
     return "\n".join(out)
+
+
+def _parts(forms: list[FormDef], parts) -> list[str]:
+    """The parts a project is made of (projects brief §4): the questions each asks and what it
+    sets for the rules."""
+    titles = {f.key: f.official_title for f in forms}
+    out = ["## Parts (`parts.yaml`)", "",
+           "A project is made of parts; each asks the form sections listed and sets the rules' inputs "
+           "(projects brief §6.1). \"Type of project\" prints from the parts.", ""]
+
+    def asks(refs) -> str:
+        by_form: dict[str, list[str]] = {}
+        for fk, sid in refs:
+            by_form.setdefault(fk, []).append(f"`{sid}`")
+        return "; ".join(f"{titles.get(fk, fk)} — {', '.join(ids)}" for fk, ids in by_form.items())
+
+    for p in parts.parts:
+        out += [f"### {p.label} (`{p.id}`)", "", f"- Dashboard row: {p.step}; icon `{p.icon}`"
+                + ("; repeats (one per building or addition)" if p.repeats else ""),
+                f"- Asks: {asks(p.sections)}",
+                f"- Rule input: {', '.join(f'`{k}` = `{v}`' for k, v in p.rule.items())}",
+                *[f"- Sets for the rules: `{k}` from `{v}`" for k, v in p.inputs.items()],
+                *([f"- Prints as Type of project: `{p.work_kind}`"] if p.work_kind else []),
+                _status(p), ""]
+    out += [f"### {parts.project_step.title} (`{parts.project_step.id}`)", "",
+            *[f"- Asks: {asks([(s.form_key, s.section_id)])} when the project has any of "
+              f"{', '.join(s.when_any)}" for s in parts.project_sections],
+            *[f"- Sets for the rules: `{k}` from `{v}`" for k, v in parts.project_inputs.items()],
+            "- **Draft — awaiting the chair's approval.**" if parts.project_status == "draft"
+            else f"- Approved by {parts.project_approved_by}, on {parts.project_approved_on}.", ""]
+    return out

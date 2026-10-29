@@ -1,8 +1,8 @@
 import { Button, ProgressBar } from "@heroui/react";
 import { useId, useState } from "react";
-import { useApplication } from "../app/ApplicationStore";
-import { removeAttachment, uploadFile, UPLOAD_MESSAGES, type Attachment } from "../applications";
-import type { FormField } from "../applications";
+import { useProject } from "../app/ProjectStore";
+import { removeAttachment, uploadFile, UPLOAD_MESSAGES, type Attachment } from "../projects";
+import type { FormField } from "../projects";
 
 const MAX_BYTES = 26_214_400;
 // image/* lets a phone offer its camera as well as the photo library.
@@ -14,8 +14,8 @@ function size(bytes: number): string {
 
 // One button for a photo or a file; each is checked for viruses before the Town keeps it.
 export default function UploadControl({ field, itemId }: { field: FormField; itemId: string | null }) {
-  const store = useApplication();
-  const app = store.app!;
+  const store = useProject();
+  const app = store.project!;
   const inputId = useId();
   const [progress, setProgress] = useState<number | null>(null);
   const [message, setMessage] = useState<string | null>(null);

@@ -12,7 +12,7 @@ const MESSAGES: Record<Exclude<LinkResult, "sent">, string> = {
 
 // Ask for an email address, send a sign-in link, then say where it went and for how long it
 // works. Used by the sign-in page and the sheet on "What you'll need".
-export default function SignInForm() {
+export default function SignInForm({ hint }: { hint?: string }) {
   const [email, setEmail] = useState("");
   const [result, setResult] = useState<LinkResult | null>(null);
   const [busy, setBusy] = useState(false);
@@ -34,7 +34,7 @@ export default function SignInForm() {
   if (result === "sent") {
     return (
       <div className="flex flex-col gap-3 rounded-xl bg-[var(--app-row)] p-5">
-        <h2 className="text-[22px] font-semibold">Check your email</h2>
+        <h2 className="text-[20px] font-medium leading-[1.3]">Check your email</h2>
         <p>We sent a sign-in link to <strong>{email}</strong>. The link works once, for 15 minutes, and brings you back here.</p>
         <p className="text-[15px] text-[var(--app-secondary-label)]">Didn't get it? Check your junk mail, or send another.</p>
         <div><Button variant="secondary" className="min-h-11" isDisabled={busy} onPress={() => void send()}>Send it again</Button></div>
@@ -46,10 +46,10 @@ export default function SignInForm() {
       <TextField type="email" isRequired value={email} onChange={setEmail} autoComplete="email">
         <Label>Your email address</Label>
         <Input className="min-h-11" />
-        <Description>No password needed. We only use it to send you links and updates about your applications.</Description>
+        <Description>{hint ?? "No password needed. We only use it to send you links and updates about your applications."}</Description>
       </TextField>
       {result && <p role="alert" className="text-[var(--app-destructive)]">{MESSAGES[result]}</p>}
-      <Button type="submit" variant="primary" className="min-h-11" isDisabled={busy}>Email me a sign-in link</Button>
+      <button type="submit" data-filled="" className="btn btn-filled w-full" disabled={busy}>Email me a sign-in link</button>
     </Form>
   );
 }

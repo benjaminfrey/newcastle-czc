@@ -1,7 +1,7 @@
 // Which questions apply — the browser's copy of the rules in
 // portal_api/forms/expr.py (shown) and answers.py, checked against
 // applicability-fixtures.json on both sides.
-import type { FormDef, FormField, FormSection } from "../applications";
+import type { FormDef, FormField, FormSection } from "../projects";
 import { evaluate, type Expr } from "./expr";
 
 // A question is asked unless its condition is known to be false: an answer still
@@ -99,6 +99,7 @@ export function valueOf(form: FormDef, f: FormField, itemId: string | null, cur:
   }
   if (f.source === "property") return propertyValue(f.from, cur.property, false);
   if (f.source === "account") return cur.account[f.from ?? ""] ?? null;
+  if (f.source === "parts") return answerOf(cur, f.from ?? "", null);
   if (f.source === "derived" && depth < 5) {
     const src = form.sections.flatMap((s) => s.fields).find((x) => x.id === f.from);
     return src ? valueOf(form, src, null, cur, depth + 1) : propertyValue(f.from, cur.property, false);

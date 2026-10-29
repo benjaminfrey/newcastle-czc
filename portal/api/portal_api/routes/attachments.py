@@ -1,8 +1,8 @@
-"""Uploads and downloads of an application's files.
+"""Uploads and downloads of a project's files.
 
 An upload is checked in this order, and nothing is stored unless every check
-passes: the application is the caller's (404), the field is an upload question of
-this form (422), the caller's hourly allowance (429), the size, read no further than
+passes: the project is the caller's (404) and not locked (409), the field is an upload
+question of the project's form (422), the caller's hourly allowance (429), the size, read no further than
 the limit (413), a virus scan (422 infected; 503 if the scanner can't be reached),
 the type by the file's first bytes (415), then the store (503), then the row and the
 event. Files go back only to their owner, streamed through the API.
@@ -18,12 +18,12 @@ from sqlalchemy import Connection, text
 from starlette.datastructures import UploadFile
 from starlette.formparsers import MultiPartException, MultiPartParser
 
-from portal_api import applications as apps
 from portal_api import auth
+from portal_api import projects as pj
 from portal_api.db import transaction
 from portal_api.events import append_event
 from portal_api.ratelimit import SlidingWindow
-from portal_api.routes.applications import _form_for
+from portal_api.routes.projects import Loaded
 from portal_api.scan import ScannerUnavailable
 from portal_api.storage import StoreUnavailable
 from portal_api.uploads import safe_filename, sniff
@@ -63,13 +63,15 @@ def _limiter(request: Request) -> SlidingWindow:
     return s.upload_limiter
 
 
-@router.post("/api/applications/{app_id}/attachments", status_code=201)
-async def upload(app_id: str, request: Request, applicant: auth.Applicant = auth.require,
+@router.post("/api/projects/{project_id}/attachments", status_code=201)
+async def upload(project_id: str, request: Request, applicant: auth.Applicant = auth.require,
                  conn: Connection = transaction):
     settings = request.app.state.settings
-    row = await run_in_threadpool(apps.owned, conn, app_id, applicant.id)
+    row = await run_in_threadpool(pj.owned, conn, project_id, applicant.id)
     if row is None:
         return _json(404, "not_found")
+    if row.status not in pj.EDITABLE:
+        return _json(409, "locked")
     body = await bounded_body(request, settings.upload_max_bytes + _OVERHEAD)
     if body is None:
         return _json(413, "too_large")
@@ -77,20 +79,21 @@ async def upload(app_id: str, request: Request, applicant: auth.Applicant = auth
         form = await _parse(request, body)
     except MultiPartException:
         return _json(422, "bad_upload")
-    file, field_id, item_id = form.get("file"), form.get("field_id"), form.get("item_id") or None
+    file, field_id, part_id = form.get("file"), form.get("field_id"), form.get("part_id") or None
     if not isinstance(file, UploadFile) or not isinstance(field_id, str):
         return _json(422, "bad_upload")
-    formdef = await run_in_threadpool(_form_for, row)
+    loaded = await run_in_threadpool(Loaded, conn, row)
+    formdef = loaded.form
     try:
         section, field = formdef.field(field_id)
     except KeyError:
         return _json(422, "not_an_upload_field")
     if field.type != "upload" or not field.is_question:
         return _json(422, "not_an_upload_field")
-    live = {i["id"]: i["kind"] for i in await run_in_threadpool(apps.items, conn, row.id)}
-    if (section.repeat is None and item_id is not None) or (
-            section.repeat is not None and live.get(item_id) != section.repeat.kind):
-        return _json(422, "wrong_item")
+    live = {p["id"]: p["kind"] for p in loaded.parts}
+    if (section.repeat is None and part_id is not None) or (
+            section.repeat is not None and live.get(part_id) != section.repeat.kind):
+        return _json(422, "wrong_part")
     if not _limiter(request).allow(applicant.id):
         return _json(429, "too_many_uploads")
     data = await file.read(settings.upload_max_bytes + 1)
@@ -106,7 +109,7 @@ async def upload(app_id: str, request: Request, applicant: auth.Applicant = auth
     if content_type is None:
         return _json(415, "unsupported_type")
     attachment_id = str(await run_in_threadpool(lambda: conn.execute(text("SELECT gen_random_uuid()")).scalar()))
-    key = f"applications/{row.id}/{attachment_id}"
+    key = f"projects/{row.id}/{attachment_id}"
     try:
         await run_in_threadpool(request.app.state.store.put, key, data, content_type)
     except StoreUnavailable:
@@ -114,29 +117,36 @@ async def upload(app_id: str, request: Request, applicant: auth.Applicant = auth
     digest = hashlib.sha256(data).hexdigest()
     name = safe_filename(file.filename or "")
 
-    def record():
+    def record() -> bool:
+        # The project may have been locked while the file was read and scanned: check again, holding
+        # the row so a lock waits for this insert (or this sees the lock).
+        if conn.execute(text("SELECT id FROM project WHERE id = :p AND status IN ('draft', 'submitted') FOR UPDATE"),
+                        {"p": row.id}).one_or_none() is None:
+            return False
         conn.execute(text(
-            "INSERT INTO attachment (id, application_id, field_id, item_id, filename, content_type, size_bytes,"
+            "INSERT INTO attachment (id, project_id, field_id, part_id, filename, content_type, size_bytes,"
             " sha256, storage_key) VALUES (:id, :a, :f, :i, :n, :t, :s, :h, :k)"
-        ), {"id": attachment_id, "a": row.id, "f": field_id, "i": item_id, "n": name, "t": content_type,
+        ), {"id": attachment_id, "a": row.id, "f": field_id, "i": part_id, "n": name, "t": content_type,
             "s": len(data), "h": digest, "k": key})
         append_event(conn, actor=f"applicant:{applicant.id}", kind="attachment.added",
-                     payload={"application_id": row.id, "attachment_id": attachment_id, "field_id": field_id,
-                              "item_id": item_id, "sha256": digest, "size_bytes": len(data),
+                     payload={"project_id": row.id, "attachment_id": attachment_id, "field_id": field_id,
+                              "part_id": part_id, "sha256": digest, "size_bytes": len(data),
                               "content_type": content_type})
+        return True
 
-    await run_in_threadpool(record)
+    if not await run_in_threadpool(record):
+        return _json(409, "locked")
     return {"id": attachment_id, "filename": name, "size_bytes": len(data), "content_type": content_type,
-            "field_id": field_id, "item_id": item_id}
+            "field_id": field_id, "part_id": part_id}
 
 
 def _owned_attachment(conn: Connection, attachment_id: str, applicant_id: str):
-    if apps.parse_id(attachment_id) is None:
+    if pj.parse_id(attachment_id) is None:
         return None
     return conn.execute(text(
-        "SELECT t.id, t.application_id, t.filename, t.content_type, t.storage_key FROM attachment t"
-        " JOIN application a ON a.id = t.application_id"
-        " WHERE t.id = :id AND a.applicant_id = :a AND t.removed_at IS NULL"
+        "SELECT t.id, t.project_id, t.filename, t.content_type, t.storage_key, p.status FROM attachment t"
+        " JOIN project p ON p.id = t.project_id"
+        " WHERE t.id = :id AND p.applicant_id = :a AND t.removed_at IS NULL"
     ), {"id": attachment_id, "a": applicant_id}).one_or_none()
 
 
@@ -162,7 +172,11 @@ def remove(attachment_id: str, applicant: auth.Applicant = auth.require, conn: C
     r = _owned_attachment(conn, attachment_id, applicant.id)
     if r is None:
         return _json(404, "not_found")
+    if r.status not in pj.EDITABLE or conn.execute(text(
+            "SELECT id FROM project WHERE id = :p AND status IN ('draft', 'submitted') FOR UPDATE"),
+            {"p": r.project_id}).one_or_none() is None:
+        return _json(409, "locked")
     conn.execute(text("UPDATE attachment SET removed_at = now() WHERE id = :id"), {"id": r.id})
     append_event(conn, actor=f"applicant:{applicant.id}", kind="attachment.removed",
-                 payload={"application_id": str(r.application_id), "attachment_id": str(r.id)})
+                 payload={"project_id": str(r.project_id), "attachment_id": str(r.id)})
     return Response(status_code=204)

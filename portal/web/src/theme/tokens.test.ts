@@ -26,6 +26,23 @@ describe("theme tokens", () => {
     expect(contrast(t.rowElevated, t.groundElevated)).toBeGreaterThanOrEqual(1.05);
   });
 
+  it.each(MODES)("tile and button edges stand at 3:1 on a card (%s)", (_, t) => {
+    expect(contrast(t.edge, t.row)).toBeGreaterThanOrEqual(3);
+  });
+
+  it.each(MODES)("the Done pill reads at 4.5:1 (%s)", (_, t) => {
+    expect(contrast(t.doneText, t.doneBg)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it.each(MODES)("the things-left pill reads at 4.5:1 and stands at 3:1 on a card (%s)", (_, t) => {
+    expect(contrast(t.warnText, t.warnBg)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(t.warnText, t.row)).toBeGreaterThanOrEqual(3);
+  });
+
+  it.each(MODES)("Continue (label on row) reads at 4.5:1 (%s)", (_, t) => {
+    expect(contrast(t.row, t.label)).toBeGreaterThanOrEqual(4.5);
+  });
+
   it.each(MODES)("buttons meet 4.5:1 (%s)", (_, t) => {
     expect(contrast(t.onAccent, t.accent)).toBeGreaterThanOrEqual(4.5);
   });

@@ -1,6 +1,6 @@
 import { Button } from "@heroui/react";
 import { useId } from "react";
-import type { FormField } from "../applications";
+import type { FormField } from "../projects";
 import InsetGroup from "../shell/InsetGroup";
 import {
   ChipsControl, isUnknown, NumberControl, PickerControl, SegmentedControl, SliderControl, SwitchControl, TextControl, TileControl,
@@ -37,9 +37,10 @@ type Props = {
   field: FormField; itemId: string | null; value: unknown; onValue: (v: unknown) => void; error?: string | null;
   compact?: boolean; // part of a layout that gives the help once for the group
   bare?: boolean;    // the wizard's screen: the control alone; the screen shows the question, help and "I don't know yet"
+  inSet?: boolean;   // beside its short name on a card's set of values (task-list brief §4.5): 110 px numbers, right-aligned
 };
 
-export default function FieldControl({ field, itemId, value, onValue, error, compact, bare }: Props) {
+export default function FieldControl({ field, itemId, value, onValue, error, compact, bare, inSet }: Props) {
   const kind = controlFor(field);
   const inputId = useId();
   const labelId = useId();
@@ -47,7 +48,7 @@ export default function FieldControl({ field, itemId, value, onValue, error, com
   const control = (() => {
     switch (kind) {
       case "longtext": return <TextControl {...props} long />;
-      case "number": return <NumberControl {...props} />;
+      case "number": return <NumberControl {...props} narrow={inSet} />;
       case "stepper": return <NumberControl {...props} stepper />;
       case "slider": return <SliderControl {...props} />;
       case "switch": return <SwitchControl {...props} />;
@@ -64,9 +65,9 @@ export default function FieldControl({ field, itemId, value, onValue, error, com
       default: return <TextControl {...props} />;
     }
   })();
-  if (bare) {
+  if (bare || inSet) {
     return (
-      <div data-field={field.id} className="flex w-full max-w-md flex-col items-center gap-2">
+      <div data-field={field.id} className={`flex w-full flex-col gap-2 ${inSet ? "items-end" : "max-w-md items-center"}`}>
         {control}
         {isUnknown(value) && <p className="text-[15px] text-[var(--app-secondary-label)]">Not known yet — staff will follow up.</p>}
         {error && <p role="alert" className="text-[15px] text-[var(--app-destructive)]">{error}</p>}

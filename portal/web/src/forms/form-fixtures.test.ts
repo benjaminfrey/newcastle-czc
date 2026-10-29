@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { FormDef } from "../applications";
+import type { FormDef } from "../projects";
 import { applicable, missing, printed, type Current } from "./applicability";
 import fixtures from "./form-fixtures.json";
 

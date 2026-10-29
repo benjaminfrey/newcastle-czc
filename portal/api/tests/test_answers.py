@@ -31,17 +31,17 @@ def reason(forms, key, fid, value):
 
 
 def cur(answers=None, items=(), prop=LOOKUP):
-    return Current(answers=dict(answers or {}), items=list(items), property=prop, account={"email": "a@example.com"})
+    return Current(answers=dict(answers or {}), items=list(items), property=prop, account={"email": "a@example.com", "name": "Ada Lovelace"})
 
 
 # ---- check_value ----
 
 def test_check_value_happy_paths(forms):
-    assert check_value(field(forms, "use_permit", "applicant_name"), "  Ada Lovelace ") == "Ada Lovelace"
+    assert check_value(field(forms, "use_permit", "owner_name"), "  Ada Lovelace ") == "Ada Lovelace"
     assert check_value(field(forms, "use_permit", "existing_dwelling_units"), 2) == 2.0
     assert check_value(field(forms, "use_permit", "applicant_is_owner"), False) is False
     assert check_value(field(forms, "small_project_plan", "roof_style"), "gable") == "gable"
-    assert check_value(field(forms, "small_project_plan", "work_kinds"), ["addition", "renovation", "addition"]) == ["addition", "renovation"]
+    assert check_value(field(forms, "small_project_plan", "exterior_finish"), ["clapboard", "wood_shingle", "clapboard"]) == ["clapboard", "wood_shingle"]
     assert check_value(field(forms, "use_permit", "proposed_uses"), ["residence"]) == ["residence"]
     assert check_value(field(forms, "entrance_permit", "entrance_location"), {"lon": -69.55, "lat": 44.05}, bounds=BOUNDS) \
         == {"lon": -69.55, "lat": 44.05}
@@ -59,7 +59,7 @@ def test_check_value_wrong_type(forms):
     assert reason(forms, "use_permit", "existing_dwelling_units", "two") == "wrong_type"
     assert reason(forms, "use_permit", "existing_dwelling_units", True) == "wrong_type"
     assert reason(forms, "use_permit", "applicant_is_owner", "yes") == "wrong_type"
-    assert reason(forms, "use_permit", "applicant_name", 5) == "wrong_type"
+    assert reason(forms, "use_permit", "owner_name", 5) == "wrong_type"
     assert reason(forms, "use_permit", "use_documents", ["x"]) == "wrong_type"
     assert reason(forms, "entrance_permit", "entrance_location", {"lon": "x", "lat": 1}) == "wrong_type"
     assert reason(forms, "use_permit", "existing_dwelling_units", float("nan")) == "wrong_type"
@@ -67,7 +67,7 @@ def test_check_value_wrong_type(forms):
 
 def test_check_value_not_an_option(forms):
     assert reason(forms, "small_project_plan", "roof_style", "dome") == "not_an_option"
-    assert reason(forms, "small_project_plan", "work_kinds", ["addition", "moat"]) == "not_an_option"
+    assert reason(forms, "small_project_plan", "exterior_finish", ["clapboard", "moat"]) == "not_an_option"
     assert reason(forms, "use_permit", "proposed_uses", ["castle"]) == "not_an_option"
 
 
@@ -78,11 +78,11 @@ def test_check_value_out_of_range(forms):
 
 
 def test_check_value_unknown_not_allowed(forms):
-    assert reason(forms, "use_permit", "applicant_name", {"unknown": True}) == "unknown_not_allowed"
+    assert reason(forms, "use_permit", "owner_name", {"unknown": True}) == "unknown_not_allowed"
 
 
 def test_check_value_too_long(forms):
-    assert reason(forms, "use_permit", "applicant_name", "x" * 2001) == "too_long"
+    assert reason(forms, "use_permit", "owner_name", "x" * 2001) == "too_long"
     assert reason(forms, "use_permit", "proposed_description", "x" * 10001) == "too_long"
 
 
@@ -161,7 +161,7 @@ def test_prefilled_property_values_are_not_missing(forms):
 
 def test_printed_resolves_property_and_derived_fields(forms):
     form = forms["use_permit"]
-    c = cur({("applicant_name", None): "Ada Lovelace", ("lot_area", None): 2.4})
+    c = cur({("lot_area", None): 2.4})  # the name comes from the account
     values = {(s.id, f.id): v for s, _, rows in printed(form, c) for f, v in rows}
     assert values[("location", "map_lot")] == "004-036"
     assert values[("location", "street_address")] == "461 SHEEPSCOT RD"

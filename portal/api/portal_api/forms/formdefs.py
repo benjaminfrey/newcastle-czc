@@ -20,9 +20,11 @@ from portal_api.ruleset import PINNED_KEY, Ruleset
 DIR = Path(__file__).resolve().parent / "definitions" / "forms"
 FORM_KEYS = ("use_permit", "small_project_plan", "entrance_permit")
 FIELD_TYPES = {"text", "longtext", "number", "choice", "multichoice", "yesno", "date", "uses", "point", "upload"}
-SOURCES = {"question", "property", "account", "derived", "at_submit", "staff"}
+SOURCES = {"question", "property", "account", "derived", "at_submit", "staff", "parts"}
 PROPERTY_KEYS = {"map_lot", "location", "acres", "districts", "streets", "on_state_highway"}
-ACCOUNT_KEYS = {"email"}
+ACCOUNT_KEYS = {"email", "name", "phone", "mailing_address"}
+# Worked out from the project's parts (forms/parts.py `derived`), never typed.
+PARTS_KEYS = {"work_kinds"}
 SCOPES = ("answers.", "item.", "property.")
 # How a question is drawn (the browser picks a default by type when none is named).
 # Each control and the field types it can answer: a switch on a number would be refused at every save.
@@ -32,6 +34,9 @@ CONTROL_TYPES = {"stepper": {"number"}, "slider": {"number"}, "switch": {"yesno"
 CONTROLS = set(CONTROL_TYPES)
 AUTOCOMPLETE = {"name", "tel", "email", "street-address"}
 LAYOUTS = {"compass", "lot-diagram"}
+# The outline icons an option may name: the vocabulary the web's Icon map draws.
+ICONS = frozenset(line.strip() for line in (Path(__file__).parent / "icons.txt").read_text().splitlines()
+                  if line.strip() and not line.startswith("#"))
 
 
 @dataclass(frozen=True)
@@ -39,6 +44,7 @@ class Option:
     value: str
     label: str
     official: str
+    icon: str | None = None  # an outline icon beside the tile's words (ICONS)
 
 
 @dataclass(frozen=True)
@@ -61,6 +67,8 @@ class Screen:
     with the drawing they sit around, if any."""
     id: str
     layout: str | None = None
+    title: str | None = None  # the card's own question ("How big is the building?"), when it gathers several
+    help: str | None = None   # and its line of help
 
 
 @dataclass(frozen=True)
@@ -88,11 +96,13 @@ class Field:
     approved_on: str | None = None
     step: str | None = None
     screen: str | None = None
-    ask_first: bool = False  # asked before the rest of its item; print order is unchanged
+    ask_first: int = 0  # asked before the rest of its item, lowest rank first; print order is unchanged
     control: str | None = None
     step_size: float | None = None
     default: object = None
     autocomplete: str | None = None
+    copies: bool = False  # "Copy Building 1" brings this answer to the new item
+    short: str | None = None  # its name beside its field on a shared card ("Width")
 
     @property
     def is_question(self) -> bool:
@@ -141,6 +151,17 @@ class FormDef:
                 return s, f
         raise KeyError(field_id)
 
+    def screen_layout(self, field_id: str) -> str | None:
+        """The drawing a field's card sits around, wherever in its repeat the card is declared."""
+        s, f = self.field(field_id)
+        kind = s.repeat.kind if s.repeat else None
+        for x in self.sections:
+            if (x.repeat.kind if x.repeat else None) == kind:
+                for sc in x.screens:
+                    if sc.id == f.screen:
+                        return sc.layout
+        return None
+
 
 def file_name(key: str, version: int) -> str:
     return f"{key.replace('_', '-')}.v{version}.yaml"
@@ -172,12 +193,14 @@ def _field(file: str, sec_id: str, f: dict, ruleset: Ruleset) -> Field:
     _check_status(where, f)
     if f.get("source") not in SOURCES:
         raise DefinitionError(f"{where}: unknown source {f.get('source')!r}")
-    if f["source"] in ("property", "derived", "account") and not f.get("from"):
+    if f["source"] in ("property", "derived", "account", "parts") and not f.get("from"):
         raise DefinitionError(f"{where}: a {f['source']} field needs from")
     if f["source"] == "property" and f["from"] not in PROPERTY_KEYS:
         raise DefinitionError(f"{where}: from {f['from']!r} is not a property fact")
     if f["source"] == "account" and f["from"] not in ACCOUNT_KEYS:
         raise DefinitionError(f"{where}: from {f['from']!r} is not an account fact")
+    if f["source"] == "parts" and f["from"] not in PARTS_KEYS:
+        raise DefinitionError(f"{where}: from {f['from']!r} is not worked out from the parts")
     asked = f["source"] == "question" or f.get("may_correct")
     if asked:
         if not f.get("label"):
@@ -191,6 +214,12 @@ def _field(file: str, sec_id: str, f: dict, ruleset: Ruleset) -> Field:
             values = [o.get("value") for o in opts]
             if len(set(values)) != len(values) or not all(o.get("label") and o.get("official") for o in opts):
                 raise DefinitionError(f"{where}: option values must be unique, each with a label and official name")
+            icons = [o.get("icon") for o in opts]
+            if any(icons) and not all(icons):
+                raise DefinitionError(f"{where}: give every option an icon, or none")
+            for i in icons:
+                if i is not None and i not in ICONS:
+                    raise DefinitionError(f"{where}: unknown icon {i!r} (portal_api/forms/icons.txt)")
         if f.get("min") is not None and f.get("max") is not None and f["min"] > f["max"]:
             raise DefinitionError(f"{where}: min is above max")
         if f["type"] == "upload" and f.get("required"):
@@ -208,15 +237,20 @@ def _field(file: str, sec_id: str, f: dict, ruleset: Ruleset) -> Field:
         raise DefinitionError(f"{where}: unknown autocomplete {f['autocomplete']!r}")
     if "default" in f and not asked:
         raise DefinitionError(f"{where}: only a question can have a default")
+    rank = f.get("ask_first") or 0
+    if rank is True:
+        rank = 1
+    if not isinstance(rank, int) or rank < 0:
+        raise DefinitionError(f"{where}: ask_first is true or a rank (1, 2, …)")
     return Field(
         id=f["id"], official_label=f["official_label"], source=f["source"], file=file, status=f["status"],
         from_=f.get("from"), may_correct=bool(f.get("may_correct")), label=f.get("label"), help=f.get("help"),
         why=f.get("why"), type=f.get("type"), unit=f.get("unit"), min=f.get("min"), max=f.get("max"),
-        options=tuple(Option(o["value"], o["label"], o["official"]) for o in f.get("options") or ()),
+        options=tuple(Option(o["value"], o["label"], o["official"], o.get("icon")) for o in f.get("options") or ()),
         required=bool(f.get("required")), allow_unknown=bool(f.get("allow_unknown")), show_if=f.get("show_if"),
         compare=f.get("compare"), approved_by=f.get("approved_by"), approved_on=f.get("approved_on"),
-        step=f.get("step"), screen=f.get("screen"), ask_first=bool(f.get("ask_first")), control=f.get("control"), step_size=f.get("step_size"),
-        default=f.get("default"), autocomplete=f.get("autocomplete"),
+        step=f.get("step"), screen=f.get("screen"), ask_first=rank, control=f.get("control"), step_size=f.get("step_size"),
+        default=f.get("default"), autocomplete=f.get("autocomplete"), copies=bool(f.get("copies")), short=f.get("short"),
     )
 
 
@@ -250,10 +284,14 @@ def _sections(file: str, doc: dict, ruleset: Ruleset) -> list[Section]:
                 raise DefinitionError(f"{where}: each screen needs an id")
             if sc.get("layout") is not None and sc["layout"] not in LAYOUTS:
                 raise DefinitionError(f"{where}: unknown layout {sc['layout']!r}")
-            screens.append(Screen(sc["id"], sc.get("layout")))
+            screens.append(Screen(sc["id"], sc.get("layout"), sc.get("title"), sc.get("help")))
+        fields = tuple(_field(file, s["id"], f, ruleset) for f in s.get("fields") or ())
+        for f in fields:
+            if f.copies and repeat is None:
+                raise DefinitionError(f"{file}: {f.id}: copies is only for a building's or an addition's questions")
         out.append(Section(
             id=s["id"], official_title=s["official_title"], chapter=s["chapter"], file=file, status=s["status"],
-            fields=tuple(_field(file, s["id"], f, ruleset) for f in s.get("fields") or ()),
+            fields=fields,
             repeat=repeat, show_if=s.get("show_if"), approved_by=s.get("approved_by"), approved_on=s.get("approved_on"),
             step=s.get("step"), screens=tuple(screens),
         ))
@@ -307,13 +345,21 @@ def _load(key: str, version: int, ruleset: Ruleset, root: Path) -> FormDef:
 
 
 def _check_steps(name: str, sections: list, steps: list) -> None:
-    """A form that declares steps places every question in one; a field's screen is one its
-    section declares."""
+    """A form that declares steps places every question in one. A field's screen (its card) is
+    declared once for its repeat (or once outside repeats), by any section; a card's questions
+    share one step."""
     step_ids = [st.id for st in steps]
     if len(set(step_ids)) != len(step_ids):
         raise DefinitionError(f"{name}: duplicate step id")
+    kind_of = lambda s: s.repeat.kind if s.repeat else None
+    declared: set[tuple] = set()
     for s in sections:
-        screen_ids = {x.id for x in s.screens}
+        for x in s.screens:
+            if (kind_of(s), x.id) in declared:
+                raise DefinitionError(f"{name}: {s.id}: duplicate screen {x.id!r}")
+            declared.add((kind_of(s), x.id))
+    card_step: dict[tuple, str | None] = {}
+    for s in sections:
         for f in s.fields:
             where = f"{f.file}: {f.id}"
             step = f.step or s.step
@@ -321,8 +367,13 @@ def _check_steps(name: str, sections: list, steps: list) -> None:
                 raise DefinitionError(f"{where}: step {step!r} is not declared")
             if steps and f.is_question and step is None:
                 raise DefinitionError(f"{where}: a question needs a step")
-            if f.screen is not None and f.screen not in screen_ids:
-                raise DefinitionError(f"{where}: screen {f.screen!r} is not one of {s.id}'s screens")
+            if f.screen is not None:
+                key = (kind_of(s), f.screen)
+                if key not in declared:
+                    raise DefinitionError(f"{where}: screen {f.screen!r} is not declared for this repeat ({key[0] or 'none'})")
+                if key in card_step and card_step[key] != step:
+                    raise DefinitionError(f"{where}: screen {f.screen!r} has questions in two steps")
+                card_step[key] = step
 
 
 def _check_defaults(form: FormDef) -> None:

@@ -1,127 +1,97 @@
-import { useEffect, useRef, type FormEvent, type PointerEvent, type ReactNode } from "react";
-import { commitFocused, isLongText } from "./commitFocused";
-import { useNavigate } from "react-router";
-import ActionBar from "./ActionBar";
-import NavBar from "./NavBar";
-import StepList from "./StepList";
-import StepSidebar from "./StepSidebar";
-import Toolbar from "./Toolbar";
-import type { SaveState, ShellActions, ShellStep } from "./types";
+import type { ReactNode } from "react";
+import { Link, NavLink } from "react-router";
+import Icon from "../controls/Icon";
+import { commitFocused } from "./commitFocused";
+import { SaveStatus } from "./SaveStatus";
+import type { SaveState } from "./types";
 import { useWideLayout } from "./useWideLayout";
 
+// The project last opened, so the Project tab goes back to it from Home, Messages and You.
+const LAST = "portal.lastProject";
+export function rememberProject(id: string): void {
+  try { localStorage.setItem(LAST, id); } catch { /* blocked storage: the tab goes Home */ }
+}
+function lastProject(): string | null {
+  try { return localStorage.getItem(LAST); } catch { return null; }
+}
+
 type Props = {
-  steps: ShellStep[];
-  currentId: string | null; // null: the phone's root list (on a desktop, the first step's pane)
-  formTitle: string;
-  saveState: SaveState;
-  rootHref: string;
-  onDone?: () => void;
-  onReload?: () => void;
-  onStep?: (id: string) => void; // ⌥⌘↑ / ⌥⌘↓
-  actions?: ShellActions;
-  backLabel?: string; // the phone's ‹ chevron: "Application", or "Home" for the start steps
-  // The wizard: the answer trail above the pane, one pane per question keyed and slid by direction,
-  // what a screen reader hears on arriving, and the phone's ‹ Back to the previous question.
-  trail?: ReactNode;
-  paneKey?: string;
-  direction?: 1 | -1;
-  announce?: string;
-  phoneBack?: () => void;
-  children?: ReactNode;
+  title: string;              // the page's name, for its heading (shown on a phone's bar in a card)
+  project?: string | null;    // the open project's id
+  saveState?: SaveState; onReload?: () => void;
+  back?: { href: string; label: string }; // a phone's bar in a card: ‹ Project
+  card?: boolean;             // a card fills a phone's screen
+  titled?: boolean;           // the page shows its own h1 (the dashboard, Check and send, Home)
+  children: ReactNode;
 };
 
-// The application window: on a desktop, a sidebar of steps beside the content pane (toolbar,
-// content, Back and Continue); on a phone, a list of steps that pushes each step in. The
-// content sits in one form, so Return anywhere in a field means Continue.
-export default function AppShell({ steps, currentId, formTitle, saveState, rootHref, onDone, onReload, onStep, actions = {}, backLabel = "Application",
-  trail, paneKey, direction = 1, announce, phoneBack, children }: Props) {
+const TABS = [
+  { to: "/", label: "Home", icon: "home", end: true },
+  { to: "project", label: "Project", icon: "clipboard-list", end: false },
+  { to: "/messages", label: "Messages", icon: "message", end: true },
+  { to: "/you", label: "You", icon: "user", end: true },
+] as const;
+
+// The app's window (projects brief §3.4): a desktop sidebar under the Town seal (Home, Project,
+// Messages, You); a phone's bottom tab bar with the same four. In a card, a phone's 44 px bar
+// carries ‹ Project and the save status, and the card fills the screen above the tab bar.
+export default function AppShell({ title, project, saveState, onReload, back, card, titled, children }: Props) {
   const wide = useWideLayout();
-  const navigate = useNavigate();
-  const flat = steps.flatMap((s) => [s, ...(s.children ?? [])]);
-  const current = flat.find((s) => s.id === currentId);
-  const reduced = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  // A step slides in on a phone and cross-fades on a desktop; with reduced motion, a short fade.
-  // In the wizard each question slides in sideways on both sizes, back the other way.
-  const motion = reduced ? "pane-fade" : paneKey ? (direction < 0 ? "pane-pull" : "pane-push") : wide ? "pane-cross" : "pane-push";
-  const top = steps.findIndex((s) => s.id === currentId || s.children?.some((c) => c.id === currentId));
-
-  // The iOS edge swipe: a drag that starts at the left edge and moves right goes back.
-  const swipe = useRef<number | null>(null);
-  const onPointerDown = (e: PointerEvent) => { swipe.current = !wide && e.clientX <= 20 ? e.clientX : null; };
-  const onPointerUp = (e: PointerEvent) => {
-    if (swipe.current !== null && e.clientX - swipe.current >= 80) {
-      commitFocused();
-      if (phoneBack) {
-        swipe.current = null;
-        return phoneBack();
-      }
-      navigate(rootHref);
-    }
-    swipe.current = null;
-  };
-
-  useEffect(() => {
-    if (!onStep || !currentId) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (!(e.altKey || e.metaKey) || (e.key !== "ArrowDown" && e.key !== "ArrowUp") || isLongText(e.target)) return;
-      const at = steps.findIndex((s) => s.id === currentId);
-      const next = steps[at + (e.key === "ArrowDown" ? 1 : -1)];
-      if (next) {
-        e.preventDefault();
-        commitFocused();
-        onStep(next.id);
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [steps, currentId, onStep]);
-
-  function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    commitFocused();
-    actions.onContinue?.();
-  }
-
-  if (!wide && !current) return <StepList steps={steps} title="Your application" subtitle={formTitle} />;
-
-  // A pane that brings its own form (the start steps) gets a plain container, never a nested form.
-  const cls = `flex flex-col gap-6 ${wide ? "px-8 py-6" : "px-4 pb-32 pt-2"}`;
-  const inner = actions.onContinue || actions.back || actions.dots ? (
-    <form onSubmit={onSubmit} noValidate className={cls}>
-      {children}
-      <ActionBar actions={actions} wide={wide} />
-    </form>
-  ) : <div className={cls}>{children}</div>;
-  const content = (
-    <div key={paneKey ?? currentId ?? "root"} data-pane className={motion} onPointerDown={onPointerDown} onPointerUp={onPointerUp}>
-      {inner}
-      {current && top >= 0 && (
-        <p data-testid="step-announcer" aria-live="polite" className="sr-only">
-          {announce ?? `Step ${top + 1} of ${steps.length}: ${current.title}`}
-        </p>
-      )}
-    </div>
+  const projectHref = project ? `/projects/${project}` : lastProject() ? `/projects/${lastProject()}` : "/";
+  const tabs = TABS.map((t) => ({ ...t, to: t.to === "project" ? projectHref : t.to }));
+  const item = (t: (typeof tabs)[number], phone: boolean) => (
+    <NavLink key={t.label} to={t.to} end={t.end} onClick={commitFocused}
+             className={({ isActive }) => {
+               const on = isActive || (t.label === "Project" && !!project);
+               return phone
+                 ? `flex min-h-12 flex-1 flex-col items-center justify-center gap-0.5 text-[11px] no-underline ${on ? "text-[var(--app-accent-text)]" : "text-[var(--app-secondary-label)]"}`
+                 : `flex min-h-11 items-center gap-3 rounded-[8px] px-3 text-[15px] no-underline ${on ? "bg-[var(--app-selection)] font-medium text-[var(--app-label)]" : "text-[var(--app-label)]"}`;
+             }}>
+      <Icon name={t.icon} size={phone ? 22 : 18} />{t.label}
+    </NavLink>
   );
 
-  if (!wide) {
+  if (wide) {
     return (
-      <div className="min-h-dvh bg-[var(--app-ground)]">
-        <NavBar title={current!.title} backHref={rootHref} backLabel={backLabel} saveState={saveState} onReload={onReload} onBack={phoneBack} />
-        {trail}
-        {content}
+      <div className="grid min-h-dvh grid-cols-[250px_minmax(0,1fr)] bg-[var(--app-grouped-ground)]">
+        <aside className="sticky top-0 flex h-dvh flex-col gap-4 border-r-[0.5px] border-[var(--app-separator)] px-[10px] py-4">
+          <Link to="/" className="flex items-center gap-3 px-3 no-underline">
+            <img src="/town-seal.png" alt="Town of Newcastle seal" className="size-10" width={40} height={40} />
+            <span className="min-w-0 leading-tight">
+              <span className="block text-[13px] font-semibold text-[var(--app-label)]">Town of Newcastle</span>
+              <span className="block text-[13px] text-[var(--app-secondary-label)]">Permits</span>
+            </span>
+          </Link>
+          <nav aria-label="The app" className="flex flex-col gap-0.5">{tabs.map((t) => item(t, false))}</nav>
+          {saveState && <div className="mt-auto px-3"><SaveStatus state={saveState} onReload={onReload} /></div>}
+        </aside>
+        <main className="min-w-0 px-8 pb-8 pt-8">
+          {!titled && <h1 className="sr-only">{title}</h1>}
+          {children}
+        </main>
       </div>
     );
   }
+
+  const bar = "sticky top-0 z-10 flex h-11 items-center justify-between border-b-[0.5px] border-[var(--app-separator)] bg-[var(--app-grouped-ground)]/95 px-2 backdrop-blur";
   return (
-    <div className="grid min-h-dvh grid-cols-[17rem_1fr] bg-[var(--app-ground)]">
-      <aside className="border-r border-[var(--app-separator)] bg-[var(--app-grouped-ground)]">
-        <StepSidebar steps={steps} currentId={currentId} title={formTitle} />
-      </aside>
-      <main className="flex min-w-0 flex-col">
-        <Toolbar title={current?.title ?? formTitle} saveState={saveState} onDone={onDone} onReload={onReload} />
-        {trail}
-        <div className="mx-auto w-full max-w-3xl">{content}</div>
+    <div className="flex h-dvh flex-col bg-[var(--app-grouped-ground)]">
+      {back && (
+        <div className={bar}>
+          <Link to={back.href} onClick={commitFocused} className="flex min-h-11 items-center gap-1 px-2 text-[17px] text-[var(--app-accent-text)] no-underline">
+            <span aria-hidden="true" className="text-[22px] leading-none">‹</span>{back.label}
+          </Link>
+          {saveState && <span className="px-2"><SaveStatus state={saveState} onReload={onReload} /></span>}
+        </div>
+      )}
+      {!titled && <h1 className="sr-only">{title}</h1>}
+      <main className={card ? "flex min-h-0 flex-1 flex-col [&>*]:min-h-0 [&>*]:flex-1" : "min-h-0 flex-1 overflow-y-auto px-4 py-3"}>
+        {children}
       </main>
+      <nav aria-label="The app" className="flex border-t-[0.5px] border-[var(--app-separator)] bg-[var(--app-grouped-ground)]/95 backdrop-blur"
+           style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
+        {tabs.map((t) => item(t, true))}
+      </nav>
     </div>
   );
 }

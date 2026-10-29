@@ -20,13 +20,17 @@ sections:
 - id: entrance
   official_title: Entrance / Driveway Form
   chapter: Your driveway
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
   fields:
   - id: lot_streets
     official_label: Streets and Roads along the lot (Town map)
     source: property
     from: streets
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     step: driveway
   - id: entrance_street
     official_label: Street or Road the entrance is on
@@ -36,7 +40,9 @@ sections:
     type: text
     why: 3.8.b.1
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     step: driveway
     control: street-picker
   - id: entrance_work
@@ -56,7 +62,9 @@ sections:
       official: New entrance to a parking lot
     why: 3.7.b.1
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     step: driveway
     control: segmented
   - id: homes_single_family
@@ -69,10 +77,13 @@ sections:
     max: 500
     why: 3.7.c.7
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     step: driveway
     control: stepper
     screen: homes
+    short: Single-family homes
   - id: homes_two_family
     official_label: Two-family dwellings served
     source: question
@@ -82,10 +93,13 @@ sections:
     max: 500
     why: 3.7.c.7
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     step: driveway
     control: stepper
     screen: homes
+    short: Two-family homes
   - id: shared_driveway
     official_label: Shared with an abutting lot
     source: question
@@ -93,7 +107,9 @@ sections:
     type: yesno
     why: 3.7.c.3
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     step: driveway
     control: switch
     default: false
@@ -108,7 +124,9 @@ sections:
       eq:
       - answers.shared_driveway
       - true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     step: driveway
   - id: entrance_location
     official_label: Location of the entrance
@@ -117,7 +135,9 @@ sections:
     type: point
     why: 3.8.d.2
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     step: meets_road
   - id: driveway_width
     official_label: Driveway width (ft)
@@ -130,8 +150,12 @@ sections:
     why: 3.7.e.1
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     step: meets_road
+    screen: driveway
+    short: Width
   - id: first_20ft_slope
     official_label: Slope of the first 20 ft (%)
     source: question
@@ -144,10 +168,14 @@ sections:
     why: 3.7.d.2
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     step: meets_road
     control: slider
     step_size: 1
+    screen: driveway
+    short: Slope of the first 20 ft
   - id: entrance_angle
     official_label: Angle of intersection with the Street or Road (degrees)
     source: question
@@ -160,10 +188,14 @@ sections:
     why: 3.8.e.1
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     step: meets_road
     control: slider
     step_size: 5
+    screen: driveway
+    short: Angle to the road
   - id: sight_distance_left
     official_label: Sight distance, looking left (ft)
     source: question
@@ -176,9 +208,12 @@ sections:
     why: 3.8.f.1
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     step: safety
     screen: sight
+    short: Seeing left
   - id: sight_distance_right
     official_label: Sight distance, looking right (ft)
     source: question
@@ -190,9 +225,12 @@ sections:
     why: 3.8.f.1
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     step: safety
     screen: sight
+    short: Seeing right
   - id: intersection_distance
     official_label: Distance to the nearest intersection (ft)
     source: question
@@ -204,8 +242,12 @@ sections:
     why: 3.8.f.2
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     step: safety
+    screen: sight
+    short: To the nearest intersection
   - id: intersection_signal
     official_label: Nearest intersection is signaled
     source: question
@@ -214,8 +256,12 @@ sections:
     why: 3.8.f.2
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     step: safety
+    screen: sight
+    short: A traffic light there
   - id: roadside_ditch
     official_label: Ditch along the road at the entrance
     source: question
@@ -225,7 +271,9 @@ sections:
     why: 3.7.d.3
     allow_unknown: true
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     step: safety
   - id: mainedot_permit
     official_label: MaineDOT entrance permit
@@ -250,7 +298,9 @@ sections:
       ne:
       - property.on_state_highway
       - false
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     step: state_permit
     control: segmented
   - id: mainedot_copy
@@ -263,7 +313,9 @@ sections:
       eq:
       - answers.mainedot_permit
       - have
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     step: state_permit
   - id: entrance_sketch
     official_label: Sketch
@@ -272,10 +324,19 @@ sections:
     help: A hand drawing is fine. Show the road, the lot lines and the driveway.
     type: upload
     why: 8.2.a.2
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
     step: state_permit
   screens:
   - id: sight
     layout: null
+    title: How far can you see from the driveway?
+    help: Standing where it meets the road, in feet; then the nearest intersection.
   - id: homes
     layout: null
+    title: How many homes will use this driveway?
+  - id: driveway
+    layout: null
+    title: What will the driveway be like?
+    help: Its width in feet, its slope and its angle to the road.

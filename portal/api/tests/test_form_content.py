@@ -88,7 +88,7 @@ def test_every_packet_field_is_present(forms, key, expected):
 def test_every_field_has_a_source(forms):
     for form in forms.values():
         for _, f in form.fields():
-            assert f.source in {"question", "property", "account", "derived", "at_submit", "staff"}
+            assert f.source in {"question", "property", "account", "derived", "at_submit", "staff", "parts"}
 
 
 def test_building_classes_follow_article_5(forms, ruleset):
@@ -127,11 +127,28 @@ def test_mainedot_question_shows_unless_known_off_highway(forms, on_highway, sho
     assert (result is not False) is shown
 
 
-def test_all_entries_start_as_drafts(forms):
+def test_every_entry_is_approved_by_the_chair(forms):
+    # The chair approved every entry on 2026-10-28; a new or changed entry goes back to draft.
     for form in forms.values():
-        statuses = {s.status for s in form.sections} | {f.status for _, f in form.fields()}
-        assert statuses == {"draft"}
-        assert form_drafts(form)
+        entries = list(form.sections) + [f for _, f in form.fields()]
+        assert {(e.status, e.approved_by, e.approved_on) for e in entries} == {
+            ("approved", "Ben Frey, Planning Board chair", "2026-10-28")}
+        assert not form_drafts(form)
+
+
+def test_the_chairs_decisions_of_2026_10_28(forms, ruleset):
+    forms = {**forms, "project_questions": load_form("project_questions", latest_version("project_questions"), ruleset)}
+    sp = forms["small_project_plan"]
+    assert sp.field("building_name")[1].required is False  # an unnamed building shows as "Building 2"
+    _, stories = sp.field("stories")
+    assert (stories.min, stories.max) == (1, 4) and "more than four" in stories.help
+    assert {f.unit for form in forms.values() for _, f in form.fields() if f.unit} >= {"sq ft"}
+    assert "sf" not in {f.unit for form in forms.values() for _, f in form.fields()}
+    words = " ".join(f"{f.label} {f.help or ''} {' '.join(o.label for o in f.options or [])}"
+                     for form in forms.values() for _, f in form.fields())
+    for old in ("storey", "Fibre", "Add more detail", "decides when it isn't clear", "We've filled in the size",
+                "will tell you what it needs"):
+        assert old not in words, old
 
 
 def test_form_keys_match_applications_yaml():
@@ -195,11 +212,12 @@ def building_questions(sp):
 
 
 def test_building_starts_with_its_type(forms):
-    # A detached garage or shed is chosen by type, so the wizard asks the type first (wizard brief,
-    # section 4); the printed Building Form keeps the paper form's order.
+    # A detached garage or shed is chosen by type, so the type is asked first, then whether it is
+    # only being renovated (task-list brief, section 3); the printed Building Form keeps the paper
+    # form's order.
     sp = forms["small_project_plan"]
-    first = [fid for fid in building_questions(sp) if sp.field(fid)[1].ask_first]
-    assert first == ["building_class", "dwelling_units"]
+    first = sorted((sp.field(fid)[1].ask_first, fid) for fid in building_questions(sp) if sp.field(fid)[1].ask_first)
+    assert [fid for _, fid in first] == ["building_class", "renovation_only"]
     assert building_questions(sp)[0] == "building_name"  # print order unchanged
 
 
@@ -210,15 +228,14 @@ def test_front_facing_before_walls(forms):
         assert order[order.index(facing) + 1] == first_wall, facing
         _, f = sp.field(facing)
         assert f.type == "choice" and [o.official for o in f.options] == ["North", "East", "South", "West"]
-        assert f.status == "draft" and f.allow_unknown
+        assert f.allow_unknown
     assert sp.field("component_front_facing")[1].show_if == sp.field("component_windows_north")[1].show_if
 
 
 def test_groupings(forms):
     def screen_of(form, fid):
-        sec, f = forms[form].field(fid)
-        lay = {x.id: x.layout for x in sec.screens}
-        return f.screen, lay.get(f.screen)
+        f = forms[form].field(fid)[1]
+        return f.screen, forms[form].screen_layout(fid)
     pairs = [("cover_sheet_host", "deed_book", "deed_page"), ("small_project_plan", "mass_width", "mass_depth"),
              ("small_project_plan", "component_width", "component_depth"),
              ("entrance_permit", "sight_distance_left", "sight_distance_right"),
@@ -259,7 +276,7 @@ def test_finish_chips_have_an_other_field(forms):
         _, f = sp.field(fid)
         assert f.type == "multichoice" and f.control == "chips"
         assert [o.official for o in f.options] == [
-            "Clapboard", "Wood shingle", "Vinyl siding", "Fibre-cement siding", "Brick", "Stone",
+            "Clapboard", "Wood shingle", "Vinyl siding", "Fiber-cement siding", "Brick", "Stone",
             "Board-and-batten", "Metal siding", "Asphalt shingle roof", "Metal roof", "Slate roof", "Other"]
         _, o = sp.field(other)
         assert {"has": [f"item.{fid}", "other"]} in [o.show_if, *o.show_if.get("all", [])]
@@ -290,13 +307,114 @@ def test_window_walls_are_sliders(forms):
         assert f.label == f"{wall.capitalize()} wall"
 
 
-def test_changed_entries_are_drafts(forms):
-    for form in forms.values():
-        assert {f.status for _, f in form.fields()} == {"draft"}
-
-
 def test_yes_no_help_speaks_of_choosing_not_switching(forms):
     # Yes/no questions are tiles in the wizard (brief 2026-10-24), so help says "choose", not "turn on/off".
     for form in forms.values():
         for _, f in form.fields():
             assert "Turn this" not in (f.help or ""), f.id
+
+
+# ---- Tasks and cards (task-list brief, 2026-10-25) ----
+
+def cards(form, kind):
+    """A repeat's cards in asking order: ask-first questions by rank, then the form's order; a
+    card is its screen, or the question alone."""
+    qs = [f for s, f in form.fields() if s.repeat and s.repeat.kind == kind and f.is_question]
+    ordered = sorted((f for f in qs if f.ask_first), key=lambda f: f.ask_first) + [f for f in qs if not f.ask_first]
+    out = []
+    for f in ordered:
+        c = f.screen or f.id
+        if c not in out:
+            out.append(c)
+    return out
+
+
+def test_a_building_is_eight_cards(forms):
+    assert cards(forms["small_project_plan"], "building") == [
+        "building_class", "renovation_only", "about", "setbacks", "size", "roof", "outside", "walls"]
+
+
+def test_an_addition_is_seven_cards(forms):
+    assert cards(forms["small_project_plan"], "component") == [
+        "kind", "component_renovation_only", "attached_to", "size", "roof", "outside", "walls"]
+
+
+def test_card_members(forms):
+    sp, cover, ep = forms["small_project_plan"], forms["use_permit"], forms["entrance_permit"]
+    def members(form, screen, kind=None):
+        return [f.id for s, f in form.fields() if f.screen == screen and (kind is None or (s.repeat and s.repeat.kind == kind))]
+    assert members(sp, "about", "building") == ["building_name", "dwelling_units"]
+    assert members(sp, "size", "building") == ["mass_width", "mass_depth", "stories", "floor_area", "first_floor_elevation",
+                                               "floor_height_1", "floor_height_2", "floor_height_3", "floor_height_4"]
+    assert members(sp, "roof", "building") == ["roof_style", "roof_slope"]
+    assert members(sp, "outside", "building") == ["exterior_finish", "exterior_finish_other"]
+    assert members(sp, "walls", "building") == ["front_facing", "windows_north", "windows_east", "windows_south", "windows_west"]
+    assert members(sp, "kind", "component") == ["component_kind", "component_other_name"]
+    assert members(sp, "size", "component") == ["component_width", "component_depth", "component_height", "added_floor_area"]
+    assert members(cover, "lot_size") == ["lot_width", "lot_depth"]
+    assert members(cover, "contact") == []  # the applicant comes from the account (projects brief §5.1)
+    assert members(cover, "owner") == ["owner_name", "owner_email", "owner_phone", "owner_address"]
+    assert members(cover, "agent") == ["agent_name", "agent_email", "agent_phone", "agent_address"]
+    assert members(ep, "driveway") == ["driveway_width", "first_20ft_slope", "entrance_angle"]
+    assert members(ep, "sight") == ["sight_distance_left", "sight_distance_right", "intersection_distance", "intersection_signal"]
+
+
+def test_copy_building_1_copies_the_briefs_fields(forms):
+    sp = forms["small_project_plan"]
+    assert [f.id for _, f in sp.fields() if f.copies] == [
+        "renovation_only", "building_class", "mass_width", "mass_depth", "stories", "floor_area", "first_floor_elevation",
+        "floor_height_1", "floor_height_2", "floor_height_3", "floor_height_4", "roof_style", "roof_slope",
+        "exterior_finish", "exterior_finish_other"]
+
+
+def test_tile_icons(forms):
+    sp = forms["small_project_plan"]
+    icons = lambda fid: {o.value: o.icon for o in sp.field(fid)[1].options}
+    assert icons("work_kinds") == {"new_building": "building-cottage", "addition": "home-plus", "renovation": "paint",
+                                   "site": "shovel", "nonconforming": "file-alert"}
+    assert icons("component_kind") == {"addition": "home-plus", "garage": "car-garage", "porch": "armchair",
+                                       "deck": "stairs", "patio": "square", "other": "dots"}
+    for fid in ("front_facing", "component_front_facing"):
+        assert icons(fid) == {"north": "arrow-up", "east": "arrow-right", "south": "arrow-down", "west": "arrow-left"}
+
+
+def test_icons_on_all_options_or_none(forms):
+    for form in forms.values():
+        for _, f in form.fields():
+            if f.options:
+                assert len({o.icon is None for o in f.options}) == 1, f.id
+
+
+def test_every_question_on_a_shared_card_has_a_short_name(forms):
+    # A set of values reads as a short name beside each field (task-list brief §4.5); the lot drawing
+    # and the compass name their own sides and walls.
+    for form in forms.values():
+        for s, f in form.fields():
+            if f.screen and form.screen_layout(f.id) is None and f.is_question:
+                assert f.short and len(f.short) <= 32, f.id
+
+
+def test_a_card_of_several_questions_asks_its_own_question(forms):
+    # The card asks for the whole card ("How big is the building?"), not its first value (task-list
+    # brief §3, the comp); the lot drawing and the compass ask their own.
+    for form in forms.values():
+        for s in form.sections:
+            for sc in s.screens:
+                if sc.layout is None:
+                    assert sc.title and sc.title.endswith("?"), (form.key, sc.id)
+
+
+def test_about_you_asks_the_owner_right_after_the_owner_question(forms):
+    # The owner's card follows "Do you own this property?", before "Is someone else helping?"
+    # (task-list brief §3), by rank; the printed Cover Sheet keeps its order.
+    cover = forms["use_permit"]
+    ranked = sorted(((f.ask_first, f.id) for _, f in cover.fields() if f.ask_first and cover.step_of(f.id) == "about_you"),
+                    key=lambda x: x[0])  # by rank; the form's order among equals
+    assert [fid for _, fid in ranked] == ["applicant_is_owner", "owner_name", "owner_email", "owner_phone", "owner_address"]
+    assert ranked[0][0] == 2 and {r for r, f in ranked[1:]} == {3}
+
+
+def test_cover_sheet_takes_the_applicant_from_the_account(forms):
+    got = {f.id: (f.source, f.from_) for _, f in forms["small_project_plan"].fields() if f.id.startswith("applicant_") and f.id != "applicant_is_owner"}
+    assert got == {"applicant_name": ("account", "name"), "applicant_email": ("account", "email"),
+                   "applicant_phone": ("account", "phone"), "applicant_address": ("account", "mailing_address")}

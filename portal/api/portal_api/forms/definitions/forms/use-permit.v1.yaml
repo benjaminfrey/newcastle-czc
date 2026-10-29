@@ -17,27 +17,37 @@ sections:
 - id: use_header
   official_title: Proposed Project
   chapter: Your property
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
   fields:
   - id: use_applicant_name
     official_label: Applicant Name
     source: derived
     from: applicant_name
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: use_street_address
     official_label: Street Address
     source: derived
     from: street_address
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: use_map_lot
     official_label: Map / Lot
     source: derived
     from: map_lot
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
 - id: existing
   official_title: Existing
   chapter: How the property is used now
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
   fields:
   - id: existing_uses
     official_label: Existing Use(s)
@@ -47,7 +57,9 @@ sections:
       in the next question.
     type: uses
     why: 8.15.b.1
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: existing_description
     official_label: Description
     source: question
@@ -56,12 +68,16 @@ sections:
     type: longtext
     why: 8.15.b.1
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   step: uses_today
 - id: proposed
   official_title: Proposed
   chapter: What you want to do
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
   fields:
   - id: proposed_uses
     official_label: Uses to be Established
@@ -71,7 +87,9 @@ sections:
     type: uses
     why: 8.15.b.1
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: proposed_description
     official_label: Description
     source: question
@@ -81,7 +99,9 @@ sections:
     type: longtext
     why: 8.15.b.1
     required: true
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: discontinued_uses
     official_label: Uses to be Discontinued
     source: question
@@ -89,7 +109,9 @@ sections:
     help: Pick each use that will stop. Leave this blank if nothing will stop.
     type: uses
     why: 8.15.b.1
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: discontinued_description
     official_label: Description of Uses to be Discontinued
     source: question
@@ -98,12 +120,16 @@ sections:
     why: 8.15.b.1
     show_if:
       known: answers.discontinued_uses
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   step: your_plan
 - id: use_documents_section
   official_title: Attachments
   chapter: Plans and photos
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
   fields:
   - id: use_documents
     official_label: Other relevant documentation
@@ -112,31 +138,45 @@ sections:
     help: PDF, JPEG, PNG or HEIC files up to 25 MB each. This is optional, but staff may ask for more.
     type: upload
     why: 8.2.a.2
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   step: photos
 - id: use_certification
   official_title: Use Form Certification
   chapter: Sign and submit
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
   fields:
   - id: use_signature
     official_label: Applicant Signature
     source: at_submit
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: use_signature_date
     official_label: Date
     source: at_submit
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
   - id: use_signature_name
     official_label: Name (print)
     source: at_submit
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"
 - id: use_office
   official_title: Use Form — Official Use Only
   chapter: Office use
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: "2026-10-28"
   fields:
   - id: permit_type_required
     official_label: Permit Type Required
     source: staff
-    status: draft
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-10-28"

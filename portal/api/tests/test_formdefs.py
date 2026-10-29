@@ -274,3 +274,85 @@ def test_rejects_control_that_does_not_suit_the_type(tmp_path, ruleset):
 def test_a_form_without_steps_still_loads(tmp_path, ruleset):
     write(tmp_path)
     assert load_form("test_permit", 1, ruleset, root=tmp_path).steps == ()
+
+
+# ---- Cards, icons and copies (task-list brief) ----
+
+def test_screen_may_span_sections_of_one_step(tmp_path, ruleset):
+    cover, form = stepped()
+    extra = copy.deepcopy(form["sections"][0])
+    extra.update(id="building_more", screens=[])
+    extra["fields"] = [{"id": "height", "official_label": "Height", "source": "question", "label": "How tall?",
+                        "type": "number", "why": "8.10.b.1", "screen": "shape", **APPROVED}]
+    form["sections"].append(extra)
+    write(tmp_path, cover=cover, form=form)
+    f = load_form("test_permit", 1, ruleset, root=tmp_path)
+    assert f.field("height")[1].screen == "shape" and f.screen_layout("height") is None
+
+
+def test_rejects_screen_across_repeat_kinds(tmp_path, ruleset):
+    def change(c, f):
+        other = copy.deepcopy(f["sections"][0])
+        other.update(id="component", screens=[])
+        other["repeat"] = {"kind": "component", "add_label": "Add one", "min": 0, "max": 5}
+        other["fields"] = [{"id": "c_width", "official_label": "Width", "source": "question", "label": "How wide?",
+                            "type": "number", "why": "8.10.b.1", "screen": "shape", **APPROVED}]
+        f["sections"].append(other)
+    assert "repeat" in broken_stepped(tmp_path, ruleset, change)
+
+
+def test_rejects_duplicate_screen_ids_in_a_step(tmp_path, ruleset):
+    def change(c, f):
+        f["sections"][0]["screens"] = [{"id": "shape"}, {"id": "shape"}]
+    assert "duplicate screen" in broken_stepped(tmp_path, ruleset, change)
+
+
+def test_icons_load_and_unknown_icons_are_refused(tmp_path, ruleset):
+    cover, form = stepped()
+    opts = form["sections"][0]["fields"][1]["options"]
+    opts[0]["icon"], opts[1]["icon"] = "home", "building"
+    write(tmp_path, cover=cover, form=form)
+    f = load_form("test_permit", 1, ruleset, root=tmp_path)
+    assert [o.icon for o in f.field("roof")[1].options] == ["home", "building"]
+    def unknown(c, f):
+        f["sections"][0]["fields"][1]["options"][0]["icon"] = "not-an-icon"
+        f["sections"][0]["fields"][1]["options"][1]["icon"] = "home"
+    assert "not-an-icon" in broken_stepped(tmp_path, ruleset, unknown)
+
+
+def test_rejects_icons_on_some_options(tmp_path, ruleset):
+    assert "every option" in broken_stepped(
+        tmp_path, ruleset, lambda c, f: f["sections"][0]["fields"][1]["options"][0].update(icon="home"))
+
+
+def test_copies_only_in_a_repeat(tmp_path, ruleset):
+    cover, form = stepped()
+    form["sections"][0]["fields"][0]["copies"] = True
+    write(tmp_path, cover=cover, form=form)
+    assert load_form("test_permit", 1, ruleset, root=tmp_path).field("stories")[1].copies is True
+    assert "copies" in broken_stepped(tmp_path, ruleset, lambda c, f: c["sections"][0]["fields"][1].update(copies=True))
+
+
+def test_ask_first_is_a_rank(tmp_path, ruleset):
+    cover, form = stepped()
+    form["sections"][0]["fields"][0]["ask_first"] = 2
+    form["sections"][0]["fields"][1]["ask_first"] = 1
+    write(tmp_path, cover=cover, form=form)
+    f = load_form("test_permit", 1, ruleset, root=tmp_path)
+    assert (f.field("stories")[1].ask_first, f.field("roof")[1].ask_first) == (2, 1)
+    assert "ask_first" in broken_stepped(tmp_path, ruleset, lambda c, f: f["sections"][0]["fields"][0].update(ask_first=-1))
+
+
+def test_short_names_load(tmp_path, ruleset):
+    cover, form = stepped()
+    form["sections"][0]["fields"][0]["short"] = "Stories"
+    write(tmp_path, cover=cover, form=form)
+    assert load_form("test_permit", 1, ruleset, root=tmp_path).field("stories")[1].short == "Stories"
+
+
+def test_a_card_has_its_own_question_and_help(tmp_path, ruleset):
+    cover, form = stepped()
+    form["sections"][0]["screens"] = [{"id": "shape", "layout": None, "title": "How big is it?", "help": "In feet."}]
+    write(tmp_path, cover=cover, form=form)
+    sc = load_form("test_permit", 1, ruleset, root=tmp_path).sections[1].screens[0]
+    assert (sc.title, sc.help) == ("How big is it?", "In feet.")

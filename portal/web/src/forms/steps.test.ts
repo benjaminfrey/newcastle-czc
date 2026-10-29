@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { FormDef } from "../applications";
+import type { FormDef } from "../projects";
 import type { Current } from "./applicability";
 import fixtures from "./form-fixtures.json";
 import { itemLabel, REVIEW_STEP, START_STEPS, statusOf, stepModels } from "./steps";
@@ -22,7 +22,7 @@ const B1 = { id: "x1", kind: "building", position: 0 };
 describe("steps model", () => {
   it("the shared steps are fixed", () => {
     expect(START_STEPS.map((s) => s.title)).toEqual(["Your project", "Your property", "What you'll need"]);
-    expect(REVIEW_STEP.title).toBe("Review and sign");
+    expect(REVIEW_STEP.title).toBe("Check and send");
   });
 
   it("steps follow the form's order", () => {

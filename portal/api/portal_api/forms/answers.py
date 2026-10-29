@@ -170,6 +170,8 @@ def value_of(form: FormDef, f: Field, item_id, cur: Current, _depth: int = 0):
         return _property_value(f.from_, cur.property, prefill=False)
     if f.source == "account":
         return cur.account.get(f.from_)
+    if f.source == "parts":
+        return cur.answers.get((f.from_, None))
     if f.source == "derived" and _depth < 5:
         try:
             _, src = form.field(f.from_)

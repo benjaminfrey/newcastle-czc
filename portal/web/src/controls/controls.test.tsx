@@ -2,8 +2,8 @@ import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as api from "../api";
-import type { FormField } from "../applications";
-import * as storeModule from "../app/ApplicationStore";
+import type { FormField } from "../projects";
+import * as storeModule from "../app/ProjectStore";
 import { buildingLabel } from "./pickers";
 import FieldControl, { controlFor } from "./FieldControl";
 
@@ -19,14 +19,14 @@ const f = (extra: Partial<FormField>): FormField => ({
 });
 const opts = (...v: string[]) => v.map((x) => ({ value: x, label: x.toUpperCase(), official: x }));
 
-function fakeStore(over: Partial<ReturnType<typeof storeModule.useApplication>> = {}) {
+function fakeStore(over: Partial<ReturnType<typeof storeModule.useProject>> = {}) {
   const store = {
-    app: { id: "app1", attachments: [], items: [], property: { parcel_id: null } },
+    project: { id: "app1", attachments: [], items: [], property: { parcel_id: null } },
     form: { sections: [{ id: "building", repeat: { kind: "building" }, fields: [f({ id: "building_name" })] }] },
     cur: { answers: [], items: [], property: { streets: [{ name: "Sheepscot Road" }, { name: "Hall Street" }] }, account: {} },
     ...over,
-  } as unknown as ReturnType<typeof storeModule.useApplication>;
-  vi.spyOn(storeModule, "useApplication").mockReturnValue(store);
+  } as unknown as ReturnType<typeof storeModule.useProject>;
+  vi.spyOn(storeModule, "useProject").mockReturnValue(store);
   return store;
 }
 
@@ -251,6 +251,13 @@ describe("BuildingTypeControl", () => {
     expect(onValue).toHaveBeenCalledWith("residential");
   });
 
+  it("the first step's kinds each carry an icon", () => {
+    draw(field);
+    for (const name of ["A home", /A building for a business/, /A smaller building/, "A farm building", "Something else"]) {
+      expect(screen.getByRole("radio", { name }).querySelector("svg")).not.toBeNull();
+    }
+  });
+
   it("A smaller building asks which kind", async () => {
     const onValue = draw(field);
     await userEvent.click(screen.getByRole("radio", { name: /A smaller building/ }));
@@ -282,7 +289,7 @@ describe("UploadControl", () => {
   });
 
   it("refuses a file over 25 MB before sending it", async () => {
-    const { default: apps } = await import("../applications").then((m) => ({ default: m }));
+    const { default: apps } = await import("../projects").then((m) => ({ default: m }));
     const spy = vi.spyOn(apps, "uploadFile");
     draw(f({ type: "upload", label: "Add a sketch." }));
     const big = new File(["x"], "photo.jpg", { type: "image/jpeg" });
@@ -293,7 +300,7 @@ describe("UploadControl", () => {
   });
 
   it("hands a kept file to the application, so review and a return visit both show it", async () => {
-    const apps = await import("../applications");
+    const apps = await import("../projects");
     vi.spyOn(apps, "uploadFile").mockResolvedValue({ id: "a1", filename: "sketch.pdf", content_type: "application/pdf", size_bytes: 2048 } as never);
     const attachmentAdded = vi.fn();
     fakeStore({ attachmentAdded } as never);
@@ -303,7 +310,7 @@ describe("UploadControl", () => {
   });
 
   it("lists the files the application already holds", () => {
-    fakeStore({ app: { id: "app1", items: [], property: { parcel_id: null }, attachments: [
+    fakeStore({ project: { id: "app1", items: [], property: { parcel_id: null }, attachments: [
       { id: "a1", field_id: "sketch", item_id: null, filename: "sketch.pdf", content_type: "application/pdf", size_bytes: 2048 }] } } as never);
     draw(f({ id: "sketch", type: "upload", label: "Add a sketch." }));
     expect(screen.getByRole("list", { name: "Files added" })).toHaveTextContent("sketch.pdf");

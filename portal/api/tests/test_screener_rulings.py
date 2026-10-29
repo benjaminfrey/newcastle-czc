@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 from portal_api.forms.definitions import load_definitions
 from portal_api.main import create_app
 from portal_api.ruleset import load_ruleset
+from tests.screener_runner import Runner
 from tests.test_screener import answers
 
 
@@ -13,7 +14,7 @@ from tests.test_screener import answers
 def c(engine, settings, outbox):
     settings.allow_draft_rules = True
     with TestClient(create_app(settings, outbox)) as client:
-        yield client
+        yield Runner(client)
 
 
 def post(c, **kw):

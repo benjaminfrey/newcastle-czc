@@ -1,0 +1,93 @@
+# The Town's Planning Fee Schedule, transcribed line for line (projects brief §7). Approved by the
+# chair on 2026-10-25 as the schedule in force (§12.5). Each permit has an application fee,
+# "payable upon submission of an application", and a permit fee, "due prior to issuance of
+# permit", the permit fee being "cumulative of below as applicable". "All fees are non-refundable."
+# A fee is a number of dollars, "varies" (set by the Town Office), or {per_sf: dollars}.
+source:
+  title: Planning Fee Schedule
+  as_of: "2025-08-25"
+  url: https://drive.google.com/file/d/1f2ZNZcp0ESJU3uDRK7aEFEooCpzGo5uB/view
+  linked_from: https://www.newcastlemaine.us
+  read_on: "2026-10-25"
+status: approved
+approved_by: "Ben Frey, Planning Board chair"
+approved_on: "2026-10-25"
+permits:
+- key: use_permit
+  schedule_name: USE PERMIT
+  name: Use Permit
+  application_fee: 30
+  reviews:
+  - {key: basic_use, name: Basic Use, fee: 0}
+  - {key: residential_companion_use, name: Residential Companion Use, fee: 0}
+  - {key: expanded_use, name: Expanded Use, fee: 60}
+  - {key: special, name: Special, fee: 60}
+  - {key: shoreland_use_ceo, name: Shoreland Use (CEO rev), fee: 0}
+  - {key: shoreland_use_pb, name: Shoreland Use (PB rev), fee: 60}
+- key: building_permit
+  schedule_name: BUILDING PERMIT
+  name: Building Permit
+  application_fee: 30
+  reviews:
+  - {key: small_project_plan, name: Small Project Plan, fee: 0}
+  - {key: small_project_plan_revisions, name: Small Project Plan Revisions, fee: 0}
+  - {key: large_project_plan, name: Large Project Plan, fee: 240}
+  - {key: large_project_plan_revisions, name: Large Project Plan Revisions, fee: 100}
+  - {key: structure, name: Structure, fee: 30}
+  - {key: entrances, name: Entrances, fee: 0}
+  - {key: demolition_historic, name: Demolition of Historic Assets, fee: 0}
+  - {key: floodplain, name: Floodplain Management, fee: 60}
+  - {key: mobile_home_park, name: Mobile Home Park, fee: 60}
+  - {key: tower, name: Tower, fee: 500}
+  - {key: power_generation, name: Power Generation, fee: {per_sf: 0.10}}
+  - {key: erosion_sediment, name: Erosion & Sediment Control, fee: 60}
+- key: subdivision
+  schedule_name: SUBDIVISION (PERMIT)
+  name: Subdivision Permit
+  application_fee: 300
+  reviews:
+  - {key: subdivision_major, name: Subdivision (Major), fee: 0}
+  - {key: master_plan, name: Master Plan, fee: 1000}
+- key: sign_permit
+  schedule_name: SIGN PERMIT
+  name: Sign Permit
+  application_fee: 30
+  reviews:
+  - {key: sign, name: Sign, fee: 0}
+  - {key: shoreland_sign, name: Shoreland Sign, fee: 30}
+- key: plumbing_permit
+  schedule_name: PLUMBING PERMIT
+  name: Plumbing Permit
+  application_fee: varies
+  reviews:
+  - {key: plumbing_interior, name: Plumbing (interior), fee: varies}
+  - {key: subsurface_wastewater, name: Subsurface Wastewater, fee: varies}
+  - {key: tank_only, name: Tank Only, fee: varies}
+- key: activity_permit
+  schedule_name: ACTIVITY PERMIT
+  name: Activity Permit
+  application_fee: 30
+  reviews:
+  - {key: tourist_rentals, name: Tourist Rentals Annual Registration, fee: 70}
+  - {key: temporary_structure, name: Temporary Structure, fee: 0}
+  - {key: shoreland_vegetation, name: Shoreland Vegetation Removal, fee: 60}
+- key: other
+  schedule_name: OTHER
+  name: Other
+  application_fee: null
+  reviews:
+  - {key: zoning_variance, name: Zoning Variance, fee: 300}
+  - {key: administrative_appeal, name: Administrative Appeal, fee: 300}
+# Each review the rules name (an applications.yaml key, or `structure`, brief §7) and its fee
+# line: [permit key, review key]. A driveway is the Entrances review within the Building Permit
+# (§12.2); Structure is added once for each new building (§12.3).
+review_map:
+  use_permit: [use_permit, basic_use]
+  residential_companion: [use_permit, residential_companion_use]
+  expanded_use: [use_permit, expanded_use]
+  special_permit: [use_permit, special]
+  small_project_plan: [building_permit, small_project_plan]
+  large_project_plan: [building_permit, large_project_plan]
+  entrance_permit: [building_permit, entrances]
+  structure: [building_permit, structure]
+  subdivision: [subdivision, subdivision_major]

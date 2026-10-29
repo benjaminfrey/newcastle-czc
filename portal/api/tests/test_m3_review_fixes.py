@@ -4,6 +4,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from portal_api.main import create_app
+from tests.screener_runner import Runner
 from tests.test_screener import _apps, _first_cell, answers
 
 
@@ -11,7 +12,7 @@ from tests.test_screener import _apps, _first_cell, answers
 def draft_client(engine, settings, outbox):
     settings.allow_draft_rules = True
     with TestClient(create_app(settings, outbox)) as c:
-        yield c
+        yield Runner(c)
 
 
 def _post(c, **kw):
@@ -65,14 +66,6 @@ def test_new_building_of_unknown_size_may_need_either(draft_client):
 def test_building_results_mention_large_project_impacts(draft_client):
     res = _post(draft_client, project=["build"], building={"kind": "new", "gross_floor_area_sf": 800})
     assert any(n["cite"] == "8.11.b.1" for n in res["notes"])
-
-
-# 4. In production, any draft refuses the answer — even an answer where no rule fired.
-
-def test_no_rule_firing_is_still_refused_while_rules_are_drafts(engine, settings, outbox, one_draft):
-    with TestClient(create_app(settings, outbox)) as c:
-        r = c.post("/api/screener", json=answers(project=["divide"], division={"lots_after": None}))
-        assert r.status_code == 503 and r.json() == {"detail": "screener_not_approved"}
 
 
 def test_dividing_with_lots_unknown_may_be_a_subdivision(draft_client):
