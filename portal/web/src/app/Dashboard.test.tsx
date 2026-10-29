@@ -80,7 +80,7 @@ beforeEach(() => {
 describe("the dashboard", () => {
   it("shows the title, the parcel, a row per part and the parts still to add", async () => {
     open();
-    expect(await screen.findByRole("heading", { level: 2, name: "A new building and a driveway at Sheepscot Road" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 1, name: "A new building and a driveway at Sheepscot Road" })).toBeInTheDocument();
     const lot = screen.getByRole("link", { name: /^Your lot,\s*Map 4, Lot 36.*(Not started|answered|Done)$/ });
     expect(lot).toHaveTextContent("Sheepscot Road · Rural (D1)");
     expect(lot).toHaveTextContent("2.73 acres · 675 ft on Sheepscot Road");
@@ -93,7 +93,9 @@ describe("the dashboard", () => {
 
   it("counts the rows with something still to answer", async () => {
     open();
-    expect(await screen.findByText(/3 things left/)).toBeInTheDocument(); // About you, the building, the driveway
+    // About you, the building, the driveway; the button opens the first card still to answer.
+    expect(await screen.findByText("3 things left before you can send it.")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Continue with About you" }).getAttribute("href")).toMatch(/^\/projects\/p1\/about_you\?screen=/);
   });
 
   it("says Ready to send once nothing is left", async () => {
@@ -155,20 +157,21 @@ describe("the dashboard", () => {
     await userEvent.clear(box);
     await userEvent.type(box, "The new barn{Enter}");
     expect(title).toHaveBeenCalledWith("p1", 3, "The new barn");
-    expect(await screen.findByRole("heading", { level: 2, name: "The new barn" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 1, name: "The new barn" })).toBeInTheDocument();
   });
 
   it("You shows who is applying and opens About you", async () => {
     open();
     const you = await screen.findByRole("link", { name: /^Ada Lovelace/ });
     expect(you).toHaveAttribute("href", "/projects/p1/about_you");
-    expect(you).toHaveTextContent("a@example.com");
+    expect(you).toHaveTextContent("Ada Lovelace");
+    expect(you).not.toHaveTextContent("a@example.com"); // a long address only truncates in the rail
   });
 
   it("removes a single part after asking", async () => {
     const remove = vi.spyOn(apps, "removePart").mockResolvedValue({ revision: 4, missing: [] });
     open();
-    await userEvent.click(await screen.findByRole("button", { name: "Remove" }));
+    await userEvent.click(await screen.findByRole("button", { name: "Remove Driveway" }));
     await userEvent.click(await screen.findByRole("button", { name: "Remove" }));
     expect(remove).toHaveBeenCalledWith("p1", 3, "d1");
   });

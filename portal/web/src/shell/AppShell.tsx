@@ -21,6 +21,7 @@ type Props = {
   saveState?: SaveState; onReload?: () => void;
   back?: { href: string; label: string }; // a phone's bar in a card: ‹ Project
   card?: boolean;             // a card fills a phone's screen
+  titled?: boolean;           // the page shows its own h1 (the dashboard, Check and send, Home)
   children: ReactNode;
 };
 
@@ -34,7 +35,7 @@ const TABS = [
 // The app's window (projects brief §3.4): a desktop sidebar under the Town seal (Home, Project,
 // Messages, You); a phone's bottom tab bar with the same four. In a card, a phone's 44 px bar
 // carries ‹ Project and the save status, and the card fills the screen above the tab bar.
-export default function AppShell({ title, project, saveState, onReload, back, card, children }: Props) {
+export default function AppShell({ title, project, saveState, onReload, back, card, titled, children }: Props) {
   const wide = useWideLayout();
   const projectHref = project ? `/projects/${project}` : lastProject() ? `/projects/${lastProject()}` : "/";
   const tabs = TABS.map((t) => ({ ...t, to: t.to === "project" ? projectHref : t.to }));
@@ -65,7 +66,7 @@ export default function AppShell({ title, project, saveState, onReload, back, ca
           {saveState && <div className="mt-auto px-3"><SaveStatus state={saveState} onReload={onReload} /></div>}
         </aside>
         <main className="min-w-0 px-8 pb-8 pt-8">
-          <h1 className="sr-only">{title}</h1>
+          {!titled && <h1 className="sr-only">{title}</h1>}
           {children}
         </main>
       </div>
@@ -83,8 +84,8 @@ export default function AppShell({ title, project, saveState, onReload, back, ca
           {saveState && <span className="px-2"><SaveStatus state={saveState} onReload={onReload} /></span>}
         </div>
       )}
-      <h1 className="sr-only">{title}</h1>
-      <main className={card ? "flex min-h-0 flex-1 flex-col px-3 pb-3 pt-3 [&>*]:min-h-0 [&>*]:flex-1" : "min-h-0 flex-1 overflow-y-auto px-3 py-3"}>
+      {!titled && <h1 className="sr-only">{title}</h1>}
+      <main className={card ? "flex min-h-0 flex-1 flex-col [&>*]:min-h-0 [&>*]:flex-1" : "min-h-0 flex-1 overflow-y-auto px-4 py-3"}>
         {children}
       </main>
       <nav aria-label="The app" className="flex border-t-[0.5px] border-[var(--app-separator)] bg-[var(--app-grouped-ground)]/95 backdrop-blur"

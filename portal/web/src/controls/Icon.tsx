@@ -1,5 +1,5 @@
 import {
-  IconArmchair, IconArrowDown, IconChevronRight, IconClipboardList, IconMessage, IconPencil, IconArrowLeft, IconArrowRight, IconArrowUp, IconBuilding, IconBuildingCottage,
+  IconArmchair, IconArrowDown, IconCheck, IconChevronRight, IconCircleMinus, IconClipboardList, IconMessage, IconPencil, IconArrowLeft, IconArrowRight, IconArrowUp, IconBuilding, IconBuildingCottage,
   IconBuildingStore, IconBuildingWarehouse, IconCarGarage, IconCopy, IconDots, IconEye, IconFileAlert, IconFileCertificate, IconHammer, IconHelpCircle,
   IconHome, IconHomePlus, IconLayoutGrid, IconMap2, IconMapPin, IconPaint, IconPhoto, IconPlus, IconRoad, IconShovel, IconSignature,
   IconSquare, IconStairs, IconTractor, IconUser, type Icon as TablerIcon,
@@ -9,7 +9,7 @@ import {
 // (portal/api/portal_api/forms/icons.txt) plus the task list's and the buttons'. Only these are
 // imported, so the bundle carries only these.
 const ICONS: Record<string, TablerIcon> = {
-  "armchair": IconArmchair, "chevron-right": IconChevronRight, "clipboard-list": IconClipboardList,
+  "armchair": IconArmchair, "check": IconCheck, "chevron-right": IconChevronRight, "minus-circle": IconCircleMinus, "clipboard-list": IconClipboardList,
   "message": IconMessage, "pencil": IconPencil, "arrow-down": IconArrowDown, "arrow-left": IconArrowLeft, "arrow-right": IconArrowRight,
   "arrow-up": IconArrowUp, "building": IconBuilding, "building-cottage": IconBuildingCottage,
   "building-store": IconBuildingStore, "building-warehouse": IconBuildingWarehouse, "car-garage": IconCarGarage,

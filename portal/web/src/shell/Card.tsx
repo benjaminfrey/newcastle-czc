@@ -4,9 +4,11 @@ import ProgressBar from "./ProgressBar";
 
 // The card (task-list brief §4.3, and the comp in specs/assets/): the row colour, a 0.5 px
 // hairline edge, 12 px corners, no shadow; header, body and footer bands. Only the body slides.
+// On a phone it is the screen itself, edge to edge; on a wide screen it starts at the dashboard's
+// left edge (its 1040 px column), so going in and out of a card doesn't shift the page.
 // With onSubmit, the card is a form, so Return in a field means Continue.
 function Card({ wide, onSubmit, children }: { wide?: boolean; onSubmit?: () => void; children: ReactNode }) {
-  const cls = `mx-auto flex w-full ${wide ? "max-w-[760px]" : "max-w-[640px]"} flex-col overflow-hidden rounded-[12px] border-[0.5px] border-[var(--app-separator)] bg-[var(--app-row)]`;
+  const cls = `flex w-full ${wide ? "lg:max-w-[760px]" : "lg:max-w-[640px]"} flex-col overflow-hidden bg-[var(--app-row)] lg:mr-auto lg:ml-[max(0px,calc((100%_-_1040px)/2))] lg:rounded-[12px] lg:border-[0.5px] lg:border-[var(--app-separator)]`;
   if (!onSubmit) return <section className={cls}>{children}</section>;
   const submit = (e: FormEvent) => { e.preventDefault(); commitFocused(); onSubmit(); };
   return <form noValidate onSubmit={submit} className={cls}>{children}</form>;
@@ -29,7 +31,7 @@ function Header({ title, count, at = 0, aside }: { title: ReactNode; count?: num
 
 const reduced = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-// The question and its control, centred; the next card's body slides in from the right, Back's
+// The question and its control, centred on a phone and from the left on a wide screen; the next card's body slides in from the right, Back's
 // from the left, 300 ms (index.css); a short fade with reduced motion.
 function Body({ motionKey, direction = 1, children, className }: {
   motionKey?: string; direction?: 1 | -1; children: ReactNode; className?: string;
@@ -37,7 +39,7 @@ function Body({ motionKey, direction = 1, children, className }: {
   const motion = motionKey === undefined ? "" : reduced() ? "pane-fade" : direction < 0 ? "pane-pull" : "pane-push";
   return (
     // On a phone the card fills the screen, so a long body scrolls between the header and footer.
-    <div key={motionKey} data-card-body data-pane className={`flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-6 pb-[18px] pt-[22px] text-center ${motion} ${className ?? ""}`}>
+    <div key={motionKey} data-card-body data-pane className={`flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-6 pb-[18px] pt-[22px] text-center lg:items-start lg:text-left ${motion} ${className ?? ""}`}>
       {children}
     </div>
   );

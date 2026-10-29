@@ -56,8 +56,8 @@ function Row({ p }: { p: ProjectSummary }) {
   );
 }
 
-// Signed in (projects brief §3.2): Start a new application, Continue an application, and every
-// project, newest change first.
+// Signed in (projects brief §3.2): every project, newest change first, under the page's title,
+// with Start a new application and Continue an application beside it. The seal is the shell's.
 function SignedIn() {
   const navigate = useNavigate();
   const [rows, setRows] = useState<ProjectSummary[] | null>(null);
@@ -71,17 +71,21 @@ function SignedIn() {
     else setNote("You have no application in progress.");
   }
   return (
-    <AppShell title="Home">
-    <div className="mx-auto flex max-w-lg flex-col gap-6 px-4 py-8">
-      <Seal />
-      <div className="flex flex-col gap-3">
-        <Link to="/new" data-filled="" className="btn btn-filled w-full no-underline">Start a new application</Link>
-        <button type="button" className="btn w-full" onClick={carryOn}>Continue an application</button>
-        {note && <p role="status" className="text-center text-[15px] text-[var(--app-secondary-label)]">{note}</p>}
-      </div>
+    <AppShell title="Home" titled>
+    <div className="mx-auto flex w-full max-w-[1040px] flex-col gap-6">
+      <header className="flex flex-col gap-4">
+        <h1 className="text-[30px] font-bold leading-tight">Your applications</h1>
+        <div className="flex flex-wrap gap-3">
+          <Link to="/new" data-filled="" className="btn btn-filled no-underline">Start a new application</Link>
+          <button type="button" className="btn" onClick={carryOn}>Continue an application</button>
+        </div>
+        {note && <p role="status" className="text-[15px] text-[var(--app-secondary-label)]">{note}</p>}
+      </header>
+      {rows && rows.length === 0 && (
+        <p className="text-[15px] text-[var(--app-secondary-label)]">Nothing yet. Start a new application to apply for a permit.</p>
+      )}
       {rows && rows.length > 0 && (
-        <section className="flex flex-col gap-2">
-          <h2 className="px-4 text-[13px] text-[var(--app-secondary-label)]">Your applications</h2>
+        <section className="flex max-w-[720px] flex-col gap-2">
           <ul aria-label="Your applications"
               className="overflow-hidden rounded-[12px] border-[0.5px] border-[var(--app-separator)] bg-[var(--app-row)]">
             {rows.map((p, i) => (

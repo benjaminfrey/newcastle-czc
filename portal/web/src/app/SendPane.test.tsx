@@ -60,6 +60,15 @@ beforeEach(() => {
 });
 
 describe("Check and send", () => {
+  it("has a title, and on a wide screen keeps the fees and Send beside the project", async () => {
+    open();
+    expect(await screen.findByRole("heading", { level: 1, name: "Check and send" })).toBeInTheDocument();
+    const rail = screen.getByRole("complementary", { name: "Fees and sending" });
+    expect(within(rail).getByRole("region", { name: "Fees" })).toBeInTheDocument();
+    expect(within(rail).getByRole("button", { name: "Send to the Town" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Your project" })).toHaveAttribute("href", "/projects/p1");
+  });
+
   it("lists what to finish first, each opening the card it stops at; Send answers with the first", async () => {
     vi.spyOn(apps, "getProject").mockResolvedValue({ ...PROJECT, answers: DONE.slice(0, 2) });
     const submit = vi.spyOn(apps, "submitProject");

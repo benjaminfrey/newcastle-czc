@@ -35,6 +35,7 @@ describe("Home", () => {
     ]);
     at("/");
     expect(await screen.findByRole("link", { name: "Start a new application" })).toHaveAttribute("href", "/new");
+    expect(screen.getByRole("heading", { level: 1, name: "Your applications" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Continue an application" })).toBeInTheDocument();
     const list = await screen.findByRole("list", { name: "Your applications" });
     const rows = within(list).getAllByRole("link");

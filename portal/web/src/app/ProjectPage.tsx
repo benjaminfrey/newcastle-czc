@@ -12,6 +12,7 @@ import CheckPane from "./CheckPane";
 import Dashboard from "./Dashboard";
 import ItemsPane, { itemTitle } from "./ItemsPane";
 import SendPane from "./SendPane";
+import { todoRows } from "./todo";
 import CardQuestion, { headingOf, rowKey } from "./WizardPane";
 
 // /projects/:id                          the dashboard
@@ -147,9 +148,9 @@ function Tasks({ id }: { id: string }) {
   // "2 things left": the rows (a part, About you, Your lot) with something required still blank.
   const stepOfRow = new Map(models.flatMap((m) => m.rows.map((r) => [`${r.field.id}|${r.itemId ?? ""}`, m.id] as const)));
   const left = new Set(missing(form, cur).map(([f, i]) => stepOfRow.get(`${f}|${i ?? ""}`)).filter(Boolean)).size;
-  const shell = (inCard: boolean, children: React.ReactNode) => (
+  const shell = (inCard: boolean, children: React.ReactNode, titled = false) => (
     <AppShell title={app.title} project={id} saveState={saveState} onReload={() => void reload()}
-              back={inCard ? { href: base, label: "Project" } : undefined} card={inCard}>
+              back={inCard ? { href: base, label: "Project" } : undefined} card={inCard} titled={titled}>
       {children}
     </AppShell>
   );
@@ -157,15 +158,15 @@ function Tasks({ id }: { id: string }) {
     return shell(false, (
       <Dashboard project={app} form={form} cur={cur} models={models} statuses={statuses} base={base} left={left} locked={locked}
                  onAdd={(kind) => void addItem(kind).then((made) => made && setPending({ added: made, step: kind, check: false }))}
-                 onRemove={(part) => void removeItem(part)} onRename={setTitle} />
-    ));
+                 onRemove={(part) => void removeItem(part)} onRename={setTitle} next={todoRows(form, cur, models, base)[0]} />
+    ), true);
   }
   if (stepId === SEND) {
     if (locked) return <Navigate to={base} replace />;
     return shell(true, (
       <SendPane project={app} form={form} cur={cur} models={models} base={base} onBack={() => go(base, -1)}
                 onSend={submit} onSent={() => go(base)} />
-    ));
+    ), true);
   }
   const step = current!;
 

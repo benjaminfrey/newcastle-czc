@@ -27,10 +27,12 @@ export function partSummary(form: FormDef, cur: Current, m: StepModel): string {
   return gaps ? `${gaps} ${gaps === 1 ? "answer" : "answers"} to go` : "";
 }
 
-function StatusPill({ status }: { status: TaskStatus }) {
-  if (status.kind === "done") return <Pill tone="done">Done</Pill>;
-  if (status.kind === "progress") return <Pill tone="progress">{status.answered} of {status.total}<span className="sr-only"> answered</span></Pill>;
-  return <Pill tone="todo">Not started</Pill>;
+// A row's state: a check once it's done; otherwise its summary line ("24 answers to go") says it,
+// and the words are read out, not drawn.
+function StatusMark({ status }: { status: TaskStatus }) {
+  if (status.kind === "done") return <><Icon name="check" className="text-[var(--app-done-text)]" /><span className="sr-only">, Done</span></>;
+  if (status.kind === "progress") return <span className="sr-only">, {status.answered} of {status.total} answered</span>;
+  return <span className="sr-only">, Not started</span>;
 }
 
 // "2.73 acres · 675 ft on Sheepscot Road"; "461 Sheepscot Road · Rural (D1)".
@@ -47,6 +49,7 @@ function lotLines(facts: Record<string, unknown>): string[] {
 type Props = {
   project: ProjectState; form: FormDef; cur: Current; models: StepModel[]; statuses: TaskStatus[]; base: string;
   left: number;                         // parts (and About you) with something required still blank
+  next?: { title: string; href: string }; // the first of them, and its first card still to answer
   locked: boolean;
   onAdd: (kind: string) => void; onRemove: (partId: string) => void; onRename: (title: string) => Promise<boolean>;
 };
@@ -54,7 +57,7 @@ type Props = {
 // The project's home (projects brief §3.4): its title and a pill, the parcel, a row per part, the
 // parts still to add, and beside them what it needs, who is applying, and Check and send. The
 // dashboard is the recap: there is no long review page.
-export default function Dashboard({ project, form, cur, models, statuses, base, left, locked, onAdd, onRemove, onRename }: Props) {
+export default function Dashboard({ project, form, cur, models, statuses, base, left, next, locked, onAdd, onRemove, onRename }: Props) {
   const [parts, setParts] = useState<PartDef[]>([]);
   const [useNames, setUseNames] = useState<Record<string, string>>({});
   const [renaming, setRenaming] = useState<string | null>(null);
@@ -72,8 +75,10 @@ export default function Dashboard({ project, form, cur, models, statuses, base, 
   const iconOf = (id: string) => ICONS[id] ?? parts.find((p) => p.id === id)?.icon ?? "clipboard-list";
   const toAdd = parts.filter((p) => !present.has(p.id));
   const sent = project.status !== "draft";
+  const things = `${left} ${left === 1 ? "thing" : "things"} left`;
   const pill = locked ? <Pill tone="progress">{STATUS_WORDS[project.status]}</Pill>
-    : left ? <Pill tone="warn">{left} {left === 1 ? "thing" : "things"} left</Pill>
+    : left && sent ? <Pill tone="warn">{things}</Pill>
+    : left ? null
     : sent ? <Pill tone={STATUS_TONE[project.status]}>{STATUS_WORDS[project.status]}</Pill>
     : <Pill tone="done">Ready to send</Pill>;
 
@@ -93,7 +98,7 @@ export default function Dashboard({ project, form, cur, models, statuses, base, 
         <header className="flex flex-col gap-2">
           {renaming === null ? (
             <div className="flex items-start gap-2">
-              <h2 className="text-[30px] font-bold leading-tight">{project.title}</h2>
+              <h1 className="text-[30px] font-bold leading-tight">{project.title}</h1>
               {!locked && (
                 <button type="button" aria-label="Rename the project" onClick={() => setRenaming(project.title)}
                         className="mt-2 flex size-11 shrink-0 items-center justify-center rounded-full text-[var(--app-accent-text)]">
@@ -110,7 +115,14 @@ export default function Dashboard({ project, form, cur, models, statuses, base, 
               <button type="button" className="btn" onClick={() => setRenaming(null)}>Cancel</button>
             </form>
           )}
-          <div className="flex flex-wrap items-center gap-2">
+          {!pill && (
+            // The screen's one question, first: what's left before it can be sent, and the way in.
+            <div className="flex flex-col items-start gap-3">
+              <p className="text-[17px] text-[var(--app-label)]">{things} before you can send it.</p>
+              {next && <Link to={next.href} data-filled="" className="btn btn-filled no-underline">Continue with {next.title}</Link>}
+            </div>
+          )}
+          <div className="flex flex-wrap items-center gap-2 empty:hidden">
             {pill}
             {sent && project.submitted_at && !locked && (
               <span className="text-[13px] text-[var(--app-secondary-label)]">
@@ -128,7 +140,7 @@ export default function Dashboard({ project, form, cur, models, statuses, base, 
             <span className="block text-[15px] font-semibold text-[var(--app-label)]">{mapLotLabel(project.property.map_lot)}</span>
             {lotLines(facts).map((l) => <span key={l} className="block text-[13px] text-[var(--app-secondary-label)]">{l}</span>)}
           </span>
-          {statusOf("your_lot") && <StatusPill status={statusOf("your_lot")} />}
+          {statusOf("your_lot") && <StatusMark status={statusOf("your_lot")} />}
           <Icon name="chevron-right" className="text-[var(--app-tertiary-label)]" />
         </Link>
 
@@ -147,12 +159,14 @@ export default function Dashboard({ project, form, cur, models, statuses, base, 
                       <span className="block text-[15px] text-[var(--app-label)]">{m.title}</span>
                       {line && <span className="block truncate text-[12px] text-[var(--app-secondary-label)]">{line}</span>}
                     </span>
-                    <StatusPill status={statusOf(m.id)} />
+                    <StatusMark status={statusOf(m.id)} />
                     <Icon name="chevron-right" className="text-[var(--app-tertiary-label)]" />
                   </Link>
                   {single && !locked && project.items.length > 1 && (
-                    <button type="button" onClick={() => setRemoving({ id: part.id, title: m.title })}
-                            className="mr-2 min-h-11 px-2 text-[13px] text-[var(--app-destructive)]">Remove</button>
+                    <button type="button" aria-label={`Remove ${m.title}`} onClick={() => setRemoving({ id: part.id, title: m.title })}
+                            className="mr-1 flex size-11 shrink-0 items-center justify-center text-[var(--app-destructive)]">
+                      <Icon name="minus-circle" />
+                    </button>
                   )}
                 </li>
               );
@@ -167,7 +181,7 @@ export default function Dashboard({ project, form, cur, models, statuses, base, 
               <div className="grid grid-cols-1 gap-2 @[25rem]:grid-cols-2">
                 {toAdd.map((p) => (
                   <button key={p.id} type="button" onClick={() => onAdd(p.id)}
-                          className="flex min-h-12 items-center gap-[10px] rounded-[8px] border-[0.5px] border-[var(--app-edge)] bg-[var(--app-row)] px-3 py-[10px] text-left text-[14px] text-[var(--app-label)]">
+                          className="flex min-h-12 items-center gap-[10px] rounded-[8px] border-[0.5px] border-[var(--app-separator)] bg-[var(--app-row)] px-3 py-[10px] text-left text-[14px] text-[var(--app-label)]">
                     <Icon name={p.icon} className="text-[var(--app-secondary-label)]" />
                     <span className="flex-1">{p.label}</span>
                     <Icon name="plus" className="text-[var(--app-accent-text)]" />
@@ -189,10 +203,10 @@ export default function Dashboard({ project, form, cur, models, statuses, base, 
             <span className="min-w-0 flex-1">
               <span className="block text-[15px] text-[var(--app-label)]">{(cur.account.name as string | null) ?? "Your details"}</span>
               <span className="block truncate text-[13px] text-[var(--app-secondary-label)]">
-                {owner === true ? "The owner" : owner === false ? "Helping the owner" : "Owner or helper?"}{cur.account.email ? ` · ${cur.account.email}` : ""}
+                {owner === true ? "The owner" : owner === false ? "Helping the owner" : "Owner or helper?"}
               </span>
             </span>
-            {statusOf("about_you") && <StatusPill status={statusOf("about_you")} />}
+            {statusOf("about_you") && <StatusMark status={statusOf("about_you")} />}
             <Icon name="chevron-right" className="text-[var(--app-tertiary-label)]" />
           </Link>
         </section>

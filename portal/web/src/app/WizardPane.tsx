@@ -192,7 +192,7 @@ export default function CardQuestion({ screen, editing, errorsRef, onPick, onCon
           ...(corrected ? [{ value: "map", key: "map", label: `Use the map's ${map}` }] : []),
           { value: "no", key: "no", label: "No, I'll correct it" }];
         return (
-          <div className="flex w-full flex-col items-center gap-4">
+          <div className="flex w-full flex-col items-center lg:items-start gap-4">
             <p className="text-[30px] font-semibold tabular-nums">{display(row.field, value(row), {})}</p>
             <p className="-mt-3 text-[13px] text-[var(--app-secondary-label)]">
               {corrected ? `You entered this. The Town's map says ${map}.` : "From the Town's map"}
@@ -214,10 +214,10 @@ export default function CardQuestion({ screen, editing, errorsRef, onPick, onCon
           const lead = choices[0];
           const rest = rows.slice(1);
           return (
-            <div className="flex w-full flex-col items-center gap-5">
+            <div className="flex w-full flex-col items-center lg:items-start gap-5">
               {tiles(lead, false)}
               {!blank(value(lead)) && rest.map((r) => (isChoice(r.field) || controlOf(r.field) === "picker") ? (
-                <div key={r.field.id} className="flex w-full flex-col items-center gap-2">
+                <div key={r.field.id} className="flex w-full flex-col items-center lg:items-start gap-2">
                   <p className="text-[13px] text-[var(--app-secondary-label)]">{r.field.label ?? short(r)}</p>
                   {tiles(r, true)}
                 </div>
@@ -235,7 +235,7 @@ export default function CardQuestion({ screen, editing, errorsRef, onPick, onCon
         const wide = rows.some((r) => r.field.type === "text" || r.field.type === "longtext") ? "max-w-[480px]" : "max-w-[380px]";
         const floors = rows.filter(repeated);
         return (
-          <div className={`flex w-full flex-col items-center ${wide}`}>
+          <div className={`flex w-full flex-col items-center lg:items-start ${wide}`}>
             <div className={grid}>{rows.filter((r) => !repeated(r)).map(member)}</div>
             {floors.length > 0 && (
               <div className={`${grid} mt-[10px] border-t-[0.5px] border-[var(--app-separator)] pt-[10px]`}>{floors.map(member)}</div>
@@ -246,7 +246,7 @@ export default function CardQuestion({ screen, editing, errorsRef, onPick, onCon
       case "setbacks": {
         const by = (s: string) => screen.rows.find((r) => r.field.id.endsWith(s));
         const side = (s: string, words: string) => (by(s) ? (
-          <div className="flex flex-col items-center gap-1.5 text-[13px] text-[var(--app-secondary-label)]">
+          <div className="flex flex-col items-center gap-1.5 text-[13px] text-[var(--app-secondary-label)] lg:items-start">
             <span>{words}</span>{control(by(s)!, { bare: true })}
           </div>) : null);
         return (
@@ -269,7 +269,7 @@ export default function CardQuestion({ screen, editing, errorsRef, onPick, onCon
           return <div className="flex flex-col gap-1 text-left"><span className="text-[15px]">{field.label}</span>{control(r, { bare: true, field })}</div>;
         };
         return (
-          <div className="flex w-full flex-col items-center gap-5">
+          <div className="flex w-full flex-col items-center lg:items-start gap-5">
             {facing && <ChoiceTiles field={facing.field} value={dir} tap={false} onPick={(v) => answer(facing, v)} onValue={(v) => answer(facing, v)} />}
             {(!facing || labels) && (
               <div className="w-full">
@@ -289,7 +289,7 @@ export default function CardQuestion({ screen, editing, errorsRef, onPick, onCon
 
   return (
     <>
-      <h2 tabIndex={-1} data-screen-title className="max-w-[30ch] text-balance text-[20px] font-medium leading-[1.3] outline-none">{heading}</h2>
+      <h2 tabIndex={-1} data-screen-title className="max-w-[30ch] text-balance text-[20px] font-medium leading-[1.3] outline-none lg:text-[24px]">{heading}</h2>
       <p className="mb-4 mt-1 max-w-[46ch] text-pretty text-[13px] text-[var(--app-secondary-label)] empty:mb-3">{help ?? ""}</p>
       {body}
       {unknownable && (
