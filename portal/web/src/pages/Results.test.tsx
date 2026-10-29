@@ -34,19 +34,20 @@ describe("Results", () => {
   it("sends the answers and the property's districts to the screener", async () => {
     const spy = vi.spyOn(api, "runScreener").mockResolvedValue(RESULT);
     renderPage();
-    await screen.findByText("Here's what you'll need");
+    await screen.findByText("Use Permit");
     expect(spy).toHaveBeenCalledWith(expect.objectContaining({
       use_key: "restaurant_cafe", property: { district_codes: ["D1"], on_state_highway: false, civic: false } }));
   });
 
-  it("lists each application with reviewer, time limit and why", async () => {
+  it("lists each application with reviewer and time limit, with no Code citation or why", async () => {
     vi.spyOn(api, "runScreener").mockResolvedValue(RESULT);
     renderPage();
     expect(await screen.findByText("Use Permit")).toBeInTheDocument();
     expect(screen.getAllByText(/Code Enforcement Officer/).length).toBeGreaterThan(0);
     expect(screen.getByText(/30 days/)).toBeInTheDocument();
-    expect(screen.getByText(/Art\. 8 §15\.b\.1/)).toBeInTheDocument();
-    expect(screen.getByText("Measure the floor area.")).toBeInTheDocument();
+    expect(screen.queryByText(/Art\. \d/)).not.toBeInTheDocument();
+    expect(screen.getByText("Measure the floor area.")).toBeInTheDocument(); // a note in plain words stays
+    expect(screen.queryByText(/Why the Code/)).not.toBeInTheDocument();
     expect(screen.getAllByText(/the Rural \(D1\) district/).length).toBeGreaterThan(0);
   });
 
@@ -68,7 +69,7 @@ describe("Results", () => {
   it("shows the fee line", async () => {
     vi.spyOn(api, "runScreener").mockResolvedValue(RESULT);
     renderPage();
-    expect(await screen.findByText(/Set by the Town's fee schedule/)).toBeInTheDocument();
+    expect((await screen.findAllByText(/Set by the Town's fee schedule/)).length).toBeGreaterThan(0);
   });
 
   it("says when answers aren't approved yet", async () => {
@@ -95,7 +96,18 @@ describe("Results", () => {
   it("says 'you may need' when the answer isn't certain", async () => {
     vi.spyOn(api, "runScreener").mockResolvedValue({ ...RESULT, outcomes: [{ ...USE_PERMIT, certainty: "may_need" }] });
     renderPage();
-    expect(await screen.findByText("You may need this.")).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: /^You may need a Use Permit/ })).toBeInTheDocument();
+    expect(screen.queryByText("You may need this.")).not.toBeInTheDocument(); // the title says it
+  });
+
+  it("the answer, then reviewer, fees and lot, with no talk of the Code", async () => {
+    vi.spyOn(api, "runScreener").mockResolvedValue({ ...RESULT, outcomes: [USE_PERMIT] });
+    renderPage();
+    const block = await screen.findByRole("region", { name: "Use Permit" });
+    expect(block).toHaveTextContent("Reviewed by");
+    expect(block).toHaveTextContent("Fees");
+    expect(block).toHaveTextContent("Your lot");
+    expect(document.body.textContent).not.toMatch(/The Code calls for this|Time the Code gives/);
   });
 
   it("never says nothing is needed beside a caveat", async () => {
@@ -121,18 +133,18 @@ describe("Results", () => {
     expect(await screen.findByText(/30 days, if sent to the Planning Board/)).toBeInTheDocument();
   });
 
-  it("shows the chair's ruling under why", async () => {
+  it("doesn't show the Code's why, nor a ruling under it", async () => {
     vi.spyOn(api, "runScreener").mockResolvedValue({ ...RESULT, outcomes: [{ ...USE_PERMIT,
       why: { ...USE_PERMIT.why, ruling: "Any home is the Residence use. (Ruling of Ben Frey, Planning Board chair, 2026-10-18.)" } }] });
     renderPage();
-    expect(await screen.findByText(/Ruling of Ben Frey/)).toBeInTheDocument();
+    expect(await screen.findByText("Use Permit")).toBeInTheDocument();
+    expect(screen.queryByText(/Ruling of Ben Frey/)).not.toBeInTheDocument();
   });
 
   it("offers Start only for the applications this site takes", async () => {
     vi.spyOn(api, "runScreener").mockResolvedValue(RESULT);
     renderPage();
-    const start = await screen.findByRole("link", { name: "Start your Use Permit application" });
-    expect(start).toHaveAttribute("href", "/apply/use_permit");
-    expect(screen.queryByRole("link", { name: /Start your Special Permit/ })).not.toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "Start this application: Use Permit" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Start this application: Special Permit/ })).not.toBeInTheDocument();
   });
 });

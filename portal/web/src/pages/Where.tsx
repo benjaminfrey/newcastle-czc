@@ -1,5 +1,8 @@
 import { Button, Card, Description, Form, Input, Label, Radio, RadioGroup, TextArea, TextField } from "@heroui/react";
 import { useEffect, useState, type FormEvent } from "react";
+import { ChoiceTiles } from "../controls/Tiles";
+import InsetGroup from "../shell/InsetGroup";
+import type { FormField } from "../applications";
 import ParcelMap from "../components/ParcelMap";
 import { getDistricts, getProperty, parcelAt, searchProperty, type Facts, type Hit } from "../api";
 import { saveProperty } from "../property";
@@ -102,7 +105,7 @@ export default function Where() {
     if (next) return navigate(next);
     const answers = loadAnswers();
     if (!answers) return setMode("saved");
-    navigate(answers.project.includes("use") && !answers.use_key ? "/start/use" : "/start/results");
+    navigate(answers.project.includes("use") && !answers.use_key ? "/start/use" : "/start/needs");
   }
 
   function saveManual(e: FormEvent) {
@@ -169,10 +172,63 @@ export default function Where() {
   const district_ = facts ? districtLine(facts) : null;
   // Article 2 §5; the chair's ruling of 2026-10-15 on who builds there and how.
   const civic = facts?.districts.find((d) => d.code === "SD-Civic");
+  const facing = (words: string, ok: boolean) => ({ value: words, key: words, label: words, ok });
+
+  // The lot that was found is its own screen: what the Town's map says, and three answers.
+  if (facts && district_) {
+    const answers = [facing("Yes, this is my property", true), facing("This doesn't look right", false), facing("No, search again", false)];
+    return (
+      <section className="pane-push flex flex-col items-center gap-3 py-6 text-center">
+        <h2 tabIndex={-1} data-screen-title className="text-[22px] font-semibold leading-tight outline-none">Is this your property?</h2>
+        <div className="h-56 w-full max-w-xl overflow-hidden rounded-xl">
+          <ParcelMap selected={facts.geometry ?? null} focus={focus} onPick={onPick} />
+        </div>
+        {!disputing ? (
+          <ChoiceTiles field={{ id: "this_lot", label: "Is this your property?", official_label: "Is this your property?" } as FormField}
+                       value={null} choices={answers}
+                       onPick={(v) => (v === answers[0].value ? confirm(false) : v === answers[1].value ? setDisputing(true) : setFacts(null))} />
+        ) : (
+          <div className="flex w-full max-w-md flex-col gap-2 text-left">
+            <TextField value={note} onChange={setNote}>
+              <Label>What looks wrong?</Label>
+              <TextArea />
+              <Description>Staff will see this. You can still go on with your application.</Description>
+            </TextField>
+            <Button variant="primary" className="self-end" onPress={() => confirm(true)}>Save</Button>
+          </div>
+        )}
+        <div className="w-full max-w-xl text-left">
+          <InsetGroup footer={<>Lot lines from the Town's tax maps as of {longDate(facts.as_of.parcels)}. District from a tracing
+            of the District Map. The Code Enforcement Officer confirms all of this when you apply.</>}>
+            <InsetGroup.Row label="Map and lot"><span className="font-semibold">{mapLotLabel(facts.map_lot)}</span></InsetGroup.Row>
+            <InsetGroup.Row label="District"><span>{district_.text.replace(/^District: /, "")}</span></InsetGroup.Row>
+            {district_.staffWillConfirm && <InsetGroup.Row label="Note"><span>Part of this lot is in an area staff will confirm.</span></InsetGroup.Row>}
+            {civic && (
+              <InsetGroup.Row label="Civic land">
+                <span>
+                  {civic.share >= 0.99 ? "This lot is" : "Part of this lot is"} Town-owned land in the Civic district.
+                  Only the Town builds on Civic land: Town Meeting votes on it, on the Select Board's
+                  recommendation, and no permit application is made through this site.
+                </span>
+              </InsetGroup.Row>
+            )}
+            <InsetGroup.Row label="Size"><span>About {facts.acres} acres (measured from the map).</span></InsetGroup.Row>
+            {facts.streets.map((st) => (
+              <InsetGroup.Row key={`${st.name}-${st.type}`} label="Road">
+                <span>About {st.frontage_ft} ft along {st.name}{st.type_name ? `, a ${st.type_name}` : ""}.</span>
+              </InsetGroup.Row>
+            ))}
+          </InsetGroup>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <div className="flex flex-col gap-4">
-      <h1 className="text-xl font-semibold">Where is your project?</h1>
-      <Form onSubmit={onSearch} className="flex flex-col gap-2 sm:flex-row sm:items-end">
+    <section className="flex flex-col items-center gap-3 py-6 text-center">
+      <h2 tabIndex={-1} data-screen-title className="text-[22px] font-semibold leading-tight outline-none">Where is the property?</h2>
+      <p className="max-w-[46ch] text-[15px] text-[var(--app-secondary-label)]">Search for the address, or the map and lot from your tax bill, or tap your lot on the map.</p>
+      <Form onSubmit={onSearch} className="flex w-full max-w-xl flex-col gap-2 text-left sm:flex-row sm:items-end">
         <TextField value={query} onChange={setQuery} className="flex-1">
           <Label>Street address, or map and lot</Label>
           <Input />
@@ -181,7 +237,7 @@ export default function Where() {
       </Form>
 
       {hits && hits.length > 0 && (
-        <ul className="flex flex-col gap-1" aria-label="Search results">
+        <ul className="flex w-full max-w-xl flex-col gap-1 text-left" aria-label="Search results">
           {hits.map((h) => (
             <li key={`${h.label}-${h.lon}-${h.lat}`}>
               <Button variant="ghost" onPress={() => pickHit(h)}>{h.label}</Button>
@@ -192,59 +248,11 @@ export default function Where() {
 
       {message && <p role="status">{message}</p>}
 
-      <ParcelMap selected={facts?.geometry ?? null} focus={focus} onPick={onPick} />
-      <p className="text-sm">Or tap your lot on the map.</p>
-
-      {facts && district_ && (
-        <Card>
-          <Card.Header>
-            <Card.Title>Here's what we found</Card.Title>
-          </Card.Header>
-          <Card.Content className="flex flex-col gap-2">
-            <p className="font-semibold">{mapLotLabel(facts.map_lot)}</p>
-            <p>{district_.text}</p>
-            {district_.staffWillConfirm && <p>Part of this lot is in an area staff will confirm.</p>}
-            {civic && (
-              <p>
-                {civic.share >= 0.99 ? "This lot is" : "Part of this lot is"} Town-owned land in the Civic district.
-                Only the Town builds on Civic land: Town Meeting votes on it, on the Select Board's
-                recommendation, and no permit application is made through this site.
-              </p>
-            )}
-            <p>About {facts.acres} acres (measured from the map).</p>
-            {facts.streets.map((s) => (
-              <p key={`${s.name}-${s.type}`}>
-                About {s.frontage_ft} ft along {s.name}{s.type_name ? `, a ${s.type_name}` : ""}.
-              </p>
-            ))}
-            <p className="text-sm">
-              Lot lines from the Town's tax maps as of {longDate(facts.as_of.parcels)}. District from a tracing
-              of the District Map. The Code Enforcement Officer confirms all of this when you apply.
-            </p>
-          </Card.Content>
-          <Card.Footer className="flex flex-col items-start gap-3">
-            {!disputing ? (
-              <div className="flex flex-wrap gap-2">
-                <Button variant="primary" onPress={() => confirm(false)}>Yes, this is my property</Button>
-                <Button variant="secondary" onPress={() => setDisputing(true)}>This doesn't look right</Button>
-              </div>
-            ) : (
-              <div className="flex w-full flex-col gap-2">
-                <TextField value={note} onChange={setNote}>
-                  <Label>What looks wrong?</Label>
-                  <TextArea />
-                  <Description>Staff will see this. You can still go on with your application.</Description>
-                </TextField>
-                <Button variant="primary" onPress={() => confirm(true)}>Save</Button>
-              </div>
-            )}
-          </Card.Footer>
-        </Card>
-      )}
-
-      <div>
-        <Button variant="ghost" onPress={() => goManual(false)}>I can't find my property</Button>
+      <div className="w-full max-w-xl overflow-hidden rounded-xl">
+        <ParcelMap selected={null} focus={focus} onPick={onPick} />
       </div>
-    </div>
+      <p className="text-[13px] text-[var(--app-secondary-label)]">Or tap your lot on the map.</p>
+      <Button variant="ghost" className="text-[var(--app-accent-text)]" onPress={() => goManual(false)}>I can't find my property</Button>
+    </section>
   );
 }

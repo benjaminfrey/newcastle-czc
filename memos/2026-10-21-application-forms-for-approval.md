@@ -2,7 +2,7 @@
 
 Every section and field of the three application forms, with what applicants read, when each question is asked, the Code text it rests on, and its approval. Production refuses a form while any of its entries is a draft.
 
-**127 entries await approval.**
+**130 entries await approval.**
 
 To approve an entry, change `status: draft` to `status: approved` with `approved_by` and `approved_on` in its YAML file (`portal/api/portal_api/forms/definitions/forms/`).
 
@@ -11,6 +11,8 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - **Fields come from the Town's current Planning Application packet** (Cover Sheet, Use Form, Building Form, Components Section), read from the scanned 2025 applications in `docs/`. The Entrance / Driveway Form is new, drafted from Art. 3 §§7–8 and §12.
 - **Buildings and components repeat**: the form prints one Building Form per building and one Components Section per addition, porch, deck or other component.
 - **Signatures, dates and "Name (print)"** are filled when the applicant signs and submits (Milestone 6).
+- **Redesign (briefs approved 2026-10-23 and 2026-10-24): steps, screens and controls.** Each form is grouped into a few steps ("Step:" below) and asked one question per screen; fields marked "Screen:" are asked together on one screen. "Control:" names the control drawn (switch, stepper, slider, chips, picker, tiles). A switch's starting position is written as an answer marked as the form's, and the applicant sees it set.
+- **Proposed with the redesign, for approval:** (1) a detached garage or shed is a building, chosen by its type ("A smaller building that goes with a home"), which the wizard asks first; an attached garage stays an addition, and the "garage attached or detached" question is gone; (2) the four window walls are sliders, still percentages, labelled with the street side as well as the compass point; (3) roof slope is picked (Flat, 2/12 to 12/12, Steeper), exterior finish is chips with an Other field, "attached to" picks one of the application's buildings, and the entrance's road picks one along the lot; (4) the four setbacks are entered around a not-to-scale drawing of the lot; (5) each building, and each addition or attached garage with walls, is asked which way its front faces, so the walls can be named by the street side (the chair's ruling, 2026-10-24).
 
 ## The chair's rulings (2026-10-23)
 
@@ -25,7 +27,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Location of Proposed Project (`location`)
 
-- Wizard chapter: Your property
+- Step: Your lot
 - **Draft — awaiting the chair's approval.**
 
 #### Map / Lot (`map_lot`)
@@ -50,6 +52,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “If you know it, what is the book number of your deed?”
 - Help: It's printed on your deed from the Lincoln County Registry of Deeds. Staff can look it up if you don't have it.
 - Answer: text; optional; “I don't know yet” allowed
+- Screen: asked with the others on `deed`
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §2.a.2:
 
@@ -61,6 +64,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “And the page number of your deed?”
 - Help: It's printed next to the book number.
 - Answer: text; optional; “I don't know yet” allowed
+- Screen: asked with the others on `deed`
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §2.a.2:
 
@@ -68,7 +72,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Applicant (`applicant`)
 
-- Wizard chapter: Who's applying
+- Step: About you
 - **Draft — awaiting the chair's approval.**
 
 #### Name (`applicant_name`)
@@ -110,9 +114,10 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 #### Applicant is the Property Owner (`applicant_is_owner`)
 
 - Source: asked in the wizard
-- Applicants read: “Do you own the property?”
-- Help: If you're a builder or someone else applying for the owner, choose No.
+- Applicants read: “Do you own this property?”
+- Help: Choose No if you're a builder or someone else applying for the owner.
 - Answer: yesno; required
+- Control: switch (starts on)
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §2.a.2:
 
@@ -121,8 +126,10 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 #### Agent (`has_agent`)
 
 - Source: asked in the wizard
-- Applicants read: “Should the Town also contact someone working on this for you, like a builder or surveyor?”
+- Applicants read: “Is someone else helping with this, like a builder or surveyor?”
+- Help: If you choose Yes, the Town will also contact them.
 - Answer: yesno; required
+- Control: switch (starts off)
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §2.a.2:
 
@@ -130,7 +137,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Property Owner (if different) (`owner`)
 
-- Wizard chapter: Who's applying
+- Step: About you
 - Printed and asked only when “Applicant is the Property Owner” is No
 - **Draft — awaiting the chair's approval.**
 
@@ -177,7 +184,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Agent (if applicable) (`agent`)
 
-- Wizard chapter: Who's applying
+- Step: About you
 - Printed and asked only when “Agent” is Yes
 - **Draft — awaiting the chair's approval.**
 
@@ -223,7 +230,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Site Information (existing) (`site`)
 
-- Wizard chapter: Your property
+- Step: Your lot
 - **Draft — awaiting the chair's approval.**
 
 #### Zoning District (`zoning_district`)
@@ -280,6 +287,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “How many homes are on the property now?”
 - Help: Count each house, apartment or other separate home (the Code calls each one a dwelling unit). Enter 0 if there are none.
 - Answer: number, 0–500; required
+- Control: stepper
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §2.a.2:
 
@@ -287,7 +295,6 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Certification (`certification`)
 
-- Wizard chapter: Sign and submit
 - **Draft — awaiting the chair's approval.**
 
 #### Applicant Signature (`signature`)
@@ -307,7 +314,6 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Official Use Only (`office`)
 
-- Wizard chapter: Office use
 - **Draft — awaiting the chair's approval.**
 
 #### Date Received (`date_received`)
@@ -321,7 +327,6 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Proposed Project (`use_header`)
 
-- Wizard chapter: Your property
 - **Draft — awaiting the chair's approval.**
 
 #### Applicant Name (`use_applicant_name`)
@@ -341,7 +346,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Existing (`existing`)
 
-- Wizard chapter: How the property is used now
+- Step: Uses today
 - **Draft — awaiting the chair's approval.**
 
 #### Existing Use(s) (`existing_uses`)
@@ -368,7 +373,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Proposed (`proposed`)
 
-- Wizard chapter: What you want to do
+- Step: Your plan
 - **Draft — awaiting the chair's approval.**
 
 #### Uses to be Established (`proposed_uses`)
@@ -417,7 +422,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Attachments (`use_documents_section`)
 
-- Wizard chapter: Plans and photos
+- Step: Photos and plans
 - **Draft — awaiting the chair's approval.**
 
 #### Other relevant documentation (`use_documents`)
@@ -433,7 +438,6 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Use Form Certification (`use_certification`)
 
-- Wizard chapter: Sign and submit
 - **Draft — awaiting the chair's approval.**
 
 #### Applicant Signature (`use_signature`)
@@ -453,7 +457,6 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Use Form — Official Use Only (`use_office`)
 
-- Wizard chapter: Office use
 - **Draft — awaiting the chair's approval.**
 
 #### Permit Type Required (`permit_type_required`)
@@ -467,7 +470,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Your Project (`project`)
 
-- Wizard chapter: Your project
+- Step: The work
 - **Draft — awaiting the chair's approval.**
 
 #### Type of project (`work_kinds`)
@@ -481,6 +484,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
   - Building renovation — applicants read “Renovating a building, inside or out”
   - Site improvements — applicants read “Work on the land, such as a parking area, walls or grading”
   - Change to a nonconforming lot, use, structure or site improvement — applicants read “A change to a lot, use or building that doesn't fit today's Code”
+- Control: chips
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §10.b.1:
 
@@ -509,7 +513,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Building Form (`building`)
 
-- Wizard chapter: Your buildings
+- Step: Buildings
 - Repeats: one per building (1 to 20); the wizard offers “Add another building”
 - Printed and asked only when (“Type of project” includes New building or accessory building) or (“Type of project” includes Addition of building components) or (“Type of project” includes Building renovation)
 - **Draft — awaiting the chair's approval.**
@@ -543,8 +547,10 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 #### Only being renovated, not changing size or location (`renovation_only`)
 
 - Source: asked in the wizard
-- Applicants read: “Is this building only being renovated, without changing its size or where it sits?”
+- Applicants read: “Is it only being renovated?”
+- Help: Choose Yes if the building keeps its size and place.
 - Answer: yesno; required
+- Control: switch (starts off)
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §10.b.2:
 
@@ -552,7 +558,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Building Location (proposed) (`building_location`)
 
-- Wizard chapter: Your buildings
+- Step: Buildings
 - Repeats: one per building (1 to 20); the wizard offers “Add another building”
 - Printed and asked only when (“Type of project” includes New building or accessory building) or (“Type of project” includes Addition of building components) or (“Type of project” includes Building renovation)
 - **Draft — awaiting the chair's approval.**
@@ -563,6 +569,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “How far will the building be from the front lot line, the one along the road?”
 - Help: Measure in feet from the lot line to the closest part of the building.
 - Answer: number (ft), 0–50000; required; “I don't know yet” allowed
+- Screen: asked with the others on `setbacks` (lot-diagram drawing)
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 2 §3.c.3:
 
@@ -574,6 +581,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “How far will it be from the nearest side lot line?”
 - Help: In feet, from the lot line to the closest part of the building.
 - Answer: number (ft), 0–50000; required; “I don't know yet” allowed
+- Screen: asked with the others on `setbacks` (lot-diagram drawing)
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 2 §3.c.3:
 
@@ -584,6 +592,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Source: asked in the wizard
 - Applicants read: “How far will it be from the other side lot line?”
 - Answer: number (ft), 0–50000; required; “I don't know yet” allowed
+- Screen: asked with the others on `setbacks` (lot-diagram drawing)
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 2 §3.c.3:
 
@@ -594,6 +603,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Source: asked in the wizard
 - Applicants read: “How far will it be from the back lot line?”
 - Answer: number (ft), 0–50000; required; “I don't know yet” allowed
+- Screen: asked with the others on `setbacks` (lot-diagram drawing)
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 2 §3.c.3:
 
@@ -601,7 +611,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Building Details (proposed) (`building_details`)
 
-- Wizard chapter: Your buildings
+- Step: Buildings
 - Repeats: one per building (1 to 20); the wizard offers “Add another building”
 - Printed and asked only when (“Type of project” includes New building or accessory building) or (“Type of project” includes Addition of building components) or (“Type of project” includes Building renovation)
 - **Draft — awaiting the chair's approval.**
@@ -621,6 +631,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
   - General Accessory Building — applicants read “A smaller building that could serve a home or a business”
   - Special Use Building — applicants read “A Special Use Building (staff can help you decide)”
   - Agricultural Building — applicants read “A farm building, like a barn, stable or greenhouse”
+- Control: building-type
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 5 §1.c.1:
 
@@ -635,6 +646,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “How many homes will this building have?”
 - Help: Count each separate home with its own kitchen. Enter 0 if none.
 - Answer: number, 0–500; required
+- Control: stepper
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §2.a.2:
 
@@ -642,7 +654,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Main Building Mass Details (`building_mass`)
 
-- Wizard chapter: Your buildings
+- Step: Buildings
 - Repeats: one per building (1 to 20); the wizard offers “Add another building”
 - Printed and asked only when (“Type of project” includes New building or accessory building) or (“Type of project” includes Addition of building components) or (“Type of project” includes Building renovation)
 - **Draft — awaiting the chair's approval.**
@@ -653,6 +665,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “How wide is the main part of the building, in feet?”
 - Help: The "main building mass" is the main rectangular part of the building, not counting additions, porches or decks. Width is measured along the side facing the road.
 - Answer: number (ft), 0–2000; required; “I don't know yet” allowed
+- Screen: asked with the others on `size`
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 5 §3.c.2:
 
@@ -663,6 +676,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Source: asked in the wizard
 - Applicants read: “How deep is the main part of the building, front to back, in feet?”
 - Answer: number (ft), 0–2000; required; “I don't know yet” allowed
+- Screen: asked with the others on `size`
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 5 §3.c.2:
 
@@ -674,6 +688,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “How many stories (floors above ground) will it have?”
 - Help: Don't count a basement or living space inside the roof.
 - Answer: number, 1–10; required; “I don't know yet” allowed
+- Control: stepper
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 5 §3.c.2:
 
@@ -755,6 +770,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
   - Gambrel — applicants read “Gambrel: a barn-style roof with two slopes on each side”
   - Hipped — applicants read “Hipped: slopes on all four sides”
   - Shed — applicants read “Shed: a single slope”
+- Control: tiles
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 6 §5.c.2:
 
@@ -764,8 +780,22 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 - Source: asked in the wizard
 - Applicants read: “How steep is the roof?”
-- Help: Give the rise over 12 inches of run, for example "8/12".
-- Answer: text; required; “I don't know yet” allowed
+- Help: Pick the pitch: how many inches the roof rises for every 12 inches across.
+- Answer: choice; required; “I don't know yet” allowed
+  - Flat (under 2/12) — applicants read “Flat (under 2/12)”
+  - 2/12 — applicants read “2/12”
+  - 3/12 — applicants read “3/12”
+  - 4/12 — applicants read “4/12”
+  - 5/12 — applicants read “5/12”
+  - 6/12 — applicants read “6/12”
+  - 7/12 — applicants read “7/12”
+  - 8/12 — applicants read “8/12”
+  - 9/12 — applicants read “9/12”
+  - 10/12 — applicants read “10/12”
+  - 11/12 — applicants read “11/12”
+  - 12/12 — applicants read “12/12”
+  - Steeper than 12/12 — applicants read “Steeper than 12/12”
+- Control: picker
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 6 §5.c.2:
 
@@ -775,8 +805,32 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 - Source: asked in the wizard
 - Applicants read: “What will the outside walls and roof be covered with?”
-- Help: List them all, for example "clapboards, asphalt shingles".
-- Answer: text; required; “I don't know yet” allowed
+- Help: Choose all that apply.
+- Answer: multichoice; required; “I don't know yet” allowed
+  - Clapboard — applicants read “Clapboard”
+  - Wood shingle — applicants read “Wood shingle”
+  - Vinyl siding — applicants read “Vinyl siding”
+  - Fibre-cement siding — applicants read “Fibre-cement siding”
+  - Brick — applicants read “Brick”
+  - Stone — applicants read “Stone”
+  - Board-and-batten — applicants read “Board-and-batten”
+  - Metal siding — applicants read “Metal siding”
+  - Asphalt shingle roof — applicants read “Asphalt shingle roof”
+  - Metal roof — applicants read “Metal roof”
+  - Slate roof — applicants read “Slate roof”
+  - Other — applicants read “Something else”
+- Control: chips
+- **Draft — awaiting the chair's approval.**
+- Rests on Art. 6 §5.c.5:
+
+  > Pitched roofs, if provided, must be clad with wood shingles, asphalt shingles, slate tile, metal, or have the appearance of natural materials.
+
+#### Other exterior finish (`exterior_finish_other`)
+
+- Source: asked in the wizard
+- Applicants read: “What other material?”
+- Answer: text; required
+- Asked only when “Exterior finish material” (this building) includes Other
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 6 §5.c.5:
 
@@ -784,16 +838,35 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Windows & Doors - Main Building Mass (`building_windows`)
 
-- Wizard chapter: Your buildings
+- Step: Buildings
 - Repeats: one per building (1 to 20); the wizard offers “Add another building”
 - Printed and asked only when (“Type of project” includes New building or accessory building) or (“Type of project” includes Addition of building components) or (“Type of project” includes Building renovation)
 - **Draft — awaiting the chair's approval.**
 
+#### Direction the front faces (`front_facing`)
+
+- Source: asked in the wizard
+- Applicants read: “Which way does the front of the building face?”
+- Help: The front is the side facing the road. Pick the closest direction.
+- Answer: choice; required; “I don't know yet” allowed
+  - North — applicants read “North”
+  - East — applicants read “East”
+  - South — applicants read “South”
+  - West — applicants read “West”
+- Control: tiles
+- **Draft — awaiting the chair's approval.**
+- Rests on Art. 6 §6.c.2:
+
+  > The required window and door percentages apply to the total area of each story of each building facade as measured from the surface of the floor of that story, to the surface of the next floor above; or, if there is no floor above, to either the top of the wall plate, or the base of the buildings eaves, whichever is shorter.
+
 #### North facing facade % (`windows_north`)
 
 - Source: asked in the wizard
-- Applicants read: “About what share of the north-facing wall is windows and doors, as a percent?”
+- Applicants read: “North wall”
+- Help: About what share of this wall is windows and doors?
 - Answer: number (%), 0–100; required; “I don't know yet” allowed
+- Screen: asked with the others on `walls` (compass drawing)
+- Control: slider
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 6 §6.c.2:
 
@@ -802,8 +875,11 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 #### East facing facade % (`windows_east`)
 
 - Source: asked in the wizard
-- Applicants read: “And of the east-facing wall?”
+- Applicants read: “East wall”
+- Help: About what share of this wall is windows and doors?
 - Answer: number (%), 0–100; required; “I don't know yet” allowed
+- Screen: asked with the others on `walls` (compass drawing)
+- Control: slider
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 6 §6.c.2:
 
@@ -812,8 +888,11 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 #### South facing facade % (`windows_south`)
 
 - Source: asked in the wizard
-- Applicants read: “And of the south-facing wall?”
+- Applicants read: “South wall”
+- Help: About what share of this wall is windows and doors?
 - Answer: number (%), 0–100; required; “I don't know yet” allowed
+- Screen: asked with the others on `walls` (compass drawing)
+- Control: slider
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 6 §6.c.2:
 
@@ -822,8 +901,11 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 #### West facing facade % (`windows_west`)
 
 - Source: asked in the wizard
-- Applicants read: “And of the west-facing wall?”
+- Applicants read: “West wall”
+- Help: About what share of this wall is windows and doors?
 - Answer: number (%), 0–100; required; “I don't know yet” allowed
+- Screen: asked with the others on `walls` (compass drawing)
+- Control: slider
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 6 §6.c.2:
 
@@ -831,7 +913,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Components Section (`component`)
 
-- Wizard chapter: Additions, porches and decks
+- Step: Additions, porches and decks
 - Repeats: one per component (0 to 30); the wizard offers “Add an addition, porch or deck”
 - **Draft — awaiting the chair's approval.**
 
@@ -841,11 +923,12 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “What are you adding or changing?”
 - Answer: choice; required
   - Addition — applicants read “An addition to a building”
-  - Garage — applicants read “A garage”
+  - Garage (attached) — applicants read “An attached garage”
   - Porch — applicants read “A porch”
   - Deck — applicants read “A deck”
   - Patio — applicants read “A patio”
   - Other Architectural Component — applicants read “Something else, like a dormer, bay window or cupola”
+- Control: tiles
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 6 §2.a.1:
 
@@ -865,8 +948,10 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 #### Only being renovated, not changing size or location (`component_renovation_only`)
 
 - Source: asked in the wizard
-- Applicants read: “Is it only being renovated, without changing its size or where it sits?”
+- Applicants read: “Is it only being renovated?”
+- Help: Choose Yes if it keeps its size and place.
 - Answer: yesno; required
+- Control: switch (starts off)
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 8 §10.b.2:
 
@@ -876,21 +961,9 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 - Source: asked in the wizard
 - Applicants read: “Which building is it attached to?”
-- Help: Use the name you gave the building, or write "free standing" if it isn't attached to one.
+- Help: Choose the building it's attached to, or Free-standing.
 - Answer: text; required
-- **Draft — awaiting the chair's approval.**
-- Rests on Art. 5 §3.d.1:
-
-  > Components may attach to primary and accessory buildings.
-
-#### Garage attached or detached (`garage_attached`)
-
-- Source: asked in the wizard
-- Applicants read: “Is the garage attached to another building, or separate?”
-- Answer: choice; required
-  - Attached — applicants read “Attached”
-  - Detached — applicants read “Separate (detached)”
-- Asked only when “Component” (this component) is Garage
+- Control: building-picker
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 5 §3.d.1:
 
@@ -901,6 +974,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Source: asked in the wizard
 - Applicants read: “How wide is it, in feet?”
 - Answer: number (ft), 0–2000; required; “I don't know yet” allowed
+- Screen: asked with the others on `size`
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 6 §2.a.1:
 
@@ -911,6 +985,7 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Source: asked in the wizard
 - Applicants read: “How deep is it, or how long for a patio, in feet?”
 - Answer: number (ft), 0–2000; required; “I don't know yet” allowed
+- Screen: asked with the others on `size`
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 6 §2.a.1:
 
@@ -937,7 +1012,8 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
   - Gambrel — applicants read “Gambrel: a barn-style roof with two slopes on each side”
   - Hipped — applicants read “Hipped: slopes on all four sides”
   - Shed — applicants read “Shed: a single slope”
-- Asked only when “Component” (this component) is Addition or Garage
+- Control: tiles
+- Asked only when “Component” (this component) is Addition or Garage (attached)
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 6 §5.c.2:
 
@@ -947,9 +1023,23 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 - Source: asked in the wizard
 - Applicants read: “How steep is its roof?”
-- Help: Give the rise over 12 inches of run, for example "6/12".
-- Answer: text; required; “I don't know yet” allowed
-- Asked only when “Component” (this component) is Addition or Garage
+- Help: Pick the pitch: how many inches the roof rises for every 12 inches across.
+- Answer: choice; required; “I don't know yet” allowed
+  - Flat (under 2/12) — applicants read “Flat (under 2/12)”
+  - 2/12 — applicants read “2/12”
+  - 3/12 — applicants read “3/12”
+  - 4/12 — applicants read “4/12”
+  - 5/12 — applicants read “5/12”
+  - 6/12 — applicants read “6/12”
+  - 7/12 — applicants read “7/12”
+  - 8/12 — applicants read “8/12”
+  - 9/12 — applicants read “9/12”
+  - 10/12 — applicants read “10/12”
+  - 11/12 — applicants read “11/12”
+  - 12/12 — applicants read “12/12”
+  - Steeper than 12/12 — applicants read “Steeper than 12/12”
+- Control: picker
+- Asked only when “Component” (this component) is Addition or Garage (attached)
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 6 §5.c.2:
 
@@ -959,19 +1049,64 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 - Source: asked in the wizard
 - Applicants read: “What will its outside walls and roof be covered with?”
-- Answer: text; required; “I don't know yet” allowed
-- Asked only when “Component” (this component) is Addition or Garage
+- Help: Choose all that apply.
+- Answer: multichoice; required; “I don't know yet” allowed
+  - Clapboard — applicants read “Clapboard”
+  - Wood shingle — applicants read “Wood shingle”
+  - Vinyl siding — applicants read “Vinyl siding”
+  - Fibre-cement siding — applicants read “Fibre-cement siding”
+  - Brick — applicants read “Brick”
+  - Stone — applicants read “Stone”
+  - Board-and-batten — applicants read “Board-and-batten”
+  - Metal siding — applicants read “Metal siding”
+  - Asphalt shingle roof — applicants read “Asphalt shingle roof”
+  - Metal roof — applicants read “Metal roof”
+  - Slate roof — applicants read “Slate roof”
+  - Other — applicants read “Something else”
+- Control: chips
+- Asked only when “Component” (this component) is Addition or Garage (attached)
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 6 §5.c.5:
 
   > Pitched roofs, if provided, must be clad with wood shingles, asphalt shingles, slate tile, metal, or have the appearance of natural materials.
 
+#### Other exterior finish (`component_finish_other`)
+
+- Source: asked in the wizard
+- Applicants read: “What other material?”
+- Answer: text; required
+- Asked only when (“Component” (this component) is Addition or Garage (attached)) and (“Exterior finish material” (this component) includes Other)
+- **Draft — awaiting the chair's approval.**
+- Rests on Art. 6 §5.c.5:
+
+  > Pitched roofs, if provided, must be clad with wood shingles, asphalt shingles, slate tile, metal, or have the appearance of natural materials.
+
+#### Direction the front faces (`component_front_facing`)
+
+- Source: asked in the wizard
+- Applicants read: “Which way does the front of the building face?”
+- Help: The front is the side facing the road. Pick the closest direction.
+- Answer: choice; required; “I don't know yet” allowed
+  - North — applicants read “North”
+  - East — applicants read “East”
+  - South — applicants read “South”
+  - West — applicants read “West”
+- Control: tiles
+- Asked only when “Component” (this component) is Addition or Garage (attached)
+- **Draft — awaiting the chair's approval.**
+- Rests on Art. 6 §6.c.2:
+
+  > The required window and door percentages apply to the total area of each story of each building facade as measured from the surface of the floor of that story, to the surface of the next floor above; or, if there is no floor above, to either the top of the wall plate, or the base of the buildings eaves, whichever is shorter.
+
 #### North facing facade % (`component_windows_north`)
 
 - Source: asked in the wizard
-- Applicants read: “About what share of its north-facing wall is windows and doors, as a percent?”
+- Applicants read: “North wall”
+- Help: About what share of this wall is windows and doors?
 - Answer: number (%), 0–100; required; “I don't know yet” allowed
-- Asked only when “Component” (this component) is Addition or Garage
+- Screen: asked with the others on `walls` (compass drawing)
+- Control: slider
+- Asked only when “Component” (this component) is Addition or Garage (attached)
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 6 §6.c.2:
 
@@ -980,9 +1115,12 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 #### East facing facade % (`component_windows_east`)
 
 - Source: asked in the wizard
-- Applicants read: “And of its east-facing wall?”
+- Applicants read: “East wall”
+- Help: About what share of this wall is windows and doors?
 - Answer: number (%), 0–100; required; “I don't know yet” allowed
-- Asked only when “Component” (this component) is Addition or Garage
+- Screen: asked with the others on `walls` (compass drawing)
+- Control: slider
+- Asked only when “Component” (this component) is Addition or Garage (attached)
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 6 §6.c.2:
 
@@ -991,9 +1129,12 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 #### South facing facade % (`component_windows_south`)
 
 - Source: asked in the wizard
-- Applicants read: “And of its south-facing wall?”
+- Applicants read: “South wall”
+- Help: About what share of this wall is windows and doors?
 - Answer: number (%), 0–100; required; “I don't know yet” allowed
-- Asked only when “Component” (this component) is Addition or Garage
+- Screen: asked with the others on `walls` (compass drawing)
+- Control: slider
+- Asked only when “Component” (this component) is Addition or Garage (attached)
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 6 §6.c.2:
 
@@ -1002,9 +1143,12 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 #### West facing facade % (`component_windows_west`)
 
 - Source: asked in the wizard
-- Applicants read: “And of its west-facing wall?”
+- Applicants read: “West wall”
+- Help: About what share of this wall is windows and doors?
 - Answer: number (%), 0–100; required; “I don't know yet” allowed
-- Asked only when “Component” (this component) is Addition or Garage
+- Screen: asked with the others on `walls` (compass drawing)
+- Control: slider
+- Asked only when “Component” (this component) is Addition or Garage (attached)
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 6 §6.c.2:
 
@@ -1016,20 +1160,22 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 
 ### Entrance / Driveway Form (`entrance`)
 
-- Wizard chapter: Your driveway
 - **Draft — awaiting the chair's approval.**
 
 #### Streets and Roads along the lot (Town map) (`lot_streets`)
 
 - Source: from the property lookup (staff confirm) — `streets`
+- Step: The driveway
 - **Draft — awaiting the chair's approval.**
 
 #### Street or Road the entrance is on (`entrance_street`)
 
 - Source: asked in the wizard
 - Applicants read: “Which road will the driveway connect to?”
-- Help: For example "Sheepscot Road". The property page listed the roads along your lot.
+- Help: Choose the road the driveway will join.
 - Answer: text; required
+- Step: The driveway
+- Control: street-picker
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §8.b.1:
 
@@ -1043,6 +1189,8 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
   - New Driveway — applicants read “Putting in a new driveway”
   - Relocation of an existing Driveway — applicants read “Moving an existing driveway”
   - New entrance to a parking lot — applicants read “Making a new entrance to a parking lot”
+- Step: The driveway
+- Control: segmented
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §7.b.1:
 
@@ -1054,6 +1202,9 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “How many single-family homes will use this driveway?”
 - Help: Count homes on your lot and any other lot that will share the driveway.
 - Answer: number, 0–500; required
+- Step: The driveway
+- Screen: asked with the others on `homes`
+- Control: stepper
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §7.c.7:
 
@@ -1064,6 +1215,9 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Source: asked in the wizard
 - Applicants read: “How many two-family homes (duplexes) will use it?”
 - Answer: number, 0–500; required
+- Step: The driveway
+- Screen: asked with the others on `homes`
+- Control: stepper
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §7.c.7:
 
@@ -1074,6 +1228,8 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Source: asked in the wizard
 - Applicants read: “Will a neighboring lot share this driveway?”
 - Answer: yesno; required
+- Step: The driveway
+- Control: switch (starts off)
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §7.c.3:
 
@@ -1085,17 +1241,30 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “Add a copy of the access easement between the owners.”
 - Help: The Code allows a shared driveway where there is an access easement between all the owners.
 - Answer: upload; optional
+- Step: The driveway
 - Asked only when “Shared with an abutting lot” is Yes
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §7.c.3:
 
   > Abutting lots may share a Driveway provided that an access easement exists between all owners and the shared Driveway complies with the entrance standards in Section 8.
 
+#### Location of the entrance (`entrance_location`)
+
+- Source: asked in the wizard
+- Applicants read: “Tap the map where the driveway will meet the road.”
+- Answer: point; required
+- Step: Where it joins the road
+- **Draft — awaiting the chair's approval.**
+- Rests on Art. 3 §8.d.2:
+
+  > No part of the entrance shall extend beyond the property lot frontage.
+
 #### Driveway width (ft) (`driveway_width`)
 
 - Source: asked in the wizard
 - Applicants read: “How wide will the driveway be, in feet?”
 - Answer: number (ft), 0–200; required; “I don't know yet” allowed
+- Step: Where it joins the road
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §7.e.1:
 
@@ -1110,7 +1279,9 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Source: asked in the wizard
 - Applicants read: “How steep is the first 20 feet of driveway, up or down from the road, as a percent?”
 - Help: A 1-foot rise over 20 feet is 5%. If it's about level, enter 0.
-- Answer: number (%), 0–100; required; “I don't know yet” allowed
+- Answer: number (%), 0–25; required; “I don't know yet” allowed
+- Step: Where it joins the road
+- Control: slider
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §7.d.2:
 
@@ -1122,34 +1293,12 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “At what angle will the driveway meet the road, in degrees?”
 - Help: Straight in, square to the road, is 90 degrees.
 - Answer: number (degrees), 0–90; required; “I don't know yet” allowed
+- Step: Where it joins the road
+- Control: slider
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §8.e.1:
 
   > Entrances shall intersect the adjacent Street or Road at a horizontal angle of 90 degrees.
-
-#### Distance to the nearest intersection (ft) (`intersection_distance`)
-
-- Source: asked in the wizard
-- Applicants read: “How far will the driveway be from the nearest road intersection, in feet?”
-- Answer: number (ft), 0–50000; required; “I don't know yet” allowed
-- **Draft — awaiting the chair's approval.**
-- Rests on Art. 3 §8.f.2:
-
-  > Entrances shall not be constructed within the following distances of an intersection:
-  > a. 75 ft of an un-signaled intersection.
-  > b. 125 ft of a signaled intersection.
-
-#### Nearest intersection is signaled (`intersection_signal`)
-
-- Source: asked in the wizard
-- Applicants read: “Does that intersection have a traffic light?”
-- Answer: yesno; required; “I don't know yet” allowed
-- **Draft — awaiting the chair's approval.**
-- Rests on Art. 3 §8.f.2:
-
-  > Entrances shall not be constructed within the following distances of an intersection:
-  > a. 75 ft of an un-signaled intersection.
-  > b. 125 ft of a signaled intersection.
 
 #### Sight distance, looking left (ft) (`sight_distance_left`)
 
@@ -1157,6 +1306,8 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Applicants read: “Standing where the driveway will join the road, how far can you see to the left, in feet?”
 - Help: Look along the road for the farthest point where you could see an oncoming car.
 - Answer: number (ft), 0–5000; required; “I don't know yet” allowed
+- Step: Safety at the road
+- Screen: asked with the others on `sight`
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §8.f.1:
 
@@ -1169,6 +1320,8 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Source: asked in the wizard
 - Applicants read: “And how far to the right, in feet?”
 - Answer: number (ft), 0–5000; required; “I don't know yet” allowed
+- Step: Safety at the road
+- Screen: asked with the others on `sight`
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §8.f.1:
 
@@ -1176,37 +1329,43 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
   > a. Shall be able to obtain unobstructed sight distance in both directions along the adjacent Street or Road in accordance with Table 3.2 Sight Distance.
   > b. Shall be able to maneuver safely without interference with traffic.
 
+#### Distance to the nearest intersection (ft) (`intersection_distance`)
+
+- Source: asked in the wizard
+- Applicants read: “How far will the driveway be from the nearest road intersection, in feet?”
+- Answer: number (ft), 0–50000; required; “I don't know yet” allowed
+- Step: Safety at the road
+- **Draft — awaiting the chair's approval.**
+- Rests on Art. 3 §8.f.2:
+
+  > Entrances shall not be constructed within the following distances of an intersection:
+  > a. 75 ft of an un-signaled intersection.
+  > b. 125 ft of a signaled intersection.
+
+#### Nearest intersection is signaled (`intersection_signal`)
+
+- Source: asked in the wizard
+- Applicants read: “Does that intersection have a traffic light?”
+- Answer: yesno; required; “I don't know yet” allowed
+- Step: Safety at the road
+- **Draft — awaiting the chair's approval.**
+- Rests on Art. 3 §8.f.2:
+
+  > Entrances shall not be constructed within the following distances of an intersection:
+  > a. 75 ft of an un-signaled intersection.
+  > b. 125 ft of a signaled intersection.
+
 #### Ditch along the road at the entrance (`roadside_ditch`)
 
 - Source: asked in the wizard
 - Applicants read: “Is there a ditch along the road where the driveway will go?”
 - Help: If there is, a culvert may be needed under the driveway.
 - Answer: yesno; required; “I don't know yet” allowed
+- Step: Safety at the road
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §7.d.3:
 
   > Where the Permitting Authority determines that a Driveway culvert is necessary, the applicant shall bear the burden of the cost for the culvert installation, which shall be constructed to the standards of Section 10.
-
-#### Location of the entrance (`entrance_location`)
-
-- Source: asked in the wizard
-- Applicants read: “Tap the map where the driveway will meet the road.”
-- Answer: point; required
-- **Draft — awaiting the chair's approval.**
-- Rests on Art. 3 §8.d.2:
-
-  > No part of the entrance shall extend beyond the property lot frontage.
-
-#### Sketch (`entrance_sketch`)
-
-- Source: asked in the wizard
-- Applicants read: “Add a sketch of the driveway, if you have one.”
-- Help: A hand drawing is fine. Show the road, the lot lines and the driveway.
-- Answer: upload; optional
-- **Draft — awaiting the chair's approval.**
-- Rests on Art. 8 §2.a.2:
-
-  > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
 
 #### MaineDOT entrance permit (`mainedot_permit`)
 
@@ -1217,6 +1376,8 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
   - Received — applicants read “Yes, I have it”
   - Applied for — applicants read “I've applied for it”
   - Not yet applied for — applicants read “Not yet”
+- Step: State permit and sketch
+- Control: segmented
 - Asked only when the lot is not known to be off State roads (on a State road, or unknown)
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §12.d.1:
@@ -1228,9 +1389,22 @@ To approve an entry, change `status: draft` to `status: approved` with `approved
 - Source: asked in the wizard
 - Applicants read: “Add a copy of your MaineDOT entrance permit.”
 - Answer: upload; optional
+- Step: State permit and sketch
 - Asked only when “MaineDOT entrance permit” is Received
 - **Draft — awaiting the chair's approval.**
 - Rests on Art. 3 §12.d.2:
 
   > The applicant shall submit a copy of the MaineDOT entrance permit to the Permitting Authority before the Zoning Permit is issued.
+
+#### Sketch (`entrance_sketch`)
+
+- Source: asked in the wizard
+- Applicants read: “Add a sketch of the driveway, if you have one.”
+- Help: A hand drawing is fine. Show the road, the lot lines and the driveway.
+- Answer: upload; optional
+- Step: State permit and sketch
+- **Draft — awaiting the chair's approval.**
+- Rests on Art. 8 §2.a.2:
+
+  > Applications must include all necessary information and plan contents for the Permitting Authority to determine compliance with this Code.
 

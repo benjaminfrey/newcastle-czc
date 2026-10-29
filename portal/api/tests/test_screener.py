@@ -55,6 +55,7 @@ def test_use_not_listed_in_district(draft_client):
     (nl,) = res["not_listed"]
     assert nl["district"] == "D2" and "variance can't be granted for a use" in nl["text"]
     assert "Neighborhood Residential (D2)" in nl["text"] and nl["cite"] == "8.19.b.1"
+    assert "Art." not in nl["text"] and "§" not in nl["text"]  # the citation is for staff (wizard brief §10)
 
 
 def test_the_two_permit_cell_needs_both(draft_client):

@@ -4,6 +4,20 @@
   "version": 1,
   "ruleset_key": "adopted-v1.0",
   "official_title": "Fixture Form",
+  "steps": [
+   {
+    "id": "lot",
+    "title": "Your lot"
+   },
+   {
+    "id": "you",
+    "title": "About you"
+   },
+   {
+    "id": "buildings",
+    "title": "Buildings"
+   }
+  ],
   "sections": [
    {
     "id": "site",
@@ -78,7 +92,10 @@
       "status": "approved",
       "approved_by": "Fixture",
       "approved_on": "2026-10-21",
-      "required": true
+      "required": true,
+      "step": "you",
+      "control": "switch",
+      "default": true
      },
      {
       "id": "highway",
@@ -98,7 +115,8 @@
        ]
       }
      }
-    ]
+    ],
+    "step": "lot"
    },
    {
     "id": "owner",
@@ -135,7 +153,8 @@
       "approved_by": "Fixture",
       "approved_on": "2026-10-21"
      }
-    ]
+    ],
+    "step": "you"
    },
    {
     "id": "b",
@@ -164,7 +183,8 @@
       "required": true,
       "allow_unknown": true
      }
-    ]
+    ],
+    "step": "buildings"
    },
    {
     "id": "b2",
@@ -206,7 +226,8 @@
       "approved_by": "Fixture",
       "approved_on": "2026-10-21"
      }
-    ]
+    ],
+    "step": "buildings"
    }
   ]
  },

@@ -10,13 +10,31 @@ export type FormField = {
   type: "text" | "longtext" | "number" | "choice" | "multichoice" | "yesno" | "date" | "uses" | "point" | "upload" | null;
   unit: string | null; min: number | null; max: number | null; required: boolean; allow_unknown: boolean;
   show_if: Expr | null; options: Option[];
+  // The wizard's layer (forms/formdefs.py): the step it's asked in (resolved), the screen it shares
+  // with others (deed book and page), whether it's asked before the rest of its item, the control
+  // to draw, the slider increment, a starting value, address autofill.
+  step?: string | null; screen?: string | null; ask_first?: boolean;
+  /** @deprecated sheet pages, gone from the API; read only by the item sheet until it is removed. */
+  page?: string | null;
+  control?: "stepper" | "slider" | "switch" | "segmented" | "tiles" | "picker" | "chips"
+    | "building-picker" | "street-picker" | "building-type" | null;
+  step_size?: number | null; default?: unknown; autocomplete?: "name" | "tel" | "email" | "street-address" | null;
 };
+export type Page = { id: string; title: string; layout: "compass" | "lot-diagram" | null };
+export type AddOption = { label: string; preset: Record<string, unknown> };
+export type ScreenGroup = { id: string; layout: "compass" | "lot-diagram" | null };
 export type FormSection = {
   id: string; official_title: string; chapter: string; show_if: Expr | null;
-  repeat: { kind: string; add_label: string; min: number; max: number } | null;
+  repeat: { kind: string; add_label: string; min: number; max: number; add_options?: AddOption[] } | null;
   fields: FormField[];
+  step?: string | null; screens?: ScreenGroup[];
+  /** @deprecated see FormField.page. */
+  pages?: Page[];
 };
-export type FormDef = { key: string; version: number; ruleset_key: string; official_title: string; sections: FormSection[] };
+export type FormDef = {
+  key: string; version: number; ruleset_key: string; official_title: string; sections: FormSection[];
+  steps?: { id: string; title: string }[];
+};
 
 export type Item = { id: string; kind: string; position: number };
 export type Attachment = { id: string; field_id: string; item_id: string | null; filename: string; content_type: string; size_bytes: number };
@@ -27,7 +45,7 @@ export type Snapshot = {
 export type AppState = {
   id: string; form_key: string; form_version: number; ruleset_key: string; status: string; revision: number;
   property: Snapshot; items: Item[];
-  answers: { field_id: string; item_id: string | null; value: unknown }[];
+  answers: { field_id: string; item_id: string | null; value: unknown; carried?: boolean }[];
   notes: { section_id: string; item_id: string | null; text: string }[];
   attachments: Attachment[];
   missing: { field_id: string; item_id: string | null }[];
@@ -38,7 +56,10 @@ export type NewApplication = {
   form_key: string;
   property: { source: "lookup"; parcel_id: number } | { source: "manual"; map_lot: string; district_code: string | null };
   disputed: boolean; note: string; use_key: string | null;
+  carry: Carry | null;
 };
+// What "Do I need a permit?" already asked, so the application doesn't ask again.
+export type Carry = { work_kind: "new" | "addition" | "renovation" | "site"; floor_area: number | null; new_homes: number | null };
 export type Change = { field_id: string; item_id: string | null; value: unknown };
 export type Problem = { field_id: string; item_id: string | null; reason: string };
 
@@ -129,9 +150,10 @@ export function saveAnswers(id: string, baseRevision: number, changes: Change[])
   return write(`/api/applications/${id}/answers`, "PUT", { base_revision: baseRevision, changes });
 }
 
-export async function addItem(id: string, baseRevision: number, kind: string): Promise<SaveResult & { id?: string } | SaveResult> {
+// preset: which of the repeat's add options (e.g. "A detached garage or shed") to start from.
+export async function addItem(id: string, baseRevision: number, kind: string, preset?: number): Promise<SaveResult & { id?: string } | SaveResult> {
   const r = await call(`/api/applications/${id}/items`, { method: "POST", headers: json,
-    body: JSON.stringify({ kind, base_revision: baseRevision }) });
+    body: JSON.stringify({ kind, base_revision: baseRevision, ...(preset === undefined ? {} : { preset }) }) });
   const no = await refused(r);
   if (no) return no;
   if (r!.status === 409) return { conflict: ((await r!.json()) as { revision: number }).revision };

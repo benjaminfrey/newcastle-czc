@@ -21,6 +21,20 @@ DECISIONS = [
     "**Buildings and components repeat**: the form prints one Building Form per building and one "
     "Components Section per addition, porch, deck or other component.",
     "**Signatures, dates and \"Name (print)\"** are filled when the applicant signs and submits (Milestone 6).",
+    "**Redesign (briefs approved 2026-10-23 and 2026-10-24): steps, screens and controls.** Each form is grouped "
+    "into a few steps (\"Step:\" below) and asked one question per screen; fields marked \"Screen:\" are asked "
+    "together on one screen. \"Control:\" names the "
+    "control drawn (switch, stepper, slider, chips, picker, tiles). A switch's starting position is written as "
+    "an answer marked as the form's, and the applicant sees it set.",
+    "**Proposed with the redesign, for approval:** (1) a detached garage or shed is a building, chosen by its "
+    "type (\"A smaller building that goes with a home\"), which the wizard asks first; an attached garage stays "
+    "an addition, and the \"garage attached or detached\" question is gone; (2) the four window walls are "
+    "sliders, still percentages, labelled with the street side as well as the compass point; (3) roof slope is "
+    "picked (Flat, 2/12 to 12/12, Steeper), exterior finish is chips with an Other field, \"attached to\" picks "
+    "one of the application's buildings, and the entrance's road picks one along the lot; (4) the four setbacks "
+    "are entered around a not-to-scale drawing of the lot; (5) each building, and each addition or attached "
+    "garage with walls, is asked which way its front faces, so the walls can be named by the street side "
+    "(the chair's ruling, 2026-10-24).",
 ]
 
 # The six questions from drafting, as the chair answered them on 2026-10-23.
@@ -114,8 +128,10 @@ def _status(e) -> str:
 
 
 def _section(ruleset: Ruleset, form: FormDef, s) -> list[str]:
+    steps = {st.id: st.title for st in form.steps}
+    screens = {x.id: x for x in s.screens}
     out = [f"### {s.official_title} (`{s.id}`)", "",
-           f"- Wizard chapter: {s.chapter}",
+           *([f"- Step: {steps[s.step]}"] if s.step in steps else []),
            *([f"- Repeats: one per {s.repeat.kind} ({s.repeat.min} to {s.repeat.max}); "
               f"the wizard offers “{s.repeat.add_label}”"] if s.repeat else []),
            *([f"- Printed and asked only when {condition_words(form, s.show_if)}"] if s.show_if else []),
@@ -134,6 +150,17 @@ def _section(ruleset: Ruleset, form: FormDef, s) -> list[str]:
                        + ("; “I don't know yet” allowed" if f.allow_unknown else ""))
             for o in f.options:
                 out.append(f"  - {o.official} — applicants read “{o.label}”")
+        if f.step and f.step != s.step and f.step in steps:
+            out.append(f"- Step: {steps[f.step]}")
+        if f.screen in screens:
+            lay = screens[f.screen].layout
+            out.append(f"- Screen: asked with the others on `{f.screen}`" + (f" ({lay} drawing)" if lay else ""))
+        if f.control:
+            starts = "" if f.default is None else (
+                " (starts on)" if f.default is True else " (starts off)" if f.default is False else f" (starts at {f.default})")
+            out.append(f"- Control: {f.control}{starts}")
+        elif f.default is not None:
+            out.append(f"- Starts as: {f.default}")
         if f.show_if:
             out.append(f"- Asked only when {condition_words(form, f.show_if)}")
         out.append(_status(f))

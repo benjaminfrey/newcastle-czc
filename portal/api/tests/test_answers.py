@@ -118,7 +118,7 @@ def test_components_ask_roof_only_for_additions_and_garages(forms):
     items = [("b1", "building", 0), ("c1", "component", 0), ("c2", "component", 1)]
     rows = ids(applicable(form, cur({("component_kind", "c1"): "deck", ("component_kind", "c2"): "garage"}, items)))
     assert ("component_roof_style", "c1") not in rows
-    assert ("component_roof_style", "c2") in rows and ("garage_attached", "c2") in rows
+    assert ("component_roof_style", "c2") in rows  # an attached garage (redesign: no attached/detached question)
     assert ("component_height", "c1") in rows
 
 

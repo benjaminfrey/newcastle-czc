@@ -256,3 +256,114 @@ def test_no_streets_layer_means_the_road_is_unknown(alice, engine):
     body = get(alice, app_id)
     assert body["property"]["facts"]["on_state_highway"] is None
     assert "mainedot_permit" in {m["field_id"] for m in body["missing"]}
+
+
+# ---- Defaults and presets (redesign) ----
+
+@pytest.fixture
+def stepped_forms(tmp_path, monkeypatch):
+    """The real forms, with a default on applicant_is_owner and on a building's homes."""
+    forms_dir = tmp_path / "forms"
+    shutil.copytree(formdefs.DIR, forms_dir)
+    cover = yaml.safe_load((forms_dir / "cover-sheet.v1.yaml").read_text())
+    for s in cover["sections"]:
+        for f in s["fields"]:
+            if f["id"] == "applicant_is_owner":
+                f["default"] = True
+    (forms_dir / "cover-sheet.v1.yaml").write_text(yaml.safe_dump(cover))
+    spp = yaml.safe_load((forms_dir / "small-project-plan.v1.yaml").read_text())
+    for s in spp["sections"]:
+        if s["id"] == "building_details":
+            for f in s["fields"]:
+                if f["id"] == "dwelling_units":
+                    f["default"] = 0
+    (forms_dir / "small-project-plan.v1.yaml").write_text(yaml.safe_dump(spp))
+    monkeypatch.setattr(formdefs, "DIR", forms_dir)
+
+
+def test_defaults_are_seeded_and_marked(alice, engine, stepped_forms):
+    app_id = create(alice, form_key="small_project_plan")
+    body = get(alice, app_id)
+    values = current_values(body)
+    assert values[("applicant_is_owner", None)] is True
+    (building,) = body["items"]
+    assert values[("dwelling_units", building["id"])] == 0
+    with engine.begin() as conn:
+        assert conn.execute(text("SELECT set_by FROM answer WHERE field_id = 'applicant_is_owner'")).scalar() \
+            == "form-default"
+
+
+def test_form_json_carries_steps_pages_and_controls(alice, tmp_path, monkeypatch):
+    forms_dir = tmp_path / "forms2"
+    shutil.copytree(formdefs.DIR, forms_dir)
+    cover = yaml.safe_load((forms_dir / "cover-sheet.v1.yaml").read_text())
+    cover["steps"] = [{"id": "your_lot", "title": "Your lot"}, {"id": "about_you", "title": "About you"}]
+    for s in cover["sections"]:
+        s["step"] = "your_lot" if s["id"] in ("location", "site", "certification", "office") else "about_you"
+        for f in s["fields"]:
+            if f["id"] == "existing_dwelling_units":
+                f["control"] = "stepper"
+            if f["id"] == "applicant_phone":
+                f["autocomplete"] = "tel"
+    (forms_dir / "cover-sheet.v1.yaml").write_text(yaml.safe_dump(cover))
+    up = yaml.safe_load((forms_dir / "use-permit.v1.yaml").read_text())
+    up["steps"] = [{"id": "uses", "title": "Uses"}]
+    for s in up["sections"]:
+        s["step"] = "uses"
+    (forms_dir / "use-permit.v1.yaml").write_text(yaml.safe_dump(up))
+    monkeypatch.setattr(formdefs, "DIR", forms_dir)
+    form = alice.get("/api/forms/use_permit").json()
+    assert [s["id"] for s in form["steps"]] == ["your_lot", "about_you", "uses"]
+    fields = {f["id"]: f for s in form["sections"] for f in s["fields"]}
+    assert fields["existing_dwelling_units"]["control"] == "stepper"
+    assert fields["applicant_phone"]["autocomplete"] == "tel"
+    assert fields["applicant_phone"]["step"] == "about_you"
+    assert {s["id"]: s["step"] for s in form["sections"]}["existing"] == "uses"
+    location = next(s for s in form["sections"] if s["id"] == "location")
+    assert location["screens"] == [{"id": "deed", "layout": None}] and "pages" not in location
+    assert fields["deed_book"]["screen"] == fields["deed_page"]["screen"] == "deed"
+
+
+# ---- Answers carried from "Do I need a permit?" (wizard) ----
+
+def answers_by(body):
+    return {(a["field_id"], a["item_id"]): a for a in body["answers"]}
+
+
+def test_carry_fills_work_kinds_and_building_one(alice):
+    app_id = create(alice, form_key="small_project_plan", carry={"work_kind": "new", "floor_area": 1200, "new_homes": 1})
+    body = get(alice, app_id)
+    (b1,) = [i for i in body["items"] if i["kind"] == "building"]
+    got = answers_by(body)
+    assert got[("work_kinds", None)]["value"] == ["new_building"] and got[("work_kinds", None)]["carried"] is True
+    assert got[("floor_area", b1["id"])]["value"] == 1200 and got[("floor_area", b1["id"])]["carried"] is True
+    assert got[("dwelling_units", b1["id"])]["value"] == 1 and got[("dwelling_units", b1["id"])]["carried"] is True
+
+
+def test_carry_for_an_addition_fills_only_work_kinds(alice):
+    app_id = create(alice, form_key="small_project_plan", carry={"work_kind": "addition", "floor_area": 300, "new_homes": 0})
+    body = get(alice, app_id)
+    got = answers_by(body)
+    assert got[("work_kinds", None)]["value"] == ["addition"]
+    assert not any(f == "floor_area" for f, _ in got)
+
+
+def test_carry_ignored_by_forms_without_those_fields(alice):
+    app_id = create(alice, form_key="use_permit", carry={"work_kind": "new", "floor_area": 1200, "new_homes": 1})
+    got = answers_by(get(alice, app_id))
+    assert ("work_kinds", None) not in got and not any(f == "floor_area" for f, _ in got)
+
+
+def test_carry_values_are_checked(alice):
+    r = alice.post("/api/applications", json={"form_key": "small_project_plan", "property": lookup_property(alice),
+                                               "carry": {"work_kind": "new", "floor_area": -5, "new_homes": 1}})
+    assert r.status_code == 422 and r.json()["detail"] == "invalid"
+
+
+def test_an_edited_answer_is_not_carried(alice):
+    app_id = create(alice, form_key="small_project_plan", carry={"work_kind": "new", "floor_area": 1200, "new_homes": 1})
+    body = get(alice, app_id)
+    (b1,) = [i for i in body["items"] if i["kind"] == "building"]
+    assert save(alice, app_id, [{"field_id": "floor_area", "item_id": b1["id"], "value": 900}]).status_code == 200
+    a = answers_by(get(alice, app_id))[("floor_area", b1["id"])]
+    assert a["value"] == 900 and a["carried"] is False

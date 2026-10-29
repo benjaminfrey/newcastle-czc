@@ -33,10 +33,28 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
 - **Applicant Portal** (`portal/`; roadmap `plans/2026-10-14-applicant-portal-roadmap.md`) — M1–M3
   merged; the chair ruled on the screener's nine questions on 2026-10-18 and approved every screener
   entry on 2026-10-20 (`memos/2026-10-15-screener-rules-for-approval.md`). Milestone 4 (the three
-  application wizards) is built on `portal-m4-applications` (PR #19); the chair answered the forms
+  application wizards) merged (PR #19); the chair answered the forms
   sheet's six questions on 2026-10-23, and the forms are drafts awaiting approval
-  (`memos/2026-10-21-application-forms-for-approval.md`). For M4:
-  - **For the chair:** approve the application forms (127 entries).
+  (`memos/2026-10-21-application-forms-for-approval.md`). The redesign (about ten steps, the macOS /
+  iOS window, new controls; `specs/2026-10-23-applicant-portal-redesign.md`) is built on
+  `portal-design-pass` (PR #20), now one question at a time (`specs/2026-10-24-applicant-portal-wizard.md`);
+  it regrouped the forms, added five proposals and the wizard's screens, so the sheet was regenerated
+  and every entry is a draft (130 entries). For M4 and the redesign:
+  - **For the chair:** approve the application forms (130 entries), including the redesign's steps,
+    screens, controls and the five proposals — the fifth is the new "Which way does the front of the
+    building face?" question (and its addition twin), asked before the walls (chair's ruling
+    2026-10-24). Also on the sheet: "Where it joins the road" (was "meets"), and yes/no help
+    reworded for tiles ("Choose No if…").
+  - **For the chair (wording, from the wizard's finish review):** "sf" on the Building Form against "sq
+    ft" in "Do I need a permit?"; the street-frontage help points to "Add more detail" before the
+    applicant has seen it; "storey" against "story"; the work option "A change … that doesn't fit
+    today's Code"; the building-type help mentions the CEO deciding; the lot-size help repeats the
+    line under the value ("Measured from the Town's map").
+  - **For the chair or the CEO:** check the exterior-finish chip list (clapboard, wood shingle,
+    vinyl siding, fibre-cement, brick, stone, …, plus "Other") so its terms match what staff expect.
+  - **For the chair (forms):** a building may have up to 10 stories, but the Building Form asks a
+    floor height for the first four only — cap stories at 4, or say how taller buildings are
+    described.
   - **Planning Board (next amendment):** Article 5 §1.c lists "Special Use Building", but Article 9
     does not define it; the forms keep it (chair's ruling, 2026-10-23).
   - **O5 (CEO and Planning Board):** plain-language sign-off on the question wording — still open; M7.

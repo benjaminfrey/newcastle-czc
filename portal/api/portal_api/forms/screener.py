@@ -141,7 +141,7 @@ def run(answers: dict, ruleset: Ruleset, defs: Definitions) -> dict:
                     name = _district_name(code, ruleset.districts) or code
                     not_listed.append({"district": code, "use": use_key, "cite": "8.19.b.1", "text": (
                         f"The Code doesn't list this use in the {name} district. A variance can't be granted "
-                        "for a use (Art. 8 §19.b). The Code Enforcement Officer can talk you through your options.")})
+                        "for a use. The Code Enforcement Officer can talk you through your options.")})
                 for p in permits:
                     add_app(APP_FOR_CODE[p], code, "needed", None, _ruling(rule))
         if rule.stop:

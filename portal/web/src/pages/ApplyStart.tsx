@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { getMe, UNREACHABLE } from "../api";
 import { createApplication, type NewApplication } from "../applications";
-import { savePendingStart, takePendingStart } from "../pendingStart";
+import { carryFrom, savePendingStart, takePendingStart } from "../pendingStart";
 import { loadProperty, type ChosenProperty } from "../property";
 import { loadAnswers } from "../screener";
 
@@ -36,18 +36,22 @@ export default function ApplyStart() {
       const fromPending = pending && pending.formKey === formKey ? pending : null;
       const property = fromPending?.property ?? loadProperty();
       const useKey = fromPending ? fromPending.useKey : (loadAnswers()?.use_key ?? null);
+      const carry = fromPending ? (fromPending.carry ?? null) : carryFrom(loadAnswers());
       if (!me) {
-        savePendingStart({ formKey, property, useKey });
+        savePendingStart({ formKey, property, useKey, carry });
         return navigate("/signin", { replace: true });
       }
-      if (!property) return navigate(`/where?next=${encodeURIComponent(here)}`, { replace: true });
-      const r = await createApplication({ form_key: formKey, property: propertyBody(property),
-                                          disputed: property.disputed, note: property.note, use_key: useKey });
+      if (!property) return navigate(`/start/property?next=${encodeURIComponent(here)}`, { replace: true });
+      const body = { form_key: formKey, property: propertyBody(property), disputed: property.disputed, note: property.note, use_key: useKey };
+      let r = await createApplication({ ...body, carry });
+      // An answer from "Do I need a permit?" the form can't take (600 homes) is only a head start:
+      // start without it, and the question asks again.
+      if (r === "invalid" && carry) r = await createApplication({ ...body, carry: null });
       if (r === "property_unavailable") return setLookupDown(true);
       if (r === "not_approved") return setProblem("This application isn't ready yet. Please contact the Town Office.");
       if (r === "signed_out") return navigate("/signin", { replace: true });
       if (typeof r === "string") return setProblem(r === "unavailable" ? UNREACHABLE : "Something about that property didn't work. Please choose it again.");
-      navigate(`/applications/${r.id}`, { replace: true });
+      navigate(`/applications/${r.id}?start=1`, { replace: true }); // straight to the first question
     })();
   }, [formKey, here, navigate]);
 
@@ -59,7 +63,7 @@ export default function ApplyStart() {
           <Card.Description>You can enter your property's details yourself, and staff will check them.</Card.Description>
         </Card.Header>
         <Card.Content>
-          <Link className="underline" to={`/where?manual=1&next=${encodeURIComponent(here)}`}>Enter your property yourself</Link>
+          <Link className="underline" to={`/start/property?manual=1&next=${encodeURIComponent(here)}`}>Enter your property yourself</Link>
         </Card.Content>
       </Card>
     );

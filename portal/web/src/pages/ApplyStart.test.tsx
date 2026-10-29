@@ -1,10 +1,11 @@
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter, Route, Routes } from "react-router";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as api from "../api";
 import * as apps from "../applications";
 import { peekPendingStart } from "../pendingStart";
 import { saveProperty } from "../property";
+import { saveAnswers } from "../screener";
 import ApplyStart from "./ApplyStart";
 
 const PROPERTY = { source: "lookup" as const, parcel_id: 229, map_lot: "004-036", district_code: "D2",
@@ -16,11 +17,15 @@ const renderAt = (path = "/apply/use_permit") =>
       <Routes>
         <Route path="/apply/:formKey" element={<ApplyStart />} />
         <Route path="/signin" element={<p>Sign in page</p>} />
-        <Route path="/where" element={<p>Where page</p>} />
+        <Route path="/start/property" element={<p>Where page</p>} />
         <Route path="/applications/:id" element={<p>Wizard page</p>} />
       </Routes>
     </MemoryRouter>,
   );
+
+function Search() {
+  return <p data-testid="search">{useLocation().search}</p>;
+}
 
 beforeEach(() => {
   localStorage.clear();
@@ -33,7 +38,7 @@ describe("ApplyStart", () => {
     vi.spyOn(api, "getMe").mockResolvedValue(null);
     renderAt();
     expect(await screen.findByText("Sign in page")).toBeInTheDocument();
-    expect(peekPendingStart()).toEqual({ formKey: "use_permit", property: PROPERTY, useKey: null });
+    expect(peekPendingStart()).toEqual({ formKey: "use_permit", property: PROPERTY, useKey: null, carry: null });
   });
 
   it("asks for the property first", async () => {
@@ -49,7 +54,47 @@ describe("ApplyStart", () => {
     renderAt();
     expect(await screen.findByText("Wizard page")).toBeInTheDocument();
     expect(spy).toHaveBeenCalledWith({ form_key: "use_permit", property: { source: "lookup", parcel_id: 229 },
-                                       disputed: false, note: "", use_key: null });
+                                       disputed: false, note: "", use_key: null, carry: null });
+  });
+
+  it("opens the first question, on a phone too", async () => {
+    saveProperty(PROPERTY);
+    vi.spyOn(api, "getMe").mockResolvedValue({ email: "a@example.com", role: "applicant" });
+    vi.spyOn(apps, "createApplication").mockResolvedValue({ id: "abc" });
+    render(
+      <MemoryRouter initialEntries={["/apply/use_permit"]}>
+        <Routes>
+          <Route path="/apply/:formKey" element={<ApplyStart />} />
+          <Route path="/applications/:id" element={<Search />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+    expect(await screen.findByTestId("search")).toHaveTextContent("?start=1");
+  });
+
+  it("a screener answer the form can't take starts without it, rather than not at all", async () => {
+    saveProperty(PROPERTY);
+    saveAnswers({ project: ["build"], use_key: null, division: { lots_after: null, divided_last_5_years: null },
+                  building: { kind: "new", gross_floor_area_sf: 1200, total_floor_area_sf: null, parking_spaces: null,
+                              new_dwelling_units: 600, homes_added_last_5_years: null } });
+    vi.spyOn(api, "getMe").mockResolvedValue({ email: "a@example.com", role: "applicant" });
+    const spy = vi.spyOn(apps, "createApplication").mockImplementation(async (b) => (b.carry ? "invalid" : { id: "abc" }));
+    renderAt("/apply/small_project_plan");
+    expect(await screen.findByText("Wizard page")).toBeInTheDocument();
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy.mock.calls[1][0].carry).toBeNull();
+  });
+
+  it("sends the screener's carry: the kind of work, its floor area and new homes", async () => {
+    saveProperty(PROPERTY);
+    saveAnswers({ project: ["build"], use_key: null, division: { lots_after: null, divided_last_5_years: null },
+                  building: { kind: "new", gross_floor_area_sf: 1200, total_floor_area_sf: null, parking_spaces: null,
+                              new_dwelling_units: 1, homes_added_last_5_years: null } });
+    vi.spyOn(api, "getMe").mockResolvedValue({ email: "a@example.com", role: "applicant" });
+    const spy = vi.spyOn(apps, "createApplication").mockResolvedValue({ id: "abc" });
+    renderAt("/apply/small_project_plan");
+    expect(await screen.findByText("Wizard page")).toBeInTheDocument();
+    expect(spy.mock.calls[0][0].carry).toEqual({ work_kind: "new", floor_area: 1200, new_homes: 1 });
   });
 
   it("uses the pending start after signing in, in a new tab", async () => {
@@ -68,7 +113,7 @@ describe("ApplyStart", () => {
     vi.spyOn(apps, "createApplication").mockResolvedValue("property_unavailable");
     renderAt();
     const link = await screen.findByRole("link", { name: /Enter your property yourself/ });
-    expect(link).toHaveAttribute("href", "/where?manual=1&next=%2Fapply%2Fuse_permit");
+    expect(link).toHaveAttribute("href", "/start/property?manual=1&next=%2Fapply%2Fuse_permit");
   });
 
   it("says when the form isn't ready", async () => {

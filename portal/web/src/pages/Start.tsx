@@ -1,7 +1,14 @@
-import { Button, Checkbox, CheckboxGroup, Description, Form, Input, Label, Radio, RadioGroup, TextField } from "@heroui/react";
-import { useState, type FormEvent } from "react";
+import { Form, NumberField } from "@heroui/react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
-import { saveAnswers, type ProjectKind, type ScreenerAnswers } from "../screener";
+import type { FormField } from "../applications";
+import AnswerTrail, { type Chip } from "../app/AnswerTrail";
+import { ChoiceTiles, MultiTiles } from "../controls/Tiles";
+import ActionBar from "../shell/ActionBar";
+import Dots from "../shell/Dots";
+import { useWideLayout } from "../shell/useWideLayout";
+import { saveAnswers, type ProjectKind } from "../screener";
+import { startScreens, type Kind, type StartScreenId } from "../start/startScreens";
 
 const CHOICES: { value: ProjectKind; label: string }[] = [
   { value: "build", label: "Build something new or add on" },
@@ -10,14 +17,28 @@ const CHOICES: { value: ProjectKind; label: string }[] = [
   { value: "divide", label: "Divide land" },
   { value: "other", label: "Something else / not sure" },
 ];
-
-type Kind = NonNullable<ScreenerAnswers["building"]["kind"]>;
 const KINDS: { value: Kind; label: string }[] = [
   { value: "new", label: "A new building" },
   { value: "addition", label: "An addition to a building" },
   { value: "renovation", label: "Renovating a building" },
   { value: "site", label: "Work on the site only (parking, grading, landscaping)" },
 ];
+const DIVIDED = [{ value: "yes", label: "Yes" }, { value: "no", label: "No" }, { value: "unsure", label: "I don't know" }];
+
+// Each screen's question and its line of help.
+const ASK: Record<StartScreenId, [string, string | null]> = {
+  plan: ["What are you planning?", "Choose all that apply."],
+  kind: ["What kind of building work?", null],
+  area: ["", "Count every storey. Leave it blank if you don't know yet."],
+  total: ["What is the floor area of the whole building, in square feet?", "Count every storey. Leave it blank if you don't know yet."],
+  parking: ["How many parking spaces will there be?", "Leave it blank if there's no parking, or you don't know yet."],
+  homes: ["How many new homes will you build or place?", "Count only new homes, not ones already there. Leave it blank if none."],
+  earlier: ["How many homes were added on this lot in the last five years, before this project?", "Homes added within five years count together. Leave it blank if you don't know."],
+  lots: ["How many lots will there be afterwards?", null],
+  divided: ["Has this land been divided in the last five years?", "Lots made within five years count together."],
+};
+const asked = (id: StartScreenId, kind: Kind | "") => id !== "area" ? ASK[id][0]
+  : kind === "addition" ? "How much floor area will the addition add, in square feet?" : "How much floor area will the new building have, in square feet?";
 
 // "2,400 sq ft" → 2400; blank → null; anything without a number → NaN (an error).
 function parseNumber(s: string): number | null {
@@ -25,144 +46,134 @@ function parseNumber(s: string): number | null {
   const m = s.replace(/,/g, "").match(/\d+(\.\d+)?/);
   return m ? Number(m[0]) : NaN;
 }
+const toControl = (s: string) => { const n = parseNumber(s); return n === null ? NaN : n; };
+const fromControl = (v: number) => (Number.isNaN(v) ? "" : String(v));
+// The tiles want a field; the screener's questions aren't form fields, so each gets a small one.
+const field = (id: string, label: string, options: { value: string; label: string }[]): FormField => ({
+  id, label, official_label: label, source: "question", from: null, may_correct: false, help: null, why: null, type: "choice",
+  unit: null, min: null, max: null, required: true, allow_unknown: false, show_if: null,
+  options: options.map((o) => ({ ...o, official: o.label })),
+});
 
-function NumberField({ label, help, value, onChange }: { label: string; help?: string; value: string; onChange: (v: string) => void }) {
-  return (
-    <TextField value={value} onChange={onChange} inputMode="decimal">
-      <Label>{label}</Label>
-      <Input />
-      {help && <Description>{help}</Description>}
-    </TextField>
-  );
-}
-
+// "Do I need a permit?", Your project, one question at a time: a tap answers a single choice and
+// moves on; the rest have Continue. The answers are saved when the last one is given.
 export default function Start() {
   const navigate = useNavigate();
-  const [project, setProject] = useState<string[]>([]);
+  const wide = useWideLayout();
+  const [project, setProject] = useState<ProjectKind[]>([]);
   const [kind, setKind] = useState<Kind | "">("");
-  const [area, setArea] = useState("");
-  const [total, setTotal] = useState("");
-  const [parking, setParking] = useState("");
-  const [homes, setHomes] = useState("");
-  const [earlierHomes, setEarlierHomes] = useState("");
+  const [nums, setNums] = useState<Record<string, string>>({});
   const [divided, setDivided] = useState<"yes" | "no" | "unsure">("unsure");
-  const [lots, setLots] = useState("");
+  const [at, setAt] = useState(0);
+  const [dir, setDir] = useState<1 | -1>(1);
   const [error, setError] = useState<string | null>(null);
-  const build = project.includes("build");
+  const busy = useRef(false);
+  const list = startScreens({ project, kind });
+  const i = Math.min(at, list.length - 1);
+  const screen = list[i];
+  const heading = asked(screen.id, kind);
+  const num = (id: string) => nums[id] ?? "";
+  useEffect(() => { document.querySelector<HTMLElement>("[data-screen-title]")?.focus(); }, [screen.id]);
 
-  function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (project.length === 0) return setError("Choose at least one thing you're planning.");
-    if (build && !kind) return setError("Choose what kind of building work you're planning.");
+  function finish(divOverride?: "yes" | "no" | "unsure") {
+    const build = project.includes("build");
     const n = {
-      area: kind === "new" || kind === "addition" ? parseNumber(area) : null,
-      total: kind === "renovation" ? parseNumber(total) : null,
-      parking: kind === "site" ? parseNumber(parking) : null,
-      homes: build ? parseNumber(homes) : null,
-      earlierHomes: build ? parseNumber(earlierHomes) : null,
-      lots: project.includes("divide") ? parseNumber(lots) : null,
+      area: kind === "new" || kind === "addition" ? parseNumber(num("area")) : null,
+      total: kind === "renovation" ? parseNumber(num("total")) : null,
+      parking: kind === "site" ? parseNumber(num("parking")) : null,
+      homes: build ? parseNumber(num("homes")) : null,
+      earlierHomes: build ? parseNumber(num("earlier")) : null,
+      lots: project.includes("divide") ? parseNumber(num("lots")) : null,
     };
-    if (Object.values(n).some((v) => v !== null && Number.isNaN(v))) return setError("Please enter numbers as digits, like 2400.");
-    for (const [v, what] of [[n.parking, "parking spaces"], [n.homes, "homes"], [n.earlierHomes, "earlier homes"], [n.lots, "lots"]] as const) {
-      if (v !== null && !Number.isInteger(v)) return setError(`The number of ${what} should be a whole number.`);
-    }
-    if (n.lots !== null && n.lots < 1) return setError("The number of lots should be 1 or more.");
+    const div = divOverride ?? divided;
     saveAnswers({
       project: CHOICES.map((c) => c.value).filter((v) => project.includes(v)),
       use_key: null,
       building: { kind: build ? (kind as Kind) : null, gross_floor_area_sf: n.area, total_floor_area_sf: n.total,
                   parking_spaces: n.parking, new_dwelling_units: n.homes, homes_added_last_5_years: n.earlierHomes },
-      division: { lots_after: n.lots,
-                  divided_last_5_years: project.includes("divide") && divided !== "unsure" ? divided === "yes" : null },
+      division: { lots_after: n.lots, divided_last_5_years: project.includes("divide") && div !== "unsure" ? div === "yes" : null },
     });
-    navigate("/where");
+    navigate("/start/property");
+  }
+  const forward = () => { setError(null); setDir(1); if (i >= list.length - 1) finish(); else setAt(i + 1); };
+
+  function onContinue(e: FormEvent) {
+    e.preventDefault();
+    if (screen.id === "plan" && project.length === 0) return setError("Choose at least one thing you're planning.");
+    if (screen.kind === "number" || screen.kind === "stepper") {
+      const v = parseNumber(num(screen.id));
+      if (v !== null && Number.isNaN(v)) return setError("Please enter numbers as digits, like 2400.");
+      if (screen.kind === "stepper" && v !== null && !Number.isInteger(v)) return setError("Please enter a whole number.");
+      if (screen.id === "lots" && v !== null && v < 1) return setError("The number of lots should be 1 or more.");
+    }
+    forward();
+  }
+  // A tap answers and, after a moment to see the tile chosen, moves on.
+  function tap(apply: () => void, last?: () => void) {
+    if (busy.current) return;
+    busy.current = true;
+    apply();
+    setTimeout(() => { busy.current = false; if (last) last(); else { setDir(1); setAt(i + 1); } }, 200);
   }
 
+  const chips: Chip[] = list.slice(0, i).flatMap((s): Chip[] => {
+    const text = s.id === "plan" ? CHOICES.filter((c) => project.includes(c.value)).map((c) => c.label).join(", ")
+      : s.id === "kind" ? KINDS.find((k) => k.value === kind)?.label ?? ""
+      : s.id === "divided" ? ""
+      : num(s.id) ? (s.id === "area" || s.id === "total" ? `${Number(parseNumber(num(s.id))).toLocaleString("en-US")} sq ft`
+        : `${({ parking: "Parking spaces", homes: "New homes", earlier: "Homes in the last five years", lots: "Lots after" } as Record<string, string>)[s.id]}: ${num(s.id)}`)
+      : "";
+    return text ? [{ id: s.id, text, carried: false }] : [];
+  });
+
+  const body = (() => {
+    switch (screen.id) {
+      case "plan":
+        return <MultiTiles field={field("plan", heading, CHOICES)} value={project}
+                           onValue={(v) => { setProject((v as ProjectKind[] | null) ?? []); setError(null); }} />;
+      case "kind":
+        return <ChoiceTiles field={field("kind", heading, KINDS)} value={kind} onPick={(v) => tap(() => setKind(v as Kind))} />;
+      case "divided":
+        return <ChoiceTiles field={field("divided", heading, DIVIDED)} value={null}
+                            onPick={(v) => tap(() => setDivided(v as "yes" | "no" | "unsure"), () => finish(v as "yes" | "no" | "unsure"))} />;
+      default: {
+        const stepper = screen.kind === "stepper";
+        return (
+          <div className="flex items-center justify-center gap-2">
+            <NumberField value={toControl(num(screen.id))} onChange={(v) => setNums((n) => ({ ...n, [screen.id]: fromControl(v) }))}
+                         minValue={screen.id === "lots" ? 1 : 0} step={1} aria-label={heading} className={stepper ? "w-44" : "w-40"}
+                         formatOptions={stepper ? { maximumFractionDigits: 0, useGrouping: false } : { maximumFractionDigits: 2 }}>
+              <NumberField.Group className="min-h-12">
+                {stepper && <NumberField.DecrementButton className="min-h-12 min-w-12" />}
+                <NumberField.Input className="text-right text-[17px]" />
+                {stepper && <NumberField.IncrementButton className="min-h-12 min-w-12" />}
+              </NumberField.Group>
+            </NumberField>
+            {(screen.id === "area" || screen.id === "total") && <span className="text-[17px] text-[var(--app-secondary-label)]">sq ft</span>}
+          </div>
+        );
+      }
+    }
+  })();
+  const blank = screen.kind !== "multi" && !num(screen.id);
+
   return (
-    <div className="flex flex-col gap-4">
-      <h1 className="text-xl font-semibold">Do I need a permit?</h1>
-      <p>Answer a few questions and we'll tell you what the Town's Code calls for. It takes a couple of minutes.</p>
-      <Form onSubmit={onSubmit} className="flex flex-col gap-5">
-        <CheckboxGroup value={project} onChange={(v) => { setProject(v); setError(null); }} name="project">
-          <Label>What are you planning?</Label>
-          <Description>Choose all that apply.</Description>
-          {CHOICES.map((c) => (
-            <Checkbox key={c.value} value={c.value}>
-              <Checkbox.Content>
-                <Checkbox.Control>
-                  <Checkbox.Indicator />
-                </Checkbox.Control>
-                {c.label}
-              </Checkbox.Content>
-            </Checkbox>
-          ))}
-        </CheckboxGroup>
-        {build && (
-          <>
-            <RadioGroup value={kind} onChange={(v) => { setKind(v as Kind); setError(null); }} name="kind">
-              <Label>What kind of building work?</Label>
-              {KINDS.map((k) => (
-                <Radio key={k.value} value={k.value}>
-                  <Radio.Content>
-                    <Radio.Control>
-                      <Radio.Indicator />
-                    </Radio.Control>
-                    {k.label}
-                  </Radio.Content>
-                </Radio>
-              ))}
-            </RadioGroup>
-            {kind === "new" && (
-              <NumberField label="How much floor area will the new building have, in square feet?" value={area} onChange={setArea}
-                           help="Count every storey. Leave it blank if you don't know yet." />
-            )}
-            {kind === "addition" && (
-              <NumberField label="How much floor area will the addition add, in square feet?" value={area} onChange={setArea}
-                           help="Leave it blank if you don't know yet." />
-            )}
-            {kind === "renovation" && (
-              <NumberField label="What is the floor area of the whole building, in square feet?" value={total} onChange={setTotal}
-                           help="Count every storey. Leave it blank if you don't know yet." />
-            )}
-            {kind === "site" && (
-              <NumberField label="How many parking spaces will there be?" value={parking} onChange={setParking}
-                           help="Leave it blank if there's no parking, or you don't know yet." />
-            )}
-            {kind && (
-              <>
-                <NumberField label="How many new homes will you build or place?" value={homes} onChange={setHomes}
-                             help="Count only new homes, not ones already there. Leave it blank if none." />
-                <NumberField label="How many homes were added on this lot in the last five years, before this project?"
-                             value={earlierHomes} onChange={setEarlierHomes}
-                             help="Homes added within five years count together. Leave it blank if you don't know." />
-              </>
-            )}
-          </>
-        )}
-        {project.includes("divide") && (
-          <>
-            <NumberField label="How many lots will there be afterwards?" value={lots} onChange={setLots} />
-            <RadioGroup value={divided} onChange={(v) => setDivided(v as "yes" | "no" | "unsure")} name="divided">
-              <Label>Has this land been divided in the last five years?</Label>
-              <Description>Lots made within five years count together.</Description>
-              {([["yes", "Yes"], ["no", "No"], ["unsure", "I don't know"]] as const).map(([v, l]) => (
-                <Radio key={v} value={v}>
-                  <Radio.Content>
-                    <Radio.Control>
-                      <Radio.Indicator />
-                    </Radio.Control>
-                    {l}
-                  </Radio.Content>
-                </Radio>
-              ))}
-            </RadioGroup>
-          </>
-        )}
-        {error && <p role="alert">{error}</p>}
-        <div>
-          <Button type="submit" variant="primary">Next</Button>
-        </div>
-      </Form>
-    </div>
+    <Form onSubmit={onContinue} className="flex flex-col">
+      <AnswerTrail chips={chips} onGo={(id) => { setDir(-1); setError(null); setAt(list.findIndex((s) => s.id === id)); }} />
+      <section key={screen.id} className={`flex flex-col items-center gap-2 py-8 text-center ${dir < 0 ? "pane-pull" : "pane-push"}`}>
+        {i === 0 && <p className="mb-2 max-w-[46ch] text-[15px] text-[var(--app-secondary-label)]">Answer a few questions and we'll tell you which permit you need. It takes a couple of minutes.</p>}
+        <h2 tabIndex={-1} data-screen-title className="max-w-[30ch] text-balance text-[22px] font-semibold leading-tight outline-none">{heading}</h2>
+        <p className="mb-4 min-h-[1.25rem] max-w-[46ch] text-pretty text-[15px] text-[var(--app-secondary-label)]">{ASK[screen.id][1] ?? ""}</p>
+        {body}
+        {error && <p role="alert" className="mt-3 text-[15px] text-[var(--app-destructive)]">{error}</p>}
+      </section>
+      <p className="sr-only" aria-live="polite">Question {i + 1} of {list.length}: {heading}</p>
+      <ActionBar wide={wide} actions={{
+        dots: <Dots count={list.length} index={i} />,
+        back: i > 0 ? () => { setDir(-1); setError(null); setAt(i - 1); } : undefined,
+        onContinue: screen.auto ? undefined : () => {},
+        continueLabel: screen.optional && blank ? "Skip for now" : "Continue",
+      }} />
+    </Form>
   );
 }

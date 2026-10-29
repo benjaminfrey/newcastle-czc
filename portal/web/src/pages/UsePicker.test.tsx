@@ -22,7 +22,7 @@ const renderPage = () =>
     <MemoryRouter initialEntries={["/start/use"]}>
       <Routes>
         <Route path="/start/use" element={<UsePicker />} />
-        <Route path="/start/results" element={<p>Results page</p>} />
+        <Route path="/start/needs" element={<p>Results page</p>} />
       </Routes>
     </MemoryRouter>,
   );

@@ -5,7 +5,7 @@ exist. Events name the application, fields and items, never the values: the answ
 table holds those, and the hash chain is permanent.
 """
 
-from typing import Any
+from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
@@ -55,15 +55,18 @@ def form_json(form: FormDef, ruleset) -> dict:
     return {
         "key": form.key, "version": form.version, "ruleset_key": form.ruleset_key,
         "official_title": form.official_title,
+        "steps": [{"id": st.id, "title": st.title} for st in form.steps],
         "sections": [{
             "id": s.id, "official_title": s.official_title, "chapter": s.chapter, "show_if": s.show_if,
-            "repeat": None if s.repeat is None else {"kind": s.repeat.kind, "add_label": s.repeat.add_label,
-                                                     "min": s.repeat.min, "max": s.repeat.max},
+            "step": s.step, "screens": [{"id": x.id, "layout": x.layout} for x in s.screens],
+            "repeat": None if s.repeat is None else {
+                "kind": s.repeat.kind, "add_label": s.repeat.add_label, "min": s.repeat.min, "max": s.repeat.max},
             "fields": [{
                 "id": f.id, "official_label": f.official_label, "source": f.source, "from": f.from_,
                 "may_correct": f.may_correct, "label": f.label, "help": f.help, "why": why(f.why), "type": f.type,
                 "unit": f.unit, "min": f.min, "max": f.max, "required": f.required, "allow_unknown": f.allow_unknown,
-                "show_if": f.show_if,
+                "show_if": f.show_if, "step": f.step or s.step, "screen": f.screen, "ask_first": f.ask_first, "control": f.control,
+                "step_size": f.step_size, "default": f.default, "autocomplete": f.autocomplete,
                 "options": [{"value": o.value, "label": o.label, "official": o.official} for o in f.options],
             } for f in s.fields],
         } for s in form.sections],
@@ -93,12 +96,41 @@ class LookupProperty(BaseModel):
     district_code: str | None = PField(default=None, max_length=40)
 
 
+class Carry(BaseModel):
+    """What the applicant said in "Do I need a permit?", so the application doesn't ask again."""
+    work_kind: Literal["new", "addition", "renovation", "site"] | None = None
+    floor_area: float | None = None
+    new_homes: int | None = None
+
+
+# The screener's kind of building work, as the Small Project Plan's work_kinds option.
+WORK_KINDS = {"new": "new_building", "addition": "addition", "renovation": "renovation", "site": "site"}
+
+
+def _carried_changes(form: FormDef, carry: "Carry | None", building_one: str | None) -> list[tuple]:
+    """(field, item, value) to save as the screener's: the kind of work, and for a new building its
+    floor area and homes on Building 1. Fields the form doesn't have are skipped."""
+    if carry is None or carry.work_kind is None:
+        return []
+    have = {f.id for _, f in form.fields()}
+    out = []
+    if "work_kinds" in have:
+        out.append(("work_kinds", None, [WORK_KINDS[carry.work_kind]]))
+    if carry.work_kind == "new" and building_one is not None:
+        if carry.floor_area is not None and "floor_area" in have:
+            out.append(("floor_area", building_one, carry.floor_area))
+        if carry.new_homes is not None and "dwelling_units" in have:
+            out.append(("dwelling_units", building_one, carry.new_homes))
+    return out
+
+
 class NewApplication(BaseModel):
     form_key: str
     property: LookupProperty
     disputed: bool = False
     note: str = PField(default="", max_length=2000)
     use_key: str | None = None
+    carry: Carry | None = None
 
 
 def _snapshot(conn: Connection, request: Request, body: NewApplication) -> dict | JSONResponse:
@@ -148,10 +180,19 @@ def create_application(body: NewApplication, request: Request, applicant: auth.A
     ruleset = load_ruleset()
     if body.use_key is not None and body.use_key not in {u["use_key"] for u in ruleset.uses}:
         return _json(422, "unknown_use")
+    # Check carried values before anything is written.
+    for fid, _, value in _carried_changes(form, body.carry, "check"):
+        try:
+            check_value(form.field(fid)[1], value)
+        except AnswerError:
+            return _json(422, "invalid")
     snap = _snapshot(conn, request, body)
     if isinstance(snap, JSONResponse):
         return snap
     app_id = apps.create(conn, applicant_id=applicant.id, form=form, snapshot=snap)
+    first = next((i["id"] for i in apps.items(conn, app_id) if i["kind"] == "building"), None)
+    carried = [(f, item, check_value(form.field(f)[1], v)) for f, item, v in _carried_changes(form, body.carry, first)]
+    apps.save_answers(conn, app_id, carried, apps.SCREENER)
     if body.use_key is not None and any(f.id == "proposed_uses" for _, f in form.fields()):
         apps.save_answers(conn, app_id, [("proposed_uses", None, [body.use_key])], _actor(applicant))
     append_event(conn, actor=_actor(applicant), kind="application.created",
@@ -177,11 +218,13 @@ def _form_for(row: apps.AppRow) -> FormDef:
 def _state(conn: Connection, row: apps.AppRow, applicant: auth.Applicant) -> dict:
     form = _form_for(row)
     cur = apps.current(conn, row.id, applicant.email)
+    carried = apps.carried(conn, row.id)
     return {
         "id": row.id, "form_key": row.form_key, "form_version": row.form_version, "ruleset_key": row.ruleset_key,
         "status": row.status, "revision": apps.revision(conn, row.id), "property": apps.snapshot(conn, row.id),
         "items": apps.items(conn, row.id),
-        "answers": [{"field_id": f, "item_id": i, "value": v} for (f, i), v in cur.answers.items()],
+        "answers": [{"field_id": f, "item_id": i, "value": v, "carried": (f, i) in carried}
+                    for (f, i), v in cur.answers.items()],
         "notes": apps.notes(conn, row.id), "attachments": apps.attachments(conn, row.id),
         "missing": [{"field_id": f, "item_id": i} for f, i in missing(form, cur)],
         "newer_version": latest_version(row.form_key) > row.form_version,
@@ -274,7 +317,8 @@ def add_item(app_id: str, body: ItemBody, applicant: auth.Applicant = auth.requi
     row = apps.owned(conn, app_id, applicant.id)
     if row is None:
         return _NOT_FOUND()
-    repeat = _repeat(_form_for(row), body.kind)
+    form = _form_for(row)
+    repeat = _repeat(form, body.kind)
     if repeat is None:
         return _json(422, "unknown_kind")
     if sum(1 for i in apps.items(conn, row.id) if i["kind"] == body.kind) >= repeat.max:
@@ -282,7 +326,7 @@ def add_item(app_id: str, body: ItemBody, applicant: auth.Applicant = auth.requi
     rev = apps.bump(conn, row.id, body.base_revision)
     if rev is None:
         return _conflict(conn, row.id)
-    item_id = apps.add_item(conn, row.id, body.kind)
+    item_id = apps.new_item(conn, row.id, form, body.kind)
     append_event(conn, actor=_actor(applicant), kind="application.item_added",
                  payload={"application_id": row.id, "item_id": item_id, "kind": body.kind})
     return {"id": item_id, "revision": rev}

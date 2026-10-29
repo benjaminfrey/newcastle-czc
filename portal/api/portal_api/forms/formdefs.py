@@ -24,6 +24,14 @@ SOURCES = {"question", "property", "account", "derived", "at_submit", "staff"}
 PROPERTY_KEYS = {"map_lot", "location", "acres", "districts", "streets", "on_state_highway"}
 ACCOUNT_KEYS = {"email"}
 SCOPES = ("answers.", "item.", "property.")
+# How a question is drawn (the browser picks a default by type when none is named).
+# Each control and the field types it can answer: a switch on a number would be refused at every save.
+CONTROL_TYPES = {"stepper": {"number"}, "slider": {"number"}, "switch": {"yesno"}, "segmented": {"choice", "yesno"},
+                 "tiles": {"choice"}, "picker": {"choice"}, "chips": {"multichoice"}, "building-picker": {"text"},
+                 "street-picker": {"text"}, "building-type": {"choice"}}
+CONTROLS = set(CONTROL_TYPES)
+AUTOCOMPLETE = {"name", "tel", "email", "street-address"}
+LAYOUTS = {"compass", "lot-diagram"}
 
 
 @dataclass(frozen=True)
@@ -39,6 +47,20 @@ class Repeat:
     add_label: str
     min: int
     max: int
+
+
+@dataclass(frozen=True)
+class Step:
+    id: str
+    title: str
+
+
+@dataclass(frozen=True)
+class Screen:
+    """Fields asked together on one screen of the wizard (deed book and page; the four setbacks),
+    with the drawing they sit around, if any."""
+    id: str
+    layout: str | None = None
 
 
 @dataclass(frozen=True)
@@ -64,6 +86,13 @@ class Field:
     compare: str | None = None
     approved_by: str | None = None
     approved_on: str | None = None
+    step: str | None = None
+    screen: str | None = None
+    ask_first: bool = False  # asked before the rest of its item; print order is unchanged
+    control: str | None = None
+    step_size: float | None = None
+    default: object = None
+    autocomplete: str | None = None
 
     @property
     def is_question(self) -> bool:
@@ -83,6 +112,8 @@ class Section:
     show_if: dict | None = None
     approved_by: str | None = None
     approved_on: str | None = None
+    step: str | None = None
+    screens: tuple = ()
 
 
 @dataclass(frozen=True)
@@ -92,6 +123,12 @@ class FormDef:
     ruleset_key: str
     official_title: str
     sections: tuple
+    steps: tuple = ()
+
+    def step_of(self, field_id: str) -> str | None:
+        """The step a field is asked in: its own, else its section's."""
+        s, f = self.field(field_id)
+        return f.step or s.step
 
     def fields(self):
         for s in self.sections:
@@ -163,6 +200,14 @@ def _field(file: str, sec_id: str, f: dict, ruleset: Ruleset) -> Field:
     if f.get("why") is not None:
         _check_cite(where, f["why"], ruleset)
     _check_show_if(where, f.get("show_if"))
+    if f.get("control") is not None and f["control"] not in CONTROLS:
+        raise DefinitionError(f"{where}: unknown control {f['control']!r}")
+    if f.get("control") is not None and f.get("type") not in CONTROL_TYPES[f["control"]]:
+        raise DefinitionError(f"{where}: a {f['control']} can't answer a {f.get('type')} question")
+    if f.get("autocomplete") is not None and f["autocomplete"] not in AUTOCOMPLETE:
+        raise DefinitionError(f"{where}: unknown autocomplete {f['autocomplete']!r}")
+    if "default" in f and not asked:
+        raise DefinitionError(f"{where}: only a question can have a default")
     return Field(
         id=f["id"], official_label=f["official_label"], source=f["source"], file=file, status=f["status"],
         from_=f.get("from"), may_correct=bool(f.get("may_correct")), label=f.get("label"), help=f.get("help"),
@@ -170,6 +215,8 @@ def _field(file: str, sec_id: str, f: dict, ruleset: Ruleset) -> Field:
         options=tuple(Option(o["value"], o["label"], o["official"]) for o in f.get("options") or ()),
         required=bool(f.get("required")), allow_unknown=bool(f.get("allow_unknown")), show_if=f.get("show_if"),
         compare=f.get("compare"), approved_by=f.get("approved_by"), approved_on=f.get("approved_on"),
+        step=f.get("step"), screen=f.get("screen"), ask_first=bool(f.get("ask_first")), control=f.get("control"), step_size=f.get("step_size"),
+        default=f.get("default"), autocomplete=f.get("autocomplete"),
     )
 
 
@@ -181,20 +228,44 @@ def _sections(file: str, doc: dict, ruleset: Ruleset) -> list[Section]:
         where = f"{file}: {s.get('id')}"
         _check_status(where, s)
         _check_show_if(where, s.get("show_if"))
+        # The sheets' pages and "Add a building" presets gave way to one question per screen.
+        if "pages" in s:
+            raise DefinitionError(f"{where}: pages are gone; group fields with screens")
+        if any("page" in f for f in s.get("fields") or ()):
+            raise DefinitionError(f"{where}: a field's page is gone; use screen")
         rep = s.get("repeat")
         repeat = None
         if rep is not None:
+            if "add_options" in rep:
+                raise DefinitionError(f"{where}: add_options are gone; a building's type is its first question")
             try:
                 repeat = Repeat(rep["kind"], rep["add_label"], int(rep["min"]), int(rep["max"]))
             except (KeyError, TypeError, ValueError):
                 raise DefinitionError(f"{where}: repeat needs kind, add_label, min and max") from None
             if not 0 <= repeat.min <= repeat.max or repeat.max < 1:
                 raise DefinitionError(f"{where}: repeat min must be between 0 and max")
+        screens = []
+        for sc in s.get("screens") or ():
+            if not isinstance(sc, dict) or not sc.get("id"):
+                raise DefinitionError(f"{where}: each screen needs an id")
+            if sc.get("layout") is not None and sc["layout"] not in LAYOUTS:
+                raise DefinitionError(f"{where}: unknown layout {sc['layout']!r}")
+            screens.append(Screen(sc["id"], sc.get("layout")))
         out.append(Section(
             id=s["id"], official_title=s["official_title"], chapter=s["chapter"], file=file, status=s["status"],
             fields=tuple(_field(file, s["id"], f, ruleset) for f in s.get("fields") or ()),
             repeat=repeat, show_if=s.get("show_if"), approved_by=s.get("approved_by"), approved_on=s.get("approved_on"),
+            step=s.get("step"), screens=tuple(screens),
         ))
+    return out
+
+
+def _steps(file: str, doc: dict) -> list[Step]:
+    out = []
+    for st in doc.get("steps") or ():
+        if not isinstance(st, dict) or not st.get("id") or not st.get("title"):
+            raise DefinitionError(f"{file}: each step needs an id and a title")
+        out.append(Step(st["id"], st["title"]))
     return out
 
 
@@ -210,10 +281,13 @@ def _load(key: str, version: int, ruleset: Ruleset, root: Path) -> FormDef:
     doc = _read(root, name)
     if doc.get("key") != key or doc.get("version") != version:
         raise DefinitionError(f"{name}: says it is {doc.get('key')!r} v{doc.get('version')!r}")
-    sections = []
+    sections, steps = [], []
     for inc in doc.get("include") or []:
-        sections += _sections(f"{inc}.yaml", _read(root, f"{inc}.yaml"), ruleset)
+        inc_doc = _read(root, f"{inc}.yaml")
+        sections += _sections(f"{inc}.yaml", inc_doc, ruleset)
+        steps += _steps(f"{inc}.yaml", inc_doc)
     sections += _sections(name, doc, ruleset)
+    steps += _steps(name, doc)
     ids = [s.id for s in sections] + [f.id for s in sections for f in s.fields]
     seen = set()
     for i in ids:
@@ -225,8 +299,41 @@ def _load(key: str, version: int, ruleset: Ruleset, root: Path) -> FormDef:
         for f in s.fields:
             if f.source == "derived" and f.from_ not in field_ids and f.from_ not in PROPERTY_KEYS | ACCOUNT_KEYS:
                 raise DefinitionError(f"{f.file}: {f.id}: from {f.from_!r} names no field")
-    return FormDef(key=key, version=version, ruleset_key=doc["ruleset_key"],
-                   official_title=doc["official_title"], sections=tuple(sections))
+    _check_steps(name, sections, steps)
+    form = FormDef(key=key, version=version, ruleset_key=doc["ruleset_key"],
+                   official_title=doc["official_title"], sections=tuple(sections), steps=tuple(steps))
+    _check_defaults(form)
+    return form
+
+
+def _check_steps(name: str, sections: list, steps: list) -> None:
+    """A form that declares steps places every question in one; a field's screen is one its
+    section declares."""
+    step_ids = [st.id for st in steps]
+    if len(set(step_ids)) != len(step_ids):
+        raise DefinitionError(f"{name}: duplicate step id")
+    for s in sections:
+        screen_ids = {x.id for x in s.screens}
+        for f in s.fields:
+            where = f"{f.file}: {f.id}"
+            step = f.step or s.step
+            if step is not None and step not in step_ids:
+                raise DefinitionError(f"{where}: step {step!r} is not declared")
+            if steps and f.is_question and step is None:
+                raise DefinitionError(f"{where}: a question needs a step")
+            if f.screen is not None and f.screen not in screen_ids:
+                raise DefinitionError(f"{where}: screen {f.screen!r} is not one of {s.id}'s screens")
+
+
+def _check_defaults(form: FormDef) -> None:
+    from portal_api.forms.answers import AnswerError, check_value  # answers imports this module
+
+    for s, f in form.fields():
+        if f.default is not None:
+            try:
+                check_value(f, f.default)
+            except AnswerError as e:
+                raise DefinitionError(f"{f.file}: {f.id}: bad default ({e.reason})") from None
 
 
 _CACHE: dict[tuple, FormDef] = {}

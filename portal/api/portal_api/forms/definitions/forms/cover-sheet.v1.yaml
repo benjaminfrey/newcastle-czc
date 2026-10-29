@@ -6,286 +6,320 @@ key: cover_sheet
 version: 1
 ruleset_key: adopted-v1.0
 official_title: Cover Sheet
+steps:
+- id: your_lot
+  title: Your lot
+- id: about_you
+  title: About you
 sections:
-  - id: location
-    official_title: Location of Proposed Project
-    chapter: Your property
+- id: location
+  official_title: Location of Proposed Project
+  chapter: Your property
+  status: draft
+  fields:
+  - id: map_lot
+    official_label: Map / Lot
+    source: property
+    from: map_lot
     status: draft
-    fields:
-      - id: map_lot
-        official_label: Map / Lot
-        source: property
-        from: map_lot
-        status: draft
-      - id: street_address
-        official_label: Street Address
-        source: property
-        from: location
-        may_correct: true
-        label: What is the street address of the property?
-        help: For example "461 Sheepscot Road". If the land has no address yet, write the road it's on.
-        type: text
-        why: 8.2.a.2
-        required: true
-        status: draft
-      - id: deed_book
-        official_label: Deed Book
-        source: question
-        label: If you know it, what is the book number of your deed?
-        help: It's printed on your deed from the Lincoln County Registry of Deeds. Staff can look it up if you don't have it.
-        type: text
-        why: 8.2.a.2
-        allow_unknown: true
-        status: draft
-      - id: deed_page
-        official_label: Page
-        source: question
-        label: And the page number of your deed?
-        help: It's printed next to the book number.
-        type: text
-        why: 8.2.a.2
-        allow_unknown: true
-        status: draft
-
-  - id: applicant
-    official_title: Applicant
-    chapter: Who's applying
+  - id: street_address
+    official_label: Street Address
+    source: property
+    from: location
+    may_correct: true
+    label: What is the street address of the property?
+    help: For example "461 Sheepscot Road". If the land has no address yet, write the road it's on.
+    type: text
+    why: 8.2.a.2
+    required: true
     status: draft
-    fields:
-      - id: applicant_name
-        official_label: Name
-        source: question
-        label: What is your full name?
-        type: text
-        why: 8.2.a.2
-        required: true
-        status: draft
-      - id: applicant_email
-        official_label: Email
-        source: account
-        from: email
-        status: draft
-      - id: applicant_phone
-        official_label: Phone
-        source: question
-        label: What phone number should the Town use to reach you?
-        type: text
-        why: 8.2.a.2
-        required: true
-        status: draft
-      - id: applicant_address
-        official_label: Address
-        source: question
-        label: What is your mailing address?
-        help: Street or PO box, town, state and ZIP code.
-        type: text
-        why: 8.2.a.2
-        required: true
-        status: draft
-      - id: applicant_is_owner
-        official_label: Applicant is the Property Owner
-        source: question
-        label: Do you own the property?
-        help: If you're a builder or someone else applying for the owner, choose No.
-        type: yesno
-        why: 8.2.a.2
-        required: true
-        status: draft
-      - id: has_agent
-        official_label: Agent
-        source: question
-        label: Should the Town also contact someone working on this for you, like a builder or surveyor?
-        type: yesno
-        why: 8.2.a.2
-        required: true
-        status: draft
-
-  - id: owner
-    official_title: Property Owner (if different)
-    chapter: Who's applying
-    show_if: {eq: [answers.applicant_is_owner, false]}
+  - id: deed_book
+    official_label: Deed Book
+    source: question
+    label: If you know it, what is the book number of your deed?
+    help: It's printed on your deed from the Lincoln County Registry of Deeds. Staff can look it up if you don't
+      have it.
+    type: text
+    why: 8.2.a.2
+    allow_unknown: true
     status: draft
-    fields:
-      - id: owner_name
-        official_label: Name
-        source: question
-        label: What is the property owner's full name?
-        help: If a company or trust owns it, give its name.
-        type: text
-        why: 8.2.a.2
-        required: true
-        status: draft
-      - id: owner_email
-        official_label: Email
-        source: question
-        label: What is the owner's email address?
-        type: text
-        why: 8.2.a.2
-        allow_unknown: true
-        required: true
-        status: draft
-      - id: owner_phone
-        official_label: Phone
-        source: question
-        label: What is the owner's phone number?
-        type: text
-        why: 8.2.a.2
-        allow_unknown: true
-        required: true
-        status: draft
-      - id: owner_address
-        official_label: Address
-        source: question
-        label: What is the owner's mailing address?
-        type: text
-        why: 8.2.a.2
-        required: true
-        status: draft
-
-  - id: agent
-    official_title: Agent (if applicable)
-    chapter: Who's applying
-    show_if: {eq: [answers.has_agent, true]}
+    screen: deed
+  - id: deed_page
+    official_label: Page
+    source: question
+    label: And the page number of your deed?
+    help: It's printed next to the book number.
+    type: text
+    why: 8.2.a.2
+    allow_unknown: true
     status: draft
-    fields:
-      - id: agent_name
-        official_label: Name
-        source: question
-        label: What is their name, or their company's name?
-        type: text
-        why: 8.2.a.2
-        required: true
-        status: draft
-      - id: agent_email
-        official_label: Email
-        source: question
-        label: What is their email address?
-        type: text
-        why: 8.2.a.2
-        allow_unknown: true
-        required: true
-        status: draft
-      - id: agent_phone
-        official_label: Phone
-        source: question
-        label: What is their phone number?
-        type: text
-        why: 8.2.a.2
-        allow_unknown: true
-        required: true
-        status: draft
-      - id: agent_address
-        official_label: Address
-        source: question
-        label: What is their mailing address?
-        type: text
-        why: 8.2.a.2
-        allow_unknown: true
-        required: true
-        status: draft
-
-  - id: site
-    official_title: Site Information (existing)
-    chapter: Your property
+    screen: deed
+  step: your_lot
+  screens:
+  - id: deed
+    layout: null
+- id: applicant
+  official_title: Applicant
+  chapter: Who's applying
+  status: draft
+  fields:
+  - id: applicant_name
+    official_label: Name
+    source: question
+    label: What is your full name?
+    type: text
+    why: 8.2.a.2
+    required: true
     status: draft
-    fields:
-      - id: zoning_district
-        official_label: Zoning District
-        source: property
-        from: districts
-        status: draft
-      - id: lot_area
-        official_label: Lot Area (acres)
-        source: property
-        from: acres
-        may_correct: true
-        label: How big is your lot, in acres?
-        help: We've filled in the size measured from the Town's map. Change it if your deed or a survey says otherwise.
-        type: number
-        unit: acres
-        min: 0
-        max: 5000
-        why: 8.2.a.2
-        required: true
-        status: draft
-      - id: lot_width
-        official_label: Lot Width (ft)
-        source: question
-        label: How wide is your lot, in feet?
-        help: >-
-          Measure at the widest point between the side lot lines, anywhere from the front lot line back to
-          the farthest a building may sit from the road (the district's maximum front setback).
-        type: number
-        unit: ft
-        min: 0
-        max: 50000
-        why: 8.2.a.2
-        allow_unknown: true
-        required: true
-        status: draft
-      - id: street_frontage
-        official_label: Street Frontage (ft)
-        source: property
-        from: streets
-        may_correct: true
-        label: How many feet of your lot run along the road?
-        help: We've filled in what the Town's map shows. If the lot is on more than one road, add them together, or explain in "Add more detail".
-        type: number
-        unit: ft
-        min: 0
-        max: 50000
-        why: 8.2.a.2
-        allow_unknown: true
-        required: true
-        status: draft
-      - id: lot_depth
-        official_label: Lot Depth (ft)
-        source: question
-        label: How deep is your lot, from the road to the back lot line, in feet?
-        type: number
-        unit: ft
-        min: 0
-        max: 50000
-        why: 8.2.a.2
-        allow_unknown: true
-        required: true
-        status: draft
-      - id: existing_dwelling_units
-        official_label: Number of Existing Dwelling Units
-        source: question
-        label: How many homes are on the property now?
-        help: Count each house, apartment or other separate home (the Code calls each one a dwelling unit). Enter 0 if there are none.
-        type: number
-        min: 0
-        max: 500
-        why: 8.2.a.2
-        required: true
-        status: draft
-
-  - id: certification
-    official_title: Certification
-    chapter: Sign and submit
+    autocomplete: name
+  - id: applicant_email
+    official_label: Email
+    source: account
+    from: email
     status: draft
-    fields:
-      - id: signature
-        official_label: Applicant Signature
-        source: at_submit
-        status: draft
-      - id: signature_date
-        official_label: Date
-        source: at_submit
-        status: draft
-      - id: signature_name
-        official_label: Name (print)
-        source: at_submit
-        status: draft
-
-  - id: office
-    official_title: Official Use Only
-    chapter: Office use
+  - id: applicant_phone
+    official_label: Phone
+    source: question
+    label: What phone number should the Town use to reach you?
+    type: text
+    why: 8.2.a.2
+    required: true
     status: draft
-    fields:
-      - id: date_received
-        official_label: Date Received
-        source: staff
-        status: draft
+    autocomplete: tel
+  - id: applicant_address
+    official_label: Address
+    source: question
+    label: What is your mailing address?
+    help: Street or PO box, town, state and ZIP code.
+    type: text
+    why: 8.2.a.2
+    required: true
+    status: draft
+    autocomplete: street-address
+  - id: applicant_is_owner
+    official_label: Applicant is the Property Owner
+    source: question
+    label: Do you own this property?
+    help: Choose No if you're a builder or someone else applying for the owner.
+    type: yesno
+    why: 8.2.a.2
+    required: true
+    status: draft
+    control: switch
+    default: true
+  - id: has_agent
+    official_label: Agent
+    source: question
+    label: Is someone else helping with this, like a builder or surveyor?
+    type: yesno
+    why: 8.2.a.2
+    required: true
+    status: draft
+    control: switch
+    default: false
+    help: If you choose Yes, the Town will also contact them.
+  step: about_you
+- id: owner
+  official_title: Property Owner (if different)
+  chapter: Who's applying
+  show_if:
+    eq:
+    - answers.applicant_is_owner
+    - false
+  status: draft
+  fields:
+  - id: owner_name
+    official_label: Name
+    source: question
+    label: What is the property owner's full name?
+    help: If a company or trust owns it, give its name.
+    type: text
+    why: 8.2.a.2
+    required: true
+    status: draft
+    autocomplete: name
+  - id: owner_email
+    official_label: Email
+    source: question
+    label: What is the owner's email address?
+    type: text
+    why: 8.2.a.2
+    allow_unknown: true
+    required: true
+    status: draft
+    autocomplete: email
+  - id: owner_phone
+    official_label: Phone
+    source: question
+    label: What is the owner's phone number?
+    type: text
+    why: 8.2.a.2
+    allow_unknown: true
+    required: true
+    status: draft
+    autocomplete: tel
+  - id: owner_address
+    official_label: Address
+    source: question
+    label: What is the owner's mailing address?
+    type: text
+    why: 8.2.a.2
+    required: true
+    status: draft
+    autocomplete: street-address
+  step: about_you
+- id: agent
+  official_title: Agent (if applicable)
+  chapter: Who's applying
+  show_if:
+    eq:
+    - answers.has_agent
+    - true
+  status: draft
+  fields:
+  - id: agent_name
+    official_label: Name
+    source: question
+    label: What is their name, or their company's name?
+    type: text
+    why: 8.2.a.2
+    required: true
+    status: draft
+    autocomplete: name
+  - id: agent_email
+    official_label: Email
+    source: question
+    label: What is their email address?
+    type: text
+    why: 8.2.a.2
+    allow_unknown: true
+    required: true
+    status: draft
+    autocomplete: email
+  - id: agent_phone
+    official_label: Phone
+    source: question
+    label: What is their phone number?
+    type: text
+    why: 8.2.a.2
+    allow_unknown: true
+    required: true
+    status: draft
+    autocomplete: tel
+  - id: agent_address
+    official_label: Address
+    source: question
+    label: What is their mailing address?
+    type: text
+    why: 8.2.a.2
+    allow_unknown: true
+    required: true
+    status: draft
+    autocomplete: street-address
+  step: about_you
+- id: site
+  official_title: Site Information (existing)
+  chapter: Your property
+  status: draft
+  fields:
+  - id: zoning_district
+    official_label: Zoning District
+    source: property
+    from: districts
+    status: draft
+  - id: lot_area
+    official_label: Lot Area (acres)
+    source: property
+    from: acres
+    may_correct: true
+    label: How big is your lot, in acres?
+    help: We've filled in the size measured from the Town's map. Change it if your deed or a survey says otherwise.
+    type: number
+    unit: acres
+    min: 0
+    max: 5000
+    why: 8.2.a.2
+    required: true
+    status: draft
+  - id: lot_width
+    official_label: Lot Width (ft)
+    source: question
+    label: How wide is your lot, in feet?
+    help: Measure at the widest point between the side lot lines, anywhere from the front lot line back to the farthest
+      a building may sit from the road (the district's maximum front setback).
+    type: number
+    unit: ft
+    min: 0
+    max: 50000
+    why: 8.2.a.2
+    allow_unknown: true
+    required: true
+    status: draft
+  - id: street_frontage
+    official_label: Street Frontage (ft)
+    source: property
+    from: streets
+    may_correct: true
+    label: How many feet of your lot run along the road?
+    help: We've filled in what the Town's map shows. If the lot is on more than one road, add them together, or
+      explain in "Add more detail".
+    type: number
+    unit: ft
+    min: 0
+    max: 50000
+    why: 8.2.a.2
+    allow_unknown: true
+    required: true
+    status: draft
+  - id: lot_depth
+    official_label: Lot Depth (ft)
+    source: question
+    label: How deep is your lot, from the road to the back lot line, in feet?
+    type: number
+    unit: ft
+    min: 0
+    max: 50000
+    why: 8.2.a.2
+    allow_unknown: true
+    required: true
+    status: draft
+  - id: existing_dwelling_units
+    official_label: Number of Existing Dwelling Units
+    source: question
+    label: How many homes are on the property now?
+    help: Count each house, apartment or other separate home (the Code calls each one a dwelling unit). Enter 0
+      if there are none.
+    type: number
+    min: 0
+    max: 500
+    why: 8.2.a.2
+    required: true
+    status: draft
+    control: stepper
+  step: your_lot
+- id: certification
+  official_title: Certification
+  chapter: Sign and submit
+  status: draft
+  fields:
+  - id: signature
+    official_label: Applicant Signature
+    source: at_submit
+    status: draft
+  - id: signature_date
+    official_label: Date
+    source: at_submit
+    status: draft
+  - id: signature_name
+    official_label: Name (print)
+    source: at_submit
+    status: draft
+- id: office
+  official_title: Official Use Only
+  chapter: Office use
+  status: draft
+  fields:
+  - id: date_received
+    official_label: Date Received
+    source: staff
+    status: draft
