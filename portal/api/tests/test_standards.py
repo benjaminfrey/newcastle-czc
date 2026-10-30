@@ -101,3 +101,53 @@ def test_committed_overrides_are_empty():
     import portal_api.standards as m
     path = Path(m.__file__).parent / "standards_overrides.json"
     assert json.loads(path.read_text()) == {"overrides": []}
+
+
+# --- final review: overrides never change what the Code states ---
+
+def _cell(root: Path, key: str) -> "object":
+    return next(s for s in load_standards(root) if s.key == key)
+
+
+def test_override_reads_the_whole_number(tmp_path, monkeypatch):
+    import portal_api.standards as m
+    s = m.Standard(key="x/building/B/building_floor_area", district_key="x", source="building_matrix",
+                   building="B", field="building_floor_area", label="Building Floor Area", raw="12000",
+                   status="needs_unit", min=None, max=None, unit=None, provenance=None, citation={}, note="")
+    out = m._apply([s], [{"district_key": "x", "building": "B", "field": "building_floor_area",
+                          "unit": "sf", "qualifier": "max", "decided_by": "T", "decided_at": "d", "basis": "b"}])
+    assert (out[0].max, out[0].unit) == (12000, "sf")
+
+
+def test_a_unit_answer_keeps_the_codes_own_qualifier():
+    import portal_api.standards as m
+    s = m.Standard(key="x/building/B/building_floor_area", district_key="x", source="building_matrix",
+                   building="B", field="building_floor_area", label="Building Floor Area", raw="12,000 max.",
+                   status="needs_unit", min=None, max=None, unit=None, provenance=None, citation={}, note="")
+    out = m._apply([s], [{"district_key": "x", "building": "B", "field": "building_floor_area",
+                          "unit": "sf", "decided_by": "T", "decided_at": "d", "basis": "b"}])
+    assert (out[0].status, out[0].min, out[0].max) == ("checkable", None, 12000)
+    with pytest.raises(OverrideError, match="states"):
+        m._apply([s], [{"district_key": "x", "building": "B", "field": "building_floor_area", "unit": "sf",
+                        "qualifier": "min", "decided_by": "T", "decided_at": "d", "basis": "b"}])
+
+
+def test_a_unit_answer_keeps_both_ends_of_a_range():
+    import portal_api.standards as m
+    s = m.Standard(key="x/building/B/building_floor_area", district_key="x", source="building_matrix",
+                   building="B", field="building_floor_area", label="Building Floor Area",
+                   raw="8,000 min. - 12,000 max.", status="needs_unit", min=None, max=None, unit=None,
+                   provenance=None, citation={}, note="")
+    out = m._apply([s], [{"district_key": "x", "building": "B", "field": "building_floor_area",
+                          "unit": "sf", "decided_by": "T", "decided_at": "d", "basis": "b"}])
+    assert (out[0].min, out[0].max, out[0].unit) == (8000, 12000, "sf")
+
+
+def test_a_bare_number_still_needs_a_qualifier():
+    import portal_api.standards as m
+    s = m.Standard(key="x/building/B/building_width", district_key="x", source="building_matrix",
+                   building="B", field="building_width", label="Building Width", raw="60 ft",
+                   status="needs_qualifier", min=None, max=None, unit="ft", provenance=None, citation={}, note="")
+    with pytest.raises(OverrideError, match="qualifier"):
+        m._apply([s], [{"district_key": "x", "building": "B", "field": "building_width",
+                        "decided_by": "T", "decided_at": "d", "basis": "b"}])

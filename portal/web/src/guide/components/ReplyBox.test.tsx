@@ -20,3 +20,8 @@ test("Enter sends the text and clears the box", async () => {
   expect(onSend).toHaveBeenCalledWith("It's a cape");
   expect(box).toHaveValue("");
 });
+
+test("the reply box is full size, not the small field", () => {
+  render(<GuideTheme><ReplyBox placeholder="Or tell us more…" onSend={() => {}} /></GuideTheme>);
+  expect(document.querySelector(".MuiInputBase-sizeSmall")).toBeNull();
+});

@@ -8,9 +8,12 @@ test("the guide preview answers a question", async ({ page }, info) => {
   await page.goto("/guide/preview");
   await expect(page.getByRole("heading", { level: 1, name: "Your new house" })).toBeVisible();
   await axe(page, "guide preview");
-  await page.getByRole("radio", { name: /Yes, inside the roof/ }).click();
-  await expect(page.getByText("You said").last()).toBeVisible();
-  await expect(page.getByRole("main").getByText("Yes, inside the roof").last()).toBeVisible();
+  // The opening bubble is one "You said"; answering adds exactly one more, with the answer.
+  const youSaid = page.getByText("You said");
+  await expect(youSaid).toHaveCount(1);
+  await page.getByText("No, it has full walls").click();   // the words, not the radio
+  await expect(youSaid).toHaveCount(2);
+  await expect(page.getByRole("main").getByText("No, it has full walls")).toHaveCount(2); // the row and the bubble
 });
 
 test("existing pages keep their look after the guide preview", async ({ page }, info) => {

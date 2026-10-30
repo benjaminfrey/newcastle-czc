@@ -16,9 +16,9 @@ export function ReplyBox({ placeholder, onSend }: { placeholder: string; onSend:
   };
   return (
     <Stack component="form" direction="row" onSubmit={submit} sx={{ gap: 1, alignItems: "center" }}>
-      <TextField fullWidth size="small" value={text} onChange={(e) => setText(e.target.value)}
+      <TextField fullWidth value={text} onChange={(e) => setText(e.target.value)}
         placeholder={placeholder} slotProps={{ htmlInput: { "aria-label": placeholder } }}
-        sx={{ "& .MuiOutlinedInput-root": { borderRadius: 7 } }} />
+        sx={(t) => ({ "& .MuiOutlinedInput-root": { borderRadius: `${t.guide.radius.full}px` } })} />
       <IconButton type="submit" aria-label="Send" disabled={blank} color="primary" sx={{ width: 48, height: 48 }}>
         <IconSend size={22} aria-hidden="true" />
       </IconButton>

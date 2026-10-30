@@ -37,3 +37,19 @@ test("AnswerList shows each hint", () => {
   render(<GuideTheme><AnswerList question={Q} answers={ANSWERS} onAnswer={() => {}} /></GuideTheme>);
   expect(screen.getByText("like a finished attic")).toBeInTheDocument();
 });
+
+test("tapping an answer's words answers once", async () => {
+  const onAnswer = vi.fn();
+  render(<GuideTheme><AnswerList question={Q} answers={ANSWERS} onAnswer={onAnswer} /></GuideTheme>);
+  await userEvent.click(screen.getByText("No, it has full walls"));
+  expect(onAnswer).toHaveBeenCalledOnce();
+  expect(onAnswer).toHaveBeenCalledWith("no");
+});
+
+test("Enter on an answered question doesn't answer it again", async () => {
+  const onAnswer = vi.fn();
+  render(<GuideTheme><AnswerList question={Q} answers={ANSWERS} onAnswer={onAnswer} /></GuideTheme>);
+  await userEvent.tab();
+  await userEvent.keyboard("{ArrowDown}{Enter}{Enter}");
+  expect(onAnswer).toHaveBeenCalledOnce();
+});

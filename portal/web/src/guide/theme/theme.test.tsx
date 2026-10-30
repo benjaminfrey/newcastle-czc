@@ -33,3 +33,25 @@ test("GuideTheme scopes the baseline to its children", () => {
   expect(document.querySelector(".MuiScopedCssBaseline-root")).not.toBeNull();
   expect(screen.getByTestId("outside").closest(".MuiScopedCssBaseline-root")).toBeNull();
 });
+
+// From the whole-branch review: targets and edges come from the tokens and meet WCAG.
+type Overrides = Record<string, { styleOverrides?: Record<string, unknown> }>;
+const comps = () => createGuideTheme().components as unknown as Overrides;
+
+test("chips are at least 48 px tall", () => {
+  const root = comps().MuiChip.styleOverrides!.root as { minHeight: number };
+  expect(root.minHeight).toBeGreaterThanOrEqual(48);
+});
+
+test("field and chip edges use the outline token", () => {
+  const { outline } = newcastleTokens.color.light;
+  const css = JSON.stringify(createGuideTheme().components, (_, v) => (typeof v === "function" ? v({ theme: { vars: { palette: { outline } } } }) : v));
+  expect(css).toContain(outline);
+  expect(Object.keys(comps())).toEqual(expect.arrayContaining(["MuiOutlinedInput", "MuiChip"]));
+});
+
+test("headings use the display font", () => {
+  const serif = { ...newcastleTokens, font: { ...newcastleTokens.font, display: "Georgia, serif" } };
+  expect(createGuideTheme(serif).typography.h6.fontFamily).toBe("Georgia, serif");
+  expect(createGuideTheme(serif).typography.body1.fontFamily).toBe(newcastleTokens.font.body);
+});

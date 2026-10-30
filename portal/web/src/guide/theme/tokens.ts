@@ -17,7 +17,6 @@ export type GuideTokens = {
   font: { body: string; display: string };
   radius: { small: number; medium: number; large: number; full: number };
   spacing: number; // px per MUI spacing unit
-  density: "comfortable" | "compact";
 };
 
 const ROBOTO = 'Roboto, "Helvetica Neue", Arial, system-ui, sans-serif';
@@ -40,5 +39,4 @@ export const newcastleTokens: GuideTokens = {
   font: { body: ROBOTO, display: ROBOTO },
   radius: { small: 8, medium: 12, large: 16, full: 999 },
   spacing: 8,
-  density: "comfortable",
 };

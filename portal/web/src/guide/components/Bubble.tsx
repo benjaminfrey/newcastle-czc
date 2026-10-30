@@ -9,7 +9,8 @@ export function Bubble({ from, children }: { from: "you" | "app"; children: Reac
   return (
     <Box sx={(t) => ({
       alignSelf: you ? "flex-end" : "flex-start", maxWidth: "88%", px: 2, py: 1.25,
-      borderRadius: you ? "20px 20px 4px 20px" : "4px 20px 20px 20px",
+      borderRadius: ((l, sm) => (you ? `${l} ${l} ${sm} ${l}` : `${sm} ${l} ${l} ${l}`))(
+        `${t.guide.radius.large}px`, `${t.guide.radius.small / 2}px`),
       background: you ? t.vars?.palette.primary.main : t.vars?.palette.surfaceContainer,
       color: you ? t.vars?.palette.primary.contrastText : t.vars?.palette.text.primary,
     })}>

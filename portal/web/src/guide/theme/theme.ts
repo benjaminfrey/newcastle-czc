@@ -12,12 +12,16 @@ import { newcastleTokens, type GuidePalette, type GuideTokens } from "./tokens";
 declare module "@mui/material/styles" {
   interface Palette {
     primaryContainer: string; onPrimaryContainer: string;
-    surfaceContainer: string; outlineVariant: string;
+    surfaceContainer: string; outline: string; outlineVariant: string;
   }
   interface PaletteOptions {
     primaryContainer?: string; onPrimaryContainer?: string;
-    surfaceContainer?: string; outlineVariant?: string;
+    surfaceContainer?: string; outline?: string; outlineVariant?: string;
   }
+  // The tokens themselves, for the few shapes a component sets (a bubble's corners).
+  interface Theme { guide: GuideTokens }
+  interface ThemeOptions { guide?: GuideTokens }
+  interface CssVarsTheme { guide: GuideTokens }
 }
 
 function palette(p: GuidePalette) {
@@ -28,7 +32,7 @@ function palette(p: GuidePalette) {
     text: { primary: p.onSurface, secondary: p.onSurfaceVariant },
     divider: p.outlineVariant,
     primaryContainer: p.primaryContainer, onPrimaryContainer: p.onPrimaryContainer,
-    surfaceContainer: p.surfaceContainer, outlineVariant: p.outlineVariant,
+    surfaceContainer: p.surfaceContainer, outline: p.outline, outlineVariant: p.outlineVariant,
   };
 }
 
@@ -40,10 +44,26 @@ export function createGuideTheme(tokens: GuideTokens = newcastleTokens): Theme {
     colorSchemes: { light: { palette: palette(tokens.color.light) }, dark: { palette: palette(tokens.color.dark) } },
     shape: { borderRadius: radius.medium },
     spacing: tokens.spacing,
-    typography: { fontFamily: tokens.font.body, button: { textTransform: "none", fontWeight: 500 } },
+    guide: tokens,
+    typography: {
+      fontFamily: tokens.font.body,
+      ...Object.fromEntries(["h1", "h2", "h3", "h4", "h5", "h6"].map((h) => [h, { fontFamily: tokens.font.display }])),
+      button: { textTransform: "none", fontWeight: 500 },
+    },
     components: {
       MuiButton: { styleOverrides: { root: { borderRadius: radius.full, minHeight: 48, paddingInline: 24 } } },
-      MuiChip: { styleOverrides: { root: { borderRadius: radius.small, minHeight: 36 } } },
+      // 48 px targets (WCAG 2.5.8 and Material's own minimum); edges in the outline token (3:1).
+      MuiChip: {
+        styleOverrides: {
+          root: { borderRadius: radius.small, minHeight: 48 },
+          outlined: ({ theme }) => ({ borderColor: theme.vars?.palette.outline }),
+        },
+      },
+      MuiOutlinedInput: {
+        styleOverrides: {
+          root: ({ theme }) => ({ "& .MuiOutlinedInput-notchedOutline": { borderColor: theme.vars?.palette.outline } }),
+        },
+      },
       MuiCard: {
         defaultProps: { elevation: 0 },
         styleOverrides: { root: ({ theme }) => ({ borderRadius: radius.medium, background: theme.vars?.palette.surfaceContainer }) },

@@ -37,38 +37,48 @@ def _num(text: str) -> float:
     return float(text.replace(",", ""))
 
 
+@dataclass(frozen=True)
+class _Read:
+    lo: float | None          # a stated minimum (or the number, when unqualified)
+    hi: float | None          # a stated maximum
+    qualifier: Literal["min", "max", "range"] | None
+    unit: str | None
+
+
+def _read(raw: str) -> _Read | None:
+    """The number, unit and qualifier the cell's text states, and nothing it doesn't."""
+    text = raw.strip()
+    m = _RANGE.match(text)
+    if m:
+        return _Read(_num(m["lo"]), _num(m["hi"]), "range", m["u1"] or m["u2"])
+    m = _ONE.match(text)
+    if not m:
+        return None
+    n = _num(m["n"])
+    return _Read(n if m["q"] != "max" else None, n if m["q"] == "max" else None, m["q"], m["unit"])
+
+
 def parse_matrix_cell(row_label: str, raw: str) -> Parsed:
     """One cell of a Permitted Buildings table. The qualifier comes only from the cell's text;
     the unit comes from the cell, or from the row label when the label names a count."""
-    text = raw.strip()
     if row_label == "Permitting Authority":
         return Parsed("not_a_number", None, None, None, None)
-    if text == "-":
+    if raw.strip() == "-":
         return Parsed("not_established", None, None, None, None)
     count_unit = _COUNT_UNITS.get(row_label)
-    m = _RANGE.match(text)
-    if m:
-        unit = m["u1"] or m["u2"] or count_unit
-        if unit is None:
-            return Parsed("needs_unit", None, None, None,
-                          f"The Code gives {raw!r} for {row_label} without a unit.")
-        return Parsed("checkable", _num(m["lo"]), _num(m["hi"]), unit, None)
-    m = _ONE.match(text)
-    if not m:
+    r = _read(raw)
+    if r is None:
         return Parsed("unresolved", None, None, count_unit,
                       f"The text {raw!r} for {row_label} could not be read as a number.")
-    unit = m["unit"] or count_unit
+    unit = r.unit or count_unit
     if unit is None:
         return Parsed("needs_unit", None, None, None,
                       f"The Code gives {raw!r} for {row_label} without a unit.")
-    if m["q"] is None:
+    if r.qualifier is None:
         return Parsed("needs_qualifier", None, None, unit,
                       f"The Code gives {raw!r} for {row_label} without saying whether it is a "
                       "minimum or a maximum.")
-    value = _num(m["n"])
-    return Parsed("checkable", value if m["q"] == "min" else None,
-                  value if m["q"] == "max" else None, unit, None)
-
+    return Parsed("checkable", r.lo, r.hi, unit, None)
 
 # --- every district's standards ---
 
@@ -151,12 +161,14 @@ def _matrix(district: dict) -> list[Standard]:
 
 
 def _apply(standards: list[Standard], entries: list[dict]) -> list[Standard]:
+    """The chair's recorded answers fill in only what a cell leaves out (its qualifier or its
+    unit). What the Code states (the number, a stated qualifier, a stated unit) is never changed."""
     out = list(standards)
     for e in entries:
         missing = [k for k in _PROVENANCE if not e.get(k)]
         if missing:
             raise OverrideError(f"override {e!r} lacks {', '.join(missing)}")
-        if e.get("qualifier") not in ("min", "max"):
+        if e.get("qualifier") not in (None, "min", "max"):
             raise OverrideError(f"override {e!r} needs a qualifier of min or max")
         hits = [i for i, s in enumerate(out)
                 if s.source == "building_matrix" and s.field == e.get("field")
@@ -167,17 +179,26 @@ def _apply(standards: list[Standard], entries: list[dict]) -> list[Standard]:
             raise OverrideError(f"override {e!r} matches no standard that needs one")
         for i in hits:
             s = out[i]
+            r = _read(s.raw)
+            if r is None:
+                raise OverrideError(f"override {e!r}: {s.key} has no number to qualify")
             unit = s.unit or e.get("unit")
             if unit is None:
                 raise OverrideError(f"override {e!r} must give a unit for {s.key}")
-            value = _num(re.match(_NUMBER, s.raw.strip())[0])
-            out[i] = Standard(**{**s.__dict__, "status": "checkable", "unit": unit,
-                                 "min": value if e["qualifier"] == "min" else None,
-                                 "max": value if e["qualifier"] == "max" else None,
-                                 "provenance": "override",
+            if r.qualifier and e.get("qualifier"):
+                raise OverrideError(f"override {e!r}: the Code already states {s.raw!r} for {s.key}")
+            qualifier = r.qualifier or e.get("qualifier")
+            if qualifier is None:
+                raise OverrideError(f"override {e!r} must give a qualifier for {s.key}")
+            if qualifier == "range":
+                lo, hi = r.lo, r.hi
+            else:
+                n = r.lo if r.lo is not None else r.hi
+                lo, hi = (n, None) if qualifier == "min" else (None, n)
+            out[i] = Standard(**{**s.__dict__, "status": "checkable", "unit": unit, "min": lo,
+                                 "max": hi, "provenance": "override",
                                  "note": f"Decided by {e['decided_by']} on {e['decided_at']}: {e['basis']}"})
     return out
-
 
 @functools.cache
 def _load(root: Path) -> tuple[Standard, ...]:
