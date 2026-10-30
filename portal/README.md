@@ -209,6 +209,13 @@ streamed through the API. The store's credentials are `STORE_ACCESS_KEY` / `STOR
 VM's `.env`. Tests use an in-memory store and a fake scanner; two integration tests run against the
 real ones when `PORTAL_TEST_S3_ENDPOINT` and `PORTAL_TEST_CLAMD_HOST` are set (CI sets the first).
 
+**The guided builder's preview.** `/guide/preview` shows the Material screen chosen for the guided
+builder (`specs/2026-10-30-applicant-portal-guided-builder.md`), with draft wording and no server
+calls. It exists only in builds made with `VITE_GUIDE_PREVIEW=1`: the LAN copy sets it
+(`deploy/compose.lan.yml`); for the dev server, start it as `VITE_GUIDE_PREVIEW=1 npm run dev`, or
+`e2e/guide-preview.spec.ts` fails. MUI lives only under `web/src/guide/`, inside a scoped baseline, so
+the HeroUI pages keep their look until the public launch retires them.
+
 **Journeys (Playwright).** `web/e2e/` drives projects end to end (sign in, start, every part, send), at desktop and phone width,
 with an accessibility check (axe; serious and critical findings fail) on every kind of page. They run
 on the VM against the dev stack, not in CI (ClamAV's signature download is refused from CI runners):

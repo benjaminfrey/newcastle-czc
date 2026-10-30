@@ -17,6 +17,12 @@ services:
     environment:
       PORTAL_ALLOW_STALE_PARCELS: "true"
       PORTAL_ALLOW_DRAFT_RULES: "true"
+  web:
+    # The guided builder's preview (/guide/preview) is built into the LAN copy only.
+    build:
+      context: ../web
+      args:
+        VITE_GUIDE_PREVIEW: "1"
   mail:
     image: axllent/mailpit:v1.27
     restart: unless-stopped

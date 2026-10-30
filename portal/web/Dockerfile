@@ -3,6 +3,9 @@ WORKDIR /web
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
+# The guided builder's preview route: on only for the LAN copy (compose.lan.yml).
+ARG VITE_GUIDE_PREVIEW=
+ENV VITE_GUIDE_PREVIEW=$VITE_GUIDE_PREVIEW
 RUN npm run build
 
 FROM caddy:2
