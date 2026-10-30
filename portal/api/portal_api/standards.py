@@ -215,3 +215,22 @@ def missing_buildings_table(district_key: str) -> str | None:
         if d["district_key"] == district_key and d["building_matrix_absent"]:
             return d["building_matrix_absent"]["board_question"]
     return None
+
+
+def main(argv: list[str] | None = None) -> None:
+    import argparse
+    from datetime import date
+
+    from .standards_audit import render_audit
+
+    p = argparse.ArgumentParser(prog="python -m portal_api.standards")
+    sub = p.add_subparsers(dest="cmd", required=True)
+    audit = sub.add_parser("audit", help="write the rules coverage memo")
+    audit.add_argument("--out", required=True)
+    args = p.parse_args(argv)
+    Path(args.out).write_text(render_audit(date.today().isoformat()) + "\n")
+    print(f"wrote {args.out}")
+
+
+if __name__ == "__main__":
+    main()
