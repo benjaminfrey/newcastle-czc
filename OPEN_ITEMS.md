@@ -39,9 +39,21 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
   building's name optional, homes asked of every building, stories capped at 4, "story" / "Fiber-cement"
   / "sq ft", four help-wording fixes, the finish list, the parts, the project questions, the clock
   sentences, and the rest as written). The redesign (`specs/2026-10-23-applicant-portal-redesign.md`)
-  is PR #20 (`portal-design-pass`); tasks and cards and then projects
-  (`specs/2026-10-25-applicant-portal-task-list.md`, `specs/2026-10-25-applicant-portal-projects.md`)
-  are PR #21 (`portal-projects`), stacked on it. For M4 and the redesign:
+  and projects (`specs/2026-10-25-applicant-portal-task-list.md`,
+  `specs/2026-10-25-applicant-portal-projects.md`) merged as PRs #20 and #21 on 2026-10-29.
+  - **New direction, the guided builder** (`specs/2026-10-30-applicant-portal-guided-builder.md`,
+    approved 2026-10-30): a conversation that helps residents shape a permittable project, an
+    approved explanation library, Material UI, one public launch at full scope. Five designs in
+    order (§11); plan 1 of 6 for the first is `plans/2026-10-30-applicant-portal-guided-builder-1-foundations.md`
+    (branch `portal-guided-1-foundations`). Open decisions are its §12.
+  - **For the chair (rules coverage):** `memos/2026-10-30-guided-builder-rules-coverage.md` asks 19
+    questions the Code leaves open (whether the Permitted Buildings numbers are maximums, seven
+    floor areas without a unit, two missing footnotes, three districts without a buildings table),
+    plus where the shoreland standards and map live and whether permits on record exist by lot.
+  - **For the chair:** may applicants' conversations go to an outside AI (spec decision 14)? Separate
+    from D-0025.
+
+  For M4 and the redesign:
   - **Projects follow-ups:** the parcel card has no lot drawing (the snapshot drops the parcel's
     outline); the staff lock is a test seam until Milestone 6; the printouts (View) wait for
     Milestone 5.

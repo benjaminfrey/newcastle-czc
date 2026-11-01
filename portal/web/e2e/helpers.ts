@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, type Locator, type Page } from "@playwright/test";
+import { expect, type Locator, type Page, type Request } from "@playwright/test";
 
 const MAILPIT = process.env.PORTAL_E2E_MAILPIT ?? "http://127.0.0.1:8025";
 // The LAN stack's Mailpit asks for a login ("user:password", as MAILPIT_UI_AUTH in .env).
@@ -14,7 +14,7 @@ export async function axe(page: Page, name: string) {
   if (checked.has(key)) return;
   checked.add(key);
   // Colours are only true once a sheet or pane has finished fading in.
-  await page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== "running"), null, { timeout: 5000 }).catch(() => {});
+  await settle(page);
   const results = await new AxeBuilder({ page }).exclude(".maplibregl-canvas").analyze();
   const bad = results.violations.filter((v) => v.impact === "serious" || v.impact === "critical");
   expect(bad.map((v) => `${v.id}: ${v.help} — ${v.nodes.map((n) => `${n.target.join(" ")} ${n.html.slice(0, 120)} ${n.any?.[0]?.message ?? ""}`).join(" | ")}`),
@@ -48,11 +48,36 @@ export async function signInHere(page: Page, email: string) {
   const link = await linkFor(email);
   await page.goto(new URL(link).pathname + new URL(link).hash);
   await page.getByRole("button", { name: "Sign me in" }).click();
+  // Signed in once the page leaves the verify screen; a later goto must not cut the request off.
+  await page.waitForURL((url) => url.pathname !== "/signin/verify");
 }
 
 
-const settle = (page: Page) =>
-  page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== "running"), null, { timeout: 5000 }).catch(() => {});
+// The API calls each page has in flight (not the map's tiles), so settle can wait for what they draw.
+const inFlight = new WeakMap<Page, Set<Request>>();
+function watch(page: Page): Set<Request> {
+  let calls = inFlight.get(page);
+  if (!calls) {
+    const open = (calls = new Set());
+    inFlight.set(page, open);
+    const api = (r: Request) => new URL(r.url()).pathname.startsWith("/api/") && !r.url().includes("/tiles/");
+    page.on("request", (r) => { if (api(r)) open.add(r); });
+    // Done once its response arrives: what the app draws follows the response, and some requests
+    // (the sign-in link's) never report finishing.
+    page.on("response", (r) => open.delete(r.request()));
+    page.on("requestfailed", (r) => open.delete(r));
+  }
+  return calls;
+}
+
+// Settled: no API call in flight, two frames for what a response draws and for a slide or fade to
+// start, then none still running. Over a network the screen changes after the URL does; checking
+// for animations at once would pass before the next card has begun to move.
+async function settle(page: Page) {
+  const calls = watch(page);
+  for (const end = Date.now() + 5000; calls.size && Date.now() < end;) await page.waitForTimeout(50);  await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
+  await page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== "running"), null, { timeout: 5000 }).catch(() => {});
+}
 const next = (page: Page) => page.getByRole("button", { name: /^(Continue|Skip for now)$/ });
 
 // Sign in first (projects brief §3): Home's sign-in card, the emailed link; then Start a new
@@ -197,8 +222,13 @@ export async function completeProject(page: Page, fixture: string, plan: Plan = 
     const path = new URL(page.url()).pathname;
     if (/\/send$/.test(path)) return;
     const before = page.url();
+    // The URL moves on before the next card is drawn; until the answered card's body is replaced,
+    // its controls are still on screen and would be answered again.
+    const card = page.locator("[data-card-body]").first();
+    const answered = (await card.count()) ? await card.elementHandle() : null;
     const main = page.getByRole("main");
     if (projectPath.test(path)) {
+      await expect(main.getByRole("list", { name: "Your project" })).toBeVisible(); // drawn, so its rows can be counted
       const open = main.getByRole("link", { name: /,\s*(Not started|\d+ of \d+\s*answered)$/ });
       await ((await open.count()) ? open.first() : main.getByRole("link", { name: "Check and send" })).click();
     } else if (/\/check$/.test(path)) {
@@ -219,6 +249,7 @@ export async function completeProject(page: Page, fixture: string, plan: Plan = 
       await answerScreen(page, fixture);
     }
     await expect(page, `stuck on ${before}`).not.toHaveURL(before, { timeout: 10_000 });
+    if (answered) await page.waitForFunction((el) => !el.isConnected, answered, { timeout: 10_000 });
   }
   throw new Error("didn't reach Check and send in 200 screens");
 }
