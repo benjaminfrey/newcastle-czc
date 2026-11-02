@@ -7,6 +7,8 @@ nearest: {text: "Make it {value} {unit}", status: draft}
 doesnt_fit: {text: "That's {gap} {unit} {direction} the limit here. Here's the nearest version that fits.", status: draft}
 governs: {text: "The adopted Code governs if anything here differs from it.", status: draft}
 pick_opening: {text: "What would you like to do?", status: draft}
+district_unknown: {text: "a district the Town's map doesn't show", status: draft}
+map_lot_unknown: {text: "(not found)", status: draft}
 confirm_build: {text: "So you'd like to build {opening} on lot {map_lot}, in {districts}. Is that right?", status: draft}
 confirm_use: {text: "So you'd like to change how lot {map_lot}, in {districts}, is used. Is that right?", status: draft}
 no_permit:
