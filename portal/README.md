@@ -134,6 +134,31 @@ from the parts (`source: parts`). The project is sent as one unit (`POST …/sub
 editable until staff lock it; the lock (a test seam, `POST …/lock`, behind `PORTAL_ALLOW_TEST_LOCK`,
 until Milestone 6) freezes it as a `submission` with its `review` rows.
 
+## The guide engine (guided builder, plan 2)
+
+The conversation behind the guided builder (`specs/2026-10-30-applicant-portal-guided-builder.md`),
+for an existing project; plan 3 builds its screens. Its words and questions are YAML in
+`portal_api/guide/definitions/` (`openings.yaml` the pictures it starts from, `turns.yaml` the
+questions, `entries.yaml` a first slice of the explanation library, `wording.yaml` the shared words,
+templates and endings), every entry a **draft** until the chair approves it, so production refuses
+any state that rests on one (`503 guide_not_approved`) unless `PORTAL_ALLOW_DRAFT_RULES` is set.
+
+`portal_api/guide/engine.py` replays the recorded answers into the facts and the next turn, so a
+reload or Back always lands on the same place; `checks.py` checks each number against the Code's
+standards for the lot (plan 1's `standards`), counting stories as 5.7.c does, and never says "no"
+where a standard can't be checked; `endings.py` ends in one of the spec's endings using the
+screener; `bridge.py` writes the settled numbers into the project's form answers, so the dashboard,
+reviews, fees and Send keep working. The record (`guide_conversation`, `guide_action`,
+`guide_note`, migration 0009) is insert-only: Back is a new row.
+
+Routes, each with `base_revision` on a change: `POST /api/projects/{id}/guide` (start, or restart
+after "No" on "So you mean…"), `GET …/guide`, `POST …/guide/answers`, `POST …/guide/back`,
+`POST …/guide/check` (a value's check without saving it, for the room left as it changes) and
+`POST …/guide/notes`. **What a person types is kept for staff and read by nothing** (spec decision
+14), and events never carry it. Tests:
+
+    portal/vm.sh run 'cd portal/api && .venv/bin/pytest tests/test_guide_content.py tests/test_guide_engine.py tests/test_guide_checks.py tests/test_guide_endings.py tests/test_guide_store.py tests/test_guide_routes.py'
+
 ## The forms
 
 Each official form is a definition in `portal_api/forms/definitions/forms/`: the Cover Sheet
