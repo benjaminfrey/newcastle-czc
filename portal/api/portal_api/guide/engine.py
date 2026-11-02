@@ -18,6 +18,7 @@ from typing import Literal
 
 from portal_api.forms.expr import evaluate
 from portal_api.guide.checks import Check, check_turn, stories_settled
+from portal_api.guide import endings
 from portal_api.guide.content import Answer, Content, Turn, drafts_in
 
 UNSURE = "unsure"
@@ -254,10 +255,19 @@ def _derive(content: Content, opening: str, lot: Lot, live: tuple) -> State:
         done.add(turn.id)
         if not ask(turn):
             break
+    ending = None
+    if current is None:
+        end = endings.finish(content, opening, facts, tuple(dict.fromkeys(unsure)), checks, lot)
+        build.wording.append(end["kind"])
+        words = content.wording[end["kind"]]
+        ending = {**end, "title": words["title"], "body": words["body"],
+                  "entry": build.entry(end["entry"]) if end["entry"] else None}
     shown_turns = [s.turn_id for s, _ in history] + ([current.turn_id] if current else [])
     drafts = drafts_in(content, opening=opening, turn_ids=shown_turns, entry_ids=build.entries,
                        wording_keys=build.wording)
-    return State(opening=opening, facts=facts, history=tuple(history), current=current, ending=None,
+    if ending is not None:
+        drafts += ending.pop("screener_drafts")
+    return State(opening=opening, facts=facts, history=tuple(history), current=current, ending=ending,
                  unsure=tuple(dict.fromkeys(unsure)), drafts=tuple(drafts), live=live,
                  checks=tuple(checks.items()), current_turn=current_turn)
 
