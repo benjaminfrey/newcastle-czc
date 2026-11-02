@@ -11,15 +11,18 @@ the turn is asked again. "I'm not sure yet" is an answer on every question; it l
 unknown and moves on. Free text is not an action: what a person types never reaches this module.
 """
 
+import dataclasses
 import math
 from dataclasses import dataclass
 from typing import Literal
 
 from portal_api.forms.expr import evaluate
-from portal_api.guide.content import Content, Turn, drafts_in
+from portal_api.guide.checks import Check, check_turn, stories_settled
+from portal_api.guide.content import Answer, Content, Turn, drafts_in
 
 UNSURE = "unsure"
 PICK_OPENING = "pick_opening"
+DOESNT_FIT = "doesnt_fit:"
 
 
 @dataclass(frozen=True)
@@ -82,6 +85,8 @@ class State:
     unsure: tuple[str, ...]
     drafts: tuple[str, ...]
     live: tuple[tuple[str, object], ...]   # the answers in force, in the order they were given
+    checks: tuple[tuple[str, dict], ...] = ()   # the latest check for each checked turn
+    current_turn: Turn | None = None
 
 
 class AnswerRejected(Exception):
@@ -206,8 +211,39 @@ def _derive(content: Content, opening: str, lot: Lot, live: tuple) -> State:
         _set(facts, path, v)
     given = dict(live)
     done: set[str] = set()
-    history, unsure = [], []
-    current = None
+    history, unsure, checks = [], [], {}
+    current = current_turn = None
+
+    def ask(turn: Turn) -> bool:
+        """Record `turn`'s answer if it has a valid one; otherwise make it the current turn."""
+        nonlocal current, current_turn
+        shown = build.shown(turn, facts)
+        value = given.get(turn.id, _MISSING)
+        if value is _MISSING or _valid(build, turn, facts, value) is not None:
+            current, current_turn = shown, turn
+            return False
+        settled_before = stories_settled(facts, unsure)
+        _record(build, turn, facts, value)
+        if value == UNSURE:
+            unsure.append(turn.id)
+        chk = _check(content, turn, facts, lot, unsure, settled_before) if value != UNSURE else None
+        if chk is not None:
+            checks[turn.id] = dataclasses.asdict(chk)
+            shown = dataclasses.replace(shown, check=checks[turn.id])
+        history.append((shown, value))
+        if chk is None or chk.result != "outside":
+            return True
+        fit = _doesnt_fit(build, turn, chk)
+        before = given.get(fit.id, _MISSING)
+        if not ask(fit):
+            return False
+        if before in ("keep_mine", "talk_to_town", UNSURE):
+            unsure.append(turn.id)
+        else:  # the nearest version: the fact is replaced, so check it again
+            again = _check(content, turn, facts, lot, unsure, False)
+            checks[turn.id] = dataclasses.asdict(again)
+        return True
+
     while True:
         if facts.get("confirmed") is False:
             current = build.picker(facts)
@@ -216,20 +252,42 @@ def _derive(content: Content, opening: str, lot: Lot, live: tuple) -> State:
         if turn is None:
             break
         done.add(turn.id)
-        shown = build.shown(turn, facts)
-        value = given.get(turn.id, _MISSING)
-        if value is _MISSING or _valid(build, turn, facts, value) is not None:
-            current = shown
+        if not ask(turn):
             break
-        _record(build, turn, facts, value)
-        if value == UNSURE:
-            unsure.append(turn.id)
-        history.append((shown, value))
     shown_turns = [s.turn_id for s, _ in history] + ([current.turn_id] if current else [])
     drafts = drafts_in(content, opening=opening, turn_ids=shown_turns, entry_ids=build.entries,
                        wording_keys=build.wording)
     return State(opening=opening, facts=facts, history=tuple(history), current=current, ending=None,
-                 unsure=tuple(unsure), drafts=tuple(drafts), live=live)
+                 unsure=tuple(dict.fromkeys(unsure)), drafts=tuple(drafts), live=live,
+                 checks=tuple(checks.items()), current_turn=current_turn)
+
+
+def _check(content: Content, turn: Turn, facts: dict, lot: Lot, unsure: list, settled_before: bool) -> Check | None:
+    """A turn's own check, or, for a computed value, the check on the turn that completes it."""
+    if turn.computed is None:
+        return check_turn(turn, facts, lot, unsure)
+    if settled_before or not stories_settled(facts, unsure):
+        return None
+    standard = next((t.standard for t in content.turns if t.computed == turn.computed and t.standard), None)
+    return check_turn(turn, facts, lot, unsure, standard=standard)
+
+
+def _number(v: float) -> str:
+    return str(int(v)) if float(v).is_integer() else f"{v:g}"
+
+
+def _doesnt_fit(build: _Build, turn: Turn, chk: Check) -> Turn:
+    """The page for a number past its limit (spec §4.5): the gap, the nearest version that fits
+    (for a number the person sets directly), keeping their number, or the Town Office."""
+    unit = chk.unit or turn.unit or ""
+    direction = build.word("direction_over" if chk.direction == "over" else "direction_short")
+    ask = build.word("doesnt_fit").format(gap=_number(chk.gap), unit=unit, direction=direction)
+    answers = tuple(Answer("nearest", build.word("nearest").format(value=_number(n["value"]), unit=unit), None,
+                           {turn.fact: n["value"]}) for n in chk.nearest)
+    answers += (Answer("keep_mine", build.word("keep_mine"), None, {}),
+                Answer("talk_to_town", build.word("talk_to_town"), None, {}))
+    return Turn(id=DOESNT_FIT + turn.id, order=turn.order, step=turn.step, kind="choice", ask=ask,
+                status="draft", answers=answers, why=turn.why, cite=turn.cite)
 
 
 _MISSING = object()
@@ -262,7 +320,7 @@ def apply(content: Content, state: State, lot: Lot, action: Action) -> State:
     current = state.current
     if current is None or current.turn_id != action.turn_id or current.turn_id == PICK_OPENING:
         raise AnswerRejected("not_current")
-    turn = content.turn(action.turn_id)
+    turn = state.current_turn
     reason = _valid(_Build(content, state.opening, lot), turn, state.facts, action.value)
     if reason is not None:
         raise AnswerRejected(reason)

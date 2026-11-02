@@ -5,6 +5,8 @@ talk_to_town: {text: "Talk to the Town Office", status: draft}
 keep_mine: {text: "Keep my number and ask the Town", status: draft}
 nearest: {text: "Make it {value} {unit}", status: draft}
 doesnt_fit: {text: "That's {gap} {unit} {direction} the limit here. Here's the nearest version that fits.", status: draft}
+direction_over: {text: "over", status: draft}
+direction_short: {text: "short of", status: draft}
 governs: {text: "The adopted Code governs if anything here differs from it.", status: draft}
 pick_opening: {text: "What would you like to do?", status: draft}
 district_unknown: {text: "a district the Town's map doesn't show", status: draft}
