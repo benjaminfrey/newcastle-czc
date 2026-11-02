@@ -32,7 +32,7 @@ def test_a_cell_it_cannot_read_is_reported_not_dropped():
     assert p.status == "unresolved" and p.note
 
 
-_D4_STORIES = {"district_key": "d4", "building": "Residential", "field": "total_stories",
+_D1_STORIES = {"district_key": "d1", "building": "Residential", "field": "total_stories",
                "qualifier": "max", "decided_by": "Test", "decided_at": "2026-10-30",
                "basis": "test"}
 
@@ -59,15 +59,20 @@ def test_a_range_is_checked_on_both_sides():
     assert check(s, 1) == "outside" and check(s, 2) == "within" and check(s, 4) == "outside"
 
 
-def test_bare_matrix_number_cannot_be_checked():
-    s = next(s for s in standards_for("d4")
-             if s.building == "Residential" and s.field == "total_stories")
+def _std(root, district, building, field):
+    return next(s for s in load_standards(root) if s.district_key == district and s.building == building
+                and s.field == field)
+
+
+def test_bare_matrix_number_cannot_be_checked(tmp_path):
+    """Without the chair's answer, a bare number where the page has no "maximum" note stays unchecked."""
+    s = _std(_overrides(tmp_path), "d1", "Residential", "total_stories")
     assert s.status == "needs_qualifier"
     assert check(s, 3) == "cannot_check" and check(s, 99) == "cannot_check"
 
 
 def test_unresolved_footnote_cannot_be_checked():
-    s = next(s for s in standards_for("d6") if s.field == "primary_building_placement.side_setback")
+    s = next(s for s in standards_for("sd-rhwy") if s.field == "lot_dimensions.width")
     assert s.status == "unresolved" and check(s, 3) == "cannot_check"
 
 
@@ -80,27 +85,30 @@ def test_districts_without_a_buildings_table():
 
 
 def test_override_turns_a_bare_number_checkable(tmp_path):
-    root = _overrides(tmp_path, _D4_STORIES)
+    root = _overrides(tmp_path, _D1_STORIES)
     s = next(s for s in load_standards(root)
-             if s.district_key == "d4" and s.building == "Residential" and s.field == "total_stories")
+             if s.district_key == "d1" and s.building == "Residential" and s.field == "total_stories")
     assert (s.status, s.max, s.provenance) == ("checkable", 2, "override")
 
 
 def test_override_without_provenance_is_refused(tmp_path):
-    entry = {k: v for k, v in _D4_STORIES.items() if k != "basis"}
+    entry = {k: v for k, v in _D1_STORIES.items() if k != "basis"}
     with pytest.raises(OverrideError, match="basis"):
         load_standards(_overrides(tmp_path, entry))
 
 
 def test_override_for_a_field_that_does_not_exist_is_refused(tmp_path):
     with pytest.raises(OverrideError, match="matches no"):
-        load_standards(_overrides(tmp_path, {**_D4_STORIES, "field": "roof_colour"}))
+        load_standards(_overrides(tmp_path, {**_D1_STORIES, "field": "roof_colour"}))
 
 
-def test_committed_overrides_are_empty():
+def test_committed_overrides_are_the_chairs():
+    """Only the chair's recorded answers fill the file (coverage memo, answered 2026-11-02)."""
     import portal_api.standards as m
-    path = Path(m.__file__).parent / "standards_overrides.json"
-    assert json.loads(path.read_text()) == {"overrides": []}
+    entries = json.loads((Path(m.__file__).parent / "standards_overrides.json").read_text())["overrides"]
+    assert entries
+    assert all(e["decided_by"] == "Ben Frey, Planning Board chair" and e["decided_at"] == "2026-11-02"
+               and e["basis"] for e in entries)
 
 
 # --- final review: overrides never change what the Code states ---
@@ -151,3 +159,49 @@ def test_a_bare_number_still_needs_a_qualifier():
     with pytest.raises(OverrideError, match="qualifier"):
         m._apply([s], [{"district_key": "x", "building": "B", "field": "building_width",
                         "decided_by": "T", "decided_at": "d", "basis": "b"}])
+
+
+# --- the Code's own "maximum" note, and the chair's answers (2026-11-02) ---
+
+def test_district_note_makes_bare_numbers_maximums(tmp_path):
+    """D2-D6's BUILDINGS STANDARDS note 1: "Unless otherwise noted, all measurements represent the
+    maximum permitted values." The Code's own text, so no override is needed there."""
+    root = _overrides(tmp_path)
+    s = _std(root, "d4", "Residential", "total_stories")
+    assert (s.status, s.min, s.max, s.provenance) == ("checkable", None, 2, "literal")
+    assert "maximum permitted values" in s.note
+    assert _std(root, "d4", "Residential", "first_floor_height").max == 12
+    assert _std(root, "d1", "Residential", "total_stories").status == "needs_qualifier"
+
+
+def test_the_note_gives_no_unit(tmp_path):
+    s = _std(_overrides(tmp_path), "d5", "Mixed-Use", "building_floor_area")
+    assert s.status == "needs_unit"
+
+
+def test_the_chairs_answers_cover_the_districts_without_the_note():
+    s = _std(None, "d1", "Residential", "total_stories")
+    assert (s.status, s.max, s.provenance) == ("checkable", 2, "override")
+    assert _std(None, "d1", "Residential", "first_floor_height").max == 12
+    assert _std(None, "sd-hwy", "Mixed-Use", "building_floor_area").unit == "sf"
+    s = _std(None, "d5", "Mixed-Use", "building_floor_area")
+    assert (s.status, s.max, s.unit) == ("checkable", 12000, "sf")
+
+
+def test_every_bare_number_and_unit_is_answered():
+    left = {s.status for s in load_standards()} & {"needs_qualifier", "needs_unit"}
+    assert left == set()
+
+
+def test_d6_side_setback_the_board_may_widen():
+    """Note 5: the Planning Board may increase the side setback, but not beyond 15 ft."""
+    s = next(s for s in standards_for("d6") if s.field == "primary_building_placement.side_setback")
+    assert (s.status, s.min, s.max, s.board_may_allow_to) == ("checkable", 0, 5, 15)
+    assert check(s, 5) == "within" and check(s, 10) == "cannot_check" and check(s, 16) == "outside"
+
+
+def test_a_dimension_answer_must_keep_the_codes_numbers(tmp_path):
+    entry = {"source": "dimension", "district_key": "d6", "field": "primary_building_placement.side_setback",
+             "min": 0, "max": 6, "board_may_allow_to": 15, "decided_by": "T", "decided_at": "d", "basis": "b"}
+    with pytest.raises(OverrideError, match="states"):
+        load_standards(_overrides(tmp_path, entry))

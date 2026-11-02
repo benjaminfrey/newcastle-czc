@@ -3,6 +3,11 @@
 Article 2 states each standard as text ("15 ft min", "2 min. - 3 max.", "60 ft"). A number the
 Code gives without saying whether it is a minimum or a maximum, or without a unit, is never
 filled in here: it gets a status that says why it can't be checked, and a question for the chair.
+
+Two things can settle such a number. One is the Code itself: D2-D6's BUILDINGS STANDARDS panel
+says "Unless otherwise noted, all measurements represent the maximum permitted values", so a
+bare number on those pages is a maximum, as literal as one marked "max.". The other is the
+chair's recorded answer (standards_overrides.json), which fills in only what the Code leaves out.
 """
 
 import functools
@@ -107,6 +112,7 @@ class Standard:
     provenance: Literal["literal", "override"] | None
     citation: dict
     note: str | None
+    board_may_allow_to: float | None = None   # past the limit but within this, the Board decides
 
 
 def _snake(label: str) -> str:
@@ -138,15 +144,30 @@ def _dimension(district: dict, dim: dict) -> Standard:
         note=" ".join(dim["notes"]) or None)
 
 
+MAXIMUM_NOTE = "Unless otherwise noted, all measurements represent the maximum permitted values."
+
+
+def says_maximum(district: dict) -> bool:
+    """The district's BUILDINGS STANDARDS panel carries the Code's "maximum" note."""
+    return any(p.get("panel_key") == "buildings_standards" and MAXIMUM_NOTE in (p.get("body") or [])
+               for p in district.get("panels") or [])
+
+
 def _matrix(district: dict) -> list[Standard]:
     m = district["building_matrix"]
     if not m:
         return []
+    noted = says_maximum(district)
     out = []
     for row in m["rows"]:
         label, cells = row[0], row[1:]
         for building, raw in zip(m["cols"], cells):
             p = parse_matrix_cell(label, raw)
+            note = p.note
+            if noted and p.status == "needs_qualifier":
+                n = _read(raw)
+                p = Parsed("checkable", None, n.lo, p.unit, None)
+                note = f"A maximum: the district's BUILDINGS STANDARDS note says \"{MAXIMUM_NOTE}\""
             field = _snake(label)
             out.append(Standard(
                 key=f"{district['district_key']}/building/{building}/{field}",
@@ -156,18 +177,44 @@ def _matrix(district: dict) -> list[Standard]:
                 provenance="literal" if p.status == "checkable" else None,
                 citation={**district["citation"], "panel": m["title"], "label": label,
                           "building": building},
-                note=p.note))
+                note=note))
     return out
 
 
-def _apply(standards: list[Standard], entries: list[dict]) -> list[Standard]:
+def _numbers(raw: str) -> list[float]:
+    """The numbers a cell states, without its footnote markers ("0 ft min (4)" -> [0])."""
+    return [_num(m.group(0)) for m in re.finditer(_NUMBER, re.sub(r"\(\d+\)", "", raw))]
+
+
+def _resolve_footnotes(out: list[Standard], e: dict) -> None:
+    """A dimension whose footnote text the extract missed: the chair's reading of the footnotes,
+    keeping the Code's own numbers (a minimum, a maximum, and how far the Board may go past it)."""
+    i = next((i for i, s in enumerate(out) if s.source == "dimension" and s.district_key == e.get("district_key")
+              and s.field == e.get("field") and s.status == "unresolved"), None)
+    if i is None:
+        raise OverrideError(f"override {e!r} matches no standard that needs one")
+    s = out[i]
+    stated = set(_numbers(s.raw))
+    for k in ("min", "max"):
+        if e.get(k) is not None and e[k] not in stated:
+            raise OverrideError(f"override {e!r}: the Code states {s.raw!r} for {s.key}, not {k} {e[k]}")
+    out[i] = Standard(**{**s.__dict__, "status": "checkable", "min": e.get("min"), "max": e.get("max"),
+                         "board_may_allow_to": e.get("board_may_allow_to"), "provenance": "override",
+                         "note": f"Decided by {e['decided_by']} on {e['decided_at']}: {e['basis']}"})
+
+
+def _apply(standards: list[Standard], entries: list[dict], noted: frozenset = frozenset()) -> list[Standard]:
     """The chair's recorded answers fill in only what a cell leaves out (its qualifier or its
-    unit). What the Code states (the number, a stated qualifier, a stated unit) is never changed."""
+    unit). What the Code states (the number, a stated qualifier, a stated unit) is never changed.
+    `noted` are the districts whose page says bare numbers are maximums."""
     out = list(standards)
     for e in entries:
         missing = [k for k in _PROVENANCE if not e.get(k)]
         if missing:
             raise OverrideError(f"override {e!r} lacks {', '.join(missing)}")
+        if e.get("source") == "dimension":
+            _resolve_footnotes(out, e)
+            continue
         if e.get("qualifier") not in (None, "min", "max"):
             raise OverrideError(f"override {e!r} needs a qualifier of min or max")
         hits = [i for i, s in enumerate(out)
@@ -187,7 +234,7 @@ def _apply(standards: list[Standard], entries: list[dict]) -> list[Standard]:
                 raise OverrideError(f"override {e!r} must give a unit for {s.key}")
             if r.qualifier and e.get("qualifier"):
                 raise OverrideError(f"override {e!r}: the Code already states {s.raw!r} for {s.key}")
-            qualifier = r.qualifier or e.get("qualifier")
+            qualifier = r.qualifier or ("max" if s.district_key in noted else None) or e.get("qualifier")
             if qualifier is None:
                 raise OverrideError(f"override {e!r} must give a qualifier for {s.key}")
             if qualifier == "range":
@@ -207,7 +254,8 @@ def _load(root: Path) -> tuple[Standard, ...]:
         standards += [_dimension(d, dim) for dim in d["dimensions"]]
         standards += _matrix(d)
     entries = json.loads((root / _OVERRIDES).read_text())["overrides"]
-    return tuple(_apply(standards, entries))
+    noted = frozenset(d["district_key"] for d in load_ruleset().districts if says_maximum(d))
+    return tuple(_apply(standards, entries, noted))
 
 
 def load_standards(root: Path | None = None) -> tuple[Standard, ...]:
@@ -226,7 +274,8 @@ def check(standard: Standard, value: float) -> Literal["within", "outside", "can
     if standard.min is not None and value < standard.min:
         return "outside"
     if standard.max is not None and value > standard.max:
-        return "outside"
+        within_board = standard.board_may_allow_to is not None and value <= standard.board_may_allow_to
+        return "cannot_check" if within_board else "outside"
     return "within"
 
 

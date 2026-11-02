@@ -5,11 +5,12 @@ portal's own code. Nothing is typed in by hand, so the memo can be regenerated a
 """
 
 import ast
+import json
 from collections import Counter, defaultdict
 from pathlib import Path
 
 from .ruleset import load_ruleset
-from .standards import Standard, load_standards, missing_buildings_table
+from .standards import _HERE, _OVERRIDES, MAXIMUM_NOTE, Standard, load_standards, missing_buildings_table, says_maximum
 
 _STATUS_WORDS = {
     "checkable": "can be checked",
@@ -30,6 +31,8 @@ def _bounds(s: Standard) -> str:
         parts.append(f"at least {s.min:g} {s.unit}")
     if s.max is not None:
         parts.append(f"at most {s.max:g} {s.unit}")
+    if s.board_may_allow_to is not None:
+        parts.append(f"the Board may allow up to {s.board_may_allow_to:g} {s.unit}")
     return ", ".join(parts)
 
 
@@ -45,9 +48,10 @@ def _gis_layers() -> list[str]:
     return []
 
 
-def render_audit(today: str) -> str:
+def render_audit(today: str, root: Path | None = None) -> str:
     r = load_ruleset()
-    standards = load_standards()
+    standards = load_standards(root)
+    answers = json.loads(((root or _HERE) / _OVERRIDES).read_text())["overrides"]
     names = {d["district_key"]: d["display_name"] for d in r.districts}
     out: list[str] = []
     w = out.append
@@ -93,6 +97,21 @@ def render_audit(today: str) -> str:
     # 3. Questions for the chair
     w("## 3. Questions only the chair can answer")
     w("")
+    noted = [names[d["district_key"]] for d in r.districts if says_maximum(d)]
+    if noted or answers:
+        w("**Already answered.**")
+        w("")
+    if noted:
+        w(f"- The Code's own text: {', '.join(noted)} say in their BUILDINGS STANDARDS panel, "
+          f"\"{MAXIMUM_NOTE}\" Their bare numbers are read as maximums.")
+    for e in answers:
+        where = e["district_key"] if e["district_key"] != "*" else "every district without the note"
+        what = e["field"] + (f" ({e['building']})" if e.get("building") not in (None, "*") else "")
+        w(f"- **{what}**, {where}: decided by {e['decided_by']} on {e['decided_at']}. {e['basis']}")
+    if noted or answers:
+        w("")
+        w("**Still open.**")
+        w("")
     w("The Code gives these numbers without a minimum or maximum, without a unit, or with a "
       "footnote whose text is missing. Until the chair answers, the builder can't check them and "
       "never treats them as a \"no\".")

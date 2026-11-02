@@ -10,8 +10,8 @@ The ledger of everything the Code does not answer. Governed by **CONTRACT.md §7
 Ids are `D-NNNN`, monotonic, never reused. `Status` ∈ `OPEN` · `RESOLVED` · `WITHDRAWN`.
 Entries are appended, newest last, and edited only to fill in **Resolution**.
 
-**Open blocking items: 1 · Open non-blocking items: 19**  
-*(2026-09-14: D-0033 resolved; D-0034 added.)*
+**Open blocking items: 1 · Open non-blocking items: 18**  
+*(2026-09-14: D-0033 resolved; D-0034 added. 2026-11-02: D-0004 resolved for the Applicant Portal.)*
 
 ---
 
@@ -88,13 +88,17 @@ Entries are appended, newest last, and edited only to fill in **Resolution**.
   something is missing rather than reading a bare 1000 ft.
 - **Needs:** the footnote text from the adopted Article 2 SD-Rural Highway spread, transcribed into
   the ruleset build.
-- **Resolution:** _(pending)_
+- **Resolution:** _(pending — sent to the Board 2026-11-02.)_ The footnote text is on the
+  adopted page, as BUILDINGS STANDARDS note 1: "Lots that abut Route 1 have the following
+  standards:" (a front setback measured from Route 1's center line, and a Level 4 Natural Screen).
+  The open question is whether the 1,000 ft minimum applies to every lot or only to lots that
+  abut Route 1.
 
 ---
 
 ## D-0004 — D6 Town Center · Side Setback · footnotes "(4)" and "(5)" have no text
 
-- **Status:** OPEN
+- **Status:** RESOLVED
 - **Raised:** 2026-08-20
 - **Ruleset:** `adopted`
 - **District:** `d6` (D6 - Town Center, source index 5)
@@ -107,7 +111,14 @@ Entries are appended, newest last, and edited only to fill in **Resolution**.
   anywhere in a 0–5 ft band when the Code may mean something narrower.
 - **Blocking:** **no** — emitted with `unresolved: true` and `footnote_refs: ["4","5"]`.
 - **Needs:** the footnote text from the adopted Article 2 D6 spread.
-- **Resolution:** _(pending)_
+- **Resolution:** **RESOLVED 2026-11-02, for the Applicant Portal.** The footnotes are on the
+  adopted page, as BUILDINGS STANDARDS notes 4 and 5 (the extract holds them in `panels[7]`):
+  (4) "One side of a new building is required to have a 0 ft side setback." (5) "The Planning
+  Board may increase the side setback to include vehicular and pedestrian access to the rear of the
+  lot, but shall not increase the side setback beyond 15 ft." Decided by Ben Frey (Planning Board
+  Chair): 0–5 ft fits; over 5 up to 15 ft is the Board's decision; over 15 ft is outside. Recorded
+  in `portal/api/portal_api/standards_overrides.json`. This ruleset's build still emits the field
+  as `unresolved`, because the extractor does not link footnote markers to the panel's notes.
 
 ---
 

@@ -53,8 +53,8 @@ def _stories(content, codes, full, roof=0, knee=None, basement=False, unsure=())
                       standard=std)
 
 
-def test_needs_qualifier_is_cannot_check_never_outside(content):
-    c = _stories(content, ("D4",), 3)
+def test_a_district_without_a_buildings_table_cannot_check_stories(content):
+    c = _stories(content, ("SD-Conservation",), 3)
     assert (c.result, c.reason) == ("cannot_check", "not_checkable")
 
 
@@ -150,3 +150,11 @@ def test_two_districts_that_both_miss_by_different_amounts_cannot_be_checked(con
 def test_two_districts_with_the_same_limit_that_both_miss_are_outside(content):
     c = side(content, 5, "D1", "D1")
     assert (c.result, c.gap) == ("outside", 10)
+
+
+def test_d6_side_setback_past_5_ft_is_the_boards_call(content):
+    """D6 note 5: the Planning Board may widen the side setback, but not beyond 15 ft."""
+    c = side(content, 10, "D6")
+    assert (c.result, c.reason) == ("cannot_check", "board_decides")
+    c = side(content, 16, "D6")
+    assert (c.result, c.gap, [n["value"] for n in c.nearest]) == ("outside", 11, [5])
