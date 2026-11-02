@@ -235,7 +235,7 @@ TEMPLATE_SLOTS = frozenset({"opening", "map_lot", "districts"})
       `5.7.c.3`, `5.7.c.4`, `5.7.c.5`, `5.7.c.6`;
     - `setbacks`: cite `2.3.c.3`;
     - `use_table`: cite `8.15.b.1`;
-    - `use_not_listed`: cite `8.19.b.1`, the text the screener already uses.
+    - `use_not_listed`: cite `8.19.b.1`, reworded from the screener's text, which has the word "granted".
   - **`wording.yaml`:**
     - `unsure` "I'm not sure yet";
     - `talk_to_town` "Talk to the Town Office";
