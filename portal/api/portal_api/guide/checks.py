@@ -113,6 +113,9 @@ def check_turn(turn, facts: dict, lot, unsure=(), standard: dict | None = None) 
         return _uncertain("not_checkable", value, unit, std_keys)
     if len(set(results)) > 1:
         return _uncertain("two_districts" if len(found) > 1 else "not_checkable", value, unit, std_keys)
+    if results[0] == "outside" and len({(s.min, s.max) for s in found}) > 1:
+        # Every district says no, but by how much depends on which district the work is in.
+        return _uncertain("two_districts", value, unit, std_keys)
     mins = [s.min for s in found if s.min is not None]
     maxes = [s.max for s in found if s.max is not None]
     lo, hi = (max(mins) if mins else None), (min(maxes) if maxes else None)

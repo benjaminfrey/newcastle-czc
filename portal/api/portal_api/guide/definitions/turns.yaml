@@ -85,8 +85,8 @@
   step: The building
   kind: number
   when: {eq: [opening, new_house]}
-  ask: "About how much floor area will the house have, in square feet?"
-  help: "Add up every floor. An estimate is fine for now."
+  ask: "What is the floor area of the main part of the house, in square feet?"
+  help: "Add up every story of the main part. Space inside the roof doesn't count. An estimate is fine for now."
   fact: building.floor_area_sf
   unit: sq ft
   min: 1

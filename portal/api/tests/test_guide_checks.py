@@ -131,7 +131,7 @@ def test_outside_inserts_doesnt_fit_with_nearest_first(content):
 def test_keeping_my_number_marks_it_for_the_town_and_continues(content):
     s = replay(content, "new_house", lot("D1"),
                [*UNTIL_SETBACKS, a("setback_front", 25), a("setback_side_1", 11), a("doesnt_fit:setback_side_1", "keep_mine")])
-    assert "setback_side_1" in s.unsure and s.current.turn_id == "setback_side_2"
+    assert s.kept == (("setback_side_1", "keep_mine"),) and s.current.turn_id == "setback_side_2"
     assert s.facts["building"]["setback"]["side_1"] == 11
 
 
@@ -139,3 +139,14 @@ def test_stories_that_dont_fit_offer_no_number(content):
     s = replay(content, "new_house", lot("D6"), [*START, a("full_stories", 4), a("roof_floors", 0),
                                                   a("basement_exposed_5ft", "no")])
     assert [x["id"] for x in s.current.answers] == ["keep_mine", "talk_to_town", "unsure"]
+
+
+def test_two_districts_that_both_miss_by_different_amounts_cannot_be_checked(content):
+    """D1 wants 15 ft and D4 8 ft: 5 ft misses both, but by how much depends on where the house sits."""
+    c = side(content, 5, "D1", "D4")
+    assert (c.result, c.reason, c.nearest) == ("cannot_check", "two_districts", ())
+
+
+def test_two_districts_with_the_same_limit_that_both_miss_are_outside(content):
+    c = side(content, 5, "D1", "D1")
+    assert (c.result, c.gap) == ("outside", 10)

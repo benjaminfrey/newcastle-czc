@@ -2,9 +2,9 @@
 
 The project's dashboard, its reviews and fees (`forms/needs.py`), the printed forms and Send all
 read the form answers, so the guide writes each number it settles into the form field its turn
-names, for the first part of the opening's kind. Stories are written as the Code counts them.
-A value the form wouldn't accept, or one the person took back, leaves the field empty again, but
-only a field the guide filled: an answer someone typed on the form is never cleared here.
+names, for the first part of the opening's kind, in the form's own terms (full stories, not the
+Code's count). It never overwrites or clears an answer someone typed on the form: it writes a
+field only when it is empty or the guide wrote it last.
 """
 
 from sqlalchemy import Connection, text
@@ -12,7 +12,6 @@ from sqlalchemy import Connection, text
 from portal_api import projects as pj
 from portal_api.forms.answers import AnswerError, check_value
 from portal_api.forms.expr import evaluate
-from portal_api.guide.checks import counted_stories
 from portal_api.guide.content import load_content
 
 GUIDE = "guide:"
@@ -56,7 +55,9 @@ def sync(conn: Connection, loaded, state, by: str) -> None:
         key = (t.answer_field, part_id if section.repeat else None)
         if section.repeat and part_id is None:
             continue
-        value = counted_stories(state.facts) if t.computed == "stories" else _get(state.facts, t.fact)
+        # The form's own question, not the Code's count: its stories field asks for floors above
+        # ground without the roof or basement, which is what the guide's full_stories asks.
+        value = _get(state.facts, t.fact)
         checked = None
         if value is not None:
             try:
@@ -66,6 +67,6 @@ def sync(conn: Connection, loaded, state, by: str) -> None:
         if checked is None:
             if key in current and key in ours:
                 changes.append((*key, None))
-        elif current.get(key) != checked:
+        elif current.get(key) != checked and (key not in current or key in ours):
             changes.append((*key, checked))
     pj.save_answers(conn, loaded.row.id, changes, GUIDE + by)

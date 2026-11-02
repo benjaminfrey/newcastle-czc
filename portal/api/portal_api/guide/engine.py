@@ -87,6 +87,7 @@ class State:
     drafts: tuple[str, ...]
     live: tuple[tuple[str, object], ...]   # the answers in force, in the order they were given
     checks: tuple[tuple[str, dict], ...] = ()   # the latest check for each checked turn
+    kept: tuple[tuple[str, str], ...] = ()      # a number kept past its limit: (turn, keep_mine / talk_to_town / unsure)
     current_turn: Turn | None = None
 
 
@@ -212,7 +213,7 @@ def _derive(content: Content, opening: str, lot: Lot, live: tuple) -> State:
         _set(facts, path, v)
     given = dict(live)
     done: set[str] = set()
-    history, unsure, checks = [], [], {}
+    history, unsure, checks, kept = [], [], {}, []
     current = current_turn = None
 
     def ask(turn: Turn) -> bool:
@@ -239,7 +240,7 @@ def _derive(content: Content, opening: str, lot: Lot, live: tuple) -> State:
         if not ask(fit):
             return False
         if before in ("keep_mine", "talk_to_town", UNSURE):
-            unsure.append(turn.id)
+            kept.append((turn.id, before))
         else:  # the nearest version: the fact is replaced, so check it again
             again = _check(content, turn, facts, lot, unsure, False)
             checks[turn.id] = dataclasses.asdict(again)
@@ -257,7 +258,7 @@ def _derive(content: Content, opening: str, lot: Lot, live: tuple) -> State:
             break
     ending = None
     if current is None:
-        end = endings.finish(content, opening, facts, tuple(dict.fromkeys(unsure)), checks, lot)
+        end = endings.finish(content, opening, facts, tuple(dict.fromkeys(unsure)), checks, lot, tuple(kept))
         build.wording.append(end["kind"])
         words = content.wording[end["kind"]]
         ending = {**end, "title": words["title"], "body": words["body"],
@@ -269,7 +270,7 @@ def _derive(content: Content, opening: str, lot: Lot, live: tuple) -> State:
         drafts += ending.pop("screener_drafts")
     return State(opening=opening, facts=facts, history=tuple(history), current=current, ending=ending,
                  unsure=tuple(dict.fromkeys(unsure)), drafts=tuple(drafts), live=live,
-                 checks=tuple(checks.items()), current_turn=current_turn)
+                 checks=tuple(checks.items()), current_turn=current_turn, kept=tuple(kept))
 
 
 def _check(content: Content, turn: Turn, facts: dict, lot: Lot, unsure: list, settled_before: bool) -> Check | None:

@@ -165,7 +165,9 @@ def test_the_bridge_fills_the_form_answers(alice):
     walk(alice, pid, [("lot", "yes"), ("confirm", "yes"), *STORIES, ("floor_area", 1800), ("dwelling_units", 1),
                       ("setback_front", 25)])
     v = building_values(alice, pid)
-    assert v["stories"] == 3  # two full stories and a roof floor with tall knee walls (5.7.c.5)
+    # The form asks for floors above ground without the roof or basement: the full stories. The
+    # Code's count (3 here, 5.7.c.5) stays in the guide's record and its check.
+    assert v["stories"] == 2
     assert v["setback_front"] == 25 and v["floor_area"] == 1800 and v["dwelling_units"] == 1
 
 
@@ -208,3 +210,19 @@ def test_guide_bounds_fit_the_form_fields():
             _, f = form.field(t.answer_field)
             assert f.min <= t.min and t.max <= f.max, t.id
             assert math.isfinite(t.max)
+
+
+def test_the_bridge_never_overwrites_what_the_person_typed_on_the_form(alice):
+    pid = started(alice)
+    walk(alice, pid, [("lot", "yes"), ("confirm", "yes"), *STORIES, ("floor_area", 1800)])
+    part = next(p["id"] for p in get(alice, pid)["parts"] if p["kind"] == "building")
+    r = alice.put(f"/api/projects/{pid}/answers", json={"base_revision": get(alice, pid)["revision"],
+                  "changes": [{"field_id": "floor_area", "part_id": part, "value": 2400}]})
+    assert r.status_code == 200, r.text
+    walk(alice, pid, [("dwelling_units", 1)])
+    assert building_values(alice, pid)["floor_area"] == 2400
+
+
+def test_floor_area_is_asked_the_way_the_form_defines_it():
+    t = load_content().turn("floor_area")
+    assert "main part" in t.ask and "inside the roof doesn't count" in t.help

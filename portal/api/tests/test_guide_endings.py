@@ -113,3 +113,55 @@ def test_ending_words_have_no_never_words(content):
 def test_endings_bring_their_drafts(content):
     s = _use(content, ("D1",), "residence")
     assert any(d.startswith("wording.yaml: ") for d in s.drafts)
+
+
+# --- final review: no "no" and no "ready" the Town's rules don't support ---
+
+def _unlisted(code):
+    return next(u["use_key"] for u in load_ruleset().uses if not _listed(code, u["use_key"]))
+
+
+@pytest.mark.parametrize("lot_answer,confirm_answer", [("not_right", "yes"), ("unsure", "yes"), ("yes", "unsure")])
+def test_an_uncertain_lot_or_reading_never_ends_in_not_here(content, lot_answer, confirm_answer):
+    use_key = _unlisted("D1")
+    s = replay(content, "change_of_use", lot("D1"), [a("lot", lot_answer), a("confirm", confirm_answer),
+                                                     a("use_group", _group_of(content, use_key)), a("use_key", use_key)])
+    assert s.ending["kind"] == "town_judgment"
+    assert any(u["reason"] == "not_listed" for u in s.ending["unsettled"])
+
+
+def test_a_use_listed_in_only_one_of_two_districts_goes_to_the_town(content):
+    x, y, use_key = next((x, y, u["use_key"]) for x in CODES for y in CODES for u in load_ruleset().uses
+                         if _listed(x, u["use_key"]) and not _listed(y, u["use_key"]))
+    s = _use(content, (x, y), use_key)
+    assert s.ending["kind"] == "town_judgment"
+    assert {"turn_id": "use_key", "reason": "not_listed_in_one_district", "district": y} in s.ending["unsettled"]
+    assert [n["district"] for n in s.ending["not_listed"]] == [y]
+
+
+def _keeping(content, code, actions):
+    """Replay, answering every "doesn't fit" page with "Keep my number"."""
+    actions = list(actions)
+    s = replay(content, "new_house", lot(code), actions)
+    while s.current is not None and s.current.turn_id.startswith("doesnt_fit:"):
+        actions.append(a(s.current.turn_id, "keep_mine"))
+        s = replay(content, "new_house", lot(code), actions)
+    return s
+
+
+FOUR_STORIES = [*START, a("full_stories", 4), a("roof_floors", 0), a("basement_exposed_5ft", "no")]
+
+
+def test_keeping_a_number_is_not_recorded_as_unsure(content):
+    s = replay(content, "new_house", lot("D6"), [*FOUR_STORIES, a("doesnt_fit:basement_exposed_5ft", "keep_mine")])
+    assert "basement_exposed_5ft" not in s.unsure
+    assert s.kept == (("basement_exposed_5ft", "keep_mine"),)
+
+
+def test_the_town_question_names_the_standard_and_the_choice(content):
+    s = _keeping(content, "D6", [*FOUR_STORIES, a("doesnt_fit:basement_exposed_5ft", "talk_to_town"), *SIZE,
+                                 *D1_SETBACKS])
+    stories = next(u for u in s.ending["unsettled"] if u["turn_id"] == "basement_exposed_5ft")
+    assert stories["reason"] == "talk_to_town"
+    assert stories["standard_keys"] == ["d6/building/Residential/total_stories"]
+    assert all(u["reason"] != "unsure" for u in s.ending["unsettled"])

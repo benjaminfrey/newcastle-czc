@@ -52,7 +52,10 @@ def _allowed(use_codes: list[str]) -> list[dict]:
     return out
 
 
-def finish(content, opening: str, facts: dict, unsure: tuple, checks: dict, lot) -> dict:
+KEPT = {"keep_mine": "kept_past_the_limit", "talk_to_town": "talk_to_town", "unsure": "unsure"}
+
+
+def finish(content, opening: str, facts: dict, unsure: tuple, checks: dict, lot, kept: tuple = ()) -> dict:
     """The ending, without its words: the engine adds the title, body and entry from content."""
     o = content.openings[opening]
     ruleset = load_ruleset()
@@ -61,14 +64,25 @@ def finish(content, opening: str, facts: dict, unsure: tuple, checks: dict, lot)
     mapped = [c for c in lot.district_codes if district_key_for(c)]
     missing_in = {n["district"] for n in result["not_listed"]}
     base = {"settled": [], "unsettled": [], "reviews": [], "allowed_uses": [], "notes": result["notes"],
-            "screener_drafts": result["drafts_used"], "entry": None}
+            "not_listed": result["not_listed"], "screener_drafts": result["drafts_used"], "entry": None}
+    disputed = lot.disputed or (facts.get("lot") or {}).get("confirmed") is False
+    # A "no" rests on the lot's district and on the reading of the project: if the person doubts
+    # either, it becomes a question for the Town (spec §4.5).
+    uncertain = disputed or "lot" in unsure or "confirm" in unsure
+    unsettled = []
     if use_key and mapped and all(c in missing_in for c in mapped):
-        return {**base, "kind": "not_here", "allowed_uses": _allowed(mapped), "entry": "use_not_listed"}
-    unsettled = [{"turn_id": t, "reason": "unsure"} for t in unsure if not t.startswith("doesnt_fit:")]
+        if not uncertain:
+            return {**base, "kind": "not_here", "allowed_uses": _allowed(mapped), "entry": "use_not_listed"}
+        unsettled.append({"turn_id": "use_key", "reason": "not_listed"})
+    elif use_key:
+        unsettled += [{"turn_id": "use_key", "reason": "not_listed_in_one_district", "district": c}
+                      for c in mapped if c in missing_in]
+    unsettled += [{"turn_id": t, "reason": "unsure"} for t in unsure if not t.startswith("doesnt_fit:")]
+    unsettled += [{"turn_id": t, "reason": KEPT[choice], "standard_keys": list(checks[t]["standard_keys"])}
+                  for t, choice in kept if t in checks]
     unsettled += [{"turn_id": t, "reason": c["reason"]} for t, c in checks.items() if c["result"] == "cannot_check"]
     unsettled += [{"turn_id": t, "reason": "kept_past_the_limit"} for t, c in checks.items()
                   if c["result"] == "outside" and not any(u["turn_id"] == t for u in unsettled)]
-    disputed = lot.disputed or (facts.get("lot") or {}).get("confirmed") is False
     if disputed:
         unsettled.append({"turn_id": "lot", "reason": "lot_disputed"})
     if result["town_only"]:
