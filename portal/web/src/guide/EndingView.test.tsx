@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { beforeEach, expect, test, vi } from "vitest";
 import * as projects from "../projects";
@@ -60,4 +60,13 @@ test("an ending's library entry shows as a card", () => {
   view(ended({ kind: "not_here", entry: { id: "use_not_listed", overline: "Why · uses", answer: "a", detail: "d", why: null,
     cites: [], version: 1, governs: "" } }));
   expect(screen.getByRole("article")).toHaveTextContent("Why · uses");
+});
+
+test("the fees say nothing until they've loaded", async () => {
+  let resolve!: (p: projects.ProjectState) => void;
+  vi.mocked(projects.getProject).mockReturnValue(new Promise((r) => { resolve = r; }));
+  view();
+  expect(screen.queryByText(WORDS.fees_unknown)).toBeNull();
+  await act(async () => resolve(project()));
+  expect(await screen.findByText("$30")).toBeVisible();
 });

@@ -32,7 +32,7 @@ function List({ heading, items }: { heading: string; items: { key: string; main:
 // is the staff design's (4); until then it says what's open and keeps the project saved.
 export function EndingView({ guide, projectId }: { guide: Guide; projectId: string }) {
   const e = guide.ending!;
-  const [needs, setNeeds] = useState<Needs | null>(null);
+  const [needs, setNeeds] = useState<Needs | null | undefined>(undefined);
   useEffect(() => {
     if (e.kind !== "ready") return;
     void getProject(projectId).then((p) => { if (typeof p === "object") setNeeds(p.needs); });

@@ -10,9 +10,9 @@ import * as hook from "./useGuide";
 vi.mock("./useGuide", () => ({ useGuide: vi.fn() }));
 vi.mock("../projects", async (orig) => ({ ...(await orig<typeof import("../projects")>()), getProject: vi.fn() }));
 
-const actions = { start: vi.fn(), answer: vi.fn(), back: vi.fn(), change: vi.fn(), note: vi.fn(), dismissNotice: vi.fn() };
+const actions = { start: vi.fn(), answer: vi.fn(), back: vi.fn(), change: vi.fn(), note: vi.fn(), dismissNotice: vi.fn(), reload: vi.fn() };
 const talk = (g = guide(), more = {}) => vi.mocked(hook.useGuide).mockReturnValue(
-  { view: { phase: "talk", guide: g, busy: false, notice: null, locked: false, ...more }, ...actions });
+  { view: { phase: "talk", guide: g, busy: false, notice: null, locked: false, epoch: 0, ...more }, ...actions });
 
 function open() {
   return render(<MemoryRouter initialEntries={["/projects/p1/guide"]}><Routes>
@@ -94,4 +94,14 @@ test("a notice says why the page changed", async () => {
   talk(guide(), { notice: "changed_elsewhere" });
   open();
   expect(screen.getByText(/changed in another window/)).toBeVisible();
+});
+
+test("after No on So you mean, choosing a picture starts again from it", async () => {
+  const pick = { ...LOT, turn_id: "pick_opening", kind: "choice" as const, ask: "What would you like to do?", facts_shown: null,
+    answers: [{ id: "new_house", label: "A new house", hint: null }, { id: "change_of_use", label: "A change of use", hint: null }] };
+  talk(guide({ current: pick }));
+  open();
+  await userEvent.click(screen.getByText("A change of use"));
+  expect(actions.start).toHaveBeenCalledWith("change_of_use");
+  expect(actions.answer).not.toHaveBeenCalled();
 });

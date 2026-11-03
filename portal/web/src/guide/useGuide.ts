@@ -11,13 +11,14 @@ type Why = "signed_out" | "not_found" | "not_approved" | "unavailable" | "busy";
 export type GuideView =
   | { phase: "loading" }
   | { phase: "pick"; openings: Opening[]; revision: number; busy: boolean }
-  | { phase: "talk"; guide: Guide; busy: boolean; notice: Notice | null; locked: boolean }
+  // epoch counts reloads: a turn shown again after one starts fresh (its key changes).
+  | { phase: "talk"; guide: Guide; busy: boolean; notice: Notice | null; locked: boolean; epoch: number }
   | { phase: "refused"; why: Why };
 
 type Act =
   | { t: "view"; view: GuideView }
   | { t: "busy"; busy: boolean }
-  | { t: "guide"; guide: Guide; notice?: Notice | null }
+  | { t: "guide"; guide: Guide; notice?: Notice | null; reload?: boolean }
   | { t: "locked" }
   | { t: "dismiss" };
 
@@ -25,8 +26,11 @@ function reduce(v: GuideView, a: Act): GuideView {
   switch (a.t) {
     case "view": return a.view;
     case "busy": return v.phase === "talk" || v.phase === "pick" ? { ...v, busy: a.busy } : v;
-    case "guide": return { phase: "talk", guide: a.guide, busy: false,
-      notice: a.notice ?? null, locked: v.phase === "talk" && v.locked };
+    case "guide": {
+      const epoch = v.phase === "talk" ? v.epoch + (a.reload ? 1 : 0) : 0;
+      return { phase: "talk", guide: a.guide, busy: false, notice: a.notice ?? null,
+        locked: v.phase === "talk" && v.locked, epoch };
+    }
     case "locked": return v.phase === "talk" ? { ...v, busy: false, locked: true } : v;
     case "dismiss": return v.phase === "talk" ? { ...v, notice: null } : v;
   }
@@ -55,25 +59,31 @@ export function useGuide(projectId: string) {
       return dispatch({ t: "view", view: { phase: "pick", openings, revision: project.revision, busy: false } });
     }
     if (isRefusal(g)) return dispatch({ t: "view", view: { phase: "refused", why: why(g) } });
-    dispatch({ t: "guide", guide: g, notice });
+    dispatch({ t: "guide", guide: g, notice, reload: true });
   }, [projectId]);
 
   useEffect(() => { void load(); }, [load]);
 
-  const run = useCallback(async (send: (rev: number) => Promise<Guide | GuideRefusal>) => {
+  // True once the change has landed; false when it was ignored or refused (a caller can keep what
+  // the person typed).
+  const run = useCallback(async (send: (rev: number) => Promise<Guide | GuideRefusal>): Promise<boolean> => {
     const v = live.current;
-    if (inFlight.current) return;
-    if (v.phase !== "talk" && v.phase !== "pick") return;
-    if (v.phase === "talk" && v.locked) return;
+    if (inFlight.current) return false;
+    if (v.phase !== "talk" && v.phase !== "pick") return false;
+    if (v.phase === "talk" && v.locked) return false;
     inFlight.current = true;
     dispatch({ t: "busy", busy: true });
     try {
       const out = await send(v.phase === "talk" ? v.guide.revision : v.revision);
-      if (!isRefusal(out)) dispatch({ t: "guide", guide: out });
-      else if (out === "locked") dispatch({ t: "locked" });
+      if (!isRefusal(out)) {
+        dispatch({ t: "guide", guide: out });
+        return true;
+      }
+      if (out === "locked") dispatch({ t: "locked" });
       else if (typeof out === "object" && "conflict" in out) await load("changed_elsewhere");
       else if (typeof out === "object" && "rejected" in out) await load("try_again");
       else dispatch({ t: "view", view: { phase: "refused", why: why(out) } });
+      return false;
     } finally {
       inFlight.current = false;
       dispatch({ t: "busy", busy: false });
@@ -88,5 +98,6 @@ export function useGuide(projectId: string) {
     change: (turnId: string) => run((rev) => revisit(projectId, turnId, rev)),
     note: (body: string) => run((rev) => addNote(projectId, body, rev)),
     dismissNotice: () => dispatch({ t: "dismiss" }),
+    reload: () => load(),
   };
 }

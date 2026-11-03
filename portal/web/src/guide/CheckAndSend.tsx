@@ -53,7 +53,7 @@ function Check({ projectId }: { projectId: string }) {
 
   const change = async (t: string) => {
     await g.change(t);
-    navigate(`/projects/${projectId}/guide`);
+    navigate(`/projects/${projectId}/guide`, { replace: true });
   };
   const send = async () => {
     if (!project || sent === "sending") return;
@@ -61,14 +61,18 @@ function Check({ projectId }: { projectId: string }) {
     const r = await submitProject(projectId, project.revision);
     if (typeof r === "string") setSent({ refused: r });
     else if ("incomplete" in r) setSent({ missing: r.incomplete });
-    else if ("conflict" in r) { setSent("conflict"); void load(); }
+    else if ("conflict" in r) {
+      // Another window changed the project: reload both, so one no longer ready is redirected.
+      setSent("conflict");
+      await Promise.all([load(), g.reload()]);
+    }
     else if ("invalid" in r) setSent({ refused: "unavailable" });
     else setSent("sent");
   };
 
   return (
     <GuideShell title={project?.title ?? WORDS.your_project} draft
-      back={{ href: `/projects/${projectId}/guide`, label: WORDS.back_a_turn }}>
+      back={{ href: `/projects/${projectId}/guide`, label: WORDS.back_to_conversation }}>
       <Box sx={{ display: "grid", gap: 2.5 }}>
         <Typography variant="h6" component="h2">{WORDS.check_heading}</Typography>
         {v.phase === "talk" && <ProjectPanel guide={v.guide} onChange={(t) => void change(t)} locked={v.locked} />}

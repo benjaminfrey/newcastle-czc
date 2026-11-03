@@ -12,11 +12,12 @@ vi.mock("./useGuide", () => ({ useGuide: vi.fn() }));
 vi.mock("../projects", async (orig) => ({ ...(await orig<typeof import("../projects")>()),
   getProject: vi.fn(), submitProject: vi.fn() }));
 
-const change = vi.fn(async () => {});
-const actions = { start: vi.fn(), answer: vi.fn(), back: vi.fn(), change, note: vi.fn(), dismissNotice: vi.fn() };
+const change = vi.fn(async () => true);
+const reload = vi.fn(async () => undefined);
+const actions = { start: vi.fn(), answer: vi.fn(), back: vi.fn(), change, note: vi.fn(), dismissNotice: vi.fn(), reload };
 const READY = { ...ended(), history: [{ shown: LOT, value: "yes" }, { shown: FLOOR, value: 1800 }] };
 const talk = (g = READY) => vi.mocked(hook.useGuide).mockReturnValue(
-  { view: { phase: "talk", guide: g, busy: false, notice: null, locked: false }, ...actions });
+  { view: { phase: "talk", guide: g, busy: false, notice: null, locked: false, epoch: 0 }, ...actions });
 
 function open() {
   render(<MemoryRouter initialEntries={["/projects/p1/guide/check"]}><Routes>
@@ -65,4 +66,19 @@ test("it is only for a project that is ready", async () => {
   talk({ ...READY, ending: { ...READY.ending!, kind: "town_judgment" } });
   open();
   expect(await screen.findByText("The guide")).toBeVisible();
+});
+
+test("after a conflict, the conversation reloads too, so a project no longer ready can't be sent", async () => {
+  talk();
+  vi.mocked(projects.submitProject).mockResolvedValue({ conflict: 10 });
+  open();
+  await userEvent.click(await screen.findByRole("button", { name: "Send to the Town" }));
+  expect(await screen.findByText(/changed in another window/)).toBeVisible();
+  expect(reload).toHaveBeenCalledOnce();
+});
+
+test("its way back names where it goes", async () => {
+  talk();
+  open();
+  expect(await screen.findByRole("link", { name: "Back to the conversation" })).toHaveAttribute("href", "/projects/p1/guide");
 });

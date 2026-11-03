@@ -112,6 +112,28 @@ test("Change keeps what still applies", async ({ page }, info) => {
   await expect(question(page)).toHaveText(/nearest side lot line/);
 });
 
+test("No on So you mean starts again from a picture", async ({ page }, info) => {
+  await openGuide(page, `guide-no-${info.project.name}`);
+  await choose(page, "Yes, that's right");
+  await expect(question(page)).toHaveText(/^So you'd like to build a new house/);
+  await choose(page, "No, something else");
+  await expect(question(page)).toHaveText("What would you like to do?");
+  await choose(page, "A new house");
+  await expect(question(page)).toHaveText(/what the Town knows about your lot/);
+});
+
+test("Back after a Change puts that answer back", async ({ page }, info) => {
+  await openGuide(page, `guide-change-back-${info.project.name}`);
+  await toTheSetbacks(page);
+  await expect(question(page)).toHaveText(/nearest side lot line/);
+  if (info.project.name === "phone") await page.getByRole("button", { name: "Your project" }).click();
+  await page.getByRole("button", { name: /^Change: What is the floor area/ }).click();
+  await expect(question(page)).toHaveText(/floor area/);
+  await page.getByRole("button", { name: "Back to the last question" }).click();
+  await expect(question(page)).toHaveText(/nearest side lot line/);
+  await expect(page.getByRole("main")).toContainText("1,800 sq ft");
+});
+
 test("on a phone, your project opens from the app bar", async ({ page }, info) => {
   test.skip(info.project.name !== "phone", "phone only");
   await openGuide(page, `guide-phone-${info.project.name}`);

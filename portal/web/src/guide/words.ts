@@ -8,6 +8,7 @@ export const WORDS = {
   // The app bar and the page around the conversation.
   back_to_project: "your project",           // "Back to your project", on the first turn
   back_a_turn: "the last question",          // "Back to the last question"
+  back_to_conversation: "the conversation",  // "Back to the conversation", from Check and send
   your_project: "Your project",              // the summary's heading, and its button on a phone
   close: "Close",
   loading: "Loading your project…",

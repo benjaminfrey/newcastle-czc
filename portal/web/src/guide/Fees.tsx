@@ -7,7 +7,9 @@ const money = (n: number) => `$${n.toLocaleString("en-US")}`;
 
 // What the project needs from the Town and what it costs, as the API's needs say (the screener
 // and the Town's fee schedule); nothing here is worked out on the screen.
-export function Fees({ needs }: { needs: Needs | null }) {
+// `undefined` while the project is still loading: nothing is said until it has.
+export function Fees({ needs }: { needs: Needs | null | undefined }) {
+  if (needs === undefined) return null;
   if (!needs || "refused" in needs) return <Typography color="text.secondary">{WORDS.fees_unknown}</Typography>;
   const reviews = needs.permits.flatMap((p) => p.reviews);
   const line = (label: string, amount: string) => (

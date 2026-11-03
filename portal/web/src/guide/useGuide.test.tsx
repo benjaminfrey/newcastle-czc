@@ -113,3 +113,39 @@ describe("useGuide", () => {
     await waitFor(() => expect(h.result.current.view).toEqual({ phase: "refused", why: "not_approved" }));
   });
 });
+
+describe("useGuide, after the final review", () => {
+  it("counts each reload, so a turn shown again starts fresh", async () => {
+    const h = await talking(1);
+    const before = h.result.current.view.phase === "talk" ? h.result.current.view.epoch : -1;
+    m.answerTurn.mockResolvedValue({ conflict: true });
+    m.getGuide.mockResolvedValue(guide(2));
+    await act(async () => { await h.result.current.answer("lot", "yes"); });
+    const v = h.result.current.view;
+    expect(v.phase === "talk" && v.epoch).toBe(before + 1);
+    m.answerTurn.mockResolvedValue(guide(3, "confirm"));
+    await act(async () => { await h.result.current.answer("lot", "yes"); });
+    const w = h.result.current.view;
+    expect(w.phase === "talk" && w.epoch).toBe(before + 1);   // an answer that lands is not a reload
+  });
+
+  it("says whether a note was kept", async () => {
+    const h = await talking(1);
+    m.addNote.mockResolvedValueOnce({ conflict: true });
+    m.getGuide.mockResolvedValue(guide(2));
+    let kept: boolean | undefined;
+    await act(async () => { kept = await h.result.current.note("A note"); });
+    expect(kept).toBe(false);
+    m.addNote.mockResolvedValueOnce(guide(3));
+    await act(async () => { kept = await h.result.current.note("A note"); });
+    expect(kept).toBe(true);
+  });
+
+  it("reloads on request", async () => {
+    const h = await talking(1);
+    m.getGuide.mockResolvedValue(guide(7, "floor_area"));
+    await act(async () => { await h.result.current.reload(); });
+    const v = h.result.current.view;
+    expect(v.phase === "talk" && v.guide.revision).toBe(7);
+  });
+});

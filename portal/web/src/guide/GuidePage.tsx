@@ -20,6 +20,8 @@ import { GuideTheme } from "./theme/GuideTheme";
 import { DOESNT_FIT, TURN_HEADING } from "./turns/heading";
 import { TurnView } from "./turns/TurnView";
 import { useGuide } from "./useGuide";
+
+const PICK_OPENING = "pick_opening";   // the engine's picker after "No" (guided plan 2)
 import { WORDS } from "./words";
 
 function History({ guide }: { guide: Guide }) {
@@ -87,7 +89,7 @@ function GuideScreen({ projectId }: { projectId: string }) {
     );
   }
 
-  const { guide, busy, locked, notice } = v;
+  const { guide, busy, locked, notice, epoch } = v;
   const current = guide.current;
   const ownPage = current?.turn_id.startsWith(DOESNT_FIT) ?? false;
   const last = guide.history.at(-1)?.shown.step;
@@ -108,8 +110,10 @@ function GuideScreen({ projectId }: { projectId: string }) {
         {notice && <Alert severity="info" onClose={g.dismissNotice}>{WORDS.notices[notice]}</Alert>}
         {!ownPage && <History guide={guide} />}
         {!ownPage && <Notes guide={guide} />}
-        {current && <TurnView key={current.turn_id} shown={current} projectId={projectId} busy={busy} locked={locked}
-          onAnswer={(value) => g.answer(current.turn_id, value)} />}
+        {current && <TurnView key={`${current.turn_id}:${epoch}`} shown={current} projectId={projectId} busy={busy}
+          locked={locked}
+          // After "No" on "So you mean…", the picture chosen starts the conversation again from it.
+          onAnswer={(value) => void (current.turn_id === PICK_OPENING ? g.start(String(value)) : g.answer(current.turn_id, value))} />}
         {!current && guide.ending && <EndingView guide={guide} projectId={projectId} />}
         {locked
           ? <Alert severity="info">{WORDS.locked}</Alert>
