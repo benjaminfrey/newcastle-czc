@@ -46,8 +46,9 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
     approved explanation library, Material UI, one public launch at full scope. Five designs in
     order (§11). Plan 1 of 6 (`plans/2026-10-30-applicant-portal-guided-builder-1-foundations.md`) merged
     as PR #22 on 2026-11-01; plan 2, the conversation engine
-    (`plans/2026-11-01-applicant-portal-guided-builder-2-engine.md`), is on branch
-    `portal-guided-2-engine`. Open decisions are the spec's §12.
+    (`plans/2026-11-01-applicant-portal-guided-builder-2-engine.md`), merged as PR #23 on 2026-11-02,
+    and the chair's coverage answers as PR #24 the same day. Next: plan 3, the conversation screens.
+    Open decisions are the spec's §12.
   - **For the chair (guide engine):** the words never used on applicant screens (spec §10.3; proposed:
     approved, denied, granted, rejected, permit issued, compliant, violates); whether a new house is
     checked against the Residential column and the primary-building placement panel, as the
