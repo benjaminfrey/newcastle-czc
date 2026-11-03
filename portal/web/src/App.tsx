@@ -15,6 +15,7 @@ const HOME = <Navigate to="/" replace />;
 const GUIDE_PREVIEW = import.meta.env.VITE_GUIDE_PREVIEW === "1";
 const GuidePreview = lazy(() => import("./guide/GuidePreview"));
 const GuidePage = lazy(() => import("./guide/GuidePage"));
+const CheckAndSend = lazy(() => import("./guide/CheckAndSend"));
 
 // Sign in first (projects brief §3): Home and the emailed link are the only pages a visitor sees
 // signed out. "Do I need a permit?" is gone; its addresses, and the old application addresses,
@@ -31,6 +32,7 @@ export function AppRoutes() {
         <Route path="/you" element={<You />} />
         {GUIDE_PREVIEW && <Route path="/guide/preview" element={<Suspense fallback={null}><GuidePreview /></Suspense>} />}
         {GUIDE_PREVIEW && <Route path="/projects/:id/guide" element={<Suspense fallback={null}><GuidePage /></Suspense>} />}
+        {GUIDE_PREVIEW && <Route path="/projects/:id/guide/check" element={<Suspense fallback={null}><CheckAndSend /></Suspense>} />}
       </Route>
       {["/signin", "/where", "/start/*", "/my-applications", "/apply/*", "/applications/*"].map((p) => (
         <Route key={p} path={p} element={HOME} />

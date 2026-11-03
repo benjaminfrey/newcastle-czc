@@ -1,0 +1,68 @@
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { MemoryRouter, Route, Routes } from "react-router";
+import { beforeEach, expect, test, vi } from "vitest";
+import * as projects from "../projects";
+import CheckAndSend from "./CheckAndSend";
+import { ended, project } from "./endingFixtures";
+import { FLOOR, LOT } from "./fixtures";
+import * as hook from "./useGuide";
+
+vi.mock("./useGuide", () => ({ useGuide: vi.fn() }));
+vi.mock("../projects", async (orig) => ({ ...(await orig<typeof import("../projects")>()),
+  getProject: vi.fn(), submitProject: vi.fn() }));
+
+const change = vi.fn(async () => {});
+const actions = { start: vi.fn(), answer: vi.fn(), back: vi.fn(), change, note: vi.fn(), dismissNotice: vi.fn() };
+const READY = { ...ended(), history: [{ shown: LOT, value: "yes" }, { shown: FLOOR, value: 1800 }] };
+const talk = (g = READY) => vi.mocked(hook.useGuide).mockReturnValue(
+  { view: { phase: "talk", guide: g, busy: false, notice: null, locked: false }, ...actions });
+
+function open() {
+  render(<MemoryRouter initialEntries={["/projects/p1/guide/check"]}><Routes>
+    <Route path="/projects/:id/guide/check" element={<CheckAndSend />} />
+    <Route path="/projects/:id/guide" element={<p>The guide</p>} />
+    <Route path="/projects/:id/:step" element={<p>The form</p>} />
+  </Routes></MemoryRouter>);
+}
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  vi.mocked(projects.getProject).mockResolvedValue(project());
+});
+
+test("the summary, the fees, and Send", async () => {
+  talk();
+  vi.mocked(projects.submitProject).mockResolvedValue({ revision: 10, missing: [] });
+  open();
+  expect(await screen.findByRole("heading", { level: 2, name: "Check your project" })).toBeVisible();
+  expect(screen.getByText("1,800 sq ft")).toBeVisible();
+  expect(screen.getByText("$30")).toBeVisible();
+  await userEvent.click(screen.getByRole("button", { name: "Send to the Town" }));
+  expect(projects.submitProject).toHaveBeenCalledWith("p1", 9);
+  expect(await screen.findByText("Sent. The Town has your project.")).toBeVisible();
+});
+
+test("Change from Check and send goes back into the conversation", async () => {
+  talk();
+  open();
+  await userEvent.click(await screen.findByRole("button", { name: /^Change: What is the floor area/ }));
+  expect(change).toHaveBeenCalledWith("floor_area");
+  expect(await screen.findByText("The guide")).toBeVisible();
+});
+
+test("what the official form still needs is listed, each linking to its step", async () => {
+  talk();
+  vi.mocked(projects.submitProject).mockResolvedValue({ incomplete: [{ field_id: "owner_name", item_id: null }] });
+  open();
+  await userEvent.click(await screen.findByRole("button", { name: "Send to the Town" }));
+  expect(await screen.findByText("Before you send, the Town's form still needs:")).toBeVisible();
+  await userEvent.click(screen.getByRole("link", { name: "Who owns the property?" }));
+  expect(await screen.findByText("The form")).toBeVisible();
+});
+
+test("it is only for a project that is ready", async () => {
+  talk({ ...READY, ending: { ...READY.ending!, kind: "town_judgment" } });
+  open();
+  expect(await screen.findByText("The guide")).toBeVisible();
+});

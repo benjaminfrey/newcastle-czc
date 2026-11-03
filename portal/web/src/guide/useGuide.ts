@@ -38,7 +38,8 @@ function why(r: GuideRefusal): Why {
 
 // The one place a project's conversation lives (guided plan 3). It holds the guide as the API
 // last returned it and its revision, and lets one change be in flight at a time: a second tap
-// while one is on its way is ignored, never queued or sent twice.
+// while one is on its way is ignored, never queued or sent twice. Each action's promise settles
+// once the guide shows its result, so a caller can move on after it (Change from Check and send).
 export function useGuide(projectId: string) {
   const [view, dispatch] = useReducer(reduce, { phase: "loading" } as GuideView);
   const live = useRef(view);
@@ -81,11 +82,11 @@ export function useGuide(projectId: string) {
 
   return {
     view,
-    start: (opening: string) => void run((rev) => startGuide(projectId, opening, rev)),
-    answer: (turnId: string, value: unknown) => void run((rev) => answerTurn(projectId, turnId, value, rev)),
-    back: () => void run((rev) => goBack(projectId, rev)),
-    change: (turnId: string) => void run((rev) => revisit(projectId, turnId, rev)),
-    note: (body: string) => void run((rev) => addNote(projectId, body, rev)),
+    start: (opening: string) => run((rev) => startGuide(projectId, opening, rev)),
+    answer: (turnId: string, value: unknown) => run((rev) => answerTurn(projectId, turnId, value, rev)),
+    back: () => run((rev) => goBack(projectId, rev)),
+    change: (turnId: string) => run((rev) => revisit(projectId, turnId, rev)),
+    note: (body: string) => run((rev) => addNote(projectId, body, rev)),
     dismissNotice: () => dispatch({ t: "dismiss" }),
   };
 }

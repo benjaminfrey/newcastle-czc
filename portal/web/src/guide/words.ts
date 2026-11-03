@@ -12,7 +12,6 @@ export const WORDS = {
   close: "Close",
   loading: "Loading your project…",
   pick_opening: "What would you like to do?", // before the guide starts
-  start: "Start",
 
   // The lot as the Town knows it (spec §4.1).
   lot_map_lot: "Map-lot",
@@ -31,7 +30,6 @@ export const WORDS = {
   more: "More",
   not_a_number: "Please enter a number, like 25 or 1,800.",
   out_of_range: "That number is outside what this question takes.",
-  checking: "Checking…",
   room_left: "Within the limit · {room} {unit} to spare",
   at_limit: "Within the limit, right at it",
   past_limit_over: "{gap} {unit} over the limit here",
@@ -40,10 +38,8 @@ export const WORDS = {
   limit_mark: "Limit",
 
   // The conversation.
-  you_said: "You said",
   reply_placeholder: "Anything else the Town should know?",
   notes_kept: "The Town Office will read this. The guide's questions don't change because of it.",
-  unsure_said: "Not sure yet",
 
   // Notices.
   notices: {
@@ -65,8 +61,8 @@ export const WORDS = {
   application_fees: "Application fees, due when you send",
   permit_fees: "Permit fees, due later",
   fee_varies: "Set by the Town Office",
+  fees_unknown: "Your fees show here once the Town's rules for them are ready.",
   check_and_send: "Check and send",
-  back_to_check: "Back to Check and send",
   no_permit_keep: "Keep to what you told us. If anything changes, ask the Town Office before you start.",
   allowed_heading: "What {district} allows",
   talk_to_town: "You can talk this through with the Town Office. Your project and this conversation are saved.",

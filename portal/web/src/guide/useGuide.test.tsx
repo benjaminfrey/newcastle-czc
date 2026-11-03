@@ -48,7 +48,7 @@ describe("useGuide", () => {
     await waitFor(() => expect(h.result.current.view.phase).toBe("pick"));
     const v = h.result.current.view;
     expect(v.phase === "pick" && v.openings.map((o) => o.id)).toEqual(["new_house"]);
-    act(() => h.result.current.start("new_house"));
+    act(() => { void h.result.current.start("new_house"); });
     await waitFor(() => expect(h.result.current.view.phase).toBe("talk"));
     expect(m.startGuide).toHaveBeenCalledWith("p1", "new_house", 7);
   });
@@ -57,8 +57,8 @@ describe("useGuide", () => {
     const h = await talking();
     const d = deferred<api.Guide>();
     m.answerTurn.mockReturnValue(d.promise);
-    act(() => h.result.current.answer("lot", "yes"));
-    act(() => h.result.current.answer("lot", "yes"));
+    act(() => { void h.result.current.answer("lot", "yes"); });
+    act(() => { void h.result.current.answer("lot", "yes"); });
     expect(m.answerTurn).toHaveBeenCalledTimes(1);
     await act(async () => d.resolve(guide(2, "confirm")));
     const v = h.result.current.view;
@@ -82,7 +82,7 @@ describe("useGuide", () => {
     await act(async () => h.result.current.back());
     const v = h.result.current.view;
     expect(v.phase === "talk" && [v.locked, v.guide.current?.turn_id]).toEqual([true, "lot"]);
-    act(() => h.result.current.answer("lot", "yes"));
+    act(() => { void h.result.current.answer("lot", "yes"); });
     expect(m.answerTurn).not.toHaveBeenCalled();
   });
 
