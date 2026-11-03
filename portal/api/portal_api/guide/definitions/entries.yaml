@@ -1,0 +1,34 @@
+# A first, draft slice of the explanation library (spec §6). The library's own design (design 2)
+# decides how entries are drafted, approved and stored; these carry the fields it must keep.
+- id: how_stories_count
+  overline: "Why · how stories are counted"
+  answer: "Only floors with full-height outside walls count."
+  detail: "Living space inside a pitched roof is not a story. If there is more than one floor inside the roof, all but the top one count. The top one counts if the roof meets the wall more than 3 feet above its floor. A basement counts if 5 feet or more of its wall shows above the ground along the front."
+  why: "Height limits keep buildings in scale with their street. Counting only full walls lets people use the space under a roof."
+  cites: ["5.7.c.3", "5.7.c.4", "5.7.c.5", "5.7.c.6"]
+  version: 1
+  status: draft
+- id: setbacks
+  overline: "Why · how far from the lot lines"
+  answer: "Each district sets how far a building sits from the lot lines."
+  detail: "Measure from the lot line to the closest part of the building, in feet."
+  why: "Setbacks keep light, air and room between neighbors, and keep the street's line."
+  cites: ["2.3.c.3"]
+  version: 1
+  status: draft
+- id: use_table
+  overline: "Why · uses by district"
+  answer: "The Code lists which uses each district allows, and which permit each one needs."
+  detail: "Your lot's district decides which list applies."
+  why: "Each district has its own purpose, so each allows its own set of uses."
+  cites: ["8.15.b.1"]
+  version: 1
+  status: draft
+- id: use_not_listed
+  overline: "Why · a use the district doesn't list"
+  answer: "The Code doesn't list this use in your lot's district."
+  detail: "The Code doesn't allow a variance for a use. The Code Enforcement Officer can talk you through your options."
+  why: "Which uses go where is set by the Town Meeting, not case by case."
+  cites: ["8.19.b.1"]
+  version: 1
+  status: draft

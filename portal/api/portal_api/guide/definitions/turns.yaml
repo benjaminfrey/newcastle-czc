@@ -1,0 +1,192 @@
+# The guide's questions, asked in `order` when `when` holds (spec §4.4). Kinds:
+#   lot      what the Town knows about the lot, confirmed or corrected (§4.1)
+#   confirm  "So you mean…", from the opening's template (§4.3)
+#   choice   tappable answers; each answer sets facts
+#   number   a value with bounds, for a fact; checked against `standard` (checks.py)
+# "I'm not sure yet" is added to every question by the engine. Drafts until the chair approves.
+- id: lot
+  order: 10
+  step: Your lot
+  kind: lot
+  ask: "Here's what the Town knows about your lot. Is it right?"
+  help: "The size and frontage come from the tax maps, not a survey, so they are approximate."
+  answers:
+    - {id: "yes", label: "Yes, that's right", set: {lot.confirmed: true}}
+    - {id: not_right, label: "That's not right", set: {lot.confirmed: false}}
+  status: draft
+- id: confirm
+  order: 20
+  step: Your project
+  kind: confirm
+  ask: ""
+  answers:
+    - {id: "yes", label: "Yes, that's right", set: {confirmed: true}}
+    - {id: "no", label: "No, something else", set: {confirmed: false}}
+  status: draft
+- id: full_stories
+  order: 30
+  step: The building
+  kind: number
+  when: {eq: [opening, new_house]}
+  ask: "How many full stories will the house have?"
+  help: "Count the floors whose outside walls are full height. Don't count a basement or a floor inside the roof yet."
+  fact: building.full_stories
+  min: 1
+  max: 4
+  computed: stories
+  standard: {source: building_matrix, field: total_stories, building: Residential}
+  answer_field: stories
+  why: how_stories_count
+  cite: "5.7.c.3"
+  status: draft
+- id: roof_floors
+  order: 31
+  step: The building
+  kind: number
+  when: {eq: [opening, new_house]}
+  ask: "How many floors will be inside the roof?"
+  help: "A finished attic, or rooms under the roof slope. Enter 0 if none."
+  fact: building.roof_floors
+  min: 0
+  max: 2
+  computed: stories
+  why: how_stories_count
+  cite: "5.7.c.4"
+  status: draft
+- id: top_knee_over_3ft
+  order: 32
+  step: The building
+  kind: choice
+  when: {all: [{eq: [opening, new_house]}, {gte: [building.roof_floors, 1]}]}
+  ask: "On the top floor inside the roof, does the roof meet the wall more than 3 feet above the floor?"
+  help: "Measure from the finished floor up to where the rafters sit on the wall."
+  answers:
+    - {id: "yes", label: "Yes, more than 3 feet", set: {building.top_knee_over_3ft: true}}
+    - {id: "no", label: "No, 3 feet or less", set: {building.top_knee_over_3ft: false}}
+  computed: stories
+  why: how_stories_count
+  cite: "5.7.c.5"
+  status: draft
+- id: basement_exposed_5ft
+  order: 33
+  step: The building
+  kind: choice
+  when: {eq: [opening, new_house]}
+  ask: "Will 5 feet or more of a basement wall show above the ground along the front?"
+  answers:
+    - {id: "yes", label: "Yes, 5 feet or more", set: {building.basement_exposed_5ft: true}}
+    - {id: "no", label: "No, or there's no basement", set: {building.basement_exposed_5ft: false}}
+  computed: stories
+  why: how_stories_count
+  cite: "5.7.c.6"
+  status: draft
+- id: floor_area
+  order: 40
+  step: The building
+  kind: number
+  when: {eq: [opening, new_house]}
+  ask: "What is the floor area of the main part of the house, in square feet?"
+  help: "Add up every story of the main part. Space inside the roof doesn't count. An estimate is fine for now."
+  fact: building.floor_area_sf
+  unit: sq ft
+  min: 1
+  max: 1000000
+  answer_field: floor_area
+  status: draft
+- id: dwelling_units
+  order: 41
+  step: The building
+  kind: number
+  when: {eq: [opening, new_house]}
+  ask: "How many homes will it have?"
+  help: "A house with an apartment in it has 2."
+  fact: building.dwelling_units
+  min: 0
+  max: 100
+  answer_field: dwelling_units
+  status: draft
+- id: setback_front
+  order: 50
+  step: Where it sits
+  kind: number
+  when: {eq: [opening, new_house]}
+  ask: "How far will the house be from the front lot line, the one along the road?"
+  help: "Measure in feet from the lot line to the closest part of the house."
+  fact: building.setback.front
+  unit: ft
+  min: 0
+  max: 50000
+  standard: {source: dimension, field: primary_building_placement.primary_front_setback}
+  answer_field: setback_front
+  why: setbacks
+  cite: "2.3.c.3"
+  status: draft
+- id: setback_side_1
+  order: 51
+  step: Where it sits
+  kind: number
+  when: {eq: [opening, new_house]}
+  ask: "How far will it be from the nearest side lot line?"
+  help: "Measure in feet from the lot line to the closest part of the house."
+  fact: building.setback.side_1
+  unit: ft
+  min: 0
+  max: 50000
+  standard: {source: dimension, field: primary_building_placement.side_setback}
+  answer_field: setback_side_1
+  why: setbacks
+  cite: "2.3.c.3"
+  status: draft
+- id: setback_side_2
+  order: 52
+  step: Where it sits
+  kind: number
+  when: {eq: [opening, new_house]}
+  ask: "And from the other side lot line?"
+  help: "Measure in feet from the lot line to the closest part of the house."
+  fact: building.setback.side_2
+  unit: ft
+  min: 0
+  max: 50000
+  standard: {source: dimension, field: primary_building_placement.side_setback}
+  answer_field: setback_side_2
+  why: setbacks
+  cite: "2.3.c.3"
+  status: draft
+- id: setback_rear
+  order: 53
+  step: Where it sits
+  kind: number
+  when: {eq: [opening, new_house]}
+  ask: "How far will it be from the rear lot line?"
+  help: "Measure in feet from the lot line to the closest part of the house."
+  fact: building.setback.rear
+  unit: ft
+  min: 0
+  max: 50000
+  standard: {source: dimension, field: primary_building_placement.rear_setback}
+  answer_field: setback_rear
+  why: setbacks
+  cite: "2.3.c.3"
+  status: draft
+- id: use_group
+  order: 60
+  step: The use
+  kind: choice
+  when: {eq: [opening, change_of_use]}
+  ask: "Which of these is closest to what you have in mind?"
+  answers_from: use_groups
+  why: use_table
+  cite: "8.15.b.1"
+  status: draft
+- id: use_key
+  order: 61
+  step: The use
+  kind: choice
+  when: {all: [{eq: [opening, change_of_use]}, {known: use.group}]}
+  ask: "Which one, in the Code's words?"
+  help: "Each is the Code's own name for the use, with an example."
+  answers_from: use_group_uses
+  why: use_table
+  cite: "8.15.b.1"
+  status: draft

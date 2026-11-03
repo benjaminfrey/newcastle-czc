@@ -1,0 +1,19 @@
+# The pictures a conversation can start from (spec §4.2). Each opening names the project part
+# it belongs to, the screener answers it implies, and its "So you mean…" template. Drafts until
+# the chair approves them; the pictures themselves are plan 5.
+- id: new_house
+  label: A new house
+  picture: house
+  part: building
+  facts: {}
+  screener: {project: [build], building.kind: new}
+  confirm: confirm_build
+  status: draft
+- id: change_of_use
+  label: A change of use
+  picture: shopfront
+  part: use
+  facts: {}
+  screener: {project: [use]}
+  confirm: confirm_use
+  status: draft

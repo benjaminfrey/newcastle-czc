@@ -1,0 +1,35 @@
+# The shared words the guide reads out: answers every question offers, templates, and the
+# endings (spec §4.3, §4.5, §4.6). Templates fill only the slots content.TEMPLATE_SLOTS lists.
+unsure: {text: "I'm not sure yet", status: draft}
+talk_to_town: {text: "Talk to the Town Office", status: draft}
+keep_mine: {text: "Keep my number and ask the Town", status: draft}
+nearest: {text: "Make it {value} {unit}", status: draft}
+doesnt_fit: {text: "That's {gap} {unit} {direction} the limit here. Here's the nearest version that fits.", status: draft}
+direction_over: {text: "over", status: draft}
+direction_short: {text: "short of", status: draft}
+governs: {text: "The adopted Code governs if anything here differs from it.", status: draft}
+pick_opening: {text: "What would you like to do?", status: draft}
+district_unknown: {text: "a district the Town's map doesn't show", status: draft}
+map_lot_unknown: {text: "(not found)", status: draft}
+confirm_build: {text: "So you'd like to build {opening} on lot {map_lot}, in {districts}. Is that right?", status: draft}
+confirm_use: {text: "So you'd like to change how lot {map_lot}, in {districts}, is used. Is that right?", status: draft}
+no_permit:
+  title: "You don't need a permit for this"
+  body: "As you've described it, the Code doesn't call for a review. Keep to what you told us. If anything changes, or you're unsure, ask the Town Office before you start."
+  status: draft
+covered:
+  title: "You're already covered"
+  body: "What you have on record already allows this."
+  status: draft
+ready:
+  title: "Your application is ready to send"
+  body: "Here is what your project needs from the Town, and what it costs."
+  status: draft
+town_judgment:
+  title: "This needs the Town's judgment"
+  body: "Here is what we could settle and what we couldn't. Your questions go to the Code Enforcement Officer with this conversation."
+  status: draft
+not_here:
+  title: "Not here, but…"
+  body: "No version of this use fits your lot's district. Here is what the district does allow."
+  status: draft

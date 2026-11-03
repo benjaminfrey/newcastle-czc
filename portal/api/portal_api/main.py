@@ -9,7 +9,7 @@ from portal_api.ratelimit import SlidingWindow
 from portal_api.scan import ClamdScanner, Scanner
 from portal_api.storage import ObjectStore, S3Store
 from portal_api.routes import attachments as attachment_routes, auth as auth_routes, forms as form_routes, \
-    health, projects as project_routes, property as property_routes, screener as screener_routes
+    guide as guide_routes, health, projects as project_routes, property as property_routes, screener as screener_routes
 
 
 @asynccontextmanager
@@ -49,4 +49,5 @@ def create_app(settings: Settings | None = None, mailer: Mailer | None = None,
     app.include_router(form_routes.router)
     app.include_router(project_routes.router)
     app.include_router(attachment_routes.router)
+    app.include_router(guide_routes.router)
     return app
