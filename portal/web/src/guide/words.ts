@@ -58,6 +58,7 @@ export const WORDS = {
   settled_heading: "What we could settle",
   unsettled_heading: "What goes to the Town",
   reviews_heading: "What your project needs",
+  may_apply_heading: "May also apply, depending on answers the Town's form still asks",
   fees_heading: "Fees",
   application_fees: "Application fees, due when you send",
   permit_fees: "Permit fees, due later",

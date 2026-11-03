@@ -121,7 +121,8 @@ function GuideScreen({ projectId }: { projectId: string }) {
       </Box>
       {!wide && (
         <Drawer anchor="bottom" open={panelOpen} onClose={() => setPanelOpen(false)}
-          slotProps={{ paper: { sx: { maxHeight: "85dvh", borderTopLeftRadius: 16, borderTopRightRadius: 16 } } }}>
+          slotProps={{ paper: { "aria-label": WORDS.your_project,
+            sx: { maxHeight: "85dvh", borderTopLeftRadius: 16, borderTopRightRadius: 16 } } }}>
           <Box sx={{ p: 1 }}>
             <Button onClick={() => setPanelOpen(false)} sx={{ minHeight: 48 }}>{WORDS.close}</Button>
             {panel}

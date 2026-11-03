@@ -105,3 +105,13 @@ test("after No on So you mean, choosing a picture starts again from it", async (
   expect(actions.start).toHaveBeenCalledWith("change_of_use");
   expect(actions.answer).not.toHaveBeenCalled();
 });
+
+test("on a phone, your project opens as a named sheet", async () => {
+  const wide = await import("../shell/useWideLayout");
+  const spy = vi.spyOn(wide, "useWideLayout").mockReturnValue(false);
+  talk();
+  open();
+  await userEvent.click(screen.getByRole("button", { name: "Your project" }));
+  expect(await screen.findByRole("dialog", { name: "Your project" })).toBeVisible();
+  spy.mockRestore();
+});
