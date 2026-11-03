@@ -284,3 +284,19 @@ def test_the_latest_check_for_each_turn_is_returned(alice):
     body = walk(alice, pid, [("lot", "yes"), ("confirm", "yes"), *STORIES])
     checked = {h["shown"]["turn_id"]: h["shown"]["check"] for h in body["history"] if h["shown"]["check"]}
     assert body["checks"] == checked and "basement_exposed_5ft" in body["checks"]
+
+
+def test_a_second_tab_answering_the_same_turn_is_told_it_changed_elsewhere(alice):
+    pid = started(alice)
+    base = alice.get(f"/api/projects/{pid}/guide").json()["revision"]
+    assert answer(alice, pid, "lot", "yes", base=base).status_code == 200
+    r = answer(alice, pid, "lot", "yes", base=base)          # tab B, still on the lot turn
+    assert r.status_code == 409 and r.json()["detail"] == "changed_elsewhere"
+
+
+def test_no_on_so_you_mean_restarts_from_the_picture(alice):
+    pid = started(alice)
+    body = walk(alice, pid, [("lot", "yes"), ("confirm", "no")])
+    assert body["current"]["turn_id"] == "pick_opening"
+    r = start(alice, pid, "new_house")
+    assert r.status_code == 201 and r.json()["current"]["turn_id"] == "lot"

@@ -99,6 +99,9 @@ def _change(conn, request, applicant, project_id, base_revision, act, turn_id=No
     row, lot, opening, actions, state = loaded
     if row.status not in pj.EDITABLE:
         return _json(409, "locked")
+    # A stale page is told so before its answer is judged: another tab may have moved the turn on.
+    if pj.state(conn, row.id)[1] != base_revision:
+        return _refuse_stale(conn, row.id)
     try:
         new, record, kind = act(row, lot, state)
     except AnswerRejected as e:
