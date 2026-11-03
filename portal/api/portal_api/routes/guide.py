@@ -20,7 +20,7 @@ from portal_api.db import transaction
 from portal_api.events import append_event
 from portal_api.guide import bridge, store
 from portal_api.guide.checks import check_turn
-from portal_api.guide.content import load_content
+from portal_api.guide.content import drafts_in, load_content
 from portal_api.guide.engine import PICK_OPENING, Action, AnswerRejected, Lot, _valid, _Build, apply, replay
 from portal_api.routes.projects import Loaded, _refuse_stale
 
@@ -47,6 +47,11 @@ class AnswerBody(BaseModel):
 
 
 class RevisionBody(BaseModel):
+    base_revision: int
+
+
+class RevisitBody(BaseModel):
+    turn_id: str = PField(max_length=120)
     base_revision: int
 
 
@@ -86,7 +91,7 @@ def _load(conn: Connection, project_id: str, applicant: auth.Applicant):
     return row, lot, opening, actions, replay(load_content(), opening, lot, actions)
 
 
-def _change(conn, request, applicant, project_id, base_revision, act):
+def _change(conn, request, applicant, project_id, base_revision, act, turn_id=None):
     """The shared path of every change: load, apply, gate, bump, record, bridge."""
     loaded = _load(conn, project_id, applicant)
     if isinstance(loaded, JSONResponse):
@@ -105,11 +110,13 @@ def _change(conn, request, applicant, project_id, base_revision, act):
         return _refuse_stale(conn, row.id)
     record()
     bridge.sync(conn, Loaded(conn, row), new, _actor(applicant))
-    append_event(conn, actor=_actor(applicant), kind=kind, payload={"project_id": row.id, "turn_id": _turn_of(new, kind)})
+    append_event(conn, actor=_actor(applicant), kind=kind, payload={"project_id": row.id, "turn_id": _turn_of(new, kind, turn_id)})
     return _out(conn, row.id, new, rev)
 
 
-def _turn_of(state, kind):
+def _turn_of(state, kind, turn_id=None):
+    if kind == "guide.revisited":
+        return turn_id
     return state.history[-1][0].turn_id if kind == "guide.answered" and state.history else None
 
 
@@ -185,6 +192,36 @@ def back(project_id: str, body: RevisionBody, request: Request, applicant: auth.
         shown = dataclasses.asdict(state.current) if state.current else {"ending": state.ending}
         return new, lambda: store.record(conn, row.id, action, shown, content.digest, _actor(applicant)), "guide.back"
     return _change(conn, request, applicant, project_id, body.base_revision, act)
+
+
+@router.post("/api/projects/{project_id}/guide/revisit")
+def revisit(project_id: str, body: RevisitBody, request: Request, applicant: auth.Applicant = auth.require,
+            conn: Connection = transaction):
+    """Change: the answer to one turn out of force, so it is asked again; later answers stand."""
+    action = Action("revisit", body.turn_id, None)
+    content = load_content()
+
+    def act(row, lot, state):
+        new = apply(content, state, lot, action)
+        shown = dataclasses.asdict(state.current) if state.current else {"ending": state.ending}
+        return new, lambda: store.record(conn, row.id, action, shown, content.digest, _actor(applicant)), "guide.revisited"
+    return _change(conn, request, applicant, project_id, body.base_revision, act, body.turn_id)
+
+
+@router.get("/api/projects/{project_id}/guide/openings")
+def openings(project_id: str, request: Request, applicant: auth.Applicant = auth.require,
+             conn: Connection = transaction):
+    """The pictures this project's parts can start from, before the guide has started."""
+    row = pj.owned(conn, project_id, applicant.id)
+    if row is None:
+        return _json(404, "not_found")
+    content = load_content()
+    kinds = {p["kind"] for p in pj.parts(conn, row.id)}
+    listed = [o for o in content.openings.values() if o.part in kinds]
+    drafts = [d for o in listed for d in drafts_in(content, opening=o.id, turn_ids=[], entry_ids=[], wording_keys=[])]
+    if drafts and not request.app.state.settings.allow_draft_rules:
+        return _json(503, "guide_not_approved")
+    return {"openings": [{"id": o.id, "label": o.label, "part": o.part} for o in listed]}
 
 
 @router.post("/api/projects/{project_id}/guide/notes", status_code=201)

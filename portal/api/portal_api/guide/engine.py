@@ -71,7 +71,7 @@ class Shown:
 
 @dataclass(frozen=True)
 class Action:
-    kind: Literal["answer", "back"]
+    kind: Literal["answer", "back", "revisit"]
     turn_id: str | None
     value: object
 
@@ -308,6 +308,12 @@ def _push(live: tuple, turn_id: str, value) -> tuple:
     return tuple((t, v) for t, v in live if t != turn_id) + ((turn_id, value),)
 
 
+def _without(live: tuple, turn_id: str) -> tuple:
+    """Change ("revisit"): the answer to `turn_id`, and its "doesn't fit" choice, out of force, so
+    that turn is asked again and every later answer still stands where it still applies."""
+    return tuple((t, v) for t, v in live if t not in (turn_id, DOESNT_FIT + turn_id))
+
+
 def replay(content: Content, opening: str, lot: Lot, actions: list[Action]) -> State:
     """The state after the recorded actions. Answers were checked when they were given; here an
     answer the content no longer accepts is set aside rather than refused."""
@@ -317,6 +323,8 @@ def replay(content: Content, opening: str, lot: Lot, actions: list[Action]) -> S
             live = live[:-1]
         elif action.kind == "answer":
             live = _push(live, action.turn_id, action.value)
+        elif action.kind == "revisit":
+            live = _without(live, action.turn_id)
         else:
             raise AnswerRejected("not_an_action")
     return _derive(content, opening, lot, live)
@@ -326,6 +334,10 @@ def apply(content: Content, state: State, lot: Lot, action: Action) -> State:
     """One new action, checked against the turn being asked now."""
     if action.kind == "back":
         return _derive(content, state.opening, lot, state.live[:-1])
+    if action.kind == "revisit":
+        if action.turn_id not in dict(state.live) or action.turn_id.startswith(DOESNT_FIT):
+            raise AnswerRejected("not_answered")
+        return _derive(content, state.opening, lot, _without(state.live, action.turn_id))
     if action.kind != "answer":
         raise AnswerRejected("not_an_action")
     current = state.current

@@ -70,3 +70,12 @@ def test_a_note_must_be_1_to_4000_characters(engine, body):
         with engine.begin() as conn:
             pid = _started(conn)
             store.add_note(conn, pid, body, "a")
+
+
+def test_a_revisit_is_recorded_and_replayed(engine):
+    with engine.begin() as conn:
+        pid = _started(conn)
+        store.record(conn, pid, Action("answer", "lot", "yes"), SHOWN, "d" * 64, "applicant:x")
+        assert store.record(conn, pid, Action("revisit", "lot", None), SHOWN, "d" * 64, "applicant:x") == 2
+        _, actions = store.conversation(conn, pid)
+    assert actions[-1] == Action("revisit", "lot", None)
