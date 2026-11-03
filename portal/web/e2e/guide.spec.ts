@@ -1,0 +1,126 @@
+import { expect, test, type Page } from "@playwright/test";
+import { axe, newEmail, startProject } from "./helpers";
+
+// The guided conversation (guided plan 3) on the LAN copy, built with VITE_GUIDE_PREVIEW=1 and
+// allowing draft wording. Lot 4-36 is in D1 (Rural), where 15 ft is the side setback minimum.
+
+const turn = (page: Page) => page.locator("main section[data-turn]");
+const question = (page: Page) => page.getByRole("main").getByRole("heading", { level: 2 }).first();
+
+async function choose(page: Page, label: string) {
+  await turn(page).getByText(label, { exact: true }).click();
+}
+
+async function number(page: Page, ask: RegExp, value: string) {
+  await expect(question(page)).toHaveText(ask);
+  await turn(page).getByRole("textbox").fill(value);
+  await turn(page).getByRole("button", { name: "Next" }).click();
+  await expect(question(page)).not.toHaveText(ask);
+}
+
+// Sign in, start a building project on 4-36, and open its guide at the opening.
+async function openGuide(page: Page, tag: string) {
+  await startProject(page, [/^A new building/], newEmail(tag));
+  await page.getByRole("link", { name: "Try the guided version (preview)" }).click();
+  await expect(page).toHaveURL(/\/projects\/[0-9a-f-]+\/guide$/);
+  await expect(question(page)).toHaveText("What would you like to do?");
+  await choose(page, "A new house");
+  await expect(question(page)).toHaveText(/what the Town knows about your lot/);
+}
+
+async function toTheBuilding(page: Page) {
+  await axe(page, "guide: the lot");
+  await choose(page, "Yes, that's right");
+  await expect(question(page)).toHaveText(/^So you'd like to build a new house/);
+  await choose(page, "Yes, that's right");
+  await number(page, /full stories/, "2");
+  await number(page, /inside the roof/, "0");
+  await expect(question(page)).toHaveText(/basement wall/);
+  await choose(page, "No, or there's no basement");
+}
+
+async function toTheSetbacks(page: Page) {
+  await toTheBuilding(page);
+  await number(page, /floor area/, "1,800");   // no standard of its own: the Town's form asks it
+  await number(page, /How many homes/, "1");
+  await number(page, /front lot line/, "30");
+}
+
+test("a new house that fits reaches Check and send", async ({ page }, info) => {
+  await openGuide(page, `guide-ready-${info.project.name}`);
+  await toTheSetbacks(page);
+  await expect(question(page)).toHaveText(/nearest side lot line/);
+  await turn(page).getByRole("textbox").fill("20");
+  await expect(turn(page).getByRole("status")).toHaveText("Within the limit · 5 ft to spare");
+  await expect(turn(page).getByRole("slider")).toBeVisible();
+  await axe(page, "guide: a number");
+  await turn(page).getByRole("button", { name: "Next" }).click();
+  await number(page, /other side lot line/, "20");
+  await turn(page).getByRole("textbox").fill("20");
+  await turn(page).getByRole("button", { name: "Next" }).click();
+  await expect(question(page)).toHaveText("Your application is ready to send");
+  await expect(page.getByRole("main")).toContainText("Small Project Plan");
+  await axe(page, "guide: ready");
+  await page.getByRole("link", { name: "Check and send" }).click();
+  await expect(question(page)).toHaveText("Check your project");
+  await expect(page.getByRole("main")).toContainText("1,800 sq ft");
+  await axe(page, "guide: check and send");
+  // The official form still has questions the guide doesn't ask (who owns the lot and so on),
+  // so Send lists them instead of sending.
+  await page.getByRole("button", { name: "Send to the Town" }).click();
+  await expect(page.getByText("Before you send, the Town's form still needs:")).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
+});
+
+test("a side setback that doesn't fit offers the nearest", async ({ page }, info) => {
+  await openGuide(page, `guide-fit-${info.project.name}`);
+  await toTheSetbacks(page);
+  await expect(question(page)).toHaveText(/nearest side lot line/);
+  await turn(page).getByRole("textbox").fill("11");
+  await expect(turn(page).getByRole("status")).toHaveText("4 ft short of the limit here");
+  await turn(page).getByRole("button", { name: "Next" }).click();
+  await expect(question(page)).toHaveText(/That's 4 ft short of the limit here/);
+  await expect(page.getByRole("main")).not.toContainText("How many homes");   // its own page
+  await axe(page, "guide: doesn't fit");
+  await choose(page, "Make it 15 ft");
+  await expect(question(page)).toHaveText(/other side lot line/);
+  if (info.project.name === "phone") await page.getByRole("button", { name: "Your project" }).click();
+  const panel = info.project.name === "phone" ? page.getByRole("dialog") : page.getByRole("complementary", { name: "Your project" });
+  await expect(panel.getByRole("group", { name: "Where it sits" })).toContainText("15 ft");
+  await expect(panel.getByRole("group", { name: "Where it sits" })).toContainText("Fits");
+});
+
+test("the guide picks up where it left off", async ({ page }, info) => {
+  await openGuide(page, `guide-reload-${info.project.name}`);
+  await toTheBuilding(page);
+  await expect(question(page)).toHaveText(/floor area/);
+  const step = await page.getByRole("progressbar").getAttribute("aria-valuenow");
+  await page.reload();
+  await expect(question(page)).toHaveText(/floor area/);
+  await expect(page.getByRole("main")).toContainText("No, or there's no basement");
+  expect(await page.getByRole("progressbar").getAttribute("aria-valuenow")).toBe(step);
+});
+
+test("Change keeps what still applies", async ({ page }, info) => {
+  await openGuide(page, `guide-change-${info.project.name}`);
+  await toTheSetbacks(page);
+  await expect(question(page)).toHaveText(/nearest side lot line/);
+  if (info.project.name === "phone") await page.getByRole("button", { name: "Your project" }).click();
+  await page.getByRole("button", { name: /^Change: What is the floor area/ }).click();
+  await number(page, /floor area/, "2,000");
+  // Everything after it still stands, so the guide goes straight back to the next open question.
+  await expect(question(page)).toHaveText(/nearest side lot line/);
+});
+
+test("on a phone, your project opens from the app bar", async ({ page }, info) => {
+  test.skip(info.project.name !== "phone", "phone only");
+  await openGuide(page, `guide-phone-${info.project.name}`);
+  await toTheBuilding(page);
+  await page.getByRole("button", { name: "Your project" }).click();
+  const sheet = page.getByRole("dialog");
+  await expect(sheet.getByRole("group", { name: "The building" })).toContainText("2");
+  await axe(page, "guide: your project on a phone");
+  await sheet.getByRole("button", { name: "Close" }).click();
+  await expect(sheet).toBeHidden();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
+});

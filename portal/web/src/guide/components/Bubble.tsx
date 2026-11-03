@@ -1,7 +1,9 @@
 import Box from "@mui/material/Box";
 import type { ReactNode } from "react";
 
-const visuallyHidden = { position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)" } as const;
+// Pixel sizes as strings: MUI's sx reads the number 1 as 100%.
+const visuallyHidden = { position: "absolute", width: "1px", height: "1px", m: "-1px", p: 0, border: 0,
+  overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap" } as const;
 
 // One turn of the conversation: the person's words on the right, Newcastle's on the left.
 export function Bubble({ from, children }: { from: "you" | "app"; children: ReactNode }) {

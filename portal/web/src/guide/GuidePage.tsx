@@ -77,8 +77,10 @@ function GuideScreen({ projectId }: { projectId: string }) {
           {v.phase === "loading" && <Typography role="status">{WORDS.loading}</Typography>}
           {v.phase === "refused" && <Alert severity="info">{WORDS.refusals[v.why]}</Alert>}
           {v.phase === "pick" && (
-            <AnswerList question={WORDS.pick_opening} headingProps={TURN_HEADING} disabled={v.busy}
-              answers={v.openings.map((o) => ({ id: o.id, label: o.label }))} onAnswer={g.start} />
+            <Box component="section" data-turn="pick_opening">
+              <AnswerList question={WORDS.pick_opening} headingProps={TURN_HEADING} disabled={v.busy}
+                answers={v.openings.map((o) => ({ id: o.id, label: o.label }))} onAnswer={(id) => void g.start(id)} />
+            </Box>
           )}
         </div>
       </GuideShell>
