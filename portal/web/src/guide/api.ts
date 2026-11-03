@@ -29,7 +29,8 @@ export type Ending = {
 export type Note = { body: string; at: string };
 export type Guide = {
   revision: number; opening: string; current: Shown | null; history: { shown: Shown; value: unknown }[];
-  ending: Ending | null; step: Step | null; unsure: string[]; notes: Note[]; drafts: string[];
+  ending: Ending | null; step: Step | null; unsure: string[]; checks: Record<string, Check>; notes: Note[];
+  drafts: string[];
 };
 export type Opening = { id: string; label: string; part: string };
 export type GuideRefusal = Refusal | "not_started" | "not_approved" | { conflict: true } | { rejected: string };

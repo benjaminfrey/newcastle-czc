@@ -71,7 +71,7 @@ def _out(conn: Connection, project_id: str, state, revision: int) -> dict:
             "current": asdict(state.current) if state.current else None,
             "history": [{"shown": asdict(s), "value": v} for s, v in state.history],
             "ending": state.ending, "step": asdict(state.current.step) if state.current else None,
-            "unsure": list(state.unsure), "notes": store.notes(conn, project_id), "drafts": list(state.drafts)}
+            "unsure": list(state.unsure), "checks": dict(state.checks), "notes": store.notes(conn, project_id), "drafts": list(state.drafts)}
 
 
 def _refused(state, request: Request) -> bool:

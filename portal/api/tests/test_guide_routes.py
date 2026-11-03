@@ -276,3 +276,11 @@ def test_openings_for_the_projects_parts(alice, bob, engine, settings, outbox, l
         dev.state.settings.allow_draft_rules = False
         r = c.get(f"/api/projects/{pid2}/guide/openings")
         assert r.status_code == 503 and r.json()["detail"] == "guide_not_approved"
+
+
+def test_the_latest_check_for_each_turn_is_returned(alice):
+    """The screens show the value in force after "Make it …", which only the latest check holds."""
+    pid = started(alice)
+    body = walk(alice, pid, [("lot", "yes"), ("confirm", "yes"), *STORIES])
+    checked = {h["shown"]["turn_id"]: h["shown"]["check"] for h in body["history"] if h["shown"]["check"]}
+    assert body["checks"] == checked and "basement_exposed_5ft" in body["checks"]

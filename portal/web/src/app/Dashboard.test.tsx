@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -78,6 +78,20 @@ beforeEach(() => {
 });
 
 describe("the dashboard", () => {
+  it("links to the guided version only in the LAN copy's builds", async () => {
+    open();
+    await screen.findByRole("heading", { level: 1 });
+    expect(screen.queryByRole("link", { name: "Try the guided version (preview)" })).toBeNull();
+    cleanup();
+    vi.stubEnv("VITE_GUIDE_PREVIEW", "1");
+    try {
+      open();
+      expect(await screen.findByRole("link", { name: "Try the guided version (preview)" })).toHaveAttribute("href", "/projects/p1/guide");
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+
   it("shows the title, the parcel, a row per part and the parts still to add", async () => {
     open();
     expect(await screen.findByRole("heading", { level: 1, name: "A new building and a driveway at Sheepscot Road" })).toBeInTheDocument();
