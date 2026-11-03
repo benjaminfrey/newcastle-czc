@@ -110,7 +110,9 @@ def check_turn(turn, facts: dict, lot, unsure=(), standard: dict | None = None) 
     std_keys = tuple(s.key for s in found)
     unit = next((s.unit for s in found if s.unit), turn.unit)
     if all(r == "cannot_check" for r in results):
-        return _uncertain("not_checkable", value, unit, std_keys)
+        # A checkable standard that still can't say: past its limit, within what the Board may allow.
+        board = all(s.status == "checkable" and s.board_may_allow_to is not None for s in found)
+        return _uncertain("board_decides" if board else "not_checkable", value, unit, std_keys)
     if len(set(results)) > 1:
         return _uncertain("two_districts" if len(found) > 1 else "not_checkable", value, unit, std_keys)
     if results[0] == "outside" and len({(s.min, s.max) for s in found}) > 1:

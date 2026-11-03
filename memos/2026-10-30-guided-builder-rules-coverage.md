@@ -1,6 +1,6 @@
 # Rules coverage for the guided builder
 
-*Generated 2026-10-30 from the pinned ruleset `adopted-v1.0` by `python -m portal_api.standards audit`.*
+*Generated 2026-11-02 from the pinned ruleset `adopted-v1.0` by `python -m portal_api.standards audit`.*
 
 This memo says which of the Code's district standards the guided builder can check today, which it can't and why, and the questions only the chair can answer. It never fills in a value the Code doesn't state.
 
@@ -10,11 +10,11 @@ This memo says which of the Code's district standards the guided builder can che
 
 | Status | Count |
 |---|---|
-| can be checked (`checkable`) | 111 |
-| no minimum or maximum stated (`needs_qualifier`) | 196 |
-| no unit stated (`needs_unit`) | 7 |
+| can be checked (`checkable`) | 315 |
+| no minimum or maximum stated (`needs_qualifier`) | 0 |
+| no unit stated (`needs_unit`) | 0 |
 | not set for this district (`not_established`) | 98 |
-| unresolved in the ruleset (`unresolved`) | 2 |
+| unresolved in the ruleset (`unresolved`) | 1 |
 | not a number (who decides) (`not_a_number`) | 38 |
 
 ## 2. District by district
@@ -38,26 +38,26 @@ This memo says which of the Code's district standards the guided builder can che
 | Residential | Permitting Authority | CEO | not_a_number |  |
 | General Accessory | Permitting Authority | CEO | not_a_number |  |
 | Agricultural Use | Permitting Authority | CEO | not_a_number |  |
-| Residential | Building Width | 50 ft | needs_qualifier |  |
-| General Accessory | Building Width | 30 ft | needs_qualifier |  |
+| Residential | Building Width | 50 ft | checkable | at most 50 ft |
+| General Accessory | Building Width | 30 ft | checkable | at most 30 ft |
 | Agricultural Use | Building Width | - | not_established |  |
-| Residential | Building Depth | 50 ft | needs_qualifier |  |
-| General Accessory | Building Depth | 40 ft | needs_qualifier |  |
+| Residential | Building Depth | 50 ft | checkable | at most 50 ft |
+| General Accessory | Building Depth | 40 ft | checkable | at most 40 ft |
 | Agricultural Use | Building Depth | - | not_established |  |
 | Residential | Building Floor Area | - | not_established |  |
 | General Accessory | Building Floor Area | - | not_established |  |
 | Agricultural Use | Building Floor Area | - | not_established |  |
-| Residential | Total Stories | 2 | needs_qualifier |  |
-| General Accessory | Total Stories | 1 | needs_qualifier |  |
+| Residential | Total Stories | 2 | checkable | at most 2 stories |
+| General Accessory | Total Stories | 1 | checkable | at most 1 stories |
 | Agricultural Use | Total Stories | - | not_established |  |
-| Residential | First Floor Height | 12 ft | needs_qualifier |  |
-| General Accessory | First Floor Height | 16 ft | needs_qualifier |  |
+| Residential | First Floor Height | 12 ft | checkable | at most 12 ft |
+| General Accessory | First Floor Height | 16 ft | checkable | at most 16 ft |
 | Agricultural Use | First Floor Height | - | not_established |  |
-| Residential | Upper Floor Height | 10 ft | needs_qualifier |  |
-| General Accessory | Upper Floor Height | 10 ft | needs_qualifier |  |
+| Residential | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| General Accessory | Upper Floor Height | 10 ft | checkable | at most 10 ft |
 | Agricultural Use | Upper Floor Height | - | not_established |  |
 | Residential | Number of Units | - | not_established |  |
-| General Accessory | Number of Units | 2 | needs_qualifier |  |
+| General Accessory | Number of Units | 2 | checkable | at most 2 units |
 | Agricultural Use | Number of Units | - | not_established |  |
 
 ### D2 - Neighborhood Residential
@@ -79,27 +79,27 @@ This memo says which of the Code's district standards the guided builder can che
 | Residential | Permitting Authority | CEO | not_a_number |  |
 | Mixed-Use | Permitting Authority | Planning Board | not_a_number |  |
 | Residential Accessory | Permitting Authority | CEO | not_a_number |  |
-| Residential | Building Width | 75 ft | needs_qualifier |  |
-| Mixed-Use | Building Width | 50 ft | needs_qualifier |  |
-| Residential Accessory | Building Width | 30 ft | needs_qualifier |  |
-| Residential | Building Depth | 50 ft | needs_qualifier |  |
-| Mixed-Use | Building Depth | 50 ft | needs_qualifier |  |
-| Residential Accessory | Building Depth | 40 ft | needs_qualifier |  |
+| Residential | Building Width | 75 ft | checkable | at most 75 ft |
+| Mixed-Use | Building Width | 50 ft | checkable | at most 50 ft |
+| Residential Accessory | Building Width | 30 ft | checkable | at most 30 ft |
+| Residential | Building Depth | 50 ft | checkable | at most 50 ft |
+| Mixed-Use | Building Depth | 50 ft | checkable | at most 50 ft |
+| Residential Accessory | Building Depth | 40 ft | checkable | at most 40 ft |
 | Residential | Building Floor Area | - | not_established |  |
 | Mixed-Use | Building Floor Area | - | not_established |  |
 | Residential Accessory | Building Floor Area | - | not_established |  |
-| Residential | Total Stories | 2 | needs_qualifier |  |
-| Mixed-Use | Total Stories | 2 | needs_qualifier |  |
-| Residential Accessory | Total Stories | 1 | needs_qualifier |  |
-| Residential | First Floor Height | 12 ft | needs_qualifier |  |
-| Mixed-Use | First Floor Height | 12 ft | needs_qualifier |  |
-| Residential Accessory | First Floor Height | 16 ft | needs_qualifier |  |
-| Residential | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Mixed-Use | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Residential Accessory | Upper Floor Height | 8 ft | needs_qualifier |  |
+| Residential | Total Stories | 2 | checkable | at most 2 stories |
+| Mixed-Use | Total Stories | 2 | checkable | at most 2 stories |
+| Residential Accessory | Total Stories | 1 | checkable | at most 1 stories |
+| Residential | First Floor Height | 12 ft | checkable | at most 12 ft |
+| Mixed-Use | First Floor Height | 12 ft | checkable | at most 12 ft |
+| Residential Accessory | First Floor Height | 16 ft | checkable | at most 16 ft |
+| Residential | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Mixed-Use | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Residential Accessory | Upper Floor Height | 8 ft | checkable | at most 8 ft |
 | Residential | Number of Units | - | not_established |  |
 | Mixed-Use | Number of Units | - | not_established |  |
-| Residential Accessory | Number of Units | 1 | needs_qualifier |  |
+| Residential Accessory | Number of Units | 1 | checkable | at most 1 units |
 
 ### D3 - Neighborhood Business
 
@@ -121,34 +121,34 @@ This memo says which of the Code's district standards the guided builder can che
 | Mixed-Use | Permitting Authority | Planning Board | not_a_number |  |
 | Residential Accessory | Permitting Authority | CEO | not_a_number |  |
 | Commercial Accessory | Permitting Authority | Planning Board | not_a_number |  |
-| Residential | Building Width | 50 ft | needs_qualifier |  |
-| Mixed-Use | Building Width | 60 ft | needs_qualifier |  |
-| Residential Accessory | Building Width | 30 ft | needs_qualifier |  |
-| Commercial Accessory | Building Width | 30 ft | needs_qualifier |  |
-| Residential | Building Depth | 50 ft | needs_qualifier |  |
-| Mixed-Use | Building Depth | 50 ft | needs_qualifier |  |
-| Residential Accessory | Building Depth | 40 ft | needs_qualifier |  |
-| Commercial Accessory | Building Depth | 40 ft | needs_qualifier |  |
+| Residential | Building Width | 50 ft | checkable | at most 50 ft |
+| Mixed-Use | Building Width | 60 ft | checkable | at most 60 ft |
+| Residential Accessory | Building Width | 30 ft | checkable | at most 30 ft |
+| Commercial Accessory | Building Width | 30 ft | checkable | at most 30 ft |
+| Residential | Building Depth | 50 ft | checkable | at most 50 ft |
+| Mixed-Use | Building Depth | 50 ft | checkable | at most 50 ft |
+| Residential Accessory | Building Depth | 40 ft | checkable | at most 40 ft |
+| Commercial Accessory | Building Depth | 40 ft | checkable | at most 40 ft |
 | Residential | Building Floor Area | - | not_established |  |
 | Mixed-Use | Building Floor Area | - | not_established |  |
 | Residential Accessory | Building Floor Area | - | not_established |  |
 | Commercial Accessory | Building Floor Area | - | not_established |  |
-| Residential | Total Stories | 2 | needs_qualifier |  |
-| Mixed-Use | Total Stories | 2 | needs_qualifier |  |
-| Residential Accessory | Total Stories | 1 | needs_qualifier |  |
-| Commercial Accessory | Total Stories | 1 | needs_qualifier |  |
-| Residential | First Floor Height | 12 ft | needs_qualifier |  |
-| Mixed-Use | First Floor Height | 15 ft | needs_qualifier |  |
-| Residential Accessory | First Floor Height | 16 ft | needs_qualifier |  |
-| Commercial Accessory | First Floor Height | 16 ft | needs_qualifier |  |
-| Residential | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Mixed-Use | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Residential Accessory | Upper Floor Height | 8 ft | needs_qualifier |  |
-| Commercial Accessory | Upper Floor Height | 8 ft | needs_qualifier |  |
+| Residential | Total Stories | 2 | checkable | at most 2 stories |
+| Mixed-Use | Total Stories | 2 | checkable | at most 2 stories |
+| Residential Accessory | Total Stories | 1 | checkable | at most 1 stories |
+| Commercial Accessory | Total Stories | 1 | checkable | at most 1 stories |
+| Residential | First Floor Height | 12 ft | checkable | at most 12 ft |
+| Mixed-Use | First Floor Height | 15 ft | checkable | at most 15 ft |
+| Residential Accessory | First Floor Height | 16 ft | checkable | at most 16 ft |
+| Commercial Accessory | First Floor Height | 16 ft | checkable | at most 16 ft |
+| Residential | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Mixed-Use | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Residential Accessory | Upper Floor Height | 8 ft | checkable | at most 8 ft |
+| Commercial Accessory | Upper Floor Height | 8 ft | checkable | at most 8 ft |
 | Residential | Number of Units | - | not_established |  |
 | Mixed-Use | Number of Units | - | not_established |  |
-| Residential Accessory | Number of Units | 1 | needs_qualifier |  |
-| Commercial Accessory | Number of Units | 1 | needs_qualifier |  |
+| Residential Accessory | Number of Units | 1 | checkable | at most 1 units |
+| Commercial Accessory | Number of Units | 1 | checkable | at most 1 units |
 
 ### D4 - Village Residential
 
@@ -168,20 +168,20 @@ This memo says which of the Code's district standards the guided builder can che
 |  | Rear Setback | 8 ft min | checkable | at least 8 ft |
 | Residential | Permitting Authority | Planning Board | not_a_number |  |
 | Residential Accessory | Permitting Authority | CEO | not_a_number |  |
-| Residential | Building Width | 60 ft | needs_qualifier |  |
-| Residential Accessory | Building Width | 30 ft | needs_qualifier |  |
-| Residential | Building Depth | 50 ft | needs_qualifier |  |
-| Residential Accessory | Building Depth | 40 ft | needs_qualifier |  |
-| Residential | Building Floor Area | 8,000 sf | needs_qualifier |  |
+| Residential | Building Width | 60 ft | checkable | at most 60 ft |
+| Residential Accessory | Building Width | 30 ft | checkable | at most 30 ft |
+| Residential | Building Depth | 50 ft | checkable | at most 50 ft |
+| Residential Accessory | Building Depth | 40 ft | checkable | at most 40 ft |
+| Residential | Building Floor Area | 8,000 sf | checkable | at most 8000 sf |
 | Residential Accessory | Building Floor Area | - | not_established |  |
-| Residential | Total Stories | 2 | needs_qualifier |  |
-| Residential Accessory | Total Stories | 1 | needs_qualifier |  |
-| Residential | First Floor Height | 12 ft | needs_qualifier |  |
-| Residential Accessory | First Floor Height | 16 ft | needs_qualifier |  |
-| Residential | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Residential Accessory | Upper Floor Height | 8 ft | needs_qualifier |  |
+| Residential | Total Stories | 2 | checkable | at most 2 stories |
+| Residential Accessory | Total Stories | 1 | checkable | at most 1 stories |
+| Residential | First Floor Height | 12 ft | checkable | at most 12 ft |
+| Residential Accessory | First Floor Height | 16 ft | checkable | at most 16 ft |
+| Residential | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Residential Accessory | Upper Floor Height | 8 ft | checkable | at most 8 ft |
 | Residential | Number of Units | - | not_established |  |
-| Residential Accessory | Number of Units | 1 | needs_qualifier |  |
+| Residential Accessory | Number of Units | 1 | checkable | at most 1 units |
 
 ### D5 - Village Business
 
@@ -204,41 +204,41 @@ This memo says which of the Code's district standards the guided builder can che
 | Multi-Unit Commercial | Permitting Authority | Planning Board | not_a_number |  |
 | Residential Accessory | Permitting Authority | CEO | not_a_number |  |
 | Commercial Accessory | Permitting Authority | Planning Board | not_a_number |  |
-| Residential | Building Width | 60 ft | needs_qualifier |  |
-| Mixed-Use | Building Width | 60 ft | needs_qualifier |  |
-| Multi-Unit Commercial | Building Width | 80 ft | needs_qualifier |  |
-| Residential Accessory | Building Width | 30 ft | needs_qualifier |  |
-| Commercial Accessory | Building Width | 30 ft | needs_qualifier |  |
-| Residential | Building Depth | 75 ft | needs_qualifier |  |
+| Residential | Building Width | 60 ft | checkable | at most 60 ft |
+| Mixed-Use | Building Width | 60 ft | checkable | at most 60 ft |
+| Multi-Unit Commercial | Building Width | 80 ft | checkable | at most 80 ft |
+| Residential Accessory | Building Width | 30 ft | checkable | at most 30 ft |
+| Commercial Accessory | Building Width | 30 ft | checkable | at most 30 ft |
+| Residential | Building Depth | 75 ft | checkable | at most 75 ft |
 | Mixed-Use | Building Depth | - | not_established |  |
 | Multi-Unit Commercial | Building Depth | - | not_established |  |
-| Residential Accessory | Building Depth | 40 ft | needs_qualifier |  |
-| Commercial Accessory | Building Depth | 30 ft | needs_qualifier |  |
+| Residential Accessory | Building Depth | 40 ft | checkable | at most 40 ft |
+| Commercial Accessory | Building Depth | 30 ft | checkable | at most 30 ft |
 | Residential | Building Floor Area | - | not_established |  |
-| Mixed-Use | Building Floor Area | 12,000 | needs_unit |  |
+| Mixed-Use | Building Floor Area | 12,000 | checkable | at most 12000 sf |
 | Multi-Unit Commercial | Building Floor Area | - | not_established |  |
 | Residential Accessory | Building Floor Area | - | not_established |  |
 | Commercial Accessory | Building Floor Area | - | not_established |  |
-| Residential | Total Stories | 2 | needs_qualifier |  |
-| Mixed-Use | Total Stories | 2 | needs_qualifier |  |
-| Multi-Unit Commercial | Total Stories | 2 | needs_qualifier |  |
-| Residential Accessory | Total Stories | 2 | needs_qualifier |  |
-| Commercial Accessory | Total Stories | 1 | needs_qualifier |  |
-| Residential | First Floor Height | 12 ft | needs_qualifier |  |
-| Mixed-Use | First Floor Height | 15 ft | needs_qualifier |  |
-| Multi-Unit Commercial | First Floor Height | 15 ft | needs_qualifier |  |
-| Residential Accessory | First Floor Height | 10 ft | needs_qualifier |  |
-| Commercial Accessory | First Floor Height | 16 ft | needs_qualifier |  |
-| Residential | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Mixed-Use | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Multi-Unit Commercial | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Residential Accessory | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Commercial Accessory | Upper Floor Height | 8 ft | needs_qualifier |  |
+| Residential | Total Stories | 2 | checkable | at most 2 stories |
+| Mixed-Use | Total Stories | 2 | checkable | at most 2 stories |
+| Multi-Unit Commercial | Total Stories | 2 | checkable | at most 2 stories |
+| Residential Accessory | Total Stories | 2 | checkable | at most 2 stories |
+| Commercial Accessory | Total Stories | 1 | checkable | at most 1 stories |
+| Residential | First Floor Height | 12 ft | checkable | at most 12 ft |
+| Mixed-Use | First Floor Height | 15 ft | checkable | at most 15 ft |
+| Multi-Unit Commercial | First Floor Height | 15 ft | checkable | at most 15 ft |
+| Residential Accessory | First Floor Height | 10 ft | checkable | at most 10 ft |
+| Commercial Accessory | First Floor Height | 16 ft | checkable | at most 16 ft |
+| Residential | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Mixed-Use | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Multi-Unit Commercial | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Residential Accessory | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Commercial Accessory | Upper Floor Height | 8 ft | checkable | at most 8 ft |
 | Residential | Number of Units | - | not_established |  |
 | Mixed-Use | Number of Units | - | not_established |  |
-| Multi-Unit Commercial | Number of Units | 5 | needs_qualifier |  |
-| Residential Accessory | Number of Units | 1 | needs_qualifier |  |
-| Commercial Accessory | Number of Units | 1 | needs_qualifier |  |
+| Multi-Unit Commercial | Number of Units | 5 | checkable | at most 5 units |
+| Residential Accessory | Number of Units | 1 | checkable | at most 1 units |
+| Commercial Accessory | Number of Units | 1 | checkable | at most 1 units |
 
 ### D6 - Town Center
 
@@ -249,7 +249,7 @@ This memo says which of the Code's district standards the guided builder can che
 |  | Lot Area | n/a | not_established |  |
 |  | Primary Front Setback | 0 ft max | checkable | at most 0 ft |
 |  | Secondary Front Setback | 0 ft max | checkable | at most 0 ft |
-|  | Side Setback | 0 ft min (4) , 5 ft max (5) | unresolved |  |
+|  | Side Setback | 0 ft min (4) , 5 ft max (5) | checkable | at least 0 ft, at most 5 ft, the Board may allow up to 15 ft |
 |  | Rear Setback | 5 ft min | checkable | at least 5 ft |
 |  | Frontage Zone Setback | 20 ft min | checkable | at least 20 ft |
 |  | Primary Front Setback | 25 ft min | checkable | at least 25 ft |
@@ -260,34 +260,34 @@ This memo says which of the Code's district standards the guided builder can che
 | Mixed-Use | Permitting Authority | Planning Board | not_a_number |  |
 | Multi-Unit Commercial | Permitting Authority | Planning Board | not_a_number |  |
 | Commercial Accessory | Permitting Authority | Planning Board | not_a_number |  |
-| Residential | Building Width | 90 ft | needs_qualifier |  |
-| Mixed-Use | Building Width | 90 ft | needs_qualifier |  |
-| Multi-Unit Commercial | Building Width | 90 ft | needs_qualifier |  |
-| Commercial Accessory | Building Width | 30 ft | needs_qualifier |  |
-| Residential | Building Depth | 90 ft | needs_qualifier |  |
-| Mixed-Use | Building Depth | 90 ft | needs_qualifier |  |
-| Multi-Unit Commercial | Building Depth | 90 ft | needs_qualifier |  |
-| Commercial Accessory | Building Depth | 40 ft | needs_qualifier |  |
+| Residential | Building Width | 90 ft | checkable | at most 90 ft |
+| Mixed-Use | Building Width | 90 ft | checkable | at most 90 ft |
+| Multi-Unit Commercial | Building Width | 90 ft | checkable | at most 90 ft |
+| Commercial Accessory | Building Width | 30 ft | checkable | at most 30 ft |
+| Residential | Building Depth | 90 ft | checkable | at most 90 ft |
+| Mixed-Use | Building Depth | 90 ft | checkable | at most 90 ft |
+| Multi-Unit Commercial | Building Depth | 90 ft | checkable | at most 90 ft |
+| Commercial Accessory | Building Depth | 40 ft | checkable | at most 40 ft |
 | Residential | Building Floor Area | - | not_established |  |
 | Mixed-Use | Building Floor Area | - | not_established |  |
-| Multi-Unit Commercial | Building Floor Area | 18,000 sf | needs_qualifier |  |
+| Multi-Unit Commercial | Building Floor Area | 18,000 sf | checkable | at most 18000 sf |
 | Commercial Accessory | Building Floor Area | - | not_established |  |
 | Residential | Total Stories | 2 min. - 3 max. | checkable | at least 2 stories, at most 3 stories |
 | Mixed-Use | Total Stories | 2 min. - 3 max. | checkable | at least 2 stories, at most 3 stories |
 | Multi-Unit Commercial | Total Stories | 2 min. - 3 max. | checkable | at least 2 stories, at most 3 stories |
 | Commercial Accessory | Total Stories | 1 max. | checkable | at most 1 stories |
-| Residential | First Floor Height | 12 ft | needs_qualifier |  |
-| Mixed-Use | First Floor Height | 15 ft | needs_qualifier |  |
-| Multi-Unit Commercial | First Floor Height | 15 ft | needs_qualifier |  |
-| Commercial Accessory | First Floor Height | 15 ft | needs_qualifier |  |
-| Residential | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Mixed-Use | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Multi-Unit Commercial | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Commercial Accessory | Upper Floor Height | 8 ft | needs_qualifier |  |
+| Residential | First Floor Height | 12 ft | checkable | at most 12 ft |
+| Mixed-Use | First Floor Height | 15 ft | checkable | at most 15 ft |
+| Multi-Unit Commercial | First Floor Height | 15 ft | checkable | at most 15 ft |
+| Commercial Accessory | First Floor Height | 15 ft | checkable | at most 15 ft |
+| Residential | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Mixed-Use | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Multi-Unit Commercial | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Commercial Accessory | Upper Floor Height | 8 ft | checkable | at most 8 ft |
 | Residential | Number of Units | - | not_established |  |
 | Mixed-Use | Number of Units | - | not_established |  |
-| Multi-Unit Commercial | Number of Units | 20 | needs_qualifier |  |
-| Commercial Accessory | Number of Units | 1 | needs_qualifier |  |
+| Multi-Unit Commercial | Number of Units | 20 | checkable | at most 20 units |
+| Commercial Accessory | Number of Units | 1 | checkable | at most 1 units |
 
 ### SD - Historic
 
@@ -307,20 +307,20 @@ This memo says which of the Code's district standards the guided builder can che
 |  | Rear Setback | 8 ft min | checkable | at least 8 ft |
 | Residential | Permitting Authority | Planning Board | not_a_number |  |
 | Residential Accessory | Permitting Authority | CEO | not_a_number |  |
-| Residential | Building Width | 75 ft | needs_qualifier |  |
-| Residential Accessory | Building Width | 30 ft | needs_qualifier |  |
-| Residential | Building Depth | 50 ft | needs_qualifier |  |
-| Residential Accessory | Building Depth | 40 ft | needs_qualifier |  |
+| Residential | Building Width | 75 ft | checkable | at most 75 ft |
+| Residential Accessory | Building Width | 30 ft | checkable | at most 30 ft |
+| Residential | Building Depth | 50 ft | checkable | at most 50 ft |
+| Residential Accessory | Building Depth | 40 ft | checkable | at most 40 ft |
 | Residential | Building Floor Area | - | not_established |  |
 | Residential Accessory | Building Floor Area | - | not_established |  |
-| Residential | Total Stories | 2 | needs_qualifier |  |
-| Residential Accessory | Total Stories | 1 | needs_qualifier |  |
-| Residential | First Floor Height | 12 ft | needs_qualifier |  |
-| Residential Accessory | First Floor Height | 16 ft | needs_qualifier |  |
-| Residential | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Residential Accessory | Upper Floor Height | 8 ft | needs_qualifier |  |
+| Residential | Total Stories | 2 | checkable | at most 2 stories |
+| Residential Accessory | Total Stories | 1 | checkable | at most 1 stories |
+| Residential | First Floor Height | 12 ft | checkable | at most 12 ft |
+| Residential Accessory | First Floor Height | 16 ft | checkable | at most 16 ft |
+| Residential | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Residential Accessory | Upper Floor Height | 8 ft | checkable | at most 8 ft |
 | Residential | Number of Units | - | not_established |  |
-| Residential Accessory | Number of Units | 1 | needs_qualifier |  |
+| Residential Accessory | Number of Units | 1 | checkable | at most 1 units |
 
 ### SD - Conservation
 
@@ -360,41 +360,41 @@ This memo says which of the Code's district standards the guided builder can che
 | Multi-Unit Commercial | Permitting Authority | Planning Board | not_a_number |  |
 | Commercial Accessory | Permitting Authority | Planning Board | not_a_number |  |
 | Residential Accessory | Permitting Authority | CEO | not_a_number |  |
-| Single Unit Commercial | Building Width | 120 ft | needs_qualifier |  |
-| Mixed-Use | Building Width | 120 ft | needs_qualifier |  |
-| Multi-Unit Commercial | Building Width | 120 ft | needs_qualifier |  |
-| Commercial Accessory | Building Width | 30 ft | needs_qualifier |  |
-| Residential Accessory | Building Width | 30 ft | needs_qualifier |  |
+| Single Unit Commercial | Building Width | 120 ft | checkable | at most 120 ft |
+| Mixed-Use | Building Width | 120 ft | checkable | at most 120 ft |
+| Multi-Unit Commercial | Building Width | 120 ft | checkable | at most 120 ft |
+| Commercial Accessory | Building Width | 30 ft | checkable | at most 30 ft |
+| Residential Accessory | Building Width | 30 ft | checkable | at most 30 ft |
 | Single Unit Commercial | Building Depth | - | not_established |  |
 | Mixed-Use | Building Depth | - | not_established |  |
 | Multi-Unit Commercial | Building Depth | - | not_established |  |
-| Commercial Accessory | Building Depth | 40 ft | needs_qualifier |  |
-| Residential Accessory | Building Depth | 40 ft | needs_qualifier |  |
-| Single Unit Commercial | Building Floor Area | 60,000 | needs_unit |  |
-| Mixed-Use | Building Floor Area | 40,000 | needs_unit |  |
-| Multi-Unit Commercial | Building Floor Area | 60,000 | needs_unit |  |
+| Commercial Accessory | Building Depth | 40 ft | checkable | at most 40 ft |
+| Residential Accessory | Building Depth | 40 ft | checkable | at most 40 ft |
+| Single Unit Commercial | Building Floor Area | 60,000 | checkable | at most 60000 sf |
+| Mixed-Use | Building Floor Area | 40,000 | checkable | at most 40000 sf |
+| Multi-Unit Commercial | Building Floor Area | 60,000 | checkable | at most 60000 sf |
 | Commercial Accessory | Building Floor Area | - | not_established |  |
 | Residential Accessory | Building Floor Area | - | not_established |  |
-| Single Unit Commercial | Total Stories | 3 | needs_qualifier |  |
-| Mixed-Use | Total Stories | 3 | needs_qualifier |  |
-| Multi-Unit Commercial | Total Stories | 3 | needs_qualifier |  |
-| Commercial Accessory | Total Stories | 1 | needs_qualifier |  |
-| Residential Accessory | Total Stories | 1 | needs_qualifier |  |
-| Single Unit Commercial | First Floor Height | 12 ft | needs_qualifier |  |
-| Mixed-Use | First Floor Height | 15 ft | needs_qualifier |  |
-| Multi-Unit Commercial | First Floor Height | 15 ft | needs_qualifier |  |
-| Commercial Accessory | First Floor Height | 15 ft | needs_qualifier |  |
-| Residential Accessory | First Floor Height | 16 ft | needs_qualifier |  |
-| Single Unit Commercial | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Mixed-Use | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Multi-Unit Commercial | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Commercial Accessory | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Residential Accessory | Upper Floor Height | 8 ft | needs_qualifier |  |
-| Single Unit Commercial | Number of Units | 1 | needs_qualifier |  |
+| Single Unit Commercial | Total Stories | 3 | checkable | at most 3 stories |
+| Mixed-Use | Total Stories | 3 | checkable | at most 3 stories |
+| Multi-Unit Commercial | Total Stories | 3 | checkable | at most 3 stories |
+| Commercial Accessory | Total Stories | 1 | checkable | at most 1 stories |
+| Residential Accessory | Total Stories | 1 | checkable | at most 1 stories |
+| Single Unit Commercial | First Floor Height | 12 ft | checkable | at most 12 ft |
+| Mixed-Use | First Floor Height | 15 ft | checkable | at most 15 ft |
+| Multi-Unit Commercial | First Floor Height | 15 ft | checkable | at most 15 ft |
+| Commercial Accessory | First Floor Height | 15 ft | checkable | at most 15 ft |
+| Residential Accessory | First Floor Height | 16 ft | checkable | at most 16 ft |
+| Single Unit Commercial | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Mixed-Use | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Multi-Unit Commercial | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Commercial Accessory | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Residential Accessory | Upper Floor Height | 8 ft | checkable | at most 8 ft |
+| Single Unit Commercial | Number of Units | 1 | checkable | at most 1 units |
 | Mixed-Use | Number of Units | - | not_established |  |
 | Multi-Unit Commercial | Number of Units | - | not_established |  |
-| Commercial Accessory | Number of Units | 1 | needs_qualifier |  |
-| Residential Accessory | Number of Units | 1 | needs_qualifier |  |
+| Commercial Accessory | Number of Units | 1 | checkable | at most 1 units |
+| Residential Accessory | Number of Units | 1 | checkable | at most 1 units |
 
 ### SD - Rural Highway
 
@@ -417,41 +417,41 @@ This memo says which of the Code's district standards the guided builder can che
 | Multi-Unit Commercial | Permitting Authority | Planning Board | not_a_number |  |
 | Commercial Accessory | Permitting Authority | Planning Board | not_a_number |  |
 | Residential Accessory | Permitting Authority | CEO | not_a_number |  |
-| Single Unit Commercial | Building Width | 120 ft | needs_qualifier |  |
-| Mixed-Use | Building Width | 120 ft | needs_qualifier |  |
-| Multi-Unit Commercial | Building Width | 120 ft | needs_qualifier |  |
-| Commercial Accessory | Building Width | 30 ft | needs_qualifier |  |
-| Residential Accessory | Building Width | 30 ft | needs_qualifier |  |
+| Single Unit Commercial | Building Width | 120 ft | checkable | at most 120 ft |
+| Mixed-Use | Building Width | 120 ft | checkable | at most 120 ft |
+| Multi-Unit Commercial | Building Width | 120 ft | checkable | at most 120 ft |
+| Commercial Accessory | Building Width | 30 ft | checkable | at most 30 ft |
+| Residential Accessory | Building Width | 30 ft | checkable | at most 30 ft |
 | Single Unit Commercial | Building Depth | - | not_established |  |
 | Mixed-Use | Building Depth | - | not_established |  |
 | Multi-Unit Commercial | Building Depth | - | not_established |  |
-| Commercial Accessory | Building Depth | 40 ft | needs_qualifier |  |
-| Residential Accessory | Building Depth | 40 ft | needs_qualifier |  |
-| Single Unit Commercial | Building Floor Area | 60,000 sf | needs_qualifier |  |
-| Mixed-Use | Building Floor Area | 40,000 sf | needs_qualifier |  |
-| Multi-Unit Commercial | Building Floor Area | 60,000 sf | needs_qualifier |  |
+| Commercial Accessory | Building Depth | 40 ft | checkable | at most 40 ft |
+| Residential Accessory | Building Depth | 40 ft | checkable | at most 40 ft |
+| Single Unit Commercial | Building Floor Area | 60,000 sf | checkable | at most 60000 sf |
+| Mixed-Use | Building Floor Area | 40,000 sf | checkable | at most 40000 sf |
+| Multi-Unit Commercial | Building Floor Area | 60,000 sf | checkable | at most 60000 sf |
 | Commercial Accessory | Building Floor Area | - | not_established |  |
 | Residential Accessory | Building Floor Area | - | not_established |  |
-| Single Unit Commercial | Total Stories | 3 | needs_qualifier |  |
-| Mixed-Use | Total Stories | 3 | needs_qualifier |  |
-| Multi-Unit Commercial | Total Stories | 3 | needs_qualifier |  |
-| Commercial Accessory | Total Stories | 1 | needs_qualifier |  |
-| Residential Accessory | Total Stories | 1 | needs_qualifier |  |
-| Single Unit Commercial | First Floor Height | 12 ft | needs_qualifier |  |
-| Mixed-Use | First Floor Height | 15 ft | needs_qualifier |  |
-| Multi-Unit Commercial | First Floor Height | 15 ft | needs_qualifier |  |
-| Commercial Accessory | First Floor Height | 15 ft | needs_qualifier |  |
-| Residential Accessory | First Floor Height | 16 ft | needs_qualifier |  |
-| Single Unit Commercial | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Mixed-Use | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Multi-Unit Commercial | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Commercial Accessory | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Residential Accessory | Upper Floor Height | 8 ft | needs_qualifier |  |
-| Single Unit Commercial | Number of Units | 1 | needs_qualifier |  |
+| Single Unit Commercial | Total Stories | 3 | checkable | at most 3 stories |
+| Mixed-Use | Total Stories | 3 | checkable | at most 3 stories |
+| Multi-Unit Commercial | Total Stories | 3 | checkable | at most 3 stories |
+| Commercial Accessory | Total Stories | 1 | checkable | at most 1 stories |
+| Residential Accessory | Total Stories | 1 | checkable | at most 1 stories |
+| Single Unit Commercial | First Floor Height | 12 ft | checkable | at most 12 ft |
+| Mixed-Use | First Floor Height | 15 ft | checkable | at most 15 ft |
+| Multi-Unit Commercial | First Floor Height | 15 ft | checkable | at most 15 ft |
+| Commercial Accessory | First Floor Height | 15 ft | checkable | at most 15 ft |
+| Residential Accessory | First Floor Height | 16 ft | checkable | at most 16 ft |
+| Single Unit Commercial | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Mixed-Use | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Multi-Unit Commercial | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Commercial Accessory | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Residential Accessory | Upper Floor Height | 8 ft | checkable | at most 8 ft |
+| Single Unit Commercial | Number of Units | 1 | checkable | at most 1 units |
 | Mixed-Use | Number of Units | - | not_established |  |
-| Multi-Unit Commercial | Number of Units | 20 | needs_qualifier |  |
-| Commercial Accessory | Number of Units | 1 | needs_qualifier |  |
-| Residential Accessory | Number of Units | 1 | needs_qualifier |  |
+| Multi-Unit Commercial | Number of Units | 20 | checkable | at most 20 units |
+| Commercial Accessory | Number of Units | 1 | checkable | at most 1 units |
+| Residential Accessory | Number of Units | 1 | checkable | at most 1 units |
 
 ### SD - Campus
 
@@ -500,43 +500,57 @@ This memo says which of the Code's district standards the guided builder can che
 | Multi-Unit Commercial | Permitting Authority | Planning Board | not_a_number |  |
 | Commercial Accessory | Permitting Authority | Planning Board | not_a_number |  |
 | Residential Accessory | Permitting Authority | CEO | not_a_number |  |
-| Single Unit Commercial | Building Width | 120 ft | needs_qualifier |  |
-| Mixed-Use | Building Width | 150 ft | needs_qualifier |  |
-| Multi-Unit Commercial | Building Width | 120 ft | needs_qualifier |  |
-| Commercial Accessory | Building Width | 30 ft | needs_qualifier |  |
-| Residential Accessory | Building Width | 30 ft | needs_qualifier |  |
+| Single Unit Commercial | Building Width | 120 ft | checkable | at most 120 ft |
+| Mixed-Use | Building Width | 150 ft | checkable | at most 150 ft |
+| Multi-Unit Commercial | Building Width | 120 ft | checkable | at most 120 ft |
+| Commercial Accessory | Building Width | 30 ft | checkable | at most 30 ft |
+| Residential Accessory | Building Width | 30 ft | checkable | at most 30 ft |
 | Single Unit Commercial | Building Depth | - | not_established |  |
 | Mixed-Use | Building Depth | - | not_established |  |
 | Multi-Unit Commercial | Building Depth | - | not_established |  |
-| Commercial Accessory | Building Depth | 40 ft | needs_qualifier |  |
-| Residential Accessory | Building Depth | 40 ft | needs_qualifier |  |
-| Single Unit Commercial | Building Floor Area | 50,000 | needs_unit |  |
-| Mixed-Use | Building Floor Area | 60,000 | needs_unit |  |
-| Multi-Unit Commercial | Building Floor Area | 50,000 | needs_unit |  |
+| Commercial Accessory | Building Depth | 40 ft | checkable | at most 40 ft |
+| Residential Accessory | Building Depth | 40 ft | checkable | at most 40 ft |
+| Single Unit Commercial | Building Floor Area | 50,000 | checkable | at most 50000 sf |
+| Mixed-Use | Building Floor Area | 60,000 | checkable | at most 60000 sf |
+| Multi-Unit Commercial | Building Floor Area | 50,000 | checkable | at most 50000 sf |
 | Commercial Accessory | Building Floor Area | - | not_established |  |
 | Residential Accessory | Building Floor Area | - | not_established |  |
-| Single Unit Commercial | Total Stories | 2 | needs_qualifier |  |
-| Mixed-Use | Total Stories | 2 | needs_qualifier |  |
-| Multi-Unit Commercial | Total Stories | 2 | needs_qualifier |  |
-| Commercial Accessory | Total Stories | 1 | needs_qualifier |  |
-| Residential Accessory | Total Stories | 1 | needs_qualifier |  |
-| Single Unit Commercial | First Floor Height | 22 ft | needs_qualifier |  |
-| Mixed-Use | First Floor Height | 22 ft | needs_qualifier |  |
-| Multi-Unit Commercial | First Floor Height | 22 ft | needs_qualifier |  |
-| Commercial Accessory | First Floor Height | 22 ft | needs_qualifier |  |
-| Residential Accessory | First Floor Height | 16 ft | needs_qualifier |  |
-| Single Unit Commercial | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Mixed-Use | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Multi-Unit Commercial | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Commercial Accessory | Upper Floor Height | 10 ft | needs_qualifier |  |
-| Residential Accessory | Upper Floor Height | 8 ft | needs_qualifier |  |
-| Single Unit Commercial | Number of Units | 1 | needs_qualifier |  |
+| Single Unit Commercial | Total Stories | 2 | checkable | at most 2 stories |
+| Mixed-Use | Total Stories | 2 | checkable | at most 2 stories |
+| Multi-Unit Commercial | Total Stories | 2 | checkable | at most 2 stories |
+| Commercial Accessory | Total Stories | 1 | checkable | at most 1 stories |
+| Residential Accessory | Total Stories | 1 | checkable | at most 1 stories |
+| Single Unit Commercial | First Floor Height | 22 ft | checkable | at most 22 ft |
+| Mixed-Use | First Floor Height | 22 ft | checkable | at most 22 ft |
+| Multi-Unit Commercial | First Floor Height | 22 ft | checkable | at most 22 ft |
+| Commercial Accessory | First Floor Height | 22 ft | checkable | at most 22 ft |
+| Residential Accessory | First Floor Height | 16 ft | checkable | at most 16 ft |
+| Single Unit Commercial | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Mixed-Use | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Multi-Unit Commercial | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Commercial Accessory | Upper Floor Height | 10 ft | checkable | at most 10 ft |
+| Residential Accessory | Upper Floor Height | 8 ft | checkable | at most 8 ft |
+| Single Unit Commercial | Number of Units | 1 | checkable | at most 1 units |
 | Mixed-Use | Number of Units | - | not_established |  |
 | Multi-Unit Commercial | Number of Units | - | not_established |  |
-| Commercial Accessory | Number of Units | 1 | needs_qualifier |  |
-| Residential Accessory | Number of Units | 1 | needs_qualifier |  |
+| Commercial Accessory | Number of Units | 1 | checkable | at most 1 units |
+| Residential Accessory | Number of Units | 1 | checkable | at most 1 units |
 
 ## 3. Questions only the chair can answer
+
+**Already answered.**
+
+- The Code's own text: D2 - Neighborhood Residential, D3 - Neighborhood Business, D4 - Village Residential, D5 - Village Business, D6 - Town Center say in their BUILDINGS STANDARDS panel, "Unless otherwise noted, all measurements represent the maximum permitted values." Their bare numbers are read as maximums.
+- **total_stories**, every district without the note: decided by Ben Frey, Planning Board chair on 2026-11-02. D2-D6's own pages say so (BUILDINGS STANDARDS note 1: 'Unless otherwise noted, all measurements represent the maximum permitted values'); the chair reads the same rule into D1 and the SD districts, whose pages lack the note. Also §5.7.d.1 calls the Code's height standards, measured in stories (§5.7.c.1), maximums, and D6 states its minimum where it has one. Coverage memo Q3.
+- **building_width**, every district without the note: decided by Ben Frey, Planning Board chair on 2026-11-02. D2-D6's own pages say so (BUILDINGS STANDARDS note 1: 'Unless otherwise noted, all measurements represent the maximum permitted values'); the chair reads the same rule into D1 and the SD districts, whose pages lack the note. Also §5.3.c.4 (Width, Depth and Total Square Feet limit the Main Building Mass; components add beyond it) and §5.15.c.3 (expansion 'to the extent permitted by the assigned building type'). Coverage memo Q1.
+- **building_depth**, every district without the note: decided by Ben Frey, Planning Board chair on 2026-11-02. D2-D6's own pages say so (BUILDINGS STANDARDS note 1: 'Unless otherwise noted, all measurements represent the maximum permitted values'); the chair reads the same rule into D1 and the SD districts, whose pages lack the note. Also §5.3.c.4 and §5.15.c.3. Coverage memo Q2.
+- **building_floor_area**, every district without the note: decided by Ben Frey, Planning Board chair on 2026-11-02. D2-D6's own pages say so (BUILDINGS STANDARDS note 1: 'Unless otherwise noted, all measurements represent the maximum permitted values'); the chair reads the same rule into D1 and the SD districts, whose pages lack the note. Also §5.3.c.4.b (roof space not counted toward Total Square Feet, meaningful only for a cap). The seven floor areas printed without a unit are square feet: SD-Rural Highway prints the same numbers with 'sf', every other floor area is in sf, and §5.3.c.4 calls the row Total Square Feet. Coverage memo Q7 and Q8-Q14.
+- **first_floor_height**, every district without the note: decided by Ben Frey, Planning Board chair on 2026-11-02. D2-D6's own pages say so (BUILDINGS STANDARDS note 1: 'Unless otherwise noted, all measurements represent the maximum permitted values'); the chair reads the same rule into D1 and the SD districts, whose pages lack the note. The chair's reading: floor heights cap a building's scale. Coverage memo Q4 (first answered 'minimum', corrected the same day).
+- **upper_floor_height**, every district without the note: decided by Ben Frey, Planning Board chair on 2026-11-02. D2-D6's own pages say so (BUILDINGS STANDARDS note 1: 'Unless otherwise noted, all measurements represent the maximum permitted values'); the chair reads the same rule into D1 and the SD districts, whose pages lack the note. As for First Floor Height. Coverage memo Q5.
+- **number_of_units**, every district without the note: decided by Ben Frey, Planning Board chair on 2026-11-02. D2-D6's own pages say so (BUILDINGS STANDARDS note 1: 'Unless otherwise noted, all measurements represent the maximum permitted values'); the chair reads the same rule into D1 and the SD districts, whose pages lack the note. Units read as a cap (compare §5.18.d.3.b, 'up to 7 units'). Coverage memo Q6.
+- **primary_building_placement.side_setback**, d6: decided by Ben Frey, Planning Board chair on 2026-11-02. D6's notes 4 and 5, on its Article 2 page: one side of a new building must have a 0 ft side setback (note 4, checked by a later guide question), and the Planning Board may increase the side setback for access to the rear of the lot, but not beyond 15 ft (note 5). So 0-5 ft fits, over 5 up to 15 ft is the Board's decision, over 15 ft is outside. Coverage memo Q15; DECISIONS-NEEDED D-0004.
+
+**Still open.**
 
 The Code gives these numbers without a minimum or maximum, without a unit, or with a footnote whose text is missing. Until the chair answers, the builder can't check them and never treats them as a "no".
 
@@ -544,246 +558,13 @@ Article 5 says what the Permitted Buildings dimensions apply to:
 
 > The standards set forth in the Permitted Building tables under Article 2 - District Standards for Building Width, Building Depth, and Total Square Feet apply only to the Main Building Mass of Primary Buildings and Accessory Buildings.
 
-**Q1. Is Building Width in the Permitted Buildings tables a maximum?** If not, is it a minimum?
+**Q1. SD - Rural Highway, Width (1000 ft min (1)).** Footnote text for (1) is not present in the Article 2 extract (source/article-02-data.json). See DECISIONS-NEEDED.md.
 
-- D1 - Rural, Residential: 50 ft
-- D1 - Rural, General Accessory: 30 ft
-- D2 - Neighborhood Residential, Residential: 75 ft
-- D2 - Neighborhood Residential, Mixed-Use: 50 ft
-- D2 - Neighborhood Residential, Residential Accessory: 30 ft
-- D3 - Neighborhood Business, Residential: 50 ft
-- D3 - Neighborhood Business, Mixed-Use: 60 ft
-- D3 - Neighborhood Business, Residential Accessory: 30 ft
-- D3 - Neighborhood Business, Commercial Accessory: 30 ft
-- D4 - Village Residential, Residential: 60 ft
-- D4 - Village Residential, Residential Accessory: 30 ft
-- D5 - Village Business, Residential: 60 ft
-- D5 - Village Business, Mixed-Use: 60 ft
-- D5 - Village Business, Multi-Unit Commercial: 80 ft
-- D5 - Village Business, Residential Accessory: 30 ft
-- D5 - Village Business, Commercial Accessory: 30 ft
-- D6 - Town Center, Residential: 90 ft
-- D6 - Town Center, Mixed-Use: 90 ft
-- D6 - Town Center, Multi-Unit Commercial: 90 ft
-- D6 - Town Center, Commercial Accessory: 30 ft
-- SD - Historic, Residential: 75 ft
-- SD - Historic, Residential Accessory: 30 ft
-- SD - Highway Commercial, Single Unit Commercial: 120 ft
-- SD - Highway Commercial, Mixed-Use: 120 ft
-- SD - Highway Commercial, Multi-Unit Commercial: 120 ft
-- SD - Highway Commercial, Commercial Accessory: 30 ft
-- SD - Highway Commercial, Residential Accessory: 30 ft
-- SD - Rural Highway, Single Unit Commercial: 120 ft
-- SD - Rural Highway, Mixed-Use: 120 ft
-- SD - Rural Highway, Multi-Unit Commercial: 120 ft
-- SD - Rural Highway, Commercial Accessory: 30 ft
-- SD - Rural Highway, Residential Accessory: 30 ft
-- SD - Fabrication, Single Unit Commercial: 120 ft
-- SD - Fabrication, Mixed-Use: 150 ft
-- SD - Fabrication, Multi-Unit Commercial: 120 ft
-- SD - Fabrication, Commercial Accessory: 30 ft
-- SD - Fabrication, Residential Accessory: 30 ft
+**Q2. SD - Conservation has no Permitted Buildings table.** Article 2 establishes no building dimensional standards for the SD - Conservation District. What dimensional standards, if any, does the Board apply to this proposal?
 
-**Q2. Is Building Depth in the Permitted Buildings tables a maximum?** If not, is it a minimum?
+**Q3. SD - Campus has no Permitted Buildings table.** Article 2 establishes no building dimensional standards for the SD - Campus District. What dimensional standards, if any, does the Board apply to this proposal?
 
-- D1 - Rural, Residential: 50 ft
-- D1 - Rural, General Accessory: 40 ft
-- D2 - Neighborhood Residential, Residential: 50 ft
-- D2 - Neighborhood Residential, Mixed-Use: 50 ft
-- D2 - Neighborhood Residential, Residential Accessory: 40 ft
-- D3 - Neighborhood Business, Residential: 50 ft
-- D3 - Neighborhood Business, Mixed-Use: 50 ft
-- D3 - Neighborhood Business, Residential Accessory: 40 ft
-- D3 - Neighborhood Business, Commercial Accessory: 40 ft
-- D4 - Village Residential, Residential: 50 ft
-- D4 - Village Residential, Residential Accessory: 40 ft
-- D5 - Village Business, Residential: 75 ft
-- D5 - Village Business, Residential Accessory: 40 ft
-- D5 - Village Business, Commercial Accessory: 30 ft
-- D6 - Town Center, Residential: 90 ft
-- D6 - Town Center, Mixed-Use: 90 ft
-- D6 - Town Center, Multi-Unit Commercial: 90 ft
-- D6 - Town Center, Commercial Accessory: 40 ft
-- SD - Historic, Residential: 50 ft
-- SD - Historic, Residential Accessory: 40 ft
-- SD - Highway Commercial, Commercial Accessory: 40 ft
-- SD - Highway Commercial, Residential Accessory: 40 ft
-- SD - Rural Highway, Commercial Accessory: 40 ft
-- SD - Rural Highway, Residential Accessory: 40 ft
-- SD - Fabrication, Commercial Accessory: 40 ft
-- SD - Fabrication, Residential Accessory: 40 ft
-
-**Q3. Is Total Stories in the Permitted Buildings tables a maximum?** If not, is it a minimum?
-
-- D1 - Rural, Residential: 2
-- D1 - Rural, General Accessory: 1
-- D2 - Neighborhood Residential, Residential: 2
-- D2 - Neighborhood Residential, Mixed-Use: 2
-- D2 - Neighborhood Residential, Residential Accessory: 1
-- D3 - Neighborhood Business, Residential: 2
-- D3 - Neighborhood Business, Mixed-Use: 2
-- D3 - Neighborhood Business, Residential Accessory: 1
-- D3 - Neighborhood Business, Commercial Accessory: 1
-- D4 - Village Residential, Residential: 2
-- D4 - Village Residential, Residential Accessory: 1
-- D5 - Village Business, Residential: 2
-- D5 - Village Business, Mixed-Use: 2
-- D5 - Village Business, Multi-Unit Commercial: 2
-- D5 - Village Business, Residential Accessory: 2
-- D5 - Village Business, Commercial Accessory: 1
-- SD - Historic, Residential: 2
-- SD - Historic, Residential Accessory: 1
-- SD - Highway Commercial, Single Unit Commercial: 3
-- SD - Highway Commercial, Mixed-Use: 3
-- SD - Highway Commercial, Multi-Unit Commercial: 3
-- SD - Highway Commercial, Commercial Accessory: 1
-- SD - Highway Commercial, Residential Accessory: 1
-- SD - Rural Highway, Single Unit Commercial: 3
-- SD - Rural Highway, Mixed-Use: 3
-- SD - Rural Highway, Multi-Unit Commercial: 3
-- SD - Rural Highway, Commercial Accessory: 1
-- SD - Rural Highway, Residential Accessory: 1
-- SD - Fabrication, Single Unit Commercial: 2
-- SD - Fabrication, Mixed-Use: 2
-- SD - Fabrication, Multi-Unit Commercial: 2
-- SD - Fabrication, Commercial Accessory: 1
-- SD - Fabrication, Residential Accessory: 1
-
-**Q4. Is First Floor Height in the Permitted Buildings tables a maximum?** If not, is it a minimum?
-
-- D1 - Rural, Residential: 12 ft
-- D1 - Rural, General Accessory: 16 ft
-- D2 - Neighborhood Residential, Residential: 12 ft
-- D2 - Neighborhood Residential, Mixed-Use: 12 ft
-- D2 - Neighborhood Residential, Residential Accessory: 16 ft
-- D3 - Neighborhood Business, Residential: 12 ft
-- D3 - Neighborhood Business, Mixed-Use: 15 ft
-- D3 - Neighborhood Business, Residential Accessory: 16 ft
-- D3 - Neighborhood Business, Commercial Accessory: 16 ft
-- D4 - Village Residential, Residential: 12 ft
-- D4 - Village Residential, Residential Accessory: 16 ft
-- D5 - Village Business, Residential: 12 ft
-- D5 - Village Business, Mixed-Use: 15 ft
-- D5 - Village Business, Multi-Unit Commercial: 15 ft
-- D5 - Village Business, Residential Accessory: 10 ft
-- D5 - Village Business, Commercial Accessory: 16 ft
-- D6 - Town Center, Residential: 12 ft
-- D6 - Town Center, Mixed-Use: 15 ft
-- D6 - Town Center, Multi-Unit Commercial: 15 ft
-- D6 - Town Center, Commercial Accessory: 15 ft
-- SD - Historic, Residential: 12 ft
-- SD - Historic, Residential Accessory: 16 ft
-- SD - Highway Commercial, Single Unit Commercial: 12 ft
-- SD - Highway Commercial, Mixed-Use: 15 ft
-- SD - Highway Commercial, Multi-Unit Commercial: 15 ft
-- SD - Highway Commercial, Commercial Accessory: 15 ft
-- SD - Highway Commercial, Residential Accessory: 16 ft
-- SD - Rural Highway, Single Unit Commercial: 12 ft
-- SD - Rural Highway, Mixed-Use: 15 ft
-- SD - Rural Highway, Multi-Unit Commercial: 15 ft
-- SD - Rural Highway, Commercial Accessory: 15 ft
-- SD - Rural Highway, Residential Accessory: 16 ft
-- SD - Fabrication, Single Unit Commercial: 22 ft
-- SD - Fabrication, Mixed-Use: 22 ft
-- SD - Fabrication, Multi-Unit Commercial: 22 ft
-- SD - Fabrication, Commercial Accessory: 22 ft
-- SD - Fabrication, Residential Accessory: 16 ft
-
-**Q5. Is Upper Floor Height in the Permitted Buildings tables a maximum?** If not, is it a minimum?
-
-- D1 - Rural, Residential: 10 ft
-- D1 - Rural, General Accessory: 10 ft
-- D2 - Neighborhood Residential, Residential: 10 ft
-- D2 - Neighborhood Residential, Mixed-Use: 10 ft
-- D2 - Neighborhood Residential, Residential Accessory: 8 ft
-- D3 - Neighborhood Business, Residential: 10 ft
-- D3 - Neighborhood Business, Mixed-Use: 10 ft
-- D3 - Neighborhood Business, Residential Accessory: 8 ft
-- D3 - Neighborhood Business, Commercial Accessory: 8 ft
-- D4 - Village Residential, Residential: 10 ft
-- D4 - Village Residential, Residential Accessory: 8 ft
-- D5 - Village Business, Residential: 10 ft
-- D5 - Village Business, Mixed-Use: 10 ft
-- D5 - Village Business, Multi-Unit Commercial: 10 ft
-- D5 - Village Business, Residential Accessory: 10 ft
-- D5 - Village Business, Commercial Accessory: 8 ft
-- D6 - Town Center, Residential: 10 ft
-- D6 - Town Center, Mixed-Use: 10 ft
-- D6 - Town Center, Multi-Unit Commercial: 10 ft
-- D6 - Town Center, Commercial Accessory: 8 ft
-- SD - Historic, Residential: 10 ft
-- SD - Historic, Residential Accessory: 8 ft
-- SD - Highway Commercial, Single Unit Commercial: 10 ft
-- SD - Highway Commercial, Mixed-Use: 10 ft
-- SD - Highway Commercial, Multi-Unit Commercial: 10 ft
-- SD - Highway Commercial, Commercial Accessory: 10 ft
-- SD - Highway Commercial, Residential Accessory: 8 ft
-- SD - Rural Highway, Single Unit Commercial: 10 ft
-- SD - Rural Highway, Mixed-Use: 10 ft
-- SD - Rural Highway, Multi-Unit Commercial: 10 ft
-- SD - Rural Highway, Commercial Accessory: 10 ft
-- SD - Rural Highway, Residential Accessory: 8 ft
-- SD - Fabrication, Single Unit Commercial: 10 ft
-- SD - Fabrication, Mixed-Use: 10 ft
-- SD - Fabrication, Multi-Unit Commercial: 10 ft
-- SD - Fabrication, Commercial Accessory: 10 ft
-- SD - Fabrication, Residential Accessory: 8 ft
-
-**Q6. Is Number of Units in the Permitted Buildings tables a maximum?** If not, is it a minimum?
-
-- D1 - Rural, General Accessory: 2
-- D2 - Neighborhood Residential, Residential Accessory: 1
-- D3 - Neighborhood Business, Residential Accessory: 1
-- D3 - Neighborhood Business, Commercial Accessory: 1
-- D4 - Village Residential, Residential Accessory: 1
-- D5 - Village Business, Multi-Unit Commercial: 5
-- D5 - Village Business, Residential Accessory: 1
-- D5 - Village Business, Commercial Accessory: 1
-- D6 - Town Center, Multi-Unit Commercial: 20
-- D6 - Town Center, Commercial Accessory: 1
-- SD - Historic, Residential Accessory: 1
-- SD - Highway Commercial, Single Unit Commercial: 1
-- SD - Highway Commercial, Commercial Accessory: 1
-- SD - Highway Commercial, Residential Accessory: 1
-- SD - Rural Highway, Single Unit Commercial: 1
-- SD - Rural Highway, Multi-Unit Commercial: 20
-- SD - Rural Highway, Commercial Accessory: 1
-- SD - Rural Highway, Residential Accessory: 1
-- SD - Fabrication, Single Unit Commercial: 1
-- SD - Fabrication, Commercial Accessory: 1
-- SD - Fabrication, Residential Accessory: 1
-
-**Q7. Is Building Floor Area in the Permitted Buildings tables a maximum?** If not, is it a minimum?
-
-- D4 - Village Residential, Residential: 8,000 sf
-- D6 - Town Center, Multi-Unit Commercial: 18,000 sf
-- SD - Rural Highway, Single Unit Commercial: 60,000 sf
-- SD - Rural Highway, Mixed-Use: 40,000 sf
-- SD - Rural Highway, Multi-Unit Commercial: 60,000 sf
-
-**Q8. What unit is the Building Floor Area of 12,000 for Mixed-Use in D5 - Village Business?** The Code gives '12,000' for Building Floor Area without a unit.
-
-**Q9. What unit is the Building Floor Area of 60,000 for Single Unit Commercial in SD - Highway Commercial?** The Code gives '60,000' for Building Floor Area without a unit.
-
-**Q10. What unit is the Building Floor Area of 40,000 for Mixed-Use in SD - Highway Commercial?** The Code gives '40,000' for Building Floor Area without a unit.
-
-**Q11. What unit is the Building Floor Area of 60,000 for Multi-Unit Commercial in SD - Highway Commercial?** The Code gives '60,000' for Building Floor Area without a unit.
-
-**Q12. What unit is the Building Floor Area of 50,000 for Single Unit Commercial in SD - Fabrication?** The Code gives '50,000' for Building Floor Area without a unit.
-
-**Q13. What unit is the Building Floor Area of 60,000 for Mixed-Use in SD - Fabrication?** The Code gives '60,000' for Building Floor Area without a unit.
-
-**Q14. What unit is the Building Floor Area of 50,000 for Multi-Unit Commercial in SD - Fabrication?** The Code gives '50,000' for Building Floor Area without a unit.
-
-**Q15. D6 - Town Center, Side Setback (0 ft min (4) , 5 ft max (5)).** Footnote text for (4), (5) is not present in the Article 2 extract (source/article-02-data.json). See DECISIONS-NEEDED.md.
-
-**Q16. SD - Rural Highway, Width (1000 ft min (1)).** Footnote text for (1) is not present in the Article 2 extract (source/article-02-data.json). See DECISIONS-NEEDED.md.
-
-**Q17. SD - Conservation has no Permitted Buildings table.** Article 2 establishes no building dimensional standards for the SD - Conservation District. What dimensional standards, if any, does the Board apply to this proposal?
-
-**Q18. SD - Campus has no Permitted Buildings table.** Article 2 establishes no building dimensional standards for the SD - Campus District. What dimensional standards, if any, does the Board apply to this proposal?
-
-**Q19. SD - Marine has no Permitted Buildings table.** Article 2 establishes no building dimensional standards for the SD - Marine District. What dimensional standards, if any, does the Board apply to this proposal?
+**Q4. SD - Marine has no Permitted Buildings table.** Article 2 establishes no building dimensional standards for the SD - Marine District. What dimensional standards, if any, does the Board apply to this proposal?
 
 ## 4. What the Code says in prose, not yet checkable
 

@@ -52,12 +52,23 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
     approved, denied, granted, rejected, permit issued, compliant, violates); whether a new house is
     checked against the Residential column and the primary-building placement panel, as the
     approved form already pairs them; and the first-draft wording in `portal/api/portal_api/guide/definitions/`.
-    Until the coverage memo's question 1 is answered, no new house reaches "ready to send": Total
-    Stories can't be checked in any district but D6, and D6's side setback is unresolved.
-  - **For the chair (rules coverage):** `memos/2026-10-30-guided-builder-rules-coverage.md` asks 19
-    questions the Code leaves open (whether the Permitted Buildings numbers are maximums, seven
-    floor areas without a unit, two missing footnotes, three districts without a buildings table),
-    plus where the shoreland standards and map live and whether permits on record exist by lot.
+  - **Rules coverage, answered by the chair 2026-11-02** (`memos/2026-10-30-guided-builder-rules-coverage.md`,
+    regenerated; answers in `portal/api/portal_api/standards_overrides.json`, each with its basis):
+    the Permitted Buildings numbers are maximums, floor heights included. D2–D6 already say so on
+    their pages (BUILDINGS STANDARDS note 1: "Unless otherwise noted, all measurements represent the
+    maximum permitted values"), and the chair reads the same rule into D1 and the SD districts. The
+    seven unitless floor areas are square feet. D6's side setback: 0–5 ft fits, and up to 15 ft is
+    the Board's call (notes 4 and 5, DECISIONS-NEEDED D-0004). Checkable standards: 111 → 315.
+  - **For the Board (rules coverage):** whether SD-Rural Highway's 1,000 ft minimum lot width applies
+    to every lot or only to lots on Route 1 (its note 1; D-0003); and what building standards, if any,
+    apply in SD-Conservation, SD-Campus and SD-Marine, which have no Permitted Buildings table.
+  - **For the next Code amendment (from the coverage answers):** put "max." on the bare Permitted
+    Buildings numbers, or the "maximum" note on D1's and the SD districts' pages; add "sf" to the
+    seven floor areas (D5 Mixed-Use; SD-Highway Commercial; SD-Fabrication); and reconcile §5.14.c.1.a
+    (a public mezzanine needs an 18 ft story) with first-floor maximums of 10–16 ft, which allow
+    one only in SD-Fabrication.
+  - **Still for the chair:** where the shoreland standards and map live, and whether permits on record
+    exist by lot (coverage memo §5–§6).
   - **For the chair:** may applicants' conversations go to an outside AI (spec decision 14)? Separate
     from D-0025.
 

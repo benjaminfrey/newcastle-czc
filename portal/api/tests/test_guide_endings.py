@@ -49,19 +49,16 @@ def test_a_house_that_fits_is_ready_with_its_reviews(content):
     assert s.ending["title"] == "Your application is ready to send"
 
 
-def test_no_new_house_is_ready_on_todays_ruleset(content):
-    """Total Stories is a bare number everywhere but D6, and D6's side setback is unresolved:
-    the coverage memo's question 1, seen from the applicant's side. Changes when the chair answers."""
-    for code in CODES:
-        s = replay(content, "new_house", lot(code), [*START, *STORIES, *SIZE, *D1_SETBACKS])
-        while s.current is not None and s.current.turn_id.startswith("doesnt_fit:"):
-            s = replay(content, "new_house", lot(code),
-                       [*START, *STORIES, *SIZE, *D1_SETBACKS, a(s.current.turn_id, "keep_mine")])
-        assert s.ending["kind"] == "town_judgment", code
+@pytest.mark.parametrize("code", ["D1", "D4"])
+def test_a_two_story_house_that_fits_is_ready(content, code):
+    """With the chair's answers (2026-11-02), stories are checked everywhere with a buildings table."""
+    s = replay(content, "new_house", lot(code), [*START, *STORIES, *SIZE, *D1_SETBACKS])
+    assert s.ending["kind"] == "ready", s.ending["unsettled"]
+    assert dict(s.checks)["basement_exposed_5ft"]["result"] == "fits"
 
 
 def test_cannot_check_goes_to_the_town_not_to_no(content):
-    s = replay(content, "new_house", lot("D4"), [*START, *STORIES, *SIZE, *D1_SETBACKS])
+    s = replay(content, "new_house", lot("SD-Conservation"), [*START, *STORIES, *SIZE, *D1_SETBACKS])
     assert s.ending["kind"] == "town_judgment"
     unsettled = {u["turn_id"]: u["reason"] for u in s.ending["unsettled"]}
     assert unsettled["basement_exposed_5ft"] == "not_checkable"

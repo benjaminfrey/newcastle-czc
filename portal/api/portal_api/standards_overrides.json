@@ -1,1 +1,79 @@
-{"overrides": []}
+{
+  "overrides": [
+    {
+      "district_key": "*",
+      "building": "*",
+      "field": "total_stories",
+      "qualifier": "max",
+      "decided_by": "Ben Frey, Planning Board chair",
+      "decided_at": "2026-11-02",
+      "basis": "D2-D6's own pages say so (BUILDINGS STANDARDS note 1: 'Unless otherwise noted, all measurements represent the maximum permitted values'); the chair reads the same rule into D1 and the SD districts, whose pages lack the note. Also §5.7.d.1 calls the Code's height standards, measured in stories (§5.7.c.1), maximums, and D6 states its minimum where it has one. Coverage memo Q3."
+    },
+    {
+      "district_key": "*",
+      "building": "*",
+      "field": "building_width",
+      "qualifier": "max",
+      "decided_by": "Ben Frey, Planning Board chair",
+      "decided_at": "2026-11-02",
+      "basis": "D2-D6's own pages say so (BUILDINGS STANDARDS note 1: 'Unless otherwise noted, all measurements represent the maximum permitted values'); the chair reads the same rule into D1 and the SD districts, whose pages lack the note. Also §5.3.c.4 (Width, Depth and Total Square Feet limit the Main Building Mass; components add beyond it) and §5.15.c.3 (expansion 'to the extent permitted by the assigned building type'). Coverage memo Q1."
+    },
+    {
+      "district_key": "*",
+      "building": "*",
+      "field": "building_depth",
+      "qualifier": "max",
+      "decided_by": "Ben Frey, Planning Board chair",
+      "decided_at": "2026-11-02",
+      "basis": "D2-D6's own pages say so (BUILDINGS STANDARDS note 1: 'Unless otherwise noted, all measurements represent the maximum permitted values'); the chair reads the same rule into D1 and the SD districts, whose pages lack the note. Also §5.3.c.4 and §5.15.c.3. Coverage memo Q2."
+    },
+    {
+      "district_key": "*",
+      "building": "*",
+      "field": "building_floor_area",
+      "qualifier": "max",
+      "unit": "sf",
+      "decided_by": "Ben Frey, Planning Board chair",
+      "decided_at": "2026-11-02",
+      "basis": "D2-D6's own pages say so (BUILDINGS STANDARDS note 1: 'Unless otherwise noted, all measurements represent the maximum permitted values'); the chair reads the same rule into D1 and the SD districts, whose pages lack the note. Also §5.3.c.4.b (roof space not counted toward Total Square Feet, meaningful only for a cap). The seven floor areas printed without a unit are square feet: SD-Rural Highway prints the same numbers with 'sf', every other floor area is in sf, and §5.3.c.4 calls the row Total Square Feet. Coverage memo Q7 and Q8-Q14."
+    },
+    {
+      "district_key": "*",
+      "building": "*",
+      "field": "first_floor_height",
+      "qualifier": "max",
+      "decided_by": "Ben Frey, Planning Board chair",
+      "decided_at": "2026-11-02",
+      "basis": "D2-D6's own pages say so (BUILDINGS STANDARDS note 1: 'Unless otherwise noted, all measurements represent the maximum permitted values'); the chair reads the same rule into D1 and the SD districts, whose pages lack the note. The chair's reading: floor heights cap a building's scale. Coverage memo Q4 (first answered 'minimum', corrected the same day)."
+    },
+    {
+      "district_key": "*",
+      "building": "*",
+      "field": "upper_floor_height",
+      "qualifier": "max",
+      "decided_by": "Ben Frey, Planning Board chair",
+      "decided_at": "2026-11-02",
+      "basis": "D2-D6's own pages say so (BUILDINGS STANDARDS note 1: 'Unless otherwise noted, all measurements represent the maximum permitted values'); the chair reads the same rule into D1 and the SD districts, whose pages lack the note. As for First Floor Height. Coverage memo Q5."
+    },
+    {
+      "district_key": "*",
+      "building": "*",
+      "field": "number_of_units",
+      "qualifier": "max",
+      "decided_by": "Ben Frey, Planning Board chair",
+      "decided_at": "2026-11-02",
+      "basis": "D2-D6's own pages say so (BUILDINGS STANDARDS note 1: 'Unless otherwise noted, all measurements represent the maximum permitted values'); the chair reads the same rule into D1 and the SD districts, whose pages lack the note. Units read as a cap (compare §5.18.d.3.b, 'up to 7 units'). Coverage memo Q6."
+    },
+    {
+      "source": "dimension",
+      "district_key": "d6",
+      "field": "primary_building_placement.side_setback",
+      "min": 0,
+      "max": 5,
+      "board_may_allow_to": 15,
+      "decided_by": "Ben Frey, Planning Board chair",
+      "decided_at": "2026-11-02",
+      "basis": "D6's notes 4 and 5, on its Article 2 page: one side of a new building must have a 0 ft side setback (note 4, checked by a later guide question), and the Planning Board may increase the side setback for access to the rear of the lot, but not beyond 15 ft (note 5). So 0-5 ft fits, over 5 up to 15 ft is the Board's decision, over 15 ft is outside. Coverage memo Q15; DECISIONS-NEEDED D-0004."
+    }
+  ]
+}

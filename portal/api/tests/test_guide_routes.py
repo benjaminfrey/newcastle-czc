@@ -15,7 +15,7 @@ from tests.test_auth import _sign_in
 from tests.test_projects import alice, app, bob, create, get  # noqa: F401  (fixtures)
 from tests.test_property import layers  # noqa: F401  (fixture)
 
-STORIES = [("full_stories", 2), ("roof_floors", 1), ("top_knee_over_3ft", "yes"), ("basement_exposed_5ft", "no")]
+STORIES = [("full_stories", 2), ("roof_floors", 1), ("top_knee_over_3ft", "no"), ("basement_exposed_5ft", "no")]
 
 
 def start(client, pid, opening="new_house"):
@@ -165,8 +165,7 @@ def test_the_bridge_fills_the_form_answers(alice):
     walk(alice, pid, [("lot", "yes"), ("confirm", "yes"), *STORIES, ("floor_area", 1800), ("dwelling_units", 1),
                       ("setback_front", 25)])
     v = building_values(alice, pid)
-    # The form asks for floors above ground without the roof or basement: the full stories. The
-    # Code's count (3 here, 5.7.c.5) stays in the guide's record and its check.
+    # The form asks for floors above ground without the roof or basement: the full stories.
     assert v["stories"] == 2
     assert v["setback_front"] == 25 and v["floor_area"] == 1800 and v["dwelling_units"] == 1
 
