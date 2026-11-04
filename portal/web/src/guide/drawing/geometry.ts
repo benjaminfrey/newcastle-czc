@@ -40,9 +40,9 @@ export function frontFrame(outline: Outline, frontId: string): Frame | null {
   if (!line) return null;
   const a = line.points[0]; const b = line.points[line.points.length - 1];
   const len = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
-  let u: Pt = [(b[0] - a[0]) / len, (b[1] - a[1]) / len];
-  const mid = mul(add(a, b), 0.5);
-  if (!inside(outline.parts[0], add(mid, mul([-u[1], u[0]], Math.min(1, len / 100))))) u = mul(u, -1);
+  // The API's lines run clockwise round the lot (y north), so the lot is on each line's right.
+  // (Probing beside the chord's middle fails for a front that bends outward, as on lot 4-36.)
+  const u: Pt = [-(b[0] - a[0]) / len, -(b[1] - a[1]) / len];
   const v: Pt = [-u[1], u[0]];
   const origin = line.points.reduce((m, p) => (dot(p, u) < dot(m, u) ? p : m), line.points[0]);
   return { origin, u, v };
@@ -65,14 +65,34 @@ export function rayToBoundary(poly: Pt[], from: Pt, dir: Pt): number | null {
   return best;
 }
 
+/** The nearest boundary u left and right of `uMid` within vFront < v < vRear, or null when the
+ *  boundary crosses the middle there. Points are in the front frame. */
+function bandAround(ring: Pt[], v0: number, v1: number, uMid: number): [number, number] | null {
+  const lo = v0 + EPS; const hi = v1 - EPS;
+  let left = -Infinity; let right = Infinity;
+  for (let i = 0; i < ring.length; i++) {
+    let [a, b] = [ring[i], ring[(i + 1) % ring.length]];
+    if (a[1] > b[1]) [a, b] = [b, a];
+    if (b[1] < lo || a[1] > hi) continue;
+    const at = (v: number): Pt => (b[1] === a[1] ? a : [a[0] + ((v - a[1]) * (b[0] - a[0])) / (b[1] - a[1]), v]);
+    const p = a[1] < lo ? at(lo) : a; const q = b[1] > hi ? at(hi) : b;
+    if ((p[0] - uMid) * (q[0] - uMid) <= 0) return null;
+    for (const u of [p[0], q[0]]) {
+      if (u < uMid) left = Math.max(left, u); else right = Math.min(right, u);
+    }
+  }
+  return Number.isFinite(left) && Number.isFinite(right) ? [left, right] : null;
+}
+
 function spanOfFront(outline: Outline, f: Frame, frontId: string): [number, number] {
   const us = outline.lines.find((l) => l.id === frontId)!.points.map((p) => toFrame(f, p)[0]);
   return [Math.min(...us), Math.max(...us)];
 }
 
 /** The house as the person's distances place it, in the front frame: front edge at `front`
- *  from the front line, the rest at their distances from the boundary (or on the boundary when
- *  not entered yet). Null without a front distance, or when the distances cross. */
+ *  from the front line, the rest at their distances from the boundary (a side not entered yet on
+ *  the boundary, a rear not entered yet halfway back). Null without a front distance, or when
+ *  the distances cross. */
 export function houseBox(outline: Outline, frontId: string, d: Distances, flip = false): Pt[] | null {
   const f = frontFrame(outline, frontId);
   if (!f || d.front == null) return null;
@@ -83,18 +103,17 @@ export function houseBox(outline: Outline, frontId: string, d: Distances, flip =
   if (!inside(poly, start)) return null;
   const toRear = rayToBoundary(poly, start, f.v);
   if (toRear == null) return null;
-  const vFront = d.front; const vRear = d.front + toRear - (d.rear ?? 0);
+  // A rear edge not entered yet stops halfway back: run to the boundary, a box on a lot that
+  // narrows away from the road (a wedge, like lot 4-36) would shrink to nothing. Picture only.
+  const vFront = d.front; const vRear = d.front + (d.rear == null ? toRear / 2 : toRear - d.rear);
   if (vFront >= vRear) return null;
-  // The sides are measured at the box's front, middle and back, and the narrowest wins, so the
-  // box stays inside a lot that narrows or widens away from the road.
-  let bLeft = -Infinity; let bRight = Infinity;
-  const inset = Math.min(0.5, (vRear - vFront) / 4);
-  for (const v of [vFront + inset, (vFront + vRear) / 2, vRear - inset]) {
-    const at = fromFrame(f, [uMid, v]);
-    const toLeft = rayToBoundary(poly, at, mul(f.u, -1)); const toRight = rayToBoundary(poly, at, f.u);
-    if (toLeft == null || toRight == null) return null;
-    bLeft = Math.max(bLeft, uMid - toLeft); bRight = Math.min(bRight, uMid + toRight);
-  }
+  // How wide the lot is across the box's whole depth: every boundary edge is clipped to the band
+  // between the box's front and rear, and the nearest boundary point on each side of the middle
+  // limits that side. Exact for any outline (sampling a few depths let a corner poke out of a lot
+  // whose edge pinches in between them).
+  const band = bandAround(poly.map((p) => toFrame(f, p)), vFront, vRear, uMid);
+  if (!band) return null;
+  const [bLeft, bRight] = band;
   const left = flip ? d.side_2 : d.side_1; const right = flip ? d.side_1 : d.side_2;
   const uLeft = bLeft + (left ?? 0); const uRight = bRight - (right ?? 0);
   if (uLeft >= uRight) return null;

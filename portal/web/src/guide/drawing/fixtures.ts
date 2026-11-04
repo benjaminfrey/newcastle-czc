@@ -57,3 +57,10 @@ const NOISY_RING = noisy();
 export const NOISY96: Drawing = {
   outline: { ...RECT_OUTLINE, parts: [NOISY_RING] }, front: "L1", roles: RECT.roles, limits: RECT.limits,
 };
+
+// Lot 4-36 as the tax map has it (LAN copy, 2026-11-03): a wedge whose road frontage bends
+// outward, so both sides of its chord's middle are inside the lot.
+const WEDGE_OUTLINE: Outline = { units: "ft", approximate: true, parts: [[[99.9, 154.7], [121.9, 136.7], [175.2, 94.0], [194.2, 43.2], [194.2, 18.6], [193.9, -81.5], [181.6, -211.1], [171.4, -258.9], [148.2, -243.6], [-0.2, -145.7], [-170.1, -33.7], [-254.4, 55.0], [-333.9, 138.7], [-348.0, 155.8], [-235.8, 133.4], [-53.5, 138.3], [22.4, 166.2]]],
+  lines: [{"id": "L1", "points": [[171.4, -258.9], [148.2, -243.6], [-0.2, -145.7], [-170.1, -33.7], [-254.4, 55.0], [-333.9, 138.7], [-348.0, 155.8]], "length_ft": 669, "street": {"name": "Sheepscot Road", "type": "R1"}}, {"id": "L2", "points": [[-348.0, 155.8], [-235.8, 133.4], [-53.5, 138.3], [22.4, 166.2]], "length_ft": 378, "street": null}, {"id": "L3", "points": [[22.4, 166.2], [99.9, 154.7]], "length_ft": 78, "street": null}, {"id": "L4", "points": [[99.9, 154.7], [121.9, 136.7], [175.2, 94.0]], "length_ft": 97, "street": null}, {"id": "L5", "points": [[175.2, 94.0], [194.2, 43.2], [194.2, 18.6], [193.9, -81.5], [181.6, -211.1], [171.4, -258.9]], "length_ft": 358, "street": null}], streets: [] };
+export const WEDGE: Drawing = { outline: WEDGE_OUTLINE, front: "L1",
+  roles: { L1: "front", L2: "rear", L3: "side", L4: "side", L5: "side" }, limits: RECT.limits };

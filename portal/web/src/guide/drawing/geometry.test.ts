@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { Pt } from "../api";
 import { dragDistance, fitView, frontFrame, fromFrame, houseBox, rayToBoundary, toFrame } from "./geometry";
-import { NOISY96, RECT, TRAPEZOID } from "./fixtures";
+import { NOISY96, RECT, TRAPEZOID, WEDGE } from "./fixtures";
 
 const rect = RECT.outline!;
 const inFrame = (box: Pt[]) => box.map((p) => toFrame(frontFrame(rect, "L1")!, p));
+const inFrameOf = (o: typeof rect, box: Pt[]) => box.map((p) => toFrame(frontFrame(o, "L1")!, p));
 const span = (pts: Pt[], k: 0 | 1) => [Math.min(...pts.map((p) => p[k])), Math.max(...pts.map((p) => p[k]))];
 
 function inside(poly: Pt[], p: Pt) {
@@ -57,10 +58,10 @@ describe("drawing geometry", () => {
     expect(houseBox(rect, "L1", { side_1: 20 })).toBeNull();
   });
 
-  it("houseBox uses the lot's own edge for a distance not entered yet", () => {
+  it("houseBox puts a side not entered yet on the boundary, and a rear halfway back", () => {
     const f = inFrame(houseBox(rect, "L1", { front: 30 })!);
     expect(span(f, 0).map(Math.round)).toEqual([0, 100]);
-    expect(span(f, 1).map(Math.round)).toEqual([30, 200]);
+    expect(span(f, 1).map(Math.round)).toEqual([30, 115]);
   });
 
   it("houseBox returns null when the distances cross", () => {
@@ -96,5 +97,23 @@ describe("drawing geometry", () => {
     const box = houseBox(n, "L1", { front: 30, side_1: 20, side_2: 20, rear: 40 })!;
     expect(box).toHaveLength(4);
     expect(box.flat().some(Number.isNaN)).toBe(false);
+  });
+});
+
+describe("a front line that bends outward (lot 4-36)", () => {
+  it("frontFrame still points v into the lot", () => {
+    const w = WEDGE.outline!;
+    const f = frontFrame(w, "L1")!;
+    const n = w.parts[0].length;
+    const c: Pt = [w.parts[0].reduce((s, p) => s + p[0], 0) / n, w.parts[0].reduce((s, p) => s + p[1], 0) / n];
+    expect(toFrame(f, c)[1]).toBeGreaterThan(0);
+  });
+
+  it("houseBox gives a real box inside the lot", () => {
+    const w = WEDGE.outline!;
+    const box = houseBox(w, "L1", { front: 30, side_1: 20, side_2: 10, rear: 10 })!;
+    const f = inFrameOf(w, box);
+    expect(span(f, 1)[1] - span(f, 1)[0]).toBeGreaterThan(50);
+    for (const p of box) expect(inside(w.parts[0], p)).toBe(true);
   });
 });
