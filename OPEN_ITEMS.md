@@ -49,7 +49,17 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
     (`plans/2026-11-01-applicant-portal-guided-builder-2-engine.md`), merged as PR #23 on 2026-11-02,
     and the chair's coverage answers as PR #24 the same day. Plan 3, the conversation screens
     (`plans/2026-11-02-applicant-portal-guided-builder-3-screens.md`), is on branch
-    `portal-guided-3-screens`. Next: plan 4, the lot drawing. Open decisions are the spec's §12.
+    `portal-guided-3-screens` (PR #25). Plan 4, the lot drawing
+    (`plans/2026-11-03-applicant-portal-guided-builder-4-drawing.md`), is on branch
+    `portal-guided-4-drawing`, cut from plan 3's. Next: plan 5, the pictures. Open decisions are the
+    spec's §12.
+  - **For the chair (lot drawing):** its words (draft: the front question and its answers in
+    `turns.yaml` and `wording.yaml`, the drawing's own in `words.ts`); whether "the nearest side"
+    should be drawn on the left as seen from the road (it can be swapped on the picture); and that a
+    lot on two or more roads goes to the Town for now (Code §2: "each frontage must be evaluated"),
+    until the library has an entry for the primary-frontage rule. On the current tax map 245 of
+    1,503 lots touch two or more roads, and 220 touch none within reach (back lots and rights of
+    way), so their front goes to the Town too.
   - **For the chair (guide screens):** the screens' own words in `portal/web/src/guide/words.ts`
     (draft); whether "This needs the Town's judgment" may send the project before the staff design's
     handoff exists (for now it sends nothing and keeps the project saved); the Town Office's phone,
