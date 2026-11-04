@@ -18,8 +18,8 @@ from portal_api import auth
 from portal_api import projects as pj
 from portal_api.db import transaction
 from portal_api.events import append_event
-from portal_api.guide import bridge, store
-from portal_api.guide.checks import check_turn
+from portal_api.guide import bridge, drawing, store
+from portal_api.guide.checks import check_turn, limit_for
 from portal_api.guide.content import drafts_in, load_content
 from portal_api.guide.engine import PICK_OPENING, Action, AnswerRejected, Lot, _valid, _Build, apply, replay
 from portal_api.routes.projects import Loaded, _refuse_stale
@@ -209,6 +209,29 @@ def revisit(project_id: str, body: RevisitBody, request: Request, applicant: aut
         shown = dataclasses.asdict(state.current) if state.current else {"ending": state.ending}
         return new, lambda: store.record(conn, row.id, action, shown, content.digest, _actor(applicant)), "guide.revisited"
     return _change(conn, request, applicant, project_id, body.base_revision, act, body.turn_id)
+
+
+DRAWN_LIMITS = {"front": "setback_front", "side": "setback_side_1", "rear": "setback_rear"}
+
+
+@router.get("/api/projects/{project_id}/guide/drawing")
+def get_drawing(project_id: str, request: Request, applicant: auth.Applicant = auth.require,
+                conn: Connection = transaction):
+    """The lot drawing (plan 4): the tax-map outline, what each line is once the front is chosen,
+    and the setback limits for this lot from the rulesets. No words, so no draft gate."""
+    loaded = _load(conn, project_id, applicant)
+    if isinstance(loaded, JSONResponse):
+        return loaded
+    row, lot, _, _, state = loaded
+    outline = (pj.snapshot(conn, row.id).get("facts") or {}).get("outline")
+    front = (state.facts.get("lot") or {}).get("front")
+    content = load_content()
+    limits = {}
+    for role, turn_id in DRAWN_LIMITS.items():
+        lim = limit_for(content.turn(turn_id), lot, state.facts)
+        limits[role] = dataclasses.asdict(lim) if lim else None
+    return {"outline": outline, "front": front if outline else None,
+            "roles": drawing.roles(outline["lines"], front) if outline else None, "limits": limits}
 
 
 @router.get("/api/projects/{project_id}/guide/openings")

@@ -77,6 +77,45 @@ def _uncertain(reason: str, value=None, unit=None, keys=()) -> Check:
     return Check("cannot_check", value, None, None, unit, None, None, None, reason, tuple(keys), ())
 
 
+def _lookup(spec: dict, lot, facts: dict) -> tuple[str | None, list]:
+    """The lot's standards for `spec`, one per district, or why there are none to use."""
+    if lot.disputed or _get(facts, "lot.confirmed") is False:
+        return "lot_disputed", []
+    keys = [district_key_for(c) for c in lot.district_codes]
+    if not keys or None in keys:
+        return "no_district", []
+    found = [next((s for s in standards_for(k) if s.source == spec["source"] and s.field == spec["field"]
+                   and s.building == spec.get("building")), None) for k in dict.fromkeys(keys)]
+    if any(s is None for s in found):
+        return "not_checkable", []
+    return None, found
+
+
+@dataclass(frozen=True)
+class Limit:
+    min: float | None
+    max: float | None
+    unit: str | None
+    reason: str | None
+    standard_keys: tuple[str, ...]
+
+
+def limit_for(turn, lot, facts: dict | None = None) -> Limit | None:
+    """The bounds the lot drawing shows for a number turn (plan 4), from the same standards
+    check_turn uses, or why there are none: never a number the districts don't agree on."""
+    spec = turn.standard
+    if spec is None:
+        return None
+    reason, found = _lookup(spec, lot, facts or {})
+    if reason:
+        return Limit(None, None, turn.unit, reason, ())
+    keys = tuple(s.key for s in found)
+    unit = next((s.unit for s in found if s.unit), turn.unit)
+    if len({(s.min, s.max) for s in found}) > 1:
+        return Limit(None, None, unit, "two_districts", keys)
+    return Limit(found[0].min, found[0].max, unit, None, keys)
+
+
 def check_turn(turn, facts: dict, lot, unsure=(), standard: dict | None = None) -> Check | None:
     """The check for a number turn (or the turn that completes a computed one), or None when the
     turn has no standard or its value isn't settled yet. `standard` overrides the turn's own, for
@@ -94,18 +133,9 @@ def check_turn(turn, facts: dict, lot, unsure=(), standard: dict | None = None) 
         value = _get(facts, turn.fact)
         if value is None:
             return None
-    if lot.disputed or _get(facts, "lot.confirmed") is False:
-        return _uncertain("lot_disputed", value)
-    keys = [district_key_for(c) for c in lot.district_codes]
-    if not keys or None in keys:
-        return _uncertain("no_district", value)
-    found = []
-    for k in dict.fromkeys(keys):
-        s = next((s for s in standards_for(k) if s.source == spec["source"] and s.field == spec["field"]
-                  and s.building == spec.get("building")), None)
-        found.append(s)
-    if any(s is None for s in found):
-        return _uncertain("not_checkable", value)
+    reason, found = _lookup(spec, lot, facts)
+    if reason:
+        return _uncertain(reason, value)
     results = [check(s, value) for s in found]
     std_keys = tuple(s.key for s in found)
     unit = next((s.unit for s in found if s.unit), turn.unit)
