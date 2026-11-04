@@ -140,6 +140,25 @@ def _street_of(pts: list[Pt], streets: list[dict]) -> dict | None:
     return {"name": name, "type": type_} if total and got >= total / 2 else None
 
 
+def _one_per_road(lines: list[tuple[list[Pt], dict | None]]) -> list[tuple[list[Pt], dict | None]]:
+    """Neighbouring lines along the same road are one lot line: a frontage that follows a bending
+    road is still the one front lot line (on the real parcels a curving road split hundreds of
+    frontages into several "road lines")."""
+    out = list(lines)
+    k = 0
+    while len(out) > 1 and k < len(out):
+        nxt = (k + 1) % len(out)
+        (a, sa), (b, sb) = out[k], out[nxt]
+        if sa is not None and sa == sb:
+            out[k] = (a + b[1:], sa)
+            del out[nxt]
+            if nxt < k:
+                k -= 1
+        else:
+            k += 1
+    return out
+
+
 def _pieces(gj: str | None) -> list[list]:
     if not gj:
         return []
@@ -168,11 +187,12 @@ def outline(conn: Connection, parcel_id: int, parcels_import_id: int, streets_im
                 reach_m = REACH_M.get(s.ownership, REACH_DEFAULT_M)
                 streets.append({"name": s.name, "type": s.type, "reach_ft": reach_m * FT_PER_M, "pieces": pieces})
     ring = _thin(parts[0])
-    lines = _south_first(_split(ring)) if len(ring) >= 3 else []
+    runs = _south_first(_split(ring)) if len(ring) >= 3 else []
+    lines = _one_per_road([(pts, _street_of(pts, streets)) for pts in runs])
     return {
         "units": "ft", "approximate": True,
         "parts": [[_r(p) for p in part] for part in parts],
         "lines": [{"id": f"L{i + 1}", "points": [_r(p) for p in pts], "length_ft": round(_length(pts)),
-                   "street": _street_of(pts, streets)} for i, pts in enumerate(lines)],
+                   "street": street} for i, (pts, street) in enumerate(lines)],
         "streets": [{"name": s["name"], "points": [_r(p) for p in piece]} for s in streets for piece in s["pieces"]],
     }

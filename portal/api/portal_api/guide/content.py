@@ -36,7 +36,7 @@ FACTS = frozenset({
 })
 TEMPLATE_SLOTS = frozenset({"opening", "map_lot", "districts"})
 # Number templates checks.py fills with numbers and units only.
-_NUMBER_SLOTS = {"nearest": {"value", "unit"}, "doesnt_fit": {"gap", "unit", "direction"}, "front_along": {"street"}}
+_NUMBER_SLOTS = {"nearest": {"value", "unit"}, "doesnt_fit": {"gap", "unit", "direction"}, "front_along": {"street"}, "front_along_length": {"street", "n"}}
 _ANSWERS_FROM = {"use_groups", "use_group_uses", "lot_lines"}
 _DRAWINGS = {"front", "front_setback", "side_1", "side_2", "rear"}
 _KINDS = {"lot", "confirm", "choice", "number"}

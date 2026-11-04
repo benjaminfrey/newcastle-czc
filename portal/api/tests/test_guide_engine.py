@@ -259,3 +259,12 @@ def test_setback_turns_say_which_line_they_draw(content):
     assert drawn["front_line"] == "front" and drawn["setback_front"] == "front_setback"
     assert drawn["setback_side_1"] == "side_1" and drawn["setback_side_2"] == "side_2"
     assert drawn["setback_rear"] == "rear" and drawn["full_stories"] is None
+
+
+def test_two_lines_along_one_road_are_told_apart_by_length(content):
+    lot = dataclasses.replace(LOT, lines=({"id": "L1", "length_ft": 120, "street": ROAD},
+                                          {"id": "L2", "length_ft": 40, "street": ROAD},
+                                          {"id": "L3", "length_ft": 200, "street": None}))
+    s = replay(content, "new_house", lot, [a("lot", "yes")])
+    assert [x["label"] for x in s.current.answers][:2] == [
+        "The line along Sheepscot Road, about 120 ft", "The line along Sheepscot Road, about 40 ft"]

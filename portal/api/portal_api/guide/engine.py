@@ -138,9 +138,14 @@ class _Build:
         elif turn.answers_from == "use_group_uses":
             base = self.content.use_answers.get((facts.get("use") or {}).get("group"), ())
         elif turn.answers_from == "lot_lines":
-            along = self.word("front_along")
-            base = tuple(Answer(L["id"], along.format(street=L["street"]["name"]), None, {"lot.front": L["id"]})
-                         for L in self.lot.lines if L["street"])
+            on_road = [L for L in self.lot.lines if L["street"]]
+            names = [L["street"]["name"] for L in on_road]
+            def label(L):
+                # Two lines along one road (the lot wraps round it) are told apart by length.
+                if names.count(L["street"]["name"]) > 1:
+                    return self.word("front_along_length").format(street=L["street"]["name"], n=L["length_ft"])
+                return self.word("front_along").format(street=L["street"]["name"])
+            base = tuple(Answer(L["id"], label(L), None, {"lot.front": L["id"]}) for L in on_road)
             base += (Answer("other", self.word("front_other"), None, {"lot.front": "other"}),)
         else:
             base = turn.answers

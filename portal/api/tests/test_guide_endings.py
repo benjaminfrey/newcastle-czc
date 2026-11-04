@@ -194,3 +194,9 @@ def test_a_different_front_goes_to_the_town(content):
 def test_one_road_line_and_its_front_is_still_ready(content):
     s = _house(_drawn(ROAD, None, None, None), "L1")
     assert s.ending["kind"] == "ready", s.ending["unsettled"]
+
+
+def test_two_lines_along_the_same_road_are_one_frontage(content):
+    """Lines along one road (it bends, or the lot wraps round it) are not a corner lot."""
+    s = _house(_drawn(ROAD, None, ROAD, None), "L1")
+    assert all(u["reason"] != "more_than_one_frontage" for u in s.ending["unsettled"])

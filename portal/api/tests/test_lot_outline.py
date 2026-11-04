@@ -112,3 +112,19 @@ def test_a_manual_lot_has_no_outline(alice, engine):  # noqa: F811
         facts = conn.execute(text("SELECT facts FROM property_snapshot WHERE project_id = :p"), {"p": pid}).scalar()
     facts = facts if isinstance(facts, dict) else json.loads(facts)
     assert "outline" not in facts
+
+
+def test_a_bending_road_frontage_is_one_lot_line(engine, layers):  # noqa: F811
+    """A lot whose road frontage bends (40°) along one road: the frontage is one front lot line,
+    not two (found on the real parcels: 238 lots had 3+ 'road lines' from one curving road)."""
+    with engine.begin() as conn:
+        _, si = _imports(conn)
+        conn.execute(text(
+            "INSERT INTO street_segment (import_id, segment_id, name, type, ownership, geom) VALUES"
+            " (:si, 'bend-1', 'Bend Road', 'R2', 'Town', ST_Multi(ST_GeomFromText("
+            "'LINESTRING(449990 4879995, 450050 4879973, 450110 4879995)', 26919)))"), {"si": si})
+    o = _of(engine, wkt="POLYGON((450000 4880000,450050 4879980,450100 4880000,450100 4880060,450000 4880060,450000 4880000))")
+    along = [L for L in o["lines"] if L["street"]]
+    assert [L["street"]["name"] for L in along] == ["Bend Road"]
+    assert len(o["lines"]) == 4
+    assert abs(along[0]["length_ft"] - 2 * math.hypot(50, 20) * FT) <= 2

@@ -9,6 +9,7 @@ direction_over: {text: "over", status: draft}
 direction_short: {text: "short of", status: draft}
 governs: {text: "The adopted Code governs if anything here differs from it.", status: draft}
 front_along: {text: "The line along {street}", status: draft}
+front_along_length: {text: "The line along {street}, about {n} ft", status: draft}
 front_other: {text: "A different line", status: draft}
 pick_opening: {text: "What would you like to do?", status: draft}
 district_unknown: {text: "a district the Town's map doesn't show", status: draft}
