@@ -28,9 +28,17 @@ async function openGuide(page: Page, tag: string) {
   await expect(question(page)).toHaveText(/what the Town knows about your lot/);
 }
 
+// The lot's outline is on the tax map, so after the lot the guide asks which line is the front.
+async function chooseFront(page: Page) {
+  await expect(question(page)).toHaveText("Which lot line is the front?");
+  await axe(page, "guide: the front line");
+  await turn(page).getByText(/^The line along /).first().click();
+}
+
 async function toTheBuilding(page: Page) {
   await axe(page, "guide: the lot");
   await choose(page, "Yes, that's right");
+  await chooseFront(page);
   await expect(question(page)).toHaveText(/^So you'd like to build a new house/);
   await choose(page, "Yes, that's right");
   await number(page, /full stories/, "2");
@@ -115,6 +123,7 @@ test("Change keeps what still applies", async ({ page }, info) => {
 test("No on So you mean starts again from a picture", async ({ page }, info) => {
   await openGuide(page, `guide-no-${info.project.name}`);
   await choose(page, "Yes, that's right");
+  await chooseFront(page);
   await expect(question(page)).toHaveText(/^So you'd like to build a new house/);
   await choose(page, "No, something else");
   await expect(question(page)).toHaveText("What would you like to do?");
@@ -145,4 +154,42 @@ test("on a phone, your project opens from the app bar", async ({ page }, info) =
   await sheet.getByRole("button", { name: "Close" }).click();
   await expect(sheet).toBeHidden();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
+});
+
+// --- plan 4: the lot drawing ---
+
+const drawing = (page: Page) => page.getByRole("img", { name: /A drawing of your lot/ });
+
+test("the drawing shows the lot and the setbacks", async ({ page }, info) => {
+  await openGuide(page, `guide-drawing-${info.project.name}`);
+  await toTheSetbacks(page);
+  await expect(question(page)).toHaveText(/nearest side lot line/);
+  if (info.project.name === "phone") {
+    await expect(turn(page).getByRole("img", { name: /A drawing of your lot/ })).toBeVisible();
+  } else {
+    await expect(page.getByRole("complementary", { name: "Your project" }).getByRole("img", { name: /A drawing of your lot/ })).toBeVisible();
+  }
+  await expect(page.getByText("Approximate: from the Town's tax map, not a survey").first()).toBeVisible();
+  const list = page.getByRole("group", { name: "The setbacks on your lot" }).first();
+  await expect(list).toContainText("Nearest side");
+  await expect(list).toContainText("At least 15 ft");
+  await axe(page, "guide: the drawing");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
+});
+
+test("dragging the side edge fills the field", async ({ page }, info) => {
+  test.skip(info.project.name === "phone", "desktop: a mouse drag");
+  await openGuide(page, `guide-drag-${info.project.name}`);
+  await toTheSetbacks(page);
+  await expect(question(page)).toHaveText(/nearest side lot line/);
+  const handle = drawing(page).locator("[data-handle='side_1']");
+  const box = (await handle.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width / 2 + 30, box.y + box.height / 2, { steps: 5 });
+  await page.mouse.up();
+  const field = turn(page).getByRole("textbox");
+  await expect(field).toHaveValue(/^\d+$/);
+  await turn(page).getByRole("button", { name: "Next" }).click();
+  await expect(question(page)).not.toHaveText(/nearest side lot line/);
 });
