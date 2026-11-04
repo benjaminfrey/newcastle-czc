@@ -11,7 +11,9 @@ _FT_PER_M = 3.28084
 # wide rights-of-way: on the 2012 parcels many Route 1 lots sit 20-35 m out, while
 # town and private roads are within 15 m. Frontage is measured along the street, so
 # a longer reach does not inflate it.
-_REACH_SQL = "CASE WHEN s.ownership = 'State Highway' THEN 35 ELSE 20 END"
+REACH_M = {"State Highway": 35}
+REACH_DEFAULT_M = 20
+_REACH_SQL = f"CASE WHEN s.ownership = 'State Highway' THEN {REACH_M['State Highway']} ELSE {REACH_DEFAULT_M} END"
 _SQ_M_PER_ACRE = 4046.8564224
 
 
