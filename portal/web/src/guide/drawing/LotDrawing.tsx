@@ -45,8 +45,12 @@ export function LotDrawing({ drawing, distances, asking, onPickLine, onDrag }: P
   const at = (p: Pt) => ({ x: p[0] * scale, y: -p[1] * scale });
   const roles = drawing.roles;
   const front = roles ? drawing.front : null;
-  const box = front ? houseBox(outline, front, distances, flip) : null;
   const edge = asking ? EDGE_OF[asking] : undefined;
+  // The edge being asked needs somewhere to start before it has a number: at its limit if the
+  // API gave one, else 10 ft in. That only places the handle; no number is shown or entered.
+  const startAt = (e: Edge) => drawing.limits[e === "front" ? "front" : e === "rear" ? "rear" : "side"]?.min ?? 10;
+  const placed = edge && distances[edge] == null ? { ...distances, [edge]: startAt(edge) } : distances;
+  const box = front ? houseBox(outline, front, placed, flip) : null;
   const stroke = Math.max(1.5, 400 / 250);
 
   function world(e: PointerEvent): Pt {

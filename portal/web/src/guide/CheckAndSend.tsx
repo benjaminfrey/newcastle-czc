@@ -8,6 +8,9 @@ import { Navigate, Link as RouterLink, useNavigate, useParams } from "react-rout
 import { getProject, submitProject, type Missing, type ProjectState } from "../projects";
 import { Fees } from "./Fees";
 import { GuideShell } from "./GuideShell";
+import { distancesOf, DrawingList } from "./drawing/DrawingList";
+import { LotDrawing } from "./drawing/LotDrawing";
+import { useDrawing } from "./drawing/useDrawing";
 import { ProjectPanel } from "./ProjectPanel";
 import { GuideTheme } from "./theme/GuideTheme";
 import { useGuide } from "./useGuide";
@@ -41,6 +44,7 @@ function StillNeeds({ missing, project }: { missing: Missing; project: ProjectSt
 // back into the conversation, the fees, then Send. Only for a project whose guide is ready.
 function Check({ projectId }: { projectId: string }) {
   const g = useGuide(projectId);
+  const drawing = useDrawing(projectId, g.view.phase === "talk" ? g.view.guide.revision : undefined);
   const navigate = useNavigate();
   const [project, setProject] = useState<ProjectState | null>(null);
   const [sent, setSent] = useState<Sent>("idle");
@@ -75,7 +79,13 @@ function Check({ projectId }: { projectId: string }) {
       back={{ href: `/projects/${projectId}/guide`, label: WORDS.back_to_conversation }}>
       <Box sx={{ display: "grid", gap: 2.5 }}>
         <Typography variant="h6" component="h2">{WORDS.check_heading}</Typography>
-        {v.phase === "talk" && <ProjectPanel guide={v.guide} onChange={(t) => void change(t)} locked={v.locked} />}
+        {v.phase === "talk" && <ProjectPanel guide={v.guide} onChange={(t) => void change(t)} locked={v.locked}
+          drawing={drawing && (
+            <Box sx={{ display: "grid", gap: 1 }}>
+              <LotDrawing drawing={drawing} distances={distancesOf(v.guide)} />
+              <DrawingList drawing={drawing} guide={v.guide} />
+            </Box>
+          )} />}
         {project && <Fees needs={project.needs} />}
         {sent === "conflict" && <Alert severity="info">{WORDS.notices.changed_elsewhere}</Alert>}
         {typeof sent === "object" && "refused" in sent && <Alert severity="info">{WORDS.refusals[sent.refused]}</Alert>}

@@ -108,3 +108,26 @@ test("a number outside the question's range is an input error", async () => {
   expect(screen.getByText("That number is outside what this question takes.")).toBeVisible();
   expect(checkValue).not.toHaveBeenCalled();
 });
+
+test("a controlled field shows the text it is given and reports typing", async () => {
+  const onTextChange = vi.fn();
+  const onAnswer = vi.fn();
+  const { rerender } = render(<GuideTheme><NumberAnswer shown={SIDE} projectId="p1" busy={false} locked={false}
+    onAnswer={onAnswer} text="55" onTextChange={onTextChange} /></GuideTheme>);
+  const field = screen.getByRole("textbox", { name: SIDE.ask });
+  expect(field).toHaveValue("55");
+  type(field, "60");
+  expect(onTextChange).toHaveBeenLastCalledWith("60");
+  expect(field).toHaveValue("55");   // the owner decides
+  rerender(<GuideTheme><NumberAnswer shown={SIDE} projectId="p1" busy={false} locked={false}
+    onAnswer={onAnswer} text="60" onTextChange={onTextChange} /></GuideTheme>);
+  await userEvent.click(screen.getByRole("button", { name: "Next" }));
+  expect(onAnswer).toHaveBeenCalledWith(60);
+});
+
+test("a figure sits above the field", () => {
+  render(<GuideTheme><NumberAnswer shown={SIDE} projectId="p1" busy={false} locked={false} onAnswer={vi.fn()}
+    figure={<p>The drawing</p>} /></GuideTheme>);
+  const fig = screen.getByText("The drawing");
+  expect(fig.compareDocumentPosition(screen.getByRole("textbox")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});

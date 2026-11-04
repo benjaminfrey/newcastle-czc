@@ -10,6 +10,10 @@ import { getProject } from "../projects";
 import { useWideLayout } from "../shell/useWideLayout";
 import type { Guide } from "./api";
 import { AnswerList } from "./components/AnswerList";
+import { distancesOf, DrawingList } from "./drawing/DrawingList";
+import type { Edge } from "./drawing/geometry";
+import { LotDrawing } from "./drawing/LotDrawing";
+import { useDrawing } from "./drawing/useDrawing";
 import { Bubble } from "./components/Bubble";
 import { ReplyBox } from "./components/ReplyBox";
 import { EndingView } from "./EndingView";
@@ -18,6 +22,7 @@ import { ProjectPanel } from "./ProjectPanel";
 import { said } from "./said";
 import { GuideTheme } from "./theme/GuideTheme";
 import { DOESNT_FIT, TURN_HEADING } from "./turns/heading";
+import { parseNumber } from "./turns/NumberAnswer";
 import { TurnView } from "./turns/TurnView";
 import { useGuide } from "./useGuide";
 
@@ -55,6 +60,9 @@ function GuideScreen({ projectId }: { projectId: string }) {
   const v = g.view;
   const turnId = v.phase === "talk" ? (v.guide.current?.turn_id ?? `ending:${v.guide.ending?.kind}`) : null;
   const seen = useRef<string | null>(null);
+  const drawing = useDrawing(projectId, v.phase === "talk" ? v.guide.revision : undefined);
+  // The number field's text on a setback turn, held here so a drag in the drawing can set it.
+  const [draft, setDraft] = useState<{ key: string; text: string }>({ key: "", text: "" });
 
   useEffect(() => {
     void getProject(projectId).then((p) => { if (typeof p === "object") setTitle(p.title); });
@@ -97,7 +105,27 @@ function GuideScreen({ projectId }: { projectId: string }) {
   const back = guide.history.length && !locked
     ? { onClick: g.back, label: WORDS.back_a_turn, disabled: busy }
     : { href: `/projects/${projectId}`, label: WORDS.back_to_project };
-  const panel = <ProjectPanel guide={guide} onChange={change} locked={locked} />;
+  // The lot drawing (plan 4): beside the conversation on a computer, inside a "where" turn on a
+  // phone, and always in the project sheet. Only the turn being asked can be dragged or tapped.
+  const asking = current?.drawing ?? null;
+  const edge: Edge | null = asking === "front_setback" ? "front" : asking && asking !== "front" ? asking : null;
+  const turnKey = current ? `${current.turn_id}:${epoch}` : "";
+  const text = draft.key === turnKey ? draft.text : "";
+  const setText = (t: string) => setDraft({ key: turnKey, text: t });
+  const distances = distancesOf(guide);
+  if (edge) {
+    const n = parseNumber(text);
+    if (typeof n === "number") distances[edge] = n; else delete distances[edge];
+  }
+  const figure = (live: boolean) => drawing && (
+    <Box sx={{ display: "grid", gap: 1 }}>
+      <LotDrawing drawing={drawing} distances={distances} asking={live ? asking : null}
+        onPickLine={(id) => { if (!busy && !locked && current) void g.answer(current.turn_id, id); }}
+        onDrag={(n) => { if (!locked) setText(String(n)); }} />
+      <DrawingList drawing={drawing} guide={guide} />
+    </Box>
+  );
+  const panel = <ProjectPanel guide={guide} onChange={change} locked={locked} drawing={figure(wide && !!asking)} />;
 
   return (
     <GuideShell title={title} draft back={back} step={step ? { step: step.n, of: step.of, label: step.label } : undefined}
@@ -110,8 +138,9 @@ function GuideScreen({ projectId }: { projectId: string }) {
         {notice && <Alert severity="info" onClose={g.dismissNotice}>{WORDS.notices[notice]}</Alert>}
         {!ownPage && <History guide={guide} />}
         {!ownPage && <Notes guide={guide} />}
-        {current && <TurnView key={`${current.turn_id}:${epoch}`} shown={current} projectId={projectId} busy={busy}
-          locked={locked}
+        {current && <TurnView key={turnKey} shown={current} projectId={projectId} busy={busy}
+          locked={locked} figure={!wide && asking ? figure(true) : undefined}
+          text={edge ? text : undefined} onTextChange={edge ? setText : undefined}
           // After "No" on "So you mean…", the picture chosen starts the conversation again from it.
           onAnswer={(value) => void (current.turn_id === PICK_OPENING ? g.start(String(value)) : g.answer(current.turn_id, value))} />}
         {!current && guide.ending && <EndingView guide={guide} projectId={projectId} />}

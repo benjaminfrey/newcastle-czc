@@ -18,6 +18,7 @@ export type Shown = {
   turn_id: string; kind: "lot" | "confirm" | "choice" | "number"; step: Step; ask: string; help: string | null;
   answers: TurnAnswer[]; input: { unit: string | null; min: number; max: number } | null; why: Entry | null;
   defines: Entry[]; check: Check | null; facts_shown: LotFacts | null;
+  drawing?: "front" | "front_setback" | "side_1" | "side_2" | "rear" | null;   // plan 4
 };
 export type Unsettled = { turn_id: string | null; reason: string; district?: string; standard_keys?: string[] };
 export type Ending = {

@@ -4,7 +4,7 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { IconCheck, IconMessageCircleQuestion } from "@tabler/icons-react";
-import { useId } from "react";
+import { useId, type ReactNode } from "react";
 import type { Guide, LotFacts } from "./api";
 import { rows, type Row } from "./said";
 import { WORDS } from "./words";
@@ -50,12 +50,15 @@ function lotOf(guide: Guide): LotFacts | null {
 
 // The project as the conversation has it so far (spec §4.4, §4.7): the lot, then each answer
 // grouped by step with a Change link. Marks are the API's results; none is ever red.
-export function ProjectPanel({ guide, onChange, locked }: { guide: Guide; onChange: (turnId: string) => void; locked?: boolean }) {
+export function ProjectPanel({ guide, onChange, locked, drawing }: {
+  guide: Guide; onChange: (turnId: string) => void; locked?: boolean; drawing?: ReactNode;
+}) {
   const lot = lotOf(guide);
   return (
     <Card variant="outlined">
       <CardContent sx={{ display: "grid", gap: 1.5 }}>
         <Typography variant="subtitle1" component="h2" sx={{ fontWeight: 500 }}>{WORDS.your_project}</Typography>
+        {drawing}
         {lot && (
           <Box>
             <Typography variant="body1" sx={{ fontWeight: 500 }}>{lot.map_lot ?? WORDS.unknown}</Typography>

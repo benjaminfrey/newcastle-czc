@@ -6,9 +6,12 @@ import * as projects from "../projects";
 import CheckAndSend from "./CheckAndSend";
 import { ended, project } from "./endingFixtures";
 import { FLOOR, LOT } from "./fixtures";
+import { RECT } from "./drawing/fixtures";
+import * as drawn from "./drawing/useDrawing";
 import * as hook from "./useGuide";
 
 vi.mock("./useGuide", () => ({ useGuide: vi.fn() }));
+vi.mock("./drawing/useDrawing", () => ({ useDrawing: vi.fn(() => null) }));
 vi.mock("../projects", async (orig) => ({ ...(await orig<typeof import("../projects")>()),
   getProject: vi.fn(), submitProject: vi.fn() }));
 
@@ -81,4 +84,13 @@ test("its way back names where it goes", async () => {
   talk();
   open();
   expect(await screen.findByRole("link", { name: "Back to the conversation" })).toHaveAttribute("href", "/projects/p1/guide");
+});
+
+
+test("check and send shows the drawing and its list", async () => {
+  vi.mocked(drawn.useDrawing).mockReturnValue(RECT);
+  talk();
+  open();
+  expect(await screen.findByRole("img", { name: /A drawing of your lot/ })).toBeVisible();
+  expect(screen.getByRole("group", { name: "The setbacks on your lot" })).toBeVisible();
 });
