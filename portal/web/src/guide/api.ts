@@ -33,6 +33,17 @@ export type Guide = {
   drafts: string[];
 };
 export type Opening = { id: string; label: string; part: string };
+
+// The lot drawing (guided plan 4): the tax-map outline in feet, and what the API says each line is.
+export type Pt = [number, number];
+export type LotLine = { id: string; points: Pt[]; length_ft: number; street: { name: string; type: string | null } | null };
+export type Outline = { units: "ft"; approximate: true; parts: Pt[][]; lines: LotLine[]; streets: { name: string; points: Pt[] }[] };
+export type Role = "front" | "side" | "rear" | "frontage";
+export type Limit = { min: number | null; max: number | null; unit: string | null; reason: string | null; standard_keys: string[] };
+export type Drawing = {
+  outline: Outline | null; front: string | null; roles: Record<string, Role> | null;
+  limits: Record<"front" | "side" | "rear", Limit | null>;
+};
 export type GuideRefusal = Refusal | "not_started" | "not_approved" | { conflict: true } | { rejected: string };
 
 const json = { "Content-Type": "application/json" };
@@ -68,6 +79,10 @@ export const getGuide = (id: string) => call(base(id)).then((r) => read<Guide>(r
 export async function getOpenings(id: string): Promise<Opening[] | GuideRefusal> {
   const out = await call(`${base(id)}/openings`).then((r) => read<{ openings: Opening[] }>(r));
   return typeof out === "object" && "openings" in out ? out.openings : out as GuideRefusal;
+}
+
+export async function getDrawing(id: string): Promise<Drawing | GuideRefusal> {
+  return call(`${base(id)}/drawing`).then((r) => read<Drawing>(r));
 }
 
 export const startGuide = (id: string, opening: string, rev: number) =>
