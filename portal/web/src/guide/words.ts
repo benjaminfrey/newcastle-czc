@@ -101,7 +101,7 @@ export const WORDS = {
     no_limit: "No limit to show",
     yours: "Yours: {n} {unit}",
     not_entered: "Not entered yet",
-    frontage_town: "Along a second road, the Town decides the setback",
+    frontage_town: "Along another frontage, the Town decides the setback",
     not_shown: "Water, buildings already there and easements aren't in the Town's map data, so they aren't drawn.",
   },
 

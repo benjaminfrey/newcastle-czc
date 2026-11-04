@@ -106,3 +106,45 @@ test("it renders a 96-vertex lot", () => {
   expect(container.querySelector("[data-lot]")!.getAttribute("points")!.split(" ")).toHaveLength(96);
   expect(container.querySelector("[data-house]")).not.toBeNull();
 });
+
+// --- final review findings 1, 2, 7 and 8 ---
+
+test("tapping a line that isn't along a road chooses A different line", async () => {
+  const onPickLine = vi.fn();
+  const { container } = draw(RECT, { asking: "front", onPickLine });
+  await userEvent.click(container.querySelector("[data-pick='L3']")!);
+  expect(onPickLine).toHaveBeenCalledWith("other");
+});
+
+test("a drag is read through the letterbox when the drawing is shorter than its box", () => {
+  // RECT is twice as deep as it is wide; in a wide, short box the picture sits in the middle.
+  const onDrag = vi.fn();
+  const { svg, container } = draw(RECT, { asking: "side_1", distances: { front: 30, side_1: 20 }, onDrag });
+  const [x, y, w, h] = fitView(RECT.outline!).viewBox.split(" ").map(Number);
+  const k = 0.5;   // drawn at half size, centred in a box twice as wide as that
+  const width = w * k * 2; const height = h * k;
+  svg.getBoundingClientRect = () => ({ left: 0, top: 0, width, height, right: width, bottom: height, x: 0, y: 0, toJSON: () => ({}) });
+  const { scale } = fitView(RECT.outline!);
+  const f = frontFrame(RECT.outline!, "L1")!;
+  const at = (q: Pt) => { const p = fromFrame(f, q); return { clientX: (width - w * k) / 2 + (p[0] * scale - x) * k, clientY: (-p[1] * scale - y) * k, pointerId: 1 }; };
+  fireEvent.pointerDown(container.querySelector("[data-handle='side_1']")!, at([20, 80]));
+  fireEvent.pointerMove(svg, at([12, 80]));
+  expect(onDrag).toHaveBeenLastCalledWith(12);
+});
+
+test("the handle and the line targets are 48 px across on screen", () => {
+  const [, , w] = fitView(RECT.outline!).viewBox.split(" ").map(Number);
+  const spy = vi.spyOn(SVGSVGElement.prototype, "getBoundingClientRect").mockReturnValue(
+    { left: 0, top: 0, width: w / 2, height: 300, right: w / 2, bottom: 300, x: 0, y: 0, toJSON: () => ({}) });
+  const { container } = draw(RECT, { asking: "side_1", distances: { front: 30, side_1: 20 } });
+  expect(Number(container.querySelector("[data-handle]")!.getAttribute("r"))).toBeCloseTo(48);   // 24 px at half scale
+  const picks = draw(RECT, { asking: "front" }).container.querySelector("[data-pick]")!;
+  expect(Number(picks.getAttribute("stroke-width"))).toBeCloseTo(96);
+  spy.mockRestore();
+});
+
+test("the drawing doesn't stop a phone from scrolling; only the handle takes the touch", () => {
+  const { svg, container } = draw(RECT, { asking: "side_1", distances: { front: 30, side_1: 20 } });
+  expect(svg.style.touchAction).not.toBe("none");
+  expect((container.querySelector("[data-handle]") as SVGElement).style.touchAction).toBe("none");
+});

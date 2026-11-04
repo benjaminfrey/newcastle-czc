@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
-import { useId, useRef, useState, type PointerEvent } from "react";
+import { useId, useLayoutEffect, useRef, useState, type PointerEvent } from "react";
 import type { Drawing, LotLine, Pt, Role } from "../api";
 import { fill, WORDS } from "../words";
 import { dragDistance, fitView, houseBox, type Distances, type Edge } from "./geometry";
@@ -35,7 +35,25 @@ export function LotDrawing({ drawing, distances, asking, onPickLine, onDrag }: P
   const svg = useRef<SVGSVGElement>(null);
   const dragging = useRef(false);
   const [flip, setFlip] = useState(false);
+  // Screen pixels per view unit, so the handle and the line targets are 48 px across (spec §10.4).
+  const [ppu, setPpu] = useState(1);
   const outline = drawing.outline;
+  const vbWidth = outline ? Number(fitView(outline).viewBox.split(" ")[2]) : 1;
+  useLayoutEffect(() => {
+    const el = svg.current;
+    if (!el) return;
+    const measure = () => {
+      const r = el.getBoundingClientRect();
+      const vbHeight = Number(el.getAttribute("viewBox")?.split(" ")[3]) || 1;
+      const k = Math.min(r.width / vbWidth, r.height / vbHeight);
+      if (k > 0) setPpu(k);
+    };
+    measure();
+    if (typeof ResizeObserver !== "function") return;
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [vbWidth]);
   if (!outline) return null;
 
   const { viewBox, scale } = fitView(outline);
@@ -50,18 +68,22 @@ export function LotDrawing({ drawing, distances, asking, onPickLine, onDrag }: P
   // API gave one, else 10 ft in. That only places the handle; no number is shown or entered.
   const startAt = (e: Edge) => drawing.limits[e === "front" ? "front" : e === "rear" ? "rear" : "side"]?.min ?? 10;
   const placed = edge && distances[edge] == null ? { ...distances, [edge]: startAt(edge) } : distances;
-  const box = front ? houseBox(outline, front, placed, flip) : null;
+  const box = front ? houseBox(outline, front, placed, flip, roles ?? undefined) : null;
   const stroke = Math.max(1.5, 400 / 250);
 
+  // A screen point in feet. The picture keeps its shape ("meet"), so when its box is wider or
+  // taller than the picture it is centred with margins, which the mapping must skip.
   function world(e: PointerEvent): Pt {
     const r = svg.current!.getBoundingClientRect();
-    const x = vbX + ((e.clientX - r.left) * vbW) / (r.width || vbW);
-    const y = vbY + ((e.clientY - r.top) * vbH) / (r.height || vbH);
+    const k = Math.min((r.width || vbW) / vbW, (r.height || vbH) / vbH);
+    const ox = ((r.width || vbW) - vbW * k) / 2; const oy = ((r.height || vbH) - vbH * k) / 2;
+    const x = vbX + (e.clientX - r.left - ox) / k;
+    const y = vbY + (e.clientY - r.top - oy) / k;
     return [x / scale, -y / scale];
   }
   function move(e: PointerEvent) {
     if (!dragging.current || !edge || !front) return;
-    onDrag?.(dragDistance(outline!, front, edge, world(e), flip));
+    onDrag?.(dragDistance(outline!, front, edge, world(e), flip, roles ?? undefined));
   }
 
   // Each edge of the box, and the distance that set it: front, right, rear, left.
@@ -72,7 +94,7 @@ export function LotDrawing({ drawing, distances, asking, onPickLine, onDrag }: P
   return (
     <Box>
       <svg ref={svg} role="img" viewBox={viewBox} aria-label={fill(WORDS.drawing.summary, { lines: outline.lines.length })}
-        style={{ width: "100%", height: "auto", maxHeight: "50dvh", touchAction: edge ? "none" : undefined, display: "block" }}
+        style={{ width: "100%", height: "auto", maxHeight: "50dvh", display: "block" }}
         onPointerMove={move} onPointerUp={() => { dragging.current = false; }} onPointerCancel={() => { dragging.current = false; }}>
         <defs><clipPath id={clip}><polygon points={pts(outline.parts[0])} /></clipPath></defs>
         {outline.streets.map((s, i) => (
@@ -129,12 +151,13 @@ export function LotDrawing({ drawing, distances, asking, onPickLine, onDrag }: P
         })}
         {asking === "front" && outline.lines.map((l) => (
           <polyline key={`pick-${l.id}`} data-pick={l.id} aria-hidden="true" points={pts(l.points)} fill="none"
-            stroke="transparent" strokeWidth={24} strokeLinecap="round" style={{ cursor: "pointer" }}
-            onClick={() => onPickLine?.(l.id)} />
+            stroke="transparent" strokeWidth={48 / ppu} strokeLinecap="round" style={{ cursor: "pointer" }}
+            // Only a line along a road is offered as the front; tapping another is "A different line".
+            onClick={() => onPickLine?.(l.street ? l.id : "other")} />
         ))}
         {edge && edges.filter(([e]) => e === edge).map(([e, a, b]) => {
           const m = at(mid(a, b));
-          return <circle key={`h-${e}`} data-handle={e} aria-hidden="true" cx={m.x} cy={m.y} r={12}
+          return <circle key={`h-${e}`} data-handle={e} aria-hidden="true" cx={m.x} cy={m.y} r={24 / ppu}
             fill={theme.palette.primary.main} stroke={theme.palette.background.paper} strokeWidth={3}
             style={{ cursor: "grab", touchAction: "none" }}
             onPointerDown={(ev) => { dragging.current = true; ev.currentTarget.setPointerCapture?.(ev.pointerId); }} />;

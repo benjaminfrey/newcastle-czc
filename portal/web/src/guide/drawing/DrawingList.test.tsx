@@ -47,7 +47,7 @@ test("a limit with no numbers says why", () => {
 test("a frontage row says the Town decides", () => {
   render(<GuideTheme><DrawingList drawing={CORNER} guide={guide()} /></GuideTheme>);
   expect(screen.getByText("Along River Road")).toBeVisible();
-  expect(screen.getByText("Along a second road, the Town decides the setback")).toBeVisible();
+  expect(screen.getByText("Along another frontage, the Town decides the setback")).toBeVisible();
 });
 
 test("before the front is chosen it says so", () => {

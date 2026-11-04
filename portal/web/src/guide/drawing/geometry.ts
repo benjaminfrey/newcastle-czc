@@ -1,7 +1,7 @@
 // Geometry for drawing the lot (guided plan 4). It only places things on the picture: it never
 // reads a standard or a limit, and never says whether anything fits (decision 12). Coordinates
 // are the API's feet, x east and y north.
-import type { Outline, Pt } from "../api";
+import type { Outline, Pt, Role } from "../api";
 
 export type Frame = { origin: Pt; u: Pt; v: Pt };
 export type Distances = { front?: number; side_1?: number; side_2?: number; rear?: number };
@@ -93,19 +93,64 @@ function spanOfFront(outline: Outline, f: Frame, frontId: string): [number, numb
  *  from the front line, the rest at their distances from the boundary (a side not entered yet on
  *  the boundary, a rear not entered yet halfway back). Null without a front distance, or when
  *  the distances cross. */
-export function houseBox(outline: Outline, frontId: string, d: Distances, flip = false): Pt[] | null {
+export type Roles = Record<string, Role>;
+
+function segToSeg(a: Pt, b: Pt, c: Pt, e: Pt): number {
+  const d1 = cross(sub(e, c), sub(a, c)); const d2 = cross(sub(e, c), sub(b, c));
+  const d3 = cross(sub(b, a), sub(c, a)); const d4 = cross(sub(b, a), sub(e, a));
+  if (d1 * d2 < 0 && d3 * d4 < 0) return 0;
+  return Math.min(ptToSeg(a, c, e), ptToSeg(b, c, e), ptToSeg(c, a, b), ptToSeg(e, a, b));
+}
+
+function ptToSeg(p: Pt, a: Pt, b: Pt): number {
+  const ab = sub(b, a); const L2 = dot(ab, ab);
+  const t = L2 === 0 ? 0 : Math.max(0, Math.min(1, dot(sub(p, a), ab) / L2));
+  return Math.hypot(...sub(p, add(a, mul(ab, t))));
+}
+
+const segsOf = (lines: Pt[][]) => lines.flatMap((pts) => pts.slice(1).map((q, i) => [pts[i], q] as [Pt, Pt]));
+
+/** The lot lines that bound each edge of the house: the front line, the rear lines, and the
+ *  side lines (and other frontages) on each side of the front's middle. */
+function boundingLines(outline: Outline, f: Frame, frontId: string, roles: Roles, uMid: number, flip: boolean) {
+  const out: Record<Edge, Pt[][]> = { front: [], side_1: [], side_2: [], rear: [] };
+  const left = flip ? "side_2" : "side_1"; const right = flip ? "side_1" : "side_2";
+  for (const l of outline.lines) {
+    const role = l.id === frontId ? "front" : roles[l.id];
+    if (role === "front") out.front.push(l.points);
+    else if (role === "rear") out.rear.push(l.points);
+    else {
+      const m = l.points[Math.floor(l.points.length / 2)];
+      out[toFrame(f, m)[0] < uMid ? left : right].push(l.points);
+    }
+  }
+  return out;
+}
+
+/** The house as the person's distances place it, in the front frame: front edge at `front`
+ *  from the front line, the rest at their distances from the boundary (a side not entered yet on
+ *  the boundary, a rear not entered yet halfway back). With the API's `roles`, each distance is
+ *  then made good against the lot lines themselves, so on a slanted or skewed lot the house is
+ *  never drawn closer to a line than the number says. Null without a front distance, or when the
+ *  distances cross. */
+export function houseBox(outline: Outline, frontId: string, d: Distances, flip = false, roles?: Roles): Pt[] | null {
   const f = frontFrame(outline, frontId);
   if (!f || d.front == null) return null;
   const poly = outline.parts[0];
   const [u0, u1] = spanOfFront(outline, f, frontId);
   const uMid = (u0 + u1) / 2;
-  const start = fromFrame(f, [uMid, d.front]);
+  // Start just inside the lot: a point on the front line itself (a front of 0) is neither in
+  // nor out, and a front that kinks inward needs a step or two more.
+  let vStart = Math.max(d.front, 0.05);
+  for (let k = 0; k < 40 && !inside(poly, fromFrame(f, [uMid, vStart])); k++) vStart += 0.5;
+  const start = fromFrame(f, [uMid, vStart]);
   if (!inside(poly, start)) return null;
   const toRear = rayToBoundary(poly, start, f.v);
   if (toRear == null) return null;
   // A rear edge not entered yet stops halfway back: run to the boundary, a box on a lot that
   // narrows away from the road (a wedge, like lot 4-36) would shrink to nothing. Picture only.
-  const vFront = d.front; const vRear = d.front + (d.rear == null ? toRear / 2 : toRear - d.rear);
+  let vFront = roles ? vStart : d.front;
+  let vRear = vStart + (d.rear == null ? toRear / 2 : toRear - d.rear);
   if (vFront >= vRear) return null;
   // How wide the lot is across the box's whole depth: every boundary edge is clipped to the band
   // between the box's front and rear, and the nearest boundary point on each side of the middle
@@ -115,16 +160,51 @@ export function houseBox(outline: Outline, frontId: string, d: Distances, flip =
   if (!band) return null;
   const [bLeft, bRight] = band;
   const left = flip ? d.side_2 : d.side_1; const right = flip ? d.side_1 : d.side_2;
-  const uLeft = bLeft + (left ?? 0); const uRight = bRight - (right ?? 0);
+  let uLeft = bLeft + (left ?? 0); let uRight = bRight - (right ?? 0);
   if (uLeft >= uRight) return null;
+  if (roles) {
+    // Measured along the front's axes, a distance to a slanted line comes out short: move each
+    // edge in until its own lot lines are at least the person's distance away.
+    const lines = boundingLines(outline, f, frontId, roles, uMid, flip);
+    const want: [Edge, number | undefined][] = [["front", d.front], ["rear", d.rear], ["side_1", d.side_1], ["side_2", d.side_2]];
+    const leftEdge = flip ? "side_2" : "side_1";
+    for (let round = 0; round < 50; round++) {
+      const box = [[uLeft, vFront], [uRight, vFront], [uRight, vRear], [uLeft, vRear]].map((q) => fromFrame(f, q as Pt));
+      const sides = box.map((p, i) => [p, box[(i + 1) % 4]] as [Pt, Pt]);
+      let moved = false;
+      for (const [edge, n] of want) {
+        if (n == null || !lines[edge].length) continue;
+        const gap = Math.min(...sides.flatMap(([a, b]) => segsOf(lines[edge]).map(([c, e]) => segToSeg(a, b, c, e))));
+        const short = n - gap;
+        if (short <= 0.01) continue;
+        moved = true;
+        const by = short + 0.01;
+        if (edge === "front") vFront += by;
+        else if (edge === "rear") vRear -= by;
+        else if (edge === leftEdge) uLeft += by;
+        else uRight -= by;
+      }
+      if (vFront >= vRear || uLeft >= uRight) return null;
+      if (!moved) break;
+    }
+  }
   return [[uLeft, vFront], [uRight, vFront], [uRight, vRear], [uLeft, vRear]].map((q) => fromFrame(f, q as Pt));
 }
 
 /** The distance a pointer at `p` sets for one edge of the house: whole feet, never below 0. */
-export function dragDistance(outline: Outline, frontId: string, edge: Edge, p: Pt, flip = false): number {
+export function dragDistance(outline: Outline, frontId: string, edge: Edge, p: Pt, flip = false, roles?: Roles): number {
   const f = frontFrame(outline, frontId);
   if (!f) return 0;
   const poly = outline.parts[0];
+  if (roles) {
+    // The distance from the pointer to the edge's own lot lines, as the person would measure it.
+    const [u0, u1] = spanOfFront(outline, f, frontId);
+    const lines = boundingLines(outline, f, frontId, roles, (u0 + u1) / 2, flip)[edge];
+    if (lines.length) {
+      if (!inside(poly, p)) return 0;
+      return Math.max(0, Math.round(Math.min(...segsOf(lines).map(([a, b]) => ptToSeg(p, a, b)))));
+    }
+  }
   const q = toFrame(f, p);
   const left = flip ? "side_2" : "side_1";
   let n: number | null;
