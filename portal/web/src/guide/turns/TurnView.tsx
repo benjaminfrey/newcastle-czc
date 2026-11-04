@@ -12,17 +12,17 @@ type Props = {
   shown: Shown; projectId: string; busy: boolean; locked: boolean; onAnswer: (value: unknown) => void;
   // Plan 4: the lot drawing inside the turn (on a phone), and the number field's text when the
   // page holds it so a drag in the drawing can set it.
-  figure?: ReactNode; text?: string; onTextChange?: (text: string) => void;
+  figure?: ReactNode; footer?: ReactNode; text?: string; onTextChange?: (text: string) => void;
 };
 
 const card = (e: Entry) => <WhyCard key={e.id} overline={e.overline} answer={e.answer} detail={e.detail} />;
 
 // One turn, as the API shows it. A "doesn't fit" turn is a page of its own in neutral words,
 // never an error (spec §4.5); its answers come in the API's order, the nearest version first.
-export function TurnView({ shown, projectId, busy, locked, onAnswer, figure, text, onTextChange }: Props) {
+export function TurnView({ shown, projectId, busy, locked, onAnswer, figure, footer, text, onTextChange }: Props) {
   if (shown.kind === "number") {
     return <NumberAnswer shown={shown} projectId={projectId} busy={busy} locked={locked} onAnswer={onAnswer}
-      figure={figure} text={text} onTextChange={onTextChange} />;
+      figure={figure} footer={footer} text={text} onTextChange={onTextChange} />;
   }
   const between = (
     <Box sx={{ display: "grid", gap: 1.5, mb: 1.5 }}>
@@ -38,6 +38,7 @@ export function TurnView({ shown, projectId, busy, locked, onAnswer, figure, tex
       <AnswerList question={shown.ask} between={between} headingProps={TURN_HEADING} disabled={busy || locked}
         answers={shown.answers.map((a) => ({ id: a.id, label: a.label, hint: a.hint ?? undefined }))}
         onAnswer={(id) => onAnswer(id)} />
+      {footer && <Box sx={{ mt: 1.5 }}>{footer}</Box>}
     </Box>
   );
 }

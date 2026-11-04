@@ -117,14 +117,15 @@ function GuideScreen({ projectId }: { projectId: string }) {
     const n = parseNumber(text);
     if (typeof n === "number") distances[edge] = n; else delete distances[edge];
   }
-  const figure = (live: boolean) => drawing && (
-    <Box sx={{ display: "grid", gap: 1 }}>
-      <LotDrawing drawing={drawing} distances={distances} asking={live ? asking : null}
-        onPickLine={(id) => { if (!busy && !locked && current) void g.answer(current.turn_id, id); }}
-        onDrag={(n) => { if (!locked) setText(String(n)); }} />
-      <DrawingList drawing={drawing} guide={guide} />
-    </Box>
+  const picture = (live: boolean) => drawing && (
+    <LotDrawing drawing={drawing} distances={distances} asking={live ? asking : null}
+      onPickLine={(id) => { if (!busy && !locked && current) void g.answer(current.turn_id, id); }}
+      onDrag={(n) => { if (!locked) setText(String(n)); }} />
   );
+  const list = drawing && <DrawingList drawing={drawing} guide={guide} />;
+  const figure = (live: boolean) => drawing && <Box sx={{ display: "grid", gap: 1 }}>{picture(live)}{list}</Box>;
+  // On a phone the list follows the answer, so the field stays close to its question.
+  const inTurn = !wide && asking;
   const panel = <ProjectPanel guide={guide} onChange={change} locked={locked} drawing={figure(wide && !!asking)} />;
 
   return (
@@ -139,7 +140,7 @@ function GuideScreen({ projectId }: { projectId: string }) {
         {!ownPage && <History guide={guide} />}
         {!ownPage && <Notes guide={guide} />}
         {current && <TurnView key={turnKey} shown={current} projectId={projectId} busy={busy}
-          locked={locked} figure={!wide && asking ? figure(true) : undefined}
+          locked={locked} figure={inTurn ? picture(true) : undefined} footer={inTurn ? list : undefined}
           text={edge ? text : undefined} onTextChange={edge ? setText : undefined}
           // After "No" on "So you mean…", the picture chosen starts the conversation again from it.
           onAnswer={(value) => void (current.turn_id === PICK_OPENING ? g.start(String(value)) : g.answer(current.turn_id, value))} />}

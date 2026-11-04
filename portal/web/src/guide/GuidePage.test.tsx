@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { beforeEach, expect, test, vi } from "vitest";
@@ -208,4 +208,18 @@ test("the drawing is asked for at the guide's revision", () => {
   talk(guide({ current: FRONT, revision: 7 }));
   open();
   expect(drawn.useDrawing).toHaveBeenCalledWith("p1", 7);
+});
+
+test("on a phone the setbacks list comes after the field, so the field stays near its question", async () => {
+  const spy = await phone();
+  vi.mocked(drawn.useDrawing).mockReturnValue(RECT);
+  talk(guide({ current: FRONT_SETBACK }));
+  const { container } = open();
+  const turn = container.querySelector("[data-turn='setback_front']")!;
+  const field = screen.getByRole("textbox", { name: FRONT_SETBACK.ask });
+  const list = within(turn as HTMLElement).getByRole("group", { name: "The setbacks on your lot" });
+  const svg = turn.querySelector("svg[role=img]")!;
+  expect(svg.compareDocumentPosition(field) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  expect(field.compareDocumentPosition(list) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  spy.mockRestore();
 });

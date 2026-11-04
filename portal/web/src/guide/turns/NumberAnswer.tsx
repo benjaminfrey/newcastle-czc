@@ -17,7 +17,7 @@ type Props = {
   shown: Shown; projectId: string; busy: boolean; locked: boolean; onAnswer: (value: unknown) => void;
   // The field's text, when its owner holds it (the lot drawing can set it by dragging, plan 4).
   text?: string; onTextChange?: (text: string) => void;
-  figure?: ReactNode;
+  figure?: ReactNode; footer?: ReactNode;
 };
 
 // "1,800", " 25 " and "25.5" are numbers; "" is nothing yet; anything else isn't a number.
@@ -46,7 +46,7 @@ const card = (e: Entry) => <WhyCard key={e.id} overline={e.overline} answer={e.a
 // at it. As the value changes the API checks it (debounced) and the line under the field shows
 // the room left. A number past its limit is shown in plain words, never as an error; only input
 // the question can't take (not a number, outside its range) is an error.
-export function NumberAnswer({ shown, projectId, busy, locked, onAnswer, text: held, onTextChange, figure }: Props) {
+export function NumberAnswer({ shown, projectId, busy, locked, onAnswer, text: held, onTextChange, figure, footer }: Props) {
   const input = shown.input ?? { unit: null, min: 0, max: Number.MAX_SAFE_INTEGER };
   const headingId = useId();
   const helpId = useId();
@@ -128,6 +128,7 @@ export function NumberAnswer({ shown, projectId, busy, locked, onAnswer, text: h
           <Button variant="text" disabled={off} onClick={() => onAnswer("unsure")} sx={{ minHeight: 48 }}>{WORDS.unsure}</Button>
         </Stack>
       </Box>
+      {footer}
     </Box>
   );
 }
