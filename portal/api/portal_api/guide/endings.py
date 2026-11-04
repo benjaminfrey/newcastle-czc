@@ -80,7 +80,10 @@ def finish(content, opening: str, facts: dict, unsure: tuple, checks: dict, lot,
     unsettled += [{"turn_id": t, "reason": "unsure"} for t in unsure if not t.startswith("doesnt_fit:")]
     # Which line is the front decides the setbacks (Code §2): a lot on two roads has a primary
     # and a secondary frontage, and "each frontage must be evaluated", so that is the Town's call.
-    if len({(L["street"]["name"], L["street"]["type"]) for L in lot.lines if L["street"]}) > 1:
+    # A bending road is already one line (lot_outline.py), so each road line is a frontage of its
+    # own, even two on the same road. Only where the front was asked: a change of use isn't.
+    front_asked = "front" in (facts.get("lot") or {}) or "front_line" in unsure
+    if front_asked and sum(1 for L in lot.lines if L["street"]) > 1:
         unsettled.append({"turn_id": "front_line", "reason": "more_than_one_frontage"})
     if (facts.get("lot") or {}).get("front") == "other":
         unsettled.append({"turn_id": "front_line", "reason": "front_not_on_a_road"})

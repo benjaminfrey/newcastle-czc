@@ -18,7 +18,8 @@
   order: 15
   step: Your lot
   kind: choice
-  when: {eq: [lot.has_outline, true]}
+  # Asked only where setbacks are (final review, finding 6): a change of use checks none.
+  when: {all: [{eq: [lot.has_outline, true]}, {eq: [opening, new_house]}]}
   ask: "Which lot line is the front?"
   help: "The front is the line along the road, as the Code counts it. We've drawn the lot from the tax map."
   answers_from: lot_lines

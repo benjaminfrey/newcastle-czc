@@ -196,7 +196,21 @@ def test_one_road_line_and_its_front_is_still_ready(content):
     assert s.ending["kind"] == "ready", s.ending["unsettled"]
 
 
-def test_two_lines_along_the_same_road_are_one_frontage(content):
-    """Lines along one road (it bends, or the lot wraps round it) are not a corner lot."""
+def test_two_separate_stretches_of_one_road_are_two_frontages(content):
+    """A bending road is already one lot line (lot_outline merges neighbours), so two road lines
+    on one road are two separate frontages — a through lot on a loop — and each must be evaluated
+    (Code §2). Final review finding 5."""
     s = _house(_drawn(ROAD, None, ROAD, None), "L1")
-    assert all(u["reason"] != "more_than_one_frontage" for u in s.ending["unsettled"])
+    assert {"turn_id": "front_line", "reason": "more_than_one_frontage"} in s.ending["unsettled"]
+
+
+def test_a_change_of_use_is_not_asked_the_front(content):
+    """No setback is checked for a change of use, so its lot's front isn't asked and can't send it
+    to the Town (final review finding 6)."""
+    use_key = next(u["use_key"] for u in load_ruleset().uses if _listed("D1", u["use_key"]))
+    lot_ = _drawn(ROAD, None, {"name": "River Road", "type": "R2"}, None)
+    assert replay(content, "change_of_use", lot_, [a("lot", "yes")]).current.turn_id == "confirm"
+    s = replay(content, "change_of_use", lot_, [a("lot", "yes"), a("confirm", "yes"),
+                                                a("use_group", _group_of(content, use_key)), a("use_key", use_key)])
+    assert all(sh.turn_id != "front_line" for sh, _ in s.history)
+    assert all(u["turn_id"] != "front_line" for u in (s.ending or {}).get("unsettled", []))
