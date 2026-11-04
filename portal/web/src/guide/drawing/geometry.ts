@@ -163,28 +163,29 @@ export function houseBox(outline: Outline, frontId: string, d: Distances, flip =
   let uLeft = bLeft + (left ?? 0); let uRight = bRight - (right ?? 0);
   if (uLeft >= uRight) return null;
   if (roles) {
-    // Measured along the front's axes, a distance to a slanted line comes out short: move each
-    // edge in until its own lot lines are at least the person's distance away.
+    // Measured along the front's axes, a distance to a slanted line comes out short. Each line
+    // must be at least its own distance from the house: where one is too close, the edge of the
+    // house nearest it moves in (on an odd lot that can be another edge than the one its role
+    // names, as on lot 4-36, whose long north line is a side but faces the house's back).
     const lines = boundingLines(outline, f, frontId, roles, uMid, flip);
     const want: [Edge, number | undefined][] = [["front", d.front], ["rear", d.rear], ["side_1", d.side_1], ["side_2", d.side_2]];
-    const leftEdge = flip ? "side_2" : "side_1";
-    for (let round = 0; round < 50; round++) {
-      const box = [[uLeft, vFront], [uRight, vFront], [uRight, vRear], [uLeft, vRear]].map((q) => fromFrame(f, q as Pt));
-      const sides = box.map((p, i) => [p, box[(i + 1) % 4]] as [Pt, Pt]);
+    for (let round = 0; round < 60; round++) {
       let moved = false;
       for (const [edge, n] of want) {
         if (n == null || !lines[edge].length) continue;
-        const gap = Math.min(...sides.flatMap(([a, b]) => segsOf(lines[edge]).map(([c, e]) => segToSeg(a, b, c, e))));
-        const short = n - gap;
-        if (short <= 0.01) continue;
+        const box = [[uLeft, vFront], [uRight, vFront], [uRight, vRear], [uLeft, vRear]].map((q) => fromFrame(f, q as Pt));
+        const gaps = box.map((a, k) => {
+          const b = box[(k + 1) % 4];
+          return Math.min(...segsOf(lines[edge]).map(([c, e]) => segToSeg(a, b, c, e)));
+        });
+        const gap = Math.min(...gaps);
+        if (n - gap <= 0.01) continue;
         moved = true;
-        const by = short + 0.01;
-        if (edge === "front") vFront += by;
-        else if (edge === "rear") vRear -= by;
-        else if (edge === leftEdge) uLeft += by;
-        else uRight -= by;
+        const by = n - gap + 0.01;
+        const k = gaps.indexOf(gap);   // 0 front, 1 right, 2 rear, 3 left
+        if (k === 0) vFront += by; else if (k === 2) vRear -= by; else if (k === 3) uLeft += by; else uRight -= by;
+        if (vFront >= vRear || uLeft >= uRight) return null;
       }
-      if (vFront >= vRear || uLeft >= uRight) return null;
       if (!moved) break;
     }
   }

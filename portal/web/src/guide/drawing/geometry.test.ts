@@ -169,3 +169,18 @@ describe("a front setback of 0 (finding 4)", () => {
     }
   });
 });
+
+describe("lot 4-36 with every distance entered (found in the screenshots)", () => {
+  it("draws the house, clear of each line by its distance", () => {
+    const w = WEDGE.outline!;
+    const d = { front: 30, side_1: 20, side_2: 25, rear: 40 };
+    const box = houseBox(w, "L1", d, false, WEDGE.roles!)!;
+    expect(box).not.toBeNull();
+    const want: Record<string, number> = { front: 30, side: 20, rear: 40 };
+    for (const l of w.lines) {
+      const role = WEDGE.roles![l.id];
+      const gap = Math.min(...l.points.slice(1).flatMap((q, i) => box.map((p) => segPt(p, l.points[i], q))));
+      expect(gap).toBeGreaterThanOrEqual(want[role] - 0.5);
+    }
+  });
+});
