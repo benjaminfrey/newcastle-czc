@@ -82,6 +82,27 @@ export const WORDS = {
     board_decides: "A number the Planning Board can allow",
     town_only: "Work only the Town Office can review",
     contact_town: "Something the Town Office needs to look at",
+    more_than_one_frontage: "Your lot is on more than one road, so the Town decides which is the front",
+    front_not_on_a_road: "Which line is your lot's front",
+  },
+
+  // The lot drawing (guided plan 4). It shows; it never decides (decision 12).
+  drawing: {
+    approximate: "Approximate: from the Town's tax map, not a survey",
+    summary: "A drawing of your lot from the Town's tax map, with {lines} lot lines. The list beside it says the same in words.",
+    line_length: "about {n} ft",
+    swap_sides: "Swap sides",
+    list_heading: "The setbacks on your lot",
+    choose_front_first: "Choose the front, and the setbacks show here.",
+    rows: { front: "Front", side_1: "Nearest side", side_2: "Other side", rear: "Rear", frontage: "Along {street}" },
+    at_least: "At least {n} {unit}",
+    at_most: "At most {n} {unit}",
+    between: "{min} to {max} {unit}",
+    no_limit: "No limit to show",
+    yours: "Yours: {n} {unit}",
+    not_entered: "Not entered yet",
+    frontage_town: "Along a second road, the Town decides the setback",
+    not_shown: "Water, buildings already there and easements aren't in the Town's map data, so they aren't drawn.",
   },
 
   // Check and send (spec §4.7).

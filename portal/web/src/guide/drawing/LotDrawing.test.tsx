@@ -1,0 +1,108 @@
+import { fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { expect, test, vi } from "vitest";
+import type { Drawing, Pt } from "../api";
+import { GuideTheme } from "../theme/GuideTheme";
+import { CORNER, NOISY96, RECT } from "./fixtures";
+import { fitView, fromFrame, frontFrame } from "./geometry";
+import { LotDrawing } from "./LotDrawing";
+
+function draw(drawing: Drawing, props: Partial<Parameters<typeof LotDrawing>[0]> = {}) {
+  const utils = render(<GuideTheme><LotDrawing drawing={drawing} distances={{}} {...props} /></GuideTheme>);
+  return { ...utils, svg: utils.container.querySelector("svg[role=img]") as SVGSVGElement };
+}
+
+// jsdom lays nothing out: give the SVG a box the size of its viewBox, so a client point is a view point.
+function layOut(svg: SVGSVGElement, drawing: Drawing) {
+  const [x, y, w, h] = fitView(drawing.outline!).viewBox.split(" ").map(Number);
+  svg.getBoundingClientRect = () => ({ left: 0, top: 0, width: w, height: h, right: w, bottom: h, x: 0, y: 0, toJSON: () => ({}) });
+  const { scale } = fitView(drawing.outline!);
+  return (p: Pt) => ({ clientX: p[0] * scale - x, clientY: -p[1] * scale - y });
+}
+
+test("it shows the approximate caption", () => {
+  draw(RECT);
+  expect(screen.getByText("Approximate: from the Town's tax map, not a survey")).toBeVisible();
+});
+
+test("the svg has an accessible name", () => {
+  const { svg } = draw(RECT);
+  expect(svg).toHaveAccessibleName(/A drawing of your lot from the Town's tax map, with 4 lot lines/);
+});
+
+test("it labels each line with its length", () => {
+  const { container } = draw(RECT);
+  const labels = [...container.querySelectorAll("[data-line-label]")].map((t) => t.textContent);
+  expect(labels.sort()).toEqual(["about 100 ft", "about 100 ft", "about 200 ft", "about 200 ft"]);
+});
+
+test("it draws a strip for each role with a minimum and none for a frontage", () => {
+  const { container } = draw(CORNER);
+  const strips = [...container.querySelectorAll("[data-strip]")].map((s) => s.getAttribute("data-strip"));
+  expect(strips.sort()).toEqual(["L1", "L2", "L4"]);   // front and both sides; L3 is another road frontage
+});
+
+test("it draws no strip when the limit has no numbers", () => {
+  const none = { min: null, max: null, unit: "ft", reason: "two_districts", standard_keys: [] };
+  const { container } = draw({ ...RECT, limits: { front: none, side: none, rear: none } });
+  expect(container.querySelectorAll("[data-strip]")).toHaveLength(0);
+});
+
+test("it draws no strips or roles before the front is chosen", () => {
+  const { container } = draw({ ...RECT, front: null, roles: null });
+  expect(container.querySelectorAll("[data-strip]")).toHaveLength(0);
+  expect(container.querySelector("[data-front]")).toBeNull();
+});
+
+test("it draws the house box once the front distance is known", () => {
+  expect(draw(RECT, { distances: { side_1: 20 } }).container.querySelector("[data-house]")).toBeNull();
+  expect(draw(RECT, { distances: { front: 30 } }).container.querySelector("[data-house]")).not.toBeNull();
+});
+
+test("picking a line calls onPickLine, only when asking for the front", async () => {
+  const onPickLine = vi.fn();
+  const { container } = draw(RECT, { asking: "front", onPickLine });
+  await userEvent.click(container.querySelector("[data-pick='L1']")!);
+  expect(onPickLine).toHaveBeenCalledWith("L1");
+  expect(draw(RECT, { onPickLine }).container.querySelector("[data-pick]")).toBeNull();
+});
+
+test("dragging the asked edge calls onDrag with the new distance", () => {
+  const onDrag = vi.fn();
+  const { svg, container } = draw(RECT, { asking: "front_setback", distances: { front: 30 }, onDrag });
+  const at = layOut(svg, RECT);
+  const f = frontFrame(RECT.outline!, "L1")!;
+  const handle = container.querySelector("[data-handle='front']")!;
+  fireEvent.pointerDown(handle, { ...at(fromFrame(f, [50, 30])), pointerId: 1 });
+  fireEvent.pointerMove(svg, { ...at(fromFrame(f, [50, 55])), pointerId: 1 });
+  fireEvent.pointerUp(svg, { pointerId: 1 });
+  expect(onDrag).toHaveBeenLastCalledWith(55);
+  fireEvent.pointerMove(svg, { ...at(fromFrame(f, [50, 80])), pointerId: 1 });
+  expect(onDrag).toHaveBeenCalledTimes(1);   // released: moving no longer drags
+});
+
+test("only the asked edge has a handle", () => {
+  const { container } = draw(RECT, { asking: "side_1", distances: { front: 30, side_1: 20 } });
+  expect([...container.querySelectorAll("[data-handle]")].map((h) => h.getAttribute("data-handle"))).toEqual(["side_1"]);
+  expect(container.querySelector("[data-handle]")).toHaveAttribute("aria-hidden", "true");
+  expect(draw(RECT, { distances: { front: 30 } }).container.querySelector("[data-handle]")).toBeNull();
+});
+
+test("Swap sides flips which side the first distance is on", async () => {
+  const { container } = draw(RECT, { distances: { front: 30, side_1: 10, side_2: 30 } });
+  const xs = () => container.querySelector("[data-house]")!.getAttribute("points")!.split(" ").map((p) => Number(p.split(",")[0]));
+  const before = Math.min(...xs());
+  await userEvent.click(screen.getByRole("button", { name: "Swap sides" }));
+  expect(Math.min(...xs())).toBeGreaterThan(before);
+});
+
+test("there is no Swap sides button until a side distance is known", () => {
+  draw(RECT, { distances: { front: 30 } });
+  expect(screen.queryByRole("button", { name: "Swap sides" })).toBeNull();
+});
+
+test("it renders a 96-vertex lot", () => {
+  const { container } = draw(NOISY96, { distances: { front: 30, side_1: 20, side_2: 20, rear: 40 } });
+  expect(container.querySelector("[data-lot]")!.getAttribute("points")!.split(" ")).toHaveLength(96);
+  expect(container.querySelector("[data-house]")).not.toBeNull();
+});
