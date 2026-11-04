@@ -206,3 +206,56 @@ def test_changing_a_stories_input_clears_the_stories_doesnt_fit_choice(content):
     s = apply(content, s, d6, revisit("full_stories"))
     s = apply(content, s, d6, a("full_stories", 5 if s.current_turn.max >= 5 else 4))
     assert s.current.turn_id == "doesnt_fit:basement_exposed_5ft"
+
+
+# --- plan 4: which lot line is the front ---
+
+ROAD = {"name": "Sheepscot Road", "type": "R2"}
+LINES = ({"id": "L1", "length_ft": 120, "street": ROAD}, {"id": "L2", "length_ft": 200, "street": None},
+         {"id": "L3", "length_ft": 120, "street": None}, {"id": "L4", "length_ft": 200, "street": None})
+DRAWN = dataclasses.replace(LOT, lines=LINES)
+HOUSE = [a("full_stories", 2), a("roof_floors", 0), a("basement_exposed_5ft", "no"),
+         a("floor_area", 1800), a("dwelling_units", 1), a("setback_front", 30), a("setback_side_1", 20),
+         a("setback_side_2", 20), a("setback_rear", 20)]
+
+
+def test_front_line_comes_after_the_lot_when_there_is_an_outline(content):
+    s = replay(content, "new_house", DRAWN, [a("lot", "yes")])
+    assert s.current.turn_id == "front_line"
+    assert [x["id"] for x in s.current.answers] == ["L1", "other", "unsure"]
+    assert s.current.answers[0]["label"] == "The line along Sheepscot Road"
+
+
+def test_old_snapshot_has_no_front_turn(content):
+    lot = Lot.from_snapshot({"map_lot": "012-034", "facts": {"districts": [{"code": "D4", "name": "Village Residential"}]}})
+    assert lot.lines == ()
+    assert replay(content, "new_house", lot, [a("lot", "yes")]).current.turn_id == "confirm"
+
+
+def test_lines_come_from_the_snapshot_outline(content):
+    lot = Lot.from_snapshot({"map_lot": "012-034", "facts": {"outline": {"lines": [
+        {"id": "L1", "points": [[0, 0], [1, 0]], "length_ft": 1, "street": ROAD}]}}})
+    assert lot.lines == ({"id": "L1", "length_ft": 1, "street": ROAD},)
+
+
+def test_a_lot_with_no_road_line_offers_only_a_different_line(content):
+    lot = dataclasses.replace(LOT, lines=tuple({**L, "street": None} for L in LINES))
+    s = replay(content, "new_house", lot, [a("lot", "yes")])
+    assert [x["id"] for x in s.current.answers] == ["other", "unsure"]
+
+
+def test_changing_the_front_keeps_the_setbacks(content):
+    s = replay(content, "new_house", DRAWN, [a("lot", "yes"), a("front_line", "L1"), a("confirm", "yes"), *HOUSE])
+    before = dict(s.facts["building"]["setback"])
+    s = apply(content, s, DRAWN, Action("revisit", "front_line", None))
+    assert s.current.turn_id == "front_line"
+    s = apply(content, s, DRAWN, a("front_line", "other"))
+    assert s.facts["building"]["setback"] == before and s.facts["lot"]["front"] == "other"
+
+
+def test_setback_turns_say_which_line_they_draw(content):
+    s = replay(content, "new_house", DRAWN, [a("lot", "yes"), a("front_line", "L1"), a("confirm", "yes"), *HOUSE])
+    drawn = {sh.turn_id: sh.drawing for sh, _ in s.history}
+    assert drawn["front_line"] == "front" and drawn["setback_front"] == "front_setback"
+    assert drawn["setback_side_1"] == "side_1" and drawn["setback_side_2"] == "side_2"
+    assert drawn["setback_rear"] == "rear" and drawn["full_stories"] is None

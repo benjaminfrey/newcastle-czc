@@ -78,6 +78,12 @@ def finish(content, opening: str, facts: dict, unsure: tuple, checks: dict, lot,
         unsettled += [{"turn_id": "use_key", "reason": "not_listed_in_one_district", "district": c}
                       for c in mapped if c in missing_in]
     unsettled += [{"turn_id": t, "reason": "unsure"} for t in unsure if not t.startswith("doesnt_fit:")]
+    # Which line is the front decides the setbacks (Code §2): a lot on two roads has a primary
+    # and a secondary frontage, and "each frontage must be evaluated", so that is the Town's call.
+    if sum(1 for L in lot.lines if L["street"]) > 1:
+        unsettled.append({"turn_id": "front_line", "reason": "more_than_one_frontage"})
+    if (facts.get("lot") or {}).get("front") == "other":
+        unsettled.append({"turn_id": "front_line", "reason": "front_not_on_a_road"})
     unsettled += [{"turn_id": t, "reason": KEPT[choice], "standard_keys": list(checks[t]["standard_keys"])}
                   for t, choice in kept if t in checks]
     unsettled += [{"turn_id": t, "reason": c["reason"]} for t, c in checks.items() if c["result"] == "cannot_check"]

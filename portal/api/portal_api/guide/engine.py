@@ -34,6 +34,7 @@ class Lot:
     acres: float | None            # from the tax map: approximate
     frontage_ft: int | None        # from the tax map: approximate
     disputed: bool = False         # the applicant said the Town's facts were wrong when starting
+    lines: tuple[dict, ...] = ()   # the tax-map lot lines (lot_outline.py): id, length_ft, street
 
     @staticmethod
     def from_snapshot(snapshot: dict) -> "Lot":
@@ -44,7 +45,9 @@ class Lot:
         return Lot(map_lot=snapshot.get("map_lot") or facts.get("map_lot"),
                    district_codes=tuple(d["code"] for d in districts),
                    district_names=tuple(d.get("name") or d["code"] for d in districts),
-                   acres=facts.get("acres"), frontage_ft=frontage, disputed=bool(snapshot.get("disputed")))
+                   acres=facts.get("acres"), frontage_ft=frontage, disputed=bool(snapshot.get("disputed")),
+                   lines=tuple({"id": L["id"], "length_ft": L["length_ft"], "street": L["street"]}
+                               for L in (facts.get("outline") or {}).get("lines") or []))
 
 
 @dataclass(frozen=True)
@@ -67,6 +70,7 @@ class Shown:
     defines: tuple[dict, ...] = ()
     check: dict | None = None
     facts_shown: dict | None = None
+    drawing: str | None = None      # which part of the lot drawing this turn asks about (plan 4)
 
 
 @dataclass(frozen=True)
@@ -133,6 +137,11 @@ class _Build:
             base = self.content.group_answers
         elif turn.answers_from == "use_group_uses":
             base = self.content.use_answers.get((facts.get("use") or {}).get("group"), ())
+        elif turn.answers_from == "lot_lines":
+            along = self.word("front_along")
+            base = tuple(Answer(L["id"], along.format(street=L["street"]["name"]), None, {"lot.front": L["id"]})
+                         for L in self.lot.lines if L["street"])
+            base += (Answer("other", self.word("front_other"), None, {"lot.front": "other"}),)
         else:
             base = turn.answers
         return base
@@ -170,7 +179,7 @@ class _Build:
             input={"unit": turn.unit, "min": turn.min, "max": turn.max} if turn.kind == "number" else None,
             why=self.entry(turn.why) if turn.why else None,
             defines=tuple(self.entry(d) for d in turn.defines),
-            facts_shown=self.facts_shown() if turn.kind == "lot" else None)
+            facts_shown=self.facts_shown() if turn.kind == "lot" else None, drawing=turn.drawing)
 
     def picker(self, facts: dict) -> Shown:
         answers = tuple({"id": o.id, "label": o.label, "hint": None} for o in self.content.openings.values())
@@ -209,7 +218,7 @@ def _record(build: _Build, turn: Turn, facts: dict, value) -> None:
 def _derive(content: Content, opening: str, lot: Lot, live: tuple, undo: tuple = ()) -> State:
     build = _Build(content, opening, lot)
     o = content.openings[opening]
-    facts: dict = {"opening": opening}
+    facts: dict = {"opening": opening, "lot": {"has_outline": bool(lot.lines)}}
     for path, v in o.facts.items():
         _set(facts, path, v)
     given = dict(live)

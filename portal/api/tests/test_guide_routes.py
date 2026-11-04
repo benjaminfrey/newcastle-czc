@@ -34,8 +34,20 @@ def started(client, opening="new_house", parts=("building",)):
     return pid
 
 
+def front(client, pid):
+    """The fixture lots have an outline (plan 4), so the front lot line is asked after the lot:
+    answer it with the line along the road whenever it is the current turn."""
+    g = client.get(f"/api/projects/{pid}/guide").json()
+    cur = g["current"]
+    if cur and cur["turn_id"] == "front_line":
+        r = answer(client, pid, "front_line", cur["answers"][0]["id"], g["revision"])
+        assert r.status_code == 200, r.text
+
+
 def walk(client, pid, steps):
     for turn_id, value in steps:
+        if turn_id != "front_line":
+            front(client, pid)
         r = answer(client, pid, turn_id, value)
         assert r.status_code == 200, r.text
     return r.json()
@@ -91,7 +103,7 @@ def test_answer_advances_and_bumps_the_revision(alice):
     pid = started(alice)
     before = alice.get(f"/api/projects/{pid}/guide").json()["revision"]
     s = walk(alice, pid, [("lot", "yes")])
-    assert s["current"]["turn_id"] == "confirm" and s["revision"] == before + 1
+    assert s["current"]["turn_id"] == "front_line" and s["revision"] == before + 1
     assert s["history"][0]["shown"]["turn_id"] == "lot" and s["history"][0]["value"] == "yes"
 
 

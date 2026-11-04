@@ -162,3 +162,35 @@ def test_the_town_question_names_the_standard_and_the_choice(content):
     assert stories["reason"] == "talk_to_town"
     assert stories["standard_keys"] == ["d6/building/Residential/total_stories"]
     assert all(u["reason"] != "unsure" for u in s.ending["unsettled"])
+
+
+# --- plan 4: the front lot line ---
+
+ROAD = {"name": "Sheepscot Road", "type": "R2"}
+
+
+def _drawn(*streets):
+    lines = tuple({"id": f"L{i + 1}", "length_ft": 100, "street": s} for i, s in enumerate(streets))
+    return dataclasses.replace(lot("D1"), lines=lines)
+
+
+def _house(lot_, front):
+    return replay(load_content(), "new_house", lot_, [a("lot", "yes"), a("front_line", front), a("confirm", "yes"),
+                                                       *STORIES, *SIZE, *D1_SETBACKS])
+
+
+def test_two_road_lines_go_to_the_town(content):
+    s = _house(_drawn(ROAD, None, {"name": "River Road", "type": "R2"}, None), "L1")
+    assert s.ending["kind"] == "town_judgment"
+    assert {"turn_id": "front_line", "reason": "more_than_one_frontage"} in s.ending["unsettled"]
+
+
+def test_a_different_front_goes_to_the_town(content):
+    s = _house(_drawn(ROAD, None, None, None), "other")
+    assert s.ending["kind"] == "town_judgment"
+    assert {"turn_id": "front_line", "reason": "front_not_on_a_road"} in s.ending["unsettled"]
+
+
+def test_one_road_line_and_its_front_is_still_ready(content):
+    s = _house(_drawn(ROAD, None, None, None), "L1")
+    assert s.ending["kind"] == "ready", s.ending["unsettled"]

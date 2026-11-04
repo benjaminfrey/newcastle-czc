@@ -14,6 +14,16 @@
     - {id: "yes", label: "Yes, that's right", set: {lot.confirmed: true}}
     - {id: not_right, label: "That's not right", set: {lot.confirmed: false}}
   status: draft
+- id: front_line
+  order: 15
+  step: Your lot
+  kind: choice
+  when: {eq: [lot.has_outline, true]}
+  ask: "Which lot line is the front?"
+  help: "The front is the line along the road, as the Code counts it. We've drawn the lot from the tax map."
+  answers_from: lot_lines
+  drawing: front
+  status: draft
 - id: confirm
   order: 20
   step: Your project
@@ -106,6 +116,7 @@
   answer_field: dwelling_units
   status: draft
 - id: setback_front
+  drawing: front_setback
   order: 50
   step: Where it sits
   kind: number
@@ -122,6 +133,7 @@
   cite: "2.3.c.3"
   status: draft
 - id: setback_side_1
+  drawing: side_1
   order: 51
   step: Where it sits
   kind: number
@@ -138,6 +150,7 @@
   cite: "2.3.c.3"
   status: draft
 - id: setback_side_2
+  drawing: side_2
   order: 52
   step: Where it sits
   kind: number
@@ -154,6 +167,7 @@
   cite: "2.3.c.3"
   status: draft
 - id: setback_rear
+  drawing: rear
   order: 53
   step: Where it sits
   kind: number
