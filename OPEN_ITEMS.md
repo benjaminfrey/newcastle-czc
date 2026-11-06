@@ -99,9 +99,8 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
     - the stories and setbacks pictures.
 
     The chair approved the sample sheet on 2026-11-06
-    (`memos/2026-11-06-guided-builder-pictures-sample-sheet.md`). **Still a draft, for the chair:**
-    the setbacks picture's description (`entries.yaml` `setbacks`). Until it is approved,
-    production refuses a new-house conversation at the setbacks turn.
+    (`memos/2026-11-06-guided-builder-pictures-sample-sheet.md`), and the scene's and the setbacks
+    picture's descriptions the same day. Every word plan 5 shows is approved.
   - **The guided builder's wording, answered by the chair 2026-11-06 and built** on
     `portal-guided-4-drawing` (`memos/2026-11-06-guided-builder-wording-for-approval.md`). All of it
     is approved except two drafts that aren't shown to the public:

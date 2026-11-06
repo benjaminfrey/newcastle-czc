@@ -21,6 +21,12 @@ Taken in interview on 2026-11-06.
    from each lot line to the nearest part of the house, labelled with the drawing's
    already-approved row names ("Front", "Nearest side", "Other side", "Rear") and no distances.
    Its description comes back to the chair as a draft.
+7. **Two screen-reader descriptions**, raised by the branch review and approved as written:
+   - the scene's: "A Newcastle lot with a cape, its ell and a barn, a stone wall and a maple. Tap a
+     project, or choose one from the list below.";
+   - the setbacks picture's: "A house on its lot, with an arrow from each lot line to the nearest
+     part of the house: the front, the nearest side, the other side and the rear. Each setback is
+     measured along its arrow."
 
 The design (`specs/2026-11-06-applicant-portal-guided-builder-pictures.md`, approved 2026-11-06)
 calls for one opening scene of a Newcastle lot, seen from above at an angle, and explanation

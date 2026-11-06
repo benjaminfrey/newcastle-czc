@@ -20,11 +20,13 @@
   detail: "Measure from the lot line to the closest part of the building, in feet."
   why: "Setbacks keep light, air and room between neighbors, and keep the street's line."
   cites: ["2.3.c.3"]
-  # Plan 5, Task 7: the setbacks picture. Its description is new wording, so the entry is a draft.
+  # Plan 5, Task 7: the setbacks picture; its description was approved by the chair on 2026-11-06.
   picture: setbacks
   picture_alt: "A house on its lot, with an arrow from each lot line to the nearest part of the house: the front, the nearest side, the other side and the rear. Each setback is measured along its arrow."
   version: 1
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06
 - id: use_table
   overline: "Why · uses by district"
   answer: "The Code lists which uses each district allows, and which permit each one needs."
