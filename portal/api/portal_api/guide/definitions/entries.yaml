@@ -7,10 +7,11 @@
   detail: "Living space inside a pitched roof is not a story. If there is more than one floor inside the roof, all but the top one count. The top one counts if the roof meets the wall more than 3 feet above its floor. A basement counts if 5 feet or more of its wall shows above the ground along the front."
   why: "Height limits keep buildings in scale with their street. Counting only full walls lets people use the space under a roof."
   cites: ["5.7.c.3", "5.7.c.4", "5.7.c.5", "5.7.c.6"]
+  # Plan 5: the cut-away picture. Its description is new wording, so the entry is a draft again.
+  picture: stories
+  picture_alt: "A house cut open to show its floors. The first and second floors have full-height walls and count as stories. A floor inside the roof counts only if the roof meets its wall more than 3 feet above the floor. A basement counts if 5 feet or more of its wall shows above the ground along the front."
   version: 1
-  status: approved
-  approved_by: "Ben Frey, Planning Board chair"
-  approved_on: 2026-11-06
+  status: draft
 - id: setbacks
   overline: "Why · how far from the lot lines"
   answer: "Each district sets how far a building sits from the lot lines."

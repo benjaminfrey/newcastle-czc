@@ -134,7 +134,8 @@ class _Build:
         e = self.content.entries[key]
         self.entries.append(key)
         return {"id": e.id, "overline": e.overline, "answer": e.answer, "detail": e.detail, "why": e.why,
-                "cites": list(e.cites), "version": e.version, "governs": self.word("governs")}
+                "cites": list(e.cites), "version": e.version, "governs": self.word("governs"),
+                "picture": e.picture, "picture_alt": e.picture_alt}
 
     def answers(self, turn: Turn, facts: dict) -> tuple:
         if turn.answers_from == "use_groups":

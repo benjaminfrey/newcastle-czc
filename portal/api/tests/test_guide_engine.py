@@ -114,7 +114,8 @@ def test_use_answers_follow_the_chosen_group(content):
 def test_no_on_so_you_mean_shows_the_opening_picker(content):
     s = replay(content, "new_house", LOT, [a("lot", "yes"), a("confirm", "no")])
     assert s.current.turn_id == "pick_opening"
-    assert {x["id"] for x in s.current.answers} == {"new_house", "change_of_use"}
+    # Every spot in the scene (plan 5); the web shows the scene, and the start route checks the choice.
+    assert [x["id"] for x in s.current.answers if x["id"] != "unsure"] == list(content.openings)
     with pytest.raises(AnswerRejected):
         apply(content, s, LOT, a("pick_opening", "change_of_use"))  # the start route restarts it
 
@@ -132,7 +133,8 @@ def test_free_text_is_not_an_action():
 
 
 def test_drafts_list_what_the_state_shows(content):
-    assert not replay(content, "new_house", LOT, START).drafts  # the chair, 2026-11-06
+    # The chair approved the rest on 2026-11-06; the stories picture's description is plan 5's draft.
+    assert list(replay(content, "new_house", LOT, START).drafts) == ["entries.yaml: how_stories_count"]
     s = replay(all_draft(content), "new_house", LOT, START)
     assert "turns.yaml: full_stories" in s.drafts and "openings.yaml: new_house" in s.drafts
     assert "entries.yaml: how_stories_count" in s.drafts and "wording.yaml: unsure" in s.drafts
@@ -340,3 +342,11 @@ def test_back_after_a_change_reopens_nothing(content):
     s = replay(content, "change_of_use", LOT, [*START, a("use_group", "home"), a("use_key", "residence"),
                                                revisit("use_group"), a("use_group", other), BACK])
     assert s.reopened == ()
+
+
+def test_the_stories_entry_carries_its_picture(content):
+    """Plan 5: the cut-away picture, with a description a screen reader reads."""
+    why = replay(content, "new_house", LOT, START).current.why
+    assert why["picture"] == "stories"
+    assert "3 feet" in why["picture_alt"] and "5 feet" in why["picture_alt"]
+    assert replay(content, "new_house", LOT, START).current.turn_id == "full_stories"
