@@ -6,6 +6,7 @@ import * as projects from "../projects";
 import { FLOOR, guide, LOT, SIDE } from "./fixtures";
 import GuidePage from "./GuidePage";
 import { RECT } from "./drawing/fixtures";
+import { WORD_STATUS } from "./words";
 import { fitView, fromFrame, frontFrame } from "./drawing/geometry";
 import * as drawn from "./drawing/useDrawing";
 import * as hook from "./useGuide";
@@ -242,10 +243,10 @@ test("one reopened question is told as one", () => {
 });
 
 
-test("the draft chip shows only while the API says a word on the screen is a draft", () => {
+test("with no draft from the API, the chip follows the screens' own words", () => {
   talk(guide({ drafts: [] }));
   open();
-  expect(screen.queryByText("Draft wording, not approved")).toBeNull();
+  expect(Boolean(screen.queryByText("Draft wording, not approved"))).toBe(WORD_STATUS === "draft");
 });
 
 test("a draft from the API brings the chip back", () => {

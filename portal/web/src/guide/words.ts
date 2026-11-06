@@ -2,8 +2,9 @@
 // approved before the public sees it). Turn, answer, entry and ending words come from the API's
 // content files; these are the rest. The chair approved them on 2026-11-06
 // (memos/2026-11-06-guided-builder-wording-for-approval.md); a changed line makes the file a
-// draft again. Nothing else in src/guide/ writes words.
-export const WORD_STATUS = "approved" as "draft" | "approved";
+// draft again, as plan 5's pictures and opening scene have, until the chair approves them.
+// Nothing else in src/guide/ writes words.
+export const WORD_STATUS = "draft" as "draft" | "approved";
 
 // The "Draft wording" chip shows while any word on the screen is a draft: these, or one of the
 // API's (it lists the drafts a state shows).
@@ -131,6 +132,13 @@ export const WORDS = {
     busy: "Too many requests just now. Please wait a minute and try again.",
     unavailable: "We couldn't reach the Town's server. Please check your connection and try again.",
     locked: "The Town is reviewing this project, so it can't be changed now.",
+  },
+
+  // The pictures' labels (guided plan 5). A picture carries no number of its own: these name the
+  // Code's own tests.
+  pictures: {
+    stories: { first: "1st story", second: "2nd story", roof: "In the roof", basement: "Basement",
+      knee: "More than 3 ft?", exposed: "5 ft or more?" },
   },
 } as const;
 

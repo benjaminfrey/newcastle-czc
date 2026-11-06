@@ -12,8 +12,17 @@ export type GuidePalette = {
   error: string; success: string; warning: string;
 };
 
+// The pictures' colours (guided plan 5): the scene and every explanation share them, in light and
+// dark alike, since they are the place's own colours. Flat fills; the "Shade" ones are side faces.
+export type PicturePalette = {
+  clapboard: string; clapboardShade: string; barn: string; barnShade: string;
+  roof: string; roofShade: string; lot: string; lotEdge: string;
+  stone: string; maple: string; door: string; brick: string;
+};
+
 export type GuideTokens = {
   color: { light: GuidePalette; dark: GuidePalette };
+  picture: PicturePalette;
   font: { body: string; display: string };
   radius: { small: number; medium: number; large: number; full: number };
   spacing: number; // px per MUI spacing unit
@@ -35,6 +44,11 @@ export const newcastleTokens: GuideTokens = {
       outline: "#899294", outlineVariant: "#3F484A",
       error: "#FFB4AB", success: "#6FD089", warning: "#FFC266",
     },
+  },
+  picture: {
+    clapboard: "#fdfcf8", clapboardShade: "#e9e5dc", barn: "#a8432f", barnShade: "#93392a",
+    roof: "#59606a", roofShade: "#4a4f57", lot: "#bcd3a0", lotEdge: "#8fae73",
+    stone: "#9a938a", maple: "#d9822b", door: "#2f5d7c", brick: "#8a4b3a",
   },
   font: { body: ROBOTO, display: ROBOTO },
   radius: { small: 8, medium: 12, large: 16, full: 999 },

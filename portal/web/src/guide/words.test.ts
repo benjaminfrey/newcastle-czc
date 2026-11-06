@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { WORDS, WORD_STATUS } from "./words";
+import { draftWording, WORDS, WORD_STATUS } from "./words";
 
 // Keep in step with NEVER_WORDS in portal/api/portal_api/guide/content.py (spec §10.3).
 const NEVER = /\b(approved|denied|granted|rejected|permit issued|compliant|violates)\b/i;
@@ -11,7 +11,14 @@ function strings(x: unknown): string[] {
 }
 
 describe("the guide's screen words", () => {
-  it("were approved by the chair on 2026-11-06", () => expect(WORD_STATUS).toBe("approved"));
+  // The chair approved them on 2026-11-06; plan 5's new words make the file a draft until he
+  // approves its sample sheet.
+  it("are a draft again until the chair approves plan 5's words", () => expect(WORD_STATUS).toBe("draft"));
+
+  it("show the draft chip while these words or any of the API's are drafts", () => {
+    expect(draftWording(["wording.yaml: covered"])).toBe(true);
+    expect(draftWording([])).toBe(WORD_STATUS === "draft");
+  });
 
   it("say what the chair approved", () => {
     expect(WORDS.reply_placeholder).toBe("Anything the Town should know?");
