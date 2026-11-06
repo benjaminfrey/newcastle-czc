@@ -51,27 +51,53 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
     (`plans/2026-11-02-applicant-portal-guided-builder-3-screens.md`), is on branch
     `portal-guided-3-screens` (PR #25). Plan 4, the lot drawing
     (`plans/2026-11-03-applicant-portal-guided-builder-4-drawing.md`), is on branch
-    `portal-guided-4-drawing`, cut from plan 3's. Next: plan 5, the pictures. Open decisions are the
+    `portal-guided-4-drawing` (PR #26, stacked on #25). Next: plan 5, the pictures. Open decisions are the
     spec's §12.
-  - **For the chair (lot drawing):** its words (draft: the front question and its answers in
-    `turns.yaml` and `wording.yaml`, the drawing's own in `words.ts`); whether "the nearest side"
-    should be drawn on the left as seen from the road (it can be swapped on the picture); and that a
-    lot on two or more roads goes to the Town for now (Code §2: "each frontage must be evaluated"),
-    until the library has an entry for the primary-frontage rule. On the current tax map 273 of
-    1,503 lots have two or more road frontages, and 220 touch no road within reach (back lots and
-    rights of way), so their front goes to the Town too. The front is asked only for a new house,
-    where setbacks are checked; whether a change of use should confirm it too is your call. Also
-    for you: the front question's help says "the line along the road", but the Code also allows
-    water, an easement or a right of way; and a line along an alley still counts as a frontage.
-  - **For the chair (guide screens):** the screens' own words in `portal/web/src/guide/words.ts`
-    (draft); whether "This needs the Town's judgment" may send the project before the staff design's
-    handoff exists (for now it sends nothing and keeps the project saved); the Town Office's phone,
-    hours and address for the screens (none are made up); and whether a Change should say which
-    later answers it reopened.
-  - **For the chair (guide engine):** the words never used on applicant screens (spec §10.3; proposed:
-    approved, denied, granted, rejected, permit issued, compliant, violates); whether a new house is
-    checked against the Residential column and the primary-building placement panel, as the
-    approved form already pairs them; and the first-draft wording in `portal/api/portal_api/guide/definitions/`.
+  - **Answered by the chair 2026-11-05 (interview); built on `portal-guided-4-drawing`, not yet
+    committed** (the screen items below as well):
+    - *Corner lots:* the guide suggests the front from the road Type (Article 2: Streets before
+      Roads, then the lower code), the rule written for newly created lots, which the chair applies
+      to existing lots too. The other road gets the district's Secondary Front Setback. The applicant
+      can't pick another road; choosing one sends the lot to the Town. Two roads of the same Type, a
+      through lot (roads on opposite sides; Article 9 defines a secondary frontage only on corner
+      lots), and a lot touching no road all go to the Town. *For the next amendment:* say what applies
+      along a through lot's second road, and whether §2's rule for new lots covers existing ones.
+    - *Alleys:* a line along an S5 Alley is never a front and adds no frontage. It may be the rear
+      (Article 2: "except an alley") or a side.
+    - *The front question's help* names all five fronts: a road, water, an easement, a right of way or
+      a civic space. A line not along a road still goes to the Town.
+    - *Change of use:* not asked the front (no setbacks are checked).
+    - *Nearest side:* drawn on the left as seen from the road; "Swap sides" stays.
+    - *The drawing's words are approved*, with the new lines: the corner-lot help ("Your lot is on
+      more than one road. The Code makes the front the line along the busier road, by its Type."),
+      the answer "The line along {street} (the Code's front)", the row "Along {street}: the
+      secondary front setback, at least {n} ft", and the five-fronts help.
+    - *"This needs the Town's judgment"* saves the project and sends nothing until the staff handoff
+      exists.
+    - *A Change* lists the later questions it reopened.
+    - *The Town Office:* no phone, hours or address on the screens. Show "Contact the Town Office"
+      linking to the Citizens Request Center (https://www.newcastlemaine.us/citizens_request_center/index.php,
+      checked 2026-11-05; it lists Code Enforcement).
+    - *Words never used on applicant screens:* approved as proposed (approved, denied, granted,
+      rejected, permit issued, compliant, violates), enforced by a test.
+    - *A new house* is checked against the Residential column and Primary Building Placement.
+    - *Outside AI (decision 14):* no, not at launch. Revisit after launch.
+    - *Shoreland:* a separate ordinance and map outside the CZC. The chair will send them; until then
+      shoreland lots go to the Town. *Permits on record:* none known by lot; parked.
+    - *Notes:* one optional "Anything the Town should know?" box on Check and send, read by staff
+      only (the guide never reads it). The "too long" message points there.
+    - *The old cards' looks findings* (task list twice, 44 vs 36 px fields, property card spacing,
+      "No password" twice) are closed as superseded; recheck the same four on the new screens in
+      plan 6.
+  - **For the chair (raised by building the corner lot):** the approved application form has no field
+    for the secondary front setback, and its required "other side" field stays empty on a corner lot
+    (the guide asks the secondary setback instead), so Check and send lists it. Add a form field
+    (needs your approval of its wording), or map the secondary answer to "other side". New draft
+    words for the memo: the secondary question ("How far will it be from the lot line along the
+    other road?" and its help), the Change notice ("Changing that answer reopened {n} later
+    questions"), and "Contact the Town Office".
+  - **For the chair:** the remaining draft wording (the screens' `words.ts` and the engine's entries
+    in `portal/api/portal_api/guide/definitions/`), to come as an approval memo in `memos/`.
   - **Rules coverage, answered by the chair 2026-11-02** (`memos/2026-10-30-guided-builder-rules-coverage.md`,
     regenerated; answers in `portal/api/portal_api/standards_overrides.json`, each with its basis):
     the Permitted Buildings numbers are maximums, floor heights included. D2–D6 already say so on
@@ -87,23 +113,13 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
     seven floor areas (D5 Mixed-Use; SD-Highway Commercial; SD-Fabrication); and reconcile §5.14.c.1.a
     (a public mezzanine needs an 18 ft story) with first-floor maximums of 10–16 ft, which allow
     one only in SD-Fabrication.
-  - **Still for the chair:** where the shoreland standards and map live, and whether permits on record
-    exist by lot (coverage memo §5–§6).
-  - **For the chair:** may applicants' conversations go to an outside AI (spec decision 14)? Separate
-    from D-0025.
 
   For M4 and the redesign:
   - **Projects follow-ups:** the parcel card has no lot drawing (the snapshot drops the parcel's
     outline); the staff lock is a test seam until Milestone 6; the printouts (View) wait for
     Milestone 5.
-  - **No "Add more detail" in projects:** the store can save a section's note, but no screen offers
-    one, and the wizard's "too long" message still points to "Add more detail" on a review page that
-    is gone. Give notes a place (Check and send is the natural one), or reword that message.
   - **To check on an iPhone:** with the keyboard up on a long card (materials, walls), the card's
     footer may sit behind the keyboard until it is dismissed.
-  - **For the chair (looks, from the cards' finish review):** a desktop's application home shows the
-    task list twice (the sidebar and the main card); fields stay 44 px tall for touch, where the
-    comp drew 36 px; the property card's spacing; "No password" said twice on sign-in.
   - **For the chair (wording):** the work option "A change to a lot, use or building that doesn't fit
     today's Code" (approved as written; applicants no longer pick it, since "Type of project" prints
     from the parts).

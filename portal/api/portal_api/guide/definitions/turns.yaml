@@ -21,10 +21,12 @@
   # Asked only where setbacks are (final review, finding 6): a change of use checks none.
   when: {all: [{eq: [lot.has_outline, true]}, {eq: [opening, new_house]}]}
   ask: "Which lot line is the front?"
-  help: "The front is the line along the road, as the Code counts it. We've drawn the lot from the tax map."
+  help: "The front is the line along a road, or along water, an easement, a right of way or a civic space. We've drawn the lot from the tax map."
   answers_from: lot_lines
   drawing: front
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-05
 - id: confirm
   order: 20
   step: Your project
@@ -155,7 +157,8 @@
   order: 52
   step: Where it sits
   kind: number
-  when: {eq: [opening, new_house]}
+  # A corner lot has one side; its other road takes the secondary front setback instead.
+  when: {all: [{eq: [opening, new_house]}, {ne: [lot.corner, true]}]}
   ask: "And from the other side lot line?"
   help: "Measure in feet from the lot line to the closest part of the house."
   fact: building.setback.side_2
@@ -164,6 +167,24 @@
   max: 50000
   standard: {source: dimension, field: primary_building_placement.side_setback}
   answer_field: setback_side_2
+  why: setbacks
+  cite: "2.3.c.3"
+  status: draft
+- id: setback_secondary
+  drawing: secondary
+  order: 52
+  step: Where it sits
+  kind: number
+  # A corner lot's other road is its secondary frontage (Article 2; the chair, 2026-11-05).
+  when: {all: [{eq: [opening, new_house]}, {eq: [lot.corner, true]}]}
+  ask: "How far will it be from the lot line along the other road?"
+  help: "On a corner lot, the Code sets a secondary front setback along the other road. Measure in feet from the lot line to the closest part of the house."
+  fact: building.setback.secondary
+  unit: ft
+  min: 0
+  max: 50000
+  standard: {source: dimension, field: primary_building_placement.secondary_front_setback}
+  # No answer_field yet: the approved form has no secondary-setback field (for the chair).
   why: setbacks
   cite: "2.3.c.3"
   status: draft

@@ -95,9 +95,21 @@ def test_no_never_words():
     assert not NEVER_WORDS.search("It fits within the limit")
 
 
-def test_all_new_content_is_draft():
+def test_content_is_draft_until_the_chair_approves_it():
     for name in FILES:
         data = yaml.safe_load((gc.DIR / name).read_text())
         entries = data if isinstance(data, list) else list(data.values())
         for e in entries:
-            assert e["status"] == "draft", (name, e.get("id"))
+            assert e["status"] == "draft" or e.get("approved_by") == "Ben Frey, Planning Board chair", (name, e.get("id"))
+
+
+def test_a_new_house_is_checked_as_a_residential_primary_building():
+    """The chair, 2026-11-05: a new house uses the Residential column of Permitted Buildings and
+    the Primary Building Placement panel, as the approved form already pairs them."""
+    for t in load_content().turns:
+        if t.standard and t.when and "new_house" in str(t.when):
+            s = t.standard
+            if s["source"] == "building_matrix":
+                assert s.get("building") == "Residential", t.id
+            else:
+                assert s["field"].startswith("primary_building_placement."), t.id

@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import Drawer from "@mui/material/Drawer";
 import Typography from "@mui/material/Typography";
 import { IconListDetails } from "@tabler/icons-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useParams } from "react-router";
 import { getProject } from "../projects";
 import { useWideLayout } from "../shell/useWideLayout";
@@ -27,7 +27,7 @@ import { TurnView } from "./turns/TurnView";
 import { useGuide } from "./useGuide";
 
 const PICK_OPENING = "pick_opening";   // the engine's picker after "No" (guided plan 2)
-import { WORDS } from "./words";
+import { fill, WORDS } from "./words";
 
 function History({ guide }: { guide: Guide }) {
   return <>{guide.history.map(({ shown, value }, i) => (
@@ -36,6 +36,22 @@ function History({ guide }: { guide: Guide }) {
       <Bubble from="you">{said(shown, value)}</Bubble>
     </Box>
   ))}</>;
+}
+
+// What the last Change reopened, until the person closes it; a new list shows again.
+function Reopened({ guide }: { guide: Guide }) {
+  const id = useId();
+  const list = guide.reopened;
+  const key = list.map((r) => r.turn_id).join("|");
+  const [closed, setClosed] = useState("");
+  if (!list.length || closed === key) return null;
+  const heading = list.length === 1 ? WORDS.reopened_one : fill(WORDS.reopened_many, { n: list.length });
+  return (
+    <Alert severity="info" role="status" aria-labelledby={id} onClose={() => setClosed(key)}>
+      <Typography id={id} sx={{ fontWeight: 500 }}>{heading}</Typography>
+      <Box component="ul" sx={{ m: 0, pl: 2.5 }}>{list.map((r) => <li key={r.turn_id}>{r.ask}</li>)}</Box>
+    </Alert>
+  );
 }
 
 function Notes({ guide }: { guide: Guide }) {
@@ -108,7 +124,8 @@ function GuideScreen({ projectId }: { projectId: string }) {
   // The lot drawing (plan 4): beside the conversation on a computer, inside a "where" turn on a
   // phone, and always in the project sheet. Only the turn being asked can be dragged or tapped.
   const asking = current?.drawing ?? null;
-  const edge: Edge | null = asking === "front_setback" ? "front" : asking && asking !== "front" ? asking : null;
+  const edge: Edge | null = asking === "front_setback" ? "front" : asking === "secondary" ? "side_2"
+    : asking && asking !== "front" ? asking : null;
   const turnKey = current ? `${current.turn_id}:${epoch}` : "";
   const text = draft.key === turnKey ? draft.text : "";
   const setText = (t: string) => setDraft({ key: turnKey, text: t });
@@ -139,6 +156,7 @@ function GuideScreen({ projectId }: { projectId: string }) {
         {notice && <Alert severity="info" onClose={g.dismissNotice}>{WORDS.notices[notice]}</Alert>}
         {!ownPage && <History guide={guide} />}
         {!ownPage && <Notes guide={guide} />}
+        <Reopened guide={guide} />
         {current && <TurnView key={turnKey} shown={current} projectId={projectId} busy={busy}
           locked={locked} figure={inTurn ? picture(true) : undefined} footer={inTurn ? list : undefined}
           text={edge ? text : undefined} onTextChange={edge ? setText : undefined}

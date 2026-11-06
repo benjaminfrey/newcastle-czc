@@ -6,6 +6,8 @@ import Typography from "@mui/material/Typography";
 import { useCallback, useEffect, useState } from "react";
 import { Navigate, Link as RouterLink, useNavigate, useParams } from "react-router";
 import { getProject, submitProject, type Missing, type ProjectState } from "../projects";
+import { Bubble } from "./components/Bubble";
+import { ReplyBox } from "./components/ReplyBox";
 import { Fees } from "./Fees";
 import { GuideShell } from "./GuideShell";
 import { distancesOf, DrawingList } from "./drawing/DrawingList";
@@ -87,6 +89,14 @@ function Check({ projectId }: { projectId: string }) {
             </Box>
           )} />}
         {project && <Fees needs={project.needs} />}
+        {/* A note for the Town (the chair, 2026-11-05): read by staff, never by the guide. */}
+        {v.phase === "talk" && sent !== "sent" && (
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+            {v.guide.notes.map((n, i) => <Bubble key={`${n.at}-${i}`} from="you">{n.body}</Bubble>)}
+            {!v.locked && <ReplyBox placeholder={WORDS.reply_placeholder} onSend={g.note} />}
+            <Typography variant="body2" color="text.secondary">{WORDS.notes_kept}</Typography>
+          </Box>
+        )}
         {sent === "conflict" && <Alert severity="info">{WORDS.notices.changed_elsewhere}</Alert>}
         {typeof sent === "object" && "refused" in sent && <Alert severity="info">{WORDS.refusals[sent.refused]}</Alert>}
         {typeof sent === "object" && "missing" in sent && project && <StillNeeds missing={sent.missing} project={project} />}

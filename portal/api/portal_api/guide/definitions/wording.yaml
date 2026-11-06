@@ -8,9 +8,11 @@ doesnt_fit: {text: "That's {gap} {unit} {direction} the limit here. Here's the n
 direction_over: {text: "over", status: draft}
 direction_short: {text: "short of", status: draft}
 governs: {text: "The adopted Code governs if anything here differs from it.", status: draft}
-front_along: {text: "The line along {street}", status: draft}
-front_along_length: {text: "The line along {street}, about {n} ft", status: draft}
-front_other: {text: "A different line", status: draft}
+front_along: {text: "The line along {street}", status: approved, approved_by: "Ben Frey, Planning Board chair", approved_on: 2026-11-05}
+front_along_length: {text: "The line along {street}, about {n} ft", status: approved, approved_by: "Ben Frey, Planning Board chair", approved_on: 2026-11-05}
+front_primary: {text: "The line along {street} (the Code's front)", status: approved, approved_by: "Ben Frey, Planning Board chair", approved_on: 2026-11-05}
+front_help_corner: {text: "Your lot is on more than one road. The Code makes the front the line along the busier road, by its Type.", status: approved, approved_by: "Ben Frey, Planning Board chair", approved_on: 2026-11-05}
+front_other: {text: "A different line", status: approved, approved_by: "Ben Frey, Planning Board chair", approved_on: 2026-11-05}
 pick_opening: {text: "What would you like to do?", status: draft}
 district_unknown: {text: "a district the Town's map doesn't show", status: draft}
 map_lot_unknown: {text: "(not found)", status: draft}

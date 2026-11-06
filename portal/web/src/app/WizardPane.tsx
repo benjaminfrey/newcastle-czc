@@ -18,7 +18,7 @@ export const REASONS: Record<string, string> = {
   out_of_range: "That number is outside the range this question takes.",
   wrong_type: "That answer isn't in the form this question needs.",
   not_an_option: "Please choose one of the options.",
-  too_long: "That's longer than this space allows. Please shorten it, or use \"Add more detail\" on the review page.",
+  too_long: "That's longer than this space allows. Please shorten it, or add the rest as a note for the Town when you check and send.",
   unknown_not_allowed: "Please give an answer to this one.",
 };
 

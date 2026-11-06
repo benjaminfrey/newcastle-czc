@@ -12,11 +12,17 @@ export const EDGE_TURN: Record<Edge, string> = {
 };
 const EDGE_LIMIT = { front: "front", side_1: "side", side_2: "side", rear: "rear" } as const;
 
+// A corner lot is asked its secondary setback in place of the second side (the chair,
+// 2026-11-05): that edge of the house faces the other road.
+const SECONDARY_TURN = "setback_secondary";
+
 /** The distances the person has given so far: the API's checked value when there is one (it
  *  follows "Make it 15 ft"), otherwise the answer as given. */
 export function distancesOf(guide: Guide): Distances {
   const out: Distances = {};
-  for (const [edge, turnId] of Object.entries(EDGE_TURN) as [Edge, string][]) {
+  const turns = Object.entries(EDGE_TURN) as [Edge, string][];
+  for (const [edge, turnId] of [...turns, ["side_2", SECONDARY_TURN] as [Edge, string]]) {
+    if (out[edge] !== undefined) continue;
     const checked = guide.checks[turnId]?.value;
     const given = guide.history.find((h) => h.shown.turn_id === turnId)?.value;
     const n = typeof checked === "number" ? checked : typeof given === "number" ? given : undefined;
@@ -65,18 +71,21 @@ export function DrawingList({ drawing, guide }: { drawing: Drawing; guide: Guide
   const d = distancesOf(guide);
   const lines = drawing.outline?.lines ?? [];
   const frontages = drawing.roles ? lines.filter((l) => drawing.roles![l.id] === "frontage") : [];
+  const secondary = drawing.roles ? lines.find((l) => drawing.roles![l.id] === "secondary") : undefined;
   return (
     <Box role="group" aria-labelledby={id}>
       <Typography id={id} variant="overline" color="text.secondary">{WORDS.drawing.list_heading}</Typography>
       {!drawing.roles && <Typography variant="body2">{WORDS.drawing.choose_front_first}</Typography>}
       <Box component="ul" sx={{ m: 0, p: 0 }}>
         {drawing.roles && (Object.keys(EDGE_TURN) as Edge[]).map((edge) => {
-          const limit = drawing.limits[EDGE_LIMIT[edge]];
+          const road = edge === "side_2" ? secondary : undefined;
+          const limit = drawing.limits[road ? "secondary" : EDGE_LIMIT[edge]];
           const n = d[edge];
           return (
-            <Row key={edge} name={WORDS.drawing.rows[edge]} limit={limitWords(limit)}
+            <Row key={edge} limit={limitWords(limit)}
+              name={road ? fill(WORDS.drawing.rows.secondary, { street: road.street?.name ?? "" }) : WORDS.drawing.rows[edge]}
               yours={n == null ? WORDS.drawing.not_entered : fill(WORDS.drawing.yours, { n, unit: limit?.unit ?? "ft" })}
-              check={guide.checks[EDGE_TURN[edge]]} />
+              check={guide.checks[road ? SECONDARY_TURN : EDGE_TURN[edge]]} />
           );
         })}
         {frontages.map((l) => (

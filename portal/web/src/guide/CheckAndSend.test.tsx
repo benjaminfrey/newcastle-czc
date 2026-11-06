@@ -94,3 +94,13 @@ test("check and send shows the drawing and its list", async () => {
   expect(await screen.findByRole("img", { name: /A drawing of your lot/ })).toBeVisible();
   expect(screen.getByRole("group", { name: "The setbacks on your lot" })).toBeVisible();
 });
+
+test("a note for the Town can be added on Check and send, and the notes so far are shown", async () => {
+  // The chair, 2026-11-05: one optional note box here, read by the Town's staff; the guide never reads it.
+  talk({ ...READY, notes: [{ body: "There's a well by the road.", at: "2026-11-05T10:00:00Z" }] });
+  open();
+  expect(screen.getByText("There's a well by the road.")).toBeVisible();
+  expect(screen.getByText(/The Town Office will read this/)).toBeVisible();
+  await userEvent.type(screen.getByRole("textbox", { name: "Anything else the Town should know?" }), "The barn stays.{Enter}");
+  expect(actions.note).toHaveBeenCalledWith("The barn stays.");
+});

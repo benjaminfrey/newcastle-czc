@@ -71,7 +71,16 @@ def _out(conn: Connection, project_id: str, state, revision: int) -> dict:
             "current": asdict(state.current) if state.current else None,
             "history": [{"shown": asdict(s), "value": v} for s, v in state.history],
             "ending": state.ending, "step": asdict(state.current.step) if state.current else None,
-            "unsure": list(state.unsure), "checks": dict(state.checks), "notes": store.notes(conn, project_id), "drafts": list(state.drafts)}
+            "unsure": list(state.unsure), "checks": dict(state.checks), "notes": store.notes(conn, project_id), "drafts": list(state.drafts),
+            "reopened": [{"turn_id": t, "ask": _ask_of(state, t)} for t in state.reopened]}
+
+
+def _ask_of(state, turn_id: str) -> str:
+    """A reopened question's own words: as it is asked now if it is the current turn."""
+    if state.current is not None and state.current.turn_id == turn_id:
+        return state.current.ask
+    turn = load_content().turn(turn_id)
+    return turn.ask if turn is not None else turn_id
 
 
 def _refused(state, request: Request) -> bool:
@@ -211,7 +220,8 @@ def revisit(project_id: str, body: RevisitBody, request: Request, applicant: aut
     return _change(conn, request, applicant, project_id, body.base_revision, act, body.turn_id)
 
 
-DRAWN_LIMITS = {"front": "setback_front", "side": "setback_side_1", "rear": "setback_rear"}
+DRAWN_LIMITS = {"front": "setback_front", "side": "setback_side_1", "rear": "setback_rear",
+               "secondary": "setback_secondary"}
 
 
 @router.get("/api/projects/{project_id}/guide/drawing")

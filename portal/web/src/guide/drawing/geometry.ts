@@ -89,6 +89,17 @@ function spanOfFront(outline: Outline, f: Frame, frontId: string): [number, numb
   return [Math.min(...us), Math.max(...us)];
 }
 
+/** Which side of the house, as seen from the road, faces a corner lot's secondary frontage
+ *  (left is side 1 unswapped), or null on a lot without one. */
+export function secondarySide(outline: Outline, frontId: string, roles: Roles): "left" | "right" | null {
+  const f = frontFrame(outline, frontId);
+  const line = outline.lines.find((l) => roles[l.id] === "secondary");
+  if (!f || !line) return null;
+  const [u0, u1] = spanOfFront(outline, f, frontId);
+  const m = line.points[Math.floor(line.points.length / 2)];
+  return toFrame(f, m)[0] < (u0 + u1) / 2 ? "left" : "right";
+}
+
 /** The house as the person's distances place it, in the front frame: front edge at `front`
  *  from the front line, the rest at their distances from the boundary (a side not entered yet on
  *  the boundary, a rear not entered yet halfway back). Null without a front distance, or when

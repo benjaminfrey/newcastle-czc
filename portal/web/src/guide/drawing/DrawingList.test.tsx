@@ -3,8 +3,8 @@ import { expect, test } from "vitest";
 import { guide, SIDE } from "../fixtures";
 import { GuideTheme } from "../theme/GuideTheme";
 import { check } from "../turns/fixtures";
-import { DrawingList } from "./DrawingList";
-import { CORNER, RECT } from "./fixtures";
+import { distancesOf, DrawingList } from "./DrawingList";
+import { CORNER, RECT, SECONDARY } from "./fixtures";
 
 const rows = () => within(screen.getByRole("group", { name: "The setbacks on your lot" })).getAllByRole("listitem");
 
@@ -58,4 +58,21 @@ test("before the front is chosen it says so", () => {
 test("it says what the Town's data doesn't show", () => {
   render(<GuideTheme><DrawingList drawing={RECT} guide={guide()} /></GuideTheme>);
   expect(screen.getByText(/Water, buildings already there and easements/)).toBeVisible();
+});
+
+test("a corner lot lists its secondary front setback in place of the other side", () => {
+  render(<GuideTheme><DrawingList drawing={SECONDARY} guide={guide({
+    checks: { setback_secondary: check({ result: "fits", value: 25 }) },
+  })} /></GuideTheme>);
+  expect(rows().map((x) => x.textContent)).toEqual([
+    expect.stringMatching(/^Front/),
+    expect.stringMatching(/^Nearest side/),
+    expect.stringMatching(/^Along River Road: the secondary front setbackAt least 20 ftYours: 25 ftFits$/),
+    expect.stringMatching(/^Rear/),
+    expect.stringMatching(/aren't in the Town's map data/),
+  ]);
+});
+
+test("the secondary setback places the house edge beside the other road", () => {
+  expect(distancesOf(guide({ checks: { setback_secondary: check({ result: "fits", value: 25 }) } }))).toEqual({ side_2: 25 });
 });

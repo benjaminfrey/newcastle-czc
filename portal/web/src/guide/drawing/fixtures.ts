@@ -1,7 +1,7 @@
 import type { Drawing, LotLine, Outline, Pt } from "../api";
 
 const ROAD = { name: "Sheepscot Road", type: "R2" };
-const NO_LIMITS: Drawing["limits"] = { front: null, side: null, rear: null };
+const NO_LIMITS: Drawing["limits"] = { front: null, side: null, rear: null, secondary: null };
 
 function outlineOf(ring: Pt[], streets: (typeof ROAD | null)[]): Outline {
   const lines: LotLine[] = ring.map((p, i) => {
@@ -21,6 +21,7 @@ export const RECT: Drawing = {
     front: { min: 25, max: null, unit: "ft", reason: null, standard_keys: ["d1/front"] },
     side: { min: 15, max: null, unit: "ft", reason: null, standard_keys: ["d1/side"] },
     rear: { min: 15, max: null, unit: "ft", reason: null, standard_keys: ["d1/rear"] },
+    secondary: null,
   },
 };
 
@@ -30,11 +31,26 @@ export const TRAPEZOID: Drawing = {
   front: "L1", roles: { L1: "front", L2: "side", L3: "rear", L4: "side" }, limits: NO_LIMITS,
 };
 
-// A corner lot: roads on the south (front) and the north (another frontage).
+// A through lot: roads on the south (front) and the north (another frontage, the Town's call).
 export const CORNER: Drawing = {
   outline: outlineOf([[50, -50], [-50, -50], [-50, 50], [50, 50]], [ROAD, null, { name: "River Road", type: "R2" }]),
   front: "L1", roles: { L1: "front", L2: "side", L3: "frontage", L4: "side" },
   limits: { ...RECT.limits },
+};
+
+// A corner lot: Main Street (S2) on the south is the Code's front, River Road on the east its
+// secondary frontage (the chair, 2026-11-05).
+const STREET = { name: "Main Street", type: "S2" };
+export const SECONDARY: Drawing = {
+  outline: outlineOf([[50, -50], [-50, -50], [-50, 50], [50, 50]], [STREET, null, null, { name: "River Road", type: "R2" }]),
+  front: "L1", roles: { L1: "front", L2: "side", L3: "rear", L4: "secondary" },
+  limits: { ...RECT.limits, secondary: { min: 20, max: null, unit: "ft", reason: null, standard_keys: ["d1/secondary"] } },
+};
+// The same corner with its other road on the west.
+export const SECONDARY_WEST: Drawing = {
+  ...SECONDARY,
+  outline: outlineOf([[50, -50], [-50, -50], [-50, 50], [50, 50]], [STREET, { name: "River Road", type: "R2" }]),
+  roles: { L1: "front", L2: "secondary", L3: "rear", L4: "side" },
 };
 
 // A noisy 96-vertex lot, close to RECT's rectangle.

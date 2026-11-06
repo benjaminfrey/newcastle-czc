@@ -15,5 +15,5 @@ export const FLOOR: Shown = shown({ turn_id: "floor_area", kind: "number", ask: 
 
 export const guide = (over: Partial<Guide> = {}): Guide => ({
   revision: 4, opening: "new_house", current: FLOOR, history: [{ shown: LOT, value: "yes" }], ending: null,
-  step: FLOOR.step, unsure: [], checks: {}, notes: [], drafts: ["turns.yaml: lot"], ...over,
+  step: FLOOR.step, unsure: [], checks: {}, notes: [], reopened: [], drafts: ["turns.yaml: lot"], ...over,
 });

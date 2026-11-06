@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { expect, test, vi } from "vitest";
 import type { Drawing, Pt } from "../api";
 import { GuideTheme } from "../theme/GuideTheme";
-import { CORNER, NOISY96, RECT } from "./fixtures";
+import { CORNER, NOISY96, RECT, SECONDARY, SECONDARY_WEST } from "./fixtures";
 import { fitView, fromFrame, frontFrame } from "./geometry";
 import { LotDrawing } from "./LotDrawing";
 
@@ -44,7 +44,7 @@ test("it draws a strip for each role with a minimum and none for a frontage", ()
 
 test("it draws no strip when the limit has no numbers", () => {
   const none = { min: null, max: null, unit: "ft", reason: "two_districts", standard_keys: [] };
-  const { container } = draw({ ...RECT, limits: { front: none, side: none, rear: none } });
+  const { container } = draw({ ...RECT, limits: { front: none, side: none, rear: none, secondary: none } });
   expect(container.querySelectorAll("[data-strip]")).toHaveLength(0);
 });
 
@@ -147,4 +147,17 @@ test("the drawing doesn't stop a phone from scrolling; only the handle takes the
   const { svg, container } = draw(RECT, { asking: "side_1", distances: { front: 30, side_1: 20 } });
   expect(svg.style.touchAction).not.toBe("none");
   expect((container.querySelector("[data-handle]") as SVGElement).style.touchAction).toBe("none");
+});
+
+test("a corner lot draws its secondary strip and puts that edge's handle beside the other road", () => {
+  for (const [d, east] of [[SECONDARY, true], [SECONDARY_WEST, false]] as const) {
+    const { container, unmount } = draw(d, { distances: { front: 30 }, asking: "secondary" });
+    const road = d.roles!.L4 === "secondary" ? "L4" : "L2";
+    expect(container.querySelector(`[data-strip=${road}]`)).not.toBeNull();
+    const h = container.querySelector("[data-handle=side_2]")!;
+    expect(Number(h.getAttribute("cx")) > 0).toBe(east);
+    // The edge facing the road is fixed by the road, so the sides can't be swapped.
+    expect(screen.queryByRole("button", { name: "Swap sides" })).toBeNull();
+    unmount();
+  }
 });

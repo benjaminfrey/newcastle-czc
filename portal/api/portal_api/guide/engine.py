@@ -20,6 +20,7 @@ from portal_api.forms.expr import evaluate
 from portal_api.guide.checks import Check, check_turn, stories_settled
 from portal_api.guide import endings
 from portal_api.guide.content import Answer, Content, Turn, drafts_in
+from portal_api.guide.drawing import frontages, fronting
 
 UNSURE = "unsure"
 PICK_OPENING = "pick_opening"
@@ -34,7 +35,7 @@ class Lot:
     acres: float | None            # from the tax map: approximate
     frontage_ft: int | None        # from the tax map: approximate
     disputed: bool = False         # the applicant said the Town's facts were wrong when starting
-    lines: tuple[dict, ...] = ()   # the tax-map lot lines (lot_outline.py): id, length_ft, street
+    lines: tuple[dict, ...] = ()   # the tax-map lot lines (lot_outline.py): id, length_ft, street, points
 
     @staticmethod
     def from_snapshot(snapshot: dict) -> "Lot":
@@ -46,7 +47,8 @@ class Lot:
                    district_codes=tuple(d["code"] for d in districts),
                    district_names=tuple(d.get("name") or d["code"] for d in districts),
                    acres=facts.get("acres"), frontage_ft=frontage, disputed=bool(snapshot.get("disputed")),
-                   lines=tuple({"id": L["id"], "length_ft": L["length_ft"], "street": L["street"]}
+                   lines=tuple({"id": L["id"], "length_ft": L["length_ft"], "street": L["street"],
+                                "points": L.get("points")}
                                for L in (facts.get("outline") or {}).get("lines") or []))
 
 
@@ -94,6 +96,8 @@ class State:
     kept: tuple[tuple[str, str], ...] = ()      # a number kept past its limit: (turn, keep_mine / talk_to_town / unsure)
     current_turn: Turn | None = None
     undo: tuple[tuple, ...] = ()                # the answers in force before each answer or Change, for Back
+    changed: tuple | None = None                # the last Change: (turn, the answers in force before it)
+    reopened: tuple[str, ...] = ()              # later answers that Change put out of force, to ask again
 
 
 class AnswerRejected(Exception):
@@ -138,7 +142,14 @@ class _Build:
         elif turn.answers_from == "use_group_uses":
             base = self.content.use_answers.get((facts.get("use") or {}).get("group"), ())
         elif turn.answers_from == "lot_lines":
-            on_road = [L for L in self.lot.lines if L["street"]]
+            fr = frontages(list(self.lot.lines))
+            on_road = [L for L in self.lot.lines if fronting(L)]
+            if fr["kind"] == "corner":
+                # The Code's front only (the chair, 2026-11-05): another road goes to the Town.
+                L = next(x for x in on_road if x["id"] == fr["primary"])
+                return (Answer(L["id"], self.word("front_primary").format(street=L["street"]["name"]), None,
+                               {"lot.front": L["id"]}),
+                        Answer("other", self.word("front_other"), None, {"lot.front": "other"}))
             names = [L["street"]["name"] for L in on_road]
             def label(L):
                 # Two lines along one road (the lot wraps round it) are told apart by length.
@@ -150,6 +161,11 @@ class _Build:
         else:
             base = turn.answers
         return base
+
+    def help(self, turn: Turn) -> str | None:
+        if turn.answers_from == "lot_lines" and frontages(list(self.lot.lines))["kind"] == "corner":
+            return self.word("front_help_corner")
+        return turn.help
 
     def steps(self, facts: dict) -> list[str]:
         return list(dict.fromkeys(t.step for t in self.content.turns if _holds(t, facts) is not False))
@@ -179,7 +195,7 @@ class _Build:
         answers = tuple({"id": a.id, "label": a.label, "hint": a.hint} for a in self.answers(turn, facts))
         answers += ({"id": UNSURE, "label": self.word("unsure"), "hint": None},)
         return Shown(
-            turn_id=turn.id, kind=turn.kind, step=self.step(turn.step, facts), ask=self.ask(turn), help=turn.help,
+            turn_id=turn.id, kind=turn.kind, step=self.step(turn.step, facts), ask=self.ask(turn), help=self.help(turn),
             answers=answers,
             input={"unit": turn.unit, "min": turn.min, "max": turn.max} if turn.kind == "number" else None,
             why=self.entry(turn.why) if turn.why else None,
@@ -220,10 +236,12 @@ def _record(build: _Build, turn: Turn, facts: dict, value) -> None:
         _set(facts, path, v)
 
 
-def _derive(content: Content, opening: str, lot: Lot, live: tuple, undo: tuple = ()) -> State:
+def _derive(content: Content, opening: str, lot: Lot, live: tuple, undo: tuple = (),
+            changed: tuple | None = None) -> State:
     build = _Build(content, opening, lot)
     o = content.openings[opening]
-    facts: dict = {"opening": opening, "lot": {"has_outline": bool(lot.lines)}}
+    facts: dict = {"opening": opening, "lot": {"has_outline": bool(lot.lines),
+                                               "corner": frontages(list(lot.lines))["kind"] == "corner"}}
     for path, v in o.facts.items():
         _set(facts, path, v)
     given = dict(live)
@@ -283,9 +301,17 @@ def _derive(content: Content, opening: str, lot: Lot, live: tuple, undo: tuple =
                        wording_keys=build.wording)
     if ending is not None:
         drafts += ending.pop("screener_drafts")
+    # What a Change reopened (the chair, 2026-11-05): once the changed question is answered again,
+    # the answers given before it that no longer stand, where their question still applies.
+    reopened: tuple = ()
+    answered = {sh.turn_id for sh, _ in history}
+    if changed is not None and changed[0] in answered:
+        reopened = tuple(t for t, _ in changed[1] if t != changed[0] and not t.startswith(DOESNT_FIT)
+                         and t not in answered and (x := content.turn(t)) is not None and _holds(x, facts) is not False)
     return State(opening=opening, facts=facts, history=tuple(history), current=current, ending=ending,
                  unsure=tuple(dict.fromkeys(unsure)), drafts=tuple(drafts), live=live,
-                 checks=tuple(checks.items()), current_turn=current_turn, kept=tuple(kept), undo=undo)
+                 checks=tuple(checks.items()), current_turn=current_turn, kept=tuple(kept), undo=undo,
+                 changed=changed, reopened=reopened)
 
 
 def _check(content: Content, turn: Turn, facts: dict, lot: Lot, unsure: list, settled_before: bool) -> Check | None:
@@ -345,16 +371,19 @@ def replay(content: Content, opening: str, lot: Lot, actions: list[Action]) -> S
     answer the content no longer accepts is set aside rather than refused."""
     live: tuple = ()
     undo: tuple = ()
+    changed = None
     for action in actions:
         if action.kind == "back":
             live, undo = _back(live, undo)
+            changed = None
         elif action.kind == "answer":
             live, undo = _push(live, action.turn_id, action.value), undo + (live,)
         elif action.kind == "revisit":
+            changed = (action.turn_id, live)
             live, undo = _without(content, live, action.turn_id), undo + (live,)
         else:
             raise AnswerRejected("not_an_action")
-    return _derive(content, opening, lot, live, undo)
+    return _derive(content, opening, lot, live, undo, changed)
 
 
 def apply(content: Content, state: State, lot: Lot, action: Action) -> State:
@@ -365,7 +394,7 @@ def apply(content: Content, state: State, lot: Lot, action: Action) -> State:
         if action.turn_id not in dict(state.live) or action.turn_id.startswith(DOESNT_FIT):
             raise AnswerRejected("not_answered")
         return _derive(content, state.opening, lot, _without(content, state.live, action.turn_id),
-                       state.undo + (state.live,))
+                       state.undo + (state.live,), (action.turn_id, state.live))
     if action.kind != "answer":
         raise AnswerRejected("not_an_action")
     current = state.current
@@ -376,4 +405,4 @@ def apply(content: Content, state: State, lot: Lot, action: Action) -> State:
     if reason is not None:
         raise AnswerRejected(reason)
     return _derive(content, state.opening, lot, _push(state.live, action.turn_id, action.value),
-                   state.undo + (state.live,))
+                   state.undo + (state.live,), state.changed)

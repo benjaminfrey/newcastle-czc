@@ -1,5 +1,6 @@
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import MuiLink from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
@@ -9,6 +10,17 @@ import { WhyCard } from "./components/WhyCard";
 import { Fees } from "./Fees";
 import { TURN_HEADING } from "./turns/heading";
 import { WORDS, fill } from "./words";
+
+// The Town's Citizens Request Center, which lists Code Enforcement (checked 2026-11-05).
+export const TOWN_CONTACT = "https://www.newcastlemaine.us/citizens_request_center/index.php";
+
+function TalkToTown() {
+  return <>
+    <Typography>{WORDS.talk_to_town}</Typography>
+    <MuiLink href={TOWN_CONTACT} target="_blank" rel="noopener noreferrer" sx={{ justifySelf: "start" }}>
+      {WORDS.contact_town}</MuiLink>
+  </>;
+}
 
 function List({ heading, items }: { heading: string; items: { key: string; main: string; sub?: string }[] }) {
   if (!items.length) return null;
@@ -58,14 +70,14 @@ export function EndingView({ guide, projectId }: { guide: Guide; projectId: stri
         <List heading={WORDS.settled_heading} items={e.settled.map((s) => ({ key: s.turn_id, main: ask(s.turn_id) ?? s.turn_id, sub: WORDS.fits_mark }))} />
         <List heading={WORDS.unsettled_heading} items={e.unsettled.map((u, i) => ({
           key: `${u.turn_id}|${u.reason}|${i}`, main: reasons[u.reason] ?? WORDS.town_decides, sub: ask(u.turn_id) }))} />
-        <Typography>{WORDS.talk_to_town}</Typography>
+        <TalkToTown />
       </>}
       {e.kind === "not_here" && <>
         {e.allowed_uses.map((d) => (
           <List key={d.district} heading={fill(WORDS.allowed_heading, { district: d.district })}
             items={d.uses.map((u) => ({ key: u.use_key, main: u.code_name }))} />
         ))}
-        <Typography>{WORDS.talk_to_town}</Typography>
+        <TalkToTown />
       </>}
       {!["ready", "no_permit", "town_judgment", "not_here"].includes(e.kind) && <Typography>{WORDS.town_decides}</Typography>}
     </Box>

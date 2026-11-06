@@ -48,6 +48,9 @@ export const WORDS = {
     try_again: "That answer didn't go through. Please try again.",
   },
   locked: "The Town is reviewing this project, so it can't be changed now.",
+  // After a Change (the chair, 2026-11-05): the later questions it reopened, by their own words.
+  reopened_one: "Changing that answer reopened 1 later question",
+  reopened_many: "Changing that answer reopened {n} later questions",
 
   // Your project (spec §4.4, §4.7).
   change: "Change",
@@ -68,6 +71,8 @@ export const WORDS = {
   no_permit_keep: "Keep to what you told us. If anything changes, ask the Town Office before you start.",
   allowed_heading: "What {district} allows",
   talk_to_town: "You can talk this through with the Town Office. Your project and this conversation are saved.",
+  // The chair, 2026-11-05: the Town's own contact page, not a phone or hours we'd have to keep.
+  contact_town: "Contact the Town Office",
   unsettled: {
     not_listed: "Whether this use is listed for your lot",
     not_listed_in_one_district: "Your lot is in two districts, and this use is listed in only one",
@@ -94,7 +99,8 @@ export const WORDS = {
     swap_sides: "Swap sides",
     list_heading: "The setbacks on your lot",
     choose_front_first: "Choose the front, and the setbacks show here.",
-    rows: { front: "Front", side_1: "Nearest side", side_2: "Other side", rear: "Rear", frontage: "Along {street}" },
+    rows: { front: "Front", side_1: "Nearest side", side_2: "Other side", rear: "Rear", frontage: "Along {street}",
+      secondary: "Along {street}: the secondary front setback" },
     at_least: "At least {n} {unit}",
     at_most: "At most {n} {unit}",
     between: "{min} to {max} {unit}",

@@ -312,3 +312,14 @@ def test_no_on_so_you_mean_restarts_from_the_picture(alice):
     assert body["current"]["turn_id"] == "pick_opening"
     r = start(alice, pid, "new_house")
     assert r.status_code == 201 and r.json()["current"]["turn_id"] == "lot"
+
+
+def test_a_change_says_which_later_questions_it_reopened(alice):
+    """The chair, 2026-11-05: a Change lists the later questions it reopened, by their own words."""
+    pid = started(alice, "change_of_use", parts=("use",))
+    walk(alice, pid, [("lot", "yes"), ("confirm", "yes"), ("use_group", "home"), ("use_key", "residence")])
+    r = revisit(alice, pid, "use_group")
+    assert r.json()["reopened"] == []
+    other = next(x["id"] for x in r.json()["current"]["answers"] if x["id"] not in ("home", "unsure"))
+    body = answer(alice, pid, "use_group", other).json()
+    assert body["reopened"] == [{"turn_id": "use_key", "ask": body["current"]["ask"]}]

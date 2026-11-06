@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Outline, Pt } from "../api";
-import { dragDistance, fitView, frontFrame, fromFrame, houseBox, rayToBoundary, toFrame } from "./geometry";
-import { NOISY96, RECT, TRAPEZOID, WEDGE } from "./fixtures";
+import { dragDistance, fitView, frontFrame, fromFrame, houseBox, rayToBoundary, secondarySide, toFrame } from "./geometry";
+import { NOISY96, RECT, SECONDARY, SECONDARY_WEST, TRAPEZOID, WEDGE } from "./fixtures";
 
 const rect = RECT.outline!;
 const inFrame = (box: Pt[]) => box.map((p) => toFrame(frontFrame(rect, "L1")!, p));
@@ -183,4 +183,11 @@ describe("lot 4-36 with every distance entered (found in the screenshots)", () =
       expect(gap).toBeGreaterThanOrEqual(want[role] - 0.5);
     }
   });
+});
+
+it("a corner lot's secondary frontage is on the side the drawing names", () => {
+  // Seen from Main Street, River Road on the east is on the right (side 2 unswapped), on the west the left.
+  expect(secondarySide(SECONDARY.outline!, "L1", SECONDARY.roles!)).toBe("right");
+  expect(secondarySide(SECONDARY_WEST.outline!, "L1", SECONDARY_WEST.roles!)).toBe("left");
+  expect(secondarySide(RECT.outline!, "L1", RECT.roles!)).toBeNull();
 });

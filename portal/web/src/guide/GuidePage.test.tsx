@@ -223,3 +223,20 @@ test("on a phone the setbacks list comes after the field, so the field stays nea
   expect(field.compareDocumentPosition(list) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   spy.mockRestore();
 });
+
+test("after a Change, the later questions it reopened are listed by their own words", async () => {
+  // The chair, 2026-11-05: a Change says which later answers it reopened.
+  talk(guide({ reopened: [{ turn_id: "setback_side_1", ask: SIDE.ask }, { turn_id: "floor_area", ask: FLOOR.ask }] }));
+  open();
+  const note = screen.getByRole("status", { name: "Changing that answer reopened 2 later questions" });
+  expect(note).toHaveTextContent(SIDE.ask);
+  expect(note).toHaveTextContent(FLOOR.ask);
+  await userEvent.click(within(note).getByRole("button", { name: "Close" }));
+  expect(screen.queryByRole("status", { name: /reopened/ })).toBeNull();
+});
+
+test("one reopened question is told as one", () => {
+  talk(guide({ reopened: [{ turn_id: "floor_area", ask: FLOOR.ask }] }));
+  open();
+  expect(screen.getByRole("status", { name: "Changing that answer reopened 1 later question" })).toBeVisible();
+});

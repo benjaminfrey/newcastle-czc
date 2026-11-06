@@ -169,8 +169,13 @@ def test_the_town_question_names_the_standard_and_the_choice(content):
 ROAD = {"name": "Sheepscot Road", "type": "R2"}
 
 
+# A 100 ft square, clockwise from its south-west corner (y north): west, north, east, south.
+SQUARE = ([[-50, -50], [-50, 50]], [[-50, 50], [50, 50]], [[50, 50], [50, -50]], [[50, -50], [-50, -50]])
+
+
 def _drawn(*streets):
-    lines = tuple({"id": f"L{i + 1}", "length_ft": 100, "street": s} for i, s in enumerate(streets))
+    lines = tuple({"id": f"L{i + 1}", "length_ft": 100, "street": s, "points": SQUARE[i]}
+                  for i, s in enumerate(streets))
     return dataclasses.replace(lot("D1"), lines=lines)
 
 
@@ -214,3 +219,37 @@ def test_a_change_of_use_is_not_asked_the_front(content):
                                                 a("use_group", _group_of(content, use_key)), a("use_key", use_key)])
     assert all(sh.turn_id != "front_line" for sh, _ in s.history)
     assert all(u["turn_id"] != "front_line" for u in (s.ending or {}).get("unsettled", []))
+
+
+# --- corner lots (the chair, 2026-11-05) ---
+
+STREET = {"name": "Main Street", "type": "S2"}
+CORNER_SETBACKS = [a("setback_front", 30), a("setback_side_1", 20), a("setback_secondary", 25), a("setback_rear", 20)]
+
+
+def _corner_house(lot_, front, setbacks=CORNER_SETBACKS):
+    return replay(load_content(), "new_house", lot_, [a("lot", "yes"), a("front_line", front), a("confirm", "yes"),
+                                                       *STORIES, *SIZE, *setbacks])
+
+
+def test_a_corner_lot_on_the_codes_front_is_checked_not_sent_to_the_town(content):
+    s = _corner_house(_drawn(ROAD, STREET, None, None), "L2")
+    assert s.ending["kind"] == "ready", s.ending["unsettled"]
+    assert any(x["turn_id"] == "setback_secondary" for x in s.ending["settled"])
+
+
+def test_a_corner_lots_secondary_setback_is_the_districts(content):
+    """D1's Secondary Front Setback is 20 ft min."""
+    s = _corner_house(_drawn(ROAD, STREET, None, None), "L2",
+                      [*CORNER_SETBACKS[:2], a("setback_secondary", 10), CORNER_SETBACKS[3]])
+    assert s.current.turn_id == "doesnt_fit:setback_secondary"
+
+
+def test_a_corner_on_two_roads_of_one_type_goes_to_the_town(content):
+    s = _house(_drawn(ROAD, {"name": "River Road", "type": "R2"}, None, None), "L1")
+    assert {"turn_id": "front_line", "reason": "more_than_one_frontage"} in s.ending["unsettled"]
+
+
+def test_an_alley_doesnt_send_the_lot_to_the_town(content):
+    s = _house(_drawn(ROAD, None, {"name": "Back Alley", "type": "S5"}, None), "L1")
+    assert s.ending["kind"] == "ready", s.ending["unsettled"]

@@ -5,16 +5,21 @@ import Typography from "@mui/material/Typography";
 import { useId, useLayoutEffect, useRef, useState, type PointerEvent } from "react";
 import type { Drawing, LotLine, Pt, Role } from "../api";
 import { fill, WORDS } from "../words";
-import { dragDistance, fitView, houseBox, type Distances, type Edge } from "./geometry";
+import { dragDistance, fitView, houseBox, secondarySide, type Distances, type Edge } from "./geometry";
 
-export type Asking = "front" | "front_setback" | "side_1" | "side_2" | "rear";
+export type Asking = "front" | "front_setback" | "side_1" | "side_2" | "secondary" | "rear";
 type Props = {
   drawing: Drawing; distances: Distances; asking?: Asking | null;
   onPickLine?: (id: string) => void; onDrag?: (n: number) => void;
 };
 
-const EDGE_OF: Partial<Record<Asking, Edge>> = { front_setback: "front", side_1: "side_1", side_2: "side_2", rear: "rear" };
-const LIMIT_OF: Partial<Record<Role, "front" | "side" | "rear">> = { front: "front", side: "side", rear: "rear" };
+// On a corner lot the house's second side faces the other road and takes its secondary setback.
+const EDGE_OF: Partial<Record<Asking, Edge>> = {
+  front_setback: "front", side_1: "side_1", side_2: "side_2", secondary: "side_2", rear: "rear",
+};
+const LIMIT_OF: Partial<Record<Role, "front" | "side" | "rear" | "secondary">> = {
+  front: "front", side: "side", rear: "rear", secondary: "secondary",
+};
 
 function inwardOffset(line: LotLine, ft: number): [Pt, Pt] {
   // Lines run clockwise round the lot (y north), so the lot is on their right.
@@ -34,7 +39,7 @@ export function LotDrawing({ drawing, distances, asking, onPickLine, onDrag }: P
   const clip = `lot-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
   const svg = useRef<SVGSVGElement>(null);
   const dragging = useRef(false);
-  const [flip, setFlip] = useState(false);
+  const [swapped, setFlip] = useState(false);
   // Screen pixels per view unit, so the handle and the line targets are 48 px across (spec §10.4).
   const [ppu, setPpu] = useState(1);
   const outline = drawing.outline;
@@ -63,10 +68,14 @@ export function LotDrawing({ drawing, distances, asking, onPickLine, onDrag }: P
   const at = (p: Pt) => ({ x: p[0] * scale, y: -p[1] * scale });
   const roles = drawing.roles;
   const front = roles ? drawing.front : null;
+  // A corner lot's sides are fixed by its roads: side 2 is the one beside the other road.
+  const fixedSide = front && roles ? secondarySide(outline, front, roles) : null;
+  const flip = fixedSide ? fixedSide === "left" : swapped;
   const edge = asking ? EDGE_OF[asking] : undefined;
   // The edge being asked needs somewhere to start before it has a number: at its limit if the
   // API gave one, else 10 ft in. That only places the handle; no number is shown or entered.
-  const startAt = (e: Edge) => drawing.limits[e === "front" ? "front" : e === "rear" ? "rear" : "side"]?.min ?? 10;
+  const startAt = (e: Edge) => drawing.limits[
+    asking === "secondary" ? "secondary" : e === "front" ? "front" : e === "rear" ? "rear" : "side"]?.min ?? 10;
   const placed = edge && distances[edge] == null ? { ...distances, [edge]: startAt(edge) } : distances;
   const box = front ? houseBox(outline, front, placed, flip, roles ?? undefined) : null;
   const stroke = Math.max(1.5, 400 / 250);
@@ -165,7 +174,7 @@ export function LotDrawing({ drawing, distances, asking, onPickLine, onDrag }: P
       </svg>
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1, flexWrap: "wrap" }}>
         <Typography variant="caption" color="text.secondary">{WORDS.drawing.approximate}</Typography>
-        {(distances.side_1 != null || distances.side_2 != null) && (
+        {!fixedSide && (distances.side_1 != null || distances.side_2 != null) && (
           <Button size="small" onClick={() => setFlip((f) => !f)} sx={{ minHeight: 48 }}>{WORDS.drawing.swap_sides}</Button>
         )}
       </Box>
