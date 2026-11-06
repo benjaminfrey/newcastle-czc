@@ -223,9 +223,38 @@ sections:
     allow_unknown: true
     required: true
     compare: primary_building_placement
+    # A corner lot has one side; its other road takes the secondary front setback instead.
+    show_if:
+      ne:
+      - property.corner
+      - true
     status: approved
     approved_by: "Ben Frey, Planning Board chair"
     approved_on: "2026-10-28"
+    screen: setbacks
+  - id: setback_secondary
+    official_label: Secondary front setback
+    source: question
+    label: How far will it be from the lot line along the other road?
+    help: On a corner lot, in feet, from the lot line along the other road to the closest part of the building.
+    type: number
+    unit: ft
+    min: 0
+    max: 50000
+    why: 2.3.c.3
+    allow_unknown: true
+    required: true
+    compare: primary_building_placement
+    # Asked only where the tax-map outline shows a corner lot; nobody knowing keeps "other side".
+    show_if:
+      all:
+      - known: property.corner
+      - eq:
+        - property.corner
+        - true
+    status: approved
+    approved_by: "Ben Frey, Planning Board chair"
+    approved_on: "2026-11-06"
     screen: setbacks
   - id: setback_rear
     official_label: Setback from rear lot line

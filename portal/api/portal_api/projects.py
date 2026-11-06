@@ -15,6 +15,8 @@ from dataclasses import dataclass
 
 from sqlalchemy import Connection, text
 
+from portal_api.guide.drawing import frontages
+
 EDITABLE = ("draft", "submitted")
 
 
@@ -164,7 +166,12 @@ def snapshot(conn: Connection, project_id: str) -> dict:
         "SELECT source, parcel_id, map_lot, facts, parcels_as_of, verified, disputed, note"
         " FROM property_snapshot WHERE project_id = :p"
     ), {"p": project_id}).one()
-    return {"source": r.source, "parcel_id": r.parcel_id, "map_lot": r.map_lot, "facts": r.facts,
+    facts = r.facts
+    if (facts or {}).get("outline"):
+        # A corner lot asks the secondary front setback (the chair, 2026-11-06), found from the
+        # tax-map outline as the guide finds it.
+        facts = {**facts, "corner": frontages(facts["outline"]["lines"])["kind"] == "corner"}
+    return {"source": r.source, "parcel_id": r.parcel_id, "map_lot": r.map_lot, "facts": facts,
             "parcels_as_of": r.parcels_as_of.isoformat() if r.parcels_as_of else None,
             "verified": r.verified, "disputed": r.disputed, "note": r.note}
 

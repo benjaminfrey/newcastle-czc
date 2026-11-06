@@ -1,6 +1,7 @@
 """The guide's routes (guided plan 2, Task 6): ownership, revisions, the lock, the draft gate,
 free text kept and never read, and the numbers carried into the project's form answers."""
 
+import json
 import math
 
 import pytest
@@ -10,8 +11,10 @@ from sqlalchemy import text
 from portal_api.forms.parts import load_parts, project_form, wanted_forms
 from portal_api.guide.content import load_content
 from portal_api.main import create_app
+from portal_api.routes import guide as guide_routes
 from portal_api.ruleset import load_ruleset
 from tests.test_auth import _sign_in
+from tests.test_guide_content import all_draft
 from tests.test_projects import alice, app, bob, create, get  # noqa: F401  (fixtures)
 from tests.test_property import layers  # noqa: F401  (fixture)
 
@@ -191,7 +194,8 @@ def test_back_clears_the_bridged_answer(alice):
     assert "floor_area" not in building_values(alice, pid)
 
 
-def test_drafts_are_refused_without_the_dev_setting(engine, settings, outbox, layers):  # noqa: F811
+def test_drafts_are_refused_without_the_dev_setting(engine, settings, outbox, layers, monkeypatch):  # noqa: F811
+    monkeypatch.setattr(guide_routes, "load_content", lambda: all_draft(load_content()))
     settings.allow_stale_parcels = True
     settings.allow_draft_rules = True
     dev = create_app(settings, outbox)
@@ -271,7 +275,7 @@ def test_revisit_event_carries_no_value(alice, engine):
     assert "3" not in payload.replace(pid, "")
 
 
-def test_openings_for_the_projects_parts(alice, bob, engine, settings, outbox, layers):  # noqa: F811
+def test_openings_for_the_projects_parts(alice, bob, engine, settings, outbox, layers, monkeypatch):  # noqa: F811
     pid = create(alice, parts=("building",))
     r = alice.get(f"/api/projects/{pid}/guide/openings")
     assert r.status_code == 200, r.text
@@ -286,6 +290,7 @@ def test_openings_for_the_projects_parts(alice, bob, engine, settings, outbox, l
         _sign_in(c, outbox, "dave@example.com")
         pid2 = create(c, parts=("building",))
         dev.state.settings.allow_draft_rules = False
+        monkeypatch.setattr(guide_routes, "load_content", lambda: all_draft(load_content()))
         r = c.get(f"/api/projects/{pid2}/guide/openings")
         assert r.status_code == 503 and r.json()["detail"] == "guide_not_approved"
 
@@ -323,3 +328,26 @@ def test_a_change_says_which_later_questions_it_reopened(alice):
     other = next(x["id"] for x in r.json()["current"]["answers"] if x["id"] not in ("home", "unsure"))
     body = answer(alice, pid, "use_group", other).json()
     assert body["reopened"] == [{"turn_id": "use_key", "ask": body["current"]["ask"]}]
+
+
+# A 100 ft corner lot, clockwise from its south-west corner: Main Street (S2) on the west is the
+# Code's front, Sheepscot Road (R2) on the south its secondary frontage.
+CORNER_LINES = [
+    {"id": "L1", "points": [[-50, -50], [-50, 50]], "length_ft": 100, "street": {"name": "Main Street", "type": "S2"}},
+    {"id": "L2", "points": [[-50, 50], [50, 50]], "length_ft": 100, "street": None},
+    {"id": "L3", "points": [[50, 50], [50, -50]], "length_ft": 100, "street": None},
+    {"id": "L4", "points": [[50, -50], [-50, -50]], "length_ft": 100, "street": {"name": "Sheepscot Road", "type": "R2"}},
+]
+
+
+def test_the_bridge_writes_the_secondary_front_setback(alice, engine):
+    """A corner lot's other road (the chair, 2026-11-06): the guide's answer fills the new field."""
+    pid = started(alice)
+    with engine.begin() as conn:
+        conn.execute(text("UPDATE property_snapshot SET facts = jsonb_set(facts, '{outline,lines}', CAST(:lines AS jsonb))"
+                          " WHERE project_id = :p"),
+                     {"p": pid, "lines": json.dumps(CORNER_LINES)})
+    assert get(alice, pid)["property"]["facts"]["corner"] is True
+    walk(alice, pid, [("lot", "yes"), ("confirm", "yes"), *STORIES, ("floor_area", 1800), ("dwelling_units", 1),
+                      ("setback_front", 25), ("setback_side_1", 15), ("setback_secondary", 22)])
+    assert building_values(alice, pid)["setback_secondary"] == 22

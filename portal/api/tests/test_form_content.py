@@ -128,11 +128,13 @@ def test_mainedot_question_shows_unless_known_off_highway(forms, on_highway, sho
 
 
 def test_every_entry_is_approved_by_the_chair(forms):
-    # The chair approved every entry on 2026-10-28; a new or changed entry goes back to draft.
+    # The chair approved every entry on 2026-10-28, and the secondary front setback on 2026-11-06;
+    # a new or changed entry goes back to draft.
+    later = {"setback_secondary": "2026-11-06"}
     for form in forms.values():
-        entries = list(form.sections) + [f for _, f in form.fields()]
-        assert {(e.status, e.approved_by, e.approved_on) for e in entries} == {
-            ("approved", "Ben Frey, Planning Board chair", "2026-10-28")}
+        for e in list(form.sections) + [f for _, f in form.fields()]:
+            assert (e.status, e.approved_by, e.approved_on) == (
+                "approved", "Ben Frey, Planning Board chair", later.get(e.id, "2026-10-28")), e.id
         assert not form_drafts(form)
 
 

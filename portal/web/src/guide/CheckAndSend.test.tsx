@@ -101,6 +101,6 @@ test("a note for the Town can be added on Check and send, and the notes so far a
   open();
   expect(screen.getByText("There's a well by the road.")).toBeVisible();
   expect(screen.getByText(/The Town Office will read this/)).toBeVisible();
-  await userEvent.type(screen.getByRole("textbox", { name: "Anything else the Town should know?" }), "The barn stays.{Enter}");
+  await userEvent.type(screen.getByRole("textbox", { name: "Anything the Town should know?" }), "The barn stays.{Enter}");
   expect(actions.note).toHaveBeenCalledWith("The barn stays.");
 });

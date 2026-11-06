@@ -4,6 +4,7 @@ import pytest
 
 from portal_api.guide.content import load_content
 from portal_api.guide.engine import Action, AnswerRejected, Lot, apply, replay
+from tests.test_guide_content import all_draft
 
 LOT = Lot(map_lot="012-034", district_codes=("D4",), district_names=("Village Residential",),
           acres=0.5, frontage_ft=120, disputed=False)
@@ -131,7 +132,8 @@ def test_free_text_is_not_an_action():
 
 
 def test_drafts_list_what_the_state_shows(content):
-    s = replay(content, "new_house", LOT, START)
+    assert not replay(content, "new_house", LOT, START).drafts  # the chair, 2026-11-06
+    s = replay(all_draft(content), "new_house", LOT, START)
     assert "turns.yaml: full_stories" in s.drafts and "openings.yaml: new_house" in s.drafts
     assert "entries.yaml: how_stories_count" in s.drafts and "wording.yaml: unsure" in s.drafts
 

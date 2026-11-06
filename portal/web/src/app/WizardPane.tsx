@@ -253,7 +253,9 @@ export default function CardQuestion({ screen, editing, errorsRef, onPick, onCon
           <div className="w-full">
             <LotDiagramLayout parcelId={app?.property.parcel_id ?? null} street={street}
                               sides={{ front: side("setback_front", `Front${street ? `, along ${street}` : ""}`), side1: side("setback_side_1", "One side"),
-                                       side2: side("setback_side_2", "Other side"), rear: side("setback_rear", "Back") }} />
+                                       // A corner lot's other road takes the secondary front setback (the chair, 2026-11-06).
+                                       side2: side("setback_side_2", "Other side") ?? side("setback_secondary", "Secondary front setback"),
+                                       rear: side("setback_rear", "Back") }} />
           </div>
         );
       }

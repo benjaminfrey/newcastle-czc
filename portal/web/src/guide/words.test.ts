@@ -11,7 +11,13 @@ function strings(x: unknown): string[] {
 }
 
 describe("the guide's screen words", () => {
-  it("are all draft until the chair approves them", () => expect(WORD_STATUS).toBe("draft"));
+  it("were approved by the chair on 2026-11-06", () => expect(WORD_STATUS).toBe("approved"));
+
+  it("say what the chair approved", () => {
+    expect(WORDS.reply_placeholder).toBe("Anything the Town should know?");
+    expect(WORDS.lot_map_lot).toBe("Map / Lot");
+    expect("try_guide" in WORDS).toBe(false);  // the LAN copy's link stays a draft, outside these words
+  });
 
   it("never use the words that read as the Town's decision", () => {
     expect(strings(WORDS).filter((w) => NEVER.test(w))).toEqual([]);

@@ -53,8 +53,8 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
     (`plans/2026-11-03-applicant-portal-guided-builder-4-drawing.md`), is on branch
     `portal-guided-4-drawing` (PR #26, stacked on #25). Next: plan 5, the pictures. Open decisions are the
     spec's §12.
-  - **Answered by the chair 2026-11-05 (interview); built on `portal-guided-4-drawing`, not yet
-    committed** (the screen items below as well):
+  - **Answered by the chair 2026-11-05 (interview); built on `portal-guided-4-drawing`** (b7c6e32,
+    in PR #26; the screen items below as well):
     - *Corner lots:* the guide suggests the front from the road Type (Article 2: Streets before
       Roads, then the lower code), the rule written for newly created lots, which the chair applies
       to existing lots too. The other road gets the district's Secondary Front Setback. The applicant
@@ -89,15 +89,17 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
     - *The old cards' looks findings* (task list twice, 44 vs 36 px fields, property card spacing,
       "No password" twice) are closed as superseded; recheck the same four on the new screens in
       plan 6.
-  - **For the chair (raised by building the corner lot):** the approved application form has no field
-    for the secondary front setback, and its required "other side" field stays empty on a corner lot
-    (the guide asks the secondary setback instead), so Check and send lists it. Add a form field
-    (needs your approval of its wording), or map the secondary answer to "other side". New draft
-    words for the memo: the secondary question ("How far will it be from the lot line along the
-    other road?" and its help), the Change notice ("Changing that answer reopened {n} later
-    questions"), and "Contact the Town Office".
-  - **For the chair:** the remaining draft wording (the screens' `words.ts` and the engine's entries
-    in `portal/api/portal_api/guide/definitions/`), to come as an approval memo in `memos/`.
+  - **The guided builder's wording, answered by the chair 2026-11-06 and built** on
+    `portal-guided-4-drawing` (`memos/2026-11-06-guided-builder-wording-for-approval.md`). All of it
+    is approved except two drafts that aren't shown to the public:
+    - "You're already covered" (`covered`), which stays a draft until permits are on record by lot.
+    - The LAN copy's "Try the guided version (preview)" link (`TRY_GUIDE` in
+      `app/Dashboard.tsx`), which is removed before launch.
+
+    The Small Project Plan form has a new "Secondary front setback" field, asked when the
+    tax-map outline shows a corner lot. The "Draft wording" chip now shows only while something on
+    the screen is a draft. *When the staff handoff is built:* restore the `town_judgment` sentence
+    that sends the questions to the Code Enforcement Officer.
   - **Rules coverage, answered by the chair 2026-11-02** (`memos/2026-10-30-guided-builder-rules-coverage.md`,
     regenerated; answers in `portal/api/portal_api/standards_overrides.json`, each with its basis):
     the Permitted Buildings numbers are maximums, floor heights included. D2–D6 already say so on

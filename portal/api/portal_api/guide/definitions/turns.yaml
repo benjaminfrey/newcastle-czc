@@ -3,7 +3,8 @@
 #   confirm  "So you mean…", from the opening's template (§4.3)
 #   choice   tappable answers; each answer sets facts
 #   number   a value with bounds, for a fact; checked against `standard` (checks.py)
-# "I'm not sure yet" is added to every question by the engine. Drafts until the chair approves.
+# "I'm not sure yet" is added to every question by the engine. Approved by the chair on
+# 2026-11-06 (memos/2026-11-06-guided-builder-wording-for-approval.md); a new turn starts as a draft.
 - id: lot
   order: 10
   step: Your lot
@@ -13,7 +14,9 @@
   answers:
     - {id: "yes", label: "Yes, that's right", set: {lot.confirmed: true}}
     - {id: not_right, label: "That's not right", set: {lot.confirmed: false}}
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06
 - id: front_line
   order: 15
   step: Your lot
@@ -35,7 +38,9 @@
   answers:
     - {id: "yes", label: "Yes, that's right", set: {confirmed: true}}
     - {id: "no", label: "No, something else", set: {confirmed: false}}
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06
 - id: full_stories
   order: 30
   step: The building
@@ -51,7 +56,9 @@
   answer_field: stories
   why: how_stories_count
   cite: "5.7.c.3"
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06
 - id: roof_floors
   order: 31
   step: The building
@@ -65,7 +72,9 @@
   computed: stories
   why: how_stories_count
   cite: "5.7.c.4"
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06
 - id: top_knee_over_3ft
   order: 32
   step: The building
@@ -79,7 +88,9 @@
   computed: stories
   why: how_stories_count
   cite: "5.7.c.5"
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06
 - id: basement_exposed_5ft
   order: 33
   step: The building
@@ -92,7 +103,9 @@
   computed: stories
   why: how_stories_count
   cite: "5.7.c.6"
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06
 - id: floor_area
   order: 40
   step: The building
@@ -105,7 +118,9 @@
   min: 1
   max: 1000000
   answer_field: floor_area
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06
 - id: dwelling_units
   order: 41
   step: The building
@@ -117,14 +132,16 @@
   min: 0
   max: 100
   answer_field: dwelling_units
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06
 - id: setback_front
   drawing: front_setback
   order: 50
   step: Where it sits
   kind: number
   when: {eq: [opening, new_house]}
-  ask: "How far will the house be from the front lot line, the one along the road?"
+  ask: "How far will the house be from the front lot line?"
   help: "Measure in feet from the lot line to the closest part of the house."
   fact: building.setback.front
   unit: ft
@@ -134,7 +151,9 @@
   answer_field: setback_front
   why: setbacks
   cite: "2.3.c.3"
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06
 - id: setback_side_1
   drawing: side_1
   order: 51
@@ -151,7 +170,9 @@
   answer_field: setback_side_1
   why: setbacks
   cite: "2.3.c.3"
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06
 - id: setback_side_2
   drawing: side_2
   order: 52
@@ -169,7 +190,9 @@
   answer_field: setback_side_2
   why: setbacks
   cite: "2.3.c.3"
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06
 - id: setback_secondary
   drawing: secondary
   order: 52
@@ -184,10 +207,12 @@
   min: 0
   max: 50000
   standard: {source: dimension, field: primary_building_placement.secondary_front_setback}
-  # No answer_field yet: the approved form has no secondary-setback field (for the chair).
+  answer_field: setback_secondary
   why: setbacks
   cite: "2.3.c.3"
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06
 - id: setback_rear
   drawing: rear
   order: 53
@@ -204,7 +229,9 @@
   answer_field: setback_rear
   why: setbacks
   cite: "2.3.c.3"
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06
 - id: use_group
   order: 60
   step: The use
@@ -214,7 +241,9 @@
   answers_from: use_groups
   why: use_table
   cite: "8.15.b.1"
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06
 - id: use_key
   order: 61
   step: The use
@@ -225,4 +254,6 @@
   answers_from: use_group_uses
   why: use_table
   cite: "8.15.b.1"
-  status: draft
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06

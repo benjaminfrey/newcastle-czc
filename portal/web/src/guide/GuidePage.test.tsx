@@ -67,7 +67,7 @@ test("notes are kept and shown back, and say the guide doesn't act on them", asy
   open();
   expect(screen.getByRole("main")).toHaveTextContent("There's a well by the road.");
   expect(screen.getByText(/The guide's questions don't change because of it/)).toBeVisible();
-  await userEvent.type(screen.getByRole("textbox", { name: "Anything else the Town should know?" }), "A porch too.{Enter}");
+  await userEvent.type(screen.getByRole("textbox", { name: "Anything the Town should know?" }), "A porch too.{Enter}");
   expect(actions.note).toHaveBeenCalledWith("A porch too.");
 });
 
@@ -92,7 +92,7 @@ test("a locked project is read-only and says so", () => {
   talk(guide(), { locked: true });
   open();
   expect(screen.getByText("The Town is reviewing this project, so it can't be changed now.")).toBeVisible();
-  expect(screen.queryByRole("textbox", { name: "Anything else the Town should know?" })).toBeNull();
+  expect(screen.queryByRole("textbox", { name: "Anything the Town should know?" })).toBeNull();
 });
 
 test("a notice says why the page changed", async () => {
@@ -239,4 +239,17 @@ test("one reopened question is told as one", () => {
   talk(guide({ reopened: [{ turn_id: "floor_area", ask: FLOOR.ask }] }));
   open();
   expect(screen.getByRole("status", { name: "Changing that answer reopened 1 later question" })).toBeVisible();
+});
+
+
+test("the draft chip shows only while the API says a word on the screen is a draft", () => {
+  talk(guide({ drafts: [] }));
+  open();
+  expect(screen.queryByText("Draft wording, not approved")).toBeNull();
+});
+
+test("a draft from the API brings the chip back", () => {
+  talk(guide({ drafts: ["wording.yaml: covered"] }));
+  open();
+  expect(screen.getByText("Draft wording, not approved")).toBeInTheDocument();
 });

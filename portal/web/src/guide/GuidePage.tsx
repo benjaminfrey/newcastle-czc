@@ -27,7 +27,7 @@ import { TurnView } from "./turns/TurnView";
 import { useGuide } from "./useGuide";
 
 const PICK_OPENING = "pick_opening";   // the engine's picker after "No" (guided plan 2)
-import { fill, WORDS } from "./words";
+import { draftWording, fill, WORDS } from "./words";
 
 function History({ guide }: { guide: Guide }) {
   return <>{guide.history.map(({ shown, value }, i) => (
@@ -98,7 +98,7 @@ function GuideScreen({ projectId }: { projectId: string }) {
 
   if (v.phase !== "talk") {
     return (
-      <GuideShell title={title} draft back={{ href: `/projects/${projectId}`, label: WORDS.back_to_project }}>
+      <GuideShell title={title} draft={draftWording()} back={{ href: `/projects/${projectId}`, label: WORDS.back_to_project }}>
         <div ref={main}>
           {v.phase === "loading" && <Typography role="status">{WORDS.loading}</Typography>}
           {v.phase === "refused" && <Alert severity="info">{WORDS.refusals[v.why]}</Alert>}
@@ -146,7 +146,7 @@ function GuideScreen({ projectId }: { projectId: string }) {
   const panel = <ProjectPanel guide={guide} onChange={change} locked={locked} drawing={figure(wide && !!asking)} />;
 
   return (
-    <GuideShell title={title} draft back={back} step={step ? { step: step.n, of: step.of, label: step.label } : undefined}
+    <GuideShell title={title} draft={draftWording(guide.drafts)} back={back} step={step ? { step: step.n, of: step.of, label: step.label } : undefined}
       aside={wide ? panel : undefined}
       actions={!wide && (
         <Button onClick={() => setPanelOpen(true)} startIcon={<IconListDetails size={20} aria-hidden="true" />}

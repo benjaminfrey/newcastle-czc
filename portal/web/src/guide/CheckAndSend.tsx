@@ -16,7 +16,7 @@ import { useDrawing } from "./drawing/useDrawing";
 import { ProjectPanel } from "./ProjectPanel";
 import { GuideTheme } from "./theme/GuideTheme";
 import { useGuide } from "./useGuide";
-import { WORDS } from "./words";
+import { draftWording, WORDS } from "./words";
 
 type Sent = "idle" | "sending" | "sent" | { missing: Missing } | { refused: keyof typeof WORDS.refusals } | "conflict";
 
@@ -77,7 +77,7 @@ function Check({ projectId }: { projectId: string }) {
   };
 
   return (
-    <GuideShell title={project?.title ?? WORDS.your_project} draft
+    <GuideShell title={project?.title ?? WORDS.your_project} draft={draftWording(g.view.phase === "talk" ? g.view.guide.drafts : undefined)}
       back={{ href: `/projects/${projectId}/guide`, label: WORDS.back_to_conversation }}>
       <Box sx={{ display: "grid", gap: 2.5 }}>
         <Typography variant="h6" component="h2">{WORDS.check_heading}</Typography>

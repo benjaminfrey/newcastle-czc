@@ -5,6 +5,7 @@ import pytest
 from portal_api.guide.content import NEVER_WORDS, load_content
 from portal_api.guide.engine import Action, Lot, replay
 from portal_api.ruleset import district_key_for, load_ruleset
+from tests.test_guide_content import all_draft
 
 
 def lot(*codes):
@@ -108,7 +109,7 @@ def test_ending_words_have_no_never_words(content):
 
 
 def test_endings_bring_their_drafts(content):
-    s = _use(content, ("D1",), "residence")
+    s = _use(all_draft(content), ("D1",), "residence")
     assert any(d.startswith("wording.yaml: ") for d in s.drafts)
 
 

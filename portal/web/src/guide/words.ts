@@ -1,8 +1,13 @@
 // Every word the guide's screens say on their own (spec §11: every word an applicant reads is
 // approved before the public sees it). Turn, answer, entry and ending words come from the API's
-// content files; these are the rest. All are draft until the chair approves them, which is why
-// every guide screen carries the "Draft wording" chip. Nothing else in src/guide/ writes words.
-export const WORD_STATUS = "draft";
+// content files; these are the rest. The chair approved them on 2026-11-06
+// (memos/2026-11-06-guided-builder-wording-for-approval.md); a changed line makes the file a
+// draft again. Nothing else in src/guide/ writes words.
+export const WORD_STATUS = "approved" as "draft" | "approved";
+
+// The "Draft wording" chip shows while any word on the screen is a draft: these, or one of the
+// API's (it lists the drafts a state shows).
+export const draftWording = (drafts: readonly string[] = []) => WORD_STATUS === "draft" || drafts.length > 0;
 
 export const WORDS = {
   // The app bar and the page around the conversation.
@@ -15,7 +20,7 @@ export const WORDS = {
   pick_opening: "What would you like to do?", // before the guide starts
 
   // The lot as the Town knows it (spec §4.1).
-  lot_map_lot: "Map-lot",
+  lot_map_lot: "Map / Lot",
   lot_districts: "District",
   lot_acres: "Lot size",
   lot_frontage: "Road frontage",
@@ -39,7 +44,7 @@ export const WORDS = {
   limit_mark: "Limit",
 
   // The conversation.
-  reply_placeholder: "Anything else the Town should know?",
+  reply_placeholder: "Anything the Town should know?",
   notes_kept: "The Town Office will read this. The guide's questions don't change because of it.",
 
   // Notices.
@@ -127,9 +132,6 @@ export const WORDS = {
     unavailable: "We couldn't reach the Town's server. Please check your connection and try again.",
     locked: "The Town is reviewing this project, so it can't be changed now.",
   },
-
-  // The HeroUI dashboard's link in (LAN copy only).
-  try_guide: "Try the guided version (preview)",
 } as const;
 
 // "{room} {unit} to spare" → the words with their slots filled.
