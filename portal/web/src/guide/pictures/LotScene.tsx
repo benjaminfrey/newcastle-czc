@@ -10,18 +10,18 @@ import { usePicturePalette } from "./palette";
 
 // Each pin stands `lift` feet over the point it names. Placed so that at a 390 px phone every 48 px
 // target stands clear of the others, and at 320 px their centres stay 40 px apart.
-// `left`: its name sits to the left of its pin, clear of a neighbour's.
-export const SPOTS: { id: string; at: P3; lift: number; left?: boolean }[] = [
+// `label`: where its name sits, clear of a neighbour's (to the right unless it says).
+export const SPOTS: { id: string; at: P3; lift: number; label?: "left" | "below" }[] = [
   { id: "house_outline", at: [0, 100, 0], lift: 20 },
-  { id: "barn", at: [140, 40, 8], lift: 29, left: true },
+  { id: "barn", at: [140, 40, 8], lift: 29, label: "left" },
   { id: "addition", at: [-4, 50, 0], lift: 10 },
   { id: "deck", at: [60, 86, 3], lift: 30 },
   { id: "solar", at: [80, 54, 15], lift: 14 },
   { id: "shed", at: [158, 96, 8], lift: 26 },
   { id: "driveway", at: [112, 8, 0], lift: 18 },
-  { id: "wall", at: [60, 2, 3], lift: 26, left: true },
+  { id: "wall", at: [60, 2, 3], lift: 26 },
   { id: "sign", at: [160, 4, 10], lift: 29 },
-  { id: "shingle", at: [38, 50, 6], lift: 10, left: true },
+  { id: "shingle", at: [38, 50, 6], lift: 10, label: "below" },
 ]
 
 const LOT = { x0: -12, x1: 168, y0: 0, y1: 118 };
@@ -119,7 +119,8 @@ export function LotScene({ onSpot, labels, description }: {
           <g key={s.id} data-spot={s.id}>
             <line x1={fx} y1={fy} x2={hx} y2={hy} stroke={theme.palette.primary.main} strokeWidth={1.2} />
             <circle cx={hx} cy={hy} r={6} fill={theme.palette.primary.main} stroke={theme.palette.background.paper} strokeWidth={1.5} />
-            <text x={s.left ? hx - 9 : hx + 9} y={hy + 3} fontSize={9} textAnchor={s.left ? "end" : "start"} fill={theme.palette.text.primary}
+            <text x={s.label === "left" ? hx - 9 : s.label === "below" ? hx : hx + 9} y={s.label === "below" ? hy + 16 : hy + 3}
+              fontSize={9} textAnchor={s.label === "left" ? "end" : s.label === "below" ? "middle" : "start"} fill={theme.palette.text.primary}
               stroke={theme.palette.background.paper} strokeWidth={2.5} paintOrder="stroke">{labels[s.id]}</text>
             <circle data-hit="" aria-hidden="true" cx={hx} cy={hy} r={24 / ppu} fill="transparent"
               style={{ cursor: "pointer" }} onClick={() => onSpot?.(s.id)} />

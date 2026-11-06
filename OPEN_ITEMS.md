@@ -89,6 +89,18 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
     - *The old cards' looks findings* (task list twice, 44 vs 36 px fields, property card spacing,
       "No password" twice) are closed as superseded; recheck the same four on the new screens in
       plan 6.
+  - **Plan 5, the pictures**, is on branch `portal-guided-5-pictures`, stacked on #26:
+    - design: `specs/2026-11-06-applicant-portal-guided-builder-pictures.md`, approved 2026-11-06;
+    - plan: `plans/2026-11-06-applicant-portal-guided-builder-5-pictures.md`.
+
+    What's built:
+    - the opening scene, with ten places to tap (two guided, eight "coming soon");
+    - the "add to this project?" question;
+    - the stories cut-away.
+
+    **With the chair:** the sample sheet
+    (`memos/2026-11-06-guided-builder-pictures-sample-sheet.md`; decision 15). Its Task 7, the
+    setbacks picture, his changes and the approvals, waits on his answers.
   - **The guided builder's wording, answered by the chair 2026-11-06 and built** on
     `portal-guided-4-drawing` (`memos/2026-11-06-guided-builder-wording-for-approval.md`). All of it
     is approved except two drafts that aren't shown to the public:

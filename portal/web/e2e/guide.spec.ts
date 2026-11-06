@@ -11,6 +11,11 @@ async function choose(page: Page, label: string) {
   await turn(page).getByText(label, { exact: true }).click();
 }
 
+// The opening scene's list (guided plan 5): the keyboard's and the tests' way in.
+async function pickFromList(page: Page, label: string) {
+  await page.getByRole("list", { name: "Or choose from the list" }).getByRole("button", { name: label, exact: true }).click();
+}
+
 async function number(page: Page, ask: RegExp, value: string) {
   await expect(question(page)).toHaveText(ask);
   await turn(page).getByRole("textbox").fill(value);
@@ -24,7 +29,7 @@ async function openGuide(page: Page, tag: string) {
   await page.getByRole("link", { name: "Try the guided version (preview)" }).click();
   await expect(page).toHaveURL(/\/projects\/[0-9a-f-]+\/guide$/);
   await expect(question(page)).toHaveText("What would you like to do?");
-  await choose(page, "A new house");
+  await pickFromList(page, "A new house");
   await expect(question(page)).toHaveText(/what the Town knows about your lot/);
 }
 
@@ -127,7 +132,7 @@ test("No on So you mean starts again from a picture", async ({ page }, info) => 
   await expect(question(page)).toHaveText(/^So you'd like to build a new house/);
   await choose(page, "No, something else");
   await expect(question(page)).toHaveText("What would you like to do?");
-  await choose(page, "A new house");
+  await pickFromList(page, "A new house");
   await expect(question(page)).toHaveText(/what the Town knows about your lot/);
 });
 
@@ -192,4 +197,43 @@ test("dragging the side edge fills the field", async ({ page }, info) => {
   await expect(field).toHaveValue(/^\d+$/);
   await turn(page).getByRole("button", { name: "Next" }).click();
   await expect(question(page)).not.toHaveText(/nearest side lot line/);
+});
+
+
+// Plan 5: the scene on a project with only a use. Tapping the house adds a building and starts;
+// the deck says coming soon; every pin's target is 48 px and inside the picture; the stories
+// explanation shows its cut-away.
+test("the opening scene: coming soon, add to the project, and the stories picture", async ({ page }, info) => {
+  await startProject(page, [/^Start or change a use/], newEmail(`guide-scene-${info.project.name}`));
+  await page.getByRole("link", { name: "Try the guided version (preview)" }).click();
+  const scene = page.getByRole("img", { name: /^A Newcastle lot/ });
+  await expect(scene).toBeVisible();
+  await axe(page, "guide: the opening scene");
+
+  const box = await scene.boundingBox();
+  for (const hit of await page.locator("svg[role=img] circle[data-hit]").all()) {
+    const b = (await hit.boundingBox())!;
+    expect(b.width).toBeGreaterThanOrEqual(47.5);
+    expect(b.x + b.width / 2).toBeGreaterThanOrEqual(box!.x);
+    expect(b.x + b.width / 2).toBeLessThanOrEqual(box!.x + box!.width);
+  }
+
+  await page.locator('[data-spot="deck"] circle[data-hit]').click();
+  const soon = page.getByRole("dialog", { name: "A deck: coming soon" });
+  await expect(soon).toBeVisible();
+  await axe(page, "guide: coming soon");
+  await soon.getByRole("button", { name: "OK" }).click();
+  await expect(soon).toBeHidden();
+
+  await page.locator('[data-spot="house_outline"] circle[data-hit]').click();
+  const add = page.getByRole("dialog", { name: "Add a new house to this project?" });
+  await expect(add).toBeVisible();
+  await add.getByRole("button", { name: "Add it" }).click();
+  await expect(question(page)).toHaveText(/what the Town knows about your lot/);
+  await choose(page, "Yes, that's right");
+  await chooseFront(page);
+  await choose(page, "Yes, that's right");
+  await expect(question(page)).toHaveText(/full stories/);
+  await expect(page.getByRole("img", { name: /^A house cut open to show its floors/ })).toBeVisible();
+  await axe(page, "guide: the stories picture");
 });
