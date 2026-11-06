@@ -4,9 +4,23 @@
 **From:** Applicant Portal build (guided builder, plan 5)
 **Date:** November 6, 2026
 **Re:** The pictures: sample sheet, for approval (decision 15)
-**Status:** **For approval.** Nothing more is drawn until you approve the style. You can see it working on the LAN copy: open any project, then "Try the guided version (preview)".
+**Status:** **Approved by the chair on 2026-11-06** (see "The chair's decisions"). You can see it working on the LAN copy: open any project, then "Try the guided version (preview)".
 
 ---
+
+## The chair's decisions (2026-11-06)
+
+Taken in interview on 2026-11-06.
+
+1. **Palette and look:** approved as shown.
+2. **The buildings:** approved. The cape, its ell and the red barn read as Newcastle.
+3. **The pins and their places:** approved as shown, including the three moves made for phones.
+4. **The stories picture:** one cut-away, as shown.
+5. **The words** in section 4 and the stories picture's description: approved as written.
+6. **The setbacks picture:** to be drawn to match. It shows the house on the lot, with arrows
+   from each lot line to the nearest part of the house, labelled with the drawing's
+   already-approved row names ("Front", "Nearest side", "Other side", "Rear") and no distances.
+   Its description comes back to the chair as a draft.
 
 The design (`specs/2026-11-06-applicant-portal-guided-builder-pictures.md`, approved 2026-11-06)
 calls for one opening scene of a Newcastle lot, seen from above at an angle, and explanation

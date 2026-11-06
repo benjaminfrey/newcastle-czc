@@ -1,10 +1,10 @@
 // Every word the guide's screens say on their own (spec §11: every word an applicant reads is
 // approved before the public sees it). Turn, answer, entry and ending words come from the API's
 // content files; these are the rest. The chair approved them on 2026-11-06
-// (memos/2026-11-06-guided-builder-wording-for-approval.md); a changed line makes the file a
-// draft again, as plan 5's pictures and opening scene have, until the chair approves them.
-// Nothing else in src/guide/ writes words.
-export const WORD_STATUS = "draft" as "draft" | "approved";
+// (memos/2026-11-06-guided-builder-wording-for-approval.md), and plan 5's the same day
+// (memos/2026-11-06-guided-builder-pictures-sample-sheet.md); a changed line makes the file a
+// draft again. Nothing else in src/guide/ writes words.
+export const WORD_STATUS = "approved" as "draft" | "approved";
 
 // The "Draft wording" chip shows while any word on the screen is a draft: these, or one of the
 // API's (it lists the drafts a state shows).

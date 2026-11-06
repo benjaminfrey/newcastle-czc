@@ -11,9 +11,8 @@ function strings(x: unknown): string[] {
 }
 
 describe("the guide's screen words", () => {
-  // The chair approved them on 2026-11-06; plan 5's new words make the file a draft until he
-  // approves its sample sheet.
-  it("are a draft again until the chair approves plan 5's words", () => expect(WORD_STATUS).toBe("draft"));
+  // The chair approved them on 2026-11-06, and plan 5's words with its sample sheet the same day.
+  it("were approved by the chair on 2026-11-06", () => expect(WORD_STATUS).toBe("approved"));
 
   it("show the draft chip while these words or any of the API's are drafts", () => {
     expect(draftWording(["wording.yaml: covered"])).toBe(true);
