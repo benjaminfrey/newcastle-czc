@@ -134,6 +134,20 @@ export const WORDS = {
     locked: "The Town is reviewing this project, so it can't be changed now.",
   },
 
+  // The opening scene (guided plan 5, design §6).
+  picker: {
+    description: "A Newcastle lot with a cape, its ell and a barn, a stone wall and a maple. Tap a project, or choose one from the list below.",
+    list_heading: "Or choose from the list",
+    box_label: "In your own words, what would you like to do? (optional)",
+    add_title: "Add {label} to this project?",
+    add_body: "Your project doesn't have this yet. Adding it adds its questions to your project's form.",
+    add_yes: "Add it",
+    add_no: "Not now",
+    soon_title: "{label}: coming soon",
+    soon_body: "The guide can't walk you through this yet. You can still fill in your project's form, or contact the Town Office.",
+    soon_ok: "OK",
+  },
+
   // The pictures' labels (guided plan 5). A picture carries no number of its own: these name the
   // Code's own tests.
   pictures: {

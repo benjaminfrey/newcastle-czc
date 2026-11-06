@@ -8,8 +8,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { useParams } from "react-router";
 import { getProject } from "../projects";
 import { useWideLayout } from "../shell/useWideLayout";
-import type { Guide } from "./api";
-import { AnswerList } from "./components/AnswerList";
+import { getOpenings, type Guide, type Opening } from "./api";
 import { distancesOf, DrawingList } from "./drawing/DrawingList";
 import type { Edge } from "./drawing/geometry";
 import { LotDrawing } from "./drawing/LotDrawing";
@@ -18,10 +17,11 @@ import { Bubble } from "./components/Bubble";
 import { ReplyBox } from "./components/ReplyBox";
 import { EndingView } from "./EndingView";
 import { GuideShell } from "./GuideShell";
+import { OpeningPicker } from "./OpeningPicker";
 import { ProjectPanel } from "./ProjectPanel";
 import { said } from "./said";
 import { GuideTheme } from "./theme/GuideTheme";
-import { DOESNT_FIT, TURN_HEADING } from "./turns/heading";
+import { DOESNT_FIT } from "./turns/heading";
 import { parseNumber } from "./turns/NumberAnswer";
 import { TurnView } from "./turns/TurnView";
 import { useGuide } from "./useGuide";
@@ -79,6 +79,15 @@ function GuideScreen({ projectId }: { projectId: string }) {
   const drawing = useDrawing(projectId, v.phase === "talk" ? v.guide.revision : undefined);
   // The number field's text on a setback turn, held here so a drag in the drawing can set it.
   const [draft, setDraft] = useState<{ key: string; text: string }>({ key: "", text: "" });
+  // After "No" on "So you mean…" the scene shows again (plan 5), with what the project has now.
+  const [openings, setOpenings] = useState<Opening[] | null>(null);
+  const picking = turnId === PICK_OPENING;
+  useEffect(() => {
+    if (!picking) return;
+    let live = true;
+    void getOpenings(projectId).then((o) => { if (live && Array.isArray(o)) setOpenings(o); });
+    return () => { live = false; };
+  }, [projectId, picking]);
 
   useEffect(() => {
     void getProject(projectId).then((p) => { if (typeof p === "object") setTitle(p.title); });
@@ -103,10 +112,7 @@ function GuideScreen({ projectId }: { projectId: string }) {
           {v.phase === "loading" && <Typography role="status">{WORDS.loading}</Typography>}
           {v.phase === "refused" && <Alert severity="info">{WORDS.refusals[v.why]}</Alert>}
           {v.phase === "pick" && (
-            <Box component="section" data-turn="pick_opening">
-              <AnswerList question={WORDS.pick_opening} headingProps={TURN_HEADING} disabled={v.busy}
-                answers={v.openings.map((o) => ({ id: o.id, label: o.label }))} onAnswer={(id) => void g.start(id)} />
-            </Box>
+            <OpeningPicker openings={v.openings} busy={v.busy} onStart={g.start} />
           )}
         </div>
       </GuideShell>
@@ -157,11 +163,13 @@ function GuideScreen({ projectId }: { projectId: string }) {
         {!ownPage && <History guide={guide} />}
         {!ownPage && <Notes guide={guide} />}
         <Reopened guide={guide} />
-        {current && <TurnView key={turnKey} shown={current} projectId={projectId} busy={busy}
+        {current && picking && (openings
+          ? <OpeningPicker openings={openings} busy={busy || locked} onStart={g.start} />
+          : <Typography role="status">{WORDS.loading}</Typography>)}
+        {current && !picking && <TurnView key={turnKey} shown={current} projectId={projectId} busy={busy}
           locked={locked} figure={inTurn ? picture(true) : undefined} footer={inTurn ? list : undefined}
           text={edge ? text : undefined} onTextChange={edge ? setText : undefined}
-          // After "No" on "So you mean…", the picture chosen starts the conversation again from it.
-          onAnswer={(value) => void (current.turn_id === PICK_OPENING ? g.start(String(value)) : g.answer(current.turn_id, value))} />}
+          onAnswer={(value) => void g.answer(current.turn_id, value)} />}
         {!current && guide.ending && <EndingView guide={guide} projectId={projectId} />}
         {locked
           ? <Alert severity="info">{WORDS.locked}</Alert>

@@ -7,7 +7,7 @@ import { useGuide } from "./useGuide";
 vi.mock("./api", async (orig) => ({ ...(await orig<typeof import("./api")>()),
   getGuide: vi.fn(), getOpenings: vi.fn(), startGuide: vi.fn(), answerTurn: vi.fn(), goBack: vi.fn(),
   revisit: vi.fn(), addNote: vi.fn() }));
-vi.mock("../projects", async (orig) => ({ ...(await orig<typeof import("../projects")>()), getProject: vi.fn() }));
+vi.mock("../projects", async (orig) => ({ ...(await orig<typeof import("../projects")>()), getProject: vi.fn(), addPart: vi.fn() }));
 
 const m = vi.mocked(api);
 const guide = (revision: number, turn = "lot"): api.Guide => ({
@@ -41,7 +41,7 @@ describe("useGuide", () => {
 
   it("offers the openings when the guide hasn't started, and starts with the project's revision", async () => {
     m.getGuide.mockResolvedValue("not_started");
-    m.getOpenings.mockResolvedValue([{ id: "new_house", label: "A new house", part: "building" }]);
+    m.getOpenings.mockResolvedValue([{ id: "new_house", label: "A new house", part: "building", picture: "house_outline", guided: true, in_project: true }]);
     vi.mocked(projects.getProject).mockResolvedValue({ revision: 7 } as projects.ProjectState);
     m.startGuide.mockResolvedValue(guide(8));
     const h = renderHook(() => useGuide("p1"));
@@ -147,5 +147,55 @@ describe("useGuide, after the final review", () => {
     await act(async () => { await h.result.current.reload(); });
     const v = h.result.current.view;
     expect(v.phase === "talk" && v.guide.revision).toBe(7);
+  });
+});
+
+
+describe("starting from the scene (plan 5)", () => {
+  async function picking(rev = 7) {
+    m.getGuide.mockResolvedValue("not_started");
+    m.getOpenings.mockResolvedValue([{ id: "change_of_use", label: "A change of use", part: "use", picture: "barn", guided: true, in_project: false }]);
+    vi.mocked(projects.getProject).mockResolvedValue({ revision: rev } as projects.ProjectState);
+    const h = renderHook(() => useGuide("p1"));
+    await waitFor(() => expect(h.result.current.view.phase).toBe("pick"));
+    return h;
+  }
+
+  it("adds the part, then starts with the revision that returns", async () => {
+    const h = await picking(7);
+    vi.mocked(projects.addPart).mockResolvedValue({ revision: 8, missing: [], id: "u1" });
+    m.startGuide.mockResolvedValue(guide(9));
+    await act(async () => { await h.result.current.start("change_of_use", { addPart: "use" }); });
+    expect(projects.addPart).toHaveBeenCalledWith("p1", 7, "use");
+    expect(m.startGuide).toHaveBeenCalledWith("p1", "change_of_use", 8);
+    expect(h.result.current.view.phase).toBe("talk");
+  });
+
+  it("a refused add leaves the project as it was", async () => {
+    const h = await picking(7);
+    vi.mocked(projects.addPart).mockResolvedValue("locked");
+    let ok = true;
+    await act(async () => { ok = await h.result.current.start("change_of_use", { addPart: "use", note: "A shop" }); });
+    expect(ok).toBe(false);
+    expect(m.startGuide).not.toHaveBeenCalled();
+    expect(m.addNote).not.toHaveBeenCalled();
+  });
+
+  it("saves the box's text once, as the first note, after the start", async () => {
+    const h = await picking(7);
+    m.startGuide.mockResolvedValue(guide(8));
+    m.addNote.mockResolvedValue(guide(9));
+    await act(async () => { await h.result.current.start("change_of_use", { note: "A shop in the barn" }); });
+    expect(m.addNote).toHaveBeenCalledTimes(1);
+    expect(m.addNote).toHaveBeenCalledWith("p1", "A shop in the barn", 8);
+  });
+
+  it("a failed note after a start shows try again and keeps the guide started", async () => {
+    const h = await picking(7);
+    m.startGuide.mockResolvedValue(guide(8));
+    m.addNote.mockResolvedValue("unavailable");
+    await act(async () => { await h.result.current.start("change_of_use", { note: "A shop" }); });
+    const v = h.result.current.view;
+    expect(v.phase === "talk" && v.notice).toBe("try_again");
   });
 });

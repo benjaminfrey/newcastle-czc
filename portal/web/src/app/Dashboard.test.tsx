@@ -92,6 +92,17 @@ describe("the dashboard", () => {
     }
   });
 
+  it("links to the guide from every project, whatever its parts (plan 5)", async () => {
+    vi.spyOn(apps, "getProject").mockResolvedValue({ ...PROJECT, items: [{ id: "d1", kind: "driveway", position: 0 }] });
+    vi.stubEnv("VITE_GUIDE_PREVIEW", "1");
+    try {
+      open();
+      expect(await screen.findByRole("link", { name: "Try the guided version (preview)" })).toHaveAttribute("href", "/projects/p1/guide");
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+
   it("shows the title, the parcel, a row per part and the parts still to add", async () => {
     open();
     expect(await screen.findByRole("heading", { level: 1, name: "A new building and a driveway at Sheepscot Road" })).toBeInTheDocument();

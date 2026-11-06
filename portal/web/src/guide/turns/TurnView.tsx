@@ -1,9 +1,9 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import type { ReactNode } from "react";
-import type { Entry, Shown } from "../api";
+import type { Shown } from "../api";
 import { AnswerList } from "../components/AnswerList";
-import { WhyCard } from "../components/WhyCard";
+import { entryCard } from "../components/entryCard";
 import { TURN_HEADING } from "./heading";
 import { LotFacts } from "./LotFacts";
 import { NumberAnswer } from "./NumberAnswer";
@@ -15,7 +15,7 @@ type Props = {
   figure?: ReactNode; footer?: ReactNode; text?: string; onTextChange?: (text: string) => void;
 };
 
-const card = (e: Entry) => <WhyCard key={e.id} overline={e.overline} answer={e.answer} detail={e.detail} />;
+const card = entryCard;
 
 // One turn, as the API shows it. A "doesn't fit" turn is a page of its own in neutral words,
 // never an error (spec §4.5); its answers come in the API's order, the nearest version first.

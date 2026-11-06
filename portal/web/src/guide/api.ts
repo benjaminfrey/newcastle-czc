@@ -4,7 +4,7 @@ import type { Refusal } from "../projects";
 
 export type Step = { n: number; of: number; label: string };
 export type Entry = { id: string; overline: string; answer: string; detail: string; why: string | null;
-  cites: string[]; version: number; governs: string };
+  cites: string[]; version: number; governs: string; picture?: string | null; picture_alt?: string | null };
 export type Check = {
   result: "fits" | "outside" | "cannot_check"; value: number | null; min: number | null; max: number | null;
   unit: string | null; room: number | null; gap: number | null; direction: "over" | "short" | null;
@@ -34,7 +34,9 @@ export type Guide = {
   reopened: { turn_id: string; ask: string }[];   // the later questions the last Change reopened
   drafts: string[];
 };
-export type Opening = { id: string; label: string; part: string };
+// A place to tap in the opening scene (guided plan 5): `picture` is its spot, `guided` whether the
+// guide can walk through it yet, `in_project` whether the project already has its part.
+export type Opening = { id: string; label: string; part: string | null; picture: string; guided: boolean; in_project: boolean };
 
 // The lot drawing (guided plan 4): the tax-map outline in feet, and what the API says each line is.
 export type Pt = [number, number];

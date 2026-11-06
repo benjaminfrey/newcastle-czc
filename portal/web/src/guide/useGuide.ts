@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useReducer, useRef } from "react";
-import { getProject } from "../projects";
+import { addPart, getProject } from "../projects";
 import {
   addNote, answerTurn, getGuide, getOpenings, goBack, isRefusal, revisit, startGuide,
   type Guide, type GuideRefusal, type Opening,
@@ -7,6 +7,7 @@ import {
 import type { WORDS } from "./words";
 
 type Notice = keyof typeof WORDS.notices;
+type StartOptions = { addPart?: string; note?: string };
 type Why = "signed_out" | "not_found" | "not_approved" | "unavailable" | "busy";
 export type GuideView =
   | { phase: "loading" }
@@ -90,9 +91,38 @@ export function useGuide(projectId: string) {
     }
   }, [load]);
 
+  // From the scene (guided plan 5): add the part first when asked, then start, then keep what the
+  // person wrote as the conversation's first note. A refused add starts nothing; a note that fails
+  // after the start leaves the guide started and says to try again (the box's text is in the note
+  // the person can add from the conversation).
+  const startFrom = useCallback(async (opening: string, opts: StartOptions): Promise<boolean> => {
+    let noteFailed = false;
+    let started: Guide | null = null;
+    const ok = await run(async (rev) => {
+      let r = rev;
+      if (opts.addPart) {
+        const added = await addPart(projectId, r, opts.addPart);
+        if (typeof added === "string") return added;
+        if ("conflict" in added) return { conflict: true };
+        if (!("revision" in added)) return { rejected: "add_part" };
+        r = added.revision;
+      }
+      const g = await startGuide(projectId, opening, r);
+      if (isRefusal(g)) return g;
+      started = g;
+      const note = opts.note?.trim();
+      if (!note) return g;
+      const n = await addNote(projectId, note, g.revision);
+      if (isRefusal(n)) { noteFailed = true; return g; }
+      return n;
+    });
+    if (ok && noteFailed && started) dispatch({ t: "guide", guide: started, notice: "try_again" });
+    return ok;
+  }, [projectId, run]);
+
   return {
     view,
-    start: (opening: string) => run((rev) => startGuide(projectId, opening, rev)),
+    start: (opening: string, opts: StartOptions = {}) => startFrom(opening, opts),
     answer: (turnId: string, value: unknown) => run((rev) => answerTurn(projectId, turnId, value, rev)),
     back: () => run((rev) => goBack(projectId, rev)),
     change: (turnId: string) => run((rev) => revisit(projectId, turnId, rev)),

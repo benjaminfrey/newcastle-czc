@@ -9,10 +9,12 @@ import { RECT } from "./drawing/fixtures";
 import { WORD_STATUS } from "./words";
 import { fitView, fromFrame, frontFrame } from "./drawing/geometry";
 import * as drawn from "./drawing/useDrawing";
+import * as guideApi from "./api";
 import * as hook from "./useGuide";
 import { shown } from "./turns/fixtures";
 
 vi.mock("./useGuide", () => ({ useGuide: vi.fn() }));
+vi.mock("./api", async (orig) => ({ ...(await orig<typeof import("./api")>()), getOpenings: vi.fn() }));
 vi.mock("./drawing/useDrawing", () => ({ useDrawing: vi.fn(() => null) }));
 vi.mock("../projects", async (orig) => ({ ...(await orig<typeof import("../projects")>()), getProject: vi.fn() }));
 
@@ -72,12 +74,17 @@ test("notes are kept and shown back, and say the guide doesn't act on them", asy
   expect(actions.note).toHaveBeenCalledWith("A porch too.");
 });
 
-test("before it starts, the openings are offered", async () => {
-  vi.mocked(hook.useGuide).mockReturnValue({ view: { phase: "pick", revision: 1, busy: false,
-    openings: [{ id: "new_house", label: "Build a new house", part: "building" }] }, ...actions });
+const OPENINGS = [
+  { id: "new_house", label: "A new house", part: "building", picture: "house_outline", guided: true, in_project: true },
+  { id: "change_of_use", label: "A change of use", part: "use", picture: "barn", guided: true, in_project: true },
+];
+
+test("before it starts, the scene and its list are offered", async () => {
+  vi.mocked(hook.useGuide).mockReturnValue({ view: { phase: "pick", revision: 1, busy: false, openings: OPENINGS }, ...actions });
   open();
-  await userEvent.click(await screen.findByText("Build a new house"));
-  expect(actions.start).toHaveBeenCalledWith("new_house");
+  expect(screen.getByRole("img", { name: /A Newcastle lot/ })).toBeInTheDocument();
+  await userEvent.click(await screen.findByRole("button", { name: "A new house" }));
+  expect(actions.start).toHaveBeenCalledWith("new_house", {});
 });
 
 test("a doesn't-fit turn is its own page, without the conversation above it", async () => {
@@ -102,13 +109,15 @@ test("a notice says why the page changed", async () => {
   expect(screen.getByText(/changed in another window/)).toBeVisible();
 });
 
-test("after No on So you mean, choosing a picture starts again from it", async () => {
+test("after No the scene starts without asking again", async () => {
+  vi.mocked(guideApi.getOpenings).mockResolvedValue(OPENINGS);
   const pick = { ...LOT, turn_id: "pick_opening", kind: "choice" as const, ask: "What would you like to do?", facts_shown: null,
     answers: [{ id: "new_house", label: "A new house", hint: null }, { id: "change_of_use", label: "A change of use", hint: null }] };
   talk(guide({ current: pick }));
   open();
-  await userEvent.click(screen.getByText("A change of use"));
-  expect(actions.start).toHaveBeenCalledWith("change_of_use");
+  await userEvent.click(await screen.findByRole("button", { name: "A change of use" }));
+  expect(actions.start).toHaveBeenCalledWith("change_of_use", {});
+  expect(screen.queryByRole("dialog")).toBeNull();
   expect(actions.answer).not.toHaveBeenCalled();
 });
 
