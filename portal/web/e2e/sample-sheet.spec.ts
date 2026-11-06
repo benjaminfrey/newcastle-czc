@@ -16,7 +16,7 @@ test("the sample sheet's pictures", async ({ page }, info) => {
 
   // Close-ups: a box around each pin and the thing it stands over.
   for (const spot of ["deck", "solar", "house_outline"]) {
-    const pin = (await page.locator(`[data-spot="${spot}"] circle[data-hit]`).boundingBox())!;
+    const pin = (await page.locator(`circle[data-hit][data-for="${spot}"]`).boundingBox())!;
     const cx = pin.x + pin.width / 2; const cy = pin.y + pin.height / 2;
     await page.screenshot({ path: `${OUT}/spot-${spot}.png`, clip: { x: cx - 160, y: cy - 60, width: 320, height: 220 } });
   }

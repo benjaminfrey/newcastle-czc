@@ -36,7 +36,7 @@ export default function GuidePreview() {
         <Bubble from="app">Good news: this may fit. In D4 a house can have 2 stories, but{" "}
           <b>a floor inside the roof doesn't count.</b></Bubble>
         <WhyCard overline="Why · how stories are counted" picture={<StoriesPicture />}
-          pictureAlt="A house with two full stories and a floor inside the roof; the floor inside the roof is not counted"
+          pictureAlt="A house cut open to show its floors. The first and second floors have full-height walls and count as stories. A floor inside the roof counts only if the roof meets its wall more than 3 feet above the floor. A basement counts if 5 feet or more of its wall shows above the ground along the front."
           answer="Only floors with full-height outside walls count."
           detail="A finished attic or a floor tucked under the roof slope doesn't count toward the limit." />
         <AnswerList question="Is your third floor inside the roof?" answers={ANSWERS} onAnswer={answer} />

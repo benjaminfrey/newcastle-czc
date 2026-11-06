@@ -171,7 +171,7 @@ describe("starting from the scene (plan 5)", () => {
     expect(h.result.current.view.phase).toBe("talk");
   });
 
-  it("a refused add leaves the project as it was", async () => {
+  it("a refused add leaves the project as it was, and says it's locked", async () => {
     const h = await picking(7);
     vi.mocked(projects.addPart).mockResolvedValue("locked");
     let ok = true;
@@ -179,6 +179,16 @@ describe("starting from the scene (plan 5)", () => {
     expect(ok).toBe(false);
     expect(m.startGuide).not.toHaveBeenCalled();
     expect(m.addNote).not.toHaveBeenCalled();
+    const v = h.result.current.view;
+    expect(v.phase === "pick" && v.locked).toBe(true);
+  });
+
+  it("a stale add reloads the scene and says why", async () => {
+    const h = await picking(7);
+    vi.mocked(projects.addPart).mockResolvedValue({ conflict: 9 });
+    await act(async () => { await h.result.current.start("change_of_use", { addPart: "use" }); });
+    const v = h.result.current.view;
+    expect(v.phase === "pick" && v.notice).toBe("changed_elsewhere");
   });
 
   it("saves the box's text once, as the first note, after the start", async () => {
@@ -197,5 +207,6 @@ describe("starting from the scene (plan 5)", () => {
     await act(async () => { await h.result.current.start("change_of_use", { note: "A shop" }); });
     const v = h.result.current.view;
     expect(v.phase === "talk" && v.notice).toBe("try_again");
+    expect(v.phase === "talk" && v.unsent).toBe("A shop");
   });
 });

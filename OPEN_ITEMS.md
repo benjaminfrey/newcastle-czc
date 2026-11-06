@@ -51,7 +51,7 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
     (`plans/2026-11-02-applicant-portal-guided-builder-3-screens.md`), is on branch
     `portal-guided-3-screens` (PR #25). Plan 4, the lot drawing
     (`plans/2026-11-03-applicant-portal-guided-builder-4-drawing.md`), is on branch
-    `portal-guided-4-drawing` (PR #26, stacked on #25). Next: plan 5, the pictures. Open decisions are the
+    `portal-guided-4-drawing` (PR #26, stacked on #25). Plan 5, the pictures, is built (below); next is plan 6. Open decisions are the
     spec's §12.
   - **Answered by the chair 2026-11-05 (interview); built on `portal-guided-4-drawing`** (b7c6e32,
     in PR #26; the screen items below as well):
@@ -89,18 +89,19 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
     - *The old cards' looks findings* (task list twice, 44 vs 36 px fields, property card spacing,
       "No password" twice) are closed as superseded; recheck the same four on the new screens in
       plan 6.
-  - **Plan 5, the pictures**, is on branch `portal-guided-5-pictures`, stacked on #26:
-    - design: `specs/2026-11-06-applicant-portal-guided-builder-pictures.md`, approved 2026-11-06;
+  - **Plan 5, the pictures**, is built on branch `portal-guided-5-pictures`, stacked on #26:
+    - design: `specs/2026-11-06-applicant-portal-guided-builder-pictures.md`;
     - plan: `plans/2026-11-06-applicant-portal-guided-builder-5-pictures.md`.
 
     What's built:
     - the opening scene, with ten places to tap (two guided, eight "coming soon");
     - the "add to this project?" question;
-    - the stories cut-away.
+    - the stories and setbacks pictures.
 
-    **With the chair:** the sample sheet
-    (`memos/2026-11-06-guided-builder-pictures-sample-sheet.md`; decision 15). Its Task 7, the
-    setbacks picture, his changes and the approvals, waits on his answers.
+    The chair approved the sample sheet on 2026-11-06
+    (`memos/2026-11-06-guided-builder-pictures-sample-sheet.md`). **Still a draft, for the chair:**
+    the setbacks picture's description (`entries.yaml` `setbacks`). Until it is approved,
+    production refuses a new-house conversation at the setbacks turn.
   - **The guided builder's wording, answered by the chair 2026-11-06 and built** on
     `portal-guided-4-drawing` (`memos/2026-11-06-guided-builder-wording-for-approval.md`). All of it
     is approved except two drafts that aren't shown to the public:

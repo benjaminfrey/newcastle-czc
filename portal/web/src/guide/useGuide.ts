@@ -11,15 +11,16 @@ type StartOptions = { addPart?: string; note?: string };
 type Why = "signed_out" | "not_found" | "not_approved" | "unavailable" | "busy";
 export type GuideView =
   | { phase: "loading" }
-  | { phase: "pick"; openings: Opening[]; revision: number; busy: boolean }
-  // epoch counts reloads: a turn shown again after one starts fresh (its key changes).
-  | { phase: "talk"; guide: Guide; busy: boolean; notice: Notice | null; locked: boolean; epoch: number }
+  | { phase: "pick"; openings: Opening[]; revision: number; busy: boolean; notice: Notice | null; locked: boolean }
+  // epoch counts reloads: a turn shown again after one starts fresh (its key changes). unsent is
+  // the scene's box text when its note didn't go through, waiting in the reply box (plan 5).
+  | { phase: "talk"; guide: Guide; busy: boolean; notice: Notice | null; locked: boolean; epoch: number; unsent?: string | null }
   | { phase: "refused"; why: Why };
 
 type Act =
   | { t: "view"; view: GuideView }
   | { t: "busy"; busy: boolean }
-  | { t: "guide"; guide: Guide; notice?: Notice | null; reload?: boolean }
+  | { t: "guide"; guide: Guide; notice?: Notice | null; reload?: boolean; unsent?: string | null }
   | { t: "locked" }
   | { t: "dismiss" };
 
@@ -30,10 +31,10 @@ function reduce(v: GuideView, a: Act): GuideView {
     case "guide": {
       const epoch = v.phase === "talk" ? v.epoch + (a.reload ? 1 : 0) : 0;
       return { phase: "talk", guide: a.guide, busy: false, notice: a.notice ?? null,
-        locked: v.phase === "talk" && v.locked, epoch };
+        locked: v.phase === "talk" && v.locked, epoch, unsent: a.unsent ?? null };
     }
-    case "locked": return v.phase === "talk" ? { ...v, busy: false, locked: true } : v;
-    case "dismiss": return v.phase === "talk" ? { ...v, notice: null } : v;
+    case "locked": return v.phase === "talk" || v.phase === "pick" ? { ...v, busy: false, locked: true } : v;
+    case "dismiss": return v.phase === "talk" || v.phase === "pick" ? { ...v, notice: null } : v;
   }
 }
 
@@ -57,7 +58,7 @@ export function useGuide(projectId: string) {
       const [openings, project] = await Promise.all([getOpenings(projectId), getProject(projectId)]);
       if (isRefusal(openings)) return dispatch({ t: "view", view: { phase: "refused", why: why(openings) } });
       if (typeof project === "string") return dispatch({ t: "view", view: { phase: "refused", why: why(project) } });
-      return dispatch({ t: "view", view: { phase: "pick", openings, revision: project.revision, busy: false } });
+      return dispatch({ t: "view", view: { phase: "pick", openings, revision: project.revision, busy: false, notice, locked: false } });
     }
     if (isRefusal(g)) return dispatch({ t: "view", view: { phase: "refused", why: why(g) } });
     dispatch({ t: "guide", guide: g, notice, reload: true });
@@ -93,8 +94,7 @@ export function useGuide(projectId: string) {
 
   // From the scene (guided plan 5): add the part first when asked, then start, then keep what the
   // person wrote as the conversation's first note. A refused add starts nothing; a note that fails
-  // after the start leaves the guide started and says to try again (the box's text is in the note
-  // the person can add from the conversation).
+  // after the start leaves the guide started, says to try again, and puts the words in the reply box.
   const startFrom = useCallback(async (opening: string, opts: StartOptions): Promise<boolean> => {
     let noteFailed = false;
     let started: Guide | null = null;
@@ -116,7 +116,7 @@ export function useGuide(projectId: string) {
       if (isRefusal(n)) { noteFailed = true; return g; }
       return n;
     });
-    if (ok && noteFailed && started) dispatch({ t: "guide", guide: started, notice: "try_again" });
+    if (ok && noteFailed && started) dispatch({ t: "guide", guide: started, notice: "try_again", unsent: opts.note?.trim() ?? null });
     return ok;
   }, [projectId, run]);
 

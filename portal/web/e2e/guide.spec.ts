@@ -218,14 +218,14 @@ test("the opening scene: coming soon, add to the project, and the stories pictur
     expect(b.x + b.width / 2).toBeLessThanOrEqual(box!.x + box!.width);
   }
 
-  await page.locator('[data-spot="deck"] circle[data-hit]').click();
+  await page.locator('circle[data-hit][data-for="deck"]').click();
   const soon = page.getByRole("dialog", { name: "A deck: coming soon" });
   await expect(soon).toBeVisible();
   await axe(page, "guide: coming soon");
   await soon.getByRole("button", { name: "OK" }).click();
   await expect(soon).toBeHidden();
 
-  await page.locator('[data-spot="house_outline"] circle[data-hit]').click();
+  await page.locator('circle[data-hit][data-for="house_outline"]').click();
   const add = page.getByRole("dialog", { name: "Add a new house to this project?" });
   await expect(add).toBeVisible();
   await add.getByRole("button", { name: "Add it" }).click();

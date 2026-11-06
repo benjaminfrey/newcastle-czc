@@ -20,7 +20,7 @@ test("the scene is one picture with its description, and a spot for every place 
 
 test("tapping a spot names it", () => {
   const onSpot = scene();
-  fireEvent.click(document.querySelector('[data-spot="deck"] circle[data-hit]')!);
+  fireEvent.click(document.querySelector('circle[data-hit][data-for="deck"]')!);
   expect(onSpot).toHaveBeenCalledWith("deck");
 });
 
@@ -63,4 +63,20 @@ test("on a 320 px phone the targets stay 48 px and their centres 40 px apart", (
   const hits = hitsAt(320);
   for (const h of hits) expect(h.r).toBeGreaterThanOrEqual(24 - 1e-9);
   expect(closest(hits)).toBeGreaterThanOrEqual(40);
+});
+
+
+test("a pin's name can be tapped too", () => {
+  const onSpot = scene();
+  fireEvent.click(screen.getByText("Label solar"));
+  expect(onSpot).toHaveBeenCalledWith("solar");
+});
+
+test("every target is drawn above every name, so no name covers a neighbour's pin", () => {
+  scene();
+  const svg = document.querySelector("svg[role=img]")!;
+  const all = [...svg.querySelectorAll("text, circle[data-hit]")];
+  const lastText = Math.max(...all.map((e, i) => (e.tagName === "text" ? i : -1)));
+  const firstHit = all.findIndex((e) => e.matches("circle[data-hit]"));
+  expect(firstHit).toBeGreaterThan(lastText);
 });

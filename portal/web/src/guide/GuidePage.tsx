@@ -86,8 +86,12 @@ function GuideScreen({ projectId }: { projectId: string }) {
     if (!picking) return;
     let live = true;
     void getOpenings(projectId).then((o) => { if (live && Array.isArray(o)) setOpenings(o); });
-    return () => { live = false; };
+    return () => { live = false; setOpenings(null); };
   }, [projectId, picking]);
+  // The scene's question takes focus once its openings arrive, as a new turn's does.
+  useEffect(() => {
+    if (picking && openings) main.current?.querySelector<HTMLElement>("[data-turn-heading]")?.focus();
+  }, [picking, openings]);
 
   useEffect(() => {
     void getProject(projectId).then((p) => { if (typeof p === "object") setTitle(p.title); });
@@ -111,8 +115,10 @@ function GuideScreen({ projectId }: { projectId: string }) {
         <div ref={main}>
           {v.phase === "loading" && <Typography role="status">{WORDS.loading}</Typography>}
           {v.phase === "refused" && <Alert severity="info">{WORDS.refusals[v.why]}</Alert>}
+          {v.phase === "pick" && v.notice && <Alert severity="info" onClose={g.dismissNotice}>{WORDS.notices[v.notice]}</Alert>}
+          {v.phase === "pick" && v.locked && <Alert severity="info">{WORDS.locked}</Alert>}
           {v.phase === "pick" && (
-            <OpeningPicker openings={v.openings} busy={v.busy} onStart={g.start} />
+            <OpeningPicker openings={v.openings} busy={v.busy || v.locked} onStart={g.start} />
           )}
         </div>
       </GuideShell>
@@ -173,7 +179,7 @@ function GuideScreen({ projectId }: { projectId: string }) {
         {!current && guide.ending && <EndingView guide={guide} projectId={projectId} />}
         {locked
           ? <Alert severity="info">{WORDS.locked}</Alert>
-          : !ownPage && <ReplyBox placeholder={WORDS.reply_placeholder} onSend={g.note} />}
+          : !ownPage && <ReplyBox key={v.unsent ?? ""} initial={v.unsent ?? ""} placeholder={WORDS.reply_placeholder} onSend={g.note} />}
       </Box>
       {!wide && (
         <Drawer anchor="bottom" open={panelOpen} onClose={() => setPanelOpen(false)}

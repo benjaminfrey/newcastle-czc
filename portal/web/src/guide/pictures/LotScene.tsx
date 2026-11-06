@@ -112,7 +112,8 @@ export function LotScene({ onSpot, labels, description }: {
       {(() => { const [sx, sy] = iso(160, 4, 0); return (
         <g><line x1={sx} y1={sy} x2={sx} y2={sy - 10} stroke={c.roofShade} strokeWidth={1.5} />
           <rect x={sx - 6} y={sy - 16} width={12} height={7} fill={c.clapboard} stroke={c.roofShade} strokeWidth={0.8} /></g>); })()}
-      {/* The pins: a stem from the thing to its marker, the marker, its name, and its target. */}
+      {/* The pins: a stem from the thing to its marker, the marker and its name, which can be tapped
+          too. Every target is drawn last, above every name, so no name covers a neighbour's pin. */}
       {SPOTS.map((s) => {
         const [fx, fy] = iso(...s.at); const [hx, hy] = head(s);
         return (
@@ -121,11 +122,15 @@ export function LotScene({ onSpot, labels, description }: {
             <circle cx={hx} cy={hy} r={6} fill={theme.palette.primary.main} stroke={theme.palette.background.paper} strokeWidth={1.5} />
             <text x={s.label === "left" ? hx - 9 : s.label === "below" ? hx : hx + 9} y={s.label === "below" ? hy + 16 : hy + 3}
               fontSize={9} textAnchor={s.label === "left" ? "end" : s.label === "below" ? "middle" : "start"} fill={theme.palette.text.primary}
-              stroke={theme.palette.background.paper} strokeWidth={2.5} paintOrder="stroke">{labels[s.id]}</text>
-            <circle data-hit="" aria-hidden="true" cx={hx} cy={hy} r={24 / ppu} fill="transparent"
-              style={{ cursor: "pointer" }} onClick={() => onSpot?.(s.id)} />
+              stroke={theme.palette.background.paper} strokeWidth={2.5} paintOrder="stroke"
+              style={{ cursor: "pointer" }} onClick={() => onSpot?.(s.id)}>{labels[s.id]}</text>
           </g>
         );
+      })}
+      {SPOTS.map((s) => {
+        const [hx, hy] = head(s);
+        return <circle key={s.id} data-hit="" data-for={s.id} aria-hidden="true" cx={hx} cy={hy} r={24 / ppu} fill="transparent"
+          style={{ cursor: "pointer" }} onClick={() => onSpot?.(s.id)} />;
       })}
     </svg>
   );

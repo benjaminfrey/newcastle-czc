@@ -80,7 +80,7 @@ const OPENINGS = [
 ];
 
 test("before it starts, the scene and its list are offered", async () => {
-  vi.mocked(hook.useGuide).mockReturnValue({ view: { phase: "pick", revision: 1, busy: false, openings: OPENINGS }, ...actions });
+  vi.mocked(hook.useGuide).mockReturnValue({ view: { phase: "pick", revision: 1, busy: false, openings: OPENINGS, notice: null, locked: false }, ...actions });
   open();
   expect(screen.getByRole("img", { name: /A Newcastle lot/ })).toBeInTheDocument();
   await userEvent.click(await screen.findByRole("button", { name: "A new house" }));
@@ -262,4 +262,24 @@ test("a draft from the API brings the chip back", () => {
   talk(guide({ drafts: ["wording.yaml: covered"] }));
   open();
   expect(screen.getByText("Draft wording, not approved")).toBeInTheDocument();
+});
+
+
+test("while picking, a locked project says so and can't be tapped", () => {
+  vi.mocked(hook.useGuide).mockReturnValue({ view: { phase: "pick", revision: 1, busy: false, openings: OPENINGS, notice: null, locked: true }, ...actions });
+  open();
+  expect(screen.getByText("The Town is reviewing this project, so it can't be changed now.")).toBeVisible();
+  for (const b of within(screen.getByRole("list", { name: "Or choose from the list" })).getAllByRole("button")) expect(b).toBeDisabled();
+});
+
+test("while picking, a notice says why the scene changed", () => {
+  vi.mocked(hook.useGuide).mockReturnValue({ view: { phase: "pick", revision: 1, busy: false, openings: OPENINGS, notice: "changed_elsewhere", locked: false }, ...actions });
+  open();
+  expect(screen.getByText(/changed in another window/)).toBeVisible();
+});
+
+test("a first note that didn't go through waits in the reply box", () => {
+  talk(guide(), { notice: "try_again", unsent: "A porch on the front" });
+  open();
+  expect(screen.getByRole("textbox", { name: "Anything the Town should know?" })).toHaveValue("A porch on the front");
 });

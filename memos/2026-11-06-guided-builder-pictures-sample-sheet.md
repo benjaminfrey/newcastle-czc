@@ -98,7 +98,7 @@ have full-height walls and count as stories. A floor inside the roof counts only
 its wall more than 3 feet above the floor. A basement counts if 5 feet or more of its wall shows
 above the ground along the front."
 
-## 4. The new words (all drafts)
+## 4. The new words (approved 2026-11-06)
 
 | Where | Applicants read |
 |:---|:---|

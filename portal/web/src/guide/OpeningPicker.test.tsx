@@ -25,7 +25,7 @@ function picker(onStart = vi.fn(async () => true), busy = false) {
   return { onStart, view };
 }
 const list = () => screen.getByRole("list", { name: "Or choose from the list" });
-const tapSpot = (picture: string) => fireEvent.click(document.querySelector(`[data-spot="${picture}"] circle[data-hit]`)!);
+const tapSpot = (picture: string) => fireEvent.click(document.querySelector(`circle[data-hit][data-for="${picture}"]`)!);
 
 test("a guided project already in the project starts at once", async () => {
   const { onStart } = picker();
@@ -91,4 +91,23 @@ test("a second tap while adding is ignored", async () => {
 test("while the guide is busy the list can't be tapped", () => {
   picker(undefined, true);
   for (const b of within(list()).getAllByRole("button")) expect(b).toBeDisabled();
+});
+
+
+test("a refused start closes the question, so the page can say why", async () => {
+  const { onStart } = picker(vi.fn(async () => false));
+  tapSpot("barn");
+  await userEvent.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "Add it" }));
+  await vi.waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  expect(onStart).toHaveBeenCalledTimes(1);
+});
+
+test("the box takes no more than a note can hold", () => {
+  picker();
+  expect(screen.getByRole("textbox", { name: /In your own words/ })).toHaveAttribute("maxlength", "4000");
+});
+
+test("the question is the heading the page moves focus to", () => {
+  picker();
+  expect(screen.getByRole("heading", { level: 2, name: "What would you like to do?" })).toHaveAttribute("data-turn-heading");
 });
