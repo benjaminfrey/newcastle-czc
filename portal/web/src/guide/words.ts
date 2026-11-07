@@ -3,8 +3,9 @@
 // content files; these are the rest. The chair approved them on 2026-11-06
 // (memos/2026-11-06-guided-builder-wording-for-approval.md), and plan 5's the same day
 // (memos/2026-11-06-guided-builder-pictures-sample-sheet.md); a changed line makes the file a
-// draft again. Nothing else in src/guide/ writes words.
-export const WORD_STATUS = "approved" as "draft" | "approved";
+// draft again, as plan 6's packet words have until the chair approves them. Nothing else in
+// src/guide/ writes words.
+export const WORD_STATUS = "draft" as "draft" | "approved";
 
 // The "Draft wording" chip shows while any word on the screen is a draft: these, or one of the
 // API's (it lists the drafts a state shows).
@@ -146,6 +147,32 @@ export const WORDS = {
     soon_title: "{label}: coming soon",
     soon_body: "The guide can't walk you through this yet. You can still fill in your project's form, or contact the Town Office.",
     soon_ok: "OK",
+  },
+
+  // The packet (guided plan 6; spec §7).
+  packet: {
+    title: "Your packet",
+    intro: "This is what the Town will read about your project. Staff see the same, with their own notes.",
+    now: "As it stands now",
+    sent: "As sent on {date}",
+    not_finished: "The conversation isn't finished, so this shows what's settled so far.",
+    own_words: "In your own words",
+    no_words: "You haven't written anything for the Town.",
+    reading: "Your project in the Code's terms",
+    deciders: "Who decides",
+    no_deciders: "The Town decides which review your project needs.",
+    history: "The questions and your answers",
+    mark_confirmed: "You confirmed this",
+    mark_took_suggestion: "You took the suggestion",
+    mark_kept: "You kept your number",
+    checklist: "The checklist",
+    show_fits: "Show what fits ({n})",
+    hide_fits: "Hide what fits",
+    required: "Required",
+    drawing: "Your lot",
+    no_drawing: "The Town's tax map has no outline for this lot, so there is no drawing.",
+    print: "Print",
+    open_packet: "Your packet",
   },
 
   // The pictures' labels (guided plan 5). A picture carries no number of its own: these name the

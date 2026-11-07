@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { IconCheck, IconMessageCircleQuestion } from "@tabler/icons-react";
 import { useId } from "react";
-import type { Check, Drawing, Guide, Limit } from "../api";
+import type { Check, Drawing, Limit } from "../api";
 import { fill, WORDS } from "../words";
 import type { Distances, Edge } from "./geometry";
 
@@ -18,7 +18,11 @@ const SECONDARY_TURN = "setback_secondary";
 
 /** The distances the person has given so far: the API's checked value when there is one (it
  *  follows "Make it 15 ft"), otherwise the answer as given. */
-export function distancesOf(guide: Guide): Distances {
+// What the list reads: the API's checks and each answer as given. The live guide has both, and so
+// does the packet (plan 6).
+export type Drawn = { checks: Record<string, Check>; history: { shown: { turn_id: string }; value: unknown }[] };
+
+export function distancesOf(guide: Drawn): Distances {
   const out: Distances = {};
   const turns = Object.entries(EDGE_TURN) as [Edge, string][];
   for (const [edge, turnId] of [...turns, ["side_2", SECONDARY_TURN] as [Edge, string]]) {
@@ -66,7 +70,7 @@ function Row({ name, limit, yours, check }: { name: string; limit: string; yours
 
 // The drawing in words (spec §10.4), and the live checklist beside it (§4.4): each setback as
 // the API gives it, the person's number, and the API's own mark. Nothing here compares numbers.
-export function DrawingList({ drawing, guide }: { drawing: Drawing; guide: Guide }) {
+export function DrawingList({ drawing, guide }: { drawing: Drawing; guide: Drawn }) {
   const id = useId();
   const d = distancesOf(guide);
   const lines = drawing.outline?.lines ?? [];

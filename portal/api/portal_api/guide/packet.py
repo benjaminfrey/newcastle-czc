@@ -109,8 +109,9 @@ def build(conn: Connection, row, lot, opening: str, state, needs: dict) -> dict:
         "state": "now", "sent_at": None, "finished": state.ending is not None,
         "summary": {"own_words": store.notes(conn, row.id), "reading": reading, "deciders": deciders_from(needs),
                     "corrections": {"lot_disputed": disputed, "note": snapshot.get("note") or None}},
-        "history": [{"turn_id": s.turn_id, "ask": s.ask, "answer": _answer(s, v), "marks": _marks(s, v)}
+        "history": [{"turn_id": s.turn_id, "ask": s.ask, "answer": _answer(s, v), "value": v, "marks": _marks(s, v)}
                     for s, v in state.history],
+        "checks": checks,
         "checklist": {"town": town, "fits": fits},
         "drawing": drawing_payload(snapshot, lot, state) if outline else None,
         "drafts": list(dict.fromkeys([*state.drafts, *drafts_in(content, opening=opening, turn_ids=[],

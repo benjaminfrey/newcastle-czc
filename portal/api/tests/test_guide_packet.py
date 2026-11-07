@@ -188,3 +188,14 @@ def test_a_project_sent_without_a_conversation_saves_nothing(alice, engine):
     send(alice, pid)
     with engine.begin() as conn:
         assert conn.execute(text("SELECT count(*) FROM guide_packet WHERE project_id = :p"), {"p": pid}).scalar() == 0
+
+
+
+def test_the_packet_carries_what_the_drawing_needs(alice):
+    """Plan 6, Task 3: the drawing's list reads the checks and each answer's value."""
+    pid = started(alice)
+    walk(alice, pid, [("lot", "yes"), ("confirm", "yes"), *STORIES, ("floor_area", 1800), ("dwelling_units", 1),
+                      ("setback_front", 30)])
+    p = packet(alice, pid).json()
+    assert p["checks"]["setback_front"]["result"] == "fits"
+    assert next(h for h in p["history"] if h["turn_id"] == "setback_front")["value"] == 30
