@@ -20,8 +20,7 @@
 4. **Who decides, where a review has no decision sentence:** the review's name and its approved
    reviewer, as shown.
 
-The screenshots in section 1 were taken before these decisions, so they still show the longer
-intro and the draft chip.
+The screenshots in section 1 were retaken on 2026-11-07, after these decisions.
 
 ---
 
