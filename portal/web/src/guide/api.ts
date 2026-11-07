@@ -90,7 +90,9 @@ export type PacketMark = "confirmed" | "unsure" | "took_suggestion" | "kept";
 export type PacketRow = { turn_id: string | null; ask: string | null; reason?: string; check: Check | null; why: Entry | null };
 export type Packet = {
   state: "now" | "sent"; sent_at: string | null; finished: boolean;
-  summary: { own_words: { body: string; at: string }[]; reading: string | null; deciders: string[];
+  ending: { kind: string; title: string | null } | null;
+  summary: { own_words: { body: string; at: string }[]; reading: string | null;
+    deciders: { review: string | null; reviewer: string | null; sentence: string | null }[];
     corrections: { lot_disputed: boolean; note: string | null } };
   history: { turn_id: string; ask: string; answer: string | null; value: unknown; marks: PacketMark[] }[];
   checks: Record<string, Check>;

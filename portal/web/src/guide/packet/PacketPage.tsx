@@ -17,7 +17,8 @@ import { PacketHistory } from "./PacketHistory";
 import "./packet.css";
 
 const P = WORDS.packet;
-const DATE = new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric" });
+// Dates in Newcastle's time, wherever the reader is.
+const DATE = new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "America/New_York" });
 
 export function Part({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -56,7 +57,7 @@ function PacketScreen({ projectId }: { projectId: string }) {
   const lot = (
     <Part title={P.drawing}>
       {packet.drawing?.outline
-        ? <><LotDrawing drawing={packet.drawing} distances={distancesOf(drawn)} asking={null} />
+        ? <><LotDrawing drawing={packet.drawing} distances={distancesOf(drawn)} asking={null} readOnly />
           <DrawingList drawing={packet.drawing} guide={drawn} /></>
         : <Typography variant="body2">{P.no_drawing}</Typography>}
     </Part>
@@ -87,6 +88,7 @@ function PacketScreen({ projectId }: { projectId: string }) {
             : s.own_words.map((w, i) => (
               <Box key={i} component="blockquote" sx={{ m: 0, pl: 1.5, borderLeft: 3, borderColor: "divider" }}>
                 <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>{w.body}</Typography>
+                <Typography variant="caption" color="text.secondary">{DATE.format(new Date(w.at))}</Typography>
               </Box>
             ))}
         </Part>
@@ -94,9 +96,13 @@ function PacketScreen({ projectId }: { projectId: string }) {
           <Typography variant="body1">{s.reading ?? WORDS.unknown}</Typography>
         </Part>
         <Part title={P.deciders}>
-          {s.deciders.length === 0
-            ? <Typography variant="body1">{P.no_deciders}</Typography>
-            : s.deciders.map((d) => <Typography key={d} variant="body1">{d}</Typography>)}
+          {packet.ending?.kind === "no_permit" && packet.ending.title
+            ? <Typography variant="body1">{packet.ending.title}</Typography>
+            : s.deciders.length === 0
+              ? <Typography variant="body1">{P.no_deciders}</Typography>
+              : s.deciders.map((d, i) => (
+                <Typography key={i} variant="body1">{d.sentence ?? `${d.review}: ${d.reviewer}`}</Typography>
+              ))}
         </Part>
         <Part title={P.history}><PacketHistory history={packet.history} /></Part>
         {wide

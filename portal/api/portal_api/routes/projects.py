@@ -429,7 +429,7 @@ def set_title(project_id: str, body: TitleBody, applicant: auth.Applicant = auth
 
 
 @router.post("/api/projects/{project_id}/submit")
-def submit(project_id: str, body: RevisionBody, applicant: auth.Applicant = auth.require,
+def submit(project_id: str, body: RevisionBody, request: Request, applicant: auth.Applicant = auth.require,
            conn: Connection = transaction):
     row = _owned(conn, project_id, applicant)
     if row is None:
@@ -445,7 +445,7 @@ def submit(project_id: str, body: RevisionBody, applicant: auth.Applicant = auth
     first = row.status == "draft"
     pj.submit(conn, row.id)
     # The packet as sent (guided plan 6), kept with the sending so later changes never alter it.
-    built = packet.build_for(conn, row, Loaded(conn, row).needs(conn, True))
+    built = packet.build_for(conn, row, Loaded(conn, row).needs(conn, request.app.state.settings.allow_draft_rules))
     if built is not None:
         store.save_packet(conn, row.id, built)
     append_event(conn, actor=_actor(applicant), kind="project.submitted",

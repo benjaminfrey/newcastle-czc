@@ -11,6 +11,7 @@ export type Asking = "front" | "front_setback" | "side_1" | "side_2" | "secondar
 type Props = {
   drawing: Drawing; distances: Distances; asking?: Asking | null;
   onPickLine?: (id: string) => void; onDrag?: (n: number) => void;
+  readOnly?: boolean;   // the packet's copy (plan 6): nothing to swap or drag
 };
 
 // On a corner lot the house's second side faces the other road and takes its secondary setback.
@@ -34,7 +35,7 @@ const mid = (a: Pt, b: Pt): Pt => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
 // The person's lot as the tax map has it, labelled approximate, with the setback limits the API
 // gives and the house where their distances put it (spec §4.4). It shows; it never decides
 // (decision 12): a drag only reports a distance, which goes into the question's own field.
-export function LotDrawing({ drawing, distances, asking, onPickLine, onDrag }: Props) {
+export function LotDrawing({ drawing, distances, asking, onPickLine, onDrag, readOnly }: Props) {
   const theme = useTheme();
   const clip = `lot-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
   const svg = useRef<SVGSVGElement>(null);
@@ -174,7 +175,7 @@ export function LotDrawing({ drawing, distances, asking, onPickLine, onDrag }: P
       </svg>
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1, flexWrap: "wrap" }}>
         <Typography variant="caption" color="text.secondary">{WORDS.drawing.approximate}</Typography>
-        {!fixedSide && (distances.side_1 != null || distances.side_2 != null) && (
+        {!readOnly && !fixedSide && (distances.side_1 != null || distances.side_2 != null) && (
           <Button size="small" onClick={() => setFlip((f) => !f)} sx={{ minHeight: 48 }}>{WORDS.drawing.swap_sides}</Button>
         )}
       </Box>

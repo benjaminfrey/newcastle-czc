@@ -41,8 +41,12 @@ def test_the_reading_and_who_decides(alice):
     walk(alice, pid, READY)
     p = packet(alice, pid).json()
     assert p["finished"] is True
-    assert p["summary"]["reading"].startswith("So you'd like to build a new house")
-    assert "The Code Enforcement Officer decides within 10 days of accepting your project." in p["summary"]["deciders"]
+    reading = p["summary"]["reading"]
+    assert reading.startswith("So you'd like to build a new house") and reading.endswith(".")
+    assert "Is that right" not in reading   # the statement, without the question (spec §5.1)
+    sentences = [d["sentence"] for d in p["summary"]["deciders"]]
+    assert "The Code Enforcement Officer decides within 10 days of accepting your project." in sentences
+    assert p["ending"]["kind"] == "ready" and p["ending"]["title"]
 
 
 def test_every_decision_sentence_in_review_order():
@@ -54,8 +58,17 @@ def test_every_decision_sentence_in_review_order():
         {"reviews": [{"certainty": "needed", "clocks": [clock("use_permit_completeness", "Not a decision."),
                                                         clock("use_permit_decision", "The CEO decides.")]}]},
     ]}
-    assert deciders_from(needs) == ["The CEO decides.", "The Board decides."]
+    assert [d["sentence"] for d in deciders_from(needs)] == ["The CEO decides.", "The Board decides.", "The CEO decides."][:2]
     assert deciders_from({"refused": "not_approved"}) == []
+
+
+def test_a_review_without_a_decision_sentence_names_its_reviewer():
+    """Review finding: subdivision and entrance permits have no clocks, so name who reviews them."""
+    needs = {"permits": [{"reviews": [
+        {"certainty": "needed", "name": "Subdivision Review", "reviewer": "Planning Board", "clocks": []},
+        {"certainty": "needed", "name": "Building permit", "reviewer": None, "clocks": []},
+    ]}]}
+    assert deciders_from(needs) == [{"review": "Subdivision Review", "reviewer": "Planning Board", "sentence": None}]
 
 
 def test_history_marks_the_moments_that_matter(alice):
@@ -208,3 +221,33 @@ def test_the_project_says_whether_it_has_a_conversation(alice):
     assert get(alice, pid)["has_conversation"] is False
     pid = started(alice)
     assert get(alice, pid)["has_conversation"] is True
+
+
+
+def test_a_pending_doesnt_fit_is_not_called_kept(alice):
+    """Review finding: mid-conversation, a number not yet kept or talked over isn't "kept"."""
+    pid = started(alice)
+    walk(alice, pid, [("lot", "yes"), ("confirm", "yes")])
+    for turn_id, value in [("full_stories", 4), ("roof_floors", 2), ("top_knee_over_3ft", "yes"),
+                           ("basement_exposed_5ft", "yes")]:
+        g = alice.get(f"/api/projects/{pid}/guide").json()
+        if g["current"]["turn_id"].startswith("doesnt_fit:"):
+            break
+        assert answer(alice, pid, turn_id, value).status_code == 200
+    fit = alice.get(f"/api/projects/{pid}/guide").json()["current"]["turn_id"]
+    assert fit.startswith("doesnt_fit:")
+    reasons = [r["reason"] for r in packet(alice, pid).json()["checklist"]["town"]]
+    assert "kept_past_the_limit" not in reasons
+    assert answer(alice, pid, fit, "talk_to_town").status_code == 200
+    reasons = [r["reason"] for r in packet(alice, pid).json()["checklist"]["town"]]
+    assert "talk_to_town" in reasons and "kept_past_the_limit" not in reasons
+
+
+def test_a_not_here_ending_says_the_use_isnt_listed():
+    """Review finding: a not_here ending has no settled or unsettled list of its own."""
+    from portal_api.guide.packet import checklist_of
+    state = SimpleNamespace(ending={"kind": "not_here", "settled": [], "unsettled": []},
+                            checks=(("x", {"result": "fits"}),), unsure=(), kept=())
+    town, fits = checklist_of(state, ask=lambda t: t, why=lambda t: None)
+    assert [r["reason"] for r in town] == ["not_listed"]
+    assert [r["turn_id"] for r in fits] == ["x"]

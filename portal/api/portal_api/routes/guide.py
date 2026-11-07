@@ -244,7 +244,7 @@ def get_packet(project_id: str, request: Request, applicant: auth.Applicant = au
     allow = request.app.state.settings.allow_draft_rules
     sent = packet.as_sent(conn, row)
     if sent is not None:
-        return sent
+        return _json(503, "guide_not_approved") if sent.get("drafts") and not allow else sent
     if _refused(state, request):
         return _json(503, "guide_not_approved")
     built = packet.build(conn, row, lot, opening, state, Loaded(conn, row).needs(conn, allow))

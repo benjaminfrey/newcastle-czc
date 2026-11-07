@@ -15,6 +15,7 @@ from portal_api import projects as pj
 from portal_api.guide import drawing, store
 from portal_api.guide.checks import limit_for
 from portal_api.guide.content import drafts_in, load_content
+from portal_api.guide.endings import KEPT
 from portal_api.guide.engine import Lot, _Build, replay
 
 DRAWN_LIMITS = {"front": "setback_front", "side": "setback_side_1", "rear": "setback_rear",
@@ -38,19 +39,55 @@ def drawing_payload(snapshot: dict, lot, state) -> dict:
             "roles": drawing.roles(outline["lines"], front) if outline else None, "limits": limits}
 
 
-def deciders_from(needs: dict) -> list[str]:
-    """Who decides: the approved decision sentence of every review the project needs, in the order
-    the reviews run (applications.yaml's clocks whose key names a decision)."""
-    out: list[str] = []
+def deciders_from(needs: dict) -> list[dict]:
+    """Who decides, for every review the project needs, in the order the reviews run: the approved
+    decision sentence (applications.yaml's clocks whose key names a decision), or, for a review with
+    none, its approved reviewer. A review with neither is left out, never guessed."""
+    out: list[dict] = []
     for permit in needs.get("permits") or []:
         for review in permit.get("reviews") or []:
             if review.get("certainty") != "needed":
                 continue
-            for clock in review.get("clocks") or []:
-                plain = clock.get("plain")
-                if "decision" in clock.get("key", "") and plain and plain not in out:
-                    out.append(plain)
+            said = [c["plain"] for c in review.get("clocks") or [] if "decision" in c.get("key", "") and c.get("plain")]
+            for sentence in said:
+                if all(d["sentence"] != sentence for d in out):
+                    out.append({"review": review.get("name"), "reviewer": review.get("reviewer"), "sentence": sentence})
+            if not said and review.get("reviewer"):
+                out.append({"review": review.get("name"), "reviewer": review["reviewer"], "sentence": None})
     return out
+
+
+def checklist_of(state, ask, why) -> tuple[list, list]:
+    """Judgment first, passes after (spec §7.3). With an ending, its own lists; a not-here ending
+    has none, so the use not being listed is the item for the Town. Mid-conversation, a number past
+    its limit counts only once the person has kept it or said why; one still being asked is left out."""
+    checks = dict(state.checks)
+    row = lambda t, reason, c: {"turn_id": t, "ask": ask(t), "reason": reason, "check": c, "why": why(t)}  # noqa: E731
+    fits = [{"turn_id": t, "ask": ask(t), "check": c, "why": why(t)} for t, c in checks.items() if c["result"] == "fits"]
+    ending = state.ending
+    if ending is not None and ending["kind"] == "not_here":
+        return [row("use_key", "not_listed", None)], fits
+    if ending is not None:
+        return ([row(u["turn_id"], u["reason"], checks.get(u["turn_id"])) for u in ending["unsettled"]],
+                [{"turn_id": s["turn_id"], "ask": ask(s["turn_id"]), "check": s["check"], "why": why(s["turn_id"])}
+                 for s in ending["settled"]])
+    kept = dict(state.kept)
+    town = []
+    for t, c in checks.items():
+        if c["result"] == "cannot_check":
+            town.append(row(t, c["reason"], c))
+        elif c["result"] == "outside" and t in kept:
+            town.append(row(t, KEPT[kept[t]], c))
+    town += [row(t, "unsure", None) for t in state.unsure if t not in checks and not t.startswith("doesnt_fit:")]
+    return town, fits
+
+
+def statement(confirm_ask: str | None) -> str | None:
+    """The confirmed reading as a statement (spec §5.1): the template without its closing question."""
+    if not confirm_ask or not confirm_ask.endswith("?"):
+        return confirm_ask
+    cut = confirm_ask.rfind(". ")
+    return confirm_ask[:cut + 1] if cut >= 0 else confirm_ask
 
 
 def _answer(shown, value) -> str | None:
@@ -89,25 +126,16 @@ def build(conn: Connection, row, lot, opening: str, state, needs: dict) -> dict:
         turn = content.turn(turn_id) if turn_id else None
         return explain.entry(turn.why) if turn and turn.why else None
 
-    reading = next((s.ask for s, v in reversed(state.history) if s.turn_id == "confirm" and v == "yes"), None)
+    asked_reading = next((s.ask for s, v in reversed(state.history) if s.turn_id == "confirm" and v == "yes"), None)
+    town, fits = checklist_of(state, ask, why)
     checks = dict(state.checks)
-    if state.ending is not None:
-        town = [{"turn_id": u["turn_id"], "ask": ask(u["turn_id"]), "reason": u["reason"],
-                 "check": checks.get(u["turn_id"]), "why": why(u["turn_id"])} for u in state.ending["unsettled"]]
-        fits = [{"turn_id": s["turn_id"], "ask": ask(s["turn_id"]), "check": s["check"], "why": why(s["turn_id"])}
-                for s in state.ending["settled"]]
-    else:
-        town = [{"turn_id": t, "ask": ask(t), "reason": "kept_past_the_limit" if c["result"] == "outside" else c["reason"],
-                 "check": c, "why": why(t)} for t, c in checks.items() if c["result"] != "fits"]
-        town += [{"turn_id": t, "ask": ask(t), "reason": "unsure", "check": None, "why": why(t)}
-                 for t in state.unsure if t not in checks and not t.startswith("doesnt_fit:")]
-        fits = [{"turn_id": t, "ask": ask(t), "check": c, "why": why(t)} for t, c in checks.items() if c["result"] == "fits"]
 
     disputed = bool(lot.disputed) or (state.facts.get("lot") or {}).get("confirmed") is False
     outline = (snapshot.get("facts") or {}).get("outline")
     return {
         "state": "now", "sent_at": None, "finished": state.ending is not None,
-        "summary": {"own_words": store.notes(conn, row.id), "reading": reading, "deciders": deciders_from(needs),
+        "ending": {"kind": state.ending["kind"], "title": state.ending.get("title")} if state.ending else None,
+        "summary": {"own_words": store.notes(conn, row.id), "reading": statement(asked_reading), "deciders": deciders_from(needs),
                     "corrections": {"lot_disputed": disputed, "note": snapshot.get("note") or None}},
         "history": [{"turn_id": s.turn_id, "ask": s.ask, "answer": _answer(s, v), "value": v, "marks": _marks(s, v)}
                     for s, v in state.history],

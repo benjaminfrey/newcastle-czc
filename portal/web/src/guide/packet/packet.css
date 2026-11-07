@@ -1,8 +1,10 @@
-/* The packet on paper (guided plan 6): the spec's order, the folded passes open, and nothing
-   to press. Letter paper, with each part kept whole where it fits. */
+/* The packet on paper (guided plan 6): the spec's order, the folded passes open, and nothing to
+   press. Only on the packet's own page, and the app bar's title and draft chip stay, so a printed
+   draft still says it is one. Letter paper, with each part kept whole where it fits. */
 @media print {
   @page { size: letter; margin: 0.6in; }
-  header, nav, button { display: none !important; }
-  [data-fits][hidden] { display: block !important; }
-  [data-packet-part] { break-inside: avoid-page; }
+  body:has([data-packet]) button,
+  body:has([data-packet]) a[aria-label^="Back to"] { display: none !important; }
+  body:has([data-packet]) [data-fits][hidden] { display: block !important; }
+  body:has([data-packet]) [data-packet-part] { break-inside: avoid-page; }
 }

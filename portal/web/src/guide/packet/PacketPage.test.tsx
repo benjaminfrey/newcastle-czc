@@ -11,10 +11,11 @@ import PacketPage from "./PacketPage";
 vi.mock("../api", async (orig) => ({ ...(await orig<typeof import("../api")>()), getPacket: vi.fn() }));
 
 const PACKET: Packet = {
-  state: "now", sent_at: null, finished: true,
+  state: "now", sent_at: null, finished: true, ending: { kind: "ready", title: "Your application is ready to send" },
   summary: { own_words: [{ body: "Line one\n<b>Two</b>", at: "2026-11-06T12:00:00Z" }],
     reading: "So you'd like to build a new house on lot 4-36, in D1 Rural.",
-    deciders: ["The Code Enforcement Officer decides within 10 days of accepting your project."],
+    deciders: [{ review: "Small Project Plan", reviewer: "Code Enforcement Officer",
+      sentence: "The Code Enforcement Officer decides within 10 days of accepting your project." }],
     corrections: { lot_disputed: false, note: null } },
   history: [
     { turn_id: "confirm", ask: "So you'd like to build a new house?", answer: "Yes, that's right", value: "yes", marks: ["confirmed"] },
@@ -101,4 +102,31 @@ test("the drawing sits with its list", async () => {
   const lot = (await screen.findByRole("heading", { level: 2, name: "Your lot" })).closest("section")!;
   expect(within(lot).getByRole("img")).toBeInTheDocument();
   expect(within(lot).getByText("The setbacks on your lot")).toBeInTheDocument();
+});
+
+
+// --- the review's fixes ---
+
+test("a review with no decision sentence names who reviews it", async () => {
+  show({ ...PACKET, summary: { ...PACKET.summary, deciders: [{ review: "Subdivision Review", reviewer: "Planning Board", sentence: null }] } });
+  expect(await screen.findByText("Subdivision Review: Planning Board")).toBeVisible();
+});
+
+test("an ending with no permit says so where who decides would be", async () => {
+  show({ ...PACKET, ending: { kind: "no_permit", title: "You don't need a permit for this" },
+    summary: { ...PACKET.summary, deciders: [] } });
+  expect(await screen.findByText("You don't need a permit for this")).toBeVisible();
+  expect(screen.queryByText("The Town decides which review your project needs.")).toBeNull();
+});
+
+test("their own words carry their date, in Newcastle's time", async () => {
+  show({ ...PACKET, summary: { ...PACKET.summary, own_words: [{ body: "Late note", at: "2026-11-07T03:30:00Z" }] } });
+  expect(await screen.findByText("November 6, 2026")).toBeVisible();
+});
+
+test("empty lists show nothing to open", async () => {
+  show({ ...PACKET, checklist: { town: [], fits: [] } });
+  await screen.findByRole("heading", { level: 2, name: "The checklist" });
+  expect(screen.queryByText("What goes to the Town")).toBeNull();
+  expect(screen.queryByRole("button", { name: /Show what fits/ })).toBeNull();
 });

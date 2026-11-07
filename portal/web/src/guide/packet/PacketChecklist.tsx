@@ -40,13 +40,15 @@ export function PacketChecklist({ checklist }: { checklist: Packet["checklist"] 
   const fitsId = useId();
   return (
     <Box sx={{ display: "grid", gap: 1.5 }}>
-      <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: "surfaceContainer" }}>
-        <Typography variant="subtitle1" component="h3">{WORDS.unsettled_heading}</Typography>
-        <Box component="ul" sx={{ m: 0, p: 0 }}>
-          {checklist.town.map((r, i) => <Row key={`t${i}`} row={r} town />)}
+      {checklist.town.length > 0 && (
+        <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: "surfaceContainer" }}>
+          <Typography variant="subtitle1" component="h3">{WORDS.unsettled_heading}</Typography>
+          <Box component="ul" sx={{ m: 0, p: 0 }}>
+            {checklist.town.map((r, i) => <Row key={`t${i}`} row={r} town />)}
+          </Box>
         </Box>
-      </Box>
-      <Box>
+      )}
+      {checklist.fits.length > 0 && <Box>
         <Typography variant="subtitle1" component="h3">{WORDS.settled_heading}</Typography>
         <Button aria-expanded={open} aria-controls={fitsId} onClick={() => setOpen((o) => !o)} sx={{ minHeight: 48 }}>
           {open ? P.hide_fits : fill(P.show_fits, { n: checklist.fits.length })}
@@ -54,7 +56,7 @@ export function PacketChecklist({ checklist }: { checklist: Packet["checklist"] 
         <Box component="ul" id={fitsId} data-fits="" hidden={!open} sx={{ m: 0, p: 0 }}>
           {checklist.fits.map((r, i) => <Row key={`f${i}`} row={r} town={false} />)}
         </Box>
-      </Box>
+      </Box>}
     </Box>
   );
 }
