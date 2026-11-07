@@ -1,9 +1,13 @@
-# The pictures a conversation can start from (spec §4.2). Each opening names the project part
-# it belongs to, the screener answers it implies, and its "So you mean…" template. Approved by
-# the chair on 2026-11-06 (memos/2026-11-06-guided-builder-wording-for-approval.md); the pictures themselves are plan 5.
+# The places to tap in the opening scene (spec §4.2; plan 5's design §6.1), in the order the list
+# under the scene shows them. `picture` is the spot's id in the scene. A guided opening names the
+# project part it belongs to, the screener answers it implies, and its "So you mean…" template;
+# the rest say "coming soon" until their conversations are built. All were approved by the chair
+# on 2026-11-06 (memos/2026-11-06-guided-builder-wording-for-approval.md and
+# memos/2026-11-06-guided-builder-pictures-sample-sheet.md).
 - id: new_house
   label: A new house
-  picture: house
+  picture: house_outline
+  guided: true
   part: building
   facts: {}
   screener: {project: [build], building.kind: new}
@@ -13,11 +17,68 @@
   approved_on: 2026-11-06
 - id: change_of_use
   label: A change of use
-  picture: shopfront
+  picture: barn
+  guided: true
   part: use
   facts: {}
   screener: {project: [use]}
   confirm: confirm_use
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06
+- id: addition
+  label: An addition
+  picture: addition
+  guided: false
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06
+- id: deck
+  label: A deck
+  picture: deck
+  guided: false
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06
+- id: solar
+  label: Solar panels
+  picture: solar
+  guided: false
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06
+- id: outbuilding
+  label: A garage, barn or shed
+  picture: shed
+  guided: false
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06
+- id: driveway
+  label: A driveway
+  picture: driveway
+  guided: false
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06
+- id: fence_or_wall
+  label: A fence or wall
+  picture: wall
+  guided: false
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06
+- id: sign
+  label: A sign
+  picture: sign
+  guided: false
+  status: approved
+  approved_by: "Ben Frey, Planning Board chair"
+  approved_on: 2026-11-06
+- id: home_business
+  label: A business at home
+  picture: shingle
+  guided: false
   status: approved
   approved_by: "Ben Frey, Planning Board chair"
   approved_on: 2026-11-06

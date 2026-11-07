@@ -42,7 +42,7 @@ def _turn(data: list, turn_id: str) -> dict:
 
 def test_content_loads():
     c = load_content()
-    assert set(c.openings) == {"new_house", "change_of_use"}
+    assert {o.id for o in c.openings.values() if o.guided} == {"new_house", "change_of_use"}
     assert [t.order for t in c.turns] == sorted(t.order for t in c.turns)
     assert len(c.digest) == 64
 
@@ -91,7 +91,7 @@ def _readable(c) -> list[str]:
     for answers in c.use_answers.values():
         out += [x for a in answers for x in (a.label, a.hint or "")]
     for e in c.entries.values():
-        out += [e.overline, e.answer, e.detail, e.why]
+        out += [e.overline, e.answer, e.detail, e.why, e.picture_alt or ""]
     for w in c.wording.values():
         out += [v for k, v in w.items() if k in ("text", "title", "body")]
     out += [o.label for o in c.openings.values()]
@@ -139,3 +139,34 @@ def test_the_chair_approved_everything_shown_on_2026_11_06():
                 assert e["status"] == "draft", (name, key)
             else:
                 assert e["status"] == "approved", (name, key)
+
+
+SPOTS = ["new_house", "change_of_use", "addition", "deck", "solar", "outbuilding", "driveway", "fence_or_wall",
+         "sign", "home_business"]
+
+
+def test_every_spot_is_an_opening_and_only_two_are_guided():
+    """Plan 5: every place to tap in the scene is an opening; the guide covers two of them so far."""
+    c = load_content()
+    assert list(c.openings) == SPOTS
+    assert {o.id for o in c.openings.values() if o.guided} == {"new_house", "change_of_use"}
+    pictures = [o.picture for o in c.openings.values()]
+    assert len(set(pictures)) == len(pictures)
+    assert c.openings["change_of_use"].picture == "barn"
+
+
+def test_a_guided_opening_needs_a_part_and_a_template(copy):
+    with pytest.raises(ContentError, match="part"):
+        load_content(copy("openings.yaml", lambda d: next(o for o in d if o["id"] == "new_house").pop("part")))
+
+
+def test_a_coming_soon_opening_needs_neither(copy):
+    deck = lambda d: next(o for o in d if o["id"] == "deck")  # noqa: E731
+    load_content(copy("openings.yaml", lambda d: [deck(d).pop(k, None) for k in ("part", "confirm")]))
+
+
+def test_a_picture_needs_its_description(copy):
+    def drop(data):
+        next(e for e in data if e["id"] == "how_stories_count").pop("picture_alt")
+    with pytest.raises(ContentError, match="picture_alt"):
+        load_content(copy("entries.yaml", drop))

@@ -1,7 +1,8 @@
 // Every word the guide's screens say on their own (spec §11: every word an applicant reads is
 // approved before the public sees it). Turn, answer, entry and ending words come from the API's
 // content files; these are the rest. The chair approved them on 2026-11-06
-// (memos/2026-11-06-guided-builder-wording-for-approval.md); a changed line makes the file a
+// (memos/2026-11-06-guided-builder-wording-for-approval.md), and plan 5's the same day
+// (memos/2026-11-06-guided-builder-pictures-sample-sheet.md); a changed line makes the file a
 // draft again. Nothing else in src/guide/ writes words.
 export const WORD_STATUS = "approved" as "draft" | "approved";
 
@@ -131,6 +132,27 @@ export const WORDS = {
     busy: "Too many requests just now. Please wait a minute and try again.",
     unavailable: "We couldn't reach the Town's server. Please check your connection and try again.",
     locked: "The Town is reviewing this project, so it can't be changed now.",
+  },
+
+  // The opening scene (guided plan 5, design §6).
+  picker: {
+    description: "A Newcastle lot with a cape, its ell and a barn, a stone wall and a maple. Tap a project, or choose one from the list below.",
+    list_heading: "Or choose from the list",
+    box_label: "In your own words, what would you like to do? (optional)",
+    add_title: "Add {label} to this project?",
+    add_body: "Your project doesn't have this yet. Adding it adds its questions to your project's form.",
+    add_yes: "Add it",
+    add_no: "Not now",
+    soon_title: "{label}: coming soon",
+    soon_body: "The guide can't walk you through this yet. You can still fill in your project's form, or contact the Town Office.",
+    soon_ok: "OK",
+  },
+
+  // The pictures' labels (guided plan 5). A picture carries no number of its own: these name the
+  // Code's own tests.
+  pictures: {
+    stories: { first: "1st story", second: "2nd story", roof: "In the roof", basement: "Basement",
+      knee: "More than 3 ft?", exposed: "5 ft or more?" },
   },
 } as const;
 

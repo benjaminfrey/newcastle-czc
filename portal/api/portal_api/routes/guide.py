@@ -144,6 +144,8 @@ def start(project_id: str, body: StartBody, request: Request, applicant: auth.Ap
     o = content.openings.get(body.opening)
     if o is None:
         return _json(422, "unknown_opening")
+    if not o.guided:
+        return _json(422, "not_guided")
     if o.part not in {p["kind"] for p in pj.parts(conn, row.id)}:
         return _json(422, "wrong_project")
     lot = Lot.from_snapshot(pj.snapshot(conn, row.id))
@@ -247,17 +249,19 @@ def get_drawing(project_id: str, request: Request, applicant: auth.Applicant = a
 @router.get("/api/projects/{project_id}/guide/openings")
 def openings(project_id: str, request: Request, applicant: auth.Applicant = auth.require,
              conn: Connection = transaction):
-    """The pictures this project's parts can start from, before the guide has started."""
+    """The places to tap in the opening scene, before the guide has started."""
     row = pj.owned(conn, project_id, applicant.id)
     if row is None:
         return _json(404, "not_found")
     content = load_content()
     kinds = {p["kind"] for p in pj.parts(conn, row.id)}
-    listed = [o for o in content.openings.values() if o.part in kinds]
+    # Every spot in the scene, whatever parts the project has (plan 5's design §6.1).
+    listed = list(content.openings.values())
     drafts = [d for o in listed for d in drafts_in(content, opening=o.id, turn_ids=[], entry_ids=[], wording_keys=[])]
     if drafts and not request.app.state.settings.allow_draft_rules:
         return _json(503, "guide_not_approved")
-    return {"openings": [{"id": o.id, "label": o.label, "part": o.part} for o in listed]}
+    return {"openings": [{"id": o.id, "label": o.label, "part": o.part, "picture": o.picture, "guided": o.guided,
+                          "in_project": o.part is not None and o.part in kinds} for o in listed]}
 
 
 @router.post("/api/projects/{project_id}/guide/notes", status_code=201)

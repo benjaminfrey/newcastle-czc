@@ -6,10 +6,10 @@ import { useState, type FormEvent } from "react";
 
 // A box to say more in the person's own words. Enter sends; a blank box can't be sent. When
 // onSend says the text wasn't kept (false), it stays in the box.
-export function ReplyBox({ placeholder, onSend }: {
-  placeholder: string; onSend: (text: string) => void | boolean | Promise<boolean>;
+export function ReplyBox({ placeholder, onSend, initial = "" }: {
+  placeholder: string; onSend: (text: string) => void | boolean | Promise<boolean>; initial?: string;
 }) {
-  const [text, setText] = useState("");
+  const [text, setText] = useState(initial);
   const blank = text.trim() === "";
   const submit = async (e: FormEvent) => {
     e.preventDefault();

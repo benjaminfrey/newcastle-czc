@@ -279,9 +279,11 @@ def test_openings_for_the_projects_parts(alice, bob, engine, settings, outbox, l
     pid = create(alice, parts=("building",))
     r = alice.get(f"/api/projects/{pid}/guide/openings")
     assert r.status_code == 200, r.text
-    ids = [o["id"] for o in r.json()["openings"]]
-    assert "new_house" in ids and "change_of_use" not in ids
-    assert set(r.json()["openings"][0]) == {"id", "label", "part"}
+    listed = r.json()["openings"]
+    # Plan 5: every spot in the scene, saying which the project already has.
+    assert [o["id"] for o in listed][:2] == ["new_house", "change_of_use"] and len(listed) == 10
+    assert set(listed[0]) == {"id", "label", "part", "picture", "guided", "in_project"}
+    assert [o["id"] for o in listed if o["in_project"]] == ["new_house"]
     assert bob.get(f"/api/projects/{pid}/guide/openings").status_code == 404
     settings.allow_stale_parcels = True
     settings.allow_draft_rules = True
@@ -351,3 +353,9 @@ def test_the_bridge_writes_the_secondary_front_setback(alice, engine):
     walk(alice, pid, [("lot", "yes"), ("confirm", "yes"), *STORIES, ("floor_area", 1800), ("dwelling_units", 1),
                       ("setback_front", 25), ("setback_side_1", 15), ("setback_secondary", 22)])
     assert building_values(alice, pid)["setback_secondary"] == 22
+
+
+def test_an_unguided_opening_is_refused(alice):
+    pid = create(alice, parts=("building",))
+    r = start(alice, pid, "deck")
+    assert r.status_code == 422 and r.json()["detail"] == "not_guided"

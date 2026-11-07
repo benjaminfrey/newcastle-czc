@@ -48,3 +48,10 @@ test("the lot turn shows what the Town knows before its answers", () => {
   expect(screen.getByText("Rural")).toBeVisible();
   expect(screen.getByRole("radiogroup", { name: "Is this your lot?" })).toBeVisible();
 });
+
+test("the stories explanation shows its picture with its description", () => {
+  view(shown({ why: { ...entry("how_stories_count", "Why · how stories are counted"), picture: "stories",
+    picture_alt: "A house cut open to show its floors." } }));
+  const pic = screen.getByRole("img", { name: "A house cut open to show its floors." });
+  expect(pic).toHaveTextContent("In the roof");
+});

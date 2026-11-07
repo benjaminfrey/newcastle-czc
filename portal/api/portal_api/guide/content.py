@@ -69,6 +69,8 @@ class Entry:
     status: str
     approved_by: str | None = None
     approved_on: str | None = None
+    picture: str | None = None       # a picture's id in the web's pictures/ (plan 5)
+    picture_alt: str | None = None   # what the picture shows, for a screen reader; approved wording
 
 
 @dataclass(frozen=True)
@@ -102,12 +104,13 @@ class Turn:
 class Opening:
     id: str
     label: str
-    picture: str
-    part: str
-    facts: dict
-    screener: dict
-    confirm: str
+    picture: str          # the spot's id in the opening scene (plan 5)
+    guided: bool          # False: the spot says "coming soon" until its conversation is built
     status: str
+    part: str | None = None
+    facts: dict | None = None
+    screener: dict | None = None
+    confirm: str | None = None
     approved_by: str | None = None
     approved_on: str | None = None
 
@@ -218,6 +221,8 @@ def _load(root: Path) -> Content:
             _cite(where, ref, ruleset)
         if e["id"] in entries:
             raise ContentError(f"{where}: duplicate id")
+        if e.get("picture") and not e.get("picture_alt"):
+            raise ContentError(f"{where}: a picture needs its picture_alt")
         entries[e["id"]] = Entry(**{**{k: v for k, v in e.items() if k in Entry.__dataclass_fields__},
                                     "cites": tuple(e.get("cites") or ())})
 
@@ -235,10 +240,13 @@ def _load(root: Path) -> Content:
     for o in raw["openings.yaml"]:
         where = f"openings.yaml: {o.get('id')}"
         _status(where, o)
-        if o["part"] not in part_ids:
-            raise ContentError(f"{where}: no part {o['part']!r}")
-        if o["confirm"] not in wording:
-            raise ContentError(f"{where}: no template {o['confirm']!r}")
+        if not isinstance(o.get("guided"), bool):
+            raise ContentError(f"{where}: guided must be true or false")
+        if o["guided"]:
+            if o.get("part") not in part_ids:
+                raise ContentError(f"{where}: no part {o.get('part')!r}")
+            if o.get("confirm") not in wording:
+                raise ContentError(f"{where}: no template {o.get('confirm')!r}")
         openings[o["id"]] = Opening(**{k: v for k, v in o.items() if k in Opening.__dataclass_fields__})
 
     turns, seen = [], set()

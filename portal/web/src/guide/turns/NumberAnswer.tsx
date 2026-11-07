@@ -8,8 +8,8 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from "react";
-import { checkValue, isRefusal, type Check, type Entry, type Shown } from "../api";
-import { WhyCard } from "../components/WhyCard";
+import { checkValue, isRefusal, type Check, type Shown } from "../api";
+import { entryCard } from "../components/entryCard";
 import { fill, WORDS } from "../words";
 import { TURN_HEADING } from "./heading";
 
@@ -40,7 +40,7 @@ function roomWords(c: Check, unit: string): string {
   return WORDS.town_decides;
 }
 
-const card = (e: Entry) => <WhyCard key={e.id} overline={e.overline} answer={e.answer} detail={e.detail} />;
+const card = entryCard;
 
 // A number turn (spec §4.4): a field with steppers, and, once the limit is known, a slider marked
 // at it. As the value changes the API checks it (debounced) and the line under the field shows
