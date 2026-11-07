@@ -81,6 +81,7 @@ function Check({ projectId }: { projectId: string }) {
       back={{ href: `/projects/${projectId}/guide`, label: WORDS.back_to_conversation }}>
       <Box sx={{ display: "grid", gap: 2.5 }}>
         <Typography variant="h6" component="h2">{WORDS.check_heading}</Typography>
+        <Link component={RouterLink} to={`/projects/${projectId}/packet`} sx={{ justifySelf: "start" }}>{WORDS.packet.open_packet}</Link>
         {v.phase === "talk" && <ProjectPanel guide={v.guide} onChange={(t) => void change(t)} locked={v.locked}
           drawing={drawing && (
             <Box sx={{ display: "grid", gap: 1 }}>

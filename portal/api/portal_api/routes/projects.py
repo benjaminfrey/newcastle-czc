@@ -198,6 +198,7 @@ def state(conn: Connection, loaded: Loaded, allow_drafts: bool, locked_at=None) 
         "id": row.id, "title": conn.execute(text("SELECT title FROM project WHERE id = :p"), {"p": row.id}).scalar(),
         "status": status, "revision": revision, "ruleset_key": row.ruleset_key,
         "submitted_at": submitted_at.isoformat() if submitted_at else None,
+        "has_conversation": store.conversation(conn, row.id) is not None,   # its packet can be read (plan 6)
         "property": loaded.snapshot, "parts": loaded.parts, "forms": loaded.pinned,
         "answers": [{"field_id": f, "part_id": i, "value": v, "derived": (f, i) in loaded.derived}
                     for (f, i), v in loaded.cur.answers.items()],

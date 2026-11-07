@@ -10,6 +10,7 @@ import { longDate, mapLotLabel } from "../format";
 import { STATUS_TONE, STATUS_WORDS } from "../pages/Home";
 import { getParts, type FormDef, type PartDef, type ProjectState } from "../projects";
 import Pill from "../shell/Pill";
+import { WORDS as GUIDE_WORDS } from "../guide/words";
 import NeedsPanel from "./NeedsPanel";
 
 // The guided builder's way in, on the LAN copy only: a draft the chair left out of the approved
@@ -140,6 +141,12 @@ export default function Dashboard({ project, form, cur, models, statuses, base, 
             // project: its scene shows every project, whatever the parts (plan 5).
             <Link to={`/projects/${project.id}/guide`} className="self-start text-[15px] text-[var(--app-accent-text)]">
               {TRY_GUIDE}
+            </Link>
+          )}
+          {import.meta.env.VITE_GUIDE_PREVIEW === "1" && project.has_conversation && (
+            // What the Town will read (guided plan 6), once there is a conversation to read.
+            <Link to={`/projects/${project.id}/packet`} className="self-start text-[15px] text-[var(--app-accent-text)]">
+              {GUIDE_WORDS.packet.open_packet}
             </Link>
           )}
         </header>

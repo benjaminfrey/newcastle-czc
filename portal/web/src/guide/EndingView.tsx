@@ -56,6 +56,8 @@ export function EndingView({ guide, projectId }: { guide: Guide; projectId: stri
     <Box component="section" sx={{ display: "grid", gap: 2 }}>
       <Typography variant="h6" component="h2" {...TURN_HEADING}>{e.title}</Typography>
       <Typography>{e.body}</Typography>
+      {/* What the Town will read (plan 6), whichever way it ended. */}
+      <MuiLink component={Link} to={`/projects/${projectId}/packet`} sx={{ justifySelf: "start" }}>{WORDS.packet.open_packet}</MuiLink>
       {e.entry && <WhyCard overline={e.entry.overline} answer={e.entry.answer} detail={e.entry.detail} />}
       {e.kind === "ready" && <>
         <Fees needs={needs} />

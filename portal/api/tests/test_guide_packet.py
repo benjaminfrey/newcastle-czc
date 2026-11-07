@@ -199,3 +199,12 @@ def test_the_packet_carries_what_the_drawing_needs(alice):
     p = packet(alice, pid).json()
     assert p["checks"]["setback_front"]["result"] == "fits"
     assert next(h for h in p["history"] if h["turn_id"] == "setback_front")["value"] == 30
+
+
+
+def test_the_project_says_whether_it_has_a_conversation(alice):
+    """Plan 6, Task 4: the project page offers the packet only once there is one to read."""
+    pid = create(alice, parts=("building",))
+    assert get(alice, pid)["has_conversation"] is False
+    pid = started(alice)
+    assert get(alice, pid)["has_conversation"] is True

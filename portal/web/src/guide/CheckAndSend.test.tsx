@@ -104,3 +104,9 @@ test("a note for the Town can be added on Check and send, and the notes so far a
   await userEvent.type(screen.getByRole("textbox", { name: "Anything the Town should know?" }), "The barn stays.{Enter}");
   expect(actions.note).toHaveBeenCalledWith("The barn stays.");
 });
+
+
+test("Check and send leads to the packet (plan 6)", async () => {
+  open();
+  expect(await screen.findByRole("link", { name: "Your packet" })).toHaveAttribute("href", "/projects/p1/packet");
+});
