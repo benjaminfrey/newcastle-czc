@@ -67,6 +67,7 @@ export type Needs = {
 export type Missing = { field_id: string; item_id: string | null }[];
 export type ProjectState = {
   id: string; title: string; status: Status; revision: number; ruleset_key: string; submitted_at: string | null;
+  has_conversation?: boolean;   // the guide has started, so the packet can be read (guided plan 6)
   property: Snapshot; items: Item[]; forms: Record<string, number>; form: FormDef; needs: Needs | null;
   answers: { field_id: string; item_id: string | null; value: unknown; derived?: boolean }[];
   notes: { section_id: string; item_id: string | null; text: string }[];

@@ -18,8 +18,8 @@ from portal_api import auth
 from portal_api import projects as pj
 from portal_api.db import transaction
 from portal_api.events import append_event
-from portal_api.guide import bridge, drawing, store
-from portal_api.guide.checks import check_turn, limit_for
+from portal_api.guide import bridge, packet, store
+from portal_api.guide.checks import check_turn
 from portal_api.guide.content import drafts_in, load_content
 from portal_api.guide.engine import PICK_OPENING, Action, AnswerRejected, Lot, _valid, _Build, apply, replay
 from portal_api.routes.projects import Loaded, _refuse_stale
@@ -222,28 +222,35 @@ def revisit(project_id: str, body: RevisitBody, request: Request, applicant: aut
     return _change(conn, request, applicant, project_id, body.base_revision, act, body.turn_id)
 
 
-DRAWN_LIMITS = {"front": "setback_front", "side": "setback_side_1", "rear": "setback_rear",
-               "secondary": "setback_secondary"}
-
-
 @router.get("/api/projects/{project_id}/guide/drawing")
 def get_drawing(project_id: str, request: Request, applicant: auth.Applicant = auth.require,
                 conn: Connection = transaction):
-    """The lot drawing (plan 4): the tax-map outline, what each line is once the front is chosen,
-    and the setback limits for this lot from the rulesets. No words, so no draft gate."""
+    """The lot drawing (plan 4). No words, so no draft gate."""
     loaded = _load(conn, project_id, applicant)
     if isinstance(loaded, JSONResponse):
         return loaded
     row, lot, _, _, state = loaded
-    outline = (pj.snapshot(conn, row.id).get("facts") or {}).get("outline")
-    front = (state.facts.get("lot") or {}).get("front")
-    content = load_content()
-    limits = {}
-    for role, turn_id in DRAWN_LIMITS.items():
-        lim = limit_for(content.turn(turn_id), lot, state.facts)
-        limits[role] = dataclasses.asdict(lim) if lim else None
-    return {"outline": outline, "front": front if outline else None,
-            "roles": drawing.roles(outline["lines"], front) if outline else None, "limits": limits}
+    return packet.drawing_payload(pj.snapshot(conn, row.id), lot, state)
+
+
+@router.get("/api/projects/{project_id}/packet")
+def get_packet(project_id: str, request: Request, applicant: auth.Applicant = auth.require,
+               conn: Connection = transaction):
+    """The packet (plan 6; spec §7): the same one the Town reads, without staff notes."""
+    loaded = _load(conn, project_id, applicant)
+    if isinstance(loaded, JSONResponse):
+        return loaded
+    row, lot, opening, _, state = loaded
+    allow = request.app.state.settings.allow_draft_rules
+    sent = packet.as_sent(conn, row)
+    if sent is not None:
+        return _json(503, "guide_not_approved") if sent.get("drafts") and not allow else sent
+    if _refused(state, request):
+        return _json(503, "guide_not_approved")
+    built = packet.build(conn, row, lot, opening, state, Loaded(conn, row).needs(conn, allow))
+    if built["drafts"] and not allow:
+        return _json(503, "guide_not_approved")
+    return built
 
 
 @router.get("/api/projects/{project_id}/guide/openings")

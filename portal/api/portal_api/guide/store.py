@@ -61,3 +61,17 @@ def notes(conn: Connection, project_id: str) -> list[dict]:
     return [{"body": r.body, "at": r.at.isoformat()} for r in conn.execute(text(
         "SELECT body, at FROM guide_note WHERE project_id = :p ORDER BY n"
     ), {"p": project_id})]
+
+
+def save_packet(conn: Connection, project_id: str, body: dict) -> None:
+    """The packet as sent (plan 6): sending again replaces it."""
+    conn.execute(text(
+        "INSERT INTO guide_packet (project_id, sent_at, body) VALUES (:p, now(), CAST(:b AS jsonb))"
+        " ON CONFLICT (project_id) DO UPDATE SET sent_at = now(), body = excluded.body"
+    ), {"p": project_id, "b": json.dumps(body)})
+
+
+def sent_packet(conn: Connection, project_id: str):
+    """(sent_at, body) of the packet as sent, or None."""
+    r = conn.execute(text("SELECT sent_at, body FROM guide_packet WHERE project_id = :p"), {"p": project_id}).first()
+    return (r.sent_at, r.body) if r else None

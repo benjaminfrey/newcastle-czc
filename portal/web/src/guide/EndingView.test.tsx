@@ -83,3 +83,9 @@ test("an ending that sends you to the Town links to the Town's own contact page"
     unmount();
   }
 });
+
+
+test("every ending leads to the packet (plan 6)", () => {
+  view();
+  expect(screen.getByRole("link", { name: "Your packet" })).toHaveAttribute("href", "/projects/p1/packet");
+});

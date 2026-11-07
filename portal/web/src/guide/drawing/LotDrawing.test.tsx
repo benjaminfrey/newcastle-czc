@@ -161,3 +161,9 @@ test("a corner lot draws its secondary strip and puts that edge's handle beside 
     unmount();
   }
 });
+
+
+test("read-only, as in the packet, it offers no Swap sides (plan 6)", () => {
+  render(<GuideTheme><LotDrawing drawing={RECT} distances={{ front: 30, side_1: 20, side_2: 20, rear: 40 }} readOnly /></GuideTheme>);
+  expect(screen.queryByRole("button", { name: "Swap sides" })).toBeNull();
+});

@@ -85,6 +85,24 @@ export async function getOpenings(id: string): Promise<Opening[] | GuideRefusal>
   return typeof out === "object" && "openings" in out ? out.openings : out as GuideRefusal;
 }
 
+// The packet (guided plan 6; spec §7): what the Town reads, as the API assembles it once for both sides.
+export type PacketMark = "confirmed" | "unsure" | "took_suggestion" | "kept";
+export type PacketRow = { turn_id: string | null; ask: string | null; reason?: string; check: Check | null; why: Entry | null };
+export type Packet = {
+  state: "now" | "sent"; sent_at: string | null; changed: boolean; finished: boolean;
+  ending: { kind: string; title: string | null } | null;
+  summary: { own_words: { body: string; at: string }[]; reading: string | null;
+    deciders: { review: string | null; reviewer: string | null; sentence: string | null }[];
+    corrections: { lot_disputed: boolean; note: string | null } };
+  history: { turn_id: string; ask: string; answer: string | null; value: unknown; marks: PacketMark[] }[];
+  checks: Record<string, Check>;
+  checklist: { town: PacketRow[]; fits: PacketRow[] };
+  drawing: Drawing | null; drafts: string[];
+};
+
+export const getPacket = (id: string) =>
+  call(`/api/projects/${encodeURIComponent(id)}/packet`).then((r) => read<Packet>(r));
+
 export async function getDrawing(id: string): Promise<Drawing | GuideRefusal> {
   return call(`${base(id)}/drawing`).then((r) => read<Drawing>(r));
 }

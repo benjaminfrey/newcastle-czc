@@ -103,6 +103,21 @@ describe("the dashboard", () => {
     }
   });
 
+  it("links to the packet once the project has a conversation (plan 6)", async () => {
+    vi.stubEnv("VITE_GUIDE_PREVIEW", "1");
+    try {
+      open();
+      await screen.findByRole("link", { name: "Try the guided version (preview)" });
+      expect(screen.queryByRole("link", { name: "Your packet" })).toBeNull();
+      cleanup();
+      vi.spyOn(apps, "getProject").mockResolvedValue({ ...PROJECT, has_conversation: true });
+      open();
+      expect(await screen.findByRole("link", { name: "Your packet" })).toHaveAttribute("href", "/projects/p1/packet");
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+
   it("shows the title, the parcel, a row per part and the parts still to add", async () => {
     open();
     expect(await screen.findByRole("heading", { level: 1, name: "A new building and a driveway at Sheepscot Road" })).toBeInTheDocument();

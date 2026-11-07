@@ -24,6 +24,7 @@ from portal_api.forms.definitions import load_definitions
 from portal_api.forms.fees import load_fees
 from portal_api.forms.formdefs import FormDef, form_drafts, load_form
 from portal_api.forms.needs import drafts as needs_drafts, needs
+from portal_api.guide import packet, store
 from portal_api.forms.parts import derived, load_parts, project_form, wanted_forms
 from portal_api.routes.forms import LookupProperty, _snapshot, form_json
 from portal_api.ruleset import load_ruleset
@@ -197,6 +198,7 @@ def state(conn: Connection, loaded: Loaded, allow_drafts: bool, locked_at=None) 
         "id": row.id, "title": conn.execute(text("SELECT title FROM project WHERE id = :p"), {"p": row.id}).scalar(),
         "status": status, "revision": revision, "ruleset_key": row.ruleset_key,
         "submitted_at": submitted_at.isoformat() if submitted_at else None,
+        "has_conversation": store.conversation(conn, row.id) is not None,   # its packet can be read (plan 6)
         "property": loaded.snapshot, "parts": loaded.parts, "forms": loaded.pinned,
         "answers": [{"field_id": f, "part_id": i, "value": v, "derived": (f, i) in loaded.derived}
                     for (f, i), v in loaded.cur.answers.items()],
@@ -427,7 +429,7 @@ def set_title(project_id: str, body: TitleBody, applicant: auth.Applicant = auth
 
 
 @router.post("/api/projects/{project_id}/submit")
-def submit(project_id: str, body: RevisionBody, applicant: auth.Applicant = auth.require,
+def submit(project_id: str, body: RevisionBody, request: Request, applicant: auth.Applicant = auth.require,
            conn: Connection = transaction):
     row = _owned(conn, project_id, applicant)
     if row is None:
@@ -442,6 +444,10 @@ def submit(project_id: str, body: RevisionBody, applicant: auth.Applicant = auth
         return _refuse_stale(conn, row.id)
     first = row.status == "draft"
     pj.submit(conn, row.id)
+    # The packet as sent (guided plan 6), kept with the sending so later changes never alter it.
+    built = packet.build_for(conn, row, Loaded(conn, row).needs(conn, request.app.state.settings.allow_draft_rules))
+    if built is not None:
+        store.save_packet(conn, row.id, {**built, "revision": rev})   # to tell a later change
     append_event(conn, actor=_actor(applicant), kind="project.submitted",
                  payload={"project_id": row.id, "first": first})
     return {"revision": rev, "status": "submitted"}

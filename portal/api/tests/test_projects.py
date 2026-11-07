@@ -427,7 +427,11 @@ def test_copy_writes_nothing_when_refused(alice):
 
 def finish_use_project(client):
     """A use project with every required answer, ready to send."""
-    pid = create(client, ("use",))
+    return fill_missing(client, create(client, ("use",)))
+
+
+def fill_missing(client, pid):
+    """Give every required answer still missing a plain value, so the project can be sent."""
     for _ in range(5):
         body = get(client, pid)
         if not body["missing"]:
