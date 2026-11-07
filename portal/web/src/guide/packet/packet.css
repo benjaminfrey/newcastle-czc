@@ -5,6 +5,6 @@
   @page { size: letter; margin: 0.6in; }
   body:has([data-packet]) button,
   body:has([data-packet]) a[aria-label^="Back to"] { display: none !important; }
-  body:has([data-packet]) [data-fits][hidden] { display: block !important; }
+  body:has([data-packet]) [data-fits][data-folded] { display: block !important; }
   body:has([data-packet]) [data-packet-part] { break-inside: avoid-page; }
 }

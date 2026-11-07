@@ -52,6 +52,36 @@ async function toTheBuilding(page: Page) {
   await choose(page, "No, or there's no basement");
 }
 
+// The old cards' looks findings, rechecked on the new screens (plan 6, Task 5; OPEN_ITEMS).
+async function oneProjectPanel(page: Page, phone: boolean) {
+  // Finding 1, "the task list twice": one project summary on a computer, none until asked on a phone.
+  await expect(page.locator('aside[aria-label="Your project"]')).toHaveCount(phone ? 0 : 1);
+  if (phone) await expect(page.getByRole("dialog", { name: "Your project" })).toHaveCount(0);
+}
+
+async function lotRowsEvenlySpaced(page: Page) {
+  // Finding 3, "property card spacing": the gap between the lot card's rows is even, even where
+  // a long value wraps onto two lines on a phone.
+  const rows = await page.locator("main dl dt").evaluateAll((els) => els.map((dt) => {
+    const dd = dt.nextElementSibling!;
+    const a = dt.getBoundingClientRect(); const b = dd.getBoundingClientRect();
+    return { top: Math.min(a.top, b.top), bottom: Math.max(a.bottom, b.bottom) };
+  }));
+  const gaps = rows.slice(1).map((r, i) => r.top - rows[i].bottom);
+  for (const g of gaps) expect(Math.abs(g - gaps[0])).toBeLessThanOrEqual(1);
+}
+
+async function fieldsOneHeight(page: Page) {
+  // Finding 2, "44 vs 36 px fields": every text field on the turn is one height, at least 48 px.
+  const heights = await page.locator("main .MuiOutlinedInput-root").evaluateAll((els) =>
+    els.filter((e) => (e as HTMLElement).offsetParent !== null).map((e) => e.getBoundingClientRect().height));
+  expect(heights.length).toBeGreaterThan(0);
+  for (const h of heights) {
+    expect(h).toBeGreaterThanOrEqual(48);
+    expect(Math.abs(h - heights[0])).toBeLessThanOrEqual(1);
+  }
+}
+
 async function toTheSetbacks(page: Page) {
   await toTheBuilding(page);
   await number(page, /floor area/, "1,800");   // no standard of its own: the Town's form asks it
@@ -61,10 +91,13 @@ async function toTheSetbacks(page: Page) {
 
 test("a new house that fits reaches Check and send", async ({ page }, info) => {
   await openGuide(page, `guide-ready-${info.project.name}`);
+  await oneProjectPanel(page, info.project.name === "phone");
+  await lotRowsEvenlySpaced(page);
   await toTheSetbacks(page);
   await expect(question(page)).toHaveText(/nearest side lot line/);
   await turn(page).getByRole("textbox").fill("20");
   await expect(turn(page).getByRole("status")).toHaveText("Within the limit · 5 ft to spare");
+  await fieldsOneHeight(page);
   await expect(turn(page).getByRole("slider")).toBeVisible();
   await axe(page, "guide: a number");
   await turn(page).getByRole("button", { name: "Next" }).click();

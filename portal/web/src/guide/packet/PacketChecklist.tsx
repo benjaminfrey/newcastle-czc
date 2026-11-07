@@ -53,7 +53,10 @@ export function PacketChecklist({ checklist }: { checklist: Packet["checklist"] 
         <Button aria-expanded={open} aria-controls={fitsId} onClick={() => setOpen((o) => !o)} sx={{ minHeight: 48 }}>
           {open ? P.hide_fits : fill(P.show_fits, { n: checklist.fits.length })}
         </Button>
-        <Box component="ul" id={fitsId} data-fits="" hidden={!open} sx={{ m: 0, p: 0 }}>
+        {/* Folded with display, not the hidden attribute: the app's base styles make [hidden]
+            important in a layer, which print could never open again. */}
+        <Box component="ul" id={fitsId} data-fits="" data-folded={open ? undefined : ""}
+          sx={{ m: 0, p: 0, display: open ? "block" : "none" }}>
           {checklist.fits.map((r, i) => <Row key={`f${i}`} row={r} town={false} />)}
         </Box>
       </Box>}

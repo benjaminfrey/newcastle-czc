@@ -101,7 +101,8 @@ function PacketScreen({ projectId }: { projectId: string }) {
             : s.deciders.length === 0
               ? <Typography variant="body1">{P.no_deciders}</Typography>
               : s.deciders.map((d, i) => (
-                <Typography key={i} variant="body1">{d.sentence ?? `${d.review}: ${d.reviewer}`}</Typography>
+                // Each review by its approved name, so two sentences read as two reviews.
+                <Typography key={i} variant="body1">{d.review ? `${d.review}: ` : ""}{d.sentence ?? d.reviewer}</Typography>
               ))}
         </Part>
         <Part title={P.history}><PacketHistory history={packet.history} /></Part>

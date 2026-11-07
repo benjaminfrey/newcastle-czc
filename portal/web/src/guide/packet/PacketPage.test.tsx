@@ -130,3 +130,13 @@ test("empty lists show nothing to open", async () => {
   expect(screen.queryByText("What goes to the Town")).toBeNull();
   expect(screen.queryByRole("button", { name: /Show what fits/ })).toBeNull();
 });
+
+
+test("each decision says which review it belongs to", async () => {
+  show({ ...PACKET, summary: { ...PACKET.summary, deciders: [
+    { review: "Use Permit", reviewer: "Code Enforcement Officer", sentence: "The Code Enforcement Officer decides within 30 days of accepting your project." },
+    { review: "Small Project Plan", reviewer: "Code Enforcement Officer", sentence: "The Code Enforcement Officer decides within 10 days of accepting your project." },
+  ] } });
+  expect(await screen.findByText("Use Permit: The Code Enforcement Officer decides within 30 days of accepting your project.")).toBeVisible();
+  expect(screen.getByText("Small Project Plan: The Code Enforcement Officer decides within 10 days of accepting your project.")).toBeVisible();
+});
