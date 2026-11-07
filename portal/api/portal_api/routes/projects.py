@@ -24,6 +24,7 @@ from portal_api.forms.definitions import load_definitions
 from portal_api.forms.fees import load_fees
 from portal_api.forms.formdefs import FormDef, form_drafts, load_form
 from portal_api.forms.needs import drafts as needs_drafts, needs
+from portal_api.guide import packet, store
 from portal_api.forms.parts import derived, load_parts, project_form, wanted_forms
 from portal_api.routes.forms import LookupProperty, _snapshot, form_json
 from portal_api.ruleset import load_ruleset
@@ -442,6 +443,10 @@ def submit(project_id: str, body: RevisionBody, applicant: auth.Applicant = auth
         return _refuse_stale(conn, row.id)
     first = row.status == "draft"
     pj.submit(conn, row.id)
+    # The packet as sent (guided plan 6), kept with the sending so later changes never alter it.
+    built = packet.build_for(conn, row, Loaded(conn, row).needs(conn, True))
+    if built is not None:
+        store.save_packet(conn, row.id, built)
     append_event(conn, actor=_actor(applicant), kind="project.submitted",
                  payload={"project_id": row.id, "first": first})
     return {"revision": rev, "status": "submitted"}

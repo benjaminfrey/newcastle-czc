@@ -1,16 +1,17 @@
 """The applicant's packet (guided plan 6): one packet, built from what is stored, for both sides."""
-from fastapi.testclient import TestClient
-
-from portal_api.guide.content import load_content
 from types import SimpleNamespace
 
+from fastapi.testclient import TestClient
+from sqlalchemy import text
+
+from portal_api.guide.content import load_content
 from portal_api.guide.packet import _marks, deciders_from
 from portal_api.main import create_app
 from portal_api.routes import guide as guide_routes
 from tests.test_auth import _sign_in
 from tests.test_guide_content import all_draft
 from tests.test_guide_routes import STORIES, answer, front, started, walk
-from tests.test_projects import alice, app, bob, create, get  # noqa: F401  (fixtures)
+from tests.test_projects import alice, app, bob, create, fill_missing, finish_use_project, get  # noqa: F401  (fixtures)
 from tests.test_property import layers  # noqa: F401  (fixture)
 
 SETBACKS = [("setback_front", 30), ("setback_side_1", 30), ("setback_side_2", 30), ("setback_rear", 30)]
@@ -141,3 +142,49 @@ def test_a_suggestion_taken_is_marked():
     assert _marks(shown, "nearest") == ["took_suggestion"]
     assert _marks(shown, "keep_mine") == ["kept"]
     assert _marks(shown, "talk_to_town") == []
+
+
+
+# --- Task 2: as sent ---
+
+def send(client, pid):
+    r = client.post(f"/api/projects/{pid}/submit", json={"base_revision": get(client, pid)["revision"]})
+    assert r.status_code == 200, r.text
+
+
+def sendable(client):
+    pid = started(client, opening="change_of_use", parts=("use",))
+    note(client, pid, "A yoga studio in the barn.")
+    return fill_missing(client, pid)
+
+
+def test_sending_keeps_the_packet_as_sent(alice):
+    pid = sendable(alice)
+    assert packet(alice, pid).json()["state"] == "now"
+    send(alice, pid)
+    p = packet(alice, pid).json()
+    assert p["state"] == "sent" and p["sent_at"]
+
+
+def test_the_sent_packet_does_not_follow_later_changes(alice):
+    pid = sendable(alice)
+    send(alice, pid)
+    note(alice, pid, "One more thing.")
+    words = [w["body"] for w in packet(alice, pid).json()["summary"]["own_words"]]
+    assert words == ["A yoga studio in the barn."]
+
+
+def test_sending_again_replaces_it(alice):
+    pid = sendable(alice)
+    send(alice, pid)
+    note(alice, pid, "One more thing.")
+    send(alice, pid)
+    words = [w["body"] for w in packet(alice, pid).json()["summary"]["own_words"]]
+    assert words == ["A yoga studio in the barn.", "One more thing."]
+
+
+def test_a_project_sent_without_a_conversation_saves_nothing(alice, engine):
+    pid = finish_use_project(alice)
+    send(alice, pid)
+    with engine.begin() as conn:
+        assert conn.execute(text("SELECT count(*) FROM guide_packet WHERE project_id = :p"), {"p": pid}).scalar() == 0

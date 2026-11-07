@@ -15,7 +15,7 @@ from portal_api import projects as pj
 from portal_api.guide import drawing, store
 from portal_api.guide.checks import limit_for
 from portal_api.guide.content import drafts_in, load_content
-from portal_api.guide.engine import _Build
+from portal_api.guide.engine import Lot, _Build, replay
 
 DRAWN_LIMITS = {"front": "setback_front", "side": "setback_side_1", "rear": "setback_rear",
                 "secondary": "setback_secondary"}
@@ -116,3 +116,24 @@ def build(conn: Connection, row, lot, opening: str, state, needs: dict) -> dict:
         "drafts": list(dict.fromkeys([*state.drafts, *drafts_in(content, opening=opening, turn_ids=[],
                                                                 entry_ids=explain.entries, wording_keys=explain.wording)])),
     }
+
+
+def build_for(conn: Connection, row, needs: dict) -> dict | None:
+    """The packet as it stands now, or None when the project has no conversation."""
+    convo = store.conversation(conn, row.id)
+    if convo is None:
+        return None
+    lot = Lot.from_snapshot(pj.snapshot(conn, row.id))
+    opening, actions = convo
+    return build(conn, row, lot, opening, replay(load_content(), opening, lot, actions), needs)
+
+
+def as_sent(conn: Connection, row) -> dict | None:
+    """The packet as sent, once the project has been sent and one was kept."""
+    if row.status == "draft":
+        return None
+    kept = store.sent_packet(conn, row.id)
+    if kept is None:
+        return None
+    sent_at, body = kept
+    return {**body, "state": "sent", "sent_at": sent_at.isoformat()}
