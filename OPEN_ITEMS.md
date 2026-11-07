@@ -47,12 +47,11 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
     order (§11). Plan 1 of 6 (`plans/2026-10-30-applicant-portal-guided-builder-1-foundations.md`) merged
     as PR #22 on 2026-11-01; plan 2, the conversation engine
     (`plans/2026-11-01-applicant-portal-guided-builder-2-engine.md`), merged as PR #23 on 2026-11-02,
-    and the chair's coverage answers as PR #24 the same day. Plan 3, the conversation screens
-    (`plans/2026-11-02-applicant-portal-guided-builder-3-screens.md`), is on branch
-    `portal-guided-3-screens` (PR #25). Plan 4, the lot drawing
-    (`plans/2026-11-03-applicant-portal-guided-builder-4-drawing.md`), is on branch
-    `portal-guided-4-drawing` (PR #26, stacked on #25). Plans 5 and 6 are built (below). Open decisions are the
-    spec's §12.
+    and the chair's coverage answers as PR #24 the same day. Plans 3–6 merged on 2026-11-07: the
+    conversation screens (`plans/2026-11-02-applicant-portal-guided-builder-3-screens.md`) as PR #25,
+    the lot drawing (`plans/2026-11-03-applicant-portal-guided-builder-4-drawing.md`) as PR #26, and
+    the pictures and the packet (below) as PRs #27 and #28. That finishes design 1, the experience.
+    Next: design 2, the explanation library. Open decisions are the spec's §12.
   - **Answered by the chair 2026-11-05 (interview); built on `portal-guided-4-drawing`** (b7c6e32,
     in PR #26; the screen items below as well):
     - *Corner lots:* the guide suggests the front from the road Type (Article 2: Streets before
@@ -89,17 +88,17 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
     - *The old cards' looks findings* (task list twice, 44 vs 36 px fields, property card spacing,
       "No password" twice) are closed as superseded; recheck the same four on the new screens in
       plan 6.
-  - **Plan 6, the applicant's packet**, is built on branch `portal-guided-6-packet`, stacked on #27:
+  - **Plan 6, the applicant's packet**, merged as PR #28 on 2026-11-07:
     - design: `specs/2026-11-06-applicant-portal-guided-builder-packet.md`, approved 2026-11-06;
     - plan: `plans/2026-11-06-applicant-portal-guided-builder-6-packet.md`.
 
     The packet shows the Town's reading to the resident, before and as sent, and prints. The chair
     approved its words and answered the memo's four questions on 2026-11-07
     (`memos/2026-11-06-guided-builder-packet-for-approval.md`): the staff sentence waits for staff
-    notes, and a packet sent and then changed is marked "Changed since you sent it". PR #28. The old cards' four looks findings
+    notes, and a packet sent and then changed is marked "Changed since you sent it". The old cards' four looks findings
     were rechecked on the new screens as journey checks and pass: one project panel, fields one
     height, even lot-card rows, "No password" once.
-  - **Plan 5, the pictures**, is built on branch `portal-guided-5-pictures`, stacked on #26:
+  - **Plan 5, the pictures**, merged as PR #27 on 2026-11-07:
     - design: `specs/2026-11-06-applicant-portal-guided-builder-pictures.md`;
     - plan: `plans/2026-11-06-applicant-portal-guided-builder-5-pictures.md`.
 
