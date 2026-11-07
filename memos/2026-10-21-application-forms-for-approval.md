@@ -609,7 +609,21 @@ The chair approved every entry, taking these eleven decisions:
 - Applicants read: “How far will it be from the other side lot line?”
 - Answer: number (ft), 0–50000; required; “I don't know yet” allowed
 - Card: asked with the others on `setbacks` (lot-diagram drawing)
+- Asked only when the property's corner is not Yes
 - Approved by Ben Frey, Planning Board chair, on 2026-10-28.
+- Rests on Art. 2 §3.c.3:
+
+  > All primary buildings must comply with required front, side, and rear setback ranges.
+
+#### Secondary front setback (`setback_secondary`)
+
+- Source: asked in the wizard
+- Applicants read: “How far will it be from the lot line along the other road?”
+- Help: On a corner lot, in feet, from the lot line along the other road to the closest part of the building.
+- Answer: number (ft), 0–50000; required; “I don't know yet” allowed
+- Card: asked with the others on `setbacks` (lot-diagram drawing)
+- Asked only when (the property's corner has an answer) and (the property's corner is Yes)
+- Approved by Ben Frey, Planning Board chair, on 2026-11-06.
 - Rests on Art. 2 §3.c.3:
 
   > All primary buildings must comply with required front, side, and rear setback ranges.

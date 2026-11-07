@@ -38,3 +38,9 @@ test("no limit mark is red", () => {
   expect(screen.getByText("For the Town")).toBeVisible();
   expect(document.querySelector(".Mui-error, [class*='colorError']")).toBeNull();
 });
+
+test("the panel heads with the drawing when there is one", () => {
+  render(<GuideTheme><ProjectPanel onChange={vi.fn()} guide={guide()} drawing={<p>The drawing</p>} /></GuideTheme>);
+  const panel = screen.getByText("The drawing");
+  expect(panel.compareDocumentPosition(screen.getByText("012-034")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});

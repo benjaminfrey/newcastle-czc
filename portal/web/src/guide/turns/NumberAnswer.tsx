@@ -7,13 +7,18 @@ import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
-import { useEffect, useId, useRef, useState, type FormEvent } from "react";
+import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { checkValue, isRefusal, type Check, type Entry, type Shown } from "../api";
 import { WhyCard } from "../components/WhyCard";
 import { fill, WORDS } from "../words";
 import { TURN_HEADING } from "./heading";
 
-type Props = { shown: Shown; projectId: string; busy: boolean; locked: boolean; onAnswer: (value: unknown) => void };
+type Props = {
+  shown: Shown; projectId: string; busy: boolean; locked: boolean; onAnswer: (value: unknown) => void;
+  // The field's text, when its owner holds it (the lot drawing can set it by dragging, plan 4).
+  text?: string; onTextChange?: (text: string) => void;
+  figure?: ReactNode; footer?: ReactNode;
+};
 
 // "1,800", " 25 " and "25.5" are numbers; "" is nothing yet; anything else isn't a number.
 export function parseNumber(text: string): number | null | "not_a_number" {
@@ -41,11 +46,13 @@ const card = (e: Entry) => <WhyCard key={e.id} overline={e.overline} answer={e.a
 // at it. As the value changes the API checks it (debounced) and the line under the field shows
 // the room left. A number past its limit is shown in plain words, never as an error; only input
 // the question can't take (not a number, outside its range) is an error.
-export function NumberAnswer({ shown, projectId, busy, locked, onAnswer }: Props) {
+export function NumberAnswer({ shown, projectId, busy, locked, onAnswer, text: held, onTextChange, figure, footer }: Props) {
   const input = shown.input ?? { unit: null, min: 0, max: Number.MAX_SAFE_INTEGER };
   const headingId = useId();
   const helpId = useId();
-  const [text, setText] = useState("");
+  const [own, setOwn] = useState("");
+  const text = held ?? own;
+  const setText = (t: string) => (onTextChange ? onTextChange(t) : setOwn(t));
   const [checked, setChecked] = useState<{ value: number; check: Check } | null>(null);
   const [bounds, setBounds] = useState<number[]>([]);
   const seq = useRef(0);
@@ -89,6 +96,7 @@ export function NumberAnswer({ shown, projectId, busy, locked, onAnswer }: Props
       {shown.help && <Typography variant="body2" color="text.secondary">{shown.help}</Typography>}
       {shown.defines.map(card)}
       {shown.why && card(shown.why)}
+      {figure}
       <Box component="form" onSubmit={submit} sx={{ display: "grid", gap: 1.5 }}>
         <Stack direction="row" sx={{ gap: 1, alignItems: "flex-start" }}>
           <IconButton aria-label={WORDS.less} onClick={() => step(-1)} disabled={off} sx={{ width: 48, height: 48, mt: 0.5 }}>
@@ -120,6 +128,7 @@ export function NumberAnswer({ shown, projectId, busy, locked, onAnswer }: Props
           <Button variant="text" disabled={off} onClick={() => onAnswer("unsure")} sx={{ minHeight: 48 }}>{WORDS.unsure}</Button>
         </Stack>
       </Box>
+      {footer}
     </Box>
   );
 }

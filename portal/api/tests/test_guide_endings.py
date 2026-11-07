@@ -5,6 +5,7 @@ import pytest
 from portal_api.guide.content import NEVER_WORDS, load_content
 from portal_api.guide.engine import Action, Lot, replay
 from portal_api.ruleset import district_key_for, load_ruleset
+from tests.test_guide_content import all_draft
 
 
 def lot(*codes):
@@ -108,7 +109,7 @@ def test_ending_words_have_no_never_words(content):
 
 
 def test_endings_bring_their_drafts(content):
-    s = _use(content, ("D1",), "residence")
+    s = _use(all_draft(content), ("D1",), "residence")
     assert any(d.startswith("wording.yaml: ") for d in s.drafts)
 
 
@@ -162,3 +163,94 @@ def test_the_town_question_names_the_standard_and_the_choice(content):
     assert stories["reason"] == "talk_to_town"
     assert stories["standard_keys"] == ["d6/building/Residential/total_stories"]
     assert all(u["reason"] != "unsure" for u in s.ending["unsettled"])
+
+
+# --- plan 4: the front lot line ---
+
+ROAD = {"name": "Sheepscot Road", "type": "R2"}
+
+
+# A 100 ft square, clockwise from its south-west corner (y north): west, north, east, south.
+SQUARE = ([[-50, -50], [-50, 50]], [[-50, 50], [50, 50]], [[50, 50], [50, -50]], [[50, -50], [-50, -50]])
+
+
+def _drawn(*streets):
+    lines = tuple({"id": f"L{i + 1}", "length_ft": 100, "street": s, "points": SQUARE[i]}
+                  for i, s in enumerate(streets))
+    return dataclasses.replace(lot("D1"), lines=lines)
+
+
+def _house(lot_, front):
+    return replay(load_content(), "new_house", lot_, [a("lot", "yes"), a("front_line", front), a("confirm", "yes"),
+                                                       *STORIES, *SIZE, *D1_SETBACKS])
+
+
+def test_two_road_lines_go_to_the_town(content):
+    s = _house(_drawn(ROAD, None, {"name": "River Road", "type": "R2"}, None), "L1")
+    assert s.ending["kind"] == "town_judgment"
+    assert {"turn_id": "front_line", "reason": "more_than_one_frontage"} in s.ending["unsettled"]
+
+
+def test_a_different_front_goes_to_the_town(content):
+    s = _house(_drawn(ROAD, None, None, None), "other")
+    assert s.ending["kind"] == "town_judgment"
+    assert {"turn_id": "front_line", "reason": "front_not_on_a_road"} in s.ending["unsettled"]
+
+
+def test_one_road_line_and_its_front_is_still_ready(content):
+    s = _house(_drawn(ROAD, None, None, None), "L1")
+    assert s.ending["kind"] == "ready", s.ending["unsettled"]
+
+
+def test_two_separate_stretches_of_one_road_are_two_frontages(content):
+    """A bending road is already one lot line (lot_outline merges neighbours), so two road lines
+    on one road are two separate frontages — a through lot on a loop — and each must be evaluated
+    (Code §2). Final review finding 5."""
+    s = _house(_drawn(ROAD, None, ROAD, None), "L1")
+    assert {"turn_id": "front_line", "reason": "more_than_one_frontage"} in s.ending["unsettled"]
+
+
+def test_a_change_of_use_is_not_asked_the_front(content):
+    """No setback is checked for a change of use, so its lot's front isn't asked and can't send it
+    to the Town (final review finding 6)."""
+    use_key = next(u["use_key"] for u in load_ruleset().uses if _listed("D1", u["use_key"]))
+    lot_ = _drawn(ROAD, None, {"name": "River Road", "type": "R2"}, None)
+    assert replay(content, "change_of_use", lot_, [a("lot", "yes")]).current.turn_id == "confirm"
+    s = replay(content, "change_of_use", lot_, [a("lot", "yes"), a("confirm", "yes"),
+                                                a("use_group", _group_of(content, use_key)), a("use_key", use_key)])
+    assert all(sh.turn_id != "front_line" for sh, _ in s.history)
+    assert all(u["turn_id"] != "front_line" for u in (s.ending or {}).get("unsettled", []))
+
+
+# --- corner lots (the chair, 2026-11-05) ---
+
+STREET = {"name": "Main Street", "type": "S2"}
+CORNER_SETBACKS = [a("setback_front", 30), a("setback_side_1", 20), a("setback_secondary", 25), a("setback_rear", 20)]
+
+
+def _corner_house(lot_, front, setbacks=CORNER_SETBACKS):
+    return replay(load_content(), "new_house", lot_, [a("lot", "yes"), a("front_line", front), a("confirm", "yes"),
+                                                       *STORIES, *SIZE, *setbacks])
+
+
+def test_a_corner_lot_on_the_codes_front_is_checked_not_sent_to_the_town(content):
+    s = _corner_house(_drawn(ROAD, STREET, None, None), "L2")
+    assert s.ending["kind"] == "ready", s.ending["unsettled"]
+    assert any(x["turn_id"] == "setback_secondary" for x in s.ending["settled"])
+
+
+def test_a_corner_lots_secondary_setback_is_the_districts(content):
+    """D1's Secondary Front Setback is 20 ft min."""
+    s = _corner_house(_drawn(ROAD, STREET, None, None), "L2",
+                      [*CORNER_SETBACKS[:2], a("setback_secondary", 10), CORNER_SETBACKS[3]])
+    assert s.current.turn_id == "doesnt_fit:setback_secondary"
+
+
+def test_a_corner_on_two_roads_of_one_type_goes_to_the_town(content):
+    s = _house(_drawn(ROAD, {"name": "River Road", "type": "R2"}, None, None), "L1")
+    assert {"turn_id": "front_line", "reason": "more_than_one_frontage"} in s.ending["unsettled"]
+
+
+def test_an_alley_doesnt_send_the_lot_to_the_town(content):
+    s = _house(_drawn(ROAD, None, {"name": "Back Alley", "type": "S5"}, None), "L1")
+    assert s.ending["kind"] == "ready", s.ending["unsettled"]

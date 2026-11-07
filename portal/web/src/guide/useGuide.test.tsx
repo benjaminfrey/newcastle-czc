@@ -11,7 +11,7 @@ vi.mock("../projects", async (orig) => ({ ...(await orig<typeof import("../proje
 
 const m = vi.mocked(api);
 const guide = (revision: number, turn = "lot"): api.Guide => ({
-  revision, opening: "new_house", history: [], ending: null, unsure: [], checks: {}, notes: [], drafts: [],
+  revision, opening: "new_house", history: [], ending: null, unsure: [], checks: {}, notes: [], reopened: [], drafts: [],
   step: { n: 1, of: 4, label: "Your lot" },
   current: { turn_id: turn, kind: "choice", step: { n: 1, of: 4, label: "Your lot" }, ask: "?", help: null,
     answers: [], input: null, why: null, defines: [], check: null, facts_shown: null },

@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field as PField
 from sqlalchemy import Connection
 
-from portal_api import property as prop
+from portal_api import lot_outline, property as prop
 from portal_api.forms.definitions import DefinitionError
 from portal_api.forms.formdefs import FORM_KEYS, FormDef, form_drafts, latest_version, load_form
 from portal_api.forms.parts import load_parts
@@ -104,7 +104,11 @@ def _snapshot(conn: Connection, request: Request, body) -> dict | JSONResponse:
         if facts is None:
             return _json(422, "no_such_parcel")
         facts.pop("geometry", None)
-        if prop.active_import(conn, "streets") is None:
+        streets_imp = prop.active_import(conn, "streets")
+        drawn = lot_outline.outline(conn, facts["parcel_id"], imp.id, streets_imp.id if streets_imp else None)
+        if drawn is not None:
+            facts["outline"] = drawn
+        if streets_imp is None:
             # No street layer: nobody knows whether the lot is on a State road, so the
             # MaineDOT question must still be asked.
             facts["on_state_highway"] = None

@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 import { GuideShell } from "./GuideShell";
 import { GuideTheme } from "./theme/GuideTheme";
 
@@ -32,4 +32,14 @@ test("the project summary sits in an aside named Your project", () => {
   shell({ aside: <p>Summary</p> });
   expect(screen.getByRole("complementary", { name: "Your project" })).toHaveTextContent("Summary");
   expect(screen.getByRole("main")).toHaveTextContent("The conversation");
+});
+
+test("the aside stays in view while the conversation scrolls, and scrolls itself", async () => {
+  const wide = await import("../shell/useWideLayout");
+  const spy = vi.spyOn(wide, "useWideLayout").mockReturnValue(true);
+  shell({ aside: <p>Summary</p> });
+  const aside = getComputedStyle(screen.getByRole("complementary", { name: "Your project" }));
+  expect(aside.position).toBe("sticky");
+  expect(aside.overflowY).toBe("auto");
+  spy.mockRestore();
 });

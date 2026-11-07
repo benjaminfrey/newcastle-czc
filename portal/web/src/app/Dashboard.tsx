@@ -8,10 +8,13 @@ import type { StepModel } from "../forms/steps";
 import { itemSummary, type TaskStatus } from "../forms/tasks";
 import { longDate, mapLotLabel } from "../format";
 import { STATUS_TONE, STATUS_WORDS } from "../pages/Home";
-import { WORDS as GUIDE_WORDS } from "../guide/words";
 import { getParts, type FormDef, type PartDef, type ProjectState } from "../projects";
 import Pill from "../shell/Pill";
 import NeedsPanel from "./NeedsPanel";
+
+// The guided builder's way in, on the LAN copy only: a draft the chair left out of the approved
+// words (2026-11-06), removed before launch.
+const TRY_GUIDE = "Try the guided version (preview)";
 
 export const PART_STEPS = ["building", "addition", "renovation", "site", "use", "driveway", "divide", "other"];
 const ICONS: Record<string, string> = { the_work: "hammer" };
@@ -137,7 +140,7 @@ export default function Dashboard({ project, form, cur, models, statuses, base, 
             // The guided builder's way in, only in the LAN copy's builds (guided plan 3), and only
             // for a project with a part the guide has a picture for.
             <Link to={`/projects/${project.id}/guide`} className="self-start text-[15px] text-[var(--app-accent-text)]">
-              {GUIDE_WORDS.try_guide}
+              {TRY_GUIDE}
             </Link>
           )}
         </header>

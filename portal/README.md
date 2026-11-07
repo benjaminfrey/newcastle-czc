@@ -183,6 +183,25 @@ Each journey signs in once, and the LAN copy sends at most 20 sign-in links per 
 so run the desktop and phone halves (`--project=desktop`, `--project=phone`) an hour apart if
 the other journeys ran first.
 
+## The lot drawing (guided builder, plan 4)
+
+When *where* matters (which line is the front, and each setback) the guide shows the person's own
+lot: the tax-map outline in feet, the roads beside it, a neutral strip along each line as deep as
+the Code's minimum setback there, and the house where the person's distances put it. Beside it a
+list says the same in words, with each setback, the person's number and the API's own mark. It
+**never decides** (decision 12): every limit, role and "fits" comes from the API
+(`GET /api/projects/{id}/guide/drawing`, `portal_api/guide/drawing.py`, `limit_for` in
+`checks.py`); the web code only places things on the picture (`web/src/guide/drawing/`). Dragging
+the house's edge only fills the question's number field, which is checked like a typed number.
+
+The outline is saved with the project's property snapshot when the project starts
+(`portal_api/lot_outline.py`): the largest part's boundary split into lot lines where it turns more
+than 25°, neighbouring lines along the same road merged into one, at most 12 lines. Projects
+started before plan 4 have no outline, so they get no front question and no drawing. The front
+is the applicant's to confirm; a lot on two or more roads goes to the Town (Code §2: "each
+frontage must be evaluated"). Water, existing buildings and easements are not in the Town's data
+and are not drawn.
+
 ## The forms
 
 Each official form is a definition in `portal_api/forms/definitions/forms/`: the Cover Sheet

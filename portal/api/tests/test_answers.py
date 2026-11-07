@@ -175,3 +175,15 @@ def test_printed_resolves_property_and_derived_fields(forms):
     sp = forms["entrance_permit"]
     values = {(s.id, f.id): v for s, _, rows in printed(sp, cur()) for f, v in rows}
     assert values[("entrance", "lot_streets")] == "Sheepscot Road (Rural Road), about 310 ft; Hall Street (Neighborhood Street), about 90 ft"
+
+
+def test_a_corner_lot_asks_the_secondary_front_setback_in_place_of_the_other_side(forms):
+    """The chair, 2026-11-06: a new field, asked only where the lot is known to be a corner lot."""
+    form = forms["small_project_plan"]
+    items = [("b1", "building", 0)]
+    asked = lambda prop: {i for i, _ in ids(applicable(form, cur(items=items, prop=prop)))}  # noqa: E731
+    corner = asked({**LOOKUP, "corner": True})
+    assert "setback_secondary" in corner and "setback_side_2" not in corner
+    for prop in ({**LOOKUP, "corner": False}, LOOKUP):  # not a corner lot, or nobody knows
+        one = asked(prop)
+        assert "setback_side_2" in one and "setback_secondary" not in one

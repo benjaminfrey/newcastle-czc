@@ -4,7 +4,7 @@ import { addNote, answerTurn, checkValue, getGuide, getOpenings, goBack, revisit
 const res = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
 const GUIDE = { revision: 3, opening: "new_house", current: null, history: [], ending: null, step: null,
-  unsure: [], checks: {}, notes: [], drafts: [] };
+  unsure: [], checks: {}, notes: [], reopened: [], drafts: [] };
 
 afterEach(() => vi.restoreAllMocks());
 

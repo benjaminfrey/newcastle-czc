@@ -1,8 +1,13 @@
 // Every word the guide's screens say on their own (spec §11: every word an applicant reads is
 // approved before the public sees it). Turn, answer, entry and ending words come from the API's
-// content files; these are the rest. All are draft until the chair approves them, which is why
-// every guide screen carries the "Draft wording" chip. Nothing else in src/guide/ writes words.
-export const WORD_STATUS = "draft";
+// content files; these are the rest. The chair approved them on 2026-11-06
+// (memos/2026-11-06-guided-builder-wording-for-approval.md); a changed line makes the file a
+// draft again. Nothing else in src/guide/ writes words.
+export const WORD_STATUS = "approved" as "draft" | "approved";
+
+// The "Draft wording" chip shows while any word on the screen is a draft: these, or one of the
+// API's (it lists the drafts a state shows).
+export const draftWording = (drafts: readonly string[] = []) => WORD_STATUS === "draft" || drafts.length > 0;
 
 export const WORDS = {
   // The app bar and the page around the conversation.
@@ -15,7 +20,7 @@ export const WORDS = {
   pick_opening: "What would you like to do?", // before the guide starts
 
   // The lot as the Town knows it (spec §4.1).
-  lot_map_lot: "Map-lot",
+  lot_map_lot: "Map / Lot",
   lot_districts: "District",
   lot_acres: "Lot size",
   lot_frontage: "Road frontage",
@@ -39,7 +44,7 @@ export const WORDS = {
   limit_mark: "Limit",
 
   // The conversation.
-  reply_placeholder: "Anything else the Town should know?",
+  reply_placeholder: "Anything the Town should know?",
   notes_kept: "The Town Office will read this. The guide's questions don't change because of it.",
 
   // Notices.
@@ -48,6 +53,9 @@ export const WORDS = {
     try_again: "That answer didn't go through. Please try again.",
   },
   locked: "The Town is reviewing this project, so it can't be changed now.",
+  // After a Change (the chair, 2026-11-05): the later questions it reopened, by their own words.
+  reopened_one: "Changing that answer reopened 1 later question",
+  reopened_many: "Changing that answer reopened {n} later questions",
 
   // Your project (spec §4.4, §4.7).
   change: "Change",
@@ -68,6 +76,8 @@ export const WORDS = {
   no_permit_keep: "Keep to what you told us. If anything changes, ask the Town Office before you start.",
   allowed_heading: "What {district} allows",
   talk_to_town: "You can talk this through with the Town Office. Your project and this conversation are saved.",
+  // The chair, 2026-11-05: the Town's own contact page, not a phone or hours we'd have to keep.
+  contact_town: "Contact the Town Office",
   unsettled: {
     not_listed: "Whether this use is listed for your lot",
     not_listed_in_one_district: "Your lot is in two districts, and this use is listed in only one",
@@ -82,6 +92,28 @@ export const WORDS = {
     board_decides: "A number the Planning Board can allow",
     town_only: "Work only the Town Office can review",
     contact_town: "Something the Town Office needs to look at",
+    more_than_one_frontage: "Your lot is on more than one road, so the Town decides which is the front",
+    front_not_on_a_road: "Which line is your lot's front",
+  },
+
+  // The lot drawing (guided plan 4). It shows; it never decides (decision 12).
+  drawing: {
+    approximate: "Approximate: from the Town's tax map, not a survey",
+    summary: "A drawing of your lot from the Town's tax map, with {lines} lot lines. The list beside it says the same in words.",
+    line_length: "about {n} ft",
+    swap_sides: "Swap sides",
+    list_heading: "The setbacks on your lot",
+    choose_front_first: "Choose the front, and the setbacks show here.",
+    rows: { front: "Front", side_1: "Nearest side", side_2: "Other side", rear: "Rear", frontage: "Along {street}",
+      secondary: "Along {street}: the secondary front setback" },
+    at_least: "At least {n} {unit}",
+    at_most: "At most {n} {unit}",
+    between: "{min} to {max} {unit}",
+    no_limit: "No limit to show",
+    yours: "Yours: {n} {unit}",
+    not_entered: "Not entered yet",
+    frontage_town: "Along another frontage, the Town decides the setback",
+    not_shown: "Water, buildings already there and easements aren't in the Town's map data, so they aren't drawn.",
   },
 
   // Check and send (spec §4.7).
@@ -100,9 +132,6 @@ export const WORDS = {
     unavailable: "We couldn't reach the Town's server. Please check your connection and try again.",
     locked: "The Town is reviewing this project, so it can't be changed now.",
   },
-
-  // The HeroUI dashboard's link in (LAN copy only).
-  try_guide: "Try the guided version (preview)",
 } as const;
 
 // "{room} {unit} to spare" → the words with their slots filled.

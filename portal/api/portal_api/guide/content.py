@@ -28,16 +28,17 @@ _FILES = ("entries.yaml", "openings.yaml", "turns.yaml", "wording.yaml")
 # The facts the engine knows. An answer may set only these; `opening` and `confirmed` are set by
 # the engine and the "So you mean…" answers.
 FACTS = frozenset({
-    "opening", "confirmed", "lot.confirmed",
+    "opening", "confirmed", "lot.confirmed", "lot.has_outline", "lot.corner", "lot.front",
     "building.full_stories", "building.roof_floors", "building.top_knee_over_3ft",
     "building.basement_exposed_5ft", "building.floor_area_sf", "building.dwelling_units",
     "building.setback.front", "building.setback.side_1", "building.setback.side_2",
-    "building.setback.rear", "use.group", "use.use_key",
+    "building.setback.rear", "building.setback.secondary", "use.group", "use.use_key",
 })
 TEMPLATE_SLOTS = frozenset({"opening", "map_lot", "districts"})
 # Number templates checks.py fills with numbers and units only.
-_NUMBER_SLOTS = {"nearest": {"value", "unit"}, "doesnt_fit": {"gap", "unit", "direction"}}
-_ANSWERS_FROM = {"use_groups", "use_group_uses"}
+_NUMBER_SLOTS = {"nearest": {"value", "unit"}, "doesnt_fit": {"gap", "unit", "direction"}, "front_along": {"street"}, "front_along_length": {"street", "n"}, "front_primary": {"street"}}
+_ANSWERS_FROM = {"use_groups", "use_group_uses", "lot_lines"}
+_DRAWINGS = {"front", "front_setback", "side_1", "side_2", "secondary", "rear"}
 _KINDS = {"lot", "confirm", "choice", "number"}
 
 # Words that read as the Town's decision (spec §10.3). The builder's list, for the chair to approve.
@@ -94,6 +95,7 @@ class Turn:
     cite: str | None = None
     approved_by: str | None = None
     approved_on: str | None = None
+    drawing: str | None = None      # the part of the lot drawing this turn asks about (plan 4)
 
 
 @dataclass(frozen=True)
@@ -180,6 +182,8 @@ def _turn(t: dict, entries: dict, ruleset) -> Turn:
             raise ContentError(f"{where}: min is above max")
     if t.get("answers_from") is not None and t["answers_from"] not in _ANSWERS_FROM:
         raise ContentError(f"{where}: answers_from must be one of {sorted(_ANSWERS_FROM)}")
+    if t.get("drawing") is not None and t["drawing"] not in _DRAWINGS:
+        raise ContentError(f"{where}: drawing must be one of {sorted(_DRAWINGS)}")
     if t["kind"] in ("lot", "confirm") or (t["kind"] == "choice" and not t.get("answers_from")):
         if not t.get("answers"):
             raise ContentError(f"{where}: needs answers")

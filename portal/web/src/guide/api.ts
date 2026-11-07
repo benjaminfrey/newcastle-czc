@@ -18,6 +18,7 @@ export type Shown = {
   turn_id: string; kind: "lot" | "confirm" | "choice" | "number"; step: Step; ask: string; help: string | null;
   answers: TurnAnswer[]; input: { unit: string | null; min: number; max: number } | null; why: Entry | null;
   defines: Entry[]; check: Check | null; facts_shown: LotFacts | null;
+  drawing?: "front" | "front_setback" | "side_1" | "side_2" | "secondary" | "rear" | null;   // plan 4
 };
 export type Unsettled = { turn_id: string | null; reason: string; district?: string; standard_keys?: string[] };
 export type Ending = {
@@ -30,9 +31,21 @@ export type Note = { body: string; at: string };
 export type Guide = {
   revision: number; opening: string; current: Shown | null; history: { shown: Shown; value: unknown }[];
   ending: Ending | null; step: Step | null; unsure: string[]; checks: Record<string, Check>; notes: Note[];
+  reopened: { turn_id: string; ask: string }[];   // the later questions the last Change reopened
   drafts: string[];
 };
 export type Opening = { id: string; label: string; part: string };
+
+// The lot drawing (guided plan 4): the tax-map outline in feet, and what the API says each line is.
+export type Pt = [number, number];
+export type LotLine = { id: string; points: Pt[]; length_ft: number; street: { name: string; type: string | null } | null };
+export type Outline = { units: "ft"; approximate: true; parts: Pt[][]; lines: LotLine[]; streets: { name: string; points: Pt[] }[] };
+export type Role = "front" | "side" | "rear" | "frontage" | "secondary";
+export type Limit = { min: number | null; max: number | null; unit: string | null; reason: string | null; standard_keys: string[] };
+export type Drawing = {
+  outline: Outline | null; front: string | null; roles: Record<string, Role> | null;
+  limits: Record<"front" | "side" | "rear" | "secondary", Limit | null>;
+};
 export type GuideRefusal = Refusal | "not_started" | "not_approved" | { conflict: true } | { rejected: string };
 
 const json = { "Content-Type": "application/json" };
@@ -68,6 +81,10 @@ export const getGuide = (id: string) => call(base(id)).then((r) => read<Guide>(r
 export async function getOpenings(id: string): Promise<Opening[] | GuideRefusal> {
   const out = await call(`${base(id)}/openings`).then((r) => read<{ openings: Opening[] }>(r));
   return typeof out === "object" && "openings" in out ? out.openings : out as GuideRefusal;
+}
+
+export async function getDrawing(id: string): Promise<Drawing | GuideRefusal> {
+  return call(`${base(id)}/drawing`).then((r) => read<Drawing>(r));
 }
 
 export const startGuide = (id: string, opening: string, rev: number) =>

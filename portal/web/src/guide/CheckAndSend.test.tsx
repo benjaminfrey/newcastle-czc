@@ -6,9 +6,12 @@ import * as projects from "../projects";
 import CheckAndSend from "./CheckAndSend";
 import { ended, project } from "./endingFixtures";
 import { FLOOR, LOT } from "./fixtures";
+import { RECT } from "./drawing/fixtures";
+import * as drawn from "./drawing/useDrawing";
 import * as hook from "./useGuide";
 
 vi.mock("./useGuide", () => ({ useGuide: vi.fn() }));
+vi.mock("./drawing/useDrawing", () => ({ useDrawing: vi.fn(() => null) }));
 vi.mock("../projects", async (orig) => ({ ...(await orig<typeof import("../projects")>()),
   getProject: vi.fn(), submitProject: vi.fn() }));
 
@@ -81,4 +84,23 @@ test("its way back names where it goes", async () => {
   talk();
   open();
   expect(await screen.findByRole("link", { name: "Back to the conversation" })).toHaveAttribute("href", "/projects/p1/guide");
+});
+
+
+test("check and send shows the drawing and its list", async () => {
+  vi.mocked(drawn.useDrawing).mockReturnValue(RECT);
+  talk();
+  open();
+  expect(await screen.findByRole("img", { name: /A drawing of your lot/ })).toBeVisible();
+  expect(screen.getByRole("group", { name: "The setbacks on your lot" })).toBeVisible();
+});
+
+test("a note for the Town can be added on Check and send, and the notes so far are shown", async () => {
+  // The chair, 2026-11-05: one optional note box here, read by the Town's staff; the guide never reads it.
+  talk({ ...READY, notes: [{ body: "There's a well by the road.", at: "2026-11-05T10:00:00Z" }] });
+  open();
+  expect(screen.getByText("There's a well by the road.")).toBeVisible();
+  expect(screen.getByText(/The Town Office will read this/)).toBeVisible();
+  await userEvent.type(screen.getByRole("textbox", { name: "Anything the Town should know?" }), "The barn stays.{Enter}");
+  expect(actions.note).toHaveBeenCalledWith("The barn stays.");
 });

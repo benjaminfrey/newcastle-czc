@@ -59,7 +59,14 @@ export function GuideShell({ title, back, actions, helpHref, draft, step, aside,
         <Box component="main" sx={{ display: "flex", flexDirection: "column", gap: 1.5, minWidth: 0, maxWidth: 680 }}>
           {children}
         </Box>
-        {aside && <Box component="aside" aria-label="Your project" sx={{ minWidth: 0 }}>{aside}</Box>}
+        {/* The project and the lot drawing stay in view while the conversation scrolls: the
+            drawing is what a person looks at as they answer where the house sits (plan 4). Below
+            the app bar and its step bar (128 px allows both), scrolling on its own if taller. */}
+        {aside && (
+          <Box component="aside" aria-label="Your project" sx={{
+            minWidth: 0, position: "sticky", top: 128, maxHeight: "calc(100dvh - 144px)", overflowY: "auto",
+          }}>{aside}</Box>
+        )}
       </Box>
     </Box>
   );

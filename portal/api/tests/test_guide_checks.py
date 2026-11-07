@@ -158,3 +158,30 @@ def test_d6_side_setback_past_5_ft_is_the_boards_call(content):
     assert (c.result, c.reason) == ("cannot_check", "board_decides")
     c = side(content, 16, "D6")
     assert (c.result, c.gap, [n["value"] for n in c.nearest]) == ("outside", 11, [5])
+
+
+# --- plan 4: the limits the drawing shows ---
+
+from portal_api.guide.checks import limit_for  # noqa: E402
+
+
+def test_limit_for_a_d1_side_is_its_minimum(content):
+    lim = limit_for(turn(content, "setback_side_1"), lot("D1"))
+    assert (lim.min, lim.max, lim.reason) == (15, None, None) and lim.standard_keys
+
+
+def test_limit_for_two_districts_that_disagree_has_no_numbers(content):
+    lim = limit_for(turn(content, "setback_side_1"), lot("D1", "D4"))
+    assert (lim.min, lim.max, lim.reason) == (None, None, "two_districts")
+
+
+def test_limit_for_a_disputed_lot(content):
+    assert limit_for(turn(content, "setback_side_1"), lot("D1", disputed=True)).reason == "lot_disputed"
+
+
+def test_limit_for_a_turn_without_a_standard_is_none(content):
+    assert limit_for(turn(content, "floor_area"), lot("D1")) is None
+
+
+def test_limit_for_no_district(content):
+    assert limit_for(turn(content, "setback_side_1"), lot("SD-Civic")).reason == "no_district"

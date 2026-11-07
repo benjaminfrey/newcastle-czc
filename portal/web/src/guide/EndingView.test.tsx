@@ -70,3 +70,16 @@ test("the fees say nothing until they've loaded", async () => {
   await act(async () => resolve(project()));
   expect(await screen.findByText("$30")).toBeVisible();
 });
+
+test("an ending that sends you to the Town links to the Town's own contact page", () => {
+  // The chair, 2026-11-05: no phone, hours or address on the screens; the Town's Citizens
+  // Request Center, which lists Code Enforcement.
+  for (const kind of ["town_judgment", "not_here"] as const) {
+    const { unmount } = view(ended({ kind, title: "t", unsettled: [] }));
+    const link = screen.getByRole("link", { name: "Contact the Town Office" });
+    expect(link).toHaveAttribute("href", "https://www.newcastlemaine.us/citizens_request_center/index.php");
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveAttribute("rel", expect.stringContaining("noopener"));
+    unmount();
+  }
+});

@@ -14,6 +14,7 @@ in a form the portal can read (spec §12 item 9; the rules coverage memo, §6).
 """
 
 from portal_api.forms.definitions import load_definitions
+from portal_api.guide.drawing import frontages
 from portal_api.forms.screener import run
 from portal_api.ruleset import district_key_for, load_ruleset
 
@@ -78,6 +79,16 @@ def finish(content, opening: str, facts: dict, unsure: tuple, checks: dict, lot,
         unsettled += [{"turn_id": "use_key", "reason": "not_listed_in_one_district", "district": c}
                       for c in mapped if c in missing_in]
     unsettled += [{"turn_id": t, "reason": "unsure"} for t in unsure if not t.startswith("doesnt_fit:")]
+    # Which line is the front decides the setbacks (Code §2). A corner lot fronts on the road of
+    # the highest Type and is checked; a tie, a through lot and a road of unknown Type are the
+    # Town's call (drawing.frontages; the chair, 2026-11-05). A bending road is already one line
+    # (lot_outline.py), so two lines on one road are two frontages. Alleys aren't frontages. Only
+    # where the front was asked: a change of use isn't.
+    front_asked = "front" in (facts.get("lot") or {}) or "front_line" in unsure
+    if front_asked and frontages(list(lot.lines))["kind"] == "town":
+        unsettled.append({"turn_id": "front_line", "reason": "more_than_one_frontage"})
+    if (facts.get("lot") or {}).get("front") == "other":
+        unsettled.append({"turn_id": "front_line", "reason": "front_not_on_a_road"})
     unsettled += [{"turn_id": t, "reason": KEPT[choice], "standard_keys": list(checks[t]["standard_keys"])}
                   for t, choice in kept if t in checks]
     unsettled += [{"turn_id": t, "reason": c["reason"]} for t, c in checks.items() if c["result"] == "cannot_check"]

@@ -48,7 +48,11 @@ const FORM: apps.FormDef = {
       q("renovation_only", "Is it only being renovated?", { type: "yesno", control: "switch", ask_first: 2, default: false })],
       { repeat: BUILDING, screens: [{ id: "about", layout: null }] }),
     sec("building_location", "buildings",
-        ["setback_front", "setback_side_1", "setback_side_2", "setback_rear"].map((id) => q(id, `${id}?`, { screen: "setbacks" })),
+        [...["setback_front", "setback_side_1"].map((id) => q(id, `${id}?`, { screen: "setbacks" })),
+         q("setback_side_2", "setback_side_2?", { screen: "setbacks", show_if: { ne: ["property.corner", true] } }),
+         q("setback_secondary", "setback_secondary?", { screen: "setbacks",
+           show_if: { all: [{ known: "property.corner" }, { eq: ["property.corner", true] }] } }),
+         q("setback_rear", "setback_rear?", { screen: "setbacks" })],
         { repeat: BUILDING, screens: [{ id: "setbacks", layout: "lot-diagram" }] }),
     sec("building_details", "buildings", [
       q("building_class", "Which best describes this building?", { type: "choice", control: "building-type", ask_first: 1, copies: true,
@@ -572,5 +576,22 @@ describe("review fixes", () => {
   it("an empty additions list asks in its own words", async () => {
     open("/projects/abc/additions");
     expect(await screen.findByText("Are you adding an addition, a porch or a deck?")).toBeInTheDocument();
+  });
+});
+
+
+describe("the setbacks around the lot", () => {
+  // The chair, 2026-11-06: a corner lot is asked its secondary front setback in place of the other side.
+  it("ask a corner lot for the secondary front setback, in place of the other side", async () => {
+    withApp({ property: { ...APP.property, facts: { ...APP.property.facts, corner: true } } });
+    open("/projects/abc/buildings?screen=setback_front&item=b1");
+    expect(await screen.findByText("Secondary front setback")).toBeInTheDocument();
+    expect(screen.queryByText("Other side")).toBeNull();
+  });
+
+  it("ask any other lot for the other side", async () => {
+    open("/projects/abc/buildings?screen=setback_front&item=b1");
+    expect(await screen.findByText("Other side")).toBeInTheDocument();
+    expect(screen.queryByText("Secondary front setback")).toBeNull();
   });
 });
