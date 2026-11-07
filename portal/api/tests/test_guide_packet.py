@@ -196,6 +196,46 @@ def test_sending_again_replaces_it(alice):
     assert words == ["A yoga studio in the barn.", "One more thing."]
 
 
+def test_a_packet_not_yet_sent_has_not_changed(alice):
+    assert packet(alice, sendable(alice)).json()["changed"] is False
+
+
+def test_a_sent_packet_says_when_the_project_has_changed_since(alice):
+    # The chair's decision (packet memo, 2026-11-07): the packet stays as sent, marked changed.
+    pid = sendable(alice)
+    send(alice, pid)
+    assert packet(alice, pid).json()["changed"] is False
+    note(alice, pid, "One more thing.")
+    p = packet(alice, pid).json()
+    assert p["state"] == "sent" and p["changed"] is True
+    assert [w["body"] for w in p["summary"]["own_words"]] == ["A yoga studio in the barn."]
+
+
+def test_a_change_on_the_form_after_sending_counts_too(alice):
+    pid = sendable(alice)
+    send(alice, pid)
+    r = alice.put(f"/api/projects/{pid}/answers", json={"base_revision": get(alice, pid)["revision"],
+                  "changes": [{"field_id": "owner_name", "part_id": None, "value": "Ada Lovelace"}]})
+    assert r.status_code == 200, r.text
+    assert packet(alice, pid).json()["changed"] is True
+
+
+def test_staff_locking_it_is_not_a_change(alice, engine):
+    pid = sendable(alice)
+    send(alice, pid)
+    with engine.begin() as conn:   # the lock moves the revision once, as projects.lock does
+        conn.execute(text("UPDATE project SET status = 'locked', revision = revision + 1 WHERE id = :p"), {"p": pid})
+    assert packet(alice, pid).json()["changed"] is False
+
+
+def test_sending_again_clears_the_change(alice):
+    pid = sendable(alice)
+    send(alice, pid)
+    note(alice, pid, "One more thing.")
+    send(alice, pid)
+    assert packet(alice, pid).json()["changed"] is False
+
+
 def test_a_project_sent_without_a_conversation_saves_nothing(alice, engine):
     pid = finish_use_project(alice)
     send(alice, pid)

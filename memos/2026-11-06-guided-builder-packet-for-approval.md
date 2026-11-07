@@ -4,7 +4,24 @@
 **From:** Applicant Portal build (guided builder, plan 6)
 **Date:** November 6, 2026
 **Re:** The applicant's packet: its new words, for approval
-**Status:** **For approval.** The packet is built (`portal-guided-6-packet`). You can see it on the LAN copy: walk a project with "Try the guided version (preview)", then open "Your packet".
+**Status:** **Approved by the chair on 2026-11-07** (see "The chair's decisions"). The packet is built (`portal-guided-6-packet`). You can see it on the LAN copy: walk a project with "Try the guided version (preview)", then open "Your packet".
+
+---
+
+## The chair's decisions (2026-11-07)
+
+1. **The words** in section 2: approved as drafted, with the intro shortened (decision 2) and one
+   line added (decision 3).
+2. **The intro's promise:** it waits until staff notes exist (design 4). The intro now reads
+   "This is what the Town will read about your project."
+3. **A project changed after sending:** the packet stays as sent and is marked "Changed since you
+   sent it" when the project has changed since. Any change counts, on the form or in the
+   conversation; staff locking it does not. Sending again replaces the packet and clears the mark.
+4. **Who decides, where a review has no decision sentence:** the review's name and its approved
+   reviewer, as shown.
+
+The screenshots in section 1 were taken before these decisions, so they still show the longer
+intro and the draft chip.
 
 ---
 
@@ -30,9 +47,10 @@ approve them.
 | Where | Applicants read |
 |:---|:---|
 | The page's title, and its links | Your packet |
-| Under the title | This is what the Town will read about your project. Staff see the same, with their own notes. |
+| Under the title | This is what the Town will read about your project. *(The chair: "Staff see the same, with their own notes" waits for staff notes.)* |
 | Before sending | As it stands now |
 | After sending | As sent on {date} |
+| Changed after sending | Changed since you sent it *(added by the chair's decision 3)* |
 | Before the conversation ends | The conversation isn't finished, so this shows what's settled so far. |
 | Part 1 | In your own words |
 | When there are none | You haven't written anything for the Town. |
@@ -48,7 +66,7 @@ approve them.
 | No outline | The Town's tax map has no outline for this lot, so there is no drawing. |
 | The app bar | Print |
 
-## Decisions for the chair
+## Decisions for the chair (answered above)
 
 1. **The words** in section 2, as drafted.
 2. **The intro's promise.** "Staff see the same, with their own notes" says what design 4 will build.

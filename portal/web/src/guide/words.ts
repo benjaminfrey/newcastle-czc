@@ -1,11 +1,11 @@
 // Every word the guide's screens say on their own (spec §11: every word an applicant reads is
 // approved before the public sees it). Turn, answer, entry and ending words come from the API's
 // content files; these are the rest. The chair approved them on 2026-11-06
-// (memos/2026-11-06-guided-builder-wording-for-approval.md), and plan 5's the same day
-// (memos/2026-11-06-guided-builder-pictures-sample-sheet.md); a changed line makes the file a
-// draft again, as plan 6's packet words have until the chair approves them. Nothing else in
-// src/guide/ writes words.
-export const WORD_STATUS = "draft" as "draft" | "approved";
+// (memos/2026-11-06-guided-builder-wording-for-approval.md), plan 5's the same day
+// (memos/2026-11-06-guided-builder-pictures-sample-sheet.md) and plan 6's packet words on
+// 2026-11-07 (memos/2026-11-06-guided-builder-packet-for-approval.md); a changed line makes the
+// file a draft again. Nothing else in src/guide/ writes words.
+export const WORD_STATUS = "approved" as "draft" | "approved";
 
 // The "Draft wording" chip shows while any word on the screen is a draft: these, or one of the
 // API's (it lists the drafts a state shows).
@@ -152,9 +152,11 @@ export const WORDS = {
   // The packet (guided plan 6; spec §7).
   packet: {
     title: "Your packet",
-    intro: "This is what the Town will read about your project. Staff see the same, with their own notes.",
+    // The staff sentence waits for staff notes (design 4; the chair, 2026-11-07).
+    intro: "This is what the Town will read about your project.",
     now: "As it stands now",
     sent: "As sent on {date}",
+    changed: "Changed since you sent it",
     not_finished: "The conversation isn't finished, so this shows what's settled so far.",
     own_words: "In your own words",
     no_words: "You haven't written anything for the Town.",

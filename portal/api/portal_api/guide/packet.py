@@ -133,7 +133,7 @@ def build(conn: Connection, row, lot, opening: str, state, needs: dict) -> dict:
     disputed = bool(lot.disputed) or (state.facts.get("lot") or {}).get("confirmed") is False
     outline = (snapshot.get("facts") or {}).get("outline")
     return {
-        "state": "now", "sent_at": None, "finished": state.ending is not None,
+        "state": "now", "sent_at": None, "changed": False, "finished": state.ending is not None,
         "ending": {"kind": state.ending["kind"], "title": state.ending.get("title")} if state.ending else None,
         "summary": {"own_words": store.notes(conn, row.id), "reading": statement(asked_reading), "deciders": deciders_from(needs),
                     "corrections": {"lot_disputed": disputed, "note": snapshot.get("note") or None}},
@@ -158,11 +158,16 @@ def build_for(conn: Connection, row, needs: dict) -> dict | None:
 
 
 def as_sent(conn: Connection, row) -> dict | None:
-    """The packet as sent, once the project has been sent and one was kept."""
+    """The packet as sent, once the project has been sent and one was kept. It stays as sent, and
+    says when the project has changed since (the chair, 2026-11-07): every change moves the
+    project's revision, and a staff lock moves it once more."""
     if row.status == "draft":
         return None
     kept = store.sent_packet(conn, row.id)
     if kept is None:
         return None
     sent_at, body = kept
-    return {**body, "state": "sent", "sent_at": sent_at.isoformat()}
+    body = dict(body)
+    at = body.pop("revision", None)
+    now = row.revision - (1 if row.status == "locked" else 0)
+    return {**body, "state": "sent", "sent_at": sent_at.isoformat(), "changed": at is not None and now != at}

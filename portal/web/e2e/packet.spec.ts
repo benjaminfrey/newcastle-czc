@@ -61,7 +61,7 @@ test("the packet: in order, judgment first, and on paper", async ({ page }, info
 
   await page.emulateMedia({ media: "print" });
   await expect(page.locator("[data-fits] li").first()).toBeVisible();
-  // The title stays on paper, and with it the draft chip while the words are drafts.
+  // The title stays on paper (and with it the draft chip, should any word be a draft again).
   await expect(page.getByRole("banner").getByText("Your packet")).toBeVisible();
   for (const b of await page.getByRole("button").all()) await expect(b).toBeHidden();
   await page.emulateMedia({ media: "screen" });

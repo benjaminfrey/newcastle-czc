@@ -11,7 +11,7 @@ import PacketPage from "./PacketPage";
 vi.mock("../api", async (orig) => ({ ...(await orig<typeof import("../api")>()), getPacket: vi.fn() }));
 
 const PACKET: Packet = {
-  state: "now", sent_at: null, finished: true, ending: { kind: "ready", title: "Your application is ready to send" },
+  state: "now", sent_at: null, changed: false, finished: true, ending: { kind: "ready", title: "Your application is ready to send" },
   summary: { own_words: [{ body: "Line one\n<b>Two</b>", at: "2026-11-06T12:00:00Z" }],
     reading: "So you'd like to build a new house on lot 4-36, in D1 Rural.",
     deciders: [{ review: "Small Project Plan", reviewer: "Code Enforcement Officer",
@@ -74,6 +74,24 @@ test("every highlight carries its words", async () => {
 test("as sent says when", async () => {
   show({ ...PACKET, state: "sent", sent_at: "2026-11-06T15:00:00Z" });
   expect(await screen.findByText("As sent on November 6, 2026")).toBeVisible();
+});
+
+test("a project changed since it was sent says so, and still shows what was sent", async () => {
+  show({ ...PACKET, state: "sent", sent_at: "2026-11-06T15:00:00Z", changed: true });
+  expect(await screen.findByText("As sent on November 6, 2026")).toBeVisible();
+  expect(screen.getByText("Changed since you sent it")).toBeVisible();
+});
+
+test("an unchanged packet carries no mark", async () => {
+  show({ ...PACKET, state: "sent", sent_at: "2026-11-06T15:00:00Z" });
+  await screen.findByText("As sent on November 6, 2026");
+  expect(screen.queryByText("Changed since you sent it")).toBeNull();
+});
+
+test("the intro promises nothing staff can't do yet", async () => {
+  show(PACKET);
+  expect(await screen.findByText("This is what the Town will read about your project.")).toBeVisible();
+  expect(screen.queryByText(/Staff see/)).toBeNull();
 });
 
 test("a lot corrected by the person is flagged in the summary", async () => {

@@ -89,7 +89,7 @@ export async function getOpenings(id: string): Promise<Opening[] | GuideRefusal>
 export type PacketMark = "confirmed" | "unsure" | "took_suggestion" | "kept";
 export type PacketRow = { turn_id: string | null; ask: string | null; reason?: string; check: Check | null; why: Entry | null };
 export type Packet = {
-  state: "now" | "sent"; sent_at: string | null; finished: boolean;
+  state: "now" | "sent"; sent_at: string | null; changed: boolean; finished: boolean;
   ending: { kind: string; title: string | null } | null;
   summary: { own_words: { body: string; at: string }[]; reading: string | null;
     deciders: { review: string | null; reviewer: string | null; sentence: string | null }[];

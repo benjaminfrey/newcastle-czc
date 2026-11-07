@@ -447,7 +447,7 @@ def submit(project_id: str, body: RevisionBody, request: Request, applicant: aut
     # The packet as sent (guided plan 6), kept with the sending so later changes never alter it.
     built = packet.build_for(conn, row, Loaded(conn, row).needs(conn, request.app.state.settings.allow_draft_rules))
     if built is not None:
-        store.save_packet(conn, row.id, built)
+        store.save_packet(conn, row.id, {**built, "revision": rev})   # to tell a later change
     append_event(conn, actor=_actor(applicant), kind="project.submitted",
                  payload={"project_id": row.id, "first": first})
     return {"revision": rev, "status": "submitted"}

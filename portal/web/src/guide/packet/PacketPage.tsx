@@ -71,6 +71,8 @@ function PacketScreen({ projectId }: { projectId: string }) {
           <Typography variant="overline" color="text.secondary">
             {packet.state === "sent" && packet.sent_at ? fill(P.sent, { date: DATE.format(new Date(packet.sent_at)) }) : P.now}
           </Typography>
+          {packet.state === "sent" && packet.changed &&
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>{P.changed}</Typography>}
           <Typography variant="body2" color="text.secondary">{P.intro}</Typography>
           {!packet.finished && <Typography variant="body2">{P.not_finished}</Typography>}
         </Box>

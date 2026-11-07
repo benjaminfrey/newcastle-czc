@@ -93,9 +93,10 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
     - design: `specs/2026-11-06-applicant-portal-guided-builder-packet.md`, approved 2026-11-06;
     - plan: `plans/2026-11-06-applicant-portal-guided-builder-6-packet.md`.
 
-    The packet shows the Town's reading to the resident, before and as sent, and prints. **With the
-    chair:** its new words and three questions
-    (`memos/2026-11-06-guided-builder-packet-for-approval.md`). The old cards' four looks findings
+    The packet shows the Town's reading to the resident, before and as sent, and prints. The chair
+    approved its words and answered the memo's four questions on 2026-11-07
+    (`memos/2026-11-06-guided-builder-packet-for-approval.md`): the staff sentence waits for staff
+    notes, and a packet sent and then changed is marked "Changed since you sent it". PR #28. The old cards' four looks findings
     were rechecked on the new screens as journey checks and pass: one project panel, fields one
     height, even lot-card rows, "No password" once.
   - **Plan 5, the pictures**, is built on branch `portal-guided-5-pictures`, stacked on #26:
