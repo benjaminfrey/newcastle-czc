@@ -25,3 +25,12 @@ test("the reply box is full size, not the small field", () => {
   render(<GuideTheme><ReplyBox placeholder="Or tell us more…" onSend={() => {}} /></GuideTheme>);
   expect(document.querySelector(".MuiInputBase-sizeSmall")).toBeNull();
 });
+
+test("the text stays when it couldn't be kept", async () => {
+  const onSend = vi.fn(async () => false);
+  render(<GuideTheme><ReplyBox placeholder="Or tell us more…" onSend={onSend} /></GuideTheme>);
+  const box = screen.getByRole("textbox", { name: "Or tell us more…" });
+  await userEvent.type(box, "A long note{Enter}");
+  expect(onSend).toHaveBeenCalledWith("A long note");
+  expect(box).toHaveValue("A long note");
+});

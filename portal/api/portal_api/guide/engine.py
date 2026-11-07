@@ -71,7 +71,7 @@ class Shown:
 
 @dataclass(frozen=True)
 class Action:
-    kind: Literal["answer", "back"]
+    kind: Literal["answer", "back", "revisit"]
     turn_id: str | None
     value: object
 
@@ -89,6 +89,7 @@ class State:
     checks: tuple[tuple[str, dict], ...] = ()   # the latest check for each checked turn
     kept: tuple[tuple[str, str], ...] = ()      # a number kept past its limit: (turn, keep_mine / talk_to_town / unsure)
     current_turn: Turn | None = None
+    undo: tuple[tuple, ...] = ()                # the answers in force before each answer or Change, for Back
 
 
 class AnswerRejected(Exception):
@@ -205,7 +206,7 @@ def _record(build: _Build, turn: Turn, facts: dict, value) -> None:
         _set(facts, path, v)
 
 
-def _derive(content: Content, opening: str, lot: Lot, live: tuple) -> State:
+def _derive(content: Content, opening: str, lot: Lot, live: tuple, undo: tuple = ()) -> State:
     build = _Build(content, opening, lot)
     o = content.openings[opening]
     facts: dict = {"opening": opening}
@@ -270,7 +271,7 @@ def _derive(content: Content, opening: str, lot: Lot, live: tuple) -> State:
         drafts += ending.pop("screener_drafts")
     return State(opening=opening, facts=facts, history=tuple(history), current=current, ending=ending,
                  unsure=tuple(dict.fromkeys(unsure)), drafts=tuple(drafts), live=live,
-                 checks=tuple(checks.items()), current_turn=current_turn, kept=tuple(kept))
+                 checks=tuple(checks.items()), current_turn=current_turn, kept=tuple(kept), undo=undo)
 
 
 def _check(content: Content, turn: Turn, facts: dict, lot: Lot, unsure: list, settled_before: bool) -> Check | None:
@@ -308,24 +309,49 @@ def _push(live: tuple, turn_id: str, value) -> tuple:
     return tuple((t, v) for t, v in live if t != turn_id) + ((turn_id, value),)
 
 
+def _without(content: Content, live: tuple, turn_id: str) -> tuple:
+    """Change ("revisit"): the answer to `turn_id`, and its "doesn't fit" choice, out of force, so
+    that turn is asked again and every later answer still stands where it still applies. A computed
+    value (stories) is checked on the turn that completes it, so changing any of its inputs clears
+    that value's "doesn't fit" choice too: an old "keep mine" never covers a new number unasked."""
+    turn = content.turn(turn_id)
+    group = [t.id for t in content.turns if turn is not None and turn.computed and t.computed == turn.computed]
+    gone = {turn_id, DOESNT_FIT + turn_id, *(DOESNT_FIT + t for t in group)}
+    return tuple((t, v) for t, v in live if t not in gone)
+
+
+def _back(live: tuple, undo: tuple) -> tuple[tuple, tuple]:
+    """Back undoes the last answer or Change: the answers in force before it, so Back after a
+    Change puts that answer back rather than dropping a later one."""
+    return (undo[-1], undo[:-1]) if undo else (live[:-1], ())
+
+
 def replay(content: Content, opening: str, lot: Lot, actions: list[Action]) -> State:
     """The state after the recorded actions. Answers were checked when they were given; here an
     answer the content no longer accepts is set aside rather than refused."""
     live: tuple = ()
+    undo: tuple = ()
     for action in actions:
         if action.kind == "back":
-            live = live[:-1]
+            live, undo = _back(live, undo)
         elif action.kind == "answer":
-            live = _push(live, action.turn_id, action.value)
+            live, undo = _push(live, action.turn_id, action.value), undo + (live,)
+        elif action.kind == "revisit":
+            live, undo = _without(content, live, action.turn_id), undo + (live,)
         else:
             raise AnswerRejected("not_an_action")
-    return _derive(content, opening, lot, live)
+    return _derive(content, opening, lot, live, undo)
 
 
 def apply(content: Content, state: State, lot: Lot, action: Action) -> State:
     """One new action, checked against the turn being asked now."""
     if action.kind == "back":
-        return _derive(content, state.opening, lot, state.live[:-1])
+        return _derive(content, state.opening, lot, *_back(state.live, state.undo))
+    if action.kind == "revisit":
+        if action.turn_id not in dict(state.live) or action.turn_id.startswith(DOESNT_FIT):
+            raise AnswerRejected("not_answered")
+        return _derive(content, state.opening, lot, _without(content, state.live, action.turn_id),
+                       state.undo + (state.live,))
     if action.kind != "answer":
         raise AnswerRejected("not_an_action")
     current = state.current
@@ -335,4 +361,5 @@ def apply(content: Content, state: State, lot: Lot, action: Action) -> State:
     reason = _valid(_Build(content, state.opening, lot), turn, state.facts, action.value)
     if reason is not None:
         raise AnswerRejected(reason)
-    return _derive(content, state.opening, lot, _push(state.live, action.turn_id, action.value))
+    return _derive(content, state.opening, lot, _push(state.live, action.turn_id, action.value),
+                   state.undo + (state.live,))

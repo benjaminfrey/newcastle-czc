@@ -12,7 +12,8 @@ import { StepBar } from "./components/StepBar";
 
 type Props = {
   title: string;
-  back?: { href: string; label: string };
+  back?: { href: string; label: string } | { onClick: () => void; label: string; disabled?: boolean };
+  actions?: ReactNode;                                // more buttons in the app bar
   helpHref?: string;
   draft?: boolean;                                    // wording not yet approved by the chair
   step?: { step: number; of: number; label: string };
@@ -22,20 +23,27 @@ type Props = {
 
 // The guided builder's window (spec §4.8): one column on a phone; on a computer (≥ 1024 px) the
 // conversation on the left and the project on the right.
-export function GuideShell({ title, back, helpHref, draft, step, aside, children }: Props) {
+export function GuideShell({ title, back, actions, helpHref, draft, step, aside, children }: Props) {
   const wide = useWideLayout();
   return (
     <Box sx={{ minHeight: "100dvh", bgcolor: "background.default", color: "text.primary" }}>
       <AppBar position="sticky" color="inherit" elevation={0}
         sx={{ bgcolor: "background.default", borderBottom: 1, borderColor: "divider" }}>
         <Toolbar sx={{ gap: 1, maxWidth: 1120, width: "100%", mx: "auto" }}>
-          {back && (
+          {back && "href" in back && (
             <IconButton component={Link} to={back.href} aria-label={`Back to ${back.label}`} edge="start" sx={{ width: 48, height: 48 }}>
+              <IconArrowLeft size={22} aria-hidden="true" />
+            </IconButton>
+          )}
+          {back && "onClick" in back && (
+            <IconButton onClick={back.onClick} disabled={back.disabled} aria-label={`Back to ${back.label}`} edge="start"
+              sx={{ width: 48, height: 48 }}>
               <IconArrowLeft size={22} aria-hidden="true" />
             </IconButton>
           )}
           <Typography variant="h6" component="h1" sx={{ flex: 1, minWidth: 0 }} noWrap>{title}</Typography>
           {draft && <Chip size="small" label="Draft wording, not approved" color="warning" variant="outlined" />}
+          {actions}
           {helpHref && (
             <IconButton component={Link} to={helpHref} aria-label="Help" sx={{ width: 48, height: 48 }}>
               <IconHelpCircle size={22} aria-hidden="true" />

@@ -10,3 +10,8 @@ test("a bubble tells a screen reader who is speaking", () => {
   expect(screen.getByText("Newcastle")).toBeInTheDocument();
   expect(screen.getByText("I want a 3-story house.")).toBeInTheDocument();
 });
+
+test("the hidden speaker label takes no room (MUI reads width: 1 as 100%)", () => {
+  render(<GuideTheme><Bubble from="you">Hi</Bubble></GuideTheme>);
+  expect(screen.getByText("You said")).toHaveStyle({ width: "1px", height: "1px" });
+});

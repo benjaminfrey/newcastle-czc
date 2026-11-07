@@ -225,3 +225,78 @@ def test_the_bridge_never_overwrites_what_the_person_typed_on_the_form(alice):
 def test_floor_area_is_asked_the_way_the_form_defines_it():
     t = load_content().turn("floor_area")
     assert "main part" in t.ask and "inside the roof doesn't count" in t.help
+
+
+# --- plan 3: Change ("revisit") and the openings list ---
+
+def revisit(client, pid, turn_id, base=None):
+    base = client.get(f"/api/projects/{pid}/guide").json()["revision"] if base is None else base
+    return client.post(f"/api/projects/{pid}/guide/revisit", json={"turn_id": turn_id, "base_revision": base})
+
+
+def test_revisit_route(alice, engine):
+    pid = started(alice)
+    walk(alice, pid, [("lot", "yes"), ("confirm", "yes"), *STORIES])
+    r = revisit(alice, pid, "full_stories")
+    assert r.status_code == 200, r.text
+    assert r.json()["current"]["turn_id"] == "full_stories"
+    assert revisit(alice, pid, "lot", base=r.json()["revision"] - 1).json()["detail"] == "changed_elsewhere"
+    r = revisit(alice, pid, "floor_area")
+    assert r.status_code == 422 and r.json()["detail"] == "not_answered"
+    with engine.begin() as conn:
+        conn.execute(text("UPDATE project SET status = 'locked' WHERE id = :p"), {"p": pid})
+    r = revisit(alice, pid, "lot")
+    assert r.status_code == 409 and r.json()["detail"] == "locked"
+
+
+def test_revisit_event_carries_no_value(alice, engine):
+    pid = started(alice)
+    walk(alice, pid, [("lot", "yes"), ("confirm", "yes"), ("full_stories", 3)])
+    assert revisit(alice, pid, "full_stories").status_code == 200
+    with engine.begin() as conn:
+        (payload,) = conn.execute(text("SELECT payload_json FROM event WHERE kind = 'guide.revisited'")).one()
+    assert '"turn_id": "full_stories"' in payload or '"turn_id":"full_stories"' in payload
+    assert "3" not in payload.replace(pid, "")
+
+
+def test_openings_for_the_projects_parts(alice, bob, engine, settings, outbox, layers):  # noqa: F811
+    pid = create(alice, parts=("building",))
+    r = alice.get(f"/api/projects/{pid}/guide/openings")
+    assert r.status_code == 200, r.text
+    ids = [o["id"] for o in r.json()["openings"]]
+    assert "new_house" in ids and "change_of_use" not in ids
+    assert set(r.json()["openings"][0]) == {"id", "label", "part"}
+    assert bob.get(f"/api/projects/{pid}/guide/openings").status_code == 404
+    settings.allow_stale_parcels = True
+    settings.allow_draft_rules = True
+    dev = create_app(settings, outbox)
+    with TestClient(dev) as c:
+        _sign_in(c, outbox, "dave@example.com")
+        pid2 = create(c, parts=("building",))
+        dev.state.settings.allow_draft_rules = False
+        r = c.get(f"/api/projects/{pid2}/guide/openings")
+        assert r.status_code == 503 and r.json()["detail"] == "guide_not_approved"
+
+
+def test_the_latest_check_for_each_turn_is_returned(alice):
+    """The screens show the value in force after "Make it …", which only the latest check holds."""
+    pid = started(alice)
+    body = walk(alice, pid, [("lot", "yes"), ("confirm", "yes"), *STORIES])
+    checked = {h["shown"]["turn_id"]: h["shown"]["check"] for h in body["history"] if h["shown"]["check"]}
+    assert body["checks"] == checked and "basement_exposed_5ft" in body["checks"]
+
+
+def test_a_second_tab_answering_the_same_turn_is_told_it_changed_elsewhere(alice):
+    pid = started(alice)
+    base = alice.get(f"/api/projects/{pid}/guide").json()["revision"]
+    assert answer(alice, pid, "lot", "yes", base=base).status_code == 200
+    r = answer(alice, pid, "lot", "yes", base=base)          # tab B, still on the lot turn
+    assert r.status_code == 409 and r.json()["detail"] == "changed_elsewhere"
+
+
+def test_no_on_so_you_mean_restarts_from_the_picture(alice):
+    pid = started(alice)
+    body = walk(alice, pid, [("lot", "yes"), ("confirm", "no")])
+    assert body["current"]["turn_id"] == "pick_opening"
+    r = start(alice, pid, "new_house")
+    assert r.status_code == 201 and r.json()["current"]["turn_id"] == "lot"

@@ -3,22 +3,25 @@ import Paper from "@mui/material/Paper";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import Typography from "@mui/material/Typography";
-import { useId, useRef, useState, type KeyboardEvent } from "react";
+import { useId, useRef, useState, type HTMLAttributes, type KeyboardEvent, type ReactNode } from "react";
 
 export type Answer = { id: string; label: string; hint?: string };
 
 // The question's answers as a list you tap. A tap or click answers at once; on a keyboard the
 // arrows move the choice and Enter or Space answers, so a stray arrow never answers for you, and
 // an answer is never sent twice in a row.
-export function AnswerList({ question, answers, onAnswer }: {
-  question: string; answers: Answer[]; onAnswer: (id: string) => void;
+// `between` sits under the question and above the answers (help, the lot's facts, "why" cards);
+// `headingProps` lets the guide page focus the question when it arrives.
+export function AnswerList({ question, answers, onAnswer, disabled, between, headingProps }: {
+  question: string; answers: Answer[]; onAnswer: (id: string) => void; disabled?: boolean; between?: ReactNode;
+  headingProps?: HTMLAttributes<HTMLElement> & Record<`data-${string}`, string>;
 }) {
   const headingId = useId();
   const [chosen, setChosen] = useState<string | null>(null);
   const answered = useRef<string | null>(null);
   const arrowed = useRef(false);
   const answer = (id: string) => {
-    if (answered.current === id) return;
+    if (disabled || answered.current === id) return;
     answered.current = id;
     onAnswer(id);
   };
@@ -38,15 +41,16 @@ export function AnswerList({ question, answers, onAnswer }: {
   };
   return (
     <div>
-      <Typography id={headingId} variant="subtitle1" component="h2" sx={{ fontWeight: 500, mb: 1 }}>
+      <Typography id={headingId} variant="subtitle1" component="h2" sx={{ fontWeight: 500, mb: 1 }} {...headingProps}>
         {question}
       </Typography>
+      {between}
       <Paper variant="outlined" sx={{ borderRadius: 2, overflow: "hidden", borderColor: "divider" }}>
         <RadioGroup aria-labelledby={headingId} value={chosen ?? ""}
           onChange={(_, v) => onChange(v)} onKeyDown={onKeyDown}>
           {answers.map((a, i) => (
             <FormControlLabel key={a.id} value={a.id}
-              control={<Radio />}
+              control={<Radio />} disabled={disabled}
               label={<span>{a.label}{a.hint && (
                 <Typography component="span" variant="body2" color="text.secondary" sx={{ display: "block" }}>
                   {a.hint}</Typography>)}</span>}

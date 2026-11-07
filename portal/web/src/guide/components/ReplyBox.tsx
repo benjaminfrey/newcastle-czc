@@ -4,18 +4,22 @@ import TextField from "@mui/material/TextField";
 import { IconSend } from "@tabler/icons-react";
 import { useState, type FormEvent } from "react";
 
-// A box to say more in the person's own words. Enter sends; a blank box can't be sent.
-export function ReplyBox({ placeholder, onSend }: { placeholder: string; onSend: (text: string) => void }) {
+// A box to say more in the person's own words. Enter sends; a blank box can't be sent. When
+// onSend says the text wasn't kept (false), it stays in the box.
+export function ReplyBox({ placeholder, onSend }: {
+  placeholder: string; onSend: (text: string) => void | boolean | Promise<boolean>;
+}) {
   const [text, setText] = useState("");
   const blank = text.trim() === "";
-  const submit = (e: FormEvent) => {
+  const submit = async (e: FormEvent) => {
     e.preventDefault();
     if (blank) return;
-    onSend(text.trim());
-    setText("");
+    const sent = text;
+    if ((await onSend(sent.trim())) === false) return;
+    setText((now) => (now === sent ? "" : now));
   };
   return (
-    <Stack component="form" direction="row" onSubmit={submit} sx={{ gap: 1, alignItems: "center" }}>
+    <Stack component="form" direction="row" onSubmit={(e) => void submit(e)} sx={{ gap: 1, alignItems: "center" }}>
       <TextField fullWidth value={text} onChange={(e) => setText(e.target.value)}
         placeholder={placeholder} slotProps={{ htmlInput: { "aria-label": placeholder } }}
         sx={(t) => ({ "& .MuiOutlinedInput-root": { borderRadius: `${t.guide.radius.full}px` } })} />

@@ -8,6 +8,7 @@ import type { StepModel } from "../forms/steps";
 import { itemSummary, type TaskStatus } from "../forms/tasks";
 import { longDate, mapLotLabel } from "../format";
 import { STATUS_TONE, STATUS_WORDS } from "../pages/Home";
+import { WORDS as GUIDE_WORDS } from "../guide/words";
 import { getParts, type FormDef, type PartDef, type ProjectState } from "../projects";
 import Pill from "../shell/Pill";
 import NeedsPanel from "./NeedsPanel";
@@ -131,6 +132,14 @@ export default function Dashboard({ project, form, cur, models, statuses, base, 
             )}
             {locked && <span className="text-[13px] text-[var(--app-secondary-label)]">The Town is reviewing this project; changes go through the Code Enforcement Officer.</span>}
           </div>
+          {import.meta.env.VITE_GUIDE_PREVIEW === "1" && !locked
+            && project.items.some((i) => i.kind === "building" || i.kind === "use") && (
+            // The guided builder's way in, only in the LAN copy's builds (guided plan 3), and only
+            // for a project with a part the guide has a picture for.
+            <Link to={`/projects/${project.id}/guide`} className="self-start text-[15px] text-[var(--app-accent-text)]">
+              {GUIDE_WORDS.try_guide}
+            </Link>
+          )}
         </header>
 
         <Link to={`${base}/your_lot`} className={`${box} ${rowCls}`}>

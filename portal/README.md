@@ -154,10 +154,34 @@ reviews, fees and Send keep working. The record (`guide_conversation`, `guide_ac
 Routes, each with `base_revision` on a change: `POST /api/projects/{id}/guide` (start, or restart
 after "No" on "So you mean…"), `GET …/guide`, `POST …/guide/answers`, `POST …/guide/back`,
 `POST …/guide/check` (a value's check without saving it, for the room left as it changes) and
-`POST …/guide/notes`. **What a person types is kept for staff and read by nothing** (spec decision
+`POST …/guide/notes`, plus (plan 3) `POST …/guide/revisit`, the Change link, which takes one
+answer out of force so its turn is asked again while later answers stand (migration 0010), and
+`GET …/guide/openings`, the pictures a project's parts can start. **What a person types is kept for staff and read by nothing** (spec decision
 14), and events never carry it. Tests:
 
     portal/vm.sh run 'cd portal/api && .venv/bin/pytest tests/test_guide_content.py tests/test_guide_engine.py tests/test_guide_checks.py tests/test_guide_endings.py tests/test_guide_store.py tests/test_guide_routes.py'
+
+## The guide's screens (guided builder, plan 3)
+
+`/projects/:id/guide` is the conversation and `/projects/:id/guide/check` is Check and send, both
+in `web/src/guide/` and both only in builds made with `VITE_GUIDE_PREVIEW=1` (the LAN copy), where
+the dashboard links to them ("Try the guided version (preview)"). `useGuide.ts` holds the
+conversation as the API returned it, with its revision, one change in flight at a time;
+`turns/` shows each kind of turn, with numbers checked live as they change (`/guide/check`);
+`EndingView.tsx` shows the four endings; `ProjectPanel.tsx` is the summary with its Change links.
+The screens never work out a limit: every check and ending is the API's. Their own words (buttons,
+headings, refusals) are all in `web/src/guide/words.ts`, **draft** until the chair approves them.
+"This needs the Town's judgment" sends nothing yet; the handoff is the staff design's.
+
+The journeys (`web/e2e/guide.spec.ts`) run from the Mac against the LAN copy, after
+`portal/vm.sh lan`, with the Mailpit login read from the VM's `.env` (never printed):
+
+    cd portal/web && PORTAL_E2E_MAILPIT_AUTH="$(ssh ben@192.168.1.6 'grep ^MAILPIT_UI_AUTH= newcastle-czc/portal/deploy/.env | cut -d= -f2-')" \
+      PORTAL_E2E_URL=https://192.168.1.6 PORTAL_E2E_MAILPIT=http://192.168.1.6:8026 npx playwright test e2e/guide.spec.ts
+
+Each journey signs in once, and the LAN copy sends at most 20 sign-in links per address an hour,
+so run the desktop and phone halves (`--project=desktop`, `--project=phone`) an hour apart if
+the other journeys ran first.
 
 ## The forms
 

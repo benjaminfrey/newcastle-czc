@@ -134,3 +134,75 @@ def test_drafts_list_what_the_state_shows(content):
     s = replay(content, "new_house", LOT, START)
     assert "turns.yaml: full_stories" in s.drafts and "openings.yaml: new_house" in s.drafts
     assert "entries.yaml: how_stories_count" in s.drafts and "wording.yaml: unsure" in s.drafts
+
+
+# --- plan 3: Change ("revisit") ---
+
+D1 = dataclasses.replace(LOT, district_codes=("D1",), district_names=("Rural",))
+STORIES_1 = [a("full_stories", 2), a("roof_floors", 1), a("top_knee_over_3ft", "no"), a("basement_exposed_5ft", "no")]
+
+
+def revisit(turn_id):
+    return Action("revisit", turn_id, None)
+
+
+def test_revisit_asks_that_turn_again(content):
+    s = replay(content, "new_house", LOT, [*START, *STORIES_1, a("floor_area", 1800)])
+    s2 = apply(content, s, LOT, revisit("full_stories"))
+    assert s2.current.turn_id == "full_stories"
+    assert "floor_area" in dict(s2.live)
+
+
+def test_revisit_keeps_later_answers_that_still_apply(content):
+    s = replay(content, "new_house", LOT, [*START, *STORIES_1, a("floor_area", 1800)])
+    s = apply(content, s, LOT, revisit("roof_floors"))
+    s = apply(content, s, LOT, a("roof_floors", 0))
+    assert s.current.turn_id == "dwelling_units"
+    assert "top_knee_over_3ft" not in [sh.turn_id for sh, _ in s.history]
+    assert dict(s.live)["floor_area"] == 1800
+
+
+def test_revisit_clears_the_doesnt_fit_choice(content):
+    before = [*START, *STORIES_1, a("floor_area", 1800), a("dwelling_units", 1), a("setback_front", 30),
+              a("setback_side_1", 11), a("doesnt_fit:setback_side_1", "keep_mine")]
+    s = replay(content, "new_house", D1, before)
+    s = apply(content, s, D1, revisit("setback_side_1"))
+    s = apply(content, s, D1, a("setback_side_1", 11))
+    assert s.current.turn_id == "doesnt_fit:setback_side_1"
+
+
+def test_revisit_of_an_unanswered_turn_is_refused(content):
+    s = replay(content, "new_house", LOT, START)
+    with pytest.raises(AnswerRejected) as e:
+        apply(content, s, LOT, revisit("floor_area"))
+    assert e.value.reason == "not_answered"
+
+
+def test_replay_of_a_recorded_revisit_matches_apply(content):
+    actions = [*START, *STORIES_1, a("floor_area", 1800), revisit("roof_floors"), a("roof_floors", 0)]
+    s = replay(content, "new_house", LOT, [])
+    for act in actions:
+        s = apply(content, s, LOT, act)
+    assert s == replay(content, "new_house", LOT, actions)
+
+
+# --- the final review's fixes ---
+
+def test_back_after_a_change_restores_that_answer_and_keeps_the_rest(content):
+    s = replay(content, "new_house", LOT, [*START, *STORIES_1, a("floor_area", 1800), a("dwelling_units", 1)])
+    s = apply(content, s, LOT, revisit("floor_area"))
+    s = apply(content, s, LOT, BACK)
+    assert dict(s.live)["floor_area"] == 1800 and dict(s.live)["dwelling_units"] == 1
+    assert s == replay(content, "new_house", LOT, [*START, *STORIES_1, a("floor_area", 1800), a("dwelling_units", 1),
+                                                    revisit("floor_area"), BACK])
+
+
+def test_changing_a_stories_input_clears_the_stories_doesnt_fit_choice(content):
+    d6 = dataclasses.replace(LOT, district_codes=("D6",), district_names=("Town Center",))
+    four = [*START, a("full_stories", 4), a("roof_floors", 0), a("basement_exposed_5ft", "no"),
+            a("doesnt_fit:basement_exposed_5ft", "keep_mine")]
+    s = replay(content, "new_house", d6, four)
+    assert s.kept
+    s = apply(content, s, d6, revisit("full_stories"))
+    s = apply(content, s, d6, a("full_stories", 5 if s.current_turn.max >= 5 else 4))
+    assert s.current.turn_id == "doesnt_fit:basement_exposed_5ft"
