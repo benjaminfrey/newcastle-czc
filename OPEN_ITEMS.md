@@ -52,6 +52,24 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
     the lot drawing (`plans/2026-11-03-applicant-portal-guided-builder-4-drawing.md`) as PR #26, and
     the pictures and the packet (below) as PRs #27 and #28. That finishes design 1, the experience.
     Next: design 2, the explanation library. Open decisions are the spec's §12.
+  - **Design 2, the explanation library** (`specs/2026-11-08-applicant-portal-guided-builder-library.md`,
+    approved by the chair 2026-11-08 from his interview). Library plan 1
+    (`plans/2026-11-08-applicant-portal-guided-builder-library-1-format.md`) is built on branch
+    `portal-guided-library-design`, not pushed:
+    - the entry format and its checks;
+    - the live rule (ratified, or approved before 2026-11-08), which the public site can't bypass;
+    - the staff review page at `/library`;
+    - the record (`decisions` → `apply` → `unpack.py` → commit → `mark-exported`);
+    - the pull, the amendment check, and the Board memo.
+
+    **Article 2's batch is ready for the chair** on the LAN copy's review page: 18 draft entries,
+    with 5 open questions (`memos/2026-11-08-library-article-02-for-review.md`). Before he can use
+    the page, the `staff` role must be granted to his and the CEO's sign-in addresses with
+    `python -m portal_api.library role <email> staff` in the api container (spec §13 item 2). The
+    review page's words and the interpretation mark are drafts. Next library plans:
+    - fold in the existing words and the "So you mean…" templates;
+    - one batch per Article 3–9;
+    - the interpretations, once the chair and the CEO list the rulings already made.
   - **Answered by the chair 2026-11-05 (interview); built on `portal-guided-4-drawing`** (b7c6e32,
     in PR #26; the screen items below as well):
     - *Corner lots:* the guide suggests the front from the road Type (Article 2: Streets before
