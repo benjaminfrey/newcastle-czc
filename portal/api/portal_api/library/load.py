@@ -71,8 +71,28 @@ def _check(where: str, e: dict, ruleset) -> None:
             raise LibraryError(str(exc)) from None
 
 
+def _check_slots(where: str, e: dict, keys: frozenset[str]) -> None:
+    from .render import PARTS, placeholders
+    slots = e.get("slots") or {}
+    texts = [e.get(k) or "" for k in ("overline", "answer", "detail", "why")] + list((e.get("district_notes") or {}).values())
+    for name in sorted(set().union(*(placeholders(t) for t in texts))):
+        if name not in slots:
+            raise LibraryError(f"{where}: no slot for {{{name}}}")
+    for name, slot in slots.items():
+        if not isinstance(slot, dict) or slot.get("part") not in PARTS:
+            raise LibraryError(f"{where}: slot {name}: part must be one of {', '.join(sorted(PARTS))}")
+        if slot.get("standard") not in keys:
+            raise LibraryError(f"{where}: slot {name}: no standard {slot.get('standard')}")
+    for key in e.get("standards") or []:
+        if key not in keys:
+            raise LibraryError(f"{where}: no standard {key}")
+
+
 @functools.cache
 def _load(root: Path) -> Library:
+    from .render import all_keys
+    keys = all_keys()
+    claims: dict[str, str] = {}
     ruleset = load_ruleset()
     files = sorted(root.glob("*.yaml"))
     entries, questions = {}, {}
@@ -83,6 +103,11 @@ def _load(root: Path) -> Library:
         for e in data.get("entries") or []:
             where = f"{batch}: {e.get('id')}"
             _check(where, e, ruleset)
+            _check_slots(where, e, keys)
+            for key in e.get("standards") or []:
+                if key in claims:
+                    raise LibraryError(f"{where}: {key} is claimed by both {claims[key]} and {e['id']}")
+                claims[key] = e["id"]
             if e["id"] in entries:
                 raise LibraryError(f"{where}: duplicate id (also in {entries[e['id']].batch})")
             entries[e["id"]] = LibraryEntry(**{**e, **{k: tuple(e.get(k) or ()) for k in _TUPLES},

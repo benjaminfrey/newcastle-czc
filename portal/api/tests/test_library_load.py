@@ -1,9 +1,7 @@
 """The explanation library's files, their statuses and the live rule (library plan 1, task 1)."""
 
 import dataclasses
-import shutil
 from datetime import date
-from pathlib import Path
 
 import pytest
 import yaml
@@ -11,21 +9,6 @@ import yaml
 import portal_api.library.load as ll
 from portal_api.guide.content import load_content
 from portal_api.library import LibraryError, is_live, load_library
-
-
-@pytest.fixture
-def lib(tmp_path):
-    """A writable copy of the library, and a way to change one batch."""
-    for f in ll.DIR.glob("*.yaml"):
-        shutil.copy(f, tmp_path / f.name)
-
-    def edit(batch: str, change) -> Path:
-        path = tmp_path / f"{batch}.yaml"
-        data = yaml.safe_load(path.read_text())
-        change(data)
-        path.write_text(yaml.safe_dump(data, sort_keys=False))
-        return tmp_path
-    return edit
 
 
 def _entry(data: dict, entry_id: str) -> dict:
@@ -62,11 +45,12 @@ def test_a_picture_needs_its_description(lib):
         load_library(root)
 
 
-def test_ids_are_unique_across_batches(lib, tmp_path):
-    (tmp_path / "other.yaml").write_text(yaml.safe_dump({"entries": [
+def test_ids_are_unique_across_batches(lib):
+    root = lib("guide", lambda d: None)
+    (root / "other.yaml").write_text(yaml.safe_dump({"entries": [
         yaml.safe_load((ll.DIR / "guide.yaml").read_text())["entries"][0]], "open_questions": []}))
     with pytest.raises(LibraryError, match="duplicate id"):
-        load_library(tmp_path)
+        load_library(root)
 
 
 @pytest.mark.parametrize("missing", ["approved_by", "approved_on", "ratified_on", "ratified_by"])
