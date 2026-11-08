@@ -136,7 +136,7 @@ def test_drafts_list_what_the_state_shows(content):
     assert not replay(content, "new_house", LOT, START).drafts  # the chair, 2026-11-06 (and plan 5's sheet)
     s = replay(all_draft(content), "new_house", LOT, START)
     assert "turns.yaml: full_stories" in s.drafts and "openings.yaml: new_house" in s.drafts
-    assert "entries.yaml: how_stories_count" in s.drafts and "wording.yaml: unsure" in s.drafts
+    assert "library/guide: how_stories_count" in s.drafts and "wording.yaml: unsure" in s.drafts
 
 
 # --- plan 3: Change ("revisit") ---
