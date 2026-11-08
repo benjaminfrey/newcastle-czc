@@ -14,6 +14,8 @@ import yaml
 from portal_api.forms.definitions import DefinitionError, _check_cite
 from portal_api.ruleset import load_ruleset
 
+from .readability import flags
+from .terms import article_9_terms
 from .model import KINDS, NEVER_WORDS, STATUSES, Library, LibraryEntry, LibraryError, as_date
 
 DIR = Path(__file__).resolve().parent / "entries"
@@ -116,7 +118,11 @@ def _load(root: Path) -> Library:
                                                **{k: as_date(e.get(k)) for k in _DATES},
                                                "batch": batch})
     digest = hashlib.sha256(b"".join(p.read_bytes() for p in files)).hexdigest()
-    return Library(entries=entries, open_questions=questions, digest=digest)
+    terms = article_9_terms()
+    found = {i: f for i, e in entries.items() if (f := flags(e, terms))}
+    if terms is None:
+        found["library"] = ("article 9 terms not available",)
+    return Library(entries=entries, open_questions=questions, digest=digest, flags=found)
 
 
 def load_library(root: Path | None = None) -> Library:
