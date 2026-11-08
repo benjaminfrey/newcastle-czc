@@ -71,3 +71,9 @@ def mark_exported(conn: Connection, decision_ids: list[int], pull_ids: list[str]
     if pull_ids:
         conn.execute(text("UPDATE library_pull SET exported_at = now() WHERE entry_id = ANY(:ids)"),
                      {"ids": pull_ids})
+
+
+def clear_pulls(conn: Connection, entry_ids: list[str]) -> None:
+    """A fixed version was approved: its pull no longer stands."""
+    if entry_ids:
+        conn.execute(text("DELETE FROM library_pull WHERE entry_id = ANY(:ids)"), {"ids": entry_ids})

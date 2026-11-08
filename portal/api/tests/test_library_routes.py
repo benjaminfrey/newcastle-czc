@@ -103,3 +103,32 @@ def test_preview_fills_the_district(staff):
     r = staff.get("/api/library/entries/setbacks/preview?district=d1").json()
     assert r["answer"] == load_library().entries["setbacks"].answer and r["governs"]
     assert staff.get("/api/library/entries/nope/preview?district=d1").status_code == 404
+
+
+def test_the_record_round_trip(staff, engine, monkeypatch, capsys, lib, tmp_path):
+    """decisions (VM) -> apply --emit (VM) -> unpack (Mac) -> mark-exported (VM)."""
+    import json
+
+    from portal_api.library import unpack
+    monkeypatch.setenv("PORTAL_DATABASE_URL", str(engine.url.render_as_string(hide_password=False)))
+    root = lib("guide", lambda d: None)
+    staff.post("/api/library/entries/use_table/decision", json={"version": 1, "action": "send_back", "note": "Name it."})
+    staff.post("/api/library/entries/setbacks/pull", json={"version": 1, "why": "Checking"})
+    assert cli(["decisions"]) == 0
+    decided = tmp_path / "decided.json"
+    decided.write_text(capsys.readouterr().out)
+    assert {d["entry_id"] for d in json.loads(decided.read_text())["decisions"]} == {"use_table"}
+
+    assert cli(["apply", str(decided), "--root", str(root), "--chair", "chair@example.com",
+                "--person", "ceo@example.com=the Code Enforcement Officer", "--emit"]) == 0
+    result = tmp_path / "result.json"
+    result.write_text(capsys.readouterr().out)
+    out = tmp_path / "out"
+    out.mkdir()
+    assert unpack.main([str(result), str(out)]) == ["guide.yaml"]
+    assert "status: pulled" in (out / "guide.yaml").read_text()
+
+    assert cli(["mark-exported", str(result)]) == 0
+    capsys.readouterr()
+    assert cli(["decisions"]) == 0
+    assert json.loads(capsys.readouterr().out) == {"decisions": [], "superseded": [], "pulls": []}

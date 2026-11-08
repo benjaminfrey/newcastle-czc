@@ -106,9 +106,10 @@ def lib(tmp_path):
         shutil.copy(f, root / f.name)
 
     def edit(batch: str, change) -> Path:
+        from portal_api.library.write import dump_batch
         path = root / f"{batch}.yaml"
         data = yaml.safe_load(path.read_text())
         change(data)
-        path.write_text(yaml.safe_dump(data, sort_keys=False))
+        dump_batch(path, data["entries"], data.get("open_questions") or [])
         return root
     return edit
