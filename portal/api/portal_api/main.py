@@ -1,16 +1,18 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
+from starlette.concurrency import run_in_threadpool
 
 from portal_api.config import Settings
 from portal_api.db import make_engine
-from portal_api.library import view
+from portal_api.library import records, view
 from portal_api.mail import Mailer, SmtpMailer
 from portal_api.ratelimit import SlidingWindow
 from portal_api.scan import ClamdScanner, Scanner
 from portal_api.storage import ObjectStore, S3Store
 from portal_api.routes import attachments as attachment_routes, auth as auth_routes, forms as form_routes, \
-    guide as guide_routes, health, projects as project_routes, property as property_routes, screener as screener_routes
+    guide as guide_routes, health, library as library_routes, projects as project_routes, property as property_routes, \
+    screener as screener_routes
 
 
 @asynccontextmanager
@@ -20,7 +22,14 @@ async def _lifespan(app: FastAPI):
     app.state.engine.dispose()
 
 
-_PRIVATE = ("/api/projects", "/api/attachments", "/api/me", "/api/auth")
+_PRIVATE = ("/api/projects", "/api/attachments", "/api/me", "/api/auth", "/api/library")
+# Requests that show library entries read the pulls first: a pull takes effect at once (design 2, §8).
+_SHOWS_ENTRIES = ("/api/projects", "/api/library")
+
+
+def _pulled(engine) -> frozenset[str]:
+    with engine.connect() as conn:
+        return records.pulled(conn)
 
 
 def create_app(settings: Settings | None = None, mailer: Mailer | None = None,
@@ -39,7 +48,11 @@ def create_app(settings: Settings | None = None, mailer: Mailer | None = None,
     @app.middleware("http")
     async def _library_view(request: Request, call_next):
         # Which library entries this request may show (design 2, §5), read by the guide's content.
-        view.set_view(view.View(public=settings.public, covers_standards=settings.library_covers_standards))
+        pulled = frozenset()
+        if request.url.path.startswith(_SHOWS_ENTRIES):
+            pulled = await run_in_threadpool(_pulled, app.state.engine)
+        view.set_view(view.View(public=settings.public, pulled=pulled,
+                                covers_standards=settings.library_covers_standards))
         return await call_next(request)
 
     @app.middleware("http")
@@ -59,4 +72,5 @@ def create_app(settings: Settings | None = None, mailer: Mailer | None = None,
     app.include_router(project_routes.router)
     app.include_router(attachment_routes.router)
     app.include_router(guide_routes.router)
+    app.include_router(library_routes.router)
     return app

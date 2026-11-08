@@ -177,3 +177,27 @@ def require_applicant(request: Request, conn: Connection = transaction) -> Appli
 
 # For route signatures: `applicant: Applicant = auth.require`.
 require = Depends(require_applicant, scope="function")
+
+
+STAFF_ROLES = frozenset({"staff", "admin"})
+
+
+def require_staff_member(request: Request, conn: Connection = transaction) -> Applicant:
+    """Town staff only (design 2, §7): signed out is 401, a resident is 403."""
+    applicant = require_applicant(request, conn)
+    if applicant.role not in STAFF_ROLES:
+        raise HTTPException(status_code=403, detail="staff_only")
+    return applicant
+
+
+# For route signatures: `staff: Applicant = auth.require_staff`.
+require_staff = Depends(require_staff_member, scope="function")
+
+
+def set_role(conn: Connection, email: str, role: str) -> tuple[str, str] | None:
+    """(old, new) role for the account with this email, or None when there is no such account."""
+    old = conn.execute(text("SELECT role FROM applicant WHERE email = :e"), {"e": email.strip().lower()}).scalar()
+    if old is None:
+        return None
+    conn.execute(text("UPDATE applicant SET role = :r WHERE email = :e"), {"r": role, "e": email.strip().lower()})
+    return old, role
