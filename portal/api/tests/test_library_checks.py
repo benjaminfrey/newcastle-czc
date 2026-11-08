@@ -2,6 +2,7 @@
 
 import dataclasses
 import shutil
+from pathlib import Path
 
 import pytest
 
@@ -55,3 +56,12 @@ def test_a_changed_definitions_file_is_refused(tmp_path):
 
 def test_without_the_file_the_terms_check_is_skipped(tmp_path):
     assert article_9_terms(tmp_path / "missing.json") is None
+
+
+def test_a_shallow_install_has_no_terms_file_and_still_loads():
+    """In the API's container the package sits at /app/portal_api: there is no repo above it."""
+    from portal_api.library.terms import terms_file
+    assert terms_file(Path("/app/portal_api/library/terms.py")) is None
+    deep = Path("/home/x/newcastle-czc/portal/api/portal_api/library/terms.py")
+    assert terms_file(deep) == Path("/home/x/newcastle-czc/build/permit-review/rulesets/adopted-v1.0/definitions.json")
+    assert article_9_terms(None) is None

@@ -14,14 +14,22 @@ from portal_api.ruleset import PINNED_KEY
 
 from .model import LibraryError
 
-_REPO = Path(__file__).resolve().parents[4]
-TERMS_FILE = _REPO / "build" / "permit-review" / "rulesets" / PINNED_KEY / "definitions.json"
+def terms_file(here: Path) -> Path | None:
+    """The permit-review copy of the definitions, in the repo above this package, or None where the
+    package isn't in the repo (the API's container installs it at /app/portal_api)."""
+    parents = here.parents
+    if len(parents) < 5:
+        return None
+    return parents[4] / "build" / "permit-review" / "rulesets" / PINNED_KEY / "definitions.json"
+
+
+TERMS_FILE = terms_file(Path(__file__).resolve())
 _MANIFEST = Path(__file__).resolve().parents[1] / "rulesets" / PINNED_KEY / "manifest.json"
 
 
-def article_9_terms(path: Path = TERMS_FILE) -> frozenset[str] | None:
+def article_9_terms(path: Path | None = TERMS_FILE) -> frozenset[str] | None:
     """The defined terms, lower-cased, or None when the file isn't on this machine."""
-    if not path.exists():
+    if path is None or not path.exists():
         return None
     body = path.read_bytes()
     pinned = json.loads(_MANIFEST.read_text())["content_sha256"]["definitions"]
