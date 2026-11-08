@@ -36,6 +36,8 @@ def _ordered(e: dict) -> dict:
 def dump_batch(path: Path, entries: list[dict], open_questions: list[str]) -> None:
     doc = {"entries": [_ordered(e) for e in entries], "open_questions": list(open_questions)}
     path.write_text(yaml.safe_dump(doc, sort_keys=False, allow_unicode=True, width=10_000))
+    from .load import _load
+    _load.cache_clear()   # a later load in this process reads what was just written
 
 
 def _day(at: str) -> date:

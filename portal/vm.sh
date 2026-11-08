@@ -23,12 +23,13 @@ sync() {
     --exclude '__pycache__/' --exclude '.pytest_cache/' --exclude '.env' \
     --exclude 'web/public/basemap/' \
     "$HERE/" "$VM:$REMOTE_ROOT/portal/"
-  # Reference data the GIS loaders read, kept at the same repo-relative paths on the VM.
+  # Reference data the GIS loaders read, kept at the same repo-relative paths on the VM; every
+  # ruleset, so the library's amendment check can compare a draft with the pinned one.
   (cd "$HERE/.." && rsync -azR \
     data/street-types/districts.geojson \
     source/exhibits/street-types/inventory.json \
     source/exhibits/cross-sections/types.json \
-    build/permit-review/rulesets/adopted-v1.0/ \
+    build/permit-review/rulesets/ \
     "$VM:$REMOTE_ROOT/")
 }
 
