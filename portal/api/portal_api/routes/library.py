@@ -62,7 +62,11 @@ def batch(batch: str, staff: auth.Applicant = auth.require_staff, conn: Connecti
                 "code": [{"cite": c, "text": _code(c)} for c in e.cites],
                 "pending": waiting.get(e.id), "pulled": pulls.get(e.id)}
                for e in lib.entries.values() if e.batch == batch]
-    return {"batch": batch, "open_questions": list(lib.open_questions[batch]), "entries": entries}
+    districts = [{"key": d["district_key"], "code": d["code"], "name": d["display_name"],
+                  "buildings": list((d.get("building_matrix") or {}).get("cols") or [])}
+                 for d in load_ruleset().districts]
+    return {"batch": batch, "open_questions": list(lib.open_questions[batch]), "entries": entries,
+            "districts": districts}
 
 
 @router.get("/api/library/entries/{entry_id}/preview")
@@ -104,8 +108,12 @@ def decision(entry_id: str, b: DecisionBody, staff: auth.Applicant = auth.requir
         return _json(422, "needs_note")
     if b.action == "edit" and (not b.body or set(b.body) != _TEXTS or not all(str(v).strip() for v in b.body.values())):
         return _json(422, "needs_body")
-    did = records.decide(conn, entry_id, b.version, b.action, staff.id, b.body if b.action == "edit" else None,
-                         (b.note or "").strip() or None)
+    body = b.body if b.action == "edit" else None
+    if b.action == "approve":
+        # Approve right after an edit approves the edited text (design 2, §5), never the text before it.
+        last = next((d for d in records.pending(conn) if d["entry_id"] == entry_id), None)
+        body = last["body"] if last and last["action"] in ("edit", "approve") and last["version"] == b.version else None
+    did = records.decide(conn, entry_id, b.version, b.action, staff.id, body, (b.note or "").strip() or None)
     return {"id": did}
 
 

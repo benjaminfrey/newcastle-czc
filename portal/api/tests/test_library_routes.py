@@ -132,3 +132,19 @@ def test_the_record_round_trip(staff, engine, monkeypatch, capsys, lib, tmp_path
     capsys.readouterr()
     assert cli(["decisions"]) == 0
     assert json.loads(capsys.readouterr().out) == {"decisions": [], "superseded": [], "pulls": []}
+
+
+def test_a_batch_lists_the_districts_and_their_buildings(staff):
+    ds = staff.get("/api/library/batches/guide").json()["districts"]
+    d1 = next(d for d in ds if d["key"] == "d1")
+    assert (d1["code"], d1["name"]) == ("D1", "D1 - Rural") and "Residential" in d1["buildings"]
+    assert next(d for d in ds if d["key"] == "sd-conserve")["buildings"] == []
+
+
+def test_approving_right_after_an_edit_approves_the_edited_text(staff):
+    url = "/api/library/entries/setbacks/decision"
+    texts = {"overline": "o", "answer": "The edited answer.", "detail": "d", "why": "w"}
+    staff.post(url, json={"version": 1, "action": "edit", "body": texts})
+    staff.post(url, json={"version": 1, "action": "approve"})
+    e = next(x for x in staff.get("/api/library/batches/guide").json()["entries"] if x["entry"]["id"] == "setbacks")
+    assert e["pending"]["action"] == "approve" and e["pending"]["body"] == texts

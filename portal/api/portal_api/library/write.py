@@ -91,6 +91,8 @@ def apply(root: Path, data: dict, *, chair: str, people: dict[str, str]) -> dict
                 refused.append([d["entry_id"], "pulled at this version: edit it first"])
                 continue
             _drop(e, _APPROVAL + _PULL + ("review_note",))
+            if d.get("body"):   # the edited text, approved as a new version
+                e.update({k: d["body"][k] for k in TEXTS}, version=e["version"] + 1)
             e.update(status="approved", approved_by=CHAIR_NAME, approved_on=_day(d["decided_at"]))
             cleared.append(d["entry_id"])
         else:

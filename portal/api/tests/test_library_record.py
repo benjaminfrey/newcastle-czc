@@ -151,3 +151,11 @@ def test_a_ratified_entry_is_live(lib):
     _apply(root, [_d("setbacks", "approve")])
     ratify(root, "guide", date(2026, 12, 3))
     assert is_live(load_library(root).entries["setbacks"])
+
+
+def test_approving_an_edit_writes_the_edited_text_as_a_new_approved_version(lib):
+    root = lib("guide", lambda d: None)
+    r = _apply(root, [_d("setbacks", "approve", body=TEXTS, did=2)], superseded=[1])
+    e = load_library(root).entries["setbacks"]
+    assert r["applied"] == ["setbacks"] and sorted(r["exported_decisions"]) == [1, 2]
+    assert (e.version, e.status, e.answer, e.approved_by) == (2, "approved", TEXTS["answer"], CHAIR_NAME)
