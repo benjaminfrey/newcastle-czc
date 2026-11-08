@@ -92,11 +92,11 @@ def test_a_pull_hides_the_entry_at_once(staff, alice):
     pid = started(alice)
     walk(alice, pid, [("lot", "yes"), ("confirm", "yes")])
     front(alice, pid)
-    assert alice.get(f"/api/projects/{pid}/guide").json()["current"]["why"]["id"] == "how_stories_count"
-    r = staff.post("/api/library/entries/how_stories_count/pull", json={"version": 1, "why": "Checking a word"})
+    assert alice.get(f"/api/projects/{pid}/guide").json()["current"]["why"]["id"] == "total_stories"
+    r = staff.post("/api/library/entries/total_stories/pull", json={"version": 1, "why": "Checking a word"})
     assert r.status_code == 201
-    assert alice.get(f"/api/projects/{pid}/guide").json()["current"]["why"] is None
-    assert load_library().entries["how_stories_count"].status == "approved"   # the files change only by commit
+    assert alice.get(f"/api/projects/{pid}/guide").json()["current"]["why"]["id"] == "how_stories_count"
+    assert load_library().entries["total_stories"].status == "draft"   # the files change only by commit
 
 
 def test_preview_fills_the_district(staff):

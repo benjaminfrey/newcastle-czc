@@ -94,7 +94,8 @@ def one_draft(monkeypatch):
 
 @pytest.fixture
 def lib(tmp_path):
-    """A writable copy of the explanation library, and a way to change one batch (design 2)."""
+    """A writable copy of the explanation library's guide batch (the four entries approved before
+    the library's design), and a way to change it: the library's mechanics, apart from the Articles."""
     import shutil
 
     import yaml
@@ -102,8 +103,7 @@ def lib(tmp_path):
     import portal_api.library.load as ll
     root = tmp_path / "library"
     root.mkdir()
-    for f in ll.DIR.glob("*.yaml"):
-        shutil.copy(f, root / f.name)
+    shutil.copy(ll.DIR / "guide.yaml", root / "guide.yaml")
 
     def edit(batch: str, change) -> Path:
         from portal_api.library.write import dump_batch

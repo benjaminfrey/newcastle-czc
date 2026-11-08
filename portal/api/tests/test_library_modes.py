@@ -59,19 +59,21 @@ def test_lan_shows_a_draft_and_marks_it(lib):
 
 def test_a_pulled_entry_is_shown_in_neither_mode():
     for public in (True, False):
-        _, s = _state(None, View(public=public, pulled=frozenset({"how_stories_count"})))
-        assert s.current.why is None
+        _, s = _state(None, View(public=public, pulled=frozenset({"total_stories"})))
+        assert s.current.why["id"] == "how_stories_count"     # the turn's own card, never the pulled one
+        _, s = _state(None, View(public=public, pulled=frozenset({"total_stories"})), START + STORIES)
+        assert dict(s.checks)["basement_exposed_5ft"]["reason"] == "no_entry"
 
 
-def test_a_standard_with_no_entry_goes_to_the_town():
-    _, s = _state(None, View(covers_standards=True), START + STORIES)
+def test_a_standard_with_no_entry_goes_to_the_town(lib):
+    _, s = _state(lib("guide", lambda d: None), View(covers_standards=True), START + STORIES)
     chk = dict(s.checks)["basement_exposed_5ft"]
     assert (chk["result"], chk["reason"]) == ("cannot_check", "no_entry")
     assert chk["min"] is None and chk["max"] is None
 
 
 def test_without_covering_the_old_checks_stand():
-    _, s = _state(None, View(), START + STORIES)
+    _, s = _state(None, View(covers_standards=False), START + STORIES)
     assert dict(s.checks)["basement_exposed_5ft"]["result"] == "fits"
 
 

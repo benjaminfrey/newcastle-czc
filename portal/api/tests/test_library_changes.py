@@ -41,12 +41,13 @@ def test_a_changed_subsection_flags_its_parent_cite(amended):
     assert c == {"2.3.c.3", "9.9.z.1"}
     lib = load_library()
     assert ("setbacks", ("2.3.c.3",)) in flagged(lib, c)
-    assert flagged(lib, frozenset({"2.3.c.3.a"}))[0][0] == "setbacks"   # a change under a cite counts
+    assert "setbacks" in dict(flagged(lib, frozenset({"2.3.c.3.a"})))   # a change under a cite counts
 
 
-def test_flag_lists_only_entries_citing_changes(amended):
+def test_flag_lists_only_entries_citing_changes(amended, lib):
     c = changed(section_texts(PINNED), section_texts(amended))
-    assert [i for i, _ in flagged(load_library(), c)] == ["setbacks"]
+    assert [i for i, _ in flagged(load_library(lib("guide", lambda d: None)), c)] == ["setbacks"]
+    assert {"front_setback", "side_setback", "rear_setback", "setbacks"} <= dict(flagged(load_library(), c)).keys()
 
 
 def test_apply_pulls_them(lib, amended):

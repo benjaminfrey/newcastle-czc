@@ -17,9 +17,9 @@ from .model import LibraryEntry, is_live
 class View:
     public: bool = False
     pulled: frozenset[str] = frozenset()
-    # Every standard the guide checks needs an entry, or it goes to the Town (decision 12).
-    # Off until Article 2's entries exist (library plan 1, task 9).
-    covers_standards: bool = False
+    # Every standard the guide checks needs an entry, or it goes to the Town (decision 12). Only a
+    # test of the checks themselves turns this off.
+    covers_standards: bool = True
 
 
 _current: ContextVar[View] = ContextVar("library_view", default=View())

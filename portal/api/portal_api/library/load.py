@@ -74,7 +74,7 @@ def _check(where: str, e: dict, ruleset) -> None:
 
 
 def _check_slots(where: str, e: dict, keys: frozenset[str]) -> None:
-    from .render import PARTS, placeholders
+    from .render import PARTS, placeholders, slot_keys
     slots = e.get("slots") or {}
     texts = [e.get(k) or "" for k in ("overline", "answer", "detail", "why")] + list((e.get("district_notes") or {}).values())
     for name in sorted(set().union(*(placeholders(t) for t in texts))):
@@ -83,8 +83,9 @@ def _check_slots(where: str, e: dict, keys: frozenset[str]) -> None:
     for name, slot in slots.items():
         if not isinstance(slot, dict) or slot.get("part") not in PARTS:
             raise LibraryError(f"{where}: slot {name}: part must be one of {', '.join(sorted(PARTS))}")
-        if slot.get("standard") not in keys:
-            raise LibraryError(f"{where}: slot {name}: no standard {slot.get('standard')}")
+        for key in slot_keys(slot):
+            if key not in keys:
+                raise LibraryError(f"{where}: slot {name}: no standard {key}")
     for key in e.get("standards") or []:
         if key not in keys:
             raise LibraryError(f"{where}: no standard {key}")

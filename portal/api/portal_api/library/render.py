@@ -14,7 +14,9 @@ from portal_api.standards import Standard, load_standards, standards_for
 
 from .model import Library, LibraryEntry
 
-PARTS = frozenset({"min", "max", "raw"})
+PARTS = frozenset({"min", "max", "range", "raw"})
+# How a range reads (part "range"): drafts for the chair, shown in each entry's memo.
+RANGE = {"both": "between {lo} and {hi}", "min": "at least {lo}", "max": "at most {hi}"}
 _UNITS = {"sf": "sq ft"}
 _ONE = {"stories": "story", "units": "unit"}
 
@@ -32,10 +34,29 @@ def placeholders(text: str) -> set[str]:
     return {name for _, name, _, _ in string.Formatter().parse(text) if name}
 
 
+def _shown(n: float) -> str:
+    return f"{n:,.0f}" if n == int(n) else f"{n:g}"
+
+
 def number(n: float, unit: str | None) -> str:
     unit = _ONE.get(unit, unit) if n == 1 else _UNITS.get(unit, unit)
-    shown = f"{n:,.0f}" if n == int(n) else f"{n:g}"
-    return f"{shown} {unit}" if unit else shown
+    return f"{_shown(n)} {unit}" if unit else _shown(n)
+
+
+def limit(s: Standard) -> str | None:
+    if s.min is not None and s.max is not None:
+        return RANGE["both"].format(lo=_shown(s.min), hi=number(s.max, s.unit))
+    if s.min is not None:
+        return RANGE["min"].format(lo=number(s.min, s.unit))
+    if s.max is not None:
+        return RANGE["max"].format(hi=number(s.max, s.unit))
+    return None
+
+
+def slot_keys(slot: dict) -> tuple[str, ...]:
+    """A slot names one standard key, or the same standard under each name the districts use."""
+    k = slot.get("standard")
+    return tuple(k) if isinstance(k, list) else (k,)
 
 
 @dataclass(frozen=True)
@@ -55,11 +76,15 @@ def _find(key: str, district_key: str, building: str | None) -> Standard | None:
 def render(e: LibraryEntry, district_key: str, building: str | None) -> Rendered | None:
     values, notes = {}, []
     for name, slot in e.slots.items():
-        s = _find(slot["standard"], district_key, building)
+        s = next((x for k in slot_keys(slot) if (x := _find(k, district_key, building)) is not None), None)
         if s is None:
             return None
         if slot["part"] == "raw":
             values[name] = s.raw
+        elif slot["part"] == "range":
+            if s.status != "checkable" or (shown := limit(s)) is None:
+                return None
+            values[name] = shown
         else:
             n = getattr(s, slot["part"])
             if s.status != "checkable" or n is None:

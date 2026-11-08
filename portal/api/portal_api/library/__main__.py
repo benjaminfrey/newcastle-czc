@@ -7,6 +7,7 @@ PyYAML are; `unpack.py` brings the changed files back to the Mac's checkout.
   python3 portal/api/portal_api/library/unpack.py result.json portal/api/portal_api/library/entries   (on the Mac)
   python -m portal_api.library mark-exported result.json  (after the chair commits the files)
   python -m portal_api.library ratify <batch> <YYYY-MM-DD> [--partial] --emit > result.json
+  python -m portal_api.library memo <batch> > memos/<date>-library-<batch>-for-review.md
   python -m portal_api.library flag --old <ruleset dir> --new <ruleset dir> [--apply --emit]
       (--apply only when the new ruleset is the adopted one being pinned)
 """
@@ -24,7 +25,8 @@ from portal_api.config import Settings
 
 from . import records
 from .changes import flag
-from .load import DIR
+from .load import DIR, load_library
+from .memo import render_memo
 from .write import apply, ratify
 
 ROLES = ("applicant", "staff", "admin")
@@ -69,6 +71,8 @@ def main(argv: list[str] | None = None) -> int:
     f.add_argument("--apply", action="store_true", help="pull them: only when the amendment is adopted")
     f.add_argument("--root", type=Path, default=DIR)
     f.add_argument("--emit", action="store_true")
+    mm = sub.add_parser("memo", help="the batch's memo, for the chair and the Board")
+    mm.add_argument("batch")
     args = p.parse_args(argv)
 
     if args.command == "role":
@@ -103,6 +107,8 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         out = {"ratified": done, "refused": [], "files": _files(args.root) if args.emit else {}}
         print(json.dumps(out, indent=2))
+    elif args.command == "memo":
+        print(render_memo(load_library(), args.batch, date.today().isoformat()))
     elif args.command == "flag":
         hits = flag(args.root, args.old, args.new, apply=args.apply)
         out = {"flagged": hits, "applied": args.apply, "files": _files(args.root) if args.emit and args.apply else {}}

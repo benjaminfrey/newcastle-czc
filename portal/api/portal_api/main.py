@@ -51,8 +51,7 @@ def create_app(settings: Settings | None = None, mailer: Mailer | None = None,
         pulled = frozenset()
         if request.url.path.startswith(_SHOWS_ENTRIES):
             pulled = await run_in_threadpool(_pulled, app.state.engine)
-        view.set_view(view.View(public=settings.public, pulled=pulled,
-                                covers_standards=settings.library_covers_standards))
+        view.set_view(view.View(public=settings.public, pulled=pulled))
         return await call_next(request)
 
     @app.middleware("http")

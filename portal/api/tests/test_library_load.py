@@ -17,7 +17,7 @@ def _entry(data: dict, entry_id: str) -> dict:
 
 def test_the_four_entries_load_from_the_library():
     lib = load_library()
-    assert set(lib.entries) == {"how_stories_count", "setbacks", "use_table", "use_not_listed"}
+    assert {i for i, e in lib.entries.items() if e.batch == "guide"} == {"how_stories_count", "setbacks", "use_table", "use_not_listed"}
     e = lib.entries["how_stories_count"]
     assert e.answer == "Only floors with full-height outside walls count."
     assert e.kind == "standard" and e.batch == "guide" and e.picture == "stories"

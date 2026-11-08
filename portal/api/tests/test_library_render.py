@@ -100,3 +100,30 @@ def test_entry_for_finds_the_claim(lib):
     root = lib("guide", lambda d: _add(d, standards=["building:total_stories"]))
     assert entry_for(load_library(root), "building:total_stories").id == "extra"
     assert entry_for(load_library(root), "building:building_width") is None
+
+
+def _range(**slot):
+    e = load_library().entries["setbacks"]
+    return dataclasses.replace(e, answer="Keep {side} from the side.", slots={"side": slot})
+
+
+def test_a_range_reads_as_people_say_it():
+    side = {"standard": "dimension:primary_building_placement.side_setback", "part": "range"}
+    assert render(_range(**side), "d1", None).answer == "Keep at least 15 ft from the side."
+    assert render(_range(**side), "d6", None).answer == "Keep between 0 and 5 ft from the side."
+    stories = {"standard": "building:total_stories", "part": "range"}
+    assert render(_range(**stories), "d1", "Residential").answer == "Keep at most 2 stories from the side."
+
+
+def test_a_slot_may_name_the_same_standard_under_another_key():
+    keys = ["dimension:primary_building_placement.side_setback", "dimension:building_placement.side_setback"]
+    districts = {s.district_key for s in standards_for_all() if s.field == "building_placement.side_setback"}
+    assert districts, "some district names its placement fields building_placement.*"
+    d = sorted(districts)[0]
+    assert render(_range(standard=keys, part="range"), d, None) is not None
+    assert render(_range(standard=keys[:1], part="range"), d, None) is None
+
+
+def standards_for_all():
+    from portal_api.standards import load_standards
+    return load_standards()

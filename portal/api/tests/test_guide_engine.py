@@ -133,10 +133,11 @@ def test_free_text_is_not_an_action():
 
 
 def test_drafts_list_what_the_state_shows(content):
-    assert not replay(content, "new_house", LOT, START).drafts  # the chair, 2026-11-06 (and plan 5's sheet)
+    # The chair approved the guide's words on 2026-11-06; Article 2's explanations are drafts (design 2).
+    assert replay(content, "new_house", LOT, START).drafts == ("library/article-02: total_stories",)
     s = replay(all_draft(content), "new_house", LOT, START)
     assert "turns.yaml: full_stories" in s.drafts and "openings.yaml: new_house" in s.drafts
-    assert "library/guide: how_stories_count" in s.drafts and "wording.yaml: unsure" in s.drafts
+    assert "library/article-02: total_stories" in s.drafts and "wording.yaml: unsure" in s.drafts
 
 
 # --- plan 3: Change ("revisit") ---
