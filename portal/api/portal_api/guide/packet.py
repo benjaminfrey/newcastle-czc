@@ -123,8 +123,7 @@ def build(conn: Connection, row, lot, opening: str, state, needs: dict) -> dict:
         return asked.get(turn_id) or (turn.ask if turn else None)
 
     def why(turn_id):
-        turn = content.turn(turn_id) if turn_id else None
-        return explain.entry(turn.why) if turn and turn.why else None
+        return explain.why_for(content.turn(turn_id) if turn_id else None)
 
     asked_reading = next((s.ask for s, v in reversed(state.history) if s.turn_id == "confirm" and v == "yes"), None)
     town, fits = checklist_of(state, ask, why)

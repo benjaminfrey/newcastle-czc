@@ -17,6 +17,7 @@ services:
     environment:
       PORTAL_ALLOW_STALE_PARCELS: "true"
       PORTAL_ALLOW_DRAFT_RULES: "true"
+      PORTAL_PUBLIC: "false"
   web:
     # The guided builder's preview (/guide/preview) is built into the LAN copy only.
     build:

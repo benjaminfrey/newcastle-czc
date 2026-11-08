@@ -21,6 +21,8 @@ from portal_api.guide.checks import Check, check_turn, stories_settled
 from portal_api.guide import endings
 from portal_api.guide.content import Answer, Content, Turn, drafts_in
 from portal_api.guide.drawing import frontages, fronting
+from portal_api.library.render import entry_for_spec, render
+from portal_api.ruleset import district_key_for
 
 UNSURE = "unsure"
 PICK_OPENING = "pick_opening"
@@ -130,12 +132,39 @@ class _Build:
         self.wording.append(key)
         return self.content.wording[key]["text"]
 
-    def entry(self, key: str) -> dict:
-        e = self.content.entries[key]
+    def entry(self, key: str) -> dict | None:
+        """An entry as the person reads it, or None when this request's view may not show it."""
+        e = self.content.entries.get(key)
+        if e is None:
+            return None
         self.entries.append(key)
         return {"id": e.id, "overline": e.overline, "answer": e.answer, "detail": e.detail, "why": e.why,
                 "cites": list(e.cites), "version": e.version, "governs": self.word("governs"),
-                "picture": e.picture, "picture_alt": e.picture_alt}
+                "picture": e.picture, "picture_alt": e.picture_alt, "interpretations": []}
+
+    def standard_entry(self, spec: dict | None) -> tuple[bool, dict | None]:
+        """(claimed, the entry filled in for this lot): the entry that explains a turn's standard
+        (design 2, §4), for the lot's first district. Claimed but not filled in means the Code
+        doesn't establish the value there."""
+        if spec is None:
+            return False, None
+        e = entry_for_spec(self.content.entries, spec)
+        if e is None:
+            return False, None
+        keys = [district_key_for(c) for c in self.lot.district_codes]
+        r = render(e, keys[0], spec.get("building")) if keys and keys[0] else None
+        if r is None:
+            return True, None
+        out = self.entry(e.id)
+        return True, {**out, "answer": r.answer, "detail": r.detail, "interpretations": list(r.interpretations)}
+
+    def why_for(self, turn: Turn | None) -> dict | None:
+        if turn is None:
+            return None
+        claimed, filled = self.standard_entry(turn.standard)
+        if claimed:
+            return filled
+        return self.entry(turn.why) if turn.why else None
 
     def answers(self, turn: Turn, facts: dict) -> tuple:
         if turn.answers_from == "use_groups":
@@ -199,8 +228,8 @@ class _Build:
             turn_id=turn.id, kind=turn.kind, step=self.step(turn.step, facts), ask=self.ask(turn), help=self.help(turn),
             answers=answers,
             input={"unit": turn.unit, "min": turn.min, "max": turn.max} if turn.kind == "number" else None,
-            why=self.entry(turn.why) if turn.why else None,
-            defines=tuple(self.entry(d) for d in turn.defines),
+            why=self.why_for(turn),
+            defines=tuple(x for d in turn.defines if (x := self.entry(d)) is not None),
             facts_shown=self.facts_shown() if turn.kind == "lot" else None, drawing=turn.drawing)
 
     def picker(self, facts: dict) -> Shown:
@@ -316,13 +345,19 @@ def _derive(content: Content, opening: str, lot: Lot, live: tuple, undo: tuple =
 
 
 def _check(content: Content, turn: Turn, facts: dict, lot: Lot, unsure: list, settled_before: bool) -> Check | None:
-    """A turn's own check, or, for a computed value, the check on the turn that completes it."""
+    """A turn's own check, or, for a computed value, the check on the turn that completes it.
+    Where every standard needs an entry, one without goes to the Town, with no number (decision 12)."""
     if turn.computed is None:
-        return check_turn(turn, facts, lot, unsure)
-    if settled_before or not stories_settled(facts, unsure):
-        return None
-    standard = next((t.standard for t in content.turns if t.computed == turn.computed and t.standard), None)
-    return check_turn(turn, facts, lot, unsure, standard=standard)
+        standard = turn.standard
+        chk = check_turn(turn, facts, lot, unsure)
+    else:
+        if settled_before or not stories_settled(facts, unsure):
+            return None
+        standard = next((t.standard for t in content.turns if t.computed == turn.computed and t.standard), None)
+        chk = check_turn(turn, facts, lot, unsure, standard=standard)
+    if chk is not None and content.covers_standards and entry_for_spec(content.entries, standard) is None:
+        return Check("cannot_check", chk.value, None, None, chk.unit, None, None, None, "no_entry", chk.standard_keys, ())
+    return chk
 
 
 def _number(v: float) -> str:

@@ -75,3 +75,15 @@ def render(e: LibraryEntry, district_key: str, building: str | None) -> Rendered
 
 def entry_for(lib: Library, key: str) -> LibraryEntry | None:
     return next((e for e in lib.entries.values() if key in e.standards), None)
+
+
+def spec_key(spec: dict) -> str:
+    """A turn's standard ({source, field, building}) as a standard key."""
+    return f"dimension:{spec['field']}" if spec["source"] == "dimension" else f"building:{spec['field']}"
+
+
+def entry_for_spec(entries: dict[str, LibraryEntry], spec: dict | None) -> LibraryEntry | None:
+    if spec is None:
+        return None
+    key = spec_key(spec)
+    return next((e for e in entries.values() if key in e.standards), None)

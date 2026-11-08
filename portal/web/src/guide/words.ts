@@ -89,6 +89,9 @@ export const WORDS = {
     lot_disputed: "The Town's facts about your lot, which you said aren't right",
     no_district: "Which district rules apply to your lot",
     not_checkable: "A limit the guide can't check yet",
+    // A standard with no approved explanation yet goes to the Town (design 2, decision 12), in the
+    // approved words for a limit the guide can't check.
+    no_entry: "A limit the guide can't check yet",
     two_districts: "Your lot is in two districts with different limits",
     unknown_input: "A number that rests on an answer you weren't sure of",
     board_decides: "A number the Planning Board can allow",

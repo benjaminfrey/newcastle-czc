@@ -7,6 +7,7 @@ fact and bounds, and a template may fill only the slots listed here. Nothing a p
 ever read by this package (spec decision 14).
 """
 
+import dataclasses
 import functools
 import hashlib
 import re
@@ -20,7 +21,7 @@ import yaml
 from portal_api.forms.definitions import DefinitionError, _check_cite, _check_status, load_definitions
 from portal_api.forms.expr import validate as validate_condition
 from portal_api.forms.parts import load_parts
-from portal_api.library import LibraryEntry, LibraryError, load_library
+from portal_api.library import LibraryEntry, LibraryError, is_live, load_library, view
 from portal_api.library.model import NEVER_WORDS  # noqa: F401 (re-exported: the guide's tests and endings use it)
 from portal_api.ruleset import load_ruleset
 
@@ -112,6 +113,7 @@ class Content:
     use_answers: dict      # use group key -> its uses as answers (approved content, Code names)
     group_answers: tuple   # the use groups as answers
     digest: str
+    covers_standards: bool = False   # this request's view (library/view.py)
 
     def turn(self, turn_id: str) -> Turn | None:
         return next((t for t in self.turns if t.id == turn_id), None)
@@ -242,7 +244,11 @@ def _load(root: Path, library_root: Path | None) -> Content:
 
 
 def load_content(root: Path | None = None, library_root: Path | None = None) -> Content:
-    return _load((root or DIR).resolve(), library_root.resolve() if library_root else None)
+    """The guide's content, with only the entries this request's view may show."""
+    c = _load((root or DIR).resolve(), library_root.resolve() if library_root else None)
+    v = view.current()
+    entries = {k: e for k, e in c.entries.items() if view.visible(e, public=v.public, pulled=v.pulled)}
+    return dataclasses.replace(c, entries=entries, covers_standards=v.covers_standards)
 
 
 def drafts_in(content: Content, *, opening: str, turn_ids: list[str], entry_ids: list[str],
@@ -257,7 +263,7 @@ def drafts_in(content: Content, *, opening: str, turn_ids: list[str], entry_ids:
         if turn is not None and turn.status == "draft":
             out.append(f"turns.yaml: {t}")
     for e in dict.fromkeys(entry_ids):
-        if e in content.entries and content.entries[e].status == "draft":
+        if e in content.entries and not is_live(content.entries[e]):
             out.append(f"library/{content.entries[e].batch}: {e}")
     for w in dict.fromkeys(wording_keys):
         if w in content.wording and content.wording[w].get("status") == "draft":

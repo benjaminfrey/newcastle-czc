@@ -4,7 +4,9 @@ import type { Refusal } from "../projects";
 
 export type Step = { n: number; of: number; label: string };
 export type Entry = { id: string; overline: string; answer: string; detail: string; why: string | null;
-  cites: string[]; version: number; governs: string; picture?: string | null; picture_alt?: string | null };
+  cites: string[]; version: number; governs: string; picture?: string | null; picture_alt?: string | null;
+  // The chair's recorded readings behind its numbers, shown as the Town's interpretation (design 2, decision 16).
+  interpretations?: string[] };
 export type Check = {
   result: "fits" | "outside" | "cannot_check"; value: number | null; min: number | null; max: number | null;
   unit: string | null; room: number | null; gap: number | null; direction: "over" | "short" | null;
