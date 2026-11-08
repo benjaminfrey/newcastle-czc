@@ -8,13 +8,13 @@
 
 ---
 
-Each entry explains one of the Code's standards in plain words, the way a resident reads it in the guide. Numbers are never typed into an entry: they are filled in from the Code's tables for each district and building, as the tables below show. Where the Code gives no value, the standard goes to the Town. A number marked *(the Town's reading)* rests on the chair's recorded reading where the Code is silent. Every entry carries the line "The adopted Code governs if anything here differs from it."
+Each entry explains one of the Code's standards in plain words, the way a resident reads it in the guide. Numbers are never typed into an entry: they are filled in from the Code's tables for each district and building, as the tables below show. Where the Code gives no value, the standard goes to the Town. A number marked *(The Town's reading of the Code)* rests on the chair's recorded reading where the Code is silent. Every entry carries the line "The adopted Code governs if anything here differs from it."
 
 ## Why · how far from the front
 
 > Your building sits {front} from the front lot line.
 
-Measure from the front lot line to the closest outside wall, straight out from the line. On a corner lot, the front is the line along the busier road.
+Measure from the front lot line to the closest outside wall, straight out from the line. On a corner lot, the Code makes the front the line along the busier road, by its Type.
 
 **Why the rule exists:** A front setback keeps buildings in line along the street, so each street keeps its character.
 
@@ -83,7 +83,7 @@ Measure from each side lot line to the closest outside wall. Where your lot meet
 | D3 - Neighborhood Business | — | Your building sits at least 12 ft from each side lot line. |
 | D4 - Village Residential | — | Your building sits at least 8 ft from each side lot line. |
 | D5 - Village Business | — | Your building sits between 0 and 25 ft from each side lot line. |
-| D6 - Town Center | — | Your building sits between 0 and 5 ft from each side lot line. *(the Town's reading)* |
+| D6 - Town Center | — | Your building sits between 0 and 5 ft from each side lot line. *(The Town's reading of the Code)* |
 | SD - Historic | — | Your building sits at least 8 ft from each side lot line. |
 | SD - Conservation | — | Goes to the Town |
 | SD - Highway Commercial | — | Your building sits at least 5 ft from each side lot line. |
@@ -240,11 +240,11 @@ Measure from the rear lot line to the closest outside wall. Small structures lik
 
 > A lot here is {width} wide.
 
-Lot width is the length of the front lot line, or the distance between the side lot lines at the front setback, whichever is greater. A lot narrower than this can still be built on if it meets the setbacks.
+Lot width is the length of the front lot line, or the distance between the side lot lines at the maximum front setback, whichever is greater. This applies when a lot is created. An existing lot that is narrower can still be built on if it meets the setbacks.
 
 **Why the rule exists:** Lot sizes keep the pattern of each neighborhood.
 
-**The Code:** 2.2.a.1, 2.2.d.2, 2.2.f.6 · **Defined terms:** Lot Width
+**The Code:** 2.2.a.1, 2.2.b.1, 2.2.d.2, 2.2.f.6 · **Defined terms:** Lot Width
 
 | District | Building | What a resident reads |
 |:---|:---|:---|
@@ -304,8 +304,8 @@ This counts the main building only. Porches, wings and other parts the Code call
 
 | District | Building | What a resident reads |
 |:---|:---|:---|
-| D1 - Rural | Residential | The main part of the building is at most 50 ft wide. *(the Town's reading)* |
-| D1 - Rural | General Accessory | The main part of the building is at most 30 ft wide. *(the Town's reading)* |
+| D1 - Rural | Residential | The main part of the building is at most 50 ft wide. *(The Town's reading of the Code)* |
+| D1 - Rural | General Accessory | The main part of the building is at most 30 ft wide. *(The Town's reading of the Code)* |
 | D1 - Rural | Agricultural Use | Goes to the Town |
 | D2 - Neighborhood Residential | Residential | The main part of the building is at most 75 ft wide. |
 | D2 - Neighborhood Residential | Mixed-Use | The main part of the building is at most 50 ft wide. |
@@ -325,26 +325,26 @@ This counts the main building only. Porches, wings and other parts the Code call
 | D6 - Town Center | Mixed-Use | The main part of the building is at most 90 ft wide. |
 | D6 - Town Center | Multi-Unit Commercial | The main part of the building is at most 90 ft wide. |
 | D6 - Town Center | Commercial Accessory | The main part of the building is at most 30 ft wide. |
-| SD - Historic | Residential | The main part of the building is at most 75 ft wide. *(the Town's reading)* |
-| SD - Historic | Residential Accessory | The main part of the building is at most 30 ft wide. *(the Town's reading)* |
+| SD - Historic | Residential | The main part of the building is at most 75 ft wide. *(The Town's reading of the Code)* |
+| SD - Historic | Residential Accessory | The main part of the building is at most 30 ft wide. *(The Town's reading of the Code)* |
 | SD - Conservation | — | Goes to the Town |
-| SD - Highway Commercial | Single Unit Commercial | The main part of the building is at most 120 ft wide. *(the Town's reading)* |
-| SD - Highway Commercial | Mixed-Use | The main part of the building is at most 120 ft wide. *(the Town's reading)* |
-| SD - Highway Commercial | Multi-Unit Commercial | The main part of the building is at most 120 ft wide. *(the Town's reading)* |
-| SD - Highway Commercial | Commercial Accessory | The main part of the building is at most 30 ft wide. *(the Town's reading)* |
-| SD - Highway Commercial | Residential Accessory | The main part of the building is at most 30 ft wide. *(the Town's reading)* |
-| SD - Rural Highway | Single Unit Commercial | The main part of the building is at most 120 ft wide. *(the Town's reading)* |
-| SD - Rural Highway | Mixed-Use | The main part of the building is at most 120 ft wide. *(the Town's reading)* |
-| SD - Rural Highway | Multi-Unit Commercial | The main part of the building is at most 120 ft wide. *(the Town's reading)* |
-| SD - Rural Highway | Commercial Accessory | The main part of the building is at most 30 ft wide. *(the Town's reading)* |
-| SD - Rural Highway | Residential Accessory | The main part of the building is at most 30 ft wide. *(the Town's reading)* |
+| SD - Highway Commercial | Single Unit Commercial | The main part of the building is at most 120 ft wide. *(The Town's reading of the Code)* |
+| SD - Highway Commercial | Mixed-Use | The main part of the building is at most 120 ft wide. *(The Town's reading of the Code)* |
+| SD - Highway Commercial | Multi-Unit Commercial | The main part of the building is at most 120 ft wide. *(The Town's reading of the Code)* |
+| SD - Highway Commercial | Commercial Accessory | The main part of the building is at most 30 ft wide. *(The Town's reading of the Code)* |
+| SD - Highway Commercial | Residential Accessory | The main part of the building is at most 30 ft wide. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Single Unit Commercial | The main part of the building is at most 120 ft wide. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Mixed-Use | The main part of the building is at most 120 ft wide. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Multi-Unit Commercial | The main part of the building is at most 120 ft wide. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Commercial Accessory | The main part of the building is at most 30 ft wide. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Residential Accessory | The main part of the building is at most 30 ft wide. *(The Town's reading of the Code)* |
 | SD - Campus | — | Goes to the Town |
 | SD - Marine | — | Goes to the Town |
-| SD - Fabrication | Single Unit Commercial | The main part of the building is at most 120 ft wide. *(the Town's reading)* |
-| SD - Fabrication | Mixed-Use | The main part of the building is at most 150 ft wide. *(the Town's reading)* |
-| SD - Fabrication | Multi-Unit Commercial | The main part of the building is at most 120 ft wide. *(the Town's reading)* |
-| SD - Fabrication | Commercial Accessory | The main part of the building is at most 30 ft wide. *(the Town's reading)* |
-| SD - Fabrication | Residential Accessory | The main part of the building is at most 30 ft wide. *(the Town's reading)* |
+| SD - Fabrication | Single Unit Commercial | The main part of the building is at most 120 ft wide. *(The Town's reading of the Code)* |
+| SD - Fabrication | Mixed-Use | The main part of the building is at most 150 ft wide. *(The Town's reading of the Code)* |
+| SD - Fabrication | Multi-Unit Commercial | The main part of the building is at most 120 ft wide. *(The Town's reading of the Code)* |
+| SD - Fabrication | Commercial Accessory | The main part of the building is at most 30 ft wide. *(The Town's reading of the Code)* |
+| SD - Fabrication | Residential Accessory | The main part of the building is at most 30 ft wide. *(The Town's reading of the Code)* |
 
 *The Town's reading:* Decided by Ben Frey, Planning Board chair on 2026-11-02: D2-D6's own pages say so (BUILDINGS STANDARDS note 1: 'Unless otherwise noted, all measurements represent the maximum permitted values'); the chair reads the same rule into D1 and the SD districts, whose pages lack the note. Also §5.3.c.4 (Width, Depth and Total Square Feet limit the Main Building Mass; components add beyond it) and §5.15.c.3 (expansion 'to the extent permitted by the assigned building type'). Coverage memo Q1.
 
@@ -362,8 +362,8 @@ This counts the main building only. Porches, wings and other parts the Code call
 
 | District | Building | What a resident reads |
 |:---|:---|:---|
-| D1 - Rural | Residential | The main part of the building is at most 50 ft deep. *(the Town's reading)* |
-| D1 - Rural | General Accessory | The main part of the building is at most 40 ft deep. *(the Town's reading)* |
+| D1 - Rural | Residential | The main part of the building is at most 50 ft deep. *(The Town's reading of the Code)* |
+| D1 - Rural | General Accessory | The main part of the building is at most 40 ft deep. *(The Town's reading of the Code)* |
 | D1 - Rural | Agricultural Use | Goes to the Town |
 | D2 - Neighborhood Residential | Residential | The main part of the building is at most 50 ft deep. |
 | D2 - Neighborhood Residential | Mixed-Use | The main part of the building is at most 50 ft deep. |
@@ -383,26 +383,26 @@ This counts the main building only. Porches, wings and other parts the Code call
 | D6 - Town Center | Mixed-Use | The main part of the building is at most 90 ft deep. |
 | D6 - Town Center | Multi-Unit Commercial | The main part of the building is at most 90 ft deep. |
 | D6 - Town Center | Commercial Accessory | The main part of the building is at most 40 ft deep. |
-| SD - Historic | Residential | The main part of the building is at most 50 ft deep. *(the Town's reading)* |
-| SD - Historic | Residential Accessory | The main part of the building is at most 40 ft deep. *(the Town's reading)* |
+| SD - Historic | Residential | The main part of the building is at most 50 ft deep. *(The Town's reading of the Code)* |
+| SD - Historic | Residential Accessory | The main part of the building is at most 40 ft deep. *(The Town's reading of the Code)* |
 | SD - Conservation | — | Goes to the Town |
 | SD - Highway Commercial | Single Unit Commercial | Goes to the Town |
 | SD - Highway Commercial | Mixed-Use | Goes to the Town |
 | SD - Highway Commercial | Multi-Unit Commercial | Goes to the Town |
-| SD - Highway Commercial | Commercial Accessory | The main part of the building is at most 40 ft deep. *(the Town's reading)* |
-| SD - Highway Commercial | Residential Accessory | The main part of the building is at most 40 ft deep. *(the Town's reading)* |
+| SD - Highway Commercial | Commercial Accessory | The main part of the building is at most 40 ft deep. *(The Town's reading of the Code)* |
+| SD - Highway Commercial | Residential Accessory | The main part of the building is at most 40 ft deep. *(The Town's reading of the Code)* |
 | SD - Rural Highway | Single Unit Commercial | Goes to the Town |
 | SD - Rural Highway | Mixed-Use | Goes to the Town |
 | SD - Rural Highway | Multi-Unit Commercial | Goes to the Town |
-| SD - Rural Highway | Commercial Accessory | The main part of the building is at most 40 ft deep. *(the Town's reading)* |
-| SD - Rural Highway | Residential Accessory | The main part of the building is at most 40 ft deep. *(the Town's reading)* |
+| SD - Rural Highway | Commercial Accessory | The main part of the building is at most 40 ft deep. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Residential Accessory | The main part of the building is at most 40 ft deep. *(The Town's reading of the Code)* |
 | SD - Campus | — | Goes to the Town |
 | SD - Marine | — | Goes to the Town |
 | SD - Fabrication | Single Unit Commercial | Goes to the Town |
 | SD - Fabrication | Mixed-Use | Goes to the Town |
 | SD - Fabrication | Multi-Unit Commercial | Goes to the Town |
-| SD - Fabrication | Commercial Accessory | The main part of the building is at most 40 ft deep. *(the Town's reading)* |
-| SD - Fabrication | Residential Accessory | The main part of the building is at most 40 ft deep. *(the Town's reading)* |
+| SD - Fabrication | Commercial Accessory | The main part of the building is at most 40 ft deep. *(The Town's reading of the Code)* |
+| SD - Fabrication | Residential Accessory | The main part of the building is at most 40 ft deep. *(The Town's reading of the Code)* |
 
 *The Town's reading:* Decided by Ben Frey, Planning Board chair on 2026-11-02: D2-D6's own pages say so (BUILDINGS STANDARDS note 1: 'Unless otherwise noted, all measurements represent the maximum permitted values'); the chair reads the same rule into D1 and the SD districts, whose pages lack the note. Also §5.3.c.4 and §5.15.c.3. Coverage memo Q2.
 
@@ -433,7 +433,7 @@ This counts the main building only. Living space inside a pitched roof doesn't c
 | D4 - Village Residential | Residential | The main part of the building has at most 8,000 sq ft of floor. |
 | D4 - Village Residential | Residential Accessory | Goes to the Town |
 | D5 - Village Business | Residential | Goes to the Town |
-| D5 - Village Business | Mixed-Use | The main part of the building has at most 12,000 sq ft of floor. *(the Town's reading)* |
+| D5 - Village Business | Mixed-Use | The main part of the building has at most 12,000 sq ft of floor. *(The Town's reading of the Code)* |
 | D5 - Village Business | Multi-Unit Commercial | Goes to the Town |
 | D5 - Village Business | Residential Accessory | Goes to the Town |
 | D5 - Village Business | Commercial Accessory | Goes to the Town |
@@ -444,21 +444,21 @@ This counts the main building only. Living space inside a pitched roof doesn't c
 | SD - Historic | Residential | Goes to the Town |
 | SD - Historic | Residential Accessory | Goes to the Town |
 | SD - Conservation | — | Goes to the Town |
-| SD - Highway Commercial | Single Unit Commercial | The main part of the building has at most 60,000 sq ft of floor. *(the Town's reading)* |
-| SD - Highway Commercial | Mixed-Use | The main part of the building has at most 40,000 sq ft of floor. *(the Town's reading)* |
-| SD - Highway Commercial | Multi-Unit Commercial | The main part of the building has at most 60,000 sq ft of floor. *(the Town's reading)* |
+| SD - Highway Commercial | Single Unit Commercial | The main part of the building has at most 60,000 sq ft of floor. *(The Town's reading of the Code)* |
+| SD - Highway Commercial | Mixed-Use | The main part of the building has at most 40,000 sq ft of floor. *(The Town's reading of the Code)* |
+| SD - Highway Commercial | Multi-Unit Commercial | The main part of the building has at most 60,000 sq ft of floor. *(The Town's reading of the Code)* |
 | SD - Highway Commercial | Commercial Accessory | Goes to the Town |
 | SD - Highway Commercial | Residential Accessory | Goes to the Town |
-| SD - Rural Highway | Single Unit Commercial | The main part of the building has at most 60,000 sq ft of floor. *(the Town's reading)* |
-| SD - Rural Highway | Mixed-Use | The main part of the building has at most 40,000 sq ft of floor. *(the Town's reading)* |
-| SD - Rural Highway | Multi-Unit Commercial | The main part of the building has at most 60,000 sq ft of floor. *(the Town's reading)* |
+| SD - Rural Highway | Single Unit Commercial | The main part of the building has at most 60,000 sq ft of floor. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Mixed-Use | The main part of the building has at most 40,000 sq ft of floor. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Multi-Unit Commercial | The main part of the building has at most 60,000 sq ft of floor. *(The Town's reading of the Code)* |
 | SD - Rural Highway | Commercial Accessory | Goes to the Town |
 | SD - Rural Highway | Residential Accessory | Goes to the Town |
 | SD - Campus | — | Goes to the Town |
 | SD - Marine | — | Goes to the Town |
-| SD - Fabrication | Single Unit Commercial | The main part of the building has at most 50,000 sq ft of floor. *(the Town's reading)* |
-| SD - Fabrication | Mixed-Use | The main part of the building has at most 60,000 sq ft of floor. *(the Town's reading)* |
-| SD - Fabrication | Multi-Unit Commercial | The main part of the building has at most 50,000 sq ft of floor. *(the Town's reading)* |
+| SD - Fabrication | Single Unit Commercial | The main part of the building has at most 50,000 sq ft of floor. *(The Town's reading of the Code)* |
+| SD - Fabrication | Mixed-Use | The main part of the building has at most 60,000 sq ft of floor. *(The Town's reading of the Code)* |
+| SD - Fabrication | Multi-Unit Commercial | The main part of the building has at most 50,000 sq ft of floor. *(The Town's reading of the Code)* |
 | SD - Fabrication | Commercial Accessory | Goes to the Town |
 | SD - Fabrication | Residential Accessory | Goes to the Town |
 
@@ -478,8 +478,8 @@ Only floors with full-height outside walls count. Space inside a pitched roof us
 
 | District | Building | What a resident reads |
 |:---|:---|:---|
-| D1 - Rural | Residential | The building has at most 2 stories. *(the Town's reading)* |
-| D1 - Rural | General Accessory | The building has at most 1 story. *(the Town's reading)* |
+| D1 - Rural | Residential | The building has at most 2 stories. *(The Town's reading of the Code)* |
+| D1 - Rural | General Accessory | The building has at most 1 story. *(The Town's reading of the Code)* |
 | D1 - Rural | Agricultural Use | Goes to the Town |
 | D2 - Neighborhood Residential | Residential | The building has at most 2 stories. |
 | D2 - Neighborhood Residential | Mixed-Use | The building has at most 2 stories. |
@@ -499,26 +499,26 @@ Only floors with full-height outside walls count. Space inside a pitched roof us
 | D6 - Town Center | Mixed-Use | The building has between 2 and 3 stories. |
 | D6 - Town Center | Multi-Unit Commercial | The building has between 2 and 3 stories. |
 | D6 - Town Center | Commercial Accessory | The building has at most 1 story. |
-| SD - Historic | Residential | The building has at most 2 stories. *(the Town's reading)* |
-| SD - Historic | Residential Accessory | The building has at most 1 story. *(the Town's reading)* |
+| SD - Historic | Residential | The building has at most 2 stories. *(The Town's reading of the Code)* |
+| SD - Historic | Residential Accessory | The building has at most 1 story. *(The Town's reading of the Code)* |
 | SD - Conservation | — | Goes to the Town |
-| SD - Highway Commercial | Single Unit Commercial | The building has at most 3 stories. *(the Town's reading)* |
-| SD - Highway Commercial | Mixed-Use | The building has at most 3 stories. *(the Town's reading)* |
-| SD - Highway Commercial | Multi-Unit Commercial | The building has at most 3 stories. *(the Town's reading)* |
-| SD - Highway Commercial | Commercial Accessory | The building has at most 1 story. *(the Town's reading)* |
-| SD - Highway Commercial | Residential Accessory | The building has at most 1 story. *(the Town's reading)* |
-| SD - Rural Highway | Single Unit Commercial | The building has at most 3 stories. *(the Town's reading)* |
-| SD - Rural Highway | Mixed-Use | The building has at most 3 stories. *(the Town's reading)* |
-| SD - Rural Highway | Multi-Unit Commercial | The building has at most 3 stories. *(the Town's reading)* |
-| SD - Rural Highway | Commercial Accessory | The building has at most 1 story. *(the Town's reading)* |
-| SD - Rural Highway | Residential Accessory | The building has at most 1 story. *(the Town's reading)* |
+| SD - Highway Commercial | Single Unit Commercial | The building has at most 3 stories. *(The Town's reading of the Code)* |
+| SD - Highway Commercial | Mixed-Use | The building has at most 3 stories. *(The Town's reading of the Code)* |
+| SD - Highway Commercial | Multi-Unit Commercial | The building has at most 3 stories. *(The Town's reading of the Code)* |
+| SD - Highway Commercial | Commercial Accessory | The building has at most 1 story. *(The Town's reading of the Code)* |
+| SD - Highway Commercial | Residential Accessory | The building has at most 1 story. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Single Unit Commercial | The building has at most 3 stories. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Mixed-Use | The building has at most 3 stories. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Multi-Unit Commercial | The building has at most 3 stories. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Commercial Accessory | The building has at most 1 story. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Residential Accessory | The building has at most 1 story. *(The Town's reading of the Code)* |
 | SD - Campus | — | Goes to the Town |
 | SD - Marine | — | Goes to the Town |
-| SD - Fabrication | Single Unit Commercial | The building has at most 2 stories. *(the Town's reading)* |
-| SD - Fabrication | Mixed-Use | The building has at most 2 stories. *(the Town's reading)* |
-| SD - Fabrication | Multi-Unit Commercial | The building has at most 2 stories. *(the Town's reading)* |
-| SD - Fabrication | Commercial Accessory | The building has at most 1 story. *(the Town's reading)* |
-| SD - Fabrication | Residential Accessory | The building has at most 1 story. *(the Town's reading)* |
+| SD - Fabrication | Single Unit Commercial | The building has at most 2 stories. *(The Town's reading of the Code)* |
+| SD - Fabrication | Mixed-Use | The building has at most 2 stories. *(The Town's reading of the Code)* |
+| SD - Fabrication | Multi-Unit Commercial | The building has at most 2 stories. *(The Town's reading of the Code)* |
+| SD - Fabrication | Commercial Accessory | The building has at most 1 story. *(The Town's reading of the Code)* |
+| SD - Fabrication | Residential Accessory | The building has at most 1 story. *(The Town's reading of the Code)* |
 
 *The Town's reading:* Decided by Ben Frey, Planning Board chair on 2026-11-02: D2-D6's own pages say so (BUILDINGS STANDARDS note 1: 'Unless otherwise noted, all measurements represent the maximum permitted values'); the chair reads the same rule into D1 and the SD districts, whose pages lack the note. Also §5.7.d.1 calls the Code's height standards, measured in stories (§5.7.c.1), maximums, and D6 states its minimum where it has one. Coverage memo Q3.
 
@@ -536,8 +536,8 @@ Measure from the surface of the first floor to the surface of the floor above. W
 
 | District | Building | What a resident reads |
 |:---|:---|:---|
-| D1 - Rural | Residential | The first floor is at most 12 ft tall. *(the Town's reading)* |
-| D1 - Rural | General Accessory | The first floor is at most 16 ft tall. *(the Town's reading)* |
+| D1 - Rural | Residential | The first floor is at most 12 ft tall. *(The Town's reading of the Code)* |
+| D1 - Rural | General Accessory | The first floor is at most 16 ft tall. *(The Town's reading of the Code)* |
 | D1 - Rural | Agricultural Use | Goes to the Town |
 | D2 - Neighborhood Residential | Residential | The first floor is at most 12 ft tall. |
 | D2 - Neighborhood Residential | Mixed-Use | The first floor is at most 12 ft tall. |
@@ -557,26 +557,26 @@ Measure from the surface of the first floor to the surface of the floor above. W
 | D6 - Town Center | Mixed-Use | The first floor is at most 15 ft tall. |
 | D6 - Town Center | Multi-Unit Commercial | The first floor is at most 15 ft tall. |
 | D6 - Town Center | Commercial Accessory | The first floor is at most 15 ft tall. |
-| SD - Historic | Residential | The first floor is at most 12 ft tall. *(the Town's reading)* |
-| SD - Historic | Residential Accessory | The first floor is at most 16 ft tall. *(the Town's reading)* |
+| SD - Historic | Residential | The first floor is at most 12 ft tall. *(The Town's reading of the Code)* |
+| SD - Historic | Residential Accessory | The first floor is at most 16 ft tall. *(The Town's reading of the Code)* |
 | SD - Conservation | — | Goes to the Town |
-| SD - Highway Commercial | Single Unit Commercial | The first floor is at most 12 ft tall. *(the Town's reading)* |
-| SD - Highway Commercial | Mixed-Use | The first floor is at most 15 ft tall. *(the Town's reading)* |
-| SD - Highway Commercial | Multi-Unit Commercial | The first floor is at most 15 ft tall. *(the Town's reading)* |
-| SD - Highway Commercial | Commercial Accessory | The first floor is at most 15 ft tall. *(the Town's reading)* |
-| SD - Highway Commercial | Residential Accessory | The first floor is at most 16 ft tall. *(the Town's reading)* |
-| SD - Rural Highway | Single Unit Commercial | The first floor is at most 12 ft tall. *(the Town's reading)* |
-| SD - Rural Highway | Mixed-Use | The first floor is at most 15 ft tall. *(the Town's reading)* |
-| SD - Rural Highway | Multi-Unit Commercial | The first floor is at most 15 ft tall. *(the Town's reading)* |
-| SD - Rural Highway | Commercial Accessory | The first floor is at most 15 ft tall. *(the Town's reading)* |
-| SD - Rural Highway | Residential Accessory | The first floor is at most 16 ft tall. *(the Town's reading)* |
+| SD - Highway Commercial | Single Unit Commercial | The first floor is at most 12 ft tall. *(The Town's reading of the Code)* |
+| SD - Highway Commercial | Mixed-Use | The first floor is at most 15 ft tall. *(The Town's reading of the Code)* |
+| SD - Highway Commercial | Multi-Unit Commercial | The first floor is at most 15 ft tall. *(The Town's reading of the Code)* |
+| SD - Highway Commercial | Commercial Accessory | The first floor is at most 15 ft tall. *(The Town's reading of the Code)* |
+| SD - Highway Commercial | Residential Accessory | The first floor is at most 16 ft tall. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Single Unit Commercial | The first floor is at most 12 ft tall. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Mixed-Use | The first floor is at most 15 ft tall. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Multi-Unit Commercial | The first floor is at most 15 ft tall. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Commercial Accessory | The first floor is at most 15 ft tall. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Residential Accessory | The first floor is at most 16 ft tall. *(The Town's reading of the Code)* |
 | SD - Campus | — | Goes to the Town |
 | SD - Marine | — | Goes to the Town |
-| SD - Fabrication | Single Unit Commercial | The first floor is at most 22 ft tall. *(the Town's reading)* |
-| SD - Fabrication | Mixed-Use | The first floor is at most 22 ft tall. *(the Town's reading)* |
-| SD - Fabrication | Multi-Unit Commercial | The first floor is at most 22 ft tall. *(the Town's reading)* |
-| SD - Fabrication | Commercial Accessory | The first floor is at most 22 ft tall. *(the Town's reading)* |
-| SD - Fabrication | Residential Accessory | The first floor is at most 16 ft tall. *(the Town's reading)* |
+| SD - Fabrication | Single Unit Commercial | The first floor is at most 22 ft tall. *(The Town's reading of the Code)* |
+| SD - Fabrication | Mixed-Use | The first floor is at most 22 ft tall. *(The Town's reading of the Code)* |
+| SD - Fabrication | Multi-Unit Commercial | The first floor is at most 22 ft tall. *(The Town's reading of the Code)* |
+| SD - Fabrication | Commercial Accessory | The first floor is at most 22 ft tall. *(The Town's reading of the Code)* |
+| SD - Fabrication | Residential Accessory | The first floor is at most 16 ft tall. *(The Town's reading of the Code)* |
 
 *The Town's reading:* Decided by Ben Frey, Planning Board chair on 2026-11-02: D2-D6's own pages say so (BUILDINGS STANDARDS note 1: 'Unless otherwise noted, all measurements represent the maximum permitted values'); the chair reads the same rule into D1 and the SD districts, whose pages lack the note. The chair's reading: floor heights cap a building's scale. Coverage memo Q4 (first answered 'minimum', corrected the same day).
 
@@ -594,8 +594,8 @@ Measure from the surface of each floor to the surface of the floor above. For th
 
 | District | Building | What a resident reads |
 |:---|:---|:---|
-| D1 - Rural | Residential | Each upper floor is at most 10 ft tall. *(the Town's reading)* |
-| D1 - Rural | General Accessory | Each upper floor is at most 10 ft tall. *(the Town's reading)* |
+| D1 - Rural | Residential | Each upper floor is at most 10 ft tall. *(The Town's reading of the Code)* |
+| D1 - Rural | General Accessory | Each upper floor is at most 10 ft tall. *(The Town's reading of the Code)* |
 | D1 - Rural | Agricultural Use | Goes to the Town |
 | D2 - Neighborhood Residential | Residential | Each upper floor is at most 10 ft tall. |
 | D2 - Neighborhood Residential | Mixed-Use | Each upper floor is at most 10 ft tall. |
@@ -615,26 +615,26 @@ Measure from the surface of each floor to the surface of the floor above. For th
 | D6 - Town Center | Mixed-Use | Each upper floor is at most 10 ft tall. |
 | D6 - Town Center | Multi-Unit Commercial | Each upper floor is at most 10 ft tall. |
 | D6 - Town Center | Commercial Accessory | Each upper floor is at most 8 ft tall. |
-| SD - Historic | Residential | Each upper floor is at most 10 ft tall. *(the Town's reading)* |
-| SD - Historic | Residential Accessory | Each upper floor is at most 8 ft tall. *(the Town's reading)* |
+| SD - Historic | Residential | Each upper floor is at most 10 ft tall. *(The Town's reading of the Code)* |
+| SD - Historic | Residential Accessory | Each upper floor is at most 8 ft tall. *(The Town's reading of the Code)* |
 | SD - Conservation | — | Goes to the Town |
-| SD - Highway Commercial | Single Unit Commercial | Each upper floor is at most 10 ft tall. *(the Town's reading)* |
-| SD - Highway Commercial | Mixed-Use | Each upper floor is at most 10 ft tall. *(the Town's reading)* |
-| SD - Highway Commercial | Multi-Unit Commercial | Each upper floor is at most 10 ft tall. *(the Town's reading)* |
-| SD - Highway Commercial | Commercial Accessory | Each upper floor is at most 10 ft tall. *(the Town's reading)* |
-| SD - Highway Commercial | Residential Accessory | Each upper floor is at most 8 ft tall. *(the Town's reading)* |
-| SD - Rural Highway | Single Unit Commercial | Each upper floor is at most 10 ft tall. *(the Town's reading)* |
-| SD - Rural Highway | Mixed-Use | Each upper floor is at most 10 ft tall. *(the Town's reading)* |
-| SD - Rural Highway | Multi-Unit Commercial | Each upper floor is at most 10 ft tall. *(the Town's reading)* |
-| SD - Rural Highway | Commercial Accessory | Each upper floor is at most 10 ft tall. *(the Town's reading)* |
-| SD - Rural Highway | Residential Accessory | Each upper floor is at most 8 ft tall. *(the Town's reading)* |
+| SD - Highway Commercial | Single Unit Commercial | Each upper floor is at most 10 ft tall. *(The Town's reading of the Code)* |
+| SD - Highway Commercial | Mixed-Use | Each upper floor is at most 10 ft tall. *(The Town's reading of the Code)* |
+| SD - Highway Commercial | Multi-Unit Commercial | Each upper floor is at most 10 ft tall. *(The Town's reading of the Code)* |
+| SD - Highway Commercial | Commercial Accessory | Each upper floor is at most 10 ft tall. *(The Town's reading of the Code)* |
+| SD - Highway Commercial | Residential Accessory | Each upper floor is at most 8 ft tall. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Single Unit Commercial | Each upper floor is at most 10 ft tall. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Mixed-Use | Each upper floor is at most 10 ft tall. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Multi-Unit Commercial | Each upper floor is at most 10 ft tall. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Commercial Accessory | Each upper floor is at most 10 ft tall. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Residential Accessory | Each upper floor is at most 8 ft tall. *(The Town's reading of the Code)* |
 | SD - Campus | — | Goes to the Town |
 | SD - Marine | — | Goes to the Town |
-| SD - Fabrication | Single Unit Commercial | Each upper floor is at most 10 ft tall. *(the Town's reading)* |
-| SD - Fabrication | Mixed-Use | Each upper floor is at most 10 ft tall. *(the Town's reading)* |
-| SD - Fabrication | Multi-Unit Commercial | Each upper floor is at most 10 ft tall. *(the Town's reading)* |
-| SD - Fabrication | Commercial Accessory | Each upper floor is at most 10 ft tall. *(the Town's reading)* |
-| SD - Fabrication | Residential Accessory | Each upper floor is at most 8 ft tall. *(the Town's reading)* |
+| SD - Fabrication | Single Unit Commercial | Each upper floor is at most 10 ft tall. *(The Town's reading of the Code)* |
+| SD - Fabrication | Mixed-Use | Each upper floor is at most 10 ft tall. *(The Town's reading of the Code)* |
+| SD - Fabrication | Multi-Unit Commercial | Each upper floor is at most 10 ft tall. *(The Town's reading of the Code)* |
+| SD - Fabrication | Commercial Accessory | Each upper floor is at most 10 ft tall. *(The Town's reading of the Code)* |
+| SD - Fabrication | Residential Accessory | Each upper floor is at most 8 ft tall. *(The Town's reading of the Code)* |
 
 *The Town's reading:* Decided by Ben Frey, Planning Board chair on 2026-11-02: D2-D6's own pages say so (BUILDINGS STANDARDS note 1: 'Unless otherwise noted, all measurements represent the maximum permitted values'); the chair reads the same rule into D1 and the SD districts, whose pages lack the note. As for First Floor Height. Coverage memo Q5.
 
@@ -653,7 +653,7 @@ A unit is a space that one household or one business can use on its own.
 | District | Building | What a resident reads |
 |:---|:---|:---|
 | D1 - Rural | Residential | Goes to the Town |
-| D1 - Rural | General Accessory | The building has at most 2 units. *(the Town's reading)* |
+| D1 - Rural | General Accessory | The building has at most 2 units. *(The Town's reading of the Code)* |
 | D1 - Rural | Agricultural Use | Goes to the Town |
 | D2 - Neighborhood Residential | Residential | Goes to the Town |
 | D2 - Neighborhood Residential | Mixed-Use | Goes to the Town |
@@ -674,25 +674,25 @@ A unit is a space that one household or one business can use on its own.
 | D6 - Town Center | Multi-Unit Commercial | The building has at most 20 units. |
 | D6 - Town Center | Commercial Accessory | The building has at most 1 unit. |
 | SD - Historic | Residential | Goes to the Town |
-| SD - Historic | Residential Accessory | The building has at most 1 unit. *(the Town's reading)* |
+| SD - Historic | Residential Accessory | The building has at most 1 unit. *(The Town's reading of the Code)* |
 | SD - Conservation | — | Goes to the Town |
-| SD - Highway Commercial | Single Unit Commercial | The building has at most 1 unit. *(the Town's reading)* |
+| SD - Highway Commercial | Single Unit Commercial | The building has at most 1 unit. *(The Town's reading of the Code)* |
 | SD - Highway Commercial | Mixed-Use | Goes to the Town |
 | SD - Highway Commercial | Multi-Unit Commercial | Goes to the Town |
-| SD - Highway Commercial | Commercial Accessory | The building has at most 1 unit. *(the Town's reading)* |
-| SD - Highway Commercial | Residential Accessory | The building has at most 1 unit. *(the Town's reading)* |
-| SD - Rural Highway | Single Unit Commercial | The building has at most 1 unit. *(the Town's reading)* |
+| SD - Highway Commercial | Commercial Accessory | The building has at most 1 unit. *(The Town's reading of the Code)* |
+| SD - Highway Commercial | Residential Accessory | The building has at most 1 unit. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Single Unit Commercial | The building has at most 1 unit. *(The Town's reading of the Code)* |
 | SD - Rural Highway | Mixed-Use | Goes to the Town |
-| SD - Rural Highway | Multi-Unit Commercial | The building has at most 20 units. *(the Town's reading)* |
-| SD - Rural Highway | Commercial Accessory | The building has at most 1 unit. *(the Town's reading)* |
-| SD - Rural Highway | Residential Accessory | The building has at most 1 unit. *(the Town's reading)* |
+| SD - Rural Highway | Multi-Unit Commercial | The building has at most 20 units. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Commercial Accessory | The building has at most 1 unit. *(The Town's reading of the Code)* |
+| SD - Rural Highway | Residential Accessory | The building has at most 1 unit. *(The Town's reading of the Code)* |
 | SD - Campus | — | Goes to the Town |
 | SD - Marine | — | Goes to the Town |
-| SD - Fabrication | Single Unit Commercial | The building has at most 1 unit. *(the Town's reading)* |
+| SD - Fabrication | Single Unit Commercial | The building has at most 1 unit. *(The Town's reading of the Code)* |
 | SD - Fabrication | Mixed-Use | Goes to the Town |
 | SD - Fabrication | Multi-Unit Commercial | Goes to the Town |
-| SD - Fabrication | Commercial Accessory | The building has at most 1 unit. *(the Town's reading)* |
-| SD - Fabrication | Residential Accessory | The building has at most 1 unit. *(the Town's reading)* |
+| SD - Fabrication | Commercial Accessory | The building has at most 1 unit. *(The Town's reading of the Code)* |
+| SD - Fabrication | Residential Accessory | The building has at most 1 unit. *(The Town's reading of the Code)* |
 
 *The Town's reading:* Decided by Ben Frey, Planning Board chair on 2026-11-02: D2-D6's own pages say so (BUILDINGS STANDARDS note 1: 'Unless otherwise noted, all measurements represent the maximum permitted values'); the chair reads the same rule into D1 and the SD districts, whose pages lack the note. Units read as a cap (compare §5.18.d.3.b, 'up to 7 units'). Coverage memo Q6.
 
@@ -700,57 +700,57 @@ A unit is a space that one household or one business can use on its own.
 
 ## Why · who reviews this building
 
-> For this building, the {who} reviews your project.
+> The district's Permitted Buildings table names the {who} for this kind of building.
 
-The Permitting Authority is the person or board who reviews a project under the Code.
+The Permitting Authority is the person or board who reviews a project under the Code. A project that needs more than one kind of review can have more than one.
 
 **Why the rule exists:** The Code names who reviews each kind of building in each district.
 
-**The Code:** 8.2.a.1 · **Defined terms:** Permitting Authority
+**The Code:** 8.2.a.1, 8.2.a.4 · **Defined terms:** Permitting Authority
 
 | District | Building | What a resident reads |
 |:---|:---|:---|
-| D1 - Rural | Residential | For this building, the CEO reviews your project. |
-| D1 - Rural | General Accessory | For this building, the CEO reviews your project. |
-| D1 - Rural | Agricultural Use | For this building, the CEO reviews your project. |
-| D2 - Neighborhood Residential | Residential | For this building, the CEO reviews your project. |
-| D2 - Neighborhood Residential | Mixed-Use | For this building, the Planning Board reviews your project. |
-| D2 - Neighborhood Residential | Residential Accessory | For this building, the CEO reviews your project. |
-| D3 - Neighborhood Business | Residential | For this building, the Planning Board reviews your project. |
-| D3 - Neighborhood Business | Mixed-Use | For this building, the Planning Board reviews your project. |
-| D3 - Neighborhood Business | Residential Accessory | For this building, the CEO reviews your project. |
-| D3 - Neighborhood Business | Commercial Accessory | For this building, the Planning Board reviews your project. |
-| D4 - Village Residential | Residential | For this building, the Planning Board reviews your project. |
-| D4 - Village Residential | Residential Accessory | For this building, the CEO reviews your project. |
-| D5 - Village Business | Residential | For this building, the CEO reviews your project. |
-| D5 - Village Business | Mixed-Use | For this building, the CEO reviews your project. |
-| D5 - Village Business | Multi-Unit Commercial | For this building, the Planning Board reviews your project. |
-| D5 - Village Business | Residential Accessory | For this building, the CEO reviews your project. |
-| D5 - Village Business | Commercial Accessory | For this building, the Planning Board reviews your project. |
-| D6 - Town Center | Residential | For this building, the Planning Board reviews your project. |
-| D6 - Town Center | Mixed-Use | For this building, the Planning Board reviews your project. |
-| D6 - Town Center | Multi-Unit Commercial | For this building, the Planning Board reviews your project. |
-| D6 - Town Center | Commercial Accessory | For this building, the Planning Board reviews your project. |
-| SD - Historic | Residential | For this building, the Planning Board reviews your project. |
-| SD - Historic | Residential Accessory | For this building, the CEO reviews your project. |
+| D1 - Rural | Residential | The district's Permitted Buildings table names the CEO for this kind of building. |
+| D1 - Rural | General Accessory | The district's Permitted Buildings table names the CEO for this kind of building. |
+| D1 - Rural | Agricultural Use | The district's Permitted Buildings table names the CEO for this kind of building. |
+| D2 - Neighborhood Residential | Residential | The district's Permitted Buildings table names the CEO for this kind of building. |
+| D2 - Neighborhood Residential | Mixed-Use | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| D2 - Neighborhood Residential | Residential Accessory | The district's Permitted Buildings table names the CEO for this kind of building. |
+| D3 - Neighborhood Business | Residential | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| D3 - Neighborhood Business | Mixed-Use | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| D3 - Neighborhood Business | Residential Accessory | The district's Permitted Buildings table names the CEO for this kind of building. |
+| D3 - Neighborhood Business | Commercial Accessory | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| D4 - Village Residential | Residential | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| D4 - Village Residential | Residential Accessory | The district's Permitted Buildings table names the CEO for this kind of building. |
+| D5 - Village Business | Residential | The district's Permitted Buildings table names the CEO for this kind of building. |
+| D5 - Village Business | Mixed-Use | The district's Permitted Buildings table names the CEO for this kind of building. |
+| D5 - Village Business | Multi-Unit Commercial | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| D5 - Village Business | Residential Accessory | The district's Permitted Buildings table names the CEO for this kind of building. |
+| D5 - Village Business | Commercial Accessory | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| D6 - Town Center | Residential | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| D6 - Town Center | Mixed-Use | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| D6 - Town Center | Multi-Unit Commercial | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| D6 - Town Center | Commercial Accessory | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| SD - Historic | Residential | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| SD - Historic | Residential Accessory | The district's Permitted Buildings table names the CEO for this kind of building. |
 | SD - Conservation | — | Goes to the Town |
-| SD - Highway Commercial | Single Unit Commercial | For this building, the Planning Board reviews your project. |
-| SD - Highway Commercial | Mixed-Use | For this building, the Planning Board reviews your project. |
-| SD - Highway Commercial | Multi-Unit Commercial | For this building, the Planning Board reviews your project. |
-| SD - Highway Commercial | Commercial Accessory | For this building, the Planning Board reviews your project. |
-| SD - Highway Commercial | Residential Accessory | For this building, the CEO reviews your project. |
-| SD - Rural Highway | Single Unit Commercial | For this building, the Planning Board reviews your project. |
-| SD - Rural Highway | Mixed-Use | For this building, the Planning Board reviews your project. |
-| SD - Rural Highway | Multi-Unit Commercial | For this building, the Planning Board reviews your project. |
-| SD - Rural Highway | Commercial Accessory | For this building, the Planning Board reviews your project. |
-| SD - Rural Highway | Residential Accessory | For this building, the CEO reviews your project. |
+| SD - Highway Commercial | Single Unit Commercial | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| SD - Highway Commercial | Mixed-Use | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| SD - Highway Commercial | Multi-Unit Commercial | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| SD - Highway Commercial | Commercial Accessory | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| SD - Highway Commercial | Residential Accessory | The district's Permitted Buildings table names the CEO for this kind of building. |
+| SD - Rural Highway | Single Unit Commercial | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| SD - Rural Highway | Mixed-Use | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| SD - Rural Highway | Multi-Unit Commercial | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| SD - Rural Highway | Commercial Accessory | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| SD - Rural Highway | Residential Accessory | The district's Permitted Buildings table names the CEO for this kind of building. |
 | SD - Campus | — | Goes to the Town |
 | SD - Marine | — | Goes to the Town |
-| SD - Fabrication | Single Unit Commercial | For this building, the Planning Board reviews your project. |
-| SD - Fabrication | Mixed-Use | For this building, the Planning Board reviews your project. |
-| SD - Fabrication | Multi-Unit Commercial | For this building, the Planning Board reviews your project. |
-| SD - Fabrication | Commercial Accessory | For this building, the Planning Board reviews your project. |
-| SD - Fabrication | Residential Accessory | For this building, the CEO reviews your project. |
+| SD - Fabrication | Single Unit Commercial | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| SD - Fabrication | Mixed-Use | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| SD - Fabrication | Multi-Unit Commercial | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| SD - Fabrication | Commercial Accessory | The district's Permitted Buildings table names the Planning Board for this kind of building. |
+| SD - Fabrication | Residential Accessory | The district's Permitted Buildings table names the CEO for this kind of building. |
 
 **Status:** Draft, not yet approved. (`permitting_authority`, version 1)
 
@@ -758,7 +758,7 @@ The Permitting Authority is the person or board who reviews a project under the 
 
 1. Frontage zone setback (D3, D4, D5, D6 and four special districts): the district pages give a number, and Article 9 defines the Frontage Zone as the Frontage plus an additional setback from the front facade. Does the number say how far the zone reaches behind the front of the building? No entry is written until you say what it measures.
 2. Lot depth and lot area: every district page says n/a, so there is no entry, and the guide doesn't ask them. Should a resident be told the Code sets none, or nothing at all?
-3. Permitting Authority: the tables say "CEO" or "Planning Board", and the entry fills them in as written ("the CEO reviews your project"). Should it spell out "Code Enforcement Officer"?
+3. Permitting Authority: the tables say "CEO" or "Planning Board", and the entry fills them in as written ("names the CEO for this kind of building"). Should it spell out "Code Enforcement Officer"?
 4. Ranges read "at least 20 ft", "at most 2 stories" or "between 0 and 5 ft". These three patterns are new words, for your approval with the entries.
 5. A zero limit reads as written: D6's front setback "at most 0 ft" (the building sits on the line), and SD-Campus's "at least 0 ft" (no minimum). Should these say "on the lot line" and "no minimum" instead? That would be three more approved patterns.
 

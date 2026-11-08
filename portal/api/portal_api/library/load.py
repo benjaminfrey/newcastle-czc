@@ -91,6 +91,23 @@ def _check_slots(where: str, e: dict, keys: frozenset[str]) -> None:
             raise LibraryError(f"{where}: no standard {key}")
 
 
+def check_edit(e: LibraryEntry, body: dict) -> str | None:
+    """Why an edit made on the review page can't be recorded, or None. An edit keeps every slot the
+    entry used (a number is never typed in place of one), names no slot it doesn't have, and uses
+    none of the never-used words."""
+    from .render import placeholders
+    texts = [str(body.get(k) or "") for k in ("overline", "answer", "detail", "why")]
+    if any(NEVER_WORDS.search(t) for t in texts):
+        return "never_word"
+    used = set().union(*(placeholders(t) for t in texts))
+    if used - set(e.slots):
+        return "unknown_slot"
+    before = set().union(*(placeholders(t) for t in (e.overline, e.answer, e.detail, e.why)))
+    if before - used:
+        return "drops_slot"
+    return None
+
+
 @functools.cache
 def _load(root: Path) -> Library:
     from .render import all_keys

@@ -6,7 +6,7 @@ PyYAML are; `unpack.py` brings the changed files back to the Mac's checkout.
   python -m portal_api.library apply decided.json --chair <email> [--person <email>=<name>]... --emit > result.json
   python3 portal/api/portal_api/library/unpack.py result.json portal/api/portal_api/library/entries   (on the Mac)
   python -m portal_api.library mark-exported result.json  (after the chair commits the files)
-  python -m portal_api.library ratify <batch> <YYYY-MM-DD> [--partial] --emit > result.json
+  python -m portal_api.library ratify <batch> <YYYY-MM-DD> --memo <the memo the Board read> [--partial] --emit > result.json
   python -m portal_api.library memo <batch> > memos/<date>-library-<batch>-for-review.md
   python -m portal_api.library flag --old <ruleset dir> --new <ruleset dir> [--apply --emit]
       (--apply only when the new ruleset is the adopted one being pinned)
@@ -27,7 +27,7 @@ from . import records
 from .changes import flag
 from .load import DIR, load_library
 from .memo import render_memo
-from .write import apply, ratify
+from .write import apply, memo_versions, ratify
 
 ROLES = ("applicant", "staff", "admin")
 
@@ -63,6 +63,7 @@ def main(argv: list[str] | None = None) -> int:
     t.add_argument("batch")
     t.add_argument("on", type=date.fromisoformat)
     t.add_argument("--partial", action="store_true")
+    t.add_argument("--memo", type=Path, required=True, help="the memo the Board read: only its versions are ratified")
     t.add_argument("--root", type=Path, default=DIR)
     t.add_argument("--emit", action="store_true")
     f = sub.add_parser("flag", help="list the entries citing what an amendment changed")
@@ -101,7 +102,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"{len(result['exported_decisions'])} decisions and {len(result['exported_pulls'])} pulls on the record")
     elif args.command == "ratify":
         try:
-            done = ratify(args.root, args.batch, args.on, partial=args.partial)
+            done = ratify(args.root, args.batch, args.on, partial=args.partial, versions=memo_versions(args.memo))
         except ValueError as exc:
             print(exc, file=sys.stderr)
             return 1

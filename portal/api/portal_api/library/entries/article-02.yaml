@@ -6,7 +6,7 @@ entries:
   - dimension:building_placement.primary_front_setback
   overline: Why · how far from the front
   answer: Your building sits {front} from the front lot line.
-  detail: Measure from the front lot line to the closest outside wall, straight out from the line. On a corner lot, the front is the line along the busier road.
+  detail: Measure from the front lot line to the closest outside wall, straight out from the line. On a corner lot, the Code makes the front the line along the busier road, by its Type.
   why: A front setback keeps buildings in line along the street, so each street keeps its character.
   slots:
     front:
@@ -189,7 +189,7 @@ entries:
   - dimension:lot_dimensions.width
   overline: Why · how wide a lot is
   answer: A lot here is {width} wide.
-  detail: Lot width is the length of the front lot line, or the distance between the side lot lines at the front setback, whichever is greater. A lot narrower than this can still be built on if it meets the setbacks.
+  detail: Lot width is the length of the front lot line, or the distance between the side lot lines at the maximum front setback, whichever is greater. This applies when a lot is created. An existing lot that is narrower can still be built on if it meets the setbacks.
   why: Lot sizes keep the pattern of each neighborhood.
   slots:
     width:
@@ -199,6 +199,7 @@ entries:
   - Lot Width
   cites:
   - 2.2.a.1
+  - 2.2.b.1
   - 2.2.d.2
   - 2.2.f.6
   version: 1
@@ -358,8 +359,8 @@ entries:
   standards:
   - building:permitting_authority
   overline: Why · who reviews this building
-  answer: For this building, the {who} reviews your project.
-  detail: The Permitting Authority is the person or board who reviews a project under the Code.
+  answer: The district's Permitted Buildings table names the {who} for this kind of building.
+  detail: The Permitting Authority is the person or board who reviews a project under the Code. A project that needs more than one kind of review can have more than one.
   why: The Code names who reviews each kind of building in each district.
   slots:
     who:
@@ -369,11 +370,12 @@ entries:
   - Permitting Authority
   cites:
   - 8.2.a.1
+  - 8.2.a.4
   version: 1
   status: draft
 open_questions:
 - 'Frontage zone setback (D3, D4, D5, D6 and four special districts): the district pages give a number, and Article 9 defines the Frontage Zone as the Frontage plus an additional setback from the front facade. Does the number say how far the zone reaches behind the front of the building? No entry is written until you say what it measures.'
 - 'Lot depth and lot area: every district page says n/a, so there is no entry, and the guide doesn''t ask them. Should a resident be told the Code sets none, or nothing at all?'
-- 'Permitting Authority: the tables say "CEO" or "Planning Board", and the entry fills them in as written ("the CEO reviews your project"). Should it spell out "Code Enforcement Officer"?'
+- 'Permitting Authority: the tables say "CEO" or "Planning Board", and the entry fills them in as written ("names the CEO for this kind of building"). Should it spell out "Code Enforcement Officer"?'
 - Ranges read "at least 20 ft", "at most 2 stories" or "between 0 and 5 ft". These three patterns are new words, for your approval with the entries.
 - 'A zero limit reads as written: D6''s front setback "at most 0 ft" (the building sits on the line), and SD-Campus''s "at least 0 ft" (no minimum). Should these say "on the lot line" and "no minimum" instead? That would be three more approved patterns.'

@@ -1,6 +1,5 @@
 // The explanation library's review page (design 2, §7), for Town staff. These are drafts for the
 // chair: the page is staff-only, but every word in the portal is approved before it ships.
-// The interpretation mark is also shown to residents, on the guide's "Why" cards (decision 16).
 export const LIBRARY_WORD_STATUS = "draft" as "draft" | "approved";
 
 export const LW = {
@@ -34,7 +33,7 @@ export const LW = {
   confirm_pull: "Pull this entry now?",
   confirm_pull_body: "Residents stop seeing it at once. Its standard goes to the Town until a fixed version is approved and ratified.",
   confirm_pull_yes: "Pull it",
-  interpretation_mark: "The Town's reading, where the Code doesn't say",
+  pending_edit: "The edited text, waiting for approval",
   saved: "Saved. It is recorded when the library's files are next committed.",
 } as const;
 

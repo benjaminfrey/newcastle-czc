@@ -121,7 +121,7 @@ def test_a_new_house_is_checked_as_a_residential_primary_building():
 
 
 # The chair approved the rest on 2026-11-06; "You're already covered" is never shown, so it stays a draft.
-STILL_DRAFT = {("wording.yaml", "covered")}
+STILL_DRAFT = {("wording.yaml", "covered"), ("wording.yaml", "interpretation_mark")}  # the library's mark (design 2)
 
 
 def test_the_chair_approved_everything_shown_on_2026_11_06():

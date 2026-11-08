@@ -111,7 +111,7 @@ def test_apply_will_not_approve_a_pulled_entry(lib):
     assert r["refused"] == [["setbacks", "pulled at this version: edit it first"]]
     e = load_library(root).entries["setbacks"]
     assert (e.status, e.pulled_by, e.pulled_why) == ("pulled", "the Code Enforcement Officer", "The number is wrong")
-    assert r["exported_pulls"] == ["setbacks"]
+    assert r["exported_pulls"] == [{"entry_id": "setbacks", "pulled_at": "2026-11-21T15:00:00+00:00"}]
 
 
 def test_approving_a_fixed_version_clears_its_pull(lib):
@@ -119,7 +119,7 @@ def test_approving_a_fixed_version_clears_its_pull(lib):
     _apply(root, pulls=[_pull("setbacks")])
     _apply(root, [_d("setbacks", "edit", body=TEXTS, did=1)])
     r = _apply(root, [_d("setbacks", "approve", version=2, did=2)])
-    assert r["applied"] == ["setbacks"] and r["cleared_pulls"] == ["setbacks"]
+    assert r["applied"] == ["setbacks"] and r["cleared_pulls"] == [{"entry_id": "setbacks", "version": 2}]
     e = load_library(root).entries["setbacks"]
     assert (e.status, e.version, e.pulled_on) == ("approved", 2, None)
 

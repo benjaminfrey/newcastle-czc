@@ -18,8 +18,8 @@ def test_the_memo_lists_every_entry_and_the_open_questions():
 
 def test_the_memo_fills_each_district_and_marks_the_towns_reading():
     md = render_memo(load_library(), "article-02", "2026-11-08")
-    assert "| D1 - Rural | Residential | The building has at most 2 stories. *(the Town's reading)* |" in md
-    assert "| D6 - Town Center | — | Your building sits between 0 and 5 ft from each side lot line. *(the Town's reading)* |" in md
+    assert "| D1 - Rural | Residential | The building has at most 2 stories. *(The Town's reading of the Code)* |" in md
+    assert "| D6 - Town Center | — | Your building sits between 0 and 5 ft from each side lot line. *(The Town's reading of the Code)* |" in md
 
 
 def test_the_memo_shows_goes_to_the_town_where_a_value_is_missing():

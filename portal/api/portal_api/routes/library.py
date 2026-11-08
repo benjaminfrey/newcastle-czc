@@ -15,6 +15,7 @@ from portal_api import auth
 from portal_api.db import transaction
 from portal_api.guide.content import load_content
 from portal_api.library import load_library, records
+from portal_api.library.load import check_edit
 from portal_api.library.render import render
 from portal_api.ruleset import RulesetError, load_ruleset
 
@@ -78,10 +79,11 @@ def preview(entry_id: str, district: str, building: str | None = None,
     r = render(e, district, building)
     if r is None:
         return _json(404, "not_for_this_district")
-    governs = load_content().wording["governs"]["text"]
+    wording = load_content().wording
     return {"id": e.id, "overline": e.overline, "answer": r.answer, "detail": r.detail, "why": e.why,
-            "cites": list(e.cites), "version": e.version, "governs": governs, "picture": e.picture,
-            "picture_alt": e.picture_alt, "interpretations": list(r.interpretations)}
+            "cites": list(e.cites), "version": e.version, "governs": wording["governs"]["text"], "picture": e.picture,
+            "picture_alt": e.picture_alt, "interpretations": list(r.interpretations),
+            "mark": wording["interpretation_mark"]["text"] if r.interpretations else None}
 
 
 class DecisionBody(BaseModel):
@@ -108,6 +110,8 @@ def decision(entry_id: str, b: DecisionBody, staff: auth.Applicant = auth.requir
         return _json(422, "needs_note")
     if b.action == "edit" and (not b.body or set(b.body) != _TEXTS or not all(str(v).strip() for v in b.body.values())):
         return _json(422, "needs_body")
+    if b.action == "edit" and (why := check_edit(e, b.body)):
+        return _json(422, why)
     body = b.body if b.action == "edit" else None
     if b.action == "approve":
         # Approve right after an edit approves the edited text (design 2, §5), never the text before it.

@@ -140,7 +140,7 @@ class _Build:
         self.entries.append(key)
         return {"id": e.id, "overline": e.overline, "answer": e.answer, "detail": e.detail, "why": e.why,
                 "cites": list(e.cites), "version": e.version, "governs": self.word("governs"),
-                "picture": e.picture, "picture_alt": e.picture_alt, "interpretations": []}
+                "picture": e.picture, "picture_alt": e.picture_alt, "interpretations": [], "mark": None}
 
     def standard_entry(self, spec: dict | None) -> tuple[bool, dict | None]:
         """(claimed, the entry filled in for this lot): the entry that explains a turn's standard
@@ -151,12 +151,17 @@ class _Build:
         e = entry_for_spec(self.content.entries, spec)
         if e is None:
             return False, None
-        keys = [district_key_for(c) for c in self.lot.district_codes]
-        r = render(e, keys[0], spec.get("building")) if keys and keys[0] else None
-        if r is None:
+        keys = list(dict.fromkeys(district_key_for(c) for c in self.lot.district_codes))
+        rs = [render(e, k, spec.get("building")) if k else None for k in keys]
+        # Every district on the lot must give the same words: a card never shows one district's
+        # number on a lot that is also in another (the review, 2026-11-08).
+        if not rs or any(r is None for r in rs) or len({(r.answer, r.detail) for r in rs}) > 1:
             return True, None
+        r = rs[0]
         out = self.entry(e.id)
-        return True, {**out, "answer": r.answer, "detail": r.detail, "interpretations": list(r.interpretations)}
+        notes = list(dict.fromkeys(n for x in rs for n in x.interpretations))
+        mark = self.word("interpretation_mark") if notes else None
+        return True, {**out, "answer": r.answer, "detail": r.detail, "interpretations": notes, "mark": mark}
 
     def why_for(self, turn: Turn | None) -> dict | None:
         if turn is None:

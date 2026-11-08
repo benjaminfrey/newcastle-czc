@@ -107,13 +107,23 @@ test("a pending decision shows the pending line", async () => {
   expect(await screen.findByText("Pending: approved, not yet recorded")).toBeInTheDocument();
 });
 
-test("the interpretation mark shows only with interpretations", async () => {
+test("the interpretation mark is the API's word, shown only when it sends one", async () => {
   show();
   await screen.findByText("At most 2 stories.");
-  expect(screen.queryByText("The Town's reading, where the Code doesn't say")).not.toBeInTheDocument();
-  vi.mocked(api.getPreview).mockResolvedValue({ ...PREVIEW, interpretations: ["Decided by the chair."] });
+  expect(screen.queryByText("The Town's reading of the Code")).not.toBeInTheDocument();
+  vi.mocked(api.getPreview).mockResolvedValue({ ...PREVIEW, interpretations: ["Decided by the chair."], mark: "The Town's reading of the Code" });
   await userEvent.selectOptions(screen.getByLabelText("District"), "d2");
-  expect(await screen.findByText("The Town's reading, where the Code doesn't say")).toBeInTheDocument();
+  expect(await screen.findByText("The Town's reading of the Code")).toBeInTheDocument();
+});
+
+test("a pending edit is shown, and editing again starts from it", async () => {
+  const body = { overline: "Why · how tall", answer: "No more than {stories}.", detail: "Count full stories.", why: "Scale." };
+  show({ ...BATCH, entries: [{ ...ITEM, pending: { id: 3, entry_id: "total_stories", version: 1, action: "edit",
+    body, note: null, decided_at: "2026-11-20T15:00:00Z", decided_by_email: "chair@example.com" } }] });
+  const waiting = await screen.findByRole("region", { name: "The edited text, waiting for approval" });
+  expect(within(waiting).getByText("No more than {stories}.")).toBeInTheDocument();
+  await userEvent.click(screen.getByRole("button", { name: "Edit" }));
+  expect(screen.getByLabelText("Answer")).toHaveValue("No more than {stories}.");
 });
 
 test("a resident sees the page is for staff", async () => {

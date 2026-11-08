@@ -64,16 +64,19 @@ def pulled(conn: Connection) -> frozenset[str]:
     return frozenset(conn.execute(text("SELECT entry_id FROM library_pull")).scalars())
 
 
-def mark_exported(conn: Connection, decision_ids: list[int], pull_ids: list[str]) -> None:
+def mark_exported(conn: Connection, decision_ids: list[int], pulls: list[dict]) -> None:
+    """Each pull is matched by when it was made, so one made after `decisions` ran stays open."""
     if decision_ids:
         conn.execute(text("UPDATE library_decision SET exported_at = now() WHERE id = ANY(:ids)"),
                      {"ids": decision_ids})
-    if pull_ids:
-        conn.execute(text("UPDATE library_pull SET exported_at = now() WHERE entry_id = ANY(:ids)"),
-                     {"ids": pull_ids})
+    for p in pulls:
+        conn.execute(text("UPDATE library_pull SET exported_at = now() WHERE entry_id = :e"
+                          " AND pulled_at = CAST(:at AS timestamptz)"), {"e": p["entry_id"], "at": p["pulled_at"]})
 
 
-def clear_pulls(conn: Connection, entry_ids: list[str]) -> None:
-    """A fixed version was approved: its pull no longer stands."""
-    if entry_ids:
-        conn.execute(text("DELETE FROM library_pull WHERE entry_id = ANY(:ids)"), {"ids": entry_ids})
+def clear_pulls(conn: Connection, cleared: list[dict]) -> None:
+    """A fixed version was approved: pulls of earlier versions no longer stand. A pull of the
+    approved version itself, made since, stays."""
+    for c in cleared:
+        conn.execute(text("DELETE FROM library_pull WHERE entry_id = :e AND version < :v"),
+                     {"e": c["entry_id"], "v": c["version"]})

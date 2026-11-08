@@ -7,6 +7,9 @@ nearest: {text: "Make it {value} {unit}", status: approved, approved_by: "Ben Fr
 doesnt_fit: {text: "That's {gap} {unit} {direction} the limit here. Here's the nearest version that fits.", status: approved, approved_by: "Ben Frey, Planning Board chair", approved_on: 2026-11-06}
 direction_over: {text: "over", status: approved, approved_by: "Ben Frey, Planning Board chair", approved_on: 2026-11-06}
 direction_short: {text: "short of", status: approved, approved_by: "Ben Frey, Planning Board chair", approved_on: 2026-11-06}
+# The mark on a number that rests on the chair's recorded reading where the Code is silent (design 2,
+# decision 16): a draft until the chair approves it.
+interpretation_mark: {text: "The Town's reading of the Code", status: draft}
 governs: {text: "The adopted Code governs if anything here differs from it.", status: approved, approved_by: "Ben Frey, Planning Board chair", approved_on: 2026-11-06}
 front_along: {text: "The line along {street}", status: approved, approved_by: "Ben Frey, Planning Board chair", approved_on: 2026-11-05}
 front_along_length: {text: "The line along {street}, about {n} ft", status: approved, approved_by: "Ben Frey, Planning Board chair", approved_on: 2026-11-05}

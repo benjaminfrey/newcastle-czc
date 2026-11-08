@@ -13,7 +13,6 @@ from .model import Library, LibraryEntry
 from .render import render
 
 TOWN = "Goes to the Town"
-MARK = " *(the Town's reading)*"
 
 
 def _when(d) -> str:
@@ -31,6 +30,12 @@ def _status(e: LibraryEntry) -> str:
     return "Draft, not yet approved."
 
 
+def _mark() -> str:
+    """The guide's own mark, so the Board reads the words residents will see."""
+    from portal_api.guide.content import load_content
+    return f" *({load_content().wording['interpretation_mark']['text']})*"
+
+
 def _rows(e: LibraryEntry, districts: list[dict]) -> tuple[list[str], list[str]]:
     rows, notes = [], []
     by_building = any(k.startswith("building:") for k in e.standards)
@@ -38,7 +43,7 @@ def _rows(e: LibraryEntry, districts: list[dict]) -> tuple[list[str], list[str]]
         cols = (d.get("building_matrix") or {}).get("cols") or []
         for b in (cols or [None]) if by_building else [None]:
             r = render(e, d["district_key"], b)
-            shown = TOWN if r is None else r.answer + (MARK if r.interpretations else "")
+            shown = TOWN if r is None else r.answer + (_mark() if r.interpretations else "")
             rows.append(f"| {d['display_name']} | {b or '—'} | {shown} |")
             for n in (r.interpretations if r else ()):
                 if n not in notes:
@@ -61,7 +66,7 @@ def render_memo(lib: Library, batch: str, today: str) -> str:
     w("Each entry explains one of the Code's standards in plain words, the way a resident reads it in the "
       "guide. Numbers are never typed into an entry: they are filled in from the Code's tables for each "
       "district and building, as the tables below show. Where the Code gives no value, the standard goes "
-      "to the Town. A number marked *(the Town's reading)* rests on the chair's recorded reading where the "
+      "to the Town. A number marked" + _mark() + " rests on the chair's recorded reading where the "
       "Code is silent. Every entry carries the line \"The adopted Code governs if anything here differs "
       "from it.\"\n")
     for e in entries:

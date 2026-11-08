@@ -6,11 +6,14 @@ The files are written in one fixed form (keys in a fixed order, no comments), so
 is only what changed.
 """
 
+import re
 from datetime import date, datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import yaml
+
+from portal_api.ruleset import PINNED_KEY
 
 CHAIR_NAME = "Ben Frey, Planning Board chair"
 BOARD = "Planning Board"
@@ -52,6 +55,8 @@ def _drop(e: dict, keys) -> None:
 def apply(root: Path, data: dict, *, chair: str, people: dict[str, str]) -> dict:
     """Write `decisions`' output into the batch files under `root`. Each decision or pull either
     applies or is refused, with its reason; nothing refused is marked exported."""
+    from .load import check_edit, load_library
+    lib = load_library(root)
     batches = {p.stem: read_batch(p) for p in sorted(root.glob("*.yaml"))}
     where = {e["id"]: (b, e) for b, (es, _) in batches.items() for e in es}
     names = {**people, chair.lower(): CHAIR_NAME}
@@ -71,7 +76,7 @@ def apply(root: Path, data: dict, *, chair: str, people: dict[str, str]) -> dict
             refused.append([p["entry_id"], "a draft is not shown, so its pull stays on the page only"])
         else:
             e.update(status="pulled", pulled_on=_day(p["pulled_at"]), pulled_by=who, pulled_why=p["why"])
-            done_p.append(p["entry_id"])
+            done_p.append({"entry_id": p["entry_id"], "pulled_at": p["pulled_at"]})
             touched.add(b)
 
     for d in data.get("decisions") or []:
@@ -81,6 +86,9 @@ def apply(root: Path, data: dict, *, chair: str, people: dict[str, str]) -> dict
             continue
         if d["version"] != e["version"]:
             refused.append([d["entry_id"], f"stale: the file is at version {e['version']}"])
+            continue
+        if d.get("body") and (bad := check_edit(lib.entries[d["entry_id"]], d["body"])):
+            refused.append([d["entry_id"], f"the edit fails its checks: {bad}"])
             continue
         if d["action"] == "approve":
             if d["decided_by_email"].lower() != chair.lower():
@@ -93,8 +101,8 @@ def apply(root: Path, data: dict, *, chair: str, people: dict[str, str]) -> dict
             _drop(e, _APPROVAL + _PULL + ("review_note",))
             if d.get("body"):   # the edited text, approved as a new version
                 e.update({k: d["body"][k] for k in TEXTS}, version=e["version"] + 1)
-            e.update(status="approved", approved_by=CHAIR_NAME, approved_on=_day(d["decided_at"]))
-            cleared.append(d["entry_id"])
+            e.update(status="approved", approved_by=CHAIR_NAME, approved_on=_day(d["decided_at"]), ruleset=PINNED_KEY)
+            cleared.append({"entry_id": d["entry_id"], "version": e["version"]})   # pulls of older versions
         else:
             _drop(e, _APPROVAL + _PULL)
             if d["action"] == "edit":
@@ -114,17 +122,31 @@ def apply(root: Path, data: dict, *, chair: str, people: dict[str, str]) -> dict
             "exported_decisions": done_d, "exported_pulls": done_p}
 
 
-def ratify(root: Path, batch: str, on: date, *, partial: bool = False) -> list[str]:
-    """Stamp the Board's ratification on every approved entry of `batch`; the ids stamped."""
+_MEMO_LINE = re.compile(r"\(`([^`]+)`, version (\d+)\)")
+
+
+def memo_versions(memo: Path) -> dict[str, int]:
+    """Each entry and the version the Board's memo showed it at."""
+    return {m[1]: int(m[2]) for m in _MEMO_LINE.finditer(memo.read_text())}
+
+
+def ratify(root: Path, batch: str, on: date, *, partial: bool = False, versions: dict[str, int] | None = None) -> list[str]:
+    """Stamp the Board's ratification on the approved entries of `batch` that its memo showed, at the
+    version it showed (`versions`, from memo_versions); the ids stamped. An entry changed since the
+    memo is refused: the Board ratifies what it read (the review, 2026-11-08)."""
     path = root / f"{batch}.yaml"
     entries, questions = read_batch(path)
     drafts = [e["id"] for e in entries if e["status"] == "draft"]
     if drafts and not partial:
         raise ValueError(f"{', '.join(drafts)} {'is' if len(drafts) == 1 else 'are'} still a draft: "
                          "ratify the rest with --partial, or wait")
+    changed = [f"{e['id']} is at version {e['version']}; the memo showed version {versions[e['id']]}"
+               for e in entries if versions is not None and e["id"] in versions and e["version"] != versions[e["id"]]]
+    if changed:
+        raise ValueError("; ".join(changed))
     done = []
     for e in entries:
-        if e["status"] == "approved":
+        if e["status"] == "approved" and (versions is None or e["id"] in versions):
             e.update(status="ratified", ratified_on=on, ratified_by=BOARD)
             done.append(e["id"])
     dump_batch(path, entries, questions)

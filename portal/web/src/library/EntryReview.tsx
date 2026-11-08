@@ -26,7 +26,10 @@ export function EntryReview({ item, districts }: { item: ReviewItem; districts: 
   const [preview, setPreview] = useState<Entry | "none" | null>(null);
   const [pending, setPending] = useState<string | null>(item.pending ? LW.actions[item.pending.action] : null);
   const [editing, setEditing] = useState(false);
-  const [texts, setTexts] = useState<Texts>({ overline: e.overline, answer: e.answer, detail: e.detail, why: e.why });
+  // A pending edit is what Approve will approve: show it, and edit again from it (the review, 2026-11-08).
+  const pendingEdit = item.pending?.body ? item.pending.body as Texts : null;
+  const [edited, setEdited] = useState<Texts | null>(pendingEdit);
+  const [texts, setTexts] = useState<Texts>(pendingEdit ?? { overline: e.overline, answer: e.answer, detail: e.detail, why: e.why });
   const [note, setNote] = useState("");
   const [pulling, setPulling] = useState(false);
   const [why, setWhy] = useState("");
@@ -48,7 +51,7 @@ export function EntryReview({ item, districts }: { item: ReviewItem; districts: 
     const r = extra ? await decide(e.id, e.version, action, extra) : await decide(e.id, e.version, action);
     if (!isRefusal(r)) {
       setPending(LW.actions[action]);
-      if (action === "edit") setEditing(false);
+      if (action === "edit") { setEditing(false); setEdited(texts); }
     }
   };
   const pull = async () => {
@@ -77,6 +80,12 @@ export function EntryReview({ item, districts }: { item: ReviewItem; districts: 
         )}
       </Box>
       {preview === "none" ? <Typography variant="body2">{LW.not_for_district}</Typography> : preview && entryCard(preview)}
+      {edited && !editing && (
+        <Box component="section" aria-labelledby={`${titleId}-e`} sx={{ p: 1.5, borderRadius: 2, bgcolor: "surfaceContainer", display: "grid", gap: 0.5 }}>
+          <Typography id={`${titleId}-e`} variant="subtitle2" component="h3">{LW.pending_edit}</Typography>
+          {FIELDS.map((k) => <Typography key={k} variant="body2"><b>{LW.fields[k]}:</b> {edited[k]}</Typography>)}
+        </Box>
+      )}
 
       <Box>
         <Typography variant="subtitle2" component="h3">{LW.code_heading}</Typography>
