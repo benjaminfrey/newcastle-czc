@@ -1,0 +1,381 @@
+entries:
+- id: front_setback
+  kind: standard
+  standards:
+  - dimension:primary_building_placement.primary_front_setback
+  - dimension:building_placement.primary_front_setback
+  overline: Why · how far from the front
+  answer: Your building sits {front} from the front lot line.
+  detail: Measure from the front lot line to the closest outside wall, straight out from the line. On a corner lot, the Code makes the front the line along the busier road, by its Type.
+  why: A front setback keeps buildings in line along the street, so each street keeps its character.
+  slots:
+    front:
+      standard:
+      - dimension:primary_building_placement.primary_front_setback
+      - dimension:building_placement.primary_front_setback
+      part: range
+  terms:
+  - Setback
+  - Lot Line
+  cites:
+  - 2.3.a.1
+  - 2.3.c.1
+  - 2.3.c.3
+  - 2.3.c.8
+  picture: setbacks
+  picture_alt: 'A house on its lot, with an arrow from each lot line to the nearest part of the house: the front, the nearest side, the other side and the rear. Each setback is measured along its arrow.'
+  version: 1
+  status: draft
+- id: secondary_front_setback
+  kind: standard
+  standards:
+  - dimension:primary_building_placement.secondary_front_setback
+  - dimension:building_placement.secondary_front_setback
+  overline: Why · the second road on a corner lot
+  answer: Along the second road, your building sits {secondary} from the lot line.
+  detail: This applies only to a corner lot. The second road is the one that isn't your front. Measure to the closest outside wall.
+  why: A corner building faces both streets, so it keeps in line along both.
+  slots:
+    secondary:
+      standard:
+      - dimension:primary_building_placement.secondary_front_setback
+      - dimension:building_placement.secondary_front_setback
+      part: range
+  terms:
+  - Setback
+  cites:
+  - 2.3.c.1
+  - 2.3.c.6
+  - 2.3.c.8
+  picture: setbacks
+  picture_alt: 'A house on its lot, with an arrow from each lot line to the nearest part of the house: the front, the nearest side, the other side and the rear. Each setback is measured along its arrow.'
+  version: 1
+  status: draft
+- id: side_setback
+  kind: standard
+  standards:
+  - dimension:primary_building_placement.side_setback
+  - dimension:building_placement.side_setback
+  overline: Why · how far from the sides
+  answer: Your building sits {side} from each side lot line.
+  detail: Measure from each side lot line to the closest outside wall. Where your lot meets a lot in another district, the side setback of the less strict district may be used along that line.
+  why: Side setbacks keep light, air and room between neighbors.
+  slots:
+    side:
+      standard:
+      - dimension:primary_building_placement.side_setback
+      - dimension:building_placement.side_setback
+      part: range
+  terms:
+  - Setback
+  cites:
+  - 2.3.c.1
+  - 2.3.c.3
+  - 2.3.c.6
+  - 2.3.c.7
+  picture: setbacks
+  picture_alt: 'A house on its lot, with an arrow from each lot line to the nearest part of the house: the front, the nearest side, the other side and the rear. Each setback is measured along its arrow.'
+  version: 1
+  status: draft
+- id: rear_setback
+  kind: standard
+  standards:
+  - dimension:primary_building_placement.rear_setback
+  - dimension:building_placement.rear_setback
+  overline: Why · how far from the rear
+  answer: Your building sits {rear} from the rear lot line.
+  detail: Measure from the rear lot line to the closest outside wall. A line along a road is never the rear, unless the road is an alley.
+  why: Rear setbacks keep room at the back of each lot.
+  slots:
+    rear:
+      standard:
+      - dimension:primary_building_placement.rear_setback
+      - dimension:building_placement.rear_setback
+      part: range
+  terms:
+  - Setback
+  cites:
+  - 2.2.f.5
+  - 2.3.c.1
+  - 2.3.c.3
+  picture: setbacks
+  picture_alt: 'A house on its lot, with an arrow from each lot line to the nearest part of the house: the front, the nearest side, the other side and the rear. Each setback is measured along its arrow.'
+  version: 1
+  status: draft
+- id: accessory_front_setback
+  kind: standard
+  standards:
+  - dimension:accessory_building_placement.primary_front_setback
+  overline: Why · where a garage or shed sits
+  answer: An accessory building sits {front} from the front lot line.
+  detail: An accessory building goes with the main building on your lot, like a garage, barn or shed. Small structures like garden sheds keep these setbacks too.
+  why: Smaller buildings sit back from the street, so the main building leads.
+  slots:
+    front:
+      standard: dimension:accessory_building_placement.primary_front_setback
+      part: range
+  terms:
+  - Accessory Building
+  - Setback
+  cites:
+  - 2.3.c.2
+  - 5.9.e.a
+  version: 1
+  status: draft
+- id: accessory_secondary_front_setback
+  kind: standard
+  standards:
+  - dimension:accessory_building_placement.secondary_front_setback
+  overline: Why · a garage or shed on a corner lot
+  answer: Along the second road, an accessory building sits {secondary} from the lot line.
+  detail: This applies only to a corner lot. The second road is the one that isn't your front.
+  why: A corner lot faces both streets, so smaller buildings sit back from both.
+  slots:
+    secondary:
+      standard: dimension:accessory_building_placement.secondary_front_setback
+      part: range
+  terms:
+  - Accessory Building
+  - Setback
+  cites:
+  - 2.3.c.2
+  - 2.3.c.6
+  - 5.9.e.a
+  version: 1
+  status: draft
+- id: accessory_side_setback
+  kind: standard
+  standards:
+  - dimension:accessory_building_placement.side_setback
+  overline: Why · a garage or shed and the sides
+  answer: An accessory building sits {side} from each side lot line.
+  detail: Measure from each side lot line to the closest outside wall. Small structures like garden sheds keep this setback too.
+  why: Side setbacks keep light, air and room between neighbors.
+  slots:
+    side:
+      standard: dimension:accessory_building_placement.side_setback
+      part: range
+  terms:
+  - Accessory Building
+  - Setback
+  cites:
+  - 2.3.c.2
+  - 5.9.e.a
+  version: 1
+  status: draft
+- id: accessory_rear_setback
+  kind: standard
+  standards:
+  - dimension:accessory_building_placement.rear_setback
+  overline: Why · a garage or shed and the rear
+  answer: An accessory building sits {rear} from the rear lot line.
+  detail: Measure from the rear lot line to the closest outside wall. Small structures like garden sheds keep this setback too.
+  why: Rear setbacks keep room at the back of each lot.
+  slots:
+    rear:
+      standard: dimension:accessory_building_placement.rear_setback
+      part: range
+  terms:
+  - Accessory Building
+  - Setback
+  cites:
+  - 2.3.c.2
+  - 5.9.e.a
+  version: 1
+  status: draft
+- id: lot_width
+  kind: standard
+  standards:
+  - dimension:lot_dimensions.width
+  overline: Why · how wide a lot is
+  answer: A lot here is {width} wide.
+  detail: Lot width is the length of the front lot line, or the distance between the side lot lines at the maximum front setback, whichever is greater. This applies when a lot is created. An existing lot that is narrower can still be built on if it meets the setbacks.
+  why: Lot sizes keep the pattern of each neighborhood.
+  slots:
+    width:
+      standard: dimension:lot_dimensions.width
+      part: range
+  terms:
+  - Lot Width
+  cites:
+  - 2.2.a.1
+  - 2.2.b.1
+  - 2.2.d.2
+  - 2.2.f.6
+  version: 1
+  status: draft
+- id: frontage_line_length
+  kind: standard
+  standards:
+  - dimension:lot_dimensions.primary_frontage_line_length
+  overline: Why · how long the front line is
+  answer: The front lot line here is {length} long.
+  detail: The front lot line is the lot line along your road, water, easement or right of way.
+  why: Lot sizes keep the pattern of each neighborhood.
+  slots:
+    length:
+      standard: dimension:lot_dimensions.primary_frontage_line_length
+      part: range
+  terms:
+  - Frontage Line
+  cites:
+  - 2.2.a.1
+  - 2.2.f.6
+  version: 1
+  status: draft
+- id: building_width
+  kind: standard
+  standards:
+  - building:building_width
+  overline: Why · how wide the building is
+  answer: The main part of the building is {width} wide.
+  detail: This counts the main building only. Porches, wings and other parts the Code calls components have their own sizes.
+  why: Building sizes keep new buildings in scale with their neighbors.
+  slots:
+    width:
+      standard: building:building_width
+      part: range
+  terms:
+  - Main Building Mass
+  cites:
+  - 5.3.c.4
+  - 5.3.c.4.a
+  version: 1
+  status: draft
+- id: building_depth
+  kind: standard
+  standards:
+  - building:building_depth
+  overline: Why · how deep the building is
+  answer: The main part of the building is {depth} deep.
+  detail: This counts the main building only. Porches, wings and other parts the Code calls components have their own sizes.
+  why: Building sizes keep new buildings in scale with their neighbors.
+  slots:
+    depth:
+      standard: building:building_depth
+      part: range
+  terms:
+  - Main Building Mass
+  cites:
+  - 5.3.c.4
+  - 5.3.c.4.a
+  version: 1
+  status: draft
+- id: building_floor_area
+  kind: standard
+  standards:
+  - building:building_floor_area
+  overline: Why · how much floor the building has
+  answer: The main part of the building has {area} of floor.
+  detail: This counts the main building only. Living space inside a pitched roof doesn't count.
+  why: Building sizes keep new buildings in scale with their neighbors.
+  slots:
+    area:
+      standard: building:building_floor_area
+      part: range
+  terms:
+  - Main Building Mass
+  cites:
+  - 5.3.c.4
+  - 5.3.c.4.b
+  version: 1
+  status: draft
+- id: total_stories
+  kind: standard
+  standards:
+  - building:total_stories
+  overline: Why · how tall the building is
+  answer: The building has {stories}.
+  detail: Only floors with full-height outside walls count. Space inside a pitched roof usually isn't a story.
+  why: Height limits keep buildings in scale with their street.
+  slots:
+    stories:
+      standard: building:total_stories
+      part: range
+  terms:
+  - Story
+  cites:
+  - 5.7.c.1
+  - 5.7.c.3
+  - 5.7.c.4
+  - 5.7.c.5
+  - 5.7.c.6
+  picture: stories
+  picture_alt: A house cut open to show its floors. The first and second floors have full-height walls and count as stories. A floor inside the roof counts only if the roof meets its wall more than 3 feet above the floor. A basement counts if 5 feet or more of its wall shows above the ground along the front.
+  version: 1
+  status: draft
+- id: first_floor_height
+  kind: standard
+  standards:
+  - building:first_floor_height
+  overline: Why · how tall the first floor is
+  answer: The first floor is {height} tall.
+  detail: Measure from the surface of the first floor to the surface of the floor above. With no floor above, measure to the top of the wall.
+  why: Floor heights help new buildings match the scale of the street.
+  slots:
+    height:
+      standard: building:first_floor_height
+      part: range
+  cites:
+  - 5.7.c.2
+  version: 1
+  status: draft
+- id: upper_floor_height
+  kind: standard
+  standards:
+  - building:upper_floor_height
+  overline: Why · how tall the upper floors are
+  answer: Each upper floor is {height} tall.
+  detail: Measure from the surface of each floor to the surface of the floor above. For the top floor, measure to the top of the wall.
+  why: Floor heights help new buildings match the scale of the street.
+  slots:
+    height:
+      standard: building:upper_floor_height
+      part: range
+  cites:
+  - 5.7.c.2
+  version: 1
+  status: draft
+- id: number_of_units
+  kind: standard
+  standards:
+  - building:number_of_units
+  overline: Why · how many units
+  answer: The building has {units}.
+  detail: A unit is a space that one household or one business can use on its own.
+  why: Unit counts keep each neighborhood's mix of homes and businesses.
+  slots:
+    units:
+      standard: building:number_of_units
+      part: range
+  terms:
+  - Unit
+  cites:
+  - 2.1.b.2
+  version: 1
+  status: draft
+- id: permitting_authority
+  kind: standard
+  standards:
+  - building:permitting_authority
+  overline: Why · who reviews this building
+  answer: The district's Permitted Buildings table names the {who} for this kind of building.
+  detail: The Permitting Authority is the person or board who reviews a project under the Code. A project that needs more than one kind of review can have more than one.
+  why: The Code names who reviews each kind of building in each district.
+  slots:
+    who:
+      standard: building:permitting_authority
+      part: raw
+  terms:
+  - Permitting Authority
+  cites:
+  - 8.2.a.1
+  - 8.2.a.4
+  version: 1
+  status: draft
+open_questions:
+- 'Frontage zone setback (D3, D4, D5, D6 and four special districts): the district pages give a number, and Article 9 defines the Frontage Zone as the Frontage plus an additional setback from the front facade. Does the number say how far the zone reaches behind the front of the building? No entry is written until you say what it measures.'
+- 'Lot depth and lot area: every district page says n/a, so there is no entry, and the guide doesn''t ask them. Should a resident be told the Code sets none, or nothing at all?'
+- 'Permitting Authority: the tables say "CEO" or "Planning Board", and the entry fills them in as written ("names the CEO for this kind of building"). Should it spell out "Code Enforcement Officer"?'
+- Ranges read "at least 20 ft", "at most 2 stories" or "between 0 and 5 ft". These three patterns are new words, for your approval with the entries.
+- 'A zero limit reads as written: D6''s front setback "at most 0 ft" (the building sits on the line), and SD-Campus''s "at least 0 ft" (no minimum). Should these say "on the lot line" and "no minimum" instead? That would be three more approved patterns.'

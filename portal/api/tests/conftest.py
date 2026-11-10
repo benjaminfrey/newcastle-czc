@@ -90,3 +90,26 @@ def one_draft(monkeypatch):
         return d.Definitions(applications=defs.applications, rules=rules, groups=defs.groups)
 
     monkeypatch.setattr(routes, "load_definitions", with_a_draft)
+
+
+@pytest.fixture
+def lib(tmp_path):
+    """A writable copy of the explanation library's guide batch (the four entries approved before
+    the library's design), and a way to change it: the library's mechanics, apart from the Articles."""
+    import shutil
+
+    import yaml
+
+    import portal_api.library.load as ll
+    root = tmp_path / "library"
+    root.mkdir()
+    shutil.copy(ll.DIR / "guide.yaml", root / "guide.yaml")
+
+    def edit(batch: str, change) -> Path:
+        from portal_api.library.write import dump_batch
+        path = root / f"{batch}.yaml"
+        data = yaml.safe_load(path.read_text())
+        change(data)
+        dump_batch(path, data["entries"], data.get("open_questions") or [])
+        return root
+    return edit

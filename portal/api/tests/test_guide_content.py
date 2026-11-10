@@ -8,7 +8,7 @@ import yaml
 import portal_api.guide.content as gc
 from portal_api.guide.content import NEVER_WORDS, ContentError, load_content
 
-FILES = ("openings.yaml", "turns.yaml", "entries.yaml", "wording.yaml")
+FILES = ("openings.yaml", "turns.yaml", "wording.yaml")  # the entries are the library's: test_library_load.py
 
 
 @pytest.fixture
@@ -50,12 +50,6 @@ def test_content_loads():
 def test_every_cite_resolves(copy):
     root = copy("turns.yaml", lambda d: _turn(d, "full_stories").update(cite="99.1.a"))
     with pytest.raises(ContentError, match="turns.yaml: full_stories"):
-        load_content(root)
-
-
-def test_every_entry_cite_resolves(copy):
-    root = copy("entries.yaml", lambda d: d[0]["cites"].append("99.1.a"))
-    with pytest.raises(ContentError, match="entries.yaml"):
         load_content(root)
 
 
@@ -127,7 +121,7 @@ def test_a_new_house_is_checked_as_a_residential_primary_building():
 
 
 # The chair approved the rest on 2026-11-06; "You're already covered" is never shown, so it stays a draft.
-STILL_DRAFT = {("wording.yaml", "covered")}
+STILL_DRAFT = {("wording.yaml", "covered"), ("wording.yaml", "interpretation_mark")}  # the library's mark (design 2)
 
 
 def test_the_chair_approved_everything_shown_on_2026_11_06():
@@ -163,10 +157,3 @@ def test_a_guided_opening_needs_a_part_and_a_template(copy):
 def test_a_coming_soon_opening_needs_neither(copy):
     deck = lambda d: next(o for o in d if o["id"] == "deck")  # noqa: E731
     load_content(copy("openings.yaml", lambda d: [deck(d).pop(k, None) for k in ("part", "confirm")]))
-
-
-def test_a_picture_needs_its_description(copy):
-    def drop(data):
-        next(e for e in data if e["id"] == "how_stories_count").pop("picture_alt")
-    with pytest.raises(ContentError, match="picture_alt"):
-        load_content(copy("entries.yaml", drop))

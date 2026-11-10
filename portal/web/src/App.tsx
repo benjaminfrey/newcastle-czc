@@ -17,6 +17,10 @@ const GuidePreview = lazy(() => import("./guide/GuidePreview"));
 const GuidePage = lazy(() => import("./guide/GuidePage"));
 const CheckAndSend = lazy(() => import("./guide/CheckAndSend"));
 const PacketPage = lazy(() => import("./guide/packet/PacketPage"));
+// The explanation library's review page (design 2, §7): for Town staff, and the same at launch,
+// so not behind the preview flag. The API refuses everyone else.
+const LibraryHome = lazy(() => import("./library/LibraryHome"));
+const BatchPage = lazy(() => import("./library/BatchPage"));
 
 // Sign in first (projects brief §3): Home and the emailed link are the only pages a visitor sees
 // signed out. "Do I need a permit?" is gone; its addresses, and the old application addresses,
@@ -31,6 +35,8 @@ export function AppRoutes() {
         <Route path="/projects/:id/:stepId?/:sub?" element={<ProjectPage />} />
         <Route path="/messages" element={<Messages />} />
         <Route path="/you" element={<You />} />
+        <Route path="/library" element={<Suspense fallback={null}><LibraryHome /></Suspense>} />
+        <Route path="/library/:batch" element={<Suspense fallback={null}><BatchPage /></Suspense>} />
         {GUIDE_PREVIEW && <Route path="/guide/preview" element={<Suspense fallback={null}><GuidePreview /></Suspense>} />}
         {GUIDE_PREVIEW && <Route path="/projects/:id/guide" element={<Suspense fallback={null}><GuidePage /></Suspense>} />}
         {GUIDE_PREVIEW && <Route path="/projects/:id/guide/check" element={<Suspense fallback={null}><CheckAndSend /></Suspense>} />}

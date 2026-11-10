@@ -30,6 +30,8 @@ class Settings(BaseSettings):
     # The screener's rules start as drafts the chair approves one by one. Production
     # refuses answers that rest on a draft; only development sets this.
     allow_draft_rules: bool = False
+    # The public site (design 2, §5): only live library entries, and never with draft rules.
+    public: bool = False
     # A stand-in for the staff lock (Milestone 6 builds the staff side), for tests and the
     # journeys only: an applicant may lock their own sent project. Never set in production.
     allow_test_lock: bool = False

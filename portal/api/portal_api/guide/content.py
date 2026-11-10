@@ -7,6 +7,7 @@ fact and bounds, and a template may fill only the slots listed here. Nothing a p
 ever read by this package (spec decision 14).
 """
 
+import dataclasses
 import functools
 import hashlib
 import re
@@ -20,10 +21,12 @@ import yaml
 from portal_api.forms.definitions import DefinitionError, _check_cite, _check_status, load_definitions
 from portal_api.forms.expr import validate as validate_condition
 from portal_api.forms.parts import load_parts
+from portal_api.library import LibraryEntry, LibraryError, is_live, load_library, view
+from portal_api.library.model import NEVER_WORDS  # noqa: F401 (re-exported: the guide's tests and endings use it)
 from portal_api.ruleset import load_ruleset
 
 DIR = Path(__file__).resolve().parent / "definitions"
-_FILES = ("entries.yaml", "openings.yaml", "turns.yaml", "wording.yaml")
+_FILES = ("openings.yaml", "turns.yaml", "wording.yaml")  # the entries are the library's (design 2)
 
 # The facts the engine knows. An answer may set only these; `opening` and `confirmed` are set by
 # the engine and the "So you mean…" answers.
@@ -41,8 +44,6 @@ _ANSWERS_FROM = {"use_groups", "use_group_uses", "lot_lines"}
 _DRAWINGS = {"front", "front_setback", "side_1", "side_2", "secondary", "rear"}
 _KINDS = {"lot", "confirm", "choice", "number"}
 
-# Words that read as the Town's decision (spec §10.3). The builder's list, for the chair to approve.
-NEVER_WORDS = re.compile(r"\b(approved|denied|granted|rejected|permit issued|compliant|violates)\b", re.IGNORECASE)
 
 
 class ContentError(Exception):
@@ -57,20 +58,8 @@ class Answer:
     set: dict
 
 
-@dataclass(frozen=True)
-class Entry:
-    id: str
-    overline: str
-    answer: str
-    detail: str
-    why: str
-    cites: tuple[str, ...]
-    version: int
-    status: str
-    approved_by: str | None = None
-    approved_on: str | None = None
-    picture: str | None = None       # a picture's id in the web's pictures/ (plan 5)
-    picture_alt: str | None = None   # what the picture shows, for a screen reader; approved wording
+# An entry is the library's (design 2); the guide keeps the name.
+Entry = LibraryEntry
 
 
 @dataclass(frozen=True)
@@ -124,6 +113,7 @@ class Content:
     use_answers: dict      # use group key -> its uses as answers (approved content, Code names)
     group_answers: tuple   # the use groups as answers
     digest: str
+    covers_standards: bool = False   # this request's view (library/view.py)
 
     def turn(self, turn_id: str) -> Turn | None:
         return next((t for t in self.turns if t.id == turn_id), None)
@@ -208,23 +198,16 @@ def _use_answers(ruleset) -> tuple[tuple[Answer, ...], dict]:
 
 
 @functools.cache
-def _load(root: Path) -> Content:
+def _load(root: Path, library_root: Path | None) -> Content:
     ruleset = load_ruleset()
     raw = {name: yaml.safe_load((root / name).read_text()) for name in _FILES}
-    digest = hashlib.sha256(b"".join((root / name).read_bytes() for name in _FILES)).hexdigest()
-
-    entries = {}
-    for e in raw["entries.yaml"]:
-        where = f"entries.yaml: {e.get('id')}"
-        _status(where, e)
-        for ref in e.get("cites") or []:
-            _cite(where, ref, ruleset)
-        if e["id"] in entries:
-            raise ContentError(f"{where}: duplicate id")
-        if e.get("picture") and not e.get("picture_alt"):
-            raise ContentError(f"{where}: a picture needs its picture_alt")
-        entries[e["id"]] = Entry(**{**{k: v for k, v in e.items() if k in Entry.__dataclass_fields__},
-                                    "cites": tuple(e.get("cites") or ())})
+    try:
+        library = load_library(library_root)
+    except LibraryError as exc:
+        raise ContentError(f"library: {exc}") from None
+    digest = hashlib.sha256(b"".join((root / name).read_bytes() for name in _FILES)
+                            + library.digest.encode()).hexdigest()
+    entries = library.entries
 
     wording = raw["wording.yaml"]
     for key, w in wording.items():
@@ -260,8 +243,12 @@ def _load(root: Path) -> Content:
                    wording=wording, use_answers=uses, group_answers=groups, digest=digest)
 
 
-def load_content(root: Path | None = None) -> Content:
-    return _load((root or DIR).resolve())
+def load_content(root: Path | None = None, library_root: Path | None = None) -> Content:
+    """The guide's content, with only the entries this request's view may show."""
+    c = _load((root or DIR).resolve(), library_root.resolve() if library_root else None)
+    v = view.current()
+    entries = {k: e for k, e in c.entries.items() if view.visible(e, public=v.public, pulled=v.pulled)}
+    return dataclasses.replace(c, entries=entries, covers_standards=v.covers_standards)
 
 
 def drafts_in(content: Content, *, opening: str, turn_ids: list[str], entry_ids: list[str],
@@ -276,8 +263,8 @@ def drafts_in(content: Content, *, opening: str, turn_ids: list[str], entry_ids:
         if turn is not None and turn.status == "draft":
             out.append(f"turns.yaml: {t}")
     for e in dict.fromkeys(entry_ids):
-        if e in content.entries and content.entries[e].status == "draft":
-            out.append(f"entries.yaml: {e}")
+        if e in content.entries and not is_live(content.entries[e]):
+            out.append(f"library/{content.entries[e].batch}: {e}")
     for w in dict.fromkeys(wording_keys):
         if w in content.wording and content.wording[w].get("status") == "draft":
             out.append(f"wording.yaml: {w}")
