@@ -54,8 +54,8 @@ instructions. Update it when an item opens or closes; move closed items to `HIST
     Next: design 2, the explanation library. Open decisions are the spec's §12.
   - **Design 2, the explanation library** (`specs/2026-11-08-applicant-portal-guided-builder-library.md`,
     approved by the chair 2026-11-08 from his interview). Library plan 1
-    (`plans/2026-11-08-applicant-portal-guided-builder-library-1-format.md`) is built on branch
-    `portal-guided-library-design`, not pushed:
+    (`plans/2026-11-08-applicant-portal-guided-builder-library-1-format.md`) merged as PR #29 on
+    2026-11-10 (the 11 deferred minor review findings are listed in the PR's description):
     - the entry format and its checks;
     - the live rule (ratified, or approved before 2026-11-08), which the public site can't bypass;
     - the staff review page at `/library`;
